@@ -1,0 +1,68 @@
+{% extends 'panel/base.html' %}
+{% block title %}Xavfsizlik loglari{% endblock %}
+{% block page_title %}Xavfsizlik loglari{% endblock %}
+{% block nav_security %}active{% endblock %}
+
+{% block content %}
+<div class="grid-2" style="margin-bottom:20px">
+  <div class="card">
+    <div class="section-header"><span class="section-title">Shubhali IP manzillar (Top 10)</span></div>
+    <table>
+      <thead><tr><th>IP manzil</th><th>Urinishlar soni</th><th></th></tr></thead>
+      <tbody>
+        {% for ip in top_ips %}
+        <tr>
+          <td style="font-family:monospace;color:var(--red)">{{ ip.ip }}</td>
+          <td><span class="badge badge-red">{{ ip.cnt }} ta</span></td>
+          <td><a href="?ip={{ ip.ip }}" class="btn btn-ghost btn-sm">Filter</a></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="3" style="text-align:center;padding:20px;color:var(--muted)">Shubhali IP yo'q</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="section-header"><span class="section-title">Statistika</span></div>
+    <div style="display:flex;flex-direction:column;gap:12px;font-size:13px">
+      <div style="display:flex;justify-content:space-between;padding:10px;background:var(--surface2);border-radius:8px">
+        <span style="color:var(--muted)">Jami muvaffaqiyatsiz urinish</span>
+        <span style="color:var(--red);font-weight:700">{{ logs|length }}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:10px;background:var(--surface2);border-radius:8px">
+        <span style="color:var(--muted)">Bloklangan urinishlar</span>
+        <span style="color:var(--yellow);font-weight:700">{{ logs|length }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card" style="padding:0">
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Username</th><th>IP manzil</th><th>Holat</th><th>Brauzer</th><th>Vaqt</th></tr></thead>
+      <tbody>
+        {% for log in logs %}
+        <tr>
+          <td style="font-weight:500">
+            {% if log.user %}<a href="{% url 'panel:user_detail' log.user.pk %}" style="color:var(--primary)">{{ log.username_attempt }}</a>
+            {% else %}<span style="color:var(--muted)">{{ log.username_attempt }}</span>{% endif %}
+          </td>
+          <td style="font-family:monospace;font-size:12px;color:var(--red)">{{ log.ip }}</td>
+          <td>
+            {% if log.status == 'failed' %}<span class="badge badge-yellow">Xato parol</span>
+            {% elif log.status == 'blocked' %}<span class="badge badge-red">Bloklangan</span>
+            {% else %}<span class="badge badge-green">OK</span>{% endif %}
+          </td>
+          <td style="color:var(--muted);font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ log.user_agent|truncatechars:50 }}</td>
+          <td style="color:var(--muted);font-size:12px">{{ log.created_at|date:"d M Y, H:i" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" style="text-align:center;padding:32px;color:var(--muted)">Log yo'q</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

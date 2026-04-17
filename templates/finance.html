@@ -1,0 +1,276 @@
+{% extends 'base.html' %}
+
+{% block title %}Moliya - AbExam{% endblock %}
+
+{% block extra_css %}
+<style>
+    .finance-header {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr;
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    .balance-card {
+        background: linear-gradient(135deg, #1a1a1c 0%, #0e0e0e 100%);
+        border: 1px solid var(--border-color);
+        border-radius: 24px;
+        padding: 3rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .balance-card::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(66, 133, 244, 0.1) 0%, transparent 70%);
+        z-index: 0;
+    }
+
+    .price-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
+
+    .plan-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 24px;
+        padding: 2rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .plan-card:hover {
+        border-color: var(--primary-color);
+        transform: translateY(-5px);
+    }
+
+    .plan-card.featured {
+        background: rgba(66, 133, 244, 0.05);
+        border-color: var(--primary-color);
+    }
+
+    .plan-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        margin-bottom: 1rem;
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .transaction-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+    }
+
+    .transaction-table th {
+        text-align: left;
+        padding: 1rem;
+        color: var(--text-muted);
+        font-weight: 500;
+        font-size: 0.85rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .transaction-table td {
+        padding: 1.25rem 1rem;
+        border-bottom: 1px solid var(--border-color);
+        font-size: 0.95rem;
+    }
+
+    .nav-toggle-text { transition: opacity 0.3s; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 3rem;">
+    <h1 style="font-size: 2.25rem; font-weight: 700; margin-bottom: 0.5rem;">Moliya va Rejalar</h1>
+    <p style="color: var(--text-muted); font-size: 1.1rem;">Balansingizni boshqaring va o'quv rejalarini tanlang.</p>
+</div>
+
+<div class="finance-header">
+    <div class="balance-card">
+        <div style="position: relative; z-index: 1;">
+            <p style="text-transform: uppercase; letter-spacing: 2px; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 1rem; font-weight: 600;">Joriy Balans</p>
+            <h2 style="font-size: 4rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem; letter-spacing: -2px;">
+                {{ user.balance|default:"0.00" }} <span style="font-size: 1.5rem; font-weight: 400; opacity: 0.5; letter-spacing: 0;">SO'M</span>
+            </h2>
+            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                <button onclick="openTopUp()" class="btn" style="background: #fff; color: #000; padding: 0.8rem 2rem; border-radius: 12px; font-weight: 600;">
+                    <i data-lucide="plus" style="width: 18px; margin-bottom: -3px; margin-right: 4px;"></i>
+                    To'ldirish
+                </button>
+                <button class="btn" style="background: rgba(255,255,255,0.05); color: #fff; padding: 0.8rem 2rem; border-radius: 12px; font-weight: 600; border: 1px solid var(--border-color);">
+                    Tafsilotlar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" style="background: var(--card-bg); border-radius: 24px; padding: 2rem; display: flex; flex-direction: column; justify-content: space-between;">
+        <h3 style="font-weight: 600; margin-bottom: 1rem;">Tezkor To'lov</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Payme yoki Click orqali balansingizni bir zumda to'ldiring.</p>
+        <div style="display: flex; gap: 0.75rem;">
+            <div style="flex: 1; border: 1px solid var(--border-color); border-radius: 16px; padding: 1rem; text-align: center; cursor: pointer; transition: 0.2s;" onmouseover="this.style.borderColor='#00BAEF'">
+                <img src="https://payme.uz/favicon.ico" style="width: 20px; margin-bottom: 4px;">
+                <p style="font-weight: 600; font-size: 0.9rem; color: #00BAEF;">Payme</p>
+            </div>
+            <div style="flex: 1; border: 1px solid var(--border-color); border-radius: 16px; padding: 1rem; text-align: center; cursor: pointer; transition: 0.2s;" onmouseover="this.style.borderColor='#1F2E8E'">
+                <img src="https://click.uz/favicon.ico" style="width: 20px; margin-bottom: 4px;">
+                <p style="font-weight: 600; font-size: 0.9rem; color: #1F2E8E;">Click</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h2 style="font-size: 1.75rem; font-weight: 600; margin-bottom: 2rem;">Obuna Rejalari</h2>
+<div class="price-grid">
+    <div class="plan-card">
+        <span class="plan-badge">Boshlang'ich</span>
+        <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">Free Plan</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem; flex-grow: 1;">Savollar bilan tanishish va cheklangan mock testlar.</p>
+        <div style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem;">0 SO'M <span style="font-size: 0.9rem; font-weight: 400; opacity: 0.5;">/oy</span></div>
+        <button class="btn" style="width: 100%; padding: 0.8rem; border-radius: 12px; background: rgba(255,255,255,0.05); color: #888;" disabled>Joriy reja</button>
+    </div>
+
+    <div class="plan-card featured">
+        <span class="plan-badge" style="background: rgba(66, 133, 244, 0.2); color: #4285f4;">Eng ommabop</span>
+        <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">Pro Practice</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem; flex-grow: 1;">Cheksiz mock testlar, AI tahlili va shaxsiy o'qituvchi yordami.</p>
+        <div style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem;">99,000 SO'M <span style="font-size: 0.9rem; font-weight: 400; opacity: 0.5;">/oy</span></div>
+        <button class="btn" style="width: 100%; padding: 0.8rem; border-radius: 12px; background: var(--primary-color); color: #fff; font-weight: 600;">Upgrade qilish</button>
+    </div>
+
+    <div class="plan-card">
+        <span class="plan-badge">Premium</span>
+        <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">Full Mock</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem; flex-grow: 1;">Haqiqiy examiner tomonidan tekshiriladigan 10 ta to'liq mock test.</p>
+        <div style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem;">249,000 SO'M <span style="font-size: 0.9rem; font-weight: 400; opacity: 0.5;">/bir martalik</span></div>
+        <button class="btn" style="width: 100%; padding: 0.8rem; border-radius: 12px; border: 1px solid var(--border-color); color: #fff;">Sotib olish</button>
+    </div>
+</div>
+
+<div class="card" style="background: var(--card-bg); border-radius: 24px; padding: 2rem;">
+    <h3 style="font-weight: 600; margin-bottom: 1.5rem;">Oxirgi Tranzaksiyalar</h3>
+    <table class="transaction-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Sana</th>
+                <th>Turi</th>
+                <th>Holati</th>
+                <th style="text-align: right;">Summa</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for tx in transactions %}
+            <tr>
+                <td style="color: var(--text-muted); font-size: 0.85rem;">#{{ tx.id }}</td>
+                <td>{{ tx.created_at|date:"d-M, Y H:i" }}</td>
+                <td>{{ tx.get_method_display }}</td>
+                <td>
+                    <span style="padding: 3px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;
+                        {% if tx.status == 'success' %}background: rgba(52,168,83,0.15); color: #34a853;
+                        {% elif tx.status == 'failed' %}background: rgba(234,67,53,0.15); color: #ea4335;
+                        {% else %}background: rgba(251,188,4,0.15); color: #fbbc04;{% endif %}">
+                        {{ tx.get_status_display }}
+                    </span>
+                </td>
+                <td style="text-align: right; font-weight: 600;">+{{ tx.amount }} so'm</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 4rem 0;">
+                    <i data-lucide="receipt" style="width: 32px; height: 32px; opacity: 0.5; margin-bottom: 1rem;"></i>
+                    <p>Hozircha tranzaksiyalar mavjud emas</p>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<div id="topupModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(8px);">
+    <div style="background:var(--card-bg);border:1px solid var(--border-color);border-radius:24px;padding:2.5rem;max-width:420px;width:90%;">
+        <h3 style="font-size:1.25rem;font-weight:600;margin-bottom:1.5rem;">Balansni to'ldirish</h3>
+        <div style="margin-bottom:1.25rem;">
+            <label style="font-size:0.85rem;color:var(--text-muted);display:block;margin-bottom:0.5rem;">Summa (so'm)</label>
+            <input type="number" id="topupAmount" min="1000" step="1000" placeholder="50000"
+                style="width:100%;background:rgba(255,255,255,0.05);border:1px solid var(--border-color);border-radius:10px;padding:0.8rem 1rem;color:var(--text-color);font-size:1rem;outline:none;">
+        </div>
+        <div style="margin-bottom:1.5rem;">
+            <label style="font-size:0.85rem;color:var(--text-muted);display:block;margin-bottom:0.75rem;">To'lov usuli</label>
+            <div style="display:flex;gap:0.75rem;">
+                <label id="lbl-manual" style="flex:1;border:2px solid var(--primary-color);border-radius:12px;padding:0.75rem;text-align:center;cursor:pointer;">
+                    <input type="radio" name="topupMethod" value="manual" checked style="display:none;"><span style="font-weight:600;font-size:0.9rem;">Qo'lda</span>
+                </label>
+                <label id="lbl-payme" style="flex:1;border:1px solid var(--border-color);border-radius:12px;padding:0.75rem;text-align:center;cursor:pointer;">
+                    <input type="radio" name="topupMethod" value="payme" style="display:none;"><span style="font-weight:600;font-size:0.9rem;color:#00BAEF;">Payme</span>
+                </label>
+                <label id="lbl-click" style="flex:1;border:1px solid var(--border-color);border-radius:12px;padding:0.75rem;text-align:center;cursor:pointer;">
+                    <input type="radio" name="topupMethod" value="click" style="display:none;"><span style="font-weight:600;font-size:0.9rem;color:#1F2E8E;">Click</span>
+                </label>
+            </div>
+        </div>
+        <div id="topupMsg" style="font-size:0.85rem;margin-bottom:1rem;display:none;"></div>
+        <div style="display:flex;gap:0.75rem;">
+            <button onclick="submitTopUp()" style="flex:1;background:var(--primary-color);color:#fff;border:none;padding:0.9rem;border-radius:12px;font-weight:600;cursor:pointer;">To'ldirish</button>
+            <button onclick="closeTopUp()" style="flex:1;background:rgba(255,255,255,0.05);color:var(--text-color);border:1px solid var(--border-color);padding:0.9rem;border-radius:12px;cursor:pointer;">Bekor qilish</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openTopUp() { document.getElementById('topupModal').style.display = 'flex'; }
+    function closeTopUp() {
+        document.getElementById('topupModal').style.display = 'none';
+        document.getElementById('topupMsg').style.display = 'none';
+    }
+
+    document.querySelectorAll('input[name="topupMethod"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            ['manual','payme','click'].forEach(m => {
+                document.getElementById('lbl-' + m).style.border = '1px solid var(--border-color)';
+            });
+            document.getElementById('lbl-' + this.value).style.border = '2px solid var(--primary-color)';
+        });
+    });
+
+    function submitTopUp() {
+        const amount = document.getElementById('topupAmount').value;
+        const method = document.querySelector('input[name="topupMethod"]:checked').value;
+        const msg = document.getElementById('topupMsg');
+        if (!amount || parseFloat(amount) <= 0) {
+            msg.style.display = 'block'; msg.style.color = '#e74c3c';
+            msg.innerText = "Summani to'g'ri kiriting"; return;
+        }
+        fetch('/payments/topup/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ amount: parseFloat(amount), method })
+        })
+        .then(r => r.json())
+        .then(data => {
+            msg.style.display = 'block';
+            msg.style.color = data.status === 'success' ? '#34a853' : '#fbbc04';
+            msg.innerText = data.message || "To'lov kutilmoqda";
+            if (data.status === 'success') setTimeout(() => location.reload(), 1200);
+        })
+        .catch(() => { msg.style.display='block'; msg.style.color='#e74c3c'; msg.innerText='Xatolik yuz berdi'; });
+    }
+</script>
+{% endblock %}

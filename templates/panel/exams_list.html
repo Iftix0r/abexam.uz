@@ -1,0 +1,79 @@
+{% extends 'panel/base.html' %}
+{% block title %}Imtihonlar{% endblock %}
+{% block page_title %}Imtihonlar{% endblock %}
+{% block nav_exams %}active{% endblock %}
+
+{% block content %}
+<div class="section-header">
+  <form method="get" style="display:flex;gap:10px;flex-wrap:wrap">
+    <div class="search-box">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke-width="1.8"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke-width="1.8"/></svg>
+      <input name="q" value="{{ q }}" placeholder="Qidirish...">
+    </div>
+    <select name="type" class="form-input" style="width:auto" onchange="this.form.submit()">
+      <option value="">Barcha turlar</option>
+      {% for val, label in exam_types %}
+      <option value="{{ val }}" {% if etype == val %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+    <button class="btn btn-ghost btn-sm" type="submit">Filter</button>
+  </form>
+  <a href="{% url 'panel:exam_create' %}" class="btn btn-primary">
+    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" stroke-width="2"/><line x1="5" y1="12" x2="19" y2="12" stroke-width="2"/></svg>
+    Yangi imtihon
+  </a>
+</div>
+
+<div class="card" style="padding:0">
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Nomi</th><th>Turi</th><th>Narxi</th><th>Bo'limlar</th><th>Natijalar</th><th>Status</th><th>Sana</th><th></th></tr></thead>
+      <tbody>
+        {% for e in exams %}
+        <tr>
+          <td><a href="{% url 'panel:exam_detail' e.pk %}" style="color:var(--primary);font-weight:500">{{ e.title }}</a></td>
+          <td><span class="badge badge-blue">{{ e.get_exam_type_display }}</span></td>
+          <td>{% if e.price == 0 %}<span style="color:var(--green)">Bepul</span>{% else %}<span style="font-weight:600">{{ e.price|floatformat:0 }} so'm</span>{% endif %}</td>
+          <td style="color:var(--muted)">{{ e.sections_count }}</td>
+          <td style="color:var(--muted)">{{ e.results_count }}</td>
+          <td>
+            <span class="badge {% if e.is_active %}badge-green{% else %}badge-gray{% endif %}" id="exam-status-{{ e.pk }}">
+              {% if e.is_active %}Faol{% else %}Nofaol{% endif %}
+            </span>
+          </td>
+          <td style="color:var(--muted);font-size:12px">{{ e.created_at|date:"d M Y" }}</td>
+          <td>
+            <div style="display:flex;gap:6px">
+              <a href="{% url 'panel:exam_edit' e.pk %}" class="btn btn-ghost btn-sm">Tahrir</a>
+              <button onclick="toggleExam({{ e.pk }})" class="btn btn-ghost btn-sm">On/Off</button>
+              <button onclick="deleteExam({{ e.pk }}, this)" class="btn btn-danger btn-sm">O'chir</button>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="8" style="text-align:center;padding:32px;color:var(--muted)">Imtihon topilmadi</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+async function toggleExam(pk){
+  const r=await fetch(`/panel/exams/${pk}/toggle/`,{method:'POST',headers:{'X-CSRFToken':csrf}});
+  const d=await r.json();
+  const el=document.getElementById('exam-status-'+pk);
+  el.textContent=d.active?'Faol':'Nofaol';
+  el.className='badge '+(d.active?'badge-green':'badge-gray');
+  toast(d.active?'Yoqildi':'O\'chirildi');
+}
+async function deleteExam(pk, btn){
+  if(!confirm('Imtihonni o\'chirishni tasdiqlaysizmi?')) return;
+  const r=await fetch(`/panel/exams/${pk}/delete/`,{method:'POST',headers:{'X-CSRFToken':csrf}});
+  const d=await r.json();
+  if(d.ok){btn.closest('tr').remove();toast('Imtihon o\'chirildi','#ef4444');}
+}
+</script>
+{% endblock %}

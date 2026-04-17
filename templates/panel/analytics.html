@@ -1,0 +1,203 @@
+{% extends 'panel/base.html' %}
+{% block title %}Analitika{% endblock %}
+{% block page_title %}Analitika{% endblock %}
+{% block nav_analytics %}active{% endblock %}
+
+{% block content %}
+<!-- Stats -->
+<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:24px">
+  <div class="card" style="padding:16px">
+    <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Foydalanuvchilar</div>
+    <div style="font-size:24px;font-weight:700;color:var(--primary)">{{ stats.total_users }}</div>
+  </div>
+  <div class="card" style="padding:16px">
+    <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Natijalar</div>
+    <div style="font-size:24px;font-weight:700;color:var(--blue)">{{ stats.total_results }}</div>
+  </div>
+  <div class="card" style="padding:16px">
+    <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Daromad</div>
+    <div style="font-size:22px;font-weight:700;color:var(--green)">{{ stats.total_revenue|floatformat:0 }}</div>
+  </div>
+  <div class="card" style="padding:16px">
+    <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">O'rtacha ball</div>
+    <div style="font-size:24px;font-weight:700;color:var(--yellow)">{{ stats.avg_score|floatformat:1 }}</div>
+  </div>
+  <div class="card" style="padding:16px">
+    <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Faol imtihonlar</div>
+    <div style="font-size:24px;font-weight:700">{{ stats.active_exams }}</div>
+  </div>
+  <div class="card" style="padding:16px">
+    <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Kutilayotgan to'lov</div>
+    <div style="font-size:24px;font-weight:700;color:{% if stats.pending_tx %}var(--yellow){% else %}var(--muted){% endif %}">{{ stats.pending_tx }}</div>
+  </div>
+</div>
+
+<!-- Main chart: 30 days activity -->
+<div class="card" style="margin-bottom:20px">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+    <span style="font-size:14px;font-weight:600">So'nggi 30 kun faolligi</span>
+    <div style="display:flex;gap:6px;background:rgba(255,255,255,.04);border-radius:8px;padding:3px">
+      <button class="tab-btn active" onclick="switchMain('users',this)">Foydalanuvchilar</button>
+      <button class="tab-btn" onclick="switchMain('results',this)">Natijalar</button>
+      <button class="tab-btn" onclick="switchMain('revenue',this)">Daromad</button>
+    </div>
+  </div>
+  <div style="height:240px"><canvas id="mainChart"></canvas></div>
+</div>
+
+<!-- 3 col charts -->
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-bottom:20px">
+  <div class="card">
+    <div style="font-size:13px;font-weight:600;margin-bottom:14px">Imtihon turlari</div>
+    <div style="height:180px"><canvas id="typeChart"></canvas></div>
+  </div>
+  <div class="card">
+    <div style="font-size:13px;font-weight:600;margin-bottom:14px">Band score taqsimoti</div>
+    <div style="height:180px"><canvas id="bandChart"></canvas></div>
+  </div>
+  <div class="card">
+    <div style="font-size:13px;font-weight:600;margin-bottom:14px">Bo'limlar o'rtachasi (Radar)</div>
+    <div style="height:180px"><canvas id="radarChart"></canvas></div>
+  </div>
+</div>
+
+<!-- 2 col -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px">
+  <!-- Monthly revenue -->
+  <div class="card">
+    <div style="font-size:13px;font-weight:600;margin-bottom:14px">Oylik daromad (so'nggi 6 oy)</div>
+    <div style="height:180px"><canvas id="revenueChart"></canvas></div>
+  </div>
+  <!-- Top users -->
+  <div class="card">
+    <div style="font-size:13px;font-weight:600;margin-bottom:14px">Eng faol foydalanuvchilar</div>
+    {% for u in top_users %}
+    <div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border)">
+      <div style="width:28px;height:28px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0">{{ u.user__username|first|upper }}</div>
+      <div style="flex:1;font-size:13px;font-weight:500">{{ u.user__username }}</div>
+      <span class="badge badge-blue" style="font-size:10px">{{ u.cnt }} ta</span>
+      <span style="font-size:12px;font-weight:600;color:{% if u.avg >= 7.5 %}var(--green){% elif u.avg >= 6.0 %}var(--yellow){% else %}var(--red){% endif %}">{{ u.avg|floatformat:1 }}</span>
+    </div>
+    {% empty %}
+    <p style="color:var(--muted);font-size:13px;text-align:center;padding:20px">Ma'lumot yo'q</p>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Section averages bars -->
+<div class="card">
+  <div style="font-size:13px;font-weight:600;margin-bottom:16px">Bo'limlar bo'yicha o'rtacha ball (barcha foydalanuvchilar)</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+    <div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:var(--muted)">Listening</span><span style="font-weight:600">{{ stats.avg_l|floatformat:1 }}</span></div>
+      <div style="height:7px;background:rgba(255,255,255,.06);border-radius:4px"><div style="width:{{ stats.avg_l|floatformat:0 }}0%;height:100%;background:#4285f4;border-radius:4px"></div></div>
+    </div>
+    <div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:var(--muted)">Reading</span><span style="font-weight:600">{{ stats.avg_r|floatformat:1 }}</span></div>
+      <div style="height:7px;background:rgba(255,255,255,.06);border-radius:4px"><div style="width:{{ stats.avg_r|floatformat:0 }}0%;height:100%;background:#22c55e;border-radius:4px"></div></div>
+    </div>
+    <div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:var(--muted)">Writing</span><span style="font-weight:600">{{ stats.avg_w|floatformat:1 }}</span></div>
+      <div style="height:7px;background:rgba(255,255,255,.06);border-radius:4px"><div style="width:{{ stats.avg_w|floatformat:0 }}0%;height:100%;background:#eab308;border-radius:4px"></div></div>
+    </div>
+    <div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:var(--muted)">Speaking</span><span style="font-weight:600">{{ stats.avg_s|floatformat:1 }}</span></div>
+      <div style="height:7px;background:rgba(255,255,255,.06);border-radius:4px"><div style="width:{{ stats.avg_s|floatformat:0 }}0%;height:100%;background:#ef4444;border-radius:4px"></div></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<script>
+const C = {
+  grid:'rgba(255,255,255,.05)', tick:'#666',
+  tooltip:{backgroundColor:'#1e1e1e',borderColor:'#333',borderWidth:1,titleColor:'#e3e3e3',bodyColor:'#aaa'}
+};
+
+const labels = {{ chart_labels|safe }};
+const usersData = {{ chart_users|safe }};
+const resultsData = {{ chart_results|safe }};
+const revenueData = {{ chart_revenue|safe }};
+
+// Main chart
+const mainCtx = document.getElementById('mainChart').getContext('2d');
+const mainChart = new Chart(mainCtx, {
+  type:'line',
+  data:{
+    labels,
+    datasets:[{
+      label:'Yangi foydalanuvchilar', data:usersData,
+      borderColor:'#6366f1', backgroundColor:'rgba(99,102,241,.12)',
+      tension:.4, fill:true, pointRadius:3, pointBackgroundColor:'#6366f1'
+    }]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{display:false}, tooltip:C.tooltip},
+    scales:{
+      x:{ticks:{color:C.tick,font:{size:10},maxTicksLimit:10}, grid:{color:C.grid}},
+      y:{ticks:{color:C.tick,font:{size:10},precision:0}, grid:{color:C.grid}, beginAtZero:true}
+    }
+  }
+});
+
+function switchMain(type, btn){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const map = {
+    users:{data:usersData, color:'#6366f1', label:'Yangi foydalanuvchilar'},
+    results:{data:resultsData, color:'#22c55e', label:'Natijalar'},
+    revenue:{data:revenueData, color:'#eab308', label:'Daromad (so\'m)'},
+  };
+  const m = map[type];
+  mainChart.data.datasets[0].data = m.data;
+  mainChart.data.datasets[0].borderColor = m.color;
+  mainChart.data.datasets[0].backgroundColor = m.color+'20';
+  mainChart.data.datasets[0].pointBackgroundColor = m.color;
+  mainChart.data.datasets[0].label = m.label;
+  mainChart.update();
+}
+
+// Exam type doughnut
+new Chart(document.getElementById('typeChart').getContext('2d'),{
+  type:'doughnut',
+  data:{
+    labels:{{ chart_type_labels|safe }},
+    datasets:[{data:{{ chart_type_counts|safe }}, backgroundColor:['#6366f1','#22c55e','#eab308','#ef4444','#3b82f6'], borderWidth:0, hoverOffset:6}]
+  },
+  options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'bottom',labels:{color:'#888',font:{size:10},padding:8}},tooltip:C.tooltip}}
+});
+
+// Band doughnut
+new Chart(document.getElementById('bandChart').getContext('2d'),{
+  type:'doughnut',
+  data:{
+    labels:{{ chart_band_labels|safe }},
+    datasets:[{data:{{ chart_band_data|safe }}, backgroundColor:['#ef4444','#f97316','#eab308','#22c55e','#6366f1'], borderWidth:0, hoverOffset:6}]
+  },
+  options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'bottom',labels:{color:'#888',font:{size:10},padding:8}},tooltip:C.tooltip}}
+});
+
+// Radar
+new Chart(document.getElementById('radarChart').getContext('2d'),{
+  type:'radar',
+  data:{
+    labels:['Listening','Reading','Writing','Speaking'],
+    datasets:[{label:"O'rtacha",data:[{{ stats.avg_l|floatformat:1 }},{{ stats.avg_r|floatformat:1 }},{{ stats.avg_w|floatformat:1 }},{{ stats.avg_s|floatformat:1 }}],borderColor:'#6366f1',backgroundColor:'rgba(99,102,241,.15)',pointBackgroundColor:'#6366f1',pointRadius:4}]
+  },
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:C.tooltip},scales:{r:{min:0,max:9,ticks:{color:'#555',font:{size:9},stepSize:3},grid:{color:'rgba(255,255,255,.08)'},pointLabels:{color:'#888',font:{size:10}}}}}
+});
+
+// Monthly revenue bar
+new Chart(document.getElementById('revenueChart').getContext('2d'),{
+  type:'bar',
+  data:{
+    labels:{{ chart_monthly_labels|safe }},
+    datasets:[{label:"Daromad",data:{{ chart_monthly_rev|safe }},backgroundColor:'rgba(34,197,94,.7)',borderRadius:6,borderSkipped:false}]
+  },
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:C.tooltip},scales:{x:{ticks:{color:C.tick,font:{size:10}},grid:{display:false}},y:{ticks:{color:C.tick,font:{size:10}},grid:{color:C.grid},beginAtZero:true}}}
+});
+</script>
+{% endblock %}

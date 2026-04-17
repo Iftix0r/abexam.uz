@@ -1,0 +1,138 @@
+/* AbExam Admin Custom CSS */
+
+/* Sidebar brand */
+.brand-link {
+    border-bottom: 1px solid rgba(255,255,255,0.1) !important;
+}
+.brand-text {
+    font-weight: 800 !important;
+    letter-spacing: -0.5px;
+}
+
+/* Cards */
+.card {
+    border: none !important;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.15) !important;
+}
+.card-header {
+    font-weight: 600;
+    border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+}
+
+/* Info boxes */
+.info-box {
+    border-radius: 12px !important;
+    min-height: 80px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.15) !important;
+}
+.info-box-icon {
+    width: 70px !important;
+    line-height: 70px !important;
+    font-size: 1.5rem !important;
+    border-radius: 12px 0 0 12px !important;
+}
+.info-box-number {
+    font-size: 1.6rem !important;
+    font-weight: 700 !important;
+}
+
+/* Tables */
+.table thead th {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+    border-top: none !important;
+    padding: 0.75rem 1rem;
+}
+.table td {
+    padding: 0.75rem 1rem;
+    vertical-align: middle !important;
+}
+.table-hover tbody tr:hover {
+    background: rgba(255,255,255,0.03) !important;
+}
+
+/* Badges */
+.badge {
+    border-radius: 8px !important;
+    padding: 4px 10px !important;
+    font-weight: 600 !important;
+}
+.badge-success { background: #34a853 !important; }
+.badge-warning { background: #fbbc04 !important; color: #000 !important; }
+.badge-danger  { background: #ea4335 !important; }
+.badge-primary { background: #4285f4 !important; }
+
+/* Buttons */
+.btn {
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    font-size: 0.85rem !important;
+}
+.btn-outline-primary { border-color: #4285f4 !important; color: #4285f4 !important; }
+.btn-outline-primary:hover { background: #4285f4 !important; color: #fff !important; }
+.btn-outline-success { border-color: #34a853 !important; color: #34a853 !important; }
+.btn-outline-success:hover { background: #34a853 !important; color: #fff !important; }
+.btn-outline-warning { border-color: #fbbc04 !important; color: #fbbc04 !important; }
+.btn-outline-warning:hover { background: #fbbc04 !important; color: #000 !important; }
+.btn-outline-danger { border-color: #ea4335 !important; color: #ea4335 !important; }
+.btn-outline-danger:hover { background: #ea4335 !important; color: #fff !important; }
+
+/* Sidebar nav */
+.nav-sidebar .nav-item > .nav-link {
+    border-radius: 8px !important;
+    margin: 2px 8px !important;
+    transition: all 0.2s !important;
+}
+.nav-sidebar .nav-item > .nav-link.active {
+    box-shadow: 0 4px 12px rgba(66,133,244,0.3) !important;
+}
+
+/* List group */
+.list-group-item {
+    border-color: rgba(255,255,255,0.06) !important;
+    padding: 0.75rem 1rem !important;
+}
+
+/* Change form */
+.changeform-tabs-wrapper .changeform-tabs {
+    border-radius: 10px 10px 0 0 !important;
+}
+.module h2, .module caption {
+    border-radius: 8px 8px 0 0 !important;
+    font-size: 0.9rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.3px !important;
+}
+
+/* Search bar */
+#searchbar {
+    border-radius: 20px !important;
+    padding: 0.4rem 1rem !important;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+    background: transparent !important;
+    padding: 0 !important;
+    font-size: 0.85rem !important;
+}
+
+/* Pagination */
+.pagination .page-link {
+    border-radius: 8px !important;
+    margin: 0 2px !important;
+}
+
+/* Content header */
+.content-header h1 {
+    font-size: 1.4rem !important;
+    font-weight: 700 !important;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }

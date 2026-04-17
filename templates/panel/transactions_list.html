@@ -1,0 +1,67 @@
+{% extends 'panel/base.html' %}
+{% block title %}Tranzaksiyalar{% endblock %}
+{% block page_title %}Tranzaksiyalar{% endblock %}
+{% block nav_tx %}active{% endblock %}
+
+{% block content %}
+<div class="section-header">
+  <div style="display:flex;gap:8px">
+    <a href="?status=" class="btn btn-sm {% if not status %}btn-primary{% else %}btn-ghost{% endif %}">Barchasi</a>
+    <a href="?status=pending" class="btn btn-sm {% if status == 'pending' %}btn-primary{% else %}btn-ghost{% endif %}">Kutilmoqda</a>
+    <a href="?status=success" class="btn btn-sm {% if status == 'success' %}btn-primary{% else %}btn-ghost{% endif %}">Muvaffaqiyatli</a>
+    <a href="?status=failed" class="btn btn-sm {% if status == 'failed' %}btn-primary{% else %}btn-ghost{% endif %}">Xato</a>
+  </div>
+  <div style="font-size:13px;color:var(--green);font-weight:600">Jami: {{ total|floatformat:0 }} so'm</div>
+</div>
+
+<div class="card" style="padding:0">
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Foydalanuvchi</th><th>Summa</th><th>Usul</th><th>Holat</th><th>Izoh</th><th>Sana</th><th></th></tr></thead>
+      <tbody>
+        {% for tx in txs %}
+        <tr id="tx-row-{{ tx.pk }}">
+          <td><a href="{% url 'panel:user_detail' tx.user.pk %}" style="color:var(--primary);font-weight:500">{{ tx.user.username }}</a></td>
+          <td style="font-weight:700;color:var(--green)">+{{ tx.amount|floatformat:0 }} so'm</td>
+          <td><span class="badge badge-blue">{{ tx.get_method_display }}</span></td>
+          <td id="tx-status-{{ tx.pk }}">
+            {% if tx.status == 'success' %}<span class="badge badge-green">Muvaffaqiyatli</span>
+            {% elif tx.status == 'pending' %}<span class="badge badge-yellow">Kutilmoqda</span>
+            {% else %}<span class="badge badge-red">Xato</span>{% endif %}
+          </td>
+          <td style="color:var(--muted);font-size:12px">{{ tx.description|default:"—" }}</td>
+          <td style="color:var(--muted);font-size:12px">{{ tx.created_at|date:"d M Y, H:i" }}</td>
+          <td>
+            {% if tx.status == 'pending' %}
+            <div style="display:flex;gap:6px">
+              <button onclick="approveTx({{ tx.pk }})" class="btn btn-success btn-sm">✓ Tasdiqlash</button>
+              <button onclick="rejectTx({{ tx.pk }})" class="btn btn-danger btn-sm">✗ Rad</button>
+            </div>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" style="text-align:center;padding:32px;color:var(--muted)">Tranzaksiya topilmadi</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+async function approveTx(pk){
+  await fetch(`/panel/transactions/${pk}/approve/`,{method:'POST',headers:{'X-CSRFToken':csrf}});
+  document.getElementById('tx-status-'+pk).innerHTML='<span class="badge badge-green">Muvaffaqiyatli</span>';
+  document.querySelector(`#tx-row-${pk} td:last-child`).innerHTML='';
+  toast('Tasdiqlandi');
+}
+async function rejectTx(pk){
+  await fetch(`/panel/transactions/${pk}/reject/`,{method:'POST',headers:{'X-CSRFToken':csrf}});
+  document.getElementById('tx-status-'+pk).innerHTML='<span class="badge badge-red">Rad etildi</span>';
+  document.querySelector(`#tx-row-${pk} td:last-child`).innerHTML='';
+  toast('Rad etildi','#ef4444');
+}
+</script>
+{% endblock %}

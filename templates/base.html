@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="uz" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AbExam - IELTS Mock Platform{% endblock %}</title>
+    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg-color: #0e0e0e;
+            --sidebar-color: #1a1a1c;
+            --card-bg: #1e1e1e;
+            --primary-color: #4285f4;
+            --text-color: #e3e3e3;
+            --text-muted: #b4b4b4;
+            --border-color: rgba(255, 255, 255, 0.05);
+            --sidebar-width: 280px;
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="light"] {
+            --bg-color: #ffffff;
+            --sidebar-color: #f9f9f9;
+            --card-bg: #f7f7f8;
+            --primary-color: #10a37f;
+            --text-color: #2d2d2d;
+            --text-muted: #676767;
+            --border-color: rgba(0, 0, 0, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, system-ui, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: var(--transition);
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--sidebar-color);
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+            transition: width var(--transition), transform var(--transition);
+            left: 0;
+            overflow: hidden;
+        }
+
+        .sidebar.collapsed { width: 72px; }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-color);
+            padding: 0.8rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-radius: 24px;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+            transition: var(--transition);
+            width: 100%;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .sidebar.collapsed .nav-link {
+            justify-content: center;
+            padding: 0.8rem 0;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            margin: 4px auto;
+        }
+
+        .bottom-section {
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+            margin-top: auto;
+            width: 100%;
+        }
+
+        .sidebar.collapsed .bottom-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            padding-bottom: 1.5rem;
+        }
+
+        .upgrade-btn {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            padding: 0.6rem 0.8rem;
+            border-radius: 12px;
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 0.8rem;
+            margin-bottom: 0.8rem;
+            transition: background 0.2s;
+        }
+
+        .sidebar.collapsed .upgrade-btn {
+            border: none;
+            justify-content: center;
+            padding: 0.6rem 0;
+        }
+
+        .sidebar.collapsed .upgrade-btn span,
+        .sidebar.collapsed .upgrade-btn i[data-lucide="chevron-right"] { display: none; }
+
+        .profile-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0.6rem 0.8rem;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--text-color);
+            font-size: 0.85rem;
+        }
+
+        .sidebar.collapsed .profile-link { justify-content: center; padding: 0.6rem 0; }
+        .sidebar.collapsed .profile-link span { display: none; }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            width: calc(100% - var(--sidebar-width));
+            transition: var(--transition);
+        }
+
+        .main-content.expanded {
+            margin-left: 72px;
+            width: calc(100% - 72px);
+        }
+
+        .top-navbar {
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: var(--bg-color);
+            z-index: 50;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .model-selector {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            padding: 0.5rem 0.8rem;
+            border-radius: 12px;
+            transition: background 0.2s;
+        }
+
+        .model-selector:hover { background: var(--border-color); }
+
+        .page-container {
+            width: 100%;
+            max-width: 1200px;
+            padding: 2rem 1.5rem;
+            margin: 0 auto;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: opacity 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: #fff;
+        }
+
+        .nav-links {
+            list-style: none;
+            flex-grow: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .nav-links::-webkit-scrollbar { width: 5px; }
+        .nav-links::-webkit-scrollbar-track { background: transparent; }
+        .nav-links::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+
+        .new-chat-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 24px;
+            padding: 0.8rem 1rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .new-chat-btn:hover { background: rgba(255, 255, 255, 0.1); }
+
+        .sidebar.collapsed .new-chat-btn {
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            padding: 0;
+            border-radius: 50%;
+        }
+
+        .sidebar.collapsed .new-chat-btn span { display: none; }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.5rem 0.5rem 2rem 0.5rem;
+        }
+
+        .sidebar.collapsed .nav-toggle-text,
+        .sidebar.collapsed .sidebar-label { display: none !important; }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 99;
+            backdrop-filter: blur(2px);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: var(--sidebar-width) !important;
+            }
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+            .sidebar-overlay.active { display: block; }
+            .main-content {
+                margin-left: 0 !important;
+                width: 100% !important;
+            }
+            .page-container { padding: 1rem; }
+            #toggle-sidebar { display: none; }
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <button id="toggle-sidebar" style="background: transparent; border: none; color: var(--text-color); cursor: pointer; display: flex; align-items: center; padding: 4px;">
+                <i data-lucide="menu" style="width: 24px;"></i>
+            </button>
+            <a href="/" style="text-decoration: none; display: flex; align-items: center; gap: 8px;" class="nav-toggle-text">
+                <span style="font-weight: 600; font-size: 1.25rem; color: var(--text-color); letter-spacing: -0.02em;">AbExam</span>
+            </a>
+        </div>
+
+        <a href="{% url 'dashboard' %}" class="new-chat-btn">
+            <i data-lucide="plus" style="width: 20px;"></i>
+            <span>Yangi suhbat</span>
+        </a>
+
+        <nav class="nav-links">
+            <a href="{% url 'dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                <i data-lucide="home" style="width: 20px;"></i>
+                <span class="nav-toggle-text">Bosh sahifa</span>
+            </a>
+            <a href="{% url 'exams_list' %}" class="nav-link {% if request.resolver_match.url_name == 'exams_list' %}active{% endif %}">
+                <i data-lucide="book-open" style="width: 20px;"></i>
+                <span class="nav-toggle-text">Imtihonlar</span>
+            </a>
+
+            <div style="margin-top: 1.5rem; padding: 0 0.8rem; margin-bottom: 0.5rem;" class="sidebar-label">
+                <span style="font-size: 0.75rem; font-weight: 500; color: #888; text-transform: uppercase;">Bo'limlar</span>
+            </div>
+            <a href="{% url 'results_list' %}" class="nav-link {% if request.resolver_match.url_name == 'results_list' %}active{% endif %}">
+                <i data-lucide="trophy" style="width: 20px;"></i>
+                <span class="nav-toggle-text">Natijalar</span>
+            </a>
+            <a href="{% url 'vocabulary' %}" class="nav-link {% if request.resolver_match.url_name == 'vocabulary' %}active{% endif %}">
+                <i data-lucide="languages" style="width: 20px;"></i>
+                <span class="nav-toggle-text">Lug'at</span>
+            </a>
+            <a href="{% url 'finance' %}" class="nav-link {% if request.resolver_match.url_name == 'finance' %}active{% endif %}">
+                <i data-lucide="credit-card" style="width: 20px;"></i>
+                <span class="nav-toggle-text">Moliya</span>
+            </a>
+        </nav>
+
+        <div class="bottom-section" id="sidebar-footer">
+            <a href="{% url 'finance' %}" class="upgrade-btn">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div style="width: 20px; height: 20px; border: 1px solid var(--border-color); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <i data-lucide="zap" style="width: 12px; color: var(--text-color);"></i>
+                    </div>
+                    <span>Upgrade plan</span>
+                </div>
+                <i data-lucide="chevron-right" style="width: 14px; color: #666;"></i>
+            </a>
+
+            <a href="{% url 'profile' %}" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 12px; padding: 0.8rem; border-radius: 12px; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+                <div class="user-avatar" style="overflow: hidden;">
+                    {% if user.avatar %}
+                        <img src="{{ user.avatar.url }}" style="width: 100%; height: 100%; object-fit: cover;">
+                    {% else %}
+                        {{ user.username|first|upper }}
+                    {% endif %}
+                </div>
+                <div class="nav-toggle-text">
+                    <span style="font-size: 0.85rem; font-weight: 500; display: block;">{{ user.username|upper }}</span>
+                    <span style="font-size: 0.7rem; color: #888;">Profilni tahrirlash</span>
+                </div>
+            </a>
+
+            <a href="{% url 'users:logout' %}" class="profile-link" style="color: #ff4d4d; border-top: 1px solid var(--border-color); border-radius: 0;">
+                <i data-lucide="log-out" style="width: 20px; min-width: 20px;"></i>
+                <span>Chiqish</span>
+            </a>
+        </div>
+    </aside>
+
+    <main class="main-content" id="main-content">
+        <header class="top-navbar">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <button id="toggle-sidebar-top" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; padding: 0.5rem; border-radius: 8px;" onmouseover="this.style.background='var(--border-color)'" onmouseout="this.style.background='transparent'">
+                    <i data-lucide="panel-left" style="width: 20px;"></i>
+                </button>
+                <div class="model-selector">
+                    <h2 style="font-size: 1.125rem; font-weight: 500; color: var(--text-color);">AbExam 4.0</h2>
+                    <i data-lucide="chevron-down" style="width: 16px; color: #666;"></i>
+                </div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                {% if messages %}
+                    {% for message in messages %}
+                    <span style="font-size: 0.85rem; color: {% if message.tags == 'error' %}#ff4d4d{% else %}#34a853{% endif %};">{{ message }}</span>
+                    {% endfor %}
+                {% endif %}
+                <button id="theme-toggle" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; padding: 0.5rem; border-radius: 8px;" onmouseover="this.style.background='var(--border-color)'" onmouseout="this.style.background='transparent'">
+                    <i data-lucide="sun" id="theme-icon" style="width: 20px;"></i>
+                </button>
+            </div>
+        </header>
+
+        <div class="page-container">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <script>
+        lucide.createIcons();
+
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('main-content');
+        const overlay = document.getElementById('sidebarOverlay');
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        const htmlElement = document.documentElement;
+        const isMobile = () => window.innerWidth <= 768;
+
+        // Init state
+        if (!isMobile() && localStorage.getItem('sidebar-collapsed') === 'true') {
+            sidebar.classList.add('collapsed');
+            mainContent.classList.add('expanded');
+        }
+
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        htmlElement.setAttribute('data-theme', savedTheme);
+        if (savedTheme === 'light') {
+            themeIcon.setAttribute('data-lucide', 'moon');
+            lucide.createIcons();
+        }
+
+        function toggleSidebar() {
+            if (isMobile()) {
+                const isOpen = sidebar.classList.toggle('mobile-open');
+                overlay.classList.toggle('active', isOpen);
+            } else {
+                const isCollapsed = sidebar.classList.toggle('collapsed');
+                mainContent.classList.toggle('expanded');
+                localStorage.setItem('sidebar-collapsed', isCollapsed);
+            }
+        }
+
+        overlay.addEventListener('click', () => {
+            sidebar.classList.remove('mobile-open');
+            overlay.classList.remove('active');
+        });
+
+        document.getElementById('toggle-sidebar').addEventListener('click', toggleSidebar);
+        document.getElementById('toggle-sidebar-top').addEventListener('click', toggleSidebar);
+
+        themeToggleBtn.addEventListener('click', () => {
+            const current = htmlElement.getAttribute('data-theme');
+            const next = current === 'light' ? 'dark' : 'light';
+            htmlElement.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+            themeIcon.setAttribute('data-lucide', next === 'light' ? 'moon' : 'sun');
+            lucide.createIcons();
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

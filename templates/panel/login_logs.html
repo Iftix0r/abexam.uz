@@ -1,0 +1,34 @@
+{% extends 'panel/base.html' %}
+{% block title %}{{ obj.username }} — Login loglari{% endblock %}
+{% block page_title %}{{ obj.username }} — Login tarixi{% endblock %}
+{% block nav_users %}active{% endblock %}
+
+{% block content %}
+<div style="margin-bottom:16px">
+  <a href="{% url 'panel:user_detail' obj.pk %}" style="color:var(--muted);font-size:13px">← {{ obj.username }} ga qaytish</a>
+</div>
+
+<div class="card" style="padding:0">
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Holat</th><th>IP manzil</th><th>Brauzer</th><th>Vaqt</th></tr></thead>
+      <tbody>
+        {% for log in logs %}
+        <tr>
+          <td>
+            {% if log.status == 'success' %}<span class="badge badge-green">✓ Kirdi</span>
+            {% elif log.status == 'failed' %}<span class="badge badge-yellow">✗ Xato parol</span>
+            {% else %}<span class="badge badge-red">⛔ Bloklangan</span>{% endif %}
+          </td>
+          <td style="font-family:monospace;font-size:12px">{{ log.ip }}</td>
+          <td style="color:var(--muted);font-size:11px">{{ log.user_agent|truncatechars:60 }}</td>
+          <td style="color:var(--muted);font-size:12px">{{ log.created_at|date:"d M Y, H:i:s" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4" style="text-align:center;padding:32px;color:var(--muted)">Log yo'q</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

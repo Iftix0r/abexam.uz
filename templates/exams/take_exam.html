@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ exam.title }} - AbExam</title>
+    <script>
+        const theme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', theme);
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg: #eef1f4;
+            --text: #333;
+            --header-bg: #2d2d2d;
+            --footer-bg: #415161;
+            --primary: #007bff;
+            --border: #ccc;
+            --panel-bg: #fff;
+            --ielts-yellow: #ffcc00;
+            --q-bg: #fff;
+            --q-border: #ddd;
+        }
+        [data-theme="dark"] {
+            --bg: #1a1a1c;
+            --text: #e3e3e3;
+            --header-bg: #111;
+            --footer-bg: #1e1e1e;
+            --primary: #4285f4;
+            --border: rgba(255,255,255,0.1);
+            --panel-bg: #141414;
+            --q-bg: #1e1e1e;
+            --q-border: rgba(255,255,255,0.08);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, Helvetica, sans-serif; }
+        body { background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+        header {
+            height: 52px;
+            background: var(--header-bg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1.5rem;
+            color: white;
+            flex-shrink: 0;
+        }
+        .timer-box {
+            background: var(--ielts-yellow);
+            color: #000;
+            padding: 0 1.5rem;
+            font-weight: 700;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            height: 100%;
+        }
+        .timer-box.warning { background: #ff6b35; color: #fff; }
+        .timer-box.danger { background: #e74c3c; color: #fff; animation: pulse 1s infinite; }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.7; } }
+
+        main { flex-grow: 1; display: flex; overflow: hidden; }
+
+        .reading-layout { display: flex; width: 100%; height: 100%; }
+
+        .passage-panel {
+            overflow-y: auto;
+            padding: 2rem;
+            background: var(--panel-bg);
+            border-right: 2px solid var(--border);
+            width: 50%;
+            line-height: 1.7;
+            font-size: 0.95rem;
+        }
+        .questions-panel {
+            overflow-y: auto;
+            padding: 2rem;
+            width: 50%;
+            background: var(--bg);
+        }
+        .question-item {
+            background: var(--q-bg);
+            border: 1px solid var(--q-border);
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1.25rem;
+            border-radius: 8px;
+        }
+        .question-text { font-weight: 500; margin-bottom: 0.75rem; display: block; line-height: 1.5; }
+        .ans-input {
+            width: 100%;
+            padding: 0.6rem 0.8rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: var(--bg);
+            color: var(--text);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+        .ans-input:focus { outline: none; border-color: var(--primary); }
+
+        /* MCQ Options */
+        .mcq-options { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.75rem; }
+        .mcq-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0.6rem 0.8rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s;
+            background: var(--bg);
+        }
+        .mcq-option:hover { border-color: var(--primary); background: rgba(66,133,244,0.05); }
+        .mcq-option input[type="radio"] { accent-color: var(--primary); width: 16px; height: 16px; }
+        .mcq-option.selected { border-color: var(--primary); background: rgba(66,133,244,0.1); }
+
+        /* TFNG Options */
+        .tfng-options { display: flex; gap: 0.5rem; margin-top: 0.75rem; flex-wrap: wrap; }
+        .tfng-btn {
+            padding: 0.5rem 1.2rem;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            background: var(--bg);
+            color: var(--text);
+            transition: all 0.15s;
+        }
+        .tfng-btn:hover { border-color: var(--primary); }
+        .tfng-btn.selected-true { background: #34a853; color: #fff; border-color: #34a853; }
+        .tfng-btn.selected-false { background: #e74c3c; color: #fff; border-color: #e74c3c; }
+        .tfng-btn.selected-ng { background: #f39c12; color: #fff; border-color: #f39c12; }
+
+        /* Answer tracker */
+        .answer-tracker {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            padding: 0.5rem 1rem;
+            background: var(--header-bg);
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .tracker-dot {
+            width: 22px;
+            height: 22px;
+            border-radius: 4px;
+            background: rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            color: #aaa;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .tracker-dot.answered { background: #34a853; color: #fff; }
+
+        footer {
+            background: var(--footer-bg);
+            display: flex;
+            align-items: center;
+            padding: 0 1rem;
+            gap: 5px;
+            flex-shrink: 0;
+            flex-direction: column;
+        }
+        .section-tabs { display: flex; gap: 4px; padding: 0.5rem 0; }
+        .section-tab {
+            padding: 0.5rem 1.2rem;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: #ccc;
+            cursor: pointer;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        .section-tab.active { background: white; color: #333; font-weight: 700; }
+        .footer-bottom {
+            display: flex;
+            width: 100%;
+            align-items: center;
+            padding: 0.5rem 0;
+            gap: 1rem;
+        }
+        .submit-btn {
+            margin-left: auto;
+            background: #4285f4;
+            color: white;
+            border: none;
+            padding: 0.6rem 2rem;
+            cursor: pointer;
+            font-weight: 600;
+            text-transform: uppercase;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+        .submit-btn:hover { background: #3367d6; }
+
+        /* Result Modal */
+        .result-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(8px);
+        }
+        .result-card {
+            background: var(--q-bg);
+            border: 1px solid var(--q-border);
+            border-radius: 24px;
+            padding: 3rem;
+            max-width: 480px;
+            width: 90%;
+            text-align: center;
+        }
+        .band-score {
+            font-size: 5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #4285f4, #9b72cb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div style="display: flex; align-items: center; gap: 12px;">
+        <i data-lucide="book-open" style="color: #fff; width: 18px;"></i>
+        <span style="font-weight: 500; font-size: 0.95rem;">{{ exam.title }}</span>
+    </div>
+    <div class="timer-box" id="timerBox">
+        <i data-lucide="clock" style="width: 16px;"></i>
+        <span id="countdown">00:00:00</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 10px;">
+        <span id="autosave-indicator" style="font-size:11px;color:#4ade80;opacity:0;transition:.3s">✓ Saqlandi</span>
+        <span style="font-size: 0.8rem; opacity: 0.7;">{{ user.username|upper }}</span>
+        <div style="width: 28px; height: 28px; border-radius: 50%; background: #4285f4; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.75rem; color: white;">
+            {{ user.username|first|upper }}
+        </div>
+    </div>
+</header>
+
+<main>
+    {% for section in sections %}
+    <div class="reading-layout section-content" id="section-{{ section.id }}" {% if not forloop.first %}style="display: none;"{% endif %}>
+        <div class="passage-panel">
+            <h2 style="margin-bottom: 1.5rem; font-size: 1.2rem;">{{ section.title }}</h2>
+            {% if section.audio_file %}
+            <div style="background: rgba(66,133,244,0.08); padding: 1rem; border-radius: 10px; margin-bottom: 1.5rem; border: 1px solid rgba(66,133,244,0.2);">
+                <p style="font-size: 0.8rem; color: #888; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 6px;">
+                    <i data-lucide="headphones" style="width: 14px;"></i> Audio
+                </p>
+                <audio controls style="width: 100%;">
+                    <source src="{{ section.audio_file.url }}" type="audio/mpeg">
+                </audio>
+            </div>
+            {% endif %}
+            <div>{{ section.content|safe }}</div>
+        </div>
+
+        <div class="questions-panel">
+            <h3 style="margin-bottom: 1.5rem; color: var(--primary); font-size: 1rem; text-transform: uppercase; letter-spacing: 0.5px;">Savollar</h3>
+            {% for question in section.questions.all %}
+            <div class="question-item" id="qitem-{{ question.id }}">
+                <label class="question-text">{{ question.order }}. {{ question.text }}</label>
+
+                {% if question.question_type == 'mcq' and question.options %}
+                <div class="mcq-options">
+                    {% for opt in question.options %}
+                    <label class="mcq-option" onclick="selectMCQ(this, '{{ question.id }}', '{{ opt.key|escapejs }}')">
+                        <input type="radio" name="q_{{ question.id }}" value="{{ opt.key }}">
+                        <span><strong>{{ opt.key }}.</strong> {{ opt.text }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+                {% elif question.question_type == 'tfng' %}
+                <div class="tfng-options">
+                    <button type="button" class="tfng-btn" onclick="selectTFNG(this, '{{ question.id }}', 'True')">True</button>
+                    <button type="button" class="tfng-btn" onclick="selectTFNG(this, '{{ question.id }}', 'False')">False</button>
+                    <button type="button" class="tfng-btn" onclick="selectTFNG(this, '{{ question.id }}', 'Not Given')">Not Given</button>
+                </div>
+                {% elif question.question_type == 'writing_task' %}
+                <div style="margin-top:0.75rem">
+                    {% if question.word_limit %}
+                    <div style="font-size:0.8rem;color:#888;margin-bottom:0.5rem;display:flex;align-items:center;gap:6px;">
+                        <i data-lucide="info" style="width:12px;"></i>
+                        Minimum {{ question.word_limit }} so'z yozing
+                        <span id="wc-{{ question.id }}" style="margin-left:auto;font-weight:600;color:var(--primary)">0 so'z</span>
+                    </div>
+                    {% else %}
+                    <div style="font-size:0.8rem;color:#888;margin-bottom:0.5rem;display:flex;justify-content:flex-end;">
+                        <span id="wc-{{ question.id }}" style="font-weight:600;color:var(--primary)">0 so'z</span>
+                    </div>
+                    {% endif %}
+                    <textarea
+                        class="ans-input"
+                        data-qid="{{ question.id }}"
+                        data-writing="true"
+                        {% if question.word_limit %}data-wordlimit="{{ question.word_limit }}"{% endif %}
+                        placeholder="Bu yerga yozing..."
+                        rows="14"
+                        style="resize:vertical;min-height:240px;line-height:1.7;"
+                        oninput="saveWriting('{{ question.id }}', this.value)"
+                    ></textarea>
+                </div>
+                {% else %}
+                <input type="text" placeholder="Javobingizni kiriting..." class="ans-input" data-qid="{{ question.id }}"
+                    oninput="saveAnswer('{{ question.id }}', this.value)">
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+</main>
+
+<footer>
+    <div class="answer-tracker" id="answerTracker"></div>
+    <div class="footer-bottom">
+        <div class="section-tabs">
+            {% for section in sections %}
+            <div class="section-tab {% if forloop.first %}active{% endif %}" onclick="showSection('{{ section.id }}', this)">
+                {{ section.get_section_type_display }}
+            </div>
+            {% endfor %}
+        </div>
+        <button class="submit-btn" onclick="submitExam()">
+            <i data-lucide="check-circle" style="width: 16px; margin-bottom: -2px; margin-right: 4px;"></i>
+            Testni yakunlash
+        </button>
+    </div>
+</footer>
+
+<!-- Result Modal -->
+<div class="result-modal" id="resultModal">
+    <div class="result-card">
+        <i data-lucide="award" style="width: 48px; height: 48px; color: #4285f4; margin-bottom: 1rem;"></i>
+        <h2 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem;">Test yakunlandi!</h2>
+        <div class="band-score" id="resultScore">0.0</div>
+        <p style="color: #888; margin-bottom: 1.5rem;">IELTS Band Score</p>
+        <div id="sectionScores" style="display: flex; gap: 1rem; justify-content: center; margin-bottom: 2rem; flex-wrap: wrap;"></div>
+        <a id="resultDetailLink" href="#" style="display: block; background: #4285f4; color: white; padding: 1rem 2rem; border-radius: 12px; text-decoration: none; font-weight: 600; margin-bottom: 0.75rem;">
+            Batafsil natijani ko'rish
+        </a>
+        <a href="{% url 'results_list' %}" style="display: block; color: #888; text-decoration: none; font-size: 0.9rem;">
+            Barcha natijalarga o'tish
+        </a>
+    </div>
+</div>
+
+<script>
+    lucide.createIcons();
+
+    // Sahifani yopishdan ogohlantirish
+    let examSubmitted = false;
+    window.addEventListener('beforeunload', (e) => {
+        if (!examSubmitted) {
+            e.preventDefault();
+            e.returnValue = '';
+        }
+    });
+
+    const answers = {};
+    let allQuestions = [];
+
+    // Collect all question IDs
+    {% for section in sections %}
+    {% for question in section.questions.all %}
+    allQuestions.push({ id: '{{ question.id }}', order: {{ question.order }} });
+    {% endfor %}
+    {% endfor %}
+
+    const DRAFT_KEY = 'exam_draft_{{ exam.pk }}_{{ request.user.pk }}';
+
+    // Load saved draft
+    try {
+        const saved = JSON.parse(localStorage.getItem(DRAFT_KEY) || '{}');
+        Object.assign(answers, saved);
+    } catch(e){}
+
+    buildTracker();
+
+    // Restore saved answers to UI
+    function restoreDraft(){
+        allQuestions.forEach(q => {
+            const val = answers[q.id];
+            if(!val) return;
+            // writing textarea
+            const ta = document.querySelector(`textarea[data-qid="${q.id}"]`);
+            if(ta){ ta.value = val; saveWriting(q.id, val); return; }
+            // text input
+            const inp = document.querySelector(`input[data-qid="${q.id}"]`);
+            if(inp){ inp.value = val; return; }
+            // MCQ
+            const radio = document.querySelector(`input[name="q_${q.id}"][value="${val}"]`);
+            if(radio){ radio.closest('.mcq-option').click(); return; }
+            // TFNG
+            const tfng = document.querySelector(`.tfng-btn[onclick*="${q.id}"][onclick*="${val}"]`);
+            if(tfng) tfng.click();
+        });
+    }
+    restoreDraft();
+
+    function buildTracker() {
+        const tracker = document.getElementById('answerTracker');
+        tracker.innerHTML = '';
+        allQuestions.forEach(q => {
+            const dot = document.createElement('div');
+            dot.className = 'tracker-dot' + (answers[q.id] ? ' answered' : '');
+            dot.id = 'dot-' + q.id;
+            dot.innerText = q.order;
+            tracker.appendChild(dot);
+        });
+    }
+
+    function saveAnswer(qid, value) {
+        answers[qid] = value.trim();
+        const dot = document.getElementById('dot-' + qid);
+        if (dot) dot.className = 'tracker-dot' + (answers[qid] ? ' answered' : '');
+        // Autosave to localStorage
+        try { localStorage.setItem(DRAFT_KEY, JSON.stringify(answers)); } catch(e){}
+        showSaved();
+    }
+
+    let savedTimer;
+    function showSaved(){
+        const el = document.getElementById('autosave-indicator');
+        if(!el) return;
+        el.style.opacity='1';
+        clearTimeout(savedTimer);
+        savedTimer = setTimeout(()=>el.style.opacity='0', 1500);
+    }
+
+    function selectMCQ(label, qid, value) {
+        document.querySelectorAll(`[name="q_${qid}"]`).forEach(r => {
+            r.closest('.mcq-option').classList.remove('selected');
+        });
+        label.classList.add('selected');
+        label.querySelector('input').checked = true;
+        saveAnswer(qid, value);
+    }
+
+    function selectTFNG(btn, qid, value) {
+        const container = btn.closest('.tfng-options');
+        container.querySelectorAll('.tfng-btn').forEach(b => {
+            b.className = 'tfng-btn';
+        });
+        const cls = value === 'True' ? 'selected-true' : value === 'False' ? 'selected-false' : 'selected-ng';
+        btn.classList.add(cls);
+        saveAnswer(qid, value);
+    }
+
+    function saveWriting(qid, text) {
+        answers[qid] = text;
+        const dot = document.getElementById('dot-' + qid);
+        if (dot) dot.className = 'tracker-dot' + (text.trim() ? ' answered' : '');
+        // Word count
+        const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+        const wc = document.getElementById('wc-' + qid);
+        if (wc) {
+            wc.innerText = words + ' so\'z';
+            const limit = document.querySelector(`textarea[data-qid="${qid}"]`)?.dataset?.wordlimit;
+            if (limit) {
+                wc.style.color = words >= parseInt(limit) ? '#22c55e' : 'var(--primary)';
+            }
+        }
+        try { localStorage.setItem(DRAFT_KEY, JSON.stringify(answers)); } catch(e){}
+        showSaved();
+    }
+
+    function showSection(id, el) {
+        document.querySelectorAll('.section-content').forEach(s => s.style.display = 'none');
+        document.querySelectorAll('.section-tab').forEach(t => t.classList.remove('active'));
+        document.getElementById('section-' + id).style.display = 'flex';
+        el.classList.add('active');
+    }
+
+    // Timer
+    let timeLeft = {{ exam.duration_minutes|default:60 }} * 60;
+    const timerEl = document.getElementById('countdown');
+    const timerBox = document.getElementById('timerBox');
+
+    function updateTimer() {
+        const h = Math.floor(timeLeft / 3600);
+        const m = Math.floor((timeLeft % 3600) / 60);
+        const s = timeLeft % 60;
+        timerEl.innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+
+        if (timeLeft <= 0) {
+            submitExam(true);
+        } else {
+            if (timeLeft <= 300) timerBox.className = 'timer-box danger';
+            else if (timeLeft <= 600) timerBox.className = 'timer-box warning';
+            timeLeft--;
+        }
+    }
+    setInterval(updateTimer, 1000);
+
+    function submitExam(auto = false) {
+        if (!auto && !confirm("Testni yakunlashni xohlaysizmi?")) return;
+
+        fetch("{% url 'exams:submit_exam' exam.id %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({ answers })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'success') {
+                document.getElementById('resultScore').innerText = parseFloat(data.score).toFixed(1);
+                const sc = document.getElementById('sectionScores');
+                const sections = [
+                    { label: 'Listening', val: data.listening },
+                    { label: 'Reading', val: data.reading },
+                    { label: 'Writing', val: data.writing },
+                    { label: 'Speaking', val: data.speaking },
+                ];
+                sections.forEach(s => {
+                    if (s.val > 0) {
+                        sc.innerHTML += `<div style="background:rgba(66,133,244,0.1);padding:0.5rem 1rem;border-radius:10px;font-size:0.85rem;">
+                            <strong>${s.label}</strong><br>${parseFloat(s.val).toFixed(1)}
+                        </div>`;
+                    }
+                });
+                const detailLink = document.getElementById('resultDetailLink');
+                detailLink.href = `/exams/result/${data.result_id}/`;
+                examSubmitted = true;
+                localStorage.removeItem(DRAFT_KEY);
+                document.getElementById('resultModal').style.display = 'flex';
+                lucide.createIcons();
+            }
+        })
+        .catch(() => alert("Xatolik yuz berdi. Qayta urinib ko'ring."));
+    }
+</script>
+</body>
+</html>

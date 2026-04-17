@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ro'yxatdan o'tish - AbExam</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0b0b0f;
+            --primary: #7c4dff;
+            --secondary: #00d2ff;
+            --text: #ffffff;
+            --muted: #8e8e93;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background: radial-gradient(circle at 100% 0%, rgba(124, 77, 255, 0.1), transparent 40%),
+                        radial-gradient(circle at 0% 100%, rgba(0, 210, 255, 0.1), transparent 40%);
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 500px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            padding: 3rem 2.5rem;
+            border-radius: 30px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            gap: 2px;
+            margin-bottom: 1.5rem;
+        }
+
+        .logo-ab {
+            color: #e31e24;
+            font-family: 'Georgia', serif;
+            font-style: italic;
+            font-weight: 900;
+            font-size: 2.2rem;
+            line-height: 1;
+        }
+
+        .logo-exam {
+            color: #3f3da5;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            font-size: 1.8rem;
+            line-height: 1;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-weight: 600;
+            font-size: 1.5rem;
+        }
+
+        .grid-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .full-width {
+            grid-column: span 2;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: white;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(124, 77, 255, 0.05);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1rem;
+            box-shadow: 0 10px 20px rgba(124, 77, 255, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(124, 77, 255, 0.4);
+        }
+
+        .footer-links {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            color: var(--muted);
+        }
+
+        .footer-links a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .errorlist {
+            color: #ff4d4d;
+            list-style: none;
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+            padding: 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <a href="/" class="logo">
+            <span class="logo-ab">Ab</span>
+            <span class="logo-exam">Exam</span>
+        </a>
+        
+        <h2>Ro'yxatdan o'tish</h2>
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            {% if form.errors %}
+                <ul class="errorlist">
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            <div class="grid-form">
+                <div class="form-group">
+                    <label>Ism</label>
+                    {{ form.first_name }}
+                </div>
+                <div class="form-group">
+                    <label>Familiya</label>
+                    {{ form.last_name }}
+                </div>
+                <div class="form-group full-width">
+                    <label>Username</label>
+                    {{ form.username }}
+                </div>
+                <div class="form-group full-width">
+                    <label>Email</label>
+                    {{ form.email }}
+                </div>
+                <div class="form-group full-width">
+                    <label>Telefon raqam</label>
+                    {{ form.phone_number }}
+                </div>
+                <div class="form-group">
+                    <label>Parol</label>
+                    {{ form.password }}
+                </div>
+                <div class="form-group">
+                    <label>Tasdiqlash</label>
+                    {{ form.confirm_password }}
+                </div>
+            </div>
+            
+            <button type="submit" class="btn">Ro'yxatdan o'tish</button>
+        </form>
+        
+        <div class="footer-links">
+            Hisobingiz bormi? <a href="{% url 'login' %}">Kirish</a>
+        </div>
+    </div>
+</body>
+</html>

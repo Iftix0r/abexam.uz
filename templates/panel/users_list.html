@@ -1,0 +1,129 @@
+{% extends 'panel/base.html' %}
+{% block title %}Foydalanuvchilar{% endblock %}
+{% block page_title %}Foydalanuvchilar{% endblock %}
+{% block nav_users %}active{% endblock %}
+
+{% block content %}
+<div class="section-header">
+  <form method="get" style="display:flex;gap:10px;flex-wrap:wrap">
+    <div class="search-box">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke-width="1.8"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke-width="1.8"/></svg>
+      <input name="q" value="{{ q }}" placeholder="Username yoki email...">
+    </div>
+    <div style="display:flex;gap:6px">
+      <a href="?" class="btn btn-sm {% if not filter %}btn-primary{% else %}btn-ghost{% endif %}">Barchasi</a>
+      <a href="?filter=student" class="btn btn-sm {% if filter == 'student' %}btn-primary{% else %}btn-ghost{% endif %}">Talabalar</a>
+      <a href="?filter=staff" class="btn btn-sm {% if filter == 'staff' %}btn-primary{% else %}btn-ghost{% endif %}">Adminlar</a>
+      <a href="?filter=inactive" class="btn btn-sm {% if filter == 'inactive' %}btn-primary{% else %}btn-ghost{% endif %}">Bloklangan</a>
+    </div>
+  </form>
+  <div style="display:flex;gap:8px;align-items:center">
+    <span style="color:var(--muted);font-size:13px">{{ users.count }} ta</span>
+    <a href="{% url 'panel:users_export' %}" class="btn btn-ghost btn-sm">↓ CSV</a>
+  </div>
+</div>
+
+<!-- Bulk actions (hidden until selection) -->
+<div id="bulk-bar" style="display:none;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 16px;margin-bottom:14px;display:none;align-items:center;gap:12px">
+  <span id="bulk-count" style="font-size:13px;color:var(--muted)">0 ta tanlandi</span>
+  <button onclick="bulkAction('unblock')" class="btn btn-success btn-sm">✓ Faollashtirish</button>
+  <button onclick="bulkAction('block')" class="btn btn-ghost btn-sm">⛔ Bloklash</button>
+  <button onclick="bulkAction('delete')" class="btn btn-danger btn-sm">O'chirish</button>
+  <button onclick="clearSelection()" class="btn btn-ghost btn-sm" style="margin-left:auto">Bekor</button>
+</div>
+
+<div class="card" style="padding:0">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:36px"><input type="checkbox" id="select-all" onchange="toggleAll(this)" style="accent-color:var(--primary)"></th>
+          <th>Foydalanuvchi</th>
+          <th>Email</th>
+          <th>Telefon</th>
+          <th>Balans</th>
+          <th>IP manzil</th>
+          <th>Status</th>
+          <th>Qo'shilgan</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in users %}
+        <tr id="user-row-{{ u.pk }}">
+          <td><input type="checkbox" class="row-check" value="{{ u.pk }}" onchange="updateBulk()" style="accent-color:var(--primary)"></td>
+          <td><div class="u-info">
+            <div class="u-avatar">{% if u.avatar %}<img src="{{ u.avatar.url }}">{% else %}{{ u.username|first|upper }}{% endif %}</div>
+            <div>
+              <a href="{% url 'panel:user_detail' u.pk %}" style="color:var(--primary);font-weight:500">{{ u.username }}</a>
+              {% if u.is_superuser %}<span class="badge badge-purple" style="margin-left:4px;font-size:10px">Super</span>
+              {% elif u.is_staff %}<span class="badge badge-blue" style="margin-left:4px;font-size:10px">Admin</span>{% endif %}
+            </div>
+          </div></td>
+          <td style="color:var(--muted)">{{ u.email|default:"—" }}</td>
+          <td style="color:var(--muted)">{{ u.phone_number|default:"—" }}</td>
+          <td style="font-weight:600;color:var(--green)">{{ u.balance|floatformat:0 }} so'm</td>
+          <td style="font-family:monospace;font-size:11px;color:var(--muted)">{{ u.last_ip|default:"—" }}</td>
+          <td>{% if u.is_active %}<span class="badge badge-green">Faol</span>{% else %}<span class="badge badge-red">Bloklangan</span>{% endif %}</td>
+          <td style="color:var(--muted);font-size:12px">{{ u.date_joined|date:"d M Y" }}</td>
+          <td>
+            <div style="display:flex;gap:6px">
+              <a href="{% url 'panel:user_detail' u.pk %}" class="btn btn-ghost btn-sm">Ko'rish</a>
+              {% if not u.is_superuser %}
+              <button onclick="quickDelete({{ u.pk }})" class="btn btn-danger btn-sm">✕</button>
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="9" style="text-align:center;padding:32px;color:var(--muted)">Foydalanuvchi topilmadi</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function toggleAll(cb){
+  document.querySelectorAll('.row-check').forEach(c=>c.checked=cb.checked);
+  updateBulk();
+}
+
+function updateBulk(){
+  const checked=document.querySelectorAll('.row-check:checked');
+  const bar=document.getElementById('bulk-bar');
+  document.getElementById('bulk-count').textContent=checked.length+' ta tanlandi';
+  bar.style.display=checked.length?'flex':'none';
+}
+
+function clearSelection(){
+  document.querySelectorAll('.row-check').forEach(c=>c.checked=false);
+  document.getElementById('select-all').checked=false;
+  updateBulk();
+}
+
+async function bulkAction(action){
+  const ids=[...document.querySelectorAll('.row-check:checked')].map(c=>c.value);
+  if(!ids.length)return;
+  if(action==='delete'&&!confirm(ids.length+' ta foydalanuvchini o\'chirishni tasdiqlaysizmi?'))return;
+  const r=await fetch('/panel/users/bulk/',{method:'POST',headers:{'X-CSRFToken':csrf,'Content-Type':'application/json'},body:JSON.stringify({action,ids})});
+  const d=await r.json();
+  if(d.ok){
+    if(action==='delete') ids.forEach(id=>document.getElementById('user-row-'+id)?.remove());
+    toast(d.count+' ta foydalanuvchi '+{block:'bloklandi',unblock:'faollashtirildi',delete:'o\'chirildi'}[action]);
+    clearSelection();
+    if(action!=='delete')setTimeout(()=>location.reload(),1000);
+  }
+}
+
+async function quickDelete(pk){
+  if(!confirm('O\'chirishni tasdiqlaysizmi?'))return;
+  const r=await fetch(`/panel/users/${pk}/delete/`,{method:'POST',headers:{'X-CSRFToken':csrf}});
+  const d=await r.json();
+  if(d.ok){document.getElementById('user-row-'+pk).remove();toast('O\'chirildi','#ef4444');}
+  else toast(d.error,'#ef4444');
+}
+</script>
+{% endblock %}

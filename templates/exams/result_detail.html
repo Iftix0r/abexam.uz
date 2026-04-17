@@ -1,0 +1,308 @@
+{% extends 'base.html' %}
+{% block title %}Natija — {{ result.exam.title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.score-ring{width:160px;height:160px;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;margin:0 auto 16px;background:conic-gradient(var(--primary-color) calc(var(--pct)*1%),rgba(255,255,255,.06) 0)}
+.score-ring::before{content:'';position:absolute;width:120px;height:120px;border-radius:50%;background:var(--card-bg)}
+.score-ring span{position:relative;z-index:1;font-size:2.5rem;font-weight:700}
+.bar-row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.bar-track{flex:1;height:8px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;transition:width 1s ease}
+.section-card{background:var(--card-bg);border:1px solid var(--border-color);border-radius:16px;padding:20px;margin-bottom:16px}
+.q-item{padding:14px 0;border-bottom:1px solid var(--border-color)}
+.q-item:last-child{border-bottom:none}
+.answer-box{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;margin-top:6px}
+.answer-correct{background:#22c55e18;color:#22c55e}
+.answer-wrong{background:#ef444418;color:#ef4444}
+.answer-right{background:#3b82f618;color:#3b82f6}
+.action-btn{display:flex;align-items:center;gap:7px;padding:9px 18px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid var(--border-color);background:var(--card-bg);color:var(--text-color);transition:.15s;text-decoration:none}
+.action-btn:hover{background:rgba(255,255,255,.06);border-color:var(--primary-color)}
+.tab-btn{padding:8px 18px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--text-muted);transition:.15s}
+.tab-btn.active{background:rgba(255,255,255,.08);color:var(--text-color);font-weight:600}
+
+/* Print styles */
+@media print{
+  .no-print{display:none!important}
+  body{background:#fff!important;color:#000!important}
+  .print-card{background:#fff!important;border:1px solid #ddd!important;color:#000!important}
+  .score-ring{background:conic-gradient(#4285f4 calc(var(--pct)*1%),#eee 0)!important}
+  .score-ring::before{background:#fff!important}
+  .score-ring span{color:#000!important}
+  .bar-track{background:#eee!important}
+  .answer-correct{background:#dcfce7!important;color:#166534!important}
+  .answer-wrong{background:#fee2e2!important;color:#991b1b!important}
+  .answer-right{background:#dbeafe!important;color:#1e40af!important}
+  .q-item{border-bottom:1px solid #eee!important}
+  .section-card{border:1px solid #ddd!important;background:#fff!important}
+  .print-header{display:block!important}
+}
+.print-header{display:none}
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="max-width:800px;margin:0 auto" id="result-content">
+
+  <!-- Print header (only visible when printing) -->
+  <div class="print-header" style="text-align:center;margin-bottom:24px;padding-bottom:16px;border-bottom:2px solid #333">
+    <h1 style="font-size:22px;font-weight:700;margin-bottom:4px">AbExam.uz — IELTS Natijasi</h1>
+    <p style="font-size:13px;color:#666">{{ result.user.get_full_name|default:result.user.username }} | {{ result.completed_at|date:"d M Y, H:i" }}</p>
+  </div>
+
+  <!-- Top nav -->
+  <div class="no-print" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px">
+    <a href="{% url 'results_list' %}" style="display:flex;align-items:center;gap:7px;color:var(--text-muted);font-size:13px">
+      <i data-lucide="arrow-left" style="width:14px"></i> Natijalarga qaytish
+    </a>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button onclick="window.print()" class="action-btn">
+        <i data-lucide="printer" style="width:14px"></i> Chop etish
+      </button>
+      <button onclick="downloadPDF()" class="action-btn">
+        <i data-lucide="download" style="width:14px"></i> PDF
+      </button>
+      <button onclick="shareResult()" class="action-btn">
+        <i data-lucide="share-2" style="width:14px"></i> Ulashish
+      </button>
+      <a href="{% url 'exams:exam_detail' result.exam.pk %}" class="action-btn" style="background:var(--primary-color);color:#fff;border-color:var(--primary-color)">
+        <i data-lucide="refresh-cw" style="width:14px"></i> Qayta topshirish
+      </a>
+    </div>
+  </div>
+
+  <!-- Score card -->
+  <div class="print-card" style="background:var(--card-bg);border:1px solid var(--border-color);border-radius:20px;padding:32px;text-align:center;margin-bottom:20px">
+    <h1 style="font-size:18px;font-weight:600;margin-bottom:4px">{{ result.exam.title }}</h1>
+    <p style="color:var(--text-muted);font-size:13px;margin-bottom:24px">{{ result.completed_at|date:"d M Y, H:i" }}</p>
+
+    <div class="score-ring" style="--pct:{{ result.score_pct }}">
+      <span>{{ result.score|floatformat:1 }}</span>
+    </div>
+    <p style="color:var(--text-muted);font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:24px">IELTS Band Score</p>
+
+    <!-- Section bars -->
+    <div style="max-width:420px;margin:0 auto">
+      {% if result.listening_score %}<div class="bar-row"><span style="width:80px;font-size:13px;color:var(--text-muted);text-align:left">Listening</span><div class="bar-track"><div class="bar-fill" style="width:{{ result.listening_pct }}%;background:#4285f4"></div></div><span style="width:32px;font-weight:600;font-size:13px">{{ result.listening_score|floatformat:1 }}</span></div>{% endif %}
+      {% if result.reading_score %}<div class="bar-row"><span style="width:80px;font-size:13px;color:var(--text-muted);text-align:left">Reading</span><div class="bar-track"><div class="bar-fill" style="width:{{ result.reading_pct }}%;background:#22c55e"></div></div><span style="width:32px;font-weight:600;font-size:13px">{{ result.reading_score|floatformat:1 }}</span></div>{% endif %}
+      {% if result.writing_score %}<div class="bar-row"><span style="width:80px;font-size:13px;color:var(--text-muted);text-align:left">Writing</span><div class="bar-track"><div class="bar-fill" style="width:{{ result.writing_pct }}%;background:#eab308"></div></div><span style="width:32px;font-weight:600;font-size:13px">{{ result.writing_score|floatformat:1 }}</span></div>{% endif %}
+      {% if result.speaking_score %}<div class="bar-row"><span style="width:80px;font-size:13px;color:var(--text-muted);text-align:left">Speaking</span><div class="bar-track"><div class="bar-fill" style="width:{{ result.speaking_pct }}%;background:#ef4444"></div></div><span style="width:32px;font-weight:600;font-size:13px">{{ result.speaking_score|floatformat:1 }}</span></div>{% endif %}
+    </div>
+
+    <!-- Band tavsifi -->
+    <div style="margin-top:20px;padding:14px;background:rgba(255,255,255,.04);border-radius:12px;font-size:13px;color:var(--text-muted)">
+      {% if result.score >= 8.5 %}Band {{ result.score|floatformat:1 }} — Expert: To'liq operatsional qobiliyat
+      {% elif result.score >= 8.0 %}Band {{ result.score|floatformat:1 }} — Very Good User: Ajoyib natija!
+      {% elif result.score >= 7.0 %}Band {{ result.score|floatformat:1 }} — Good User: Yaxshi natija, yana oshirishingiz mumkin
+      {% elif result.score >= 6.0 %}Band {{ result.score|floatformat:1 }} — Competent User: Ko'proq mashq qiling
+      {% elif result.score >= 5.0 %}Band {{ result.score|floatformat:1 }} — Modest User: Asosiy muloqot ko'nikmalari bor
+      {% elif result.score >= 4.0 %}Band {{ result.score|floatformat:1 }} — Limited User: Davom eting!
+      {% else %}Band {{ result.score|floatformat:1 }} — Boshlang'ich daraja{% endif %}
+    </div>
+
+    <!-- Sertifikat raqami -->
+    <div style="margin-top:14px;font-size:11px;color:var(--text-muted)">
+      Natija ID: <span style="font-family:monospace;color:var(--primary-color)">#{{ result.pk|stringformat:"06d" }}</span>
+    </div>
+  </div>
+
+  <!-- Tabs: Tahlil / Taqqoslash -->
+  <div class="no-print" style="display:flex;gap:4px;margin-bottom:16px;background:rgba(255,255,255,.04);border-radius:10px;padding:4px;width:fit-content">
+    <button class="tab-btn active" onclick="showTab('analysis', this)">Javoblar tahlili</button>
+    <button class="tab-btn" onclick="showTab('compare', this)">Oldingi natijalar</button>
+  </div>
+
+  <!-- Analysis tab -->
+  <div id="tab-analysis">
+    {% if sections_data %}
+    {% for section, questions_data in sections_data %}
+    <div class="section-card print-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <span style="font-weight:600;font-size:14px">{{ section.title }}</span>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:12px;color:var(--text-muted)">{{ section.correct }}/{{ section.total }} to'g'ri</span>
+          <div style="width:60px;height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden">
+            <div style="width:{% widthratio section.correct section.total 100 %}%;height:100%;background:#22c55e;border-radius:3px"></div>
+          </div>
+        </div>
+      </div>
+      {% for q in questions_data %}
+      <div class="q-item">
+        <div style="font-size:13px;font-weight:500;margin-bottom:6px;display:flex;align-items:flex-start;gap:8px">
+          {% if q.question_type == 'writing_task' %}
+          <span style="color:#eab308;flex-shrink:0;font-size:15px">✍</span>
+          {% elif q.is_correct %}
+          <span style="color:#22c55e;flex-shrink:0;font-size:15px">✓</span>
+          {% else %}
+          <span style="color:#ef4444;flex-shrink:0;font-size:15px">✗</span>
+          {% endif %}
+          <span><span style="color:var(--text-muted);margin-right:4px">{{ q.order }}.</span>{{ q.text|truncatechars:150 }}</span>
+        </div>
+        {% if q.question_type == 'writing_task' %}
+        <div style="padding-left:23px">
+          <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">Yozgan javobingiz (so'zlar: {{ q.user_answer|wordcount }}):</div>
+          <div style="background:rgba(255,255,255,.04);border:1px solid var(--border-color);border-radius:8px;padding:10px;font-size:12px;line-height:1.6;white-space:pre-wrap;max-height:200px;overflow-y:auto">{{ q.user_answer|default:"(Javob berilmagan)" }}</div>
+          {% if q.word_limit %}<div style="font-size:11px;color:var(--text-muted);margin-top:4px">Minimum: {{ q.word_limit }} so'z</div>{% endif %}
+        </div>
+        {% else %}
+        <div style="display:flex;gap:8px;flex-wrap:wrap;padding-left:23px">
+          <span class="answer-box {% if q.is_correct %}answer-correct{% else %}answer-wrong{% endif %}">
+            Sizning javob: {{ q.user_answer|default:"—" }}
+          </span>
+          {% if not q.is_correct %}
+          <span class="answer-box answer-right">✓ To'g'ri: {{ q.correct_answer }}</span>
+          {% endif %}
+        </div>
+        {% if q.explanation and not q.is_correct %}
+        <div style="padding-left:23px;margin-top:6px;font-size:12px;color:var(--text-muted);background:rgba(66,133,244,.06);border-left:3px solid #4285f4;padding:6px 10px 6px 23px;border-radius:0 6px 6px 0">
+          <strong style="color:#4285f4">Izoh:</strong> {{ q.explanation }}
+        </div>
+        {% endif %}
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+    {% else %}
+    <div style="text-align:center;padding:40px;color:var(--text-muted);background:var(--card-bg);border:1px solid var(--border-color);border-radius:16px">
+      <i data-lucide="info" style="width:32px;height:32px;margin-bottom:10px;opacity:.4"></i>
+      <p>Javoblar tahlili mavjud emas (sessiya tugagan bo'lishi mumkin)</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Compare tab -->
+  <div id="tab-compare" style="display:none">
+    <div style="background:var(--card-bg);border:1px solid var(--border-color);border-radius:16px;padding:20px">
+      <div style="font-size:14px;font-weight:600;margin-bottom:16px">{{ result.exam.title }} — barcha urinishlar</div>
+      {% if prev_results %}
+      <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse">
+          <thead>
+            <tr style="font-size:11px;text-transform:uppercase;color:var(--text-muted)">
+              <th style="text-align:left;padding:8px 12px;border-bottom:1px solid var(--border-color)">#</th>
+              <th style="text-align:left;padding:8px 12px;border-bottom:1px solid var(--border-color)">Sana</th>
+              <th style="padding:8px 12px;border-bottom:1px solid var(--border-color)">Ball</th>
+              <th style="padding:8px 12px;border-bottom:1px solid var(--border-color)">L</th>
+              <th style="padding:8px 12px;border-bottom:1px solid var(--border-color)">R</th>
+              <th style="padding:8px 12px;border-bottom:1px solid var(--border-color)">W</th>
+              <th style="padding:8px 12px;border-bottom:1px solid var(--border-color)">S</th>
+              <th style="padding:8px 12px;border-bottom:1px solid var(--border-color)"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in prev_results %}
+            <tr style="{% if r.pk == result.pk %}background:rgba(66,133,244,.08){% endif %}">
+              <td style="padding:10px 12px;font-size:12px;color:var(--text-muted)">{{ forloop.counter }}</td>
+              <td style="padding:10px 12px;font-size:12px;color:var(--text-muted)">{{ r.completed_at|date:"d M Y" }}</td>
+              <td style="padding:10px 12px;text-align:center">
+                <span style="font-weight:700;color:{% if r.score >= 7.5 %}#22c55e{% elif r.score >= 6.0 %}#eab308{% else %}#ef4444{% endif %}">{{ r.score|floatformat:1 }}</span>
+                {% if r.pk == result.pk %}<span style="font-size:10px;color:var(--primary-color);margin-left:4px">← hozir</span>{% endif %}
+              </td>
+              <td style="padding:10px 12px;text-align:center;font-size:12px;color:var(--text-muted)">{{ r.listening_score|floatformat:1 }}</td>
+              <td style="padding:10px 12px;text-align:center;font-size:12px;color:var(--text-muted)">{{ r.reading_score|floatformat:1 }}</td>
+              <td style="padding:10px 12px;text-align:center;font-size:12px;color:var(--text-muted)">{{ r.writing_score|floatformat:1 }}</td>
+              <td style="padding:10px 12px;text-align:center;font-size:12px;color:var(--text-muted)">{{ r.speaking_score|floatformat:1 }}</td>
+              <td style="padding:10px 12px">
+                {% if r.pk != result.pk %}
+                <a href="{% url 'exams:result_detail' r.pk %}" style="font-size:12px;color:var(--primary-color)">Ko'rish</a>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <!-- Mini chart -->
+      <div style="margin-top:20px;height:140px"><canvas id="compareChart"></canvas></div>
+      {% else %}
+      <p style="color:var(--text-muted);font-size:13px;text-align:center;padding:24px">Bu imtihon faqat bir marta topshirilgan</p>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+
+<!-- Share modal -->
+<div id="share-modal" style="display:none;position:fixed;inset:0;background:#0009;z-index:200;align-items:center;justify-content:center">
+  <div style="background:var(--card-bg);border:1px solid var(--border-color);border-radius:16px;padding:28px;width:100%;max-width:400px;margin:16px">
+    <div style="font-size:16px;font-weight:700;margin-bottom:16px">Natijani ulashish</div>
+    <div style="background:rgba(255,255,255,.05);border:1px solid var(--border-color);border-radius:8px;padding:10px 14px;font-size:13px;font-family:monospace;margin-bottom:12px;word-break:break-all" id="share-url"></div>
+    <div style="display:flex;gap:8px">
+      <button onclick="copyLink()" class="action-btn" style="flex:1;justify-content:center">
+        <i data-lucide="copy" style="width:14px"></i> Nusxa olish
+      </button>
+      <button onclick="closeShareModal()" class="action-btn">Yopish</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script>
+lucide.createIcons();
+
+// Tabs
+function showTab(name, btn){
+  document.getElementById('tab-analysis').style.display = name==='analysis'?'block':'none';
+  document.getElementById('tab-compare').style.display = name==='compare'?'block':'none';
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  if(name==='compare') buildCompareChart();
+}
+
+// Compare chart
+let compareBuilt = false;
+function buildCompareChart(){
+  if(compareBuilt) return;
+  compareBuilt = true;
+  const canvas = document.getElementById('compareChart');
+  if(!canvas) return;
+  const labels = [{% for r in prev_results %}"{{ r.completed_at|date:'d M' }}"{% if not forloop.last %},{% endif %}{% endfor %}];
+  const data = [{% for r in prev_results %}{{ r.score }}{% if not forloop.last %},{% endif %}{% endfor %}];
+  new Chart(canvas.getContext('2d'),{
+    type:'line',
+    data:{labels,datasets:[{label:'Ball',data,borderColor:'#4285f4',backgroundColor:'rgba(66,133,244,.1)',tension:.4,fill:true,pointBackgroundColor:'#4285f4',pointRadius:5}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:9,ticks:{color:'#888',font:{size:10}},grid:{color:'rgba(255,255,255,.05)'}},x:{ticks:{color:'#888',font:{size:10}},grid:{color:'rgba(255,255,255,.05)'}}}}
+  });
+}
+
+// PDF
+function downloadPDF(){
+  const el = document.getElementById('result-content');
+  const opt = {
+    margin: 10,
+    filename: 'AbExam-natija-{{ result.pk }}.pdf',
+    image: {type:'jpeg', quality:0.95},
+    html2canvas: {scale:2, useCORS:true},
+    jsPDF: {unit:'mm', format:'a4', orientation:'portrait'}
+  };
+  // Hide no-print elements temporarily
+  document.querySelectorAll('.no-print').forEach(el=>el.style.visibility='hidden');
+  html2pdf().set(opt).from(el).save().then(()=>{
+    document.querySelectorAll('.no-print').forEach(el=>el.style.visibility='');
+  });
+}
+
+// Share
+function shareResult(){
+  const url = window.location.href;
+  document.getElementById('share-url').textContent = url;
+  document.getElementById('share-modal').style.display = 'flex';
+}
+function closeShareModal(){
+  document.getElementById('share-modal').style.display = 'none';
+}
+function copyLink(){
+  navigator.clipboard.writeText(window.location.href).then(()=>{
+    const btn = event.target.closest('button');
+    btn.innerHTML = '<i data-lucide="check" style="width:14px"></i> Nusxalandi!';
+    lucide.createIcons();
+    setTimeout(()=>{btn.innerHTML='<i data-lucide="copy" style="width:14px"></i> Nusxa olish';lucide.createIcons();},2000);
+  });
+}
+document.getElementById('share-modal').addEventListener('click',function(e){if(e.target===this)closeShareModal();});
+</script>
+{% endblock %}

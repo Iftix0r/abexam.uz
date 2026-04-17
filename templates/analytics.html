@@ -1,0 +1,306 @@
+{% extends 'base.html' %}
+{% block title %}Analitika — AbExam{% endblock %}
+
+{% block extra_css %}
+<style>
+.an-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:24px}
+.an-card{background:var(--card-bg);border:1px solid var(--border-color);border-radius:14px;padding:18px}
+.an-val{font-size:28px;font-weight:700;line-height:1;margin-bottom:5px}
+.an-lbl{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em}
+.chart-card{background:var(--card-bg);border:1px solid var(--border-color);border-radius:14px;padding:20px;margin-bottom:18px}
+.chart-title{font-size:14px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
+.tab-row{display:flex;gap:6px;margin-bottom:20px;background:rgba(255,255,255,.04);border-radius:10px;padding:4px;width:fit-content}
+.tab{padding:7px 16px;border-radius:7px;font-size:13px;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--text-muted);transition:.15s}
+.tab.active{background:rgba(255,255,255,.1);color:var(--text-color);font-weight:600}
+.section-bar{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.bar-track{flex:1;height:8px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;transition:width 1.2s ease}
+.result-row{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--border-color)}
+.result-row:last-child{border-bottom:none}
+.score-dot{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0}
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+  <div>
+    <h1 style="font-size:22px;font-weight:700;margin-bottom:4px">Analitika</h1>
+    <p style="color:var(--text-muted);font-size:13px">Sizning to'liq o'sish statistikangiz</p>
+  </div>
+  <a href="{% url 'exams_list' %}" style="background:var(--primary-color);color:#fff;padding:9px 20px;border-radius:10px;font-weight:600;font-size:13px">+ Yangi imtihon</a>
+</div>
+
+{% if not stats.total %}
+<div style="text-align:center;padding:80px 0;color:var(--text-muted)">
+  <i data-lucide="bar-chart-2" style="width:56px;height:56px;margin-bottom:16px;opacity:.2"></i>
+  <h2 style="font-size:18px;font-weight:600;margin-bottom:8px;color:var(--text-color)">Hali ma'lumot yo'q</h2>
+  <p style="margin-bottom:20px">Birinchi imtihonni topshiring va statistikangiz shu yerda ko'rinadi</p>
+  <a href="{% url 'exams_list' %}" style="background:var(--primary-color);color:#fff;padding:10px 24px;border-radius:10px;font-weight:600;font-size:13px">Imtihonlarni ko'rish</a>
+</div>
+{% else %}
+
+<!-- Stats cards -->
+<div class="an-grid">
+  <div class="an-card">
+    <div class="an-val" style="color:var(--primary-color)">{{ stats.total }}</div>
+    <div class="an-lbl">Jami imtihonlar</div>
+  </div>
+  <div class="an-card">
+    <div class="an-val" style="color:#22c55e">{{ stats.avg|floatformat:1|default:"—" }}</div>
+    <div class="an-lbl">O'rtacha ball</div>
+  </div>
+  <div class="an-card">
+    <div class="an-val" style="color:#eab308">{{ stats.best|floatformat:1|default:"—" }}</div>
+    <div class="an-lbl">Eng yuqori ball</div>
+  </div>
+  <div class="an-card">
+    <div class="an-val" style="color:#ef4444">{{ stats.worst|floatformat:1|default:"—" }}</div>
+    <div class="an-lbl">Eng past ball</div>
+  </div>
+  {% if stats.avg_l %}
+  <div class="an-card">
+    <div class="an-val" style="color:#4285f4">{{ stats.avg_l|floatformat:1 }}</div>
+    <div class="an-lbl">Listening avg</div>
+  </div>
+  {% endif %}
+  {% if stats.avg_r %}
+  <div class="an-card">
+    <div class="an-val" style="color:#22c55e">{{ stats.avg_r|floatformat:1 }}</div>
+    <div class="an-lbl">Reading avg</div>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Progress chart -->
+<div class="chart-card">
+  <div class="chart-title">
+    <span>Ball dinamikasi</span>
+    <div class="tab-row">
+      <button class="tab active" onclick="toggleLine('all',this)">Barchasi</button>
+      <button class="tab" onclick="toggleLine('sections',this)">Bo'limlar</button>
+    </div>
+  </div>
+  <div style="height:240px"><canvas id="progressChart"></canvas></div>
+</div>
+
+<!-- 2 col -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px">
+  <!-- Radar -->
+  <div class="chart-card" style="margin-bottom:0">
+    <div class="chart-title">Bo'limlar tahlili (Radar)</div>
+    <div style="height:220px"><canvas id="radarChart"></canvas></div>
+  </div>
+  <!-- Band distribution -->
+  <div class="chart-card" style="margin-bottom:0">
+    <div class="chart-title">Band score taqsimoti</div>
+    <div style="height:220px"><canvas id="bandChart"></canvas></div>
+  </div>
+</div>
+
+<!-- 2 col -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px">
+  <!-- Monthly activity -->
+  <div class="chart-card" style="margin-bottom:0">
+    <div class="chart-title">Oylik faollik (so'nggi 6 oy)</div>
+    <div style="height:180px"><canvas id="monthlyChart"></canvas></div>
+  </div>
+  <!-- By exam type -->
+  <div class="chart-card" style="margin-bottom:0">
+    <div class="chart-title">Imtihon turlari</div>
+    <div style="height:180px"><canvas id="typeChart"></canvas></div>
+  </div>
+</div>
+
+<!-- Section progress bars -->
+<div class="chart-card">
+  <div class="chart-title">Bo'limlar bo'yicha o'rtacha</div>
+  {% if stats.avg_l %}
+  <div class="section-bar">
+    <span style="width:90px;font-size:13px;color:var(--text-muted)">Listening</span>
+    <div class="bar-track"><div class="bar-fill" style="width:{{ stats.avg_l|floatformat:0 }}0%;background:#4285f4"></div></div>
+    <span style="width:36px;font-weight:600;font-size:13px;text-align:right">{{ stats.avg_l|floatformat:1 }}</span>
+  </div>
+  {% endif %}
+  {% if stats.avg_r %}
+  <div class="section-bar">
+    <span style="width:90px;font-size:13px;color:var(--text-muted)">Reading</span>
+    <div class="bar-track"><div class="bar-fill" style="width:{{ stats.avg_r|floatformat:0 }}0%;background:#22c55e"></div></div>
+    <span style="width:36px;font-weight:600;font-size:13px;text-align:right">{{ stats.avg_r|floatformat:1 }}</span>
+  </div>
+  {% endif %}
+  {% if stats.avg_w %}
+  <div class="section-bar">
+    <span style="width:90px;font-size:13px;color:var(--text-muted)">Writing</span>
+    <div class="bar-track"><div class="bar-fill" style="width:{{ stats.avg_w|floatformat:0 }}0%;background:#eab308"></div></div>
+    <span style="width:36px;font-weight:600;font-size:13px;text-align:right">{{ stats.avg_w|floatformat:1 }}</span>
+  </div>
+  {% endif %}
+  {% if stats.avg_s %}
+  <div class="section-bar">
+    <span style="width:90px;font-size:13px;color:var(--text-muted)">Speaking</span>
+    <div class="bar-track"><div class="bar-fill" style="width:{{ stats.avg_s|floatformat:0 }}0%;background:#ef4444"></div></div>
+    <span style="width:36px;font-weight:600;font-size:13px;text-align:right">{{ stats.avg_s|floatformat:1 }}</span>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Best / Worst -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px">
+  {% if best_result %}
+  <div class="an-card">
+    <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em">🏆 Eng yaxshi natija</div>
+    <div style="font-size:22px;font-weight:700;color:#22c55e;margin-bottom:4px">{{ best_result.score|floatformat:1 }}</div>
+    <div style="font-size:13px;font-weight:500">{{ best_result.exam.title|truncatechars:35 }}</div>
+    <div style="font-size:11px;color:var(--text-muted);margin-top:4px">{{ best_result.completed_at|date:"d M Y" }}</div>
+    <a href="{% url 'exams:result_detail' best_result.pk %}" style="font-size:12px;color:var(--primary-color);margin-top:8px;display:block">Ko'rish →</a>
+  </div>
+  {% endif %}
+  {% if worst_result and worst_result.pk != best_result.pk %}
+  <div class="an-card">
+    <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em">📈 Yaxshilash kerak</div>
+    <div style="font-size:22px;font-weight:700;color:#ef4444;margin-bottom:4px">{{ worst_result.score|floatformat:1 }}</div>
+    <div style="font-size:13px;font-weight:500">{{ worst_result.exam.title|truncatechars:35 }}</div>
+    <div style="font-size:11px;color:var(--text-muted);margin-top:4px">{{ worst_result.completed_at|date:"d M Y" }}</div>
+    <a href="{% url 'exams:exam_detail' worst_result.exam.pk %}" style="font-size:12px;color:var(--primary-color);margin-top:8px;display:block">Qayta topshirish →</a>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Recent results -->
+<div class="chart-card">
+  <div class="chart-title">
+    <span>So'nggi natijalar</span>
+    <a href="{% url 'results_list' %}" style="font-size:12px;color:var(--primary-color)">Barchasi →</a>
+  </div>
+  {% for r in recent_results %}
+  <div class="result-row">
+    <div class="score-dot" style="background:{% if r.score >= 7.5 %}#22c55e18{% elif r.score >= 6.0 %}#eab30818{% else %}#ef444418{% endif %};color:{% if r.score >= 7.5 %}#22c55e{% elif r.score >= 6.0 %}#eab308{% else %}#ef4444{% endif %}">
+      {{ r.score|floatformat:1 }}
+    </div>
+    <div style="flex:1">
+      <div style="font-size:13px;font-weight:500">{{ r.exam.title|truncatechars:40 }}</div>
+      <div style="font-size:11px;color:var(--text-muted);margin-top:2px">
+        L:{{ r.listening_score|floatformat:1 }} R:{{ r.reading_score|floatformat:1 }} W:{{ r.writing_score|floatformat:1 }} S:{{ r.speaking_score|floatformat:1 }}
+      </div>
+    </div>
+    <div style="text-align:right">
+      <div style="font-size:11px;color:var(--text-muted)">{{ r.completed_at|date:"d M Y" }}</div>
+      <a href="{% url 'exams:result_detail' r.pk %}" style="font-size:12px;color:var(--primary-color)">Ko'rish →</a>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<script>
+lucide.createIcons();
+
+const C = {
+  grid: 'rgba(255,255,255,.05)',
+  tick: '#666',
+  tooltip: { backgroundColor:'#1e1e1e', borderColor:'#333', borderWidth:1, titleColor:'#e3e3e3', bodyColor:'#aaa' }
+};
+
+{% if stats.total %}
+
+// 1. Progress line chart
+const pChart = new Chart(document.getElementById('progressChart').getContext('2d'), {
+  type: 'line',
+  data: {
+    labels: {{ chart_dates|safe }},
+    datasets: [
+      { label:'Umumiy', data:{{ chart_scores|safe }}, borderColor:'#6366f1', backgroundColor:'rgba(99,102,241,.1)', tension:.4, fill:true, pointRadius:4, pointBackgroundColor:'#6366f1' },
+      { label:'Listening', data:{{ chart_l|safe }}, borderColor:'#4285f4', tension:.4, pointRadius:2, hidden:true },
+      { label:'Reading',   data:{{ chart_r|safe }}, borderColor:'#22c55e', tension:.4, pointRadius:2, hidden:true },
+      { label:'Writing',   data:{{ chart_w|safe }}, borderColor:'#eab308', tension:.4, pointRadius:2, hidden:true },
+      { label:'Speaking',  data:{{ chart_s|safe }}, borderColor:'#ef4444', tension:.4, pointRadius:2, hidden:true },
+    ]
+  },
+  options: {
+    responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{ labels:{ color:'#888', font:{size:11} } }, tooltip: C.tooltip },
+    scales:{ x:{ ticks:{color:C.tick,font:{size:10}}, grid:{color:C.grid} }, y:{ min:0, max:9, ticks:{color:C.tick,font:{size:10}}, grid:{color:C.grid} } }
+  }
+});
+
+function toggleLine(mode, btn){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const show = mode === 'sections';
+  pChart.data.datasets.forEach((ds,i)=>{ ds.hidden = i===0 ? show : !show; });
+  pChart.update();
+}
+
+// 2. Radar
+new Chart(document.getElementById('radarChart').getContext('2d'), {
+  type:'radar',
+  data:{
+    labels:['Listening','Reading','Writing','Speaking'],
+    datasets:[{
+      label:"O'rtacha",
+      data:[{{ stats.avg_l|default:0|floatformat:1 }},{{ stats.avg_r|default:0|floatformat:1 }},{{ stats.avg_w|default:0|floatformat:1 }},{{ stats.avg_s|default:0|floatformat:1 }}],
+      borderColor:'#6366f1', backgroundColor:'rgba(99,102,241,.15)', pointBackgroundColor:'#6366f1', pointRadius:5
+    }]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{display:false}, tooltip:C.tooltip },
+    scales:{ r:{ min:0, max:9, ticks:{color:'#555',font:{size:9},stepSize:3}, grid:{color:'rgba(255,255,255,.08)'}, pointLabels:{color:'#888',font:{size:11}} } }
+  }
+});
+
+// 3. Band distribution doughnut
+new Chart(document.getElementById('bandChart').getContext('2d'), {
+  type:'doughnut',
+  data:{
+    labels: {{ chart_band_labels|safe }},
+    datasets:[{ data:{{ chart_band_data|safe }}, backgroundColor:['#ef4444','#f97316','#eab308','#22c55e','#6366f1'], borderWidth:0, hoverOffset:6 }]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false, cutout:'65%',
+    plugins:{ legend:{ position:'right', labels:{color:'#888',font:{size:11},padding:12} }, tooltip:C.tooltip }
+  }
+});
+
+// 4. Monthly bar
+new Chart(document.getElementById('monthlyChart').getContext('2d'), {
+  type:'bar',
+  data:{
+    labels: {{ chart_monthly_labels|safe }},
+    datasets:[{ label:"Imtihonlar", data:{{ chart_monthly|safe }}, backgroundColor:'rgba(99,102,241,.7)', borderRadius:6, borderSkipped:false }]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{display:false}, tooltip:C.tooltip },
+    scales:{ x:{ticks:{color:C.tick,font:{size:10}},grid:{display:false}}, y:{ticks:{color:C.tick,font:{size:10},precision:0},grid:{color:C.grid}} }
+  }
+});
+
+// 5. Exam type bar
+new Chart(document.getElementById('typeChart').getContext('2d'), {
+  type:'bar',
+  data:{
+    labels: {{ chart_type_labels|safe }},
+    datasets:[
+      { label:'Soni', data:{{ chart_type_counts|safe }}, backgroundColor:'rgba(59,130,246,.7)', borderRadius:6, yAxisID:'y' },
+      { label:"O'rtacha ball", data:{{ chart_type_avgs|safe }}, backgroundColor:'rgba(34,197,94,.7)', borderRadius:6, yAxisID:'y1' },
+    ]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{ labels:{color:'#888',font:{size:11}} }, tooltip:C.tooltip },
+    scales:{
+      x:{ticks:{color:C.tick,font:{size:10}},grid:{display:false}},
+      y:{ticks:{color:C.tick,font:{size:10},precision:0},grid:{color:C.grid},position:'left'},
+      y1:{ticks:{color:C.tick,font:{size:10}},grid:{display:false},position:'right',min:0,max:9}
+    }
+  }
+});
+
+{% endif %}
+</script>
+{% endblock %}

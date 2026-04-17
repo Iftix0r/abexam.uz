@@ -1,0 +1,42 @@
+{% extends 'panel/base.html' %}
+{% block title %}Natijalar{% endblock %}
+{% block page_title %}Natijalar{% endblock %}
+{% block nav_results %}active{% endblock %}
+
+{% block content %}
+<div class="section-header">
+  <form method="get" style="display:flex;gap:10px">
+    <select name="exam" class="form-input" style="width:auto" onchange="this.form.submit()">
+      <option value="">Barcha imtihonlar</option>
+      {% for e in exams %}
+      <option value="{{ e.pk }}" {% if exam_id == e.pk|stringformat:"s" %}selected{% endif %}>{{ e.title }}</option>
+      {% endfor %}
+    </select>
+  </form>
+  <a href="{% url 'panel:results_export' %}" class="btn btn-ghost btn-sm">↓ CSV yuklab olish</a>
+</div>
+
+<div class="card" style="padding:0">
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Foydalanuvchi</th><th>Imtihon</th><th>Ball</th><th>Listening</th><th>Reading</th><th>Writing</th><th>Speaking</th><th>Sana</th></tr></thead>
+      <tbody>
+        {% for r in results %}
+        <tr>
+          <td><a href="{% url 'panel:user_detail' r.user.pk %}" style="color:var(--primary);font-weight:500">{{ r.user.username }}</a></td>
+          <td><a href="{% url 'panel:exam_detail' r.exam.pk %}" style="color:var(--muted)">{{ r.exam.title|truncatechars:26 }}</a></td>
+          <td>{% if r.score >= 7.5 %}<span class="badge badge-green">{{ r.score }}</span>{% elif r.score >= 6.0 %}<span class="badge badge-yellow">{{ r.score }}</span>{% else %}<span class="badge badge-red">{{ r.score }}</span>{% endif %}</td>
+          <td style="color:var(--muted)">{{ r.listening_score }}</td>
+          <td style="color:var(--muted)">{{ r.reading_score }}</td>
+          <td style="color:var(--muted)">{{ r.writing_score }}</td>
+          <td style="color:var(--muted)">{{ r.speaking_score }}</td>
+          <td style="color:var(--muted);font-size:12px">{{ r.completed_at|date:"d M Y, H:i" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="8" style="text-align:center;padding:32px;color:var(--muted)">Natija yo'q</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

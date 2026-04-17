@@ -1,0 +1,54 @@
+{% extends 'panel/base.html' %}
+{% block title %}{% if exam %}Imtihonni tahrirlash{% else %}Yangi imtihon{% endif %}{% endblock %}
+{% block page_title %}{% if exam %}Tahrirlash: {{ exam.title }}{% else %}Yangi imtihon{% endif %}{% endblock %}
+{% block nav_exams %}active{% endblock %}
+
+{% block content %}
+<div style="max-width:640px">
+  <div style="margin-bottom:20px">
+    <a href="{% url 'panel:exams' %}" style="color:var(--muted);font-size:13px">← Imtihonlarga qaytish</a>
+  </div>
+
+  <div class="card">
+    <form method="post">
+      {% csrf_token %}
+      <div class="form-group">
+        <label class="form-label">Nomi *</label>
+        <input class="form-input" name="title" value="{{ exam.title|default:'' }}" placeholder="Imtihon nomi" required>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="form-group">
+          <label class="form-label">Turi</label>
+          <select class="form-input" name="exam_type">
+            {% for val, label in exam_types %}
+            <option value="{{ val }}" {% if exam and exam.exam_type == val %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Narxi (so'm)</label>
+          <input class="form-input" name="price" type="number" min="0" step="1000" value="{{ exam.price|default:'0' }}" placeholder="0 = bepul">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Davomiyligi (daqiqa)</label>
+        <input class="form-input" name="duration_minutes" type="number" min="1" value="{{ exam.duration_minutes|default:'60' }}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tavsif</label>
+        <textarea class="form-input" name="description" placeholder="Imtihon haqida qisqacha...">{{ exam.description|default:'' }}</textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-check">
+          <input type="checkbox" name="is_active" {% if not exam or exam.is_active %}checked{% endif %}>
+          Faol (foydalanuvchilarga ko'rinadi)
+        </label>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:8px">
+        <button type="submit" class="btn btn-primary">{% if exam %}Saqlash{% else %}Yaratish{% endif %}</button>
+        <a href="{% url 'panel:exams' %}" class="btn btn-ghost">Bekor qilish</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
