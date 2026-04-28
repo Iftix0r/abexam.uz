@@ -470,3 +470,95 @@ def results_list(request):
     return render(request, 'panel/results_list.html', {
         'results': results[:100], 'exams': exams, 'exam_id': exam_id
     })
+
+
+# ── AI Exam Generator ──────────────────────────────────────────────────────────
+@panel_required
+def exam_generate(request):
+    """Step 1: form; Step 2: POST → generate → save draft → redirect to detail."""
+    error = None
+    if request.method == 'POST':
+        section_type = request.POST.get('section_type', 'reading')
+        variant = request.POST.get('variant', 'academic')
+        topic = request.POST.get('topic', '').strip()
+        model = request.POST.get('model', 'gpt-4o')
+
+        try:
+            from core.ai_utils import generate_ielts_exam
+            exam_data = generate_ielts_exam(
+                section_type=section_type,
+                variant=variant,
+                topic=topic or None,
+                model=model,
+            )
+            # Save using the same logic as seed_cambridge
+            from exams.models import Section, Question
+            from django.db import transaction as db_tx
+
+            with db_tx.atomic():
+                exam = Exam.objects.create(
+                    title=exam_data['title'],
+                    description=exam_data['description'],
+                    exam_type=exam_data['exam_type'],
+                    price=0,
+                    duration_minutes=exam_data['duration_minutes'],
+                    is_active=False,
+                    is_ai_generated=True,
+                    ai_metadata=exam_data.get('ai_metadata'),
+                )
+                for order, sec_data in enumerate(exam_data.get('sections', []), start=1):
+                    section = Section.objects.create(
+                        exam=exam,
+                        title=sec_data['title'],
+                        section_type=sec_data['section_type'],
+                        order=sec_data.get('order', order),
+                        duration_minutes=sec_data.get('duration_minutes', 0),
+                        content=sec_data.get('content', ''),
+                    )
+                    for q_data in sec_data.get('questions', []):
+                        Question.objects.create(
+                            section=section,
+                            order=q_data.get('order', 1),
+                            text=q_data['text'],
+                            question_type=q_data.get('question_type', 'gap_fill'),
+                            correct_answer=q_data.get('correct_answer', ''),
+                            options=q_data.get('options', []),
+                            explanation=q_data.get('explanation', ''),
+                            word_limit=q_data.get('word_limit', 0),
+                        )
+            return redirect('panel:exam_detail', pk=exam.pk)
+
+        except Exception as e:
+            error = f"AI xatoligi: {e}"
+
+    return render(request, 'panel/exam_generate.html', {
+        'error': error,
+        'section_types': [
+            ('reading', 'Reading (1 passage, 13-14 savol)'),
+            ('writing', 'Writing (Task 1 + Task 2)'),
+            ('listening', 'Listening (1 section, 10 savol)'),
+            ('speaking', 'Speaking (Part 1, 2, 3)'),
+            ('full', 'Full Mock Test (barcha 4 bo\'lim)'),
+        ],
+    })
+
+
+@panel_required
+@require_POST
+def question_edit(request, pk):
+    """Inline question edit from exam detail page."""
+    question = get_object_or_404(Question, pk=pk)
+    data = json.loads(request.body)
+    question.text = data.get('text', question.text)
+    question.correct_answer = data.get('correct_answer', question.correct_answer)
+    question.explanation = data.get('explanation', question.explanation)
+    question.save(update_fields=['text', 'correct_answer', 'explanation'])
+    return JsonResponse({'ok': True})
+
+
+@panel_required
+@require_POST
+def question_delete(request, pk):
+    question = get_object_or_404(Question, pk=pk)
+    question.delete()
+    return JsonResponse({'ok': True})

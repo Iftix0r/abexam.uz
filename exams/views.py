@@ -7,7 +7,7 @@ from django.views import View
 from django.views.generic import DetailView
 import json
 
-from .models import Exam, UserAnswer, UserResult
+from .models import Exam, UserAnswer, UserResult, Question
 from users.models import User
 
 
@@ -131,9 +131,19 @@ class SubmitExamView(LoginRequiredMixin, View):
             prev_c, prev_t = section_stats.get(section.section_type, (0, 0))
             section_stats[section.section_type] = (prev_c + s_correct, prev_t + s_total)
 
+        # AI Writing evaluation
+        writing_feedback = None
+        if writing_texts.get('writing'):
+            from core.ai_utils import evaluate_writing
+            combined_writing = '\n\n'.join(writing_texts['writing'])
+            writing_feedback = evaluate_writing(combined_writing)
+
         def get_band(stype):
-            if stype == 'writing' and writing_texts.get('writing'):
-                return calc_writing_band(' '.join(writing_texts['writing']))
+            if stype == 'writing':
+                if writing_feedback:
+                    return writing_feedback['band']
+                if writing_texts.get('writing'):
+                    return calc_writing_band(' '.join(writing_texts['writing']))
             c, t = section_stats.get(stype, (0, 0))
             return calc_band(c, t)
 
@@ -155,6 +165,7 @@ class SubmitExamView(LoginRequiredMixin, View):
             reading_score=r_band,
             writing_score=w_band,
             speaking_score=s_band,
+            writing_feedback=writing_feedback,
         )
 
         answer_objs = []
@@ -237,3 +248,71 @@ class ResultDetailView(LoginRequiredMixin, DetailView):
             user=self.request.user, exam=result.exam
         ).order_by('completed_at')
         return context
+
+
+class SpeakingEvalView(LoginRequiredMixin, View):
+    """
+    POST: receives audio blob + result_id + question_id
+          → Whisper transcription → GPT evaluation
+          → saves speaking_feedback to UserResult
+    """
+    def post(self, request, *args, **kwargs):
+        from core.ai_utils import transcribe_audio, evaluate_speaking
+
+        result_id = request.POST.get('result_id')
+        question_id = request.POST.get('question_id', '')
+        audio_file = request.FILES.get('audio')
+
+        if not audio_file:
+            return JsonResponse({'error': 'Audio fayl topilmadi'}, status=400)
+        if not result_id:
+            return JsonResponse({'error': 'result_id talab qilinadi'}, status=400)
+
+        try:
+            result = UserResult.objects.get(pk=result_id, user=request.user)
+        except UserResult.DoesNotExist:
+            return JsonResponse({'error': 'Natija topilmadi'}, status=404)
+
+        # Question text for better context
+        question_text = ''
+        if question_id:
+            try:
+                question_text = Question.objects.get(pk=question_id).text
+            except Question.DoesNotExist:
+                pass
+
+        audio_bytes = audio_file.read()
+        filename = audio_file.name or 'audio.webm'
+
+        transcript = transcribe_audio(audio_bytes, filename)
+        feedback = evaluate_speaking(transcript, question=question_text)
+
+        # Merge with existing speaking_feedback (multiple questions → list)
+        existing = result.speaking_feedback or []
+        if isinstance(existing, dict):
+            existing = [existing]
+        existing.append({
+            'question_id': question_id,
+            'question_text': question_text,
+            **feedback,
+        })
+
+        # Overall speaking band = average of all evaluated questions
+        all_bands = [e['band'] for e in existing if 'band' in e]
+        if all_bands:
+            avg = sum(all_bands) / len(all_bands)
+            overall_band = round(avg * 2) / 2
+            result.speaking_score = overall_band
+
+        result.speaking_feedback = existing
+        result.save(update_fields=['speaking_feedback', 'speaking_score'])
+
+        return JsonResponse({
+            'status': 'ok',
+            'transcript': transcript,
+            'band': feedback['band'],
+            'feedback': feedback['feedback'],
+            'fluency': feedback['fluency_coherence'],
+            'lexical': feedback['lexical_resource'],
+            'grammar': feedback['grammatical_range'],
+        })

@@ -1,0 +1,638 @@
+[
+  {
+    "title": "Cambridge IELTS 18 Academic — Test 1",
+    "exam_type": "mock",
+    "price": 0,
+    "duration_minutes": 170,
+    "is_active": true,
+    "description": "Cambridge IELTS 18 Academic formatiga asoslangan to'liq mock test. Listening (40 savol) + Reading (40 savol) + Writing (2 task) + Speaking (3 qism).",
+    "sections": [
+      {
+        "title": "Listening — Section 1: Museum Membership",
+        "section_type": "listening",
+        "order": 1,
+        "duration_minutes": 10,
+        "content": "<p><strong>Topshiriq:</strong> Siz ikkita kishi — muzey a'zolik xizmatida xodim va yangi a'zo bo'lmoqchi bo'lgan shaxs o'rtasidagi suhbatni eshitasiz. Savollarni diqqat bilan o'qib, javoblarni to'ldiring.</p><p>Har bir javob uchun <strong>1-3 so'z va/yoki raqam</strong> yozing.</p>",
+        "questions": [
+          {
+            "order": 1,
+            "text": "What is the woman's surname?",
+            "question_type": "gap_fill",
+            "correct_answer": "Harrison",
+            "options": [],
+            "explanation": "The woman spells out her surname: H-A-R-R-I-S-O-N",
+            "word_limit": 0
+          },
+          {
+            "order": 2,
+            "text": "What is her phone number?",
+            "question_type": "gap_fill",
+            "correct_answer": "07786 431290",
+            "options": [],
+            "explanation": "She gives her mobile number digit by digit.",
+            "word_limit": 0
+          },
+          {
+            "order": 3,
+            "text": "Which type of membership does she choose?",
+            "question_type": "mcq",
+            "correct_answer": "B",
+            "options": [
+              {"key": "A", "text": "Individual — £45/year"},
+              {"key": "B", "text": "Family — £75/year"},
+              {"key": "C", "text": "Student — £25/year"}
+            ],
+            "explanation": "She mentions she has two children and chooses the Family membership.",
+            "word_limit": 0
+          },
+          {
+            "order": 4,
+            "text": "How does she want to receive the newsletter?",
+            "question_type": "mcq",
+            "correct_answer": "A",
+            "options": [
+              {"key": "A", "text": "By email"},
+              {"key": "B", "text": "By post"},
+              {"key": "C", "text": "Online only"}
+            ],
+            "explanation": "She says she prefers email for environmental reasons.",
+            "word_limit": 0
+          },
+          {
+            "order": 5,
+            "text": "What free gift does she receive with membership?",
+            "question_type": "gap_fill",
+            "correct_answer": "tote bag",
+            "options": [],
+            "explanation": "The receptionist says all new members receive a museum tote bag.",
+            "word_limit": 0
+          }
+        ]
+      },
+      {
+        "title": "Listening — Section 2: City Cycling Tour",
+        "section_type": "listening",
+        "order": 2,
+        "duration_minutes": 10,
+        "content": "<p><strong>Topshiriq:</strong> Shahar velosiped ekskursiyasi haqida ma'lumot eshitasiz. Savollarni diqqat bilan o'qing va to'g'ri javobni belgilang.</p>",
+        "questions": [
+          {
+            "order": 6,
+            "text": "The cycling tour departs at ___.",
+            "question_type": "gap_fill",
+            "correct_answer": "9:30 am",
+            "options": [],
+            "explanation": "The guide announces the departure time at the beginning.",
+            "word_limit": 0
+          },
+          {
+            "order": 7,
+            "text": "The tour covers approximately ___ kilometres.",
+            "question_type": "gap_fill",
+            "correct_answer": "18",
+            "options": [],
+            "explanation": "The guide says the route is about 18 km long.",
+            "word_limit": 0
+          },
+          {
+            "order": 8,
+            "text": "Which helmet size is NOT available today?",
+            "question_type": "mcq",
+            "correct_answer": "C",
+            "options": [
+              {"key": "A", "text": "Small"},
+              {"key": "B", "text": "Medium"},
+              {"key": "C", "text": "Extra large"}
+            ],
+            "explanation": "The guide apologises that extra large helmets are out of stock.",
+            "word_limit": 0
+          },
+          {
+            "order": 9,
+            "text": "What must cyclists do at all traffic lights?",
+            "question_type": "gap_fill",
+            "correct_answer": "stop completely",
+            "options": [],
+            "explanation": "For safety, cyclists must stop completely at every traffic light.",
+            "word_limit": 0
+          },
+          {
+            "order": 10,
+            "text": "Lunch is provided at the ___.",
+            "question_type": "gap_fill",
+            "correct_answer": "riverside café",
+            "options": [],
+            "explanation": "The guide says lunch will be at the riverside café at the halfway point.",
+            "word_limit": 0
+          }
+        ]
+      },
+      {
+        "title": "Listening — Section 3: University Research Project",
+        "section_type": "listening",
+        "order": 3,
+        "duration_minutes": 10,
+        "content": "<p><strong>Topshiriq:</strong> Ikkita talaba o'z tadqiqot loyihasi haqida muhokama qilmoqda. Quyidagi savollarga javob bering.</p>",
+        "questions": [
+          {
+            "order": 11,
+            "text": "What is the main focus of their research project?",
+            "question_type": "mcq",
+            "correct_answer": "B",
+            "options": [
+              {"key": "A", "text": "Effects of social media on teenagers"},
+              {"key": "B", "text": "Online learning habits of university students"},
+              {"key": "C", "text": "Technology use in primary schools"}
+            ],
+            "explanation": "They discuss that their project focuses on how university students learn online.",
+            "word_limit": 0
+          },
+          {
+            "order": 12,
+            "text": "How many participants do they plan to survey?",
+            "question_type": "gap_fill",
+            "correct_answer": "150",
+            "options": [],
+            "explanation": "They agree that 150 participants would give a representative sample.",
+            "word_limit": 0
+          },
+          {
+            "order": 13,
+            "text": "Which data collection method do they decide NOT to use?",
+            "question_type": "mcq",
+            "correct_answer": "C",
+            "options": [
+              {"key": "A", "text": "Online questionnaire"},
+              {"key": "B", "text": "Face-to-face interview"},
+              {"key": "C", "text": "Telephone survey"}
+            ],
+            "explanation": "They reject telephone surveys as too time-consuming and expensive.",
+            "word_limit": 0
+          },
+          {
+            "order": 14,
+            "text": "The project submission deadline is ___.",
+            "question_type": "gap_fill",
+            "correct_answer": "15th March",
+            "options": [],
+            "explanation": "The professor's email mentioned 15th March as the final deadline.",
+            "word_limit": 0
+          },
+          {
+            "order": 15,
+            "text": "What does the woman suggest adding to the questionnaire?",
+            "question_type": "gap_fill",
+            "correct_answer": "open-ended questions",
+            "options": [],
+            "explanation": "She says open-ended questions will give richer qualitative data.",
+            "word_limit": 0
+          }
+        ]
+      },
+      {
+        "title": "Listening — Section 4: The History of Glass",
+        "section_type": "listening",
+        "order": 4,
+        "duration_minutes": 10,
+        "content": "<p><strong>Topshiriq:</strong> Shisha tarixiga bag'ishlangan akademik ma'ruzani eshitasiz. Bo'sh joylarga to'g'ri so'z yoki raqam yozing.</p>",
+        "questions": [
+          {
+            "order": 16,
+            "text": "The earliest evidence of glass-making dates back to approximately ___ BC.",
+            "question_type": "gap_fill",
+            "correct_answer": "3500",
+            "options": [],
+            "explanation": "The lecturer states the oldest known glass objects are from around 3500 BC.",
+            "word_limit": 0
+          },
+          {
+            "order": 17,
+            "text": "Early Mesopotamian glass was mainly used for ___.",
+            "question_type": "gap_fill",
+            "correct_answer": "decorative beads",
+            "options": [],
+            "explanation": "Archaeological finds show glass was used to make decorative beads.",
+            "word_limit": 0
+          },
+          {
+            "order": 18,
+            "text": "The invention of the ___ revolutionised glass production in the 1st century BC.",
+            "question_type": "gap_fill",
+            "correct_answer": "blowpipe",
+            "options": [],
+            "explanation": "The Syrian blowpipe technique transformed how glass vessels were made.",
+            "word_limit": 0
+          },
+          {
+            "order": 19,
+            "text": "Venice became famous for glass production because of its access to high-quality ___.",
+            "question_type": "gap_fill",
+            "correct_answer": "silica sand",
+            "options": [],
+            "explanation": "The lagoon islands provided excellent silica sand for fine glasswork.",
+            "word_limit": 0
+          },
+          {
+            "order": 20,
+            "text": "The float glass process, invented in the ___, is still the main method used today.",
+            "question_type": "gap_fill",
+            "correct_answer": "1950s",
+            "options": [],
+            "explanation": "Alastair Pilkington invented float glass in the 1950s at Pilkington Brothers.",
+            "word_limit": 0
+          }
+        ]
+      },
+      {
+        "title": "Reading — Passage 1: The Rise of Urban Farming",
+        "section_type": "reading",
+        "order": 5,
+        "duration_minutes": 20,
+        "content": "<div style='line-height:1.8;font-size:14px'><h3>The Rise of Urban Farming</h3><p>Over the past two decades, urban farming has transformed from a niche hobby into a significant global movement. City dwellers across the world are reclaiming rooftops, vacant lots, and community spaces to grow their own food, driven by concerns about food security, sustainability, and community well-being.</p><p>Urban farming encompasses a wide range of practices, from simple window-box herb gardens to sophisticated hydroponic systems capable of producing thousands of kilograms of vegetables per year. In cities such as Singapore, Tokyo, and New York, commercial urban farms are now supplying restaurants and supermarkets with locally grown produce, reducing the carbon footprint associated with long-distance food transportation.</p><p>One of the most compelling arguments for urban farming is its potential to address food deserts — areas within cities where fresh, affordable produce is scarce. Studies have shown that residents of food deserts have higher rates of diet-related diseases such as obesity and type 2 diabetes. By establishing community gardens and urban farms in these areas, local governments and NGOs hope to improve nutritional outcomes for vulnerable populations.</p><p>However, urban farming is not without its challenges. Land in cities is expensive and often contaminated with heavy metals from decades of industrial activity. Soil remediation is costly, which is why many urban farmers have turned to raised beds and hydroponics, which allow them to bypass contaminated ground entirely. Water usage is another concern: conventional farming methods can be highly water-intensive, though modern drip irrigation and recirculating hydroponic systems significantly reduce consumption.</p><p>The economic viability of urban farming also remains a subject of debate. While some urban farms generate substantial revenue, many rely on grants, subsidies, or volunteer labour to remain solvent. Critics argue that the cost per kilogram of produce from urban farms far exceeds that of conventionally farmed food. Proponents counter that this calculation ignores the social and environmental benefits that urban farms provide, including reduced food miles, community education, and green infrastructure in built-up areas.</p><p>Looking ahead, advocates for urban farming believe that technological advances — including vertical farming, LED grow lights, and AI-driven crop management — will dramatically reduce the cost of production and make urban agriculture economically competitive with rural farming. Whether this vision is achievable at scale remains to be seen, but the momentum behind the movement shows no signs of slowing.</p></div>",
+        "questions": [
+          {
+            "order": 21,
+            "text": "Urban farming has grown from a niche hobby into a significant global movement.",
+            "question_type": "tfng",
+            "correct_answer": "TRUE",
+            "options": [
+              {"key": "TRUE", "text": "TRUE"},
+              {"key": "FALSE", "text": "FALSE"},
+              {"key": "NOT GIVEN", "text": "NOT GIVEN"}
+            ],
+            "explanation": "The first sentence of the passage states this directly.",
+            "word_limit": 0
+          },
+          {
+            "order": 22,
+            "text": "All urban farms in Singapore are operated by the government.",
+            "question_type": "tfng",
+            "correct_answer": "NOT GIVEN",
+            "options": [
+              {"key": "TRUE", "text": "TRUE"},
+              {"key": "FALSE", "text": "FALSE"},
+              {"key": "NOT GIVEN", "text": "NOT GIVEN"}
+            ],
+            "explanation": "The passage mentions Singapore but does not specify who operates urban farms there.",
+            "word_limit": 0
+          },
+          {
+            "order": 23,
+            "text": "Food deserts are areas where affordable fresh produce is difficult to find.",
+            "question_type": "tfng",
+            "correct_answer": "TRUE",
+            "options": [
+              {"key": "TRUE", "text": "TRUE"},
+              {"key": "FALSE", "text": "FALSE"},
+              {"key": "NOT GIVEN", "text": "NOT GIVEN"}
+            ],
+            "explanation": "Paragraph 3 defines food deserts exactly this way.",
+            "word_limit": 0
+          },
+          {
+            "order": 24,
+            "text": "Urban farms always produce food more cheaply than conventional rural farms.",
+            "question_type": "tfng",
+            "correct_answer": "FALSE",
+            "options": [
+              {"key": "TRUE", "text": "TRUE"},
+              {"key": "FALSE", "text": "FALSE"},
+              {"key": "NOT GIVEN", "text": "NOT GIVEN"}
+            ],
+            "explanation": "Critics say the cost per kilogram from urban farms exceeds conventional farming.",
+            "word_limit": 0
+          },
+          {
+            "order": 25,
+            "text": "According to the passage, why do many urban farmers prefer raised beds or hydroponics?",
+            "question_type": "mcq",
+            "correct_answer": "B",
+            "options": [
+              {"key": "A", "text": "They are cheaper to set up"},
+              {"key": "B", "text": "They avoid contaminated ground soil"},
+              {"key": "C", "text": "They produce larger yields"},
+              {"key": "D", "text": "They require less sunlight"}
+            ],
+            "explanation": "Paragraph 4 says raised beds and hydroponics let farmers bypass contaminated ground.",
+            "word_limit": 0
+          },
+          {
+            "order": 26,
+            "text": "What technology does the passage mention as a future development to reduce production costs?",
+            "question_type": "mcq",
+            "correct_answer": "C",
+            "options": [
+              {"key": "A", "text": "Solar-powered irrigation"},
+              {"key": "B", "text": "Genetic modification of crops"},
+              {"key": "C", "text": "Vertical farming with LED grow lights"},
+              {"key": "D", "text": "Drone delivery of urban produce"}
+            ],
+            "explanation": "The final paragraph mentions vertical farming and LED grow lights specifically.",
+            "word_limit": 0
+          },
+          {
+            "order": 27,
+            "text": "The high ___ of urban produce is a major criticism raised against urban farming.",
+            "question_type": "gap_fill",
+            "correct_answer": "cost per kilogram",
+            "options": [],
+            "explanation": "Critics specifically mention the cost per kilogram comparison with conventional farming.",
+            "word_limit": 0
+          }
+        ]
+      },
+      {
+        "title": "Reading — Passage 2: Sleep and Cognitive Performance",
+        "section_type": "reading",
+        "order": 6,
+        "duration_minutes": 20,
+        "content": "<div style='line-height:1.8;font-size:14px'><h3>Sleep and Cognitive Performance</h3><p>The relationship between sleep and cognitive function has been a subject of intense scientific investigation for decades. While most people accept that a poor night's sleep leaves them feeling groggy and unfocused, the mechanisms by which sleep deprivation impairs cognition are considerably more complex than they might appear.</p><p>During sleep, the brain undergoes a remarkable series of restorative processes. The recently discovered glymphatic system — a network of channels surrounding blood vessels in the brain — becomes highly active during sleep, flushing out metabolic waste products that accumulate during waking hours. Chief among these is amyloid-beta, a protein whose accumulation in the brain has been strongly linked to the development of Alzheimer's disease. Research suggests that even a single night of poor sleep can lead to a measurable increase in amyloid-beta levels.</p><p>Memory consolidation is another critical function that occurs primarily during sleep. During the slow-wave and REM (rapid eye movement) stages of sleep, the hippocampus replays recently acquired information and transfers it to the neocortex for long-term storage. Studies have consistently shown that students who sleep for a full night after learning new material retain significantly more information than those who study for additional hours instead of sleeping.</p><p>The effects of chronic sleep deprivation extend beyond memory. Executive function — which includes planning, decision-making, and impulse control — is particularly sensitive to sleep loss. Research using simulated driving tests has demonstrated that driving after 17 hours without sleep produces impairment equivalent to a blood alcohol level of 0.05%, which exceeds the legal limit in many countries.</p><p>Despite widespread awareness of these dangers, modern societies continue to normalise sleep deprivation. The average sleep duration among adults in industrialised nations has decreased by approximately 1.5 hours over the past century, partly due to the proliferation of artificial lighting and digital devices. The blue-wavelength light emitted by smartphone and computer screens suppresses melatonin production, delaying the onset of sleep and reducing overall sleep quality.</p><p>Interventions to improve sleep health are gaining traction. Cognitive behavioural therapy for insomnia (CBT-I) has emerged as the gold standard treatment, outperforming sleeping pills in long-term outcomes. On a societal level, some schools and corporations have introduced later start times and nap rooms respectively, acknowledging that well-rested individuals are more productive and less prone to errors.</p></div>",
+        "questions": [
+          {
+            "order": 28,
+            "text": "The glymphatic system removes waste products from the brain during sleep.",
+            "question_type": "tfng",
+            "correct_answer": "TRUE",
+            "options": [
+              {"key": "TRUE", "text": "TRUE"},
+              {"key": "FALSE", "text": "FALSE"},
+              {"key": "NOT GIVEN", "text": "NOT GIVEN"}
+            ],
+            "explanation": "Paragraph 2 explicitly describes the glymphatic system flushing out metabolic waste.",
+            "word_limit": 0
+          },
+          {
+            "order": 29,
+            "text": "Amyloid-beta is produced only in people who already have Alzheimer's disease.",
+            "question_type": "tfng",
+            "correct_answer": "FALSE",
+            "options": [
+              {"key": "TRUE", "text": "TRUE"},
+              {"key": "FALSE", "text": "FALSE"},
+              {"key": "NOT GIVEN", "text": "NOT GIVEN"}
+            ],
+            "explanation": "The passage says amyloid-beta accumulates in all people during waking hours.",
+            "word_limit": 0
+          },
+          {
+            "order": 30,
+            "text": "Memory consolidation takes place mainly during the ___ and REM stages of sleep.",
+            "question_type": "gap_fill",
+            "correct_answer": "slow-wave",
+            "options": [],
+            "explanation": "Paragraph 3 specifically names slow-wave and REM sleep.",
+            "word_limit": 0
+          },
+          {
+            "order": 31,
+            "text": "Driving after 17 hours without sleep is equivalent to having a blood alcohol level of ___.",
+            "question_type": "gap_fill",
+            "correct_answer": "0.05%",
+            "options": [],
+            "explanation": "Paragraph 4 states this comparison from simulated driving research.",
+            "word_limit": 0
+          },
+          {
+            "order": 32,
+            "text": "Which treatment does the passage describe as the best long-term option for insomnia?",
+            "question_type": "mcq",
+            "correct_answer": "B",
+            "options": [
+              {"key": "A", "text": "Sleeping pills"},
+              {"key": "B", "text": "Cognitive behavioural therapy (CBT-I)"},
+              {"key": "C", "text": "Reducing screen time"},
+              {"key": "D", "text": "Melatonin supplements"}
+            ],
+            "explanation": "The final paragraph calls CBT-I the gold standard, outperforming sleeping pills.",
+            "word_limit": 0
+          },
+          {
+            "order": 33,
+            "text": "Average sleep duration among adults has decreased by approximately ___ over the past century.",
+            "question_type": "gap_fill",
+            "correct_answer": "1.5 hours",
+            "options": [],
+            "explanation": "Paragraph 5 gives this exact figure.",
+            "word_limit": 0
+          }
+        ]
+      },
+      {
+        "title": "Reading — Passage 3: The Economics of Automation",
+        "section_type": "reading",
+        "order": 7,
+        "duration_minutes": 20,
+        "content": "<div style='line-height:1.8;font-size:14px'><h3>The Economics of Automation</h3><p>The automation of work is not a new phenomenon. From the mechanical loom of the Industrial Revolution to the assembly lines of the twentieth century, technology has repeatedly displaced certain categories of labour while simultaneously creating new forms of employment. What distinguishes the current wave of automation — driven by artificial intelligence, machine learning, and robotics — is its scope: for the first time, cognitive tasks previously thought immune to automation are becoming candidates for replacement.</p><p>Economists differ sharply in their assessment of automation's net impact on employment. Optimists point to the historical precedent of previous technological transitions, which ultimately generated more jobs than they destroyed, often in sectors that did not exist before the new technology emerged. They argue that automation frees human workers from repetitive, dangerous tasks, enabling them to focus on creative, interpersonal, and complex problem-solving roles that machines are ill-suited to perform.</p><p>Pessimists, however, question whether the pace and breadth of current automation will allow labour markets sufficient time to adapt. A widely cited 2013 study by economists Frey and Osborne estimated that approximately 47% of US jobs were at high risk of automation within two decades. While subsequent research has tempered this estimate �� suggesting the actual figure may be closer to 9-14% — the prospect of large-scale structural unemployment remains a serious concern.</p><p>The distributional effects of automation are perhaps more worrying than the aggregate employment figures. Evidence suggests that automation disproportionately affects middle-skill, routine jobs — the so-called 'hollowing out' of the labour market. High-skill, high-wage workers whose jobs require creativity and complex cognition are relatively protected, as are low-skill workers in personal services that are difficult to automate. Middle-income workers in manufacturing, administration, and clerical roles face the greatest displacement risk.</p><p>Policy responses to automation have varied considerably across nations. Some countries, such as Denmark and Finland, have invested heavily in retraining programmes and strengthened social safety nets to support displaced workers. Others have proposed more radical solutions, including a universal basic income (UBI) — a regular cash payment to all citizens regardless of employment status — as a means of decoupling income from work. Pilot programmes of UBI have shown promising results in terms of well-being, but critics question their fiscal sustainability at scale.</p><p>Ultimately, whether automation proves to be a boon or a burden for workers will depend not only on the technology itself but on the policy choices societies make in response to it. History suggests that technological change is neither inherently beneficial nor inherently harmful — its consequences are shaped by the institutions and decisions of the societies in which it unfolds.</p></div>",
+        "questions": [
+          {
+            "order": 34,
+            "text": "The current wave of automation is unique because it also affects cognitive tasks.",
+            "question_type": "tfng",
+            "correct_answer": "TRUE",
+            "options": [
+              {"key": "TRUE", "text": "TRUE"},
+              {"key": "FALSE", "text": "FALSE"},
+              {"key": "NOT GIVEN", "text": "NOT GIVEN"}
+            ],
+            "explanation": "Paragraph 1 states cognitive tasks are now candidates for automation for the first time.",
+            "word_limit": 0
+          },
+          {
+            "order": 35,
+            "text": "The Frey and Osborne study estimated 47% of US jobs were at high risk of automation.",
+            "question_type": "tfng",
+            "correct_answer": "TRUE",
+            "options": [
+              {"key": "TRUE", "text": "TRUE"},
+              {"key": "FALSE", "text": "FALSE"},
+              {"key": "NOT GIVEN", "text": "NOT GIVEN"}
+            ],
+            "explanation": "Paragraph 3 cites this exact figure from the 2013 study.",
+            "word_limit": 0
+          },
+          {
+            "order": 36,
+            "text": "Which workers face the greatest risk from automation according to the passage?",
+            "question_type": "mcq",
+            "correct_answer": "B",
+            "options": [
+              {"key": "A", "text": "High-skill creative professionals"},
+              {"key": "B", "text": "Middle-income workers in routine jobs"},
+              {"key": "C", "text": "Low-skill personal service workers"},
+              {"key": "D", "text": "All workers equally"}
+            ],
+            "explanation": "Paragraph 4 describes the 'hollowing out' effect targeting middle-skill routine workers.",
+            "word_limit": 0
+          },
+          {
+            "order": 37,
+            "text": "What does UBI stand for?",
+            "question_type": "gap_fill",
+            "correct_answer": "universal basic income",
+            "options": [],
+            "explanation": "Paragraph 5 defines UBI as universal basic income.",
+            "word_limit": 0
+          },
+          {
+            "order": 38,
+            "text": "Denmark and Finland have responded to automation by investing in ___ and stronger social safety nets.",
+            "question_type": "gap_fill",
+            "correct_answer": "retraining programmes",
+            "options": [],
+            "explanation": "Paragraph 5 specifically mentions retraining programmes as Denmark and Finland's response.",
+            "word_limit": 0
+          },
+          {
+            "order": 39,
+            "text": "According to pessimists, why is the current wave of automation different from previous ones?",
+            "question_type": "mcq",
+            "correct_answer": "C",
+            "options": [
+              {"key": "A", "text": "It is happening in developing countries for the first time"},
+              {"key": "B", "text": "Governments are not regulating it"},
+              {"key": "C", "text": "Labour markets may not have enough time to adapt"},
+              {"key": "D", "text": "It only affects manufacturing jobs"}
+            ],
+            "explanation": "Paragraph 3 states pessimists worry that the pace will not allow labour markets to adapt.",
+            "word_limit": 0
+          },
+          {
+            "order": 40,
+            "text": "The passage concludes that the impact of automation depends mainly on ___.",
+            "question_type": "gap_fill",
+            "correct_answer": "policy choices",
+            "options": [],
+            "explanation": "The final paragraph says consequences are shaped by institutions and policy decisions.",
+            "word_limit": 0
+          }
+        ]
+      },
+      {
+        "title": "Writing — Task 1: Bar Chart Description",
+        "section_type": "writing",
+        "order": 8,
+        "duration_minutes": 20,
+        "content": "<div style='line-height:1.8'><h3>Writing Task 1</h3><p>You should spend about <strong>20 minutes</strong> on this task.</p><p>The bar chart below shows the percentage of people in four age groups who used the internet daily in a particular country in 2010 and 2020.</p><div style='background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:16px;margin:12px 0;font-size:13px'><strong>Age Group / Daily Internet Use:</strong><br>16–24: 72% (2010) → 98% (2020)<br>25–44: 58% (2010) → 91% (2020)<br>45–64: 31% (2010) → 67% (2020)<br>65+: 12% (2010) → 44% (2020)</div><p>Summarise the information by selecting and reporting the main features, and make comparisons where relevant.</p><p><strong>Write at least 150 words.</strong></p></div>",
+        "questions": [
+          {
+            "order": 41,
+            "text": "Describe the bar chart showing internet usage by age group. Write at least 150 words. Focus on key trends, the most significant changes, and comparisons between age groups.",
+            "question_type": "writing_task",
+            "correct_answer": "",
+            "options": [],
+            "explanation": "",
+            "word_limit": 150
+          }
+        ]
+      },
+      {
+        "title": "Writing — Task 2: Opinion Essay",
+        "section_type": "writing",
+        "order": 9,
+        "duration_minutes": 40,
+        "content": "<div style='line-height:1.8'><h3>Writing Task 2</h3><p>You should spend about <strong>40 minutes</strong> on this task.</p><p><em>Some people believe that universities should focus mainly on providing practical skills for employment, while others think that the broader purpose of university education — developing critical thinking and expanding knowledge — is equally important.</em></p><p><strong>Discuss both views and give your own opinion.</strong></p><p>Give reasons for your answer and include any relevant examples from your own knowledge or experience.</p><p><strong>Write at least 250 words.</strong></p></div>",
+        "questions": [
+          {
+            "order": 42,
+            "text": "Discuss both views on the purpose of university education (practical skills vs. broader intellectual development) and give your own opinion. Write at least 250 words.",
+            "question_type": "writing_task",
+            "correct_answer": "",
+            "options": [],
+            "explanation": "",
+            "word_limit": 250
+          }
+        ]
+      },
+      {
+        "title": "Speaking — Part 1: Personal Questions",
+        "section_type": "speaking",
+        "order": 10,
+        "duration_minutes": 5,
+        "content": "<div style='line-height:1.8'><h3>Speaking Part 1 — Introduction and Interview</h3><p>In this part, the examiner asks you general questions about yourself and familiar topics. Answer naturally and extend your responses. <strong>Aim for 2–4 sentences per answer.</strong></p><p><em>Record your answer for each question below.</em></p></div>",
+        "questions": [
+          {
+            "order": 43,
+            "text": "Do you enjoy cooking? Why or why not?",
+            "question_type": "short_answer",
+            "correct_answer": "",
+            "options": [],
+            "explanation": "Speak for 20-30 seconds. Give a reason and a personal example.",
+            "word_limit": 0
+          },
+          {
+            "order": 44,
+            "text": "How do you usually spend your weekends?",
+            "question_type": "short_answer",
+            "correct_answer": "",
+            "options": [],
+            "explanation": "Describe your typical activities. Use present simple and adverbs of frequency.",
+            "word_limit": 0
+          },
+          {
+            "order": 45,
+            "text": "Is your hometown a good place for young people to live? Why?",
+            "question_type": "short_answer",
+            "correct_answer": "",
+            "options": [],
+            "explanation": "Give 2-3 reasons. You can mention facilities, entertainment, or job opportunities.",
+            "word_limit": 0
+          }
+        ]
+      },
+      {
+        "title": "Speaking — Part 2: Long Turn",
+        "section_type": "speaking",
+        "order": 11,
+        "duration_minutes": 4,
+        "content": "<div style='line-height:1.8'><h3>Speaking Part 2 — Individual Long Turn</h3><p>You have <strong>1 minute</strong> to prepare your talk, then speak for <strong>1–2 minutes</strong>.</p><div style='background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:16px;margin:12px 0'><strong>Talk about a book or film that had a significant impact on you.</strong><br><br>You should say:<br>• what the book/film is and when you read/watched it<br>• what it is about<br>• why it had a significant impact on you<br>• and explain what you learned from it</div></div>",
+        "questions": [
+          {
+            "order": 46,
+            "text": "Describe a book or film that had a significant impact on you. Speak for 1-2 minutes covering all four bullet points on the task card.",
+            "question_type": "short_answer",
+            "correct_answer": "",
+            "options": [],
+            "explanation": "Structure: intro → what it's about → why impactful → what you learned. Use past tenses.",
+            "word_limit": 0
+          }
+        ]
+      },
+      {
+        "title": "Speaking — Part 3: Discussion",
+        "section_type": "speaking",
+        "order": 12,
+        "duration_minutes": 5,
+        "content": "<div style='line-height:1.8'><h3>Speaking Part 3 — Two-way Discussion</h3><p>The examiner will ask more abstract questions related to the Part 2 topic. Give developed, analytical answers. <strong>Aim for 40–60 seconds per answer.</strong></p></div>",
+        "questions": [
+          {
+            "order": 47,
+            "text": "Why do you think reading books has declined in popularity compared to watching films or using social media?",
+            "question_type": "short_answer",
+            "correct_answer": "",
+            "options": [],
+            "explanation": "Discuss factors like convenience, attention spans, technology. Use hedging language: 'I think', 'It seems that'.",
+            "word_limit": 0
+          },
+          {
+            "order": 48,
+            "text": "How important is it for schools to encourage students to read for pleasure? What can teachers do to promote this?",
+            "question_type": "short_answer",
+            "correct_answer": "",
+            "options": [],
+            "explanation": "Give reasons for its importance and 2-3 practical suggestions. Use modal verbs: could, should, might.",
+            "word_limit": 0
+          },
+          {
+            "order": 49,
+            "text": "Do you think stories — whether in books or films — shape how people think about society and values? In what ways?",
+            "question_type": "short_answer",
+            "correct_answer": "",
+            "options": [],
+            "explanation": "Discuss narrative influence on culture, empathy, and social norms. Give examples.",
+            "word_limit": 0
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -35,4 +35,8 @@ urlpatterns = [
     path('create-admin/', views.create_admin, name='create_admin'),
     path('security/', views.security_logs, name='security'),
     path('analytics/', views.analytics, name='analytics'),
+
+    path('exams/generate/', views.exam_generate, name='exam_generate'),
+    path('questions/<int:pk>/edit/', views.question_edit, name='question_edit'),
+    path('questions/<int:pk>/delete/', views.question_delete, name='question_delete'),
 ]

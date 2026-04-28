@@ -4,17 +4,50 @@
 {% block nav_exams %}active{% endblock %}
 
 {% block content %}
+
+{% if exam.is_ai_generated and not exam.is_active %}
+<div style="background:linear-gradient(135deg,rgba(99,102,241,.12),rgba(245,158,11,.08));border:1px solid rgba(99,102,241,.3);border-radius:14px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+  <div style="display:flex;align-items:center;gap:12px">
+    <div style="font-size:24px">🤖</div>
+    <div>
+      <div style="font-size:14px;font-weight:700;color:#a5b4fc">AI tomonidan yaratilgan test — Ko'rib chiqish kerak</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:2px">
+        {% if exam.ai_metadata %}
+        Variant: <strong>{{ exam.ai_metadata.variant|title }}</strong> ·
+        Bo'lim: <strong>{{ exam.ai_metadata.section_type|title }}</strong> ·
+        Mavzu: <strong>{{ exam.ai_metadata.topic }}</strong> ·
+        Model: <strong>{{ exam.ai_metadata.model }}</strong>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px">
+    <button onclick="activateExam({{ exam.pk }})" id="activate-btn"
+      style="background:var(--green);color:#fff;border:none;border-radius:8px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer">
+      ✓ Tasdiqlash va Nashr qilish
+    </button>
+    <button onclick="if(confirm('O\'chirishni tasdiqlaysizmi?'))deleteExam({{ exam.pk }})"
+      style="background:rgba(239,68,68,.12);color:var(--red);border:1px solid rgba(239,68,68,.2);border-radius:8px;padding:9px 14px;font-size:13px;cursor:pointer">
+      Rad etish
+    </button>
+  </div>
+</div>
+{% endif %}
+
 <div style="display:grid;grid-template-columns:1fr 320px;gap:20px">
   <div style="display:flex;flex-direction:column;gap:16px">
     <div class="card">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-        <div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
           <span class="badge badge-blue">{{ exam.get_exam_type_display }}</span>
-          {% if exam.is_active %}<span class="badge badge-green" style="margin-left:6px">Faol</span>{% else %}<span class="badge badge-gray" style="margin-left:6px">Nofaol</span>{% endif %}
+          {% if exam.is_active %}<span class="badge badge-green">Faol</span>{% else %}<span class="badge badge-gray">Draft</span>{% endif %}
+          {% if exam.is_ai_generated %}<span style="background:rgba(99,102,241,.15);color:#a5b4fc;border:1px solid rgba(99,102,241,.3);border-radius:20px;padding:2px 10px;font-size:11px;font-weight:700">🤖 AI Generated</span>{% endif %}
         </div>
         <div style="display:flex;gap:8px">
-          <a href="/admin/exams/exam/{{ exam.pk }}/change/" class="btn btn-ghost btn-sm">Tahrirlash</a>
-          <button onclick="toggleExam({{ exam.pk }})" class="btn btn-ghost btn-sm">On/Off</button>
+          <a href="{% url 'panel:exam_edit' exam.pk %}" class="btn btn-ghost btn-sm">Tahrirlash</a>
+          <button onclick="toggleExam({{ exam.pk }})" class="btn btn-ghost btn-sm" id="toggle-btn">
+            {% if exam.is_active %}O'chirish{% else %}Yoqish{% endif %}
+          </button>
         </div>
       </div>
       <div style="font-size:13px;color:var(--muted);line-height:1.6">{{ exam.description|default:"Tavsif yo'q" }}</div>
@@ -22,20 +55,45 @@
 
     {% for section in sections %}
     <div class="card">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap">
         <span class="badge badge-blue">{{ section.get_section_type_display }}</span>
-        <span style="font-weight:600">{{ section.title }}</span>
+        <span style="font-weight:600;font-size:14px">{{ section.title }}</span>
         <span style="color:var(--muted);font-size:12px;margin-left:auto">{{ section.questions.count }} savol</span>
       </div>
-      <table style="width:100%;border-collapse:collapse">
-        <thead><tr><th style="text-align:left;font-size:11px;color:var(--muted);padding:6px 0;border-bottom:1px solid var(--border)">#</th><th style="text-align:left;font-size:11px;color:var(--muted);padding:6px 0;border-bottom:1px solid var(--border)">Savol</th><th style="text-align:left;font-size:11px;color:var(--muted);padding:6px 0;border-bottom:1px solid var(--border)">Turi</th><th style="text-align:left;font-size:11px;color:var(--muted);padding:6px 0;border-bottom:1px solid var(--border)">Javob</th></tr></thead>
+
+      <table style="width:100%;border-collapse:collapse" id="tbl-{{ section.pk }}">
+        <thead>
+          <tr>
+            <th style="text-align:left;font-size:11px;color:var(--muted);padding:6px 0;border-bottom:1px solid var(--border);width:32px">#</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);padding:6px 0;border-bottom:1px solid var(--border)">Savol matni</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);padding:6px 0;border-bottom:1px solid var(--border);width:100px">Turi</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);padding:6px 0;border-bottom:1px solid var(--border);width:120px">To'g'ri javob</th>
+            {% if exam.is_ai_generated %}<th style="width:60px;border-bottom:1px solid var(--border)"></th>{% endif %}
+          </tr>
+        </thead>
         <tbody>
           {% for q in section.questions.all %}
-          <tr>
+          <tr id="qrow-{{ q.pk }}">
             <td style="padding:8px 0;border-bottom:1px solid var(--border);color:var(--muted);font-size:12px">{{ q.order }}</td>
-            <td style="padding:8px 12px 8px 0;border-bottom:1px solid var(--border);font-size:13px">{{ q.text|truncatechars:60 }}</td>
+            <td style="padding:8px 12px 8px 0;border-bottom:1px solid var(--border);font-size:13px" id="qtext-{{ q.pk }}">{{ q.text|truncatechars:80 }}</td>
             <td style="padding:8px 0;border-bottom:1px solid var(--border)"><span class="badge badge-gray" style="font-size:10px">{{ q.get_question_type_display }}</span></td>
-            <td style="padding:8px 0;border-bottom:1px solid var(--border);color:var(--green);font-size:12px;font-weight:600">{{ q.correct_answer }}</td>
+            <td style="padding:8px 0;border-bottom:1px solid var(--border);font-size:12px;font-weight:600" id="qans-{{ q.pk }}">
+              {% if q.question_type == 'writing_task' or q.question_type == 'short_answer' %}
+              <span style="color:var(--muted)">—</span>
+              {% else %}
+              <span style="color:var(--green)">{{ q.correct_answer|default:"—" }}</span>
+              {% endif %}
+            </td>
+            {% if exam.is_ai_generated %}
+            <td style="padding:8px 0;border-bottom:1px solid var(--border)">
+              <div style="display:flex;gap:4px">
+                <button onclick="editQuestion({{ q.pk }},'{{ q.text|escapejs }}','{{ q.correct_answer|escapejs }}','{{ q.explanation|escapejs }}')"
+                  style="background:rgba(99,102,241,.1);color:var(--primary);border:none;border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer">✎</button>
+                <button onclick="deleteQuestion({{ q.pk }})"
+                  style="background:rgba(239,68,68,.1);color:var(--red);border:none;border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer">✕</button>
+              </div>
+            </td>
+            {% endif %}
           </tr>
           {% endfor %}
         </tbody>
@@ -44,6 +102,7 @@
     {% endfor %}
   </div>
 
+  <!-- Sidebar -->
   <div style="display:flex;flex-direction:column;gap:16px">
     <div class="card">
       <div style="font-size:12px;font-weight:600;color:var(--muted);margin-bottom:14px;text-transform:uppercase;letter-spacing:.06em">Ma'lumotlar</div>
@@ -51,9 +110,29 @@
         <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Narxi</span><span style="color:var(--green);font-weight:600">{% if exam.price == 0 %}Bepul{% else %}{{ exam.price|floatformat:0 }} so'm{% endif %}</span></div>
         <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Davomiyligi</span><span>{{ exam.duration_minutes }} daqiqa</span></div>
         <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Bo'limlar</span><span>{{ sections|length }}</span></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Jami savollar</span>
+          <span style="font-weight:700">{% for s in sections %}{{ s.questions.count }}{% if not forloop.last %}+{% endif %}{% endfor %}</span>
+        </div>
         <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Yaratilgan</span><span>{{ exam.created_at|date:"d M Y" }}</span></div>
+        {% if stats.total %}<div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Topshirishlar</span><span>{{ stats.total }}</span></div>{% endif %}
+        {% if stats.avg %}<div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">O'rtacha ball</span><span style="font-weight:700;color:var(--primary)">{{ stats.avg|floatformat:1 }}</span></div>{% endif %}
       </div>
     </div>
+
+    {% if exam.is_ai_generated %}
+    <div class="card" style="border-color:rgba(99,102,241,.2)">
+      <div style="font-size:12px;font-weight:700;color:#a5b4fc;margin-bottom:12px;text-transform:uppercase;letter-spacing:.06em">🤖 AI Ma'lumotlari</div>
+      {% if exam.ai_metadata %}
+      <div style="display:flex;flex-direction:column;gap:8px;font-size:12px">
+        <div><span style="color:var(--muted)">Variant:</span> <strong>{{ exam.ai_metadata.variant|title }}</strong></div>
+        <div><span style="color:var(--muted)">Bo'lim:</span> <strong>{{ exam.ai_metadata.section_type|title }}</strong></div>
+        <div><span style="color:var(--muted)">Mavzu:</span> <strong>{{ exam.ai_metadata.topic }}</strong></div>
+        <div><span style="color:var(--muted)">Model:</span> <strong>{{ exam.ai_metadata.model }}</strong></div>
+      </div>
+      {% endif %}
+      <a href="{% url 'panel:exam_generate' %}" style="display:block;margin-top:14px;text-align:center;background:rgba(99,102,241,.1);color:var(--primary);border:1px solid rgba(99,102,241,.2);border-radius:8px;padding:8px;font-size:12px;font-weight:600">+ Yangi AI test yaratish</a>
+    </div>
+    {% endif %}
 
     <div class="card">
       <div class="section-header"><span class="section-title">So'nggi natijalar</span></div>
@@ -66,15 +145,94 @@
     </div>
   </div>
 </div>
+
+<!-- Edit Question Modal -->
+<div id="edit-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(4px)">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;width:100%;max-width:560px;margin:16px">
+    <div style="font-size:16px;font-weight:700;margin-bottom:18px">Savolni tahrirlash</div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div>
+        <label style="font-size:12px;color:var(--muted);font-weight:600;display:block;margin-bottom:6px">Savol matni</label>
+        <textarea id="edit-text" rows="3" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px;color:var(--text);font-size:13px;resize:vertical;outline:none" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+      </div>
+      <div>
+        <label style="font-size:12px;color:var(--muted);font-weight:600;display:block;margin-bottom:6px">To'g'ri javob</label>
+        <input id="edit-answer" type="text" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px;color:var(--text);font-size:13px;outline:none" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'">
+      </div>
+      <div>
+        <label style="font-size:12px;color:var(--muted);font-weight:600;display:block;margin-bottom:6px">Izoh (ixtiyoriy)</label>
+        <textarea id="edit-explanation" rows="2" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px;color:var(--text);font-size:13px;resize:vertical;outline:none" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:18px">
+      <button onclick="saveQuestion()" style="flex:1;background:var(--primary);color:#fff;border:none;border-radius:8px;padding:11px;font-size:13px;font-weight:700;cursor:pointer">Saqlash</button>
+      <button onclick="closeEditModal()" style="flex:1;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:11px;font-size:13px;cursor:pointer">Bekor qilish</button>
+    </div>
+  </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
 function getCookie(n){const v=document.cookie.match('(^|;) ?'+n+'=([^;]*)(;|$)');return v?v[2]:null}
+const csrf = getCookie('csrftoken');
+
 async function toggleExam(pk){
-  const r=await fetch(`/panel/exams/${pk}/toggle/`,{method:'POST',headers:{'X-CSRFToken':getCookie('csrftoken')}});
+  const r=await fetch(`/panel/exams/${pk}/toggle/`,{method:'POST',headers:{'X-CSRFToken':csrf}});
   const d=await r.json();
-  toast(d.active?'Yoqildi':'O\'chirildi');
+  const btn=document.getElementById('toggle-btn');
+  if(btn) btn.innerText=d.active?'O\'chirish':'Yoqish';
+  toast(d.active?'Yoqildi ✓':'O\'chirildi');
+}
+
+async function activateExam(pk){
+  const r=await fetch(`/panel/exams/${pk}/toggle/`,{method:'POST',headers:{'X-CSRFToken':csrf}});
+  const d=await r.json();
+  if(d.active){toast('Test nashr qilindi ✓');setTimeout(()=>location.reload(),800);}
+}
+
+async function deleteExam(pk){
+  const r=await fetch(`/panel/exams/${pk}/delete/`,{method:'POST',headers:{'X-CSRFToken':csrf}});
+  const d=await r.json();
+  if(d.ok){window.location='/panel/exams/';}
+}
+
+// Question inline edit
+let currentQId=null;
+function editQuestion(pk,text,answer,explanation){
+  currentQId=pk;
+  document.getElementById('edit-text').value=text;
+  document.getElementById('edit-answer').value=answer;
+  document.getElementById('edit-explanation').value=explanation;
+  document.getElementById('edit-modal').style.display='flex';
+}
+function closeEditModal(){document.getElementById('edit-modal').style.display='none';}
+document.getElementById('edit-modal').addEventListener('click',function(e){if(e.target===this)closeEditModal();});
+
+async function saveQuestion(){
+  const text=document.getElementById('edit-text').value.trim();
+  const answer=document.getElementById('edit-answer').value.trim();
+  const explanation=document.getElementById('edit-explanation').value.trim();
+  const r=await fetch(`/panel/questions/${currentQId}/edit/`,{
+    method:'POST',headers:{'X-CSRFToken':csrf,'Content-Type':'application/json'},
+    body:JSON.stringify({text,correct_answer:answer,explanation})
+  });
+  const d=await r.json();
+  if(d.ok){
+    const textEl=document.getElementById('qtext-'+currentQId);
+    const ansEl=document.getElementById('qans-'+currentQId);
+    if(textEl) textEl.innerText=text.length>80?text.slice(0,80)+'…':text;
+    if(ansEl) ansEl.innerHTML=`<span style="color:var(--green)">${answer||'—'}</span>`;
+    closeEditModal();
+    toast('Saqlandi ✓');
+  }
+}
+
+async function deleteQuestion(pk){
+  if(!confirm('Bu savolni o\'chirishni tasdiqlaysizmi?')) return;
+  const r=await fetch(`/panel/questions/${pk}/delete/`,{method:'POST',headers:{'X-CSRFToken':csrf}});
+  const d=await r.json();
+  if(d.ok){const row=document.getElementById('qrow-'+pk);if(row)row.remove();toast('O\'chirildi');}
 }
 </script>
 {% endblock %}

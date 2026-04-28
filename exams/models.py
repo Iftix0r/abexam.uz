@@ -16,6 +16,8 @@ class Exam(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     duration_minutes = models.IntegerField(default=60)
     is_active = models.BooleanField(default=True)
+    is_ai_generated = models.BooleanField(default=False)
+    ai_metadata = models.JSONField(null=True, blank=True, help_text='AI generation params: variant, topic, model')
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -82,6 +84,8 @@ class UserResult(models.Model):
     reading_score = models.FloatField(default=0.0)
     writing_score = models.FloatField(default=0.0)
     speaking_score = models.FloatField(default=0.0)
+    writing_feedback = models.JSONField(null=True, blank=True)
+    speaking_feedback = models.JSONField(null=True, blank=True)
     completed_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

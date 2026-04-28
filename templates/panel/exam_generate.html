@@ -1,0 +1,123 @@
+{% extends 'panel/base.html' %}
+{% block title %}AI Test Yaratish — AbExam Panel{% endblock %}
+{% block content %}
+<div style="max-width:640px;margin:0 auto">
+
+  <div style="margin-bottom:28px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+      <h1 style="font-size:20px;font-weight:700">🤖 AI bilan IELTS Test Yaratish</h1>
+    </div>
+    <p style="color:var(--muted);font-size:13px">GPT-4o yordamida to'liq IELTS standarti bo'yicha original test generatsiya qiling. Test avval <strong>Draft</strong> holda saqlanadi — ko'rib chiqqach, aktivlashtira olasiz.</p>
+  </div>
+
+  {% if error %}
+  <div style="background:rgba(239,68,68,.1);border:1px solid var(--red);color:var(--red);border-radius:10px;padding:14px 18px;margin-bottom:20px;font-size:13px;display:flex;align-items:center;gap:10px">
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    {{ error }}
+  </div>
+  {% endif %}
+
+  <form method="post" id="gen-form">
+    {% csrf_token %}
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px;display:flex;flex-direction:column;gap:22px">
+
+      <!-- Section type -->
+      <div>
+        <label style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:10px">Bo'lim turi</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px" id="section-grid">
+          {% for val, label in section_types %}
+          <label style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:.15s" id="st-label-{{ val }}" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="if(!document.getElementById('st-{{ val }}').checked)this.style.borderColor='var(--border)'">
+            <input type="radio" name="section_type" id="st-{{ val }}" value="{{ val }}" {% if val == 'reading' %}checked{% endif %}
+              style="margin-top:2px;accent-color:var(--primary)"
+              onchange="highlightSectionType()">
+            <div>
+              <div style="font-size:13px;font-weight:600">{{ label|slice:":label.index:'('" }}</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:2px">{% if '(' in label %}({{ label|cut:"("|cut:")" }}{% endif %}</div>
+            </div>
+          </label>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Variant -->
+      <div>
+        <label style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:10px">IELTS Turi</label>
+        <div style="display:flex;gap:8px">
+          <label style="flex:1;display:flex;align-items:center;gap:10px;padding:12px 16px;border:2px solid var(--primary);border-radius:10px;cursor:pointer;background:rgba(99,102,241,.06)">
+            <input type="radio" name="variant" value="academic" checked style="accent-color:var(--primary)">
+            <div>
+              <div style="font-size:13px;font-weight:600">Academic</div>
+              <div style="font-size:11px;color:var(--muted)">Universitetga kirish</div>
+            </div>
+          </label>
+          <label style="flex:1;display:flex;align-items:center;gap:10px;padding:12px 16px;border:1px solid var(--border);border-radius:10px;cursor:pointer">
+            <input type="radio" name="variant" value="general" style="accent-color:var(--primary)">
+            <div>
+              <div style="font-size:13px;font-weight:600">General Training</div>
+              <div style="font-size:11px;color:var(--muted)">Immigratsiya / ish</div>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Topic (optional) -->
+      <div>
+        <label style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:8px">
+          Mavzu <span style="text-transform:none;font-weight:400">(ixtiyoriy — bo'sh qoldirsangiz AI o'zi tanlaydi)</span>
+        </label>
+        <input type="text" name="topic" placeholder="masalan: renewable energy, urbanisation, AI in education..."
+          style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:14px;outline:none"
+          onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'">
+        <div style="font-size:11px;color:var(--muted);margin-top:5px">Mashhur mavzular: climate change · technology · health · education · environment · culture</div>
+      </div>
+
+      <!-- Model -->
+      <div>
+        <label style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:8px">AI Model</label>
+        <select name="model" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:13px;width:100%;outline:none">
+          <option value="gpt-4o" selected>GPT-4o — Yuqori sifat (tavsiya)</option>
+          <option value="gpt-4o-mini">GPT-4o-mini — Tez va arzon</option>
+        </select>
+      </div>
+
+      <!-- Info box -->
+      <div style="background:rgba(99,102,241,.06);border:1px solid rgba(99,102,241,.2);border-radius:10px;padding:14px 16px;font-size:12px;color:var(--muted);line-height:1.6">
+        <div style="font-weight:700;color:var(--primary);margin-bottom:6px;font-size:12px">ℹ️ Muhim eslatma</div>
+        <ul style="padding-left:16px;display:flex;flex-direction:column;gap:4px">
+          <li>Generatsiya <strong style="color:var(--text)">10–30 soniya</strong> vaqt olishi mumkin</li>
+          <li>Test <strong style="color:var(--text)">Draft (nofaol)</strong> holda saqlanadi — ko'rib chiqqach aktivlashtiring</li>
+          <li>Har bir savol va javobni tekshiring — AI ba'zan noto'g'ri javob berishi mumkin (hallucination)</li>
+          <li>Barcha kontent original va plagiarizmsiz</li>
+        </ul>
+      </div>
+
+      <!-- Submit -->
+      <button type="submit" id="gen-btn"
+        style="background:var(--primary);color:#fff;border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:.15s"
+        onmouseover="this.style.opacity='.9'" onmouseout="this.style.opacity='1'">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+        <span id="gen-btn-text">AI bilan Test Yaratish</span>
+      </button>
+    </div>
+  </form>
+</div>
+
+<script>
+function highlightSectionType(){
+  document.querySelectorAll('[id^="st-label-"]').forEach(el=>{
+    const inp = el.querySelector('input');
+    el.style.borderColor = inp.checked ? 'var(--primary)' : 'var(--border)';
+    el.style.background = inp.checked ? 'rgba(99,102,241,.06)' : '';
+  });
+}
+highlightSectionType();
+
+document.getElementById('gen-form').addEventListener('submit', function(){
+  const btn = document.getElementById('gen-btn');
+  const txt = document.getElementById('gen-btn-text');
+  btn.disabled = true;
+  btn.style.opacity = '.7';
+  txt.innerText = 'AI ishlayapti... Kuting...';
+});
+</script>
+{% endblock %}

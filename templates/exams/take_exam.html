@@ -316,6 +316,25 @@
                         oninput="saveWriting('{{ question.id }}', this.value)"
                     ></textarea>
                 </div>
+                {% elif question.question_type == 'short_answer' %}
+                <div style="margin-top:0.75rem" id="speaking-ui-{{ question.id }}">
+                  {% if question.explanation %}
+                  <div style="font-size:12px;color:#888;margin-bottom:8px;padding:8px 10px;background:rgba(255,255,255,.04);border-radius:6px;border-left:3px solid #4285f4">
+                    💡 {{ question.explanation }}
+                  </div>
+                  {% endif %}
+                  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px">
+                    <button type="button" id="rec-btn-{{ question.id }}"
+                      onclick="toggleRecording('{{ question.id }}')"
+                      style="display:flex;align-items:center;gap:7px;background:#ef4444;color:#fff;border:none;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer;transition:.15s">
+                      <i data-lucide="mic" style="width:15px"></i>
+                      <span id="rec-label-{{ question.id }}">Yozishni boshlash</span>
+                    </button>
+                    <span id="rec-timer-{{ question.id }}" style="font-size:12px;color:#888;display:none">⏱ <span>0</span>s</span>
+                    <span id="rec-status-{{ question.id }}" style="font-size:12px;color:#22c55e;display:none">✓ Audio saqlandi</span>
+                  </div>
+                  <audio id="rec-audio-{{ question.id }}" controls style="width:100%;display:none;margin-top:4px;border-radius:8px"></audio>
+                </div>
                 {% else %}
                 <input type="text" placeholder="Javobingizni kiriting..." class="ans-input" data-qid="{{ question.id }}"
                     oninput="saveAnswer('{{ question.id }}', this.value)">
@@ -481,6 +500,83 @@
         showSaved();
     }
 
+    // ── Speaking: Audio Recording ─────────────────────────────────────
+    const speakingBlobs = {};       // { qid: Blob }
+    const speakingQIds = [];        // question IDs that are short_answer
+    {% for section in sections %}{% for question in section.questions.all %}{% if question.question_type == 'short_answer' %}
+    speakingQIds.push('{{ question.id }}');
+    {% endif %}{% endfor %}{% endfor %}
+
+    const recorders = {};   // { qid: MediaRecorder }
+    const recChunks = {};   // { qid: [] }
+    const recTimers = {};   // { qid: intervalId }
+
+    async function toggleRecording(qid) {
+        if (recorders[qid] && recorders[qid].state === 'recording') {
+            recorders[qid].stop();
+            return;
+        }
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            recChunks[qid] = [];
+            const mr = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+            recorders[qid] = mr;
+
+            mr.ondataavailable = e => { if (e.data.size > 0) recChunks[qid].push(e.data); };
+            mr.onstop = () => {
+                stream.getTracks().forEach(t => t.stop());
+                clearInterval(recTimers[qid]);
+                const blob = new Blob(recChunks[qid], { type: 'audio/webm' });
+                speakingBlobs[qid] = blob;
+                // Update UI
+                const audio = document.getElementById('rec-audio-' + qid);
+                audio.src = URL.createObjectURL(blob);
+                audio.style.display = 'block';
+                document.getElementById('rec-label-' + qid).innerText = 'Qayta yozish';
+                document.getElementById('rec-timer-' + qid).style.display = 'none';
+                document.getElementById('rec-status-' + qid).style.display = 'inline';
+                const btn = document.getElementById('rec-btn-' + qid);
+                btn.style.background = '#f59e0b';
+                // Mark as answered
+                const dot = document.getElementById('dot-' + qid);
+                if (dot) dot.className = 'tracker-dot answered';
+                answers[qid] = '__audio__';
+            };
+
+            mr.start();
+            document.getElementById('rec-label-' + qid).innerText = 'Tugatish';
+            document.getElementById('rec-status-' + qid).style.display = 'none';
+            const timerEl = document.getElementById('rec-timer-' + qid);
+            timerEl.style.display = 'inline';
+            const btn = document.getElementById('rec-btn-' + qid);
+            btn.style.background = '#dc2626';
+            btn.innerHTML = '<i data-lucide="square" style="width:15px"></i><span id="rec-label-' + qid + '">Tugatish</span>';
+            lucide.createIcons();
+            let sec = 0;
+            recTimers[qid] = setInterval(() => { sec++; timerEl.querySelector('span').innerText = sec; }, 1000);
+        } catch(e) {
+            alert('Mikrofon ruxsati kerak. Brauzer sozlamalarini tekshiring.');
+        }
+    }
+
+    async function uploadSpeakingAudios(resultId) {
+        const qids = Object.keys(speakingBlobs);
+        if (!qids.length) return;
+        const statusEl = document.querySelector('#resultModal p');
+        if (statusEl) statusEl.innerText = 'Speaking AI baholash davom etmoqda...';
+        for (const qid of qids) {
+            try {
+                const fd = new FormData();
+                fd.append('audio', speakingBlobs[qid], 'speaking_' + qid + '.webm');
+                fd.append('result_id', resultId);
+                fd.append('question_id', qid);
+                fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+                await fetch("{% url 'exams:speaking_eval' %}", { method: 'POST', body: fd });
+            } catch(e) { console.warn('Speaking eval failed for q' + qid, e); }
+        }
+        if (statusEl) statusEl.innerText = 'IELTS Band Score';
+    }
+
     function showSection(id, el) {
         document.querySelectorAll('.section-content').forEach(s => s.style.display = 'none');
         document.querySelectorAll('.section-tab').forEach(t => t.classList.remove('active'));
@@ -544,6 +640,8 @@
                 localStorage.removeItem(DRAFT_KEY);
                 document.getElementById('resultModal').style.display = 'flex';
                 lucide.createIcons();
+                // Upload speaking audio blobs asynchronously
+                uploadSpeakingAudios(data.result_id);
             }
         })
         .catch(() => alert("Xatolik yuz berdi. Qayta urinib ko'ring."));

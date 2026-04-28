@@ -20,6 +20,11 @@
 .action-btn:hover{background:rgba(255,255,255,.06);border-color:var(--primary-color)}
 .tab-btn{padding:8px 18px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--text-muted);transition:.15s}
 .tab-btn.active{background:rgba(255,255,255,.08);color:var(--text-color);font-weight:600}
+.ai-badge{display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,#4285f420,#9b72cb20);border:1px solid #9b72cb44;color:#9b72cb;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600}
+.criteria-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border-color)}
+.criteria-row:last-child{border-bottom:none}
+.criteria-bar{flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden}
+.criteria-fill{height:100%;border-radius:3px;transition:width 1.2s ease}
 
 /* Print styles */
 @media print{
@@ -106,9 +111,11 @@
     </div>
   </div>
 
-  <!-- Tabs: Tahlil / Taqqoslash -->
-  <div class="no-print" style="display:flex;gap:4px;margin-bottom:16px;background:rgba(255,255,255,.04);border-radius:10px;padding:4px;width:fit-content">
+  <!-- Tabs -->
+  <div class="no-print" style="display:flex;gap:4px;margin-bottom:16px;background:rgba(255,255,255,.04);border-radius:10px;padding:4px;width:fit-content;flex-wrap:wrap">
     <button class="tab-btn active" onclick="showTab('analysis', this)">Javoblar tahlili</button>
+    {% if result.writing_feedback %}<button class="tab-btn" onclick="showTab('ai', this)"><i data-lucide="sparkles" style="width:13px;display:inline;vertical-align:middle;margin-right:4px"></i>Writing AI</button>{% endif %}
+    {% if result.speaking_feedback %}<button class="tab-btn" onclick="showTab('speaking', this)"><i data-lucide="mic" style="width:13px;display:inline;vertical-align:middle;margin-right:4px"></i>Speaking AI</button>{% endif %}
     <button class="tab-btn" onclick="showTab('compare', this)">Oldingi natijalar</button>
   </div>
 
@@ -170,6 +177,206 @@
     </div>
     {% endif %}
   </div>
+
+  <!-- AI Writing Feedback tab -->
+  {% if result.writing_feedback %}
+  {% with fb=result.writing_feedback %}
+  <div id="tab-ai" style="display:none">
+    <div style="display:flex;flex-direction:column;gap:16px">
+
+      <!-- Header -->
+      <div style="background:linear-gradient(135deg,#4285f408,#9b72cb12);border:1px solid #9b72cb33;border-radius:16px;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+        <div>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+            <span style="font-size:17px;font-weight:700">Writing AI Baholash</span>
+            {% if fb.ai_graded %}<span class="ai-badge"><i data-lucide="sparkles" style="width:11px"></i>GPT-4o-mini</span>
+            {% else %}<span class="ai-badge" style="color:#eab308;border-color:#eab30844;background:#eab30812">So'z soni asosida</span>{% endif %}
+          </div>
+          <p style="font-size:13px;color:var(--text-muted)">IELTS Writing Task 2 — to'liq tahlil</p>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:3rem;font-weight:800;background:linear-gradient(135deg,#4285f4,#9b72cb);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1">{{ fb.band }}</div>
+          <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em">Band Score</div>
+        </div>
+      </div>
+
+      <!-- 4 criteria -->
+      <div style="background:var(--card-bg);border:1px solid var(--border-color);border-radius:16px;padding:20px 24px">
+        <div style="font-size:13px;font-weight:600;margin-bottom:16px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em">4 mezon bo'yicha baho</div>
+
+        {% with ta=fb.task_achievement cc=fb.coherence_cohesion lr=fb.lexical_resource ga=fb.grammatical_accuracy %}
+        <div class="criteria-row">
+          <span style="width:180px;font-size:13px">Task Achievement</span>
+          <div class="criteria-bar"><div class="criteria-fill" style="width:{% widthratio ta 9 100 %}%;background:#4285f4"></div></div>
+          <span style="width:36px;text-align:right;font-weight:700;font-size:14px;color:#4285f4">{{ ta }}</span>
+        </div>
+        <div class="criteria-row">
+          <span style="width:180px;font-size:13px">Coherence & Cohesion</span>
+          <div class="criteria-bar"><div class="criteria-fill" style="width:{% widthratio cc 9 100 %}%;background:#22c55e"></div></div>
+          <span style="width:36px;text-align:right;font-weight:700;font-size:14px;color:#22c55e">{{ cc }}</span>
+        </div>
+        <div class="criteria-row">
+          <span style="width:180px;font-size:13px">Lexical Resource</span>
+          <div class="criteria-bar"><div class="criteria-fill" style="width:{% widthratio lr 9 100 %}%;background:#eab308"></div></div>
+          <span style="width:36px;text-align:right;font-weight:700;font-size:14px;color:#eab308">{{ lr }}</span>
+        </div>
+        <div class="criteria-row">
+          <span style="width:180px;font-size:13px">Grammatical Accuracy</span>
+          <div class="criteria-bar"><div class="criteria-fill" style="width:{% widthratio ga 9 100 %}%;background:#ef4444"></div></div>
+          <span style="width:36px;text-align:right;font-weight:700;font-size:14px;color:#ef4444">{{ ga }}</span>
+        </div>
+        {% endwith %}
+      </div>
+
+      <!-- Feedback text -->
+      {% if fb.feedback %}
+      <div style="background:var(--card-bg);border:1px solid var(--border-color);border-radius:16px;padding:20px 24px">
+        <div style="font-size:13px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:7px">
+          <i data-lucide="message-circle" style="width:15px;color:#9b72cb"></i>Umumiy baho
+        </div>
+        <p style="font-size:14px;line-height:1.7;color:var(--text-color)">{{ fb.feedback }}</p>
+      </div>
+      {% endif %}
+
+      <!-- Strengths & Improvements -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        {% if fb.strengths %}
+        <div style="background:#22c55e0e;border:1px solid #22c55e22;border-radius:14px;padding:18px">
+          <div style="font-size:12px;font-weight:700;color:#22c55e;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;display:flex;align-items:center;gap:6px">
+            <i data-lucide="thumbs-up" style="width:13px"></i>Kuchli tomonlar
+          </div>
+          {% for s in fb.strengths %}
+          <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:8px;font-size:13px;line-height:1.5">
+            <span style="color:#22c55e;margin-top:2px;flex-shrink:0">✓</span>
+            <span>{{ s }}</span>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if fb.improvements %}
+        <div style="background:#ef44440e;border:1px solid #ef444422;border-radius:14px;padding:18px">
+          <div style="font-size:12px;font-weight:700;color:#ef4444;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;display:flex;align-items:center;gap:6px">
+            <i data-lucide="trending-up" style="width:13px"></i>Yaxshilash kerak
+          </div>
+          {% for imp in fb.improvements %}
+          <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:8px;font-size:13px;line-height:1.5">
+            <span style="color:#ef4444;margin-top:2px;flex-shrink:0">→</span>
+            <span>{{ imp }}</span>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+  {% endwith %}
+  {% endif %}
+
+  <!-- Speaking AI Feedback tab -->
+  {% if result.speaking_feedback %}
+  {% with sp_list=result.speaking_feedback %}
+  <div id="tab-speaking" style="display:none">
+    <div style="display:flex;flex-direction:column;gap:16px">
+
+      <!-- Header: overall -->
+      {% with overall=result.speaking_score %}
+      <div style="background:linear-gradient(135deg,#ef444408,#f59e0b12);border:1px solid #f59e0b33;border-radius:16px;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+        <div>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+            <span style="font-size:17px;font-weight:700">Speaking AI Baholash</span>
+            <span class="ai-badge" style="color:#f59e0b;border-color:#f59e0b44;background:#f59e0b12"><i data-lucide="mic" style="width:11px"></i>Whisper + GPT</span>
+          </div>
+          <p style="font-size:13px;color:var(--text-muted)">{{ sp_list|length }} ta savol baholandi</p>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:3rem;font-weight:800;background:linear-gradient(135deg,#ef4444,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1">{{ overall|floatformat:1 }}</div>
+          <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em">Band Score</div>
+        </div>
+      </div>
+      {% endwith %}
+
+      <!-- Per-question cards -->
+      {% for entry in sp_list %}
+      <div style="background:var(--card-bg);border:1px solid var(--border-color);border-radius:16px;padding:20px 24px">
+        <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em">Savol {{ forloop.counter }}</div>
+        {% if entry.question_text %}
+        <div style="font-size:14px;font-weight:500;margin-bottom:14px;line-height:1.5">{{ entry.question_text }}</div>
+        {% endif %}
+
+        <!-- 4 criteria bars -->
+        <div style="margin-bottom:14px">
+          <div class="criteria-row">
+            <span style="width:160px;font-size:12px">Fluency & Coherence</span>
+            <div class="criteria-bar"><div class="criteria-fill" style="width:{% widthratio entry.fluency_coherence 9 100 %}%;background:#4285f4"></div></div>
+            <span style="width:32px;text-align:right;font-weight:700;font-size:13px;color:#4285f4">{{ entry.fluency_coherence }}</span>
+          </div>
+          <div class="criteria-row">
+            <span style="width:160px;font-size:12px">Lexical Resource</span>
+            <div class="criteria-bar"><div class="criteria-fill" style="width:{% widthratio entry.lexical_resource 9 100 %}%;background:#22c55e"></div></div>
+            <span style="width:32px;text-align:right;font-weight:700;font-size:13px;color:#22c55e">{{ entry.lexical_resource }}</span>
+          </div>
+          <div class="criteria-row">
+            <span style="width:160px;font-size:12px">Grammatical Range</span>
+            <div class="criteria-bar"><div class="criteria-fill" style="width:{% widthratio entry.grammatical_range 9 100 %}%;background:#eab308"></div></div>
+            <span style="width:32px;text-align:right;font-weight:700;font-size:13px;color:#eab308">{{ entry.grammatical_range }}</span>
+          </div>
+          <div class="criteria-row">
+            <span style="width:160px;font-size:12px">Pronunciation</span>
+            <div class="criteria-bar"><div class="criteria-fill" style="width:{% widthratio entry.pronunciation 9 100 %}%;background:#ef4444"></div></div>
+            <span style="width:32px;text-align:right;font-weight:700;font-size:13px;color:#ef4444">{{ entry.pronunciation }}</span>
+          </div>
+        </div>
+
+        {% if entry.feedback %}
+        <div style="font-size:13px;line-height:1.7;color:var(--text-color);padding:12px;background:rgba(255,255,255,.03);border-radius:8px;border-left:3px solid #f59e0b;margin-bottom:12px">
+          {{ entry.feedback }}
+        </div>
+        {% endif %}
+
+        <!-- Transcript -->
+        {% if entry.transcript %}
+        <details style="margin-top:8px">
+          <summary style="font-size:12px;color:var(--text-muted);cursor:pointer">📝 Transkript ko'rish ({{ entry.word_count|default:0 }} so'z)</summary>
+          <div style="margin-top:8px;padding:10px;background:rgba(255,255,255,.03);border-radius:6px;font-size:12px;line-height:1.6;color:var(--text-muted);white-space:pre-wrap">{{ entry.transcript }}</div>
+        </details>
+        {% endif %}
+
+        <!-- Sample phrases -->
+        {% if entry.sample_phrases %}
+        <div style="margin-top:10px">
+          <div style="font-size:11px;color:#9b72cb;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">💡 Tavsiya etilgan iboralar</div>
+          {% for phrase in entry.sample_phrases %}
+          <div style="display:inline-block;background:rgba(155,114,203,.1);border:1px solid rgba(155,114,203,.2);border-radius:20px;padding:3px 12px;font-size:12px;color:#9b72cb;margin:2px">{{ phrase }}</div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Strengths & Improvements -->
+        {% if entry.strengths or entry.improvements %}
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px">
+          {% if entry.strengths %}
+          <div style="background:#22c55e0a;border:1px solid #22c55e1a;border-radius:10px;padding:12px">
+            <div style="font-size:11px;color:#22c55e;font-weight:700;margin-bottom:6px">✓ Kuchli tomonlar</div>
+            {% for s in entry.strengths %}<div style="font-size:12px;margin-bottom:4px">{{ s }}</div>{% endfor %}
+          </div>
+          {% endif %}
+          {% if entry.improvements %}
+          <div style="background:#ef44440a;border:1px solid #ef44441a;border-radius:10px;padding:12px">
+            <div style="font-size:11px;color:#ef4444;font-weight:700;margin-bottom:6px">→ Yaxshilash kerak</div>
+            {% for imp in entry.improvements %}<div style="font-size:12px;margin-bottom:4px">{{ imp }}</div>{% endfor %}
+          </div>
+          {% endif %}
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+
+    </div>
+  </div>
+  {% endwith %}
+  {% endif %}
 
   <!-- Compare tab -->
   <div id="tab-compare" style="display:none">
@@ -246,8 +453,10 @@ lucide.createIcons();
 
 // Tabs
 function showTab(name, btn){
-  document.getElementById('tab-analysis').style.display = name==='analysis'?'block':'none';
-  document.getElementById('tab-compare').style.display = name==='compare'?'block':'none';
+  ['analysis','ai','speaking','compare'].forEach(t=>{
+    const el = document.getElementById('tab-'+t);
+    if(el) el.style.display = (t===name)?'block':'none';
+  });
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   if(name==='compare') buildCompareChart();
