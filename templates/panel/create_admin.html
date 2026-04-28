@@ -1,0 +1,73 @@
+{% extends 'panel/base.html' %}
+{% block title %}Admin yaratish — AbExam Panel{% endblock %}
+{% block content %}
+<div style="max-width:520px;margin:0 auto">
+  <div style="margin-bottom:24px">
+    <h1 style="font-size:20px;font-weight:700">Admin yaratish</h1>
+    <p style="color:var(--muted);font-size:13px;margin-top:4px">Yangi staff yoki superadmin foydalanuvchi qo'shing</p>
+  </div>
+
+  {% if error %}
+  <div style="background:rgba(239,68,68,.12);border:1px solid var(--red);color:var(--red);border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:13px">
+    {{ error }}
+  </div>
+  {% endif %}
+
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px">
+    <form method="post">
+      {% csrf_token %}
+      <div style="display:flex;flex-direction:column;gap:18px">
+
+        <div>
+          <label style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px">Username *</label>
+          <input name="username" type="text" required autocomplete="off"
+            style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:14px;outline:none"
+            onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'">
+        </div>
+
+        <div>
+          <label style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px">Email</label>
+          <input name="email" type="email" autocomplete="off"
+            style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:14px;outline:none"
+            onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'">
+        </div>
+
+        <div>
+          <label style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px">Parol *</label>
+          <input name="password" type="password" required minlength="6"
+            style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:14px;outline:none"
+            onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'">
+        </div>
+
+        <div>
+          <label style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px">Parolni tasdiqlang *</label>
+          <input name="password2" type="password" required minlength="6"
+            style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:14px;outline:none"
+            onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'">
+        </div>
+
+        <div style="display:flex;align-items:center;gap:10px;padding:12px;background:var(--surface2);border-radius:8px;cursor:pointer" onclick="document.getElementById('su-chk').click()">
+          <input id="su-chk" type="checkbox" name="is_superuser" style="width:16px;height:16px;accent-color:var(--primary);cursor:pointer">
+          <div>
+            <div style="font-size:13px;font-weight:500">Superadmin</div>
+            <div style="font-size:11px;color:var(--muted)">Barcha huquqlarga ega bo'ladi</div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:12px;padding-top:4px">
+          <button type="submit"
+            style="flex:1;background:var(--primary);color:#fff;border:none;border-radius:8px;padding:11px;font-size:14px;font-weight:600;cursor:pointer;transition:.15s"
+            onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+            Yaratish
+          </button>
+          <a href="{% url 'panel:users' %}"
+            style="flex:1;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:11px;font-size:14px;font-weight:600;text-align:center;transition:.15s"
+            onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='var(--surface2)'">
+            Bekor qilish
+          </a>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,12 +1,10 @@
 import csv
 import json
-import os
-import subprocess
 from datetime import timedelta
 
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.db.models import Avg, Count, Sum
-from django.http import HttpResponse, JsonResponse, FileResponse
+from django.db.models import Avg, Count, F, Sum
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
@@ -150,12 +148,12 @@ def user_add_balance(request, pk):
     amount = float(data.get('amount', 0))
     note = data.get('note', "Admin tomonidan qo'shildi")
     if amount > 0:
-        user.balance += amount
-        user.save(update_fields=['balance'])
+        User.objects.filter(pk=user.pk).update(balance=F('balance') + amount)
         Transaction.objects.create(user=user, amount=amount, method='manual', status='success', description=note)
     elif amount < 0:
-        user.balance = max(0, user.balance + amount)
-        user.save(update_fields=['balance'])
+        User.objects.filter(pk=user.pk).update(balance=F('balance') + amount)
+        User.objects.filter(pk=user.pk, balance__lt=0).update(balance=0)
+    user.refresh_from_db(fields=['balance'])
     return JsonResponse({'balance': float(user.balance)})
 
 
@@ -332,8 +330,7 @@ def transaction_approve(request, pk):
     if tx.status == 'pending':
         tx.status = 'success'
         tx.save(update_fields=['status'])
-        tx.user.balance += tx.amount
-        tx.user.save(update_fields=['balance'])
+        User.objects.filter(pk=tx.user_id).update(balance=F('balance') + tx.amount)
     return JsonResponse({'status': tx.status})
 
 

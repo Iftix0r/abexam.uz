@@ -1,10 +1,14 @@
-from django.shortcuts import render, get_object_or_404, redirect
-from django.views.generic import DetailView, View
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import JsonResponse
 from django.contrib import messages
-from .models import Exam, UserResult, UserAnswer
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import transaction
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect
+from django.views import View
+from django.views.generic import DetailView
 import json
+
+from .models import Exam, UserAnswer, UserResult
+from users.models import User
 
 
 # IELTS Listening/Reading band table (scaled to 40 questions)
@@ -59,7 +63,9 @@ class ExamDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         exam = self.object
-        context['total_questions'] = sum(s.questions.count() for s in exam.sections.prefetch_related('questions').all())
+        context['total_questions'] = sum(
+            s.questions.count() for s in exam.sections.prefetch_related('questions').all()
+        )
         context['user_results'] = UserResult.objects.filter(
             user=self.request.user, exam=exam
         ).order_by('-completed_at')[:3]
@@ -73,16 +79,16 @@ class TakeExamView(LoginRequiredMixin, DetailView):
 
     def get(self, request, *args, **kwargs):
         exam = self.get_object()
-        if exam.price > 0 and request.user.balance < exam.price:
-            messages.error(request, f"Balans yetarli emas. Imtihon narxi: {exam.price} so'm")
-            return redirect('exams:exam_detail', pk=exam.pk)
-        # Deduct balance upfront to prevent double-spending
-        if exam.price > 0:
-            already_deducted = request.session.get(f'exam_paid_{exam.pk}')
-            if not already_deducted:
-                request.user.balance -= exam.price
-                request.user.save(update_fields=['balance'])
-                request.session[f'exam_paid_{exam.pk}'] = True
+        if exam.price > 0 and not request.session.get(f'exam_paid_{exam.pk}'):
+            with transaction.atomic():
+                user = User.objects.select_for_update().get(pk=request.user.pk)
+                if user.balance < exam.price:
+                    messages.error(request, f"Balans yetarli emas. Imtihon narxi: {exam.price} so'm")
+                    return redirect('exams:exam_detail', pk=exam.pk)
+                user.balance -= exam.price
+                user.save(update_fields=['balance'])
+                request.user.balance = user.balance
+            request.session[f'exam_paid_{exam.pk}'] = True
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -96,7 +102,7 @@ class SubmitExamView(LoginRequiredMixin, View):
         exam = get_object_or_404(Exam, pk=kwargs['pk'])
         try:
             data = json.loads(request.body)
-        except (json.JSONDecodeError, Exception):
+        except json.JSONDecodeError:
             return JsonResponse({'error': 'Noto\'g\'ri so\'rov'}, status=400)
 
         answers = data.get('answers', {})
@@ -105,7 +111,10 @@ class SubmitExamView(LoginRequiredMixin, View):
         total_correct = 0
         total_questions = 0
 
-        for section in exam.sections.prefetch_related('questions').all():
+        # Fetch sections once and reuse
+        sections = list(exam.sections.prefetch_related('questions').all())
+
+        for section in sections:
             s_correct = 0
             s_total = 0
             for question in section.questions.all():
@@ -124,8 +133,7 @@ class SubmitExamView(LoginRequiredMixin, View):
 
         def get_band(stype):
             if stype == 'writing' and writing_texts.get('writing'):
-                combined = ' '.join(writing_texts['writing'])
-                return calc_writing_band(combined)
+                return calc_writing_band(' '.join(writing_texts['writing']))
             c, t = section_stats.get(stype, (0, 0))
             return calc_band(c, t)
 
@@ -134,11 +142,9 @@ class SubmitExamView(LoginRequiredMixin, View):
         w_band = get_band('writing')
         s_band = get_band('speaking')
 
-        # Overall: average of sections that have content
         active_bands = [b for b in [l_band, r_band, w_band, s_band] if b > 0]
         overall = round(sum(active_bands) / len(active_bands) * 2) / 2 if active_bands else 0.0
 
-        # Refund the upfront deduction marker (already deducted on TakeExamView)
         request.session.pop(f'exam_paid_{exam.pk}', None)
 
         result = UserResult.objects.create(
@@ -151,15 +157,14 @@ class SubmitExamView(LoginRequiredMixin, View):
             speaking_score=s_band,
         )
 
-        # Persist answers in DB (not just session)
         answer_objs = []
-        for section in exam.sections.prefetch_related('questions').all():
+        for section in sections:
             for question in section.questions.all():
                 user_ans = str(answers.get(str(question.id), '')).strip()
-                if question.question_type == 'writing_task':
-                    is_correct = False
-                else:
-                    is_correct = user_ans.lower() == str(question.correct_answer).strip().lower()
+                is_correct = (
+                    False if question.question_type == 'writing_task'
+                    else user_ans.lower() == str(question.correct_answer).strip().lower()
+                )
                 answer_objs.append(UserAnswer(
                     result=result,
                     question=question,
@@ -191,7 +196,6 @@ class ResultDetailView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         result = self.object
 
-        # Load answers from DB (persistent), fallback to session
         db_answers = {
             str(ua.question_id): ua.user_answer
             for ua in result.answers.select_related('question').all()
@@ -208,7 +212,7 @@ class ResultDetailView(LoginRequiredMixin, DetailView):
                 user_ans = str(db_answers.get(str(q.id), '')).strip()
                 correct = str(q.correct_answer).strip().lower()
                 if q.question_type == 'writing_task':
-                    is_correct = None  # Writing tasks not auto-graded
+                    is_correct = None
                 else:
                     is_correct = user_ans.lower() == correct
                     if is_correct:
