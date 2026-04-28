@@ -91,33 +91,79 @@
         </ul>
       </div>
 
-      <!-- Submit -->
-      <button type="submit" id="gen-btn"
-        style="background:var(--primary);color:#fff;border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:.15s"
-        onmouseover="this.style.opacity='.9'" onmouseout="this.style.opacity='1'">
-        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
-        <span id="gen-btn-text">AI bilan Test Yaratish</span>
-      </button>
+    <!-- Progress Overlay -->
+    {% if streaming %}
+    <div id="progress-overlay" style="position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px)">
+      <div style="width:90%;max-width:400px;text-align:center">
+        <div style="font-size:18px;font-weight:700;color:#fff;margin-bottom:20px" id="p-status">AI Test Yaratmoqda...</div>
+        <div style="height:8px;background:rgba(255,255,255,0.1);border-radius:10px;overflow:hidden;margin-bottom:12px">
+          <div id="p-bar" style="width:1%;height:100%;background:var(--primary);transition:width 0.4s ease;box-shadow:0 0 15px var(--primary)"></div>
+        </div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.5)" id="p-percent">0%</div>
+      </div>
     </div>
-  </form>
+    {% endif %}
+
+    <!-- Submit -->
+    <button type="submit" id="gen-btn"
+      style="background:var(--primary);color:#fff;border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:.15s"
+      onmouseover="this.style.opacity='.9'" onmouseout="this.style.opacity='1'">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+      <span id="gen-btn-text">AI bilan Test Yaratish</span>
+    </button>
+  </div>
+</form>
+
+<div id="error-box" style="display:none;margin-top:20px;background:rgba(239,68,68,.1);border:1px solid var(--red);color:var(--red);border-radius:10px;padding:14px 18px;font-size:13px;align-items:center;gap:10px">
+  <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+  <span id="error-msg"></span>
+</div>
+
 </div>
 
 <script>
 function highlightSectionType(){
-  document.querySelectorAll('[id^="st-label-"]').forEach(el=>{
-    const inp = el.querySelector('input');
-    el.style.borderColor = inp.checked ? 'var(--primary)' : 'var(--border)';
-    el.style.background = inp.checked ? 'rgba(99,102,241,.06)' : '';
-  });
+document.querySelectorAll('[id^="st-label-"]').forEach(el=>{
+  const inp = el.querySelector('input');
+  el.style.borderColor = inp.checked ? 'var(--primary)' : 'var(--border)';
+  el.style.background = inp.checked ? 'rgba(99,102,241,.06)' : '';
+});
 }
 highlightSectionType();
 
-document.getElementById('gen-form').addEventListener('submit', function(){
+function updateProgress(percent, status) {
+  const bar = document.getElementById('p-bar');
+  const statusEl = document.getElementById('p-status');
+  const percentEl = document.getElementById('p-percent');
+  if (bar) bar.style.width = percent + '%';
+  if (statusEl) statusEl.innerText = status;
+  if (percentEl) percentEl.innerText = percent + '%';
+}
+
+function showError(msg) {
+  const overlay = document.getElementById('progress-overlay');
+  if (overlay) overlay.style.display = 'none';
+  const box = document.getElementById('error-box');
+  const msgEl = document.getElementById('error-msg');
+  if (box && msgEl) {
+    box.style.display = 'flex';
+    msgEl.innerText = msg;
+  }
   const btn = document.getElementById('gen-btn');
   const txt = document.getElementById('gen-btn-text');
-  btn.disabled = true;
-  btn.style.opacity = '.7';
-  txt.innerText = 'AI ishlayapti... Kuting...';
+  if (btn) {
+      btn.disabled = false;
+      btn.style.opacity = '1';
+  }
+  if (txt) txt.innerText = 'Qayta urinib ko\'ring';
+}
+
+document.getElementById('gen-form').addEventListener('submit', function(){
+const btn = document.getElementById('gen-btn');
+const txt = document.getElementById('gen-btn-text');
+btn.disabled = true;
+btn.style.opacity = '.7';
+txt.innerText = 'AI ishlayapti...';
 });
 </script>
 {% endblock %}

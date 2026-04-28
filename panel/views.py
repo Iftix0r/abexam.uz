@@ -427,7 +427,143 @@ def analytics(request):
     })
 
 
-# ── Admin yaratish ─────────────────────────────────────────────────────────────
+from itertools import chain
+
+# ── Results ────────────────────────────────────────────────────────────────────
+@panel_required
+def results_list(request):
+    exam_id = request.GET.get('exam', '')
+    results = UserResult.objects.select_related('user', 'exam').order_by('-completed_at')
+    if exam_id:
+        results = results.filter(exam_id=exam_id)
+    exams = Exam.objects.all()
+    return render(request, 'panel/results_list.html', {
+        'results': results[:100], 'exams': exams, 'exam_id': exam_id
+    })
+
+
+# ── AI Exam Generator ──────────────────────────────────────────────────────────
+@panel_required
+def exam_generate(request):
+    """Step 1: form; Step 2: POST → generate with progress → save → redirect."""
+    if request.method == 'POST':
+        section_type = request.POST.get('section_type', 'reading')
+        variant = request.POST.get('variant', 'academic')
+        topic = request.POST.get('topic', '').strip()
+        model = request.POST.get('model', 'gpt-4o')
+
+        from django.http import StreamingHttpResponse
+
+        def stream_generator():
+            yield f'<script>updateProgress(1, "AI bog\'lanmoqda...");</script>'
+            try:
+                from core.ai_utils import generate_ielts_exam
+                from exams.models import Section, Question
+                from django.db import transaction as db_tx
+
+                exam_data = None
+                # generator yields (percentage, message, [data])
+                for p, m, *extra in generate_ielts_exam(
+                    section_type=section_type,
+                    variant=variant,
+                    topic=topic or None,
+                    model=model,
+                ):
+                    yield f'<script>updateProgress({int(p)}, "{m}");</script>'
+                    if extra and extra[0]:
+                        exam_data = extra[0]
+
+                if not exam_data:
+                    yield f'<script>showError("AI ma\'lumot qaytarmadi.");</script>'
+                    return
+
+                yield f'<script>updateProgress(98, "Ma\'lumotlar bazasiga saqlanmoqda...");</script>'
+                
+                with db_tx.atomic():
+                    exam = Exam.objects.create(
+                        title=exam_data['title'],
+                        description=exam_data['description'],
+                        exam_type=exam_data['exam_type'],
+                        price=0,
+                        duration_minutes=exam_data['duration_minutes'],
+                        is_active=False,
+                        is_ai_generated=True,
+                        ai_metadata=exam_data.get('ai_metadata'),
+                    )
+                    for order, sec_data in enumerate(exam_data.get('sections', []), start=1):
+                        section = Section.objects.create(
+                            exam=exam,
+                            title=sec_data['title'],
+                            section_type=sec_data['section_type'],
+                            order=sec_data.get('order', order),
+                            duration_minutes=sec_data.get('duration_minutes', 0),
+                            content=sec_data.get('content', ''),
+                        )
+                        for q_data in sec_data.get('questions', []):
+                            Question.objects.create(
+                                section=section,
+                                order=q_data.get('order', 1),
+                                text=q_data['text'],
+                                question_type=q_data.get('question_type', 'gap_fill'),
+                                correct_answer=q_data.get('correct_answer', ''),
+                                options=q_data.get('options', []),
+                                explanation=q_data.get('explanation', ''),
+                                word_limit=q_data.get('word_limit', 0),
+                            )
+                
+                yield f'<script>updateProgress(100, "Tayyor! Yo\'naltirilmoqda..."); window.location.href="{redirect("panel:exam_detail", pk=exam.pk).url}";</script>'
+
+            except Exception as e:
+                import traceback
+                print(traceback.format_exc())
+                yield f'<script>showError("AI xatoligi: {str(e).replace(chr(34), chr(39))}");</script>'
+
+        # Initial layout for streaming
+        initial_html = render(request, 'panel/exam_generate.html', {
+            'section_types': [
+                ('reading', 'Reading (3 passages, 40+ savol)'),
+                ('writing', 'Writing (Task 1 + Task 2)'),
+                ('listening', 'Listening (4 sections, 40 savol)'),
+                ('speaking', 'Speaking (Part 1, 2, 3)'),
+                ('full', 'Full Mock Test (barcha 4 bo\'lim)'),
+            ],
+            'streaming': True
+        }).content.decode('utf-8')
+        
+        return StreamingHttpResponse(chain([initial_html], stream_generator()))
+
+    return render(request, 'panel/exam_generate.html', {
+        'section_types': [
+            ('reading', 'Reading (3 passages, 40+ savol)'),
+            ('writing', 'Writing (Task 1 + Task 2)'),
+            ('listening', 'Listening (4 sections, 40 savol)'),
+            ('speaking', 'Speaking (Part 1, 2, 3)'),
+            ('full', 'Full Mock Test (barcha 4 bo\'lim)'),
+        ],
+    })
+
+
+@panel_required
+@require_POST
+def question_edit(request, pk):
+    """Inline question edit from exam detail page."""
+    question = get_object_or_404(Question, pk=pk)
+    data = json.loads(request.body)
+    question.text = data.get('text', question.text)
+    question.correct_answer = data.get('correct_answer', question.correct_answer)
+    question.explanation = data.get('explanation', question.explanation)
+    question.save(update_fields=['text', 'correct_answer', 'explanation'])
+    return JsonResponse({'ok': True})
+
+
+@panel_required
+@require_POST
+def question_delete(request, pk):
+    question = get_object_or_404(Question, pk=pk)
+    question.delete()
+    return JsonResponse({'ok': True})
+
+
 @panel_required
 def create_admin(request):
     if not request.user.is_superuser:
@@ -457,108 +593,3 @@ def create_admin(request):
             return redirect('panel:user_detail', pk=user.pk)
 
     return render(request, 'panel/create_admin.html', {'error': error})
-
-
-# ── Results ────────────────────────────────────────────────────────────────────
-@panel_required
-def results_list(request):
-    exam_id = request.GET.get('exam', '')
-    results = UserResult.objects.select_related('user', 'exam').order_by('-completed_at')
-    if exam_id:
-        results = results.filter(exam_id=exam_id)
-    exams = Exam.objects.all()
-    return render(request, 'panel/results_list.html', {
-        'results': results[:100], 'exams': exams, 'exam_id': exam_id
-    })
-
-
-# ── AI Exam Generator ──────────────────────────────────────────────────────────
-@panel_required
-def exam_generate(request):
-    """Step 1: form; Step 2: POST → generate → save draft → redirect to detail."""
-    error = None
-    if request.method == 'POST':
-        section_type = request.POST.get('section_type', 'reading')
-        variant = request.POST.get('variant', 'academic')
-        topic = request.POST.get('topic', '').strip()
-        model = request.POST.get('model', 'gpt-4o')
-
-        try:
-            from core.ai_utils import generate_ielts_exam
-            exam_data = generate_ielts_exam(
-                section_type=section_type,
-                variant=variant,
-                topic=topic or None,
-                model=model,
-            )
-            # Save using the same logic as seed_cambridge
-            from exams.models import Section, Question
-            from django.db import transaction as db_tx
-
-            with db_tx.atomic():
-                exam = Exam.objects.create(
-                    title=exam_data['title'],
-                    description=exam_data['description'],
-                    exam_type=exam_data['exam_type'],
-                    price=0,
-                    duration_minutes=exam_data['duration_minutes'],
-                    is_active=False,
-                    is_ai_generated=True,
-                    ai_metadata=exam_data.get('ai_metadata'),
-                )
-                for order, sec_data in enumerate(exam_data.get('sections', []), start=1):
-                    section = Section.objects.create(
-                        exam=exam,
-                        title=sec_data['title'],
-                        section_type=sec_data['section_type'],
-                        order=sec_data.get('order', order),
-                        duration_minutes=sec_data.get('duration_minutes', 0),
-                        content=sec_data.get('content', ''),
-                    )
-                    for q_data in sec_data.get('questions', []):
-                        Question.objects.create(
-                            section=section,
-                            order=q_data.get('order', 1),
-                            text=q_data['text'],
-                            question_type=q_data.get('question_type', 'gap_fill'),
-                            correct_answer=q_data.get('correct_answer', ''),
-                            options=q_data.get('options', []),
-                            explanation=q_data.get('explanation', ''),
-                            word_limit=q_data.get('word_limit', 0),
-                        )
-            return redirect('panel:exam_detail', pk=exam.pk)
-
-        except Exception as e:
-            error = f"AI xatoligi: {e}"
-
-    return render(request, 'panel/exam_generate.html', {
-        'error': error,
-        'section_types': [
-            ('reading', 'Reading (1 passage, 13-14 savol)'),
-            ('writing', 'Writing (Task 1 + Task 2)'),
-            ('listening', 'Listening (1 section, 10 savol)'),
-            ('speaking', 'Speaking (Part 1, 2, 3)'),
-            ('full', 'Full Mock Test (barcha 4 bo\'lim)'),
-        ],
-    })
-
-
-@panel_required
-@require_POST
-def question_edit(request, pk):
-    """Inline question edit from exam detail page."""
-    question = get_object_or_404(Question, pk=pk)
-    data = json.loads(request.body)
-    question.text = data.get('text', question.text)
-    question.correct_answer = data.get('correct_answer', question.correct_answer)
-    question.explanation = data.get('explanation', question.explanation)
-    question.save(update_fields=['text', 'correct_answer', 'explanation'])
-    return JsonResponse({'ok': True})
-
-
-@panel_required
-@require_POST
-def question_delete(request, pk):
-    question = get_object_or_404(Question, pk=pk)
-    question.delete()
-    return JsonResponse({'ok': True})

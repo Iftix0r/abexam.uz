@@ -26,7 +26,8 @@ Return ONLY a valid JSON object with this exact structure (no markdown, no extra
   "feedback": "<2-3 sentence overall feedback in Uzbek language>",
   "sample_phrases": [<string>, <string>]
 }
-Note: pronunciation score should be estimated from written features (word choice, complexity). Be strict and realistic."""
+Note: pronunciation score should be estimated from written features (word choice, complexity). Be strict and realistic. If the transcript is very short or irrelevant, give a very low band (1.0-3.0). Do not give high scores for minimal effort. Answer the overall feedback in Uzbek.
+IMPORTANT: A silent or empty transcript MUST result in a Band 0.0. A few words (under 10) should not score above 2.0. Be as critical as a real IELTS examiner. Only give 6.5+ for truly advanced responses."""
 
 WRITING_EVAL_PROMPT = """You are an expert IELTS examiner. Evaluate the following IELTS Writing Task 2 essay strictly.
 Return ONLY a valid JSON object with this exact structure (no markdown, no extra text):
@@ -40,7 +41,8 @@ Return ONLY a valid JSON object with this exact structure (no markdown, no extra
   "improvements": [<string>, <string>, <string>],
   "feedback": "<2-3 sentence overall feedback in Uzbek language>"
 }
-Be strict and realistic. A 250-word essay cannot score above 6.5. Less than 150 words: max 5.0."""
+Be strict and realistic. An empty essay MUST score 0.0. A very short essay (<50 words) MUST NOT score above 3.0.
+A 250-word essay cannot score above 6.5 if it has errors. Less than 150 words: max 5.0. Be very strict with grammar and vocabulary."""
 
 
 def get_ai_response(message, history=None):
@@ -107,7 +109,8 @@ def transcribe_audio(audio_bytes: bytes, filename: str = "audio.webm") -> str:
             file=audio_file,
             language="en",
         )
-        return transcript.text.strip()
+        text = transcript.text or ""
+        return text.strip()
     except Exception as e:
         return f"[Transcription error: {e}]"
 
@@ -117,7 +120,7 @@ def evaluate_speaking(transcript: str, question: str = "") -> dict:
     Evaluate an IELTS Speaking response from its transcript.
     Returns dict with band scores and feedback, or fallback on error.
     """
-    if not transcript or not transcript.strip() or transcript.startswith("[Transcription error"):
+    if not transcript or not str(transcript).strip() or str(transcript).startswith("[Transcription error"):
         return _fallback_speaking_eval(transcript)
 
     context = f"Question: {question}\n\nTranscript: {transcript[:2000]}" if question else f"Transcript: {transcript[:2000]}"
@@ -154,7 +157,10 @@ def evaluate_speaking(transcript: str, question: str = "") -> dict:
 
 def _fallback_speaking_eval(transcript: str) -> dict:
     words = len(transcript.split()) if transcript else 0
-    band = 5.0 if words > 30 else 4.0
+    if words == 0: band = 0.0
+    elif words < 20: band = 2.0
+    elif words < 50: band = 4.0
+    else: band = 5.0
     return {
         "band": band,
         "fluency_coherence": band,
@@ -183,30 +189,36 @@ def _clamp_band(value) -> float:
 
 # ── IELTS Exam Generator ────────────────────────────────────────────────────────
 
-_GENERATOR_SYSTEM = """You are an expert IELTS test writer with 15 years of experience creating official Cambridge-style exams.
-You write 100% original, plagiarism-free content that follows IELTS standards precisely.
-Always return ONLY valid JSON — no markdown, no commentary, no extra text."""
+_GENERATOR_SYSTEM = """You are a Senior IELTS Examiner and Content Developer for Cambridge University Press. 
+Your task is to generate AUTHENTIC, high-level IELTS exam materials.
 
-_READING_ACADEMIC = """Create a complete IELTS Academic Reading passage and questions. Topic hint: {topic}
+CORE OPERATING PRINCIPLES:
+1. FACTUAL ACCURACY: You must double-check all facts, data, and historical information. Do not hallucinate.
+2. LOGICAL CONSISTENCY: Ensure that the correct answer is unambiguously correct based ON THE TEXT provided.
+3. DISTRACTOR QUALITY: Distractors must be 'plausible'—meaning they should be mentioned in the text but incorrect in the context of the specific question.
+4. VARIETY & DISTRIBUTION: 
+   - 20% Easy (Direct information)
+   - 40% Medium (Paraphrased information)
+   - 40% Hard (Logical inference, tone analysis, subtle nuances)
+5. SELF-VERIFICATION: Before outputting JSON, mentally verify every question against the passage to ensure there is zero ambiguity."""
 
-Return JSON:
+_READING_ACADEMIC = """Create a 900-word IELTS Academic Reading passage on: {topic}
+
+Requirements:
+- Tone: Analytical, sophisticated, academic.
+- Content: Include conflicting viewpoints, data-driven analysis, and complex arguments.
+
+JSON Structure:
 {{
   "passage_title": "...",
-  "passage": "...(600-750 words, formal academic style, complex ideas)...",
+  "passage": "...",
   "questions": [
-    {{"order":1,"text":"...statement...","question_type":"tfng","correct_answer":"TRUE","options":[{{"key":"TRUE","text":"TRUE"}},{{"key":"FALSE","text":"FALSE"}},{{"key":"NOT GIVEN","text":"NOT GIVEN"}}],"explanation":"..."}},
-    ... (5 more tfng),
-    {{"order":7,"text":"The author argues that ___ has increased significantly.","question_type":"gap_fill","correct_answer":"exact phrase from passage","options":[],"explanation":"..."}},
-    ... (4 more gap_fill),
-    {{"order":12,"text":"What is the main purpose of the passage?","question_type":"mcq","correct_answer":"B","options":[{{"key":"A","text":"..."}},{{"key":"B","text":"..."}},{{"key":"C","text":"..."}},{{"key":"D","text":"..."}}],"explanation":"..."}},
-    {{"order":13,...mcq...}},{{"order":14,...mcq...}}
+    {{"order":1,"text":"...","question_type":"tfng","correct_answer":"NOT GIVEN","options":[{{"key":"TRUE","text":"TRUE"}},{{"key":"FALSE","text":"FALSE"}},{{"key":"NOT GIVEN","text":"NOT GIVEN"}}],"explanation":"Detailed logical derivation..."}},
+    ...
+    {{"order":12,"text":"...","question_type":"mcq","correct_answer":"C","options":[{{"key":"A","text":"Logical trap A"}},{{"key":"B","text":"Logical trap B"}},{{"key":"C","text":"Nuanced correct answer"}},{{"key":"D","text":"Logical trap D"}],"explanation":"..."}}
   ]
 }}
-Rules:
-- 6 TRUE/FALSE/NOT GIVEN questions (orders 1-6)
-- 5 gap-fill (orders 7-11): answers must be exact 1-3 word phrases from the passage
-- 3 MCQ (orders 12-14): one clearly correct answer
-- All 14 questions must have non-empty correct_answer"""
+Items: 6 TFNG, 5 Gap-fill (must paraphrase passage), 3 MCQ (inference based). Level: C1-C2."""
 
 _READING_GENERAL = """Create an IELTS General Training Reading section. Topic hint: {topic}
 Include ONE short text (200-250 words, e.g. advertisement, notice, letter) and ONE longer text (400-450 words, e.g. article, report).
@@ -220,20 +232,20 @@ Return JSON:
   ]
 }}"""
 
-_LISTENING_SECTION = """Create an IELTS Listening section transcript and questions. Context: {topic}. Section type: {listen_type}.
+_LISTENING_SECTION = """Create an IELTS Listening {listen_type} transcript and 10 questions. Topic: {topic}
 
-Return JSON:
+Logic Requirements:
+- SELF-CORRECTION: Speakers should change their mind or correct details (e.g., changing a date, time, or name).
+- AMBIGUITY: Multiple plausible answers mentioned, but only one is correct based on careful listening to modifiers.
+
+JSON Structure:
 {{
   "section_title": "...",
-  "audio_script": "...(full spoken conversation/monologue transcript, 300-400 words)...",
+  "audio_script": "...(800-1000 words transcript with natural spoken markers: 'actually', 'mind you', 'Wait, that's not right...')...",
   "questions": [
-    {{"order":1,"text":"...","question_type":"gap_fill","correct_answer":"exact spoken word(s)","options":[],"explanation":"..."}},
-    ... (mix of 6 gap_fill and 4 mcq, orders 1-10)
+    {{"order":1,"text":"...","question_type":"gap_fill","correct_answer":"...","options":[],"explanation":"..."}}
   ]
-}}
-Rules:
-- gap_fill answers must be 1-3 words actually spoken in the audio_script
-- MCQ must have 3 options (A/B/C)"""
+}}"""
 
 _WRITING_TASKS = """Create IELTS Writing Task 1 and Task 2 for {variant} IELTS. Topic area: {topic}
 
@@ -310,43 +322,57 @@ def generate_ielts_exam(
     variant: str = 'academic',
     topic: str = '',
     model: str = 'gpt-4o',
-) -> dict:
+):
     """
-    Generate a complete IELTS exam section (or full mock test).
-
-    section_type: 'reading' | 'writing' | 'listening' | 'speaking' | 'full'
-    variant: 'academic' | 'general'
-    topic: optional topic hint (auto-selected if empty)
-    Returns a dict matching seed JSON structure (exam + sections + questions).
+    Generator that yields (percentage, message, final_data).
     """
-    topic = topic.strip() or random.choice(
+    yield 5, "Mavzu tahlil qilinmoqda..."
+    topic = (topic or "").strip() or random.choice(
         _TOPICS_ACADEMIC if variant == 'academic' else _TOPICS_GENERAL
     )
     variant_label = 'Academic' if variant == 'academic' else 'General Training'
 
     sections = []
     if section_type == 'reading':
-        sections = _gen_reading(topic, variant, model)
+        for p, m, data in _gen_reading(topic, variant, model):
+            if data: sections = data
+            else: yield 5 + p * 0.9, m
     elif section_type == 'writing':
+        yield 10, "Writing topshiriqlari yaratilmoqda..."
         sections = _gen_writing(topic, variant, model)
     elif section_type == 'listening':
-        sections = _gen_listening(topic, model)
+        for p, m, data in _gen_listening(topic, model):
+            if data: sections = data
+            else: yield 5 + p * 0.9, m
     elif section_type == 'speaking':
+        yield 10, "Speaking savollari yaratilmoqda..."
         sections = _gen_speaking(topic, model)
     elif section_type == 'full':
-        sections = (
-            _gen_listening(topic, model) +
-            _gen_reading(topic, variant, model) +
-            _gen_writing(topic, variant, model) +
-            _gen_speaking(topic, model)
-        )
+        # Simplified for brevity, usually calls others
+        yield 10, "Listening bo'limi yaratilmoqda..."
+        for p, m, data in _gen_listening(topic, model):
+            if data: sections.extend(data)
+            else: yield 10 + p * 0.2, m
+
+        yield 30, "Reading bo'limi yaratilmoqda..."
+        for p, m, data in _gen_reading(topic, variant, model):
+            if data: sections.extend(data)
+            else: yield 30 + p * 0.3, m
+
+        yield 60, "Writing bo'limi yaratilmoqda..."
+        sections.extend(_gen_writing(topic, variant, model))
+        
+        yield 80, "Speaking bo'limi yaratilmoqda..."
+        sections.extend(_gen_speaking(topic, model))
+
+    yield 95, "Test strukturasi yakunlanmoqda..."
 
     section_label = {
         'reading': 'Reading', 'writing': 'Writing',
         'listening': 'Listening', 'speaking': 'Speaking', 'full': 'Full Mock',
     }.get(section_type, section_type.title())
 
-    return {
+    final_data = {
         "title": f"IELTS {variant_label} — {section_label} ({topic[:40]})",
         "exam_type": "mock" if section_type == 'full' else section_type,
         "price": 0,
@@ -356,6 +382,7 @@ def generate_ielts_exam(
         "sections": sections,
         "ai_metadata": {"variant": variant, "topic": topic, "section_type": section_type, "model": model},
     }
+    yield 100, "Tayyor!", final_data
 
 
 def _call_ai(prompt: str, model: str, max_tokens: int = 3000) -> dict:
@@ -372,18 +399,22 @@ def _call_ai(prompt: str, model: str, max_tokens: int = 3000) -> dict:
     return json.loads(resp.choices[0].message.content)
 
 
-def _gen_reading(topic: str, variant: str, model: str) -> list:
+def _gen_reading(topic: str, variant: str, model: str):
     template = _READING_ACADEMIC if variant == 'academic' else _READING_GENERAL
-    data = _call_ai(template.format(topic=topic), model, max_tokens=3500)
-    questions = _normalise_questions(data.get("questions", []))
-    return [{
-        "title": f"Reading — {data.get('passage_title', 'Passage')}",
-        "section_type": "reading",
-        "order": 1,
-        "duration_minutes": 60,
-        "content": f"<div style='line-height:1.8;font-size:14px'><h3>{data.get('passage_title','')}</h3><p>{data.get('passage','').replace(chr(10),'</p><p>')}</p></div>",
-        "questions": questions,
-    }]
+    all_sections = []
+    for i in range(1, 4):
+        yield i * 33 - 15, f"Reading Passage {i} yaratilmoqda...", None
+        data = _call_ai(template.format(topic=f"{topic} (Passage {i})"), model, max_tokens=3500)
+        questions = _normalise_questions(data.get("questions", []))
+        all_sections.append({
+            "title": f"Reading Passage {i}: {data.get('passage_title', 'Untitled')}",
+            "section_type": "reading",
+            "order": i,
+            "duration_minutes": 20,
+            "content": f"<div style='line-height:1.8;font-size:14px'><h3>{data.get('passage_title','')}</h3><p>{data.get('passage','').replace(chr(10),'</p><p>')}</p></div>",
+            "questions": questions,
+        })
+    yield 100, "Reading tayyor", all_sections
 
 
 def _gen_writing(topic: str, variant: str, model: str) -> list:
@@ -412,20 +443,24 @@ def _gen_writing(topic: str, variant: str, model: str) -> list:
     ]
 
 
-def _gen_listening(topic: str, model: str) -> list:
-    listen_type = random.choice(_LISTEN_TYPES)
-    data = _call_ai(_LISTENING_SECTION.format(topic=topic, listen_type=listen_type[1]), model, max_tokens=2500)
-    questions = _normalise_questions(data.get("questions", []))
-    script = data.get("audio_script", "")
-    content = f"<div style='line-height:1.8'><h3>{data.get('section_title', 'Listening')}</h3><p><strong>Topshiriq:</strong> Quyidagi audio transkriptni o'qing va savollarga javob bering.</p><details style='margin-top:12px'><summary style='cursor:pointer;font-size:13px;color:#888'>📄 Audio transkriptni ko'rish (amaliyot uchun)</summary><div style='margin-top:8px;padding:12px;background:rgba(255,255,255,.04);border-radius:8px;font-size:13px;line-height:1.7;white-space:pre-wrap'>{script}</div></details></div>"
-    return [{
-        "title": f"Listening — {data.get('section_title', 'Section')}",
-        "section_type": "listening",
-        "order": 1,
-        "duration_minutes": 30,
-        "content": content,
-        "questions": questions,
-    }]
+def _gen_listening(topic: str, model: str):
+    all_sections = []
+    for i in range(1, 5):
+        yield i * 25 - 10, f"Listening Section {i} yaratilmoqda...", None
+        listen_type = _LISTEN_TYPES[i-1] if i <= len(_LISTEN_TYPES) else random.choice(_LISTEN_TYPES)
+        data = _call_ai(_LISTENING_SECTION.format(topic=topic, listen_type=listen_type[1]), model, max_tokens=2500)
+        questions = _normalise_questions(data.get("questions", []))
+        script = data.get("audio_script", "")
+        content = f"<div style='line-height:1.8'><h3>Listening Section {i}: {data.get('section_title', 'Untitled')}</h3><p><strong>Topshiriq:</strong> Quyidagi audio transkriptni o'qing va savollarga javob bering.</p><details style='margin-top:12px'><summary style='cursor:pointer;font-size:13px;color:#888'>📄 Audio transkriptni ko'rish (amaliyot uchun)</summary><div style='margin-top:8px;padding:12px;background:rgba(255,255,255,.04);border-radius:8px;font-size:13px;line-height:1.7;white-space:pre-wrap'>{script}</div></details></div>"
+        all_sections.append({
+            "title": f"Listening Section {i}: {data.get('section_title', 'Section')}",
+            "section_type": "listening",
+            "order": i,
+            "duration_minutes": 10,
+            "content": content,
+            "questions": questions,
+        })
+    yield 100, "Listening tayyor", all_sections
 
 
 def _gen_speaking(topic: str, model: str) -> list:
@@ -445,17 +480,26 @@ def _normalise_questions(raw: list) -> list:
     """Ensure every question dict has the fields the loader expects."""
     result = []
     for i, q in enumerate(raw, start=1):
-        if not isinstance(q, dict):
-            continue
+        if not isinstance(q, dict): continue
         qtype = q.get("question_type", "gap_fill")
-        if qtype == "short_answer" and "explanation" not in q:
-            q["explanation"] = ""
+        
+        # Fix empty MCQ options
+        options = q.get("options", [])
+        if qtype == "mcq" and (not options or len(options) < 2):
+            # Emergency fallback if AI failed to provide options
+            options = [{"key": "A", "text": "Option A"}, {"key": "B", "text": "Option B"}, {"key": "C", "text": "Option C"}, {"key": "D", "text": "Option D"}]
+        
+        # Fix empty question text
+        qtext = str(q.get("text", "")).strip()
+        if not qtext:
+            qtext = f"Quyidagi bo'sh joyni to'ldiring (Savol {i})" if qtype == "gap_fill" else f"Savol matni mavjud emas ({i})"
+        
         result.append({
             "order": q.get("order", i),
-            "text": str(q.get("text", "")),
+            "text": qtext,
             "question_type": qtype,
             "correct_answer": str(q.get("correct_answer", "")),
-            "options": q.get("options", []),
+            "options": options,
             "explanation": str(q.get("explanation", "")),
             "word_limit": int(q.get("word_limit", 0)),
         })
@@ -465,20 +509,14 @@ def _normalise_questions(raw: list) -> list:
 def _fallback_writing_eval(text: str) -> dict:
     """Word-count based fallback when AI is unavailable."""
     words = len(text.split()) if text else 0
-    if words >= 350:
-        band = 6.5
-    elif words >= 300:
-        band = 6.0
-    elif words >= 250:
-        band = 5.5
-    elif words >= 200:
-        band = 5.0
-    elif words >= 150:
-        band = 4.5
-    elif words >= 100:
-        band = 4.0
-    else:
-        band = 3.5
+    if words == 0: band = 0.0
+    elif words < 50: band = 2.0
+    elif words < 100: band = 3.5
+    elif words < 150: band = 4.5
+    elif words < 200: band = 5.0
+    elif words < 250: band = 5.5
+    elif words < 300: band = 6.0
+    else: band = 6.5
     return {
         "band": band,
         "task_achievement": band,
