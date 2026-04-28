@@ -506,6 +506,18 @@ def exam_generate(request):
                                 f"listening_{section.pk}.mp3",
                                 ContentFile(sec_data['audio_bytes'])
                             )
+                        
+                        if sec_data.get('image_url'):
+                            import requests
+                            try:
+                                img_resp = requests.get(sec_data['image_url'])
+                                if img_resp.status_code == 200:
+                                    section.image.save(
+                                        f"task1_{section.pk}.png",
+                                        ContentFile(img_resp.content)
+                                    )
+                            except: pass
+
                         for q_data in sec_data.get('questions', []):
                             Question.objects.create(
                                 section=section,

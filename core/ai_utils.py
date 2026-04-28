@@ -414,6 +414,22 @@ def _generate_audio(text: str, voice: str = "alloy") -> bytes:
         return None
 
 
+def _generate_image(prompt: str) -> str:
+    """Generate image URL using OpenAI DALL-E 3."""
+    try:
+        response = client.images.generate(
+            model="dall-e-3",
+            prompt=f"A professional, clean, academic IELTS writing task 1 chart. Style: minimal, data visualization, white background. Content: {prompt}",
+            size="1024x1024",
+            quality="standard",
+            n=1,
+        )
+        return response.data[0].url
+    except Exception as e:
+        print(f"Image Gen Error: {e}")
+        return None
+
+
 def _gen_reading(topic: str, variant: str, model: str):
     template = _READING_ACADEMIC if variant == 'academic' else _READING_GENERAL
     all_sections = []
@@ -439,6 +455,12 @@ def _gen_writing(topic: str, variant: str, model: str) -> list:
     data = _call_ai(_WRITING_TASKS.format(variant=variant.title(), topic=topic, chart_type=chart, essay_type=essay), model, max_tokens=1500)
     t1 = data.get("task1", {})
     t2 = data.get("task2", {})
+    
+    # Generate chart image for Academic Task 1
+    image_url = None
+    if variant == 'academic':
+        image_url = _generate_image(t1.get("data_description", f"A {chart} about {topic}"))
+
     return [
         {
             "title": t1.get("title", "Writing Task 1"),
@@ -446,6 +468,7 @@ def _gen_writing(topic: str, variant: str, model: str) -> list:
             "order": 1,
             "duration_minutes": 20,
             "content": f"<div style='line-height:1.8'><h3>Writing Task 1</h3><p>{t1.get('instruction','')}</p><div style='background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:16px;margin:12px 0;font-size:13px'>{t1.get('data_description','')}</div></div>",
+            "image_url": image_url, # Pass URL to view
             "questions": [{
                 "order": 1, 
                 "text": f"Describe the {chart} below. Write at least 150 words.\n\n{t1.get('data_description','')}", 

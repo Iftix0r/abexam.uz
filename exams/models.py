@@ -39,6 +39,7 @@ class Section(models.Model):
     section_type = models.CharField(max_length=20, choices=SECTION_TYPES)
     content = RichTextField(blank=True, null=True)
     audio_file = models.FileField(upload_to='exams/audio/', blank=True, null=True)
+    image = models.ImageField(upload_to='exams/images/', blank=True, null=True)
     extra_data = models.JSONField(null=True, blank=True, help_text='Vocabulary, etc.')
     order = models.IntegerField(default=1)
     duration_minutes = models.IntegerField(default=0, help_text='0 = umumiy exam vaqtidan foydalaniladi')
