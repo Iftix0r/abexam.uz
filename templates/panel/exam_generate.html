@@ -72,12 +72,26 @@
       </div>
 
       <!-- Model -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px">
+        <div>
+          <label style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:8px">AI Model</label>
+          <select name="model" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:13px;width:100%;outline:none">
+            <option value="gpt-4o" selected>GPT-4o — Yuqori sifat</option>
+            <option value="gpt-4o-mini">GPT-4o-mini — Arzon</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:8px">Test Narxi (SO'M)</label>
+          <input type="number" name="price" value="0" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:14px;outline:none">
+          <div style="font-size:10px;color:#22c55e;margin-top:4px">0 = BEPUL TEST</div>
+        </div>
+      </div>
+
+      <!-- Duration -->
       <div>
-        <label style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:8px">AI Model</label>
-        <select name="model" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:13px;width:100%;outline:none">
-          <option value="gpt-4o" selected>GPT-4o — Yuqori sifat (tavsiya)</option>
-          <option value="gpt-4o-mini">GPT-4o-mini — Tez va arzon</option>
-        </select>
+        <label style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:8px">Umumiy davomiyligi (daqiqada)</label>
+        <input type="number" name="duration_minutes" value="170" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:14px;outline:none">
+        <div style="font-size:10px;color:var(--muted);margin-top:4px">Standart: Full=170, Reading/Writing=60, Listening=30</div>
       </div>
 
       <!-- Info box -->

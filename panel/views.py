@@ -451,6 +451,8 @@ def exam_generate(request):
         variant = request.POST.get('variant', 'academic')
         topic = request.POST.get('topic', '').strip()
         model = request.POST.get('model', 'gpt-4o')
+        price = request.POST.get('price', 0)
+        custom_duration = request.POST.get('duration_minutes')
 
         from django.http import StreamingHttpResponse
 
@@ -479,13 +481,16 @@ def exam_generate(request):
 
                 yield f'<script>updateProgress(98, "Ma\'lumotlar bazasiga saqlanmoqda...");</script>'
                 
+                # Use custom duration if provided, otherwise use AI's
+                final_duration = int(custom_duration) if custom_duration else exam_data['duration_minutes']
+
                 with db_tx.atomic():
                     exam = Exam.objects.create(
                         title=exam_data['title'],
                         description=exam_data['description'],
                         exam_type=exam_data['exam_type'],
-                        price=0,
-                        duration_minutes=exam_data['duration_minutes'],
+                        price=price,
+                        duration_minutes=final_duration,
                         is_active=False,
                         is_ai_generated=True,
                         ai_metadata=exam_data.get('ai_metadata'),
