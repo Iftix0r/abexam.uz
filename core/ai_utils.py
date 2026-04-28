@@ -253,14 +253,23 @@ JSON Structure:
 
 _WRITING_TASKS = """Create IELTS Writing Task 1 and Task 2 for {variant} IELTS. Topic area: {topic}
 
+IMPORTANT RULES:
+1. If variant is 'Academic': Task 1 MUST be a visual data description (e.g., 'The graph shows...', 'The chart displays...').
+2. If variant is 'General': Task 1 MUST be a letter (e.g., 'Write a letter to...', 'Dear Sir/Madam...').
+3. Task 2 is always an essay.
+
 Return JSON:
 {{
   "task1": {{
-    "title": "...", "instruction": "...", "data_description": "...",
+    "title": "...", 
+    "instruction": "...", 
+    "data_description": "FOR ACADEMIC: Detailed description of the visual data (numbers, trends, axes) for DALL-E image generation. FOR GENERAL: Background context for the letter.",
     "model_answer": "A Band 9.0 model answer (at least 150 words)..."
   }},
   "task2": {{
-    "title": "...", "question": "...", "instruction": "...",
+    "title": "...", 
+    "question": "...", 
+    "instruction": "...",
     "model_answer": "A Band 9.0 model answer (at least 250 words)..."
   }}
 }}"""

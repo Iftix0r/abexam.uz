@@ -774,7 +774,8 @@
     }
 
     // Timer
-    let timeLeft = {{ exam.duration_minutes|default:60 }} * 60;
+    let duration = parseInt("{{ exam.duration_minutes }}") || 60;
+    let timeLeft = duration * 60;
     const timerEl = document.getElementById('countdown');
     const timerBox = document.getElementById('timerBox');
 
