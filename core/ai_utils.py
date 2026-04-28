@@ -470,6 +470,12 @@ def _gen_writing(topic: str, variant: str, model: str) -> list:
     if variant == 'academic':
         image_url = _generate_image(t1.get("data_description", f"A {chart} about {topic}"))
 
+    # Question text based on variant
+    if variant == 'academic':
+        q1_text = f"Describe the {chart} below. Write at least 150 words.\n\n{t1.get('data_description','')}"
+    else:
+        q1_text = f"Write the letter described on the left. Write at least 150 words.\n\n{t1.get('data_description','')}"
+
     return [
         {
             "title": t1.get("title", "Writing Task 1"),
@@ -477,10 +483,10 @@ def _gen_writing(topic: str, variant: str, model: str) -> list:
             "order": 1,
             "duration_minutes": 20,
             "content": f"<div style='line-height:1.8'><h3>Writing Task 1</h3><p>{t1.get('instruction','')}</p><div style='background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:16px;margin:12px 0;font-size:13px'>{t1.get('data_description','')}</div></div>",
-            "image_url": image_url, # Pass URL to view
+            "image_url": image_url,
             "questions": [{
                 "order": 1, 
-                "text": f"Describe the {chart} below. Write at least 150 words.\n\n{t1.get('data_description','')}", 
+                "text": q1_text, 
                 "question_type": "writing_task", 
                 "correct_answer": "", 
                 "options": [], 

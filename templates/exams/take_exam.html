@@ -774,8 +774,9 @@
     }
 
     // Timer
-    let duration = parseInt("{{ exam.duration_minutes }}") || 60;
-    let timeLeft = duration * 60;
+    let durationMinutes = Number("{{ exam.duration_minutes }}");
+    if (!durationMinutes || isNaN(durationMinutes)) durationMinutes = 60;
+    let timeLeft = durationMinutes * 60;
     const timerEl = document.getElementById('countdown');
     const timerBox = document.getElementById('timerBox');
 
