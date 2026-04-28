@@ -191,7 +191,103 @@
             font-size: 0.9rem;
         }
 
+        /* Pricing Section */
+        .pricing {
+            padding: 100px 10%;
+            text-align: center;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, var(--muted));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            align-items: flex-start;
+        }
+
+        .pricing-card {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            padding: 3rem 2rem;
+            border-radius: 30px;
+            position: relative;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .pricing-card.popular {
+            border-color: var(--primary);
+            background: rgba(124, 77, 255, 0.08);
+            transform: scale(1.05);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: -15px;
+            right: 30px;
+            background: var(--primary);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .plan-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .plan-price {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 2rem;
+        }
+
+        .plan-price span {
+            font-size: 1rem;
+            color: var(--muted);
+            font-weight: 400;
+        }
+
+        .plan-features {
+            list-style: none;
+            margin-bottom: 2.5rem;
+        }
+
+        .plan-features li {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95rem;
+            color: #d1d1d6;
+        }
+
+        .plan-features li::before {
+            content: '✓';
+            color: var(--secondary);
+            font-weight: 800;
+        }
+
+        .pricing-card:hover {
+            border-color: var(--secondary);
+        }
+
         @media (max-width: 768px) {
+            .pricing-card.popular { transform: none; margin: 20px 0; }
             .hero h1 { font-size: 3rem; }
             .nav-links { display: none; }
             .mobile-menu-btn { display: flex !important; }
@@ -219,7 +315,7 @@
         </a>
         <div class="nav-links">
             <a href="#features" class="nav-link">Imtihonlar</a>
-            <a href="#" class="nav-link">Narxlar</a>
+            <a href="#pricing" class="nav-link">Narxlar</a>
             {% if user.is_authenticated %}
                 <a href="{% url 'dashboard' %}" class="btn btn-primary">Kabinet</a>
             {% else %}
@@ -254,6 +350,50 @@
             <div style="display: flex; gap: 1rem;">
                 <a href="{% url 'dashboard' %}" class="btn btn-primary">Hozir boshlash</a>
                 <a href="#" class="btn" style="border: 1px solid var(--border); background: var(--glass);">Ko'proq ma'lumot</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="pricing" id="pricing">
+        <h2 class="section-title">O'zingizga mos tarifni tanlang</h2>
+        <div class="pricing-grid">
+            <!-- Free Plan -->
+            <div class="pricing-card">
+                <div class="plan-name">Free Plan</div>
+                <div class="plan-price">0 <span>SO'M</span></div>
+                <ul class="plan-features">
+                    <li>Savollar bilan tanishish</li>
+                    <li>Cheklangan mock testlar</li>
+                    <li>Bepul amaliyot materiallari</li>
+                </ul>
+                <a href="/register/" class="btn" style="border: 1px solid var(--border); display: block; text-align: center;">Boshlash</a>
+            </div>
+
+            <!-- Pro Practice -->
+            <div class="pricing-card popular">
+                <div class="popular-badge">Tavsiya etiladi</div>
+                <div class="plan-name">Pro Practice</div>
+                <div class="plan-price">99,000 <span>SO'M / oy</span></div>
+                <ul class="plan-features">
+                    <li>Cheksiz AI mock testlar</li>
+                    <li>AI orqali Writing/Speaking tahlili</li>
+                    <li>Haqiqiy inson ovozidagi Listening</li>
+                    <li>Shaxsiy o'qituvchi yordami</li>
+                </ul>
+                <a href="/register/" class="btn btn-primary" style="display: block; text-align: center;">Hozir sotib olish</a>
+            </div>
+
+            <!-- Full Mock -->
+            <div class="pricing-card">
+                <div class="plan-name">Full Mock</div>
+                <div class="plan-price">249,000 <span>SO'M / test</span></div>
+                <ul class="plan-features">
+                    <li>Haqiqiy examiner tekshiruvi</li>
+                    <li>10 ta to'liq mock test to'plami</li>
+                    <li>Ekspertdan batafsil feedback</li>
+                    <li>Professional darajadagi testlar</li>
+                </ul>
+                <a href="/register/" class="btn" style="border: 1px solid var(--border); display: block; text-align: center;">Tanlash</a>
             </div>
         </div>
     </section>
