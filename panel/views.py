@@ -491,6 +491,7 @@ def exam_generate(request):
                         ai_metadata=exam_data.get('ai_metadata'),
                     )
                     for order, sec_data in enumerate(exam_data.get('sections', []), start=1):
+                        from django.core.files.base import ContentFile
                         section = Section.objects.create(
                             exam=exam,
                             title=sec_data['title'],
@@ -498,7 +499,13 @@ def exam_generate(request):
                             order=sec_data.get('order', order),
                             duration_minutes=sec_data.get('duration_minutes', 0),
                             content=sec_data.get('content', ''),
+                            extra_data=sec_data.get('extra_data'),
                         )
+                        if sec_data.get('audio_bytes'):
+                            section.audio_file.save(
+                                f"listening_{section.pk}.mp3",
+                                ContentFile(sec_data['audio_bytes'])
+                            )
                         for q_data in sec_data.get('questions', []):
                             Question.objects.create(
                                 section=section,
@@ -508,6 +515,7 @@ def exam_generate(request):
                                 correct_answer=q_data.get('correct_answer', ''),
                                 options=q_data.get('options', []),
                                 explanation=q_data.get('explanation', ''),
+                                model_answer=q_data.get('model_answer', ''),
                                 word_limit=q_data.get('word_limit', 0),
                             )
                 

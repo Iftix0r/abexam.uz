@@ -11,29 +11,32 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
-            --bg: #eef1f4;
-            --text: #333;
-            --header-bg: #2d2d2d;
-            --footer-bg: #415161;
-            --primary: #007bff;
-            --border: #ccc;
-            --panel-bg: #fff;
+            --bg: #f4f4f4;
+            --text: #222;
+            --header-bg: #333333;
+            --footer-bg: #e9e9e9;
+            --primary: #0072bc;
+            --border: #d1d1d1;
+            --panel-bg: #ffffff;
             --ielts-yellow: #ffcc00;
-            --q-bg: #fff;
-            --q-border: #ddd;
+            --q-bg: #ffffff;
+            --q-border: #e0e0e0;
+            --active-tab: #0072bc;
         }
         [data-theme="dark"] {
-            --bg: #1a1a1c;
-            --text: #e3e3e3;
-            --header-bg: #111;
-            --footer-bg: #1e1e1e;
-            --primary: #4285f4;
-            --border: rgba(255,255,255,0.1);
-            --panel-bg: #141414;
-            --q-bg: #1e1e1e;
-            --q-border: rgba(255,255,255,0.08);
+            /* Dark mode for IELTS is usually not used in real exams, 
+               but we keep it for user comfort with IELTS-like adjustments */
+            --bg: #121212;
+            --text: #e0e0e0;
+            --header-bg: #000000;
+            --footer-bg: #1a1a1a;
+            --primary: #008ae6;
+            --border: #333;
+            --panel-bg: #1e1e1e;
+            --q-bg: #181818;
+            --q-border: #2c2c2c;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, Helvetica, sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
         header {
@@ -100,73 +103,115 @@
         }
         .ans-input:focus { outline: none; border-color: var(--primary); }
 
+        .mcq-options { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 0.5rem; 
+            margin-top: 0.75rem; 
+        }
+        .section-tab {
+            padding: 8px 16px;
+            background: #e0e0e0;
+            border: 1px solid #ccc;
+            color: #555;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            transition: all 0.2s;
+        }
+        .section-tab.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
         /* MCQ Options */
-        .mcq-options { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.75rem; }
         .mcq-option {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 0.6rem 0.8rem;
+            gap: 12px;
+            padding: 12px 16px;
             border: 1px solid var(--border);
-            border-radius: 6px;
+            border-radius: 4px;
             cursor: pointer;
-            transition: all 0.15s;
-            background: var(--bg);
+            transition: 0.15s;
+            background: #fff;
+            margin-bottom: 8px;
         }
-        .mcq-option:hover { border-color: var(--primary); background: rgba(66,133,244,0.05); }
-        .mcq-option input[type="radio"] { accent-color: var(--primary); width: 16px; height: 16px; }
-        .mcq-option.selected { border-color: var(--primary); background: rgba(66,133,244,0.1); }
+        .mcq-option:hover { border-color: var(--primary); background: #f0f7ff; }
+        .mcq-option.selected { 
+            border-color: var(--primary); 
+            background: #eef6fc; 
+            box-shadow: inset 0 0 0 1px var(--primary);
+        }
 
-        /* TFNG Options */
-        .tfng-options { display: flex; gap: 0.5rem; margin-top: 0.75rem; flex-wrap: wrap; }
+        /* TFNG Buttons */
+        .tfng-options { display: flex; gap: 6px; margin-top: 10px; }
         .tfng-btn {
-            padding: 0.5rem 1.2rem;
-            border: 1px solid var(--border);
-            border-radius: 20px;
+            padding: 8px 20px;
+            border: 1px solid #ccc;
+            background: #fff;
+            color: #444;
+            font-weight: 700;
+            font-size: 12px;
             cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 600;
-            background: var(--bg);
-            color: var(--text);
-            transition: all 0.15s;
+            transition: 0.15s;
         }
-        .tfng-btn:hover { border-color: var(--primary); }
-        .tfng-btn.selected-true { background: #34a853; color: #fff; border-color: #34a853; }
-        .tfng-btn.selected-false { background: #e74c3c; color: #fff; border-color: #e74c3c; }
-        .tfng-btn.selected-ng { background: #f39c12; color: #fff; border-color: #f39c12; }
+        .tfng-btn:hover { border-color: var(--primary); background: #f9f9f9; }
+        .tfng-btn.selected { 
+            background: var(--primary); 
+            color: #fff; 
+            border-color: var(--primary); 
+        }
 
         /* Answer tracker */
         .answer-tracker {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px;
-            padding: 0.5rem 1rem;
-            background: var(--header-bg);
-            border-top: 1px solid rgba(255,255,255,0.1);
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 3px;
+            padding: 8px;
+            background: #e9e9e9;
+            border-right: 1px solid #d1d1d1;
+            width: 240px; /* Fixed width for the left tracker */
+            overflow-y: auto;
         }
         .tracker-dot {
-            width: 22px;
-            height: 22px;
-            border-radius: 4px;
-            background: rgba(255,255,255,0.1);
+            width: 20px;
+            height: 20px;
+            border-radius: 2px;
+            background: #fff;
+            border: 1px solid #bbb;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.65rem;
-            color: #aaa;
+            font-size: 9px;
+            font-weight: 700;
+            color: #444;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: 0.1s;
         }
-        .tracker-dot.answered { background: #34a853; color: #fff; }
+        .tracker-dot.answered { 
+            border-bottom: 3px solid var(--primary); 
+            color: var(--primary); 
+            font-weight: 800;
+        }
+        .tracker-dot.review {
+            background: #fff9c4;
+            border: 1px solid #fbc02d;
+            border-radius: 50%; /* Official IELTS review dots are often circles */
+            color: #af8905;
+        }
+        .tracker-dot:hover { background: #f0f0f0; }
 
         footer {
-            background: var(--footer-bg);
+            background: #e9e9e9;
+            padding: 12px 16px;
+            border-top: 1px solid #d1d1d1;
+            flex-shrink: 0;
             display: flex;
             align-items: center;
-            padding: 0 1rem;
-            gap: 5px;
-            flex-shrink: 0;
-            flex-direction: column;
+            justify-content: space-between;
         }
         .section-tabs { display: flex; gap: 4px; padding: 0.5rem 0; }
         .section-tab {
@@ -233,22 +278,34 @@
         }
     </style>
 </head>
-<body>
+<body oncopy="alert('Imtihon paytida nusxa ko\'chirish taqiqlangan!'); return false" oncontextmenu="return false">
+    <div id="highlighter-btn" style="position: absolute; z-index: 9999; background: var(--primary); color: #fff; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; box-shadow: 0 10px 30px rgba(0,0,0,0.4); display: none; align-items: center; gap: 8px; border: none;" onclick="applyHighlight()">
+        Highlight
+    </div>
 
 <header>
-    <div style="display: flex; align-items: center; gap: 12px;">
-        <i data-lucide="book-open" style="color: #fff; width: 18px;"></i>
-        <span style="font-weight: 500; font-size: 0.95rem;">{{ exam.title }}</span>
+    <div style="display: flex; align-items: center; gap: 20px;">
+        <div style="background: #fff; padding: 4px 10px; border-radius: 2px;">
+            <span style="color: #e31b23; font-weight: 900; font-size: 1.1rem; letter-spacing: -1px; font-family: sans-serif;">IELTS</span>
+        </div>
+        <div style="display: flex; flex-direction: column; border-left: 1px solid #555; padding-left: 15px;">
+            <span style="font-size: 0.85rem; font-weight: 700; color: #fff;">{{ exam.title }}</span>
+            <span style="font-size: 10px; color: #999; text-transform: uppercase; letter-spacing: 1px;">Computer-Delivered</span>
+        </div>
     </div>
+
     <div class="timer-box" id="timerBox">
-        <i data-lucide="clock" style="width: 16px;"></i>
+        <i data-lucide="clock" style="width: 18px;"></i>
         <span id="countdown">00:00:00</span>
     </div>
-    <div style="display: flex; align-items: center; gap: 10px;">
-        <span id="autosave-indicator" style="font-size:11px;color:#4ade80;opacity:0;transition:.3s">✓ Saqlandi</span>
-        <span style="font-size: 0.8rem; opacity: 0.7;">{{ user.username|upper }}</span>
-        <div style="width: 28px; height: 28px; border-radius: 50%; background: #4285f4; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.75rem; color: white;">
-            {{ user.username|first|upper }}
+
+    <div style="display: flex; align-items: center;">
+        <div style="margin-right: 15px; text-align: right; line-height: 1.2;">
+            <div style="font-size: 13px; font-weight: 700; color: #fff;">{{ user.get_full_name|default:user.username }}</div>
+            <div style="font-size: 10px; color: #999;">Candidate ID: {{ user.pk|stringformat:"06d" }}</div>
+        </div>
+        <div style="width: 32px; height: 32px; background: #555; border: 1px solid #777; display: flex; align-items: center; justify-content: center;">
+            <i data-lucide="user" style="width: 18px; color: #ccc;"></i>
         </div>
     </div>
 </header>
@@ -292,7 +349,12 @@
             <h3 style="margin-bottom: 1.5rem; color: var(--primary); font-size: 1rem; text-transform: uppercase; letter-spacing: 0.5px;">Savollar</h3>
             {% for question in section.questions.all %}
             <div class="question-item" id="qitem-{{ question.id }}">
-                <label class="question-text">{{ question.order }}. {{ question.text }}</label>
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+                    <span class="question-text"><span>{{ forloop.counter }}.</span> {{ question.text|safe }}</span>
+                    <label style="display:flex; align-items:center; gap:5px; font-size:11px; color:#f59e0b; cursor:pointer; user-select:none; background:rgba(245,158,11,0.08); padding:3px 8px; border-radius:4px; border:1px solid rgba(245,158,11,0.2);">
+                        <input type="checkbox" onchange="toggleReview('{{ question.id }}', this.checked)" style="accent-color:#f59e0b;"> Review
+                    </label>
+                </div>
 
                 {% if question.question_type == 'mcq' and question.options %}
                 <div class="mcq-options">
@@ -311,25 +373,18 @@
                 </div>
                 {% elif question.question_type == 'writing_task' %}
                 <div style="margin-top:0.75rem">
-                    {% if question.word_limit %}
-                    <div style="font-size:0.8rem;color:#888;margin-bottom:0.5rem;display:flex;align-items:center;gap:6px;">
-                        <i data-lucide="info" style="width:12px;"></i>
-                        Minimum {{ question.word_limit }} so'z yozing
-                        <span id="wc-{{ question.id }}" style="margin-left:auto;font-weight:600;color:var(--primary)">0 so'z</span>
+                    <div style="font-size:0.85rem;color:var(--text-muted);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;padding:0 4px">
+                        <span>{% if question.word_limit %}Minimum: <b>{{ question.word_limit }}</b> so'z{% endif %}</span>
+                        <span id="wc-{{ question.id }}" style="font-weight:700;color:var(--primary);background:rgba(66,133,244,0.1);padding:2px 8px;border-radius:4px">0 so'z</span>
                     </div>
-                    {% else %}
-                    <div style="font-size:0.8rem;color:#888;margin-bottom:0.5rem;display:flex;justify-content:flex-end;">
-                        <span id="wc-{{ question.id }}" style="font-weight:600;color:var(--primary)">0 so'z</span>
-                    </div>
-                    {% endif %}
                     <textarea
                         class="ans-input"
                         data-qid="{{ question.id }}"
                         data-writing="true"
                         {% if question.word_limit %}data-wordlimit="{{ question.word_limit }}"{% endif %}
-                        placeholder="Bu yerga yozing..."
-                        rows="14"
-                        style="resize:vertical;min-height:240px;line-height:1.7;"
+                        placeholder="Inshoni bu yerga yozing..."
+                        rows="15"
+                        style="resize:vertical;min-height:300px;line-height:1.7;padding:1.2rem;border-radius:10px;background:var(--panel-bg);border:1px solid var(--border);"
                         oninput="saveWriting('{{ question.id }}', this.value)"
                     ></textarea>
                 </div>
@@ -364,17 +419,21 @@
 </main>
 
 <footer>
-    <div class="answer-tracker" id="answerTracker"></div>
-    <div class="footer-bottom">
-        <div class="section-tabs">
-            {% for section in sections %}
-            <div class="section-tab {% if forloop.first %}active{% endif %}" onclick="showSection('{{ section.id }}', this)">
-                {{ section.get_section_type_display }} {{ forloop.counter }}
+    <div class="footer-bottom" style="display: flex; align-items: center; justify-content: space-between; gap: 20px;">
+        <div class="answer-tracker" id="answerTracker" style="border:none; padding:0; background:transparent; width:auto; grid-template-columns: repeat(20, 1fr); max-width: 500px;"></div>
+        
+        <div class="section-tabs" style="flex: 1; justify-content: center;">
+            {% regroup sections by get_section_type_display as section_list %}
+            {% for group in section_list %}
+            <div class="section-tab {% if forloop.first %}active{% endif %}" 
+                 onclick="showSection('{{ group.list.0.id }}', this)">
+                {{ group.grouper }}
             </div>
             {% endfor %}
         </div>
-        <button class="submit-btn" onclick="submitExam()">
-            <i data-lucide="check-circle" style="width: 16px; margin-bottom: -2px; margin-right: 4px;"></i>
+
+        <button class="submit-btn" onclick="submitExam()" style="background: #22c55e; padding: 10px 24px; border-radius: 4px; font-weight: 700;">
+            <i data-lucide="check-circle" style="width: 16px; margin-right: 6px;"></i>
             Testni yakunlash
         </button>
     </div>
@@ -450,29 +509,44 @@
     }
     restoreDraft();
 
-    function buildTracker() {
+    const reviews = new Set();
+
+    function toggleReview(qid, isReview) {
+        if (isReview) reviews.add(qid);
+        else reviews.delete(qid);
+        
+        const dot = document.getElementById('dot-' + qid);
+        if (dot) {
+            if (isReview) dot.classList.add('review');
+            else dot.classList.remove('review');
+        }
+    }
+
+    function buildTracker(activeSectionId) {
         const tracker = document.getElementById('answerTracker');
+        if (!tracker) return;
         tracker.innerHTML = '';
-        allQuestions.forEach((q, index) => {
+        
+        if (!activeSectionId && allQuestions.length > 0) {
+            activeSectionId = allQuestions[0].sectionId;
+        }
+
+        const filtered = allQuestions.filter(q => q.sectionId == activeSectionId);
+
+        filtered.forEach((q, index) => {
             const dot = document.createElement('div');
-            dot.className = 'tracker-dot' + (answers[q.id] ? ' answered' : '');
+            dot.className = 'tracker-dot';
+            if (answers[q.id]) dot.classList.add('answered');
+            if (reviews.has(q.id)) dot.classList.add('review');
+            
             dot.id = 'dot-' + q.id;
-            dot.innerText = index + 1;
+            const label = document.querySelector(`#qitem-${q.id} .question-text span`);
+            const displayNum = label ? label.innerText.replace('.', '') : (index + 1);
+            dot.innerText = displayNum;
             dot.onclick = () => {
-                showSection(q.sectionId, document.querySelector(`.section-tab[onclick*="${q.sectionId}"]`));
-                document.getElementById('qitem-' + q.id)?.scrollIntoView({ behavior: 'smooth' });
+                document.getElementById('qitem-' + q.id)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
             };
             tracker.appendChild(dot);
-            
-            // Re-number labels safely
-            const label = document.querySelector(`#qitem-${q.id} .question-text`);
-            if(label){
-                // Instead of splitting, find the first occurrence of ". " and keep everything after it
-                const currentText = label.innerText;
-                const dotPos = currentText.indexOf('. ');
-                const cleanText = dotPos !== -1 ? currentText.substring(dotPos + 2) : currentText;
-                label.innerText = (index + 1) + '. ' + cleanText;
-            }
         });
     }
 
@@ -650,7 +724,47 @@
         document.querySelectorAll('.section-tab').forEach(t => t.classList.remove('active'));
         document.getElementById('section-' + id).style.display = 'flex';
         if (el) el.classList.add('active');
-        stopSpeaking(); // Stop AI voice when switching sections
+        
+        stopSpeaking(); 
+        buildTracker(id); // Rebuild tracker for the new section
+    }
+
+    // Initialize the first section's tracker
+    window.addEventListener('DOMContentLoaded', () => {
+        const firstSection = document.querySelector('.section-content');
+        if (firstSection) {
+            const id = firstSection.id.replace('section-', '');
+            buildTracker(id);
+        }
+    });
+
+    // ── Highlighting Logic ───────────────────────────────────────────
+    document.addEventListener('mouseup', e => {
+        const selection = window.getSelection();
+        const text = selection.toString().trim();
+        const btn = document.getElementById('highlighter-btn');
+        if (btn && text && text.length > 2) {
+            btn.style.left = e.pageX + 'px';
+            btn.style.top = (e.pageY - 45) + 'px';
+            btn.style.display = 'flex';
+        } else if (btn) {
+            btn.style.display = 'none';
+        }
+    });
+
+    function applyHighlight() {
+        const selection = window.getSelection();
+        if (!selection.rangeCount) return;
+        const range = selection.getRangeAt(0);
+        const span = document.createElement('span');
+        span.style.backgroundColor = '#fef08a';
+        span.style.color = '#000';
+        span.style.borderRadius = '2px';
+        try {
+            range.surroundContents(span);
+        } catch(e) { console.warn(e); }
+        window.getSelection().removeAllRanges();
+        document.getElementById('highlighter-btn').style.display = 'none';
     }
 
     // Timer

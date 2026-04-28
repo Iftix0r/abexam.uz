@@ -39,6 +39,7 @@ class Section(models.Model):
     section_type = models.CharField(max_length=20, choices=SECTION_TYPES)
     content = RichTextField(blank=True, null=True)
     audio_file = models.FileField(upload_to='exams/audio/', blank=True, null=True)
+    extra_data = models.JSONField(null=True, blank=True, help_text='Vocabulary, etc.')
     order = models.IntegerField(default=1)
     duration_minutes = models.IntegerField(default=0, help_text='0 = umumiy exam vaqtidan foydalaniladi')
 
@@ -65,6 +66,7 @@ class Question(models.Model):
     options = models.JSONField(default=list, blank=True, help_text='MCQ uchun: [{"key": "A", "text": "..."}, ...]')
     correct_answer = models.CharField(max_length=255, blank=True)
     explanation = models.TextField(blank=True)
+    model_answer = models.TextField(blank=True, help_text='Ideal response for Writing/Speaking')
     order = models.IntegerField(default=1)
     word_limit = models.IntegerField(default=0, help_text='Writing task uchun minimum so\'z soni (0 = chegarasiz)')
 

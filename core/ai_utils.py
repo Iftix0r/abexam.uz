@@ -216,9 +216,13 @@ JSON Structure:
     {{"order":1,"text":"...","question_type":"tfng","correct_answer":"NOT GIVEN","options":[{{"key":"TRUE","text":"TRUE"}},{{"key":"FALSE","text":"FALSE"}},{{"key":"NOT GIVEN","text":"NOT GIVEN"}}],"explanation":"Detailed logical derivation..."}},
     ...
     {{"order":12,"text":"...","question_type":"mcq","correct_answer":"C","options":[{{"key":"A","text":"Logical trap A"}},{{"key":"B","text":"Logical trap B"}},{{"key":"C","text":"Nuanced correct answer"}},{{"key":"D","text":"Logical trap D"}],"explanation":"..."}}
+  ],
+  "key_vocabulary": [
+    {{"word": "word1", "definition": "English definition", "uzbek": "o'zbekcha ma'nosi", "example": "example sentence from passage"}},
+    ... (10-12 advanced words from the text)
   ]
 }}
-Items: 6 TFNG, 5 Gap-fill (must paraphrase passage), 3 MCQ (inference based). Level: C1-C2."""
+Items: 6 TFNG, 5 Gap-fill, 3 MCQ. Level: C1-C2."""
 
 _READING_GENERAL = """Create an IELTS General Training Reading section. Topic hint: {topic}
 Include ONE short text (200-250 words, e.g. advertisement, notice, letter) and ONE longer text (400-450 words, e.g. article, report).
@@ -252,15 +256,12 @@ _WRITING_TASKS = """Create IELTS Writing Task 1 and Task 2 for {variant} IELTS. 
 Return JSON:
 {{
   "task1": {{
-    "title": "Writing Task 1: ...",
-    "instruction": "...(describe the {chart_type} below. Summarise the main features and make comparisons. Write at least 150 words.)...",
-    "data_description": "...(describe what the chart/graph shows: specific numbers, labels, years — enough for a student to write about it without seeing the actual image)...",
-    "sample_answer_notes": "...(key points a good answer should cover)..."
+    "title": "...", "instruction": "...", "data_description": "...",
+    "model_answer": "A Band 9.0 model answer (at least 150 words)..."
   }},
   "task2": {{
-    "title": "Writing Task 2: ...",
-    "question": "...(clear IELTS-style essay question, {essay_type} type)...",
-    "instruction": "Write at least 250 words."
+    "title": "...", "question": "...", "instruction": "...",
+    "model_answer": "A Band 9.0 model answer (at least 250 words)..."
   }}
 }}"""
 
@@ -399,6 +400,20 @@ def _call_ai(prompt: str, model: str, max_tokens: int = 3000) -> dict:
     return json.loads(resp.choices[0].message.content)
 
 
+def _generate_audio(text: str, voice: str = "alloy") -> bytes:
+    """Generate audio bytes using OpenAI TTS."""
+    try:
+        response = client.audio.speech.create(
+            model="tts-1",
+            voice=voice,
+            input=text[:4000] # OpenAI TTS limit per request
+        )
+        return response.content
+    except Exception as e:
+        print(f"TTS Error: {e}")
+        return None
+
+
 def _gen_reading(topic: str, variant: str, model: str):
     template = _READING_ACADEMIC if variant == 'academic' else _READING_GENERAL
     all_sections = []
@@ -413,6 +428,7 @@ def _gen_reading(topic: str, variant: str, model: str):
             "duration_minutes": 20,
             "content": f"<div style='line-height:1.8;font-size:14px'><h3>{data.get('passage_title','')}</h3><p>{data.get('passage','').replace(chr(10),'</p><p>')}</p></div>",
             "questions": questions,
+            "extra_data": {"key_vocabulary": data.get("key_vocabulary", [])}
         })
     yield 100, "Reading tayyor", all_sections
 
@@ -430,7 +446,16 @@ def _gen_writing(topic: str, variant: str, model: str) -> list:
             "order": 1,
             "duration_minutes": 20,
             "content": f"<div style='line-height:1.8'><h3>Writing Task 1</h3><p>{t1.get('instruction','')}</p><div style='background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:16px;margin:12px 0;font-size:13px'>{t1.get('data_description','')}</div></div>",
-            "questions": [{"order": 1, "text": f"Describe the {chart} below. Write at least 150 words.\n\n{t1.get('data_description','')}", "question_type": "writing_task", "correct_answer": "", "options": [], "explanation": t1.get("sample_answer_notes", ""), "word_limit": 150}],
+            "questions": [{
+                "order": 1, 
+                "text": f"Describe the {chart} below. Write at least 150 words.\n\n{t1.get('data_description','')}", 
+                "question_type": "writing_task", 
+                "correct_answer": "", 
+                "options": [], 
+                "explanation": "Official Band 9.0 Sample Answer for Writing Task 1", 
+                "model_answer": t1.get("model_answer", ""),
+                "word_limit": 150
+            }],
         },
         {
             "title": t2.get("title", "Writing Task 2"),
@@ -438,7 +463,16 @@ def _gen_writing(topic: str, variant: str, model: str) -> list:
             "order": 2,
             "duration_minutes": 40,
             "content": f"<div style='line-height:1.8'><h3>Writing Task 2</h3><p>{t2.get('question','')}</p><p><strong>{t2.get('instruction','Write at least 250 words.')}</strong></p></div>",
-            "questions": [{"order": 1, "text": t2.get("question", ""), "question_type": "writing_task", "correct_answer": "", "options": [], "explanation": "", "word_limit": 250}],
+            "questions": [{
+                "order": 1, 
+                "text": t2.get("question", ""), 
+                "question_type": "writing_task", 
+                "correct_answer": "", 
+                "options": [], 
+                "explanation": "Official Band 9.0 Sample Answer for Writing Task 2", 
+                "model_answer": t2.get("model_answer", ""),
+                "word_limit": 250
+            }],
         },
     ]
 
@@ -451,14 +485,22 @@ def _gen_listening(topic: str, model: str):
         data = _call_ai(_LISTENING_SECTION.format(topic=topic, listen_type=listen_type[1]), model, max_tokens=2500)
         questions = _normalise_questions(data.get("questions", []))
         script = data.get("audio_script", "")
-        content = f"<div style='line-height:1.8'><h3>Listening Section {i}: {data.get('section_title', 'Untitled')}</h3><p><strong>Topshiriq:</strong> Quyidagi audio transkriptni o'qing va savollarga javob bering.</p><details style='margin-top:12px'><summary style='cursor:pointer;font-size:13px;color:#888'>📄 Audio transkriptni ko'rish (amaliyot uchun)</summary><div style='margin-top:8px;padding:12px;background:rgba(255,255,255,.04);border-radius:8px;font-size:13px;line-height:1.7;white-space:pre-wrap'>{script}</div></details></div>"
+        
+        # Generate real audio
+        voices = ["alloy", "echo", "fable", "onyx", "nova", "shimmer"]
+        audio_bytes = _generate_audio(script, voice=random.choice(voices))
+
+        content = f"<div style='line-height:1.8'><h3>Listening Section {i}: {data.get('section_title', 'Untitled')}</h3><p><strong>Topshiriq:</strong> Quyidagi audioni eshiting va savollarga javob bering.</p></div>"
+        
         all_sections.append({
-            "title": f"Listening Section {i}: {data.get('section_title', 'Section')}",
+            "title": f"Listening Section {i}: {data.get('section_title', 'Untitled')}",
             "section_type": "listening",
             "order": i,
-            "duration_minutes": 10,
+            "duration_minutes": 8,
             "content": content,
             "questions": questions,
+            "audio_bytes": audio_bytes, # Pass bytes to view for saving
+            "extra_data": {"key_vocabulary": data.get("key_vocabulary", [])}
         })
     yield 100, "Listening tayyor", all_sections
 

@@ -116,6 +116,7 @@
     <button class="tab-btn active" onclick="showTab('analysis', this)">Javoblar tahlili</button>
     {% if result.writing_feedback %}<button class="tab-btn" onclick="showTab('ai', this)"><i data-lucide="sparkles" style="width:13px;display:inline;vertical-align:middle;margin-right:4px"></i>Writing AI</button>{% endif %}
     {% if result.speaking_feedback %}<button class="tab-btn" onclick="showTab('speaking', this)"><i data-lucide="mic" style="width:13px;display:inline;vertical-align:middle;margin-right:4px"></i>Speaking AI</button>{% endif %}
+    <button class="tab-btn" onclick="showTab('study', this)"><i data-lucide="book-open" style="width:13px;display:inline;vertical-align:middle;margin-right:4px"></i>Study Materials</button>
     <button class="tab-btn" onclick="showTab('compare', this)">Oldingi natijalar</button>
   </div>
 
@@ -426,6 +427,54 @@
       <p style="color:var(--text-muted);font-size:13px;text-align:center;padding:24px">Bu imtihon faqat bir marta topshirilgan</p>
       {% endif %}
     </div>
+  <!-- Study Materials Tab -->
+  <div id="tab-study" style="display:none">
+    <div style="display:grid;grid-template-columns:1fr;gap:20px">
+      
+      <!-- Vocabulary Section -->
+      <div style="background:var(--card-bg);border:1px solid var(--border-color);border-radius:16px;padding:24px">
+        <h3 style="font-size:18px;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:10px">
+          <i data-lucide="languages" style="color:var(--primary-color)"></i> Key Vocabulary from this Exam
+        </h3>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(300px, 1fr));gap:15px">
+          {% for section in result.exam.sections.all %}
+            {% if section.extra_data.key_vocabulary %}
+              <div style="background:rgba(255,255,255,0.03);border:1px solid var(--border-color);border-radius:12px;padding:16px">
+                <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;margin-bottom:10px">{{ section.get_section_type_display }} — {{ section.title|truncatechars:30 }}</div>
+                {% for item in section.extra_data.key_vocabulary %}
+                  <div style="margin-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.05);padding-bottom:10px">
+                    <div style="display:flex;justify-content:space-between;align-items:baseline">
+                      <b style="color:var(--primary-color);font-size:15px">{{ item.word }}</b>
+                      <span style="font-size:12px;color:var(--text-muted)">[{{ item.translation }}]</span>
+                    </div>
+                    <div style="font-size:13px;margin:4px 0">{{ item.definition }}</div>
+                    <div style="font-size:12px;font-style:italic;color:var(--text-muted)">Example: "{{ item.example }}"</div>
+                  </div>
+                {% endfor %}
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Model Answers Section -->
+      <div style="background:var(--card-bg);border:1px solid var(--border-color);border-radius:16px;padding:24px">
+        <h3 style="font-size:18px;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:10px">
+          <i data-lucide="file-text" style="color:var(--primary-color)"></i> Band 9.0 Model Answers
+        </h3>
+        {% for section in result.exam.sections.all %}
+          {% for question in section.questions.all %}
+            {% if question.model_answer %}
+              <div style="margin-bottom:30px;background:rgba(34,197,94,0.05);border:1px solid rgba(34,197,94,0.15);border-radius:12px;padding:20px">
+                <div style="font-size:12px;font-weight:700;color:#22c55e;text-transform:uppercase;margin-bottom:10px">Writing Task {{ question.order }} — Official Model Answer</div>
+                <div style="line-height:1.8;font-size:14px;color:var(--text-color)">{{ question.model_answer|linebreaks }}</div>
+              </div>
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+      </div>
+
+    </div>
   </div>
 
 </div>
@@ -453,7 +502,7 @@ lucide.createIcons();
 
 // Tabs
 function showTab(name, btn){
-  ['analysis','ai','speaking','compare'].forEach(t=>{
+  ['analysis','ai','speaking','compare','study'].forEach(t=>{
     const el = document.getElementById('tab-'+t);
     if(el) el.style.display = (t===name)?'block':'none';
   });
