@@ -1,50 +1,314 @@
 {% extends 'base.html' %}
+{% block title %}{{ exam.title }} — AbExam{% endblock %}
 
-{% block title %}{{ exam.title }} - AbExam{% endblock %}
+{% block extra_css %}
+<style>
+.ielts-header-bar {
+    background: #1a1a2e;
+    border-bottom: 3px solid #d32f2f;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border-radius: 12px 12px 0 0;
+    margin-bottom: 0;
+}
+.ielts-logo-sm {
+    background: #fff;
+    padding: 2px 8px;
+    border-radius: 2px;
+    font-weight: 900;
+    font-size: 1rem;
+    letter-spacing: -1px;
+}
+.ielts-logo-sm .iel { color: #1a1a2e; }
+.ielts-logo-sm .ts  { color: #d32f2f; }
+
+.section-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    border-radius: 10px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    margin-bottom: 8px;
+    transition: border-color 0.2s;
+}
+.section-row:hover { border-color: var(--primary-color); }
+.section-icon-box {
+    width: 42px; height: 42px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+}
+.section-icon-box.listening { background: rgba(21,101,192,.15); color: #1565c0; }
+.section-icon-box.reading   { background: rgba(46,125,50,.15);  color: #2e7d32; }
+.section-icon-box.writing   { background: rgba(106,27,154,.15); color: #6a1b9a; }
+.section-icon-box.speaking  { background: rgba(230,81,0,.15);   color: #e65100; }
+
+.rule-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 13.5px;
+    line-height: 1.55;
+}
+.rule-item:last-child { border-bottom: none; }
+.rule-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+
+.start-btn {
+    background: #d32f2f;
+    color: #fff;
+    border: none;
+    padding: 16px 48px;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    font-weight: 800;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: background 0.2s, transform 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+}
+.start-btn:hover { background: #b71c1c; transform: translateY(-2px); }
+
+.attempt-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 13px;
+}
+.attempt-row:last-child { border-bottom: none; }
+.band-chip {
+    font-size: 1.2rem;
+    font-weight: 800;
+    padding: 4px 14px;
+    border-radius: 20px;
+}
+.band-high   { background: rgba(34,197,94,.15);  color: #22c55e; }
+.band-mid    { background: rgba(234,179,8,.15);   color: #eab308; }
+.band-low    { background: rgba(239,68,68,.15);   color: #ef4444; }
+
+.info-stat {
+    text-align: center;
+    padding: 18px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+}
+.info-stat .val { font-size: 1.6rem; font-weight: 800; margin-bottom: 2px; }
+.info-stat .lbl { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+</style>
+{% endblock %}
 
 {% block content %}
-<div style="max-width: 800px; margin: 2rem auto;">
-    <a href="{% url 'exams_list' %}" style="display: flex; align-items: center; gap: 8px; color: var(--text-muted); text-decoration: none; margin-bottom: 2rem; font-size: 0.9rem; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--text-muted)'">
-        <i data-lucide="arrow-left" style="width: 18px;"></i>
-        Orqaga qaytish
+<div style="max-width:860px; margin: 0 auto;">
+
+    <!-- Back link -->
+    <a href="{% url 'exams_list' %}"
+       style="display:inline-flex; align-items:center; gap:7px; color:var(--text-muted); text-decoration:none; font-size:13px; margin-bottom:20px; transition:color .2s;"
+       onmouseover="this.style.color='var(--text-color)'" onmouseout="this.style.color='var(--text-muted)'">
+        <i data-lucide="arrow-left" style="width:14px;"></i> Imtihonlar ro'yxatiga qaytish
     </a>
 
-    <div class="card" style="background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 24px; padding: 3rem; text-align: center;">
-        <div style="display: flex; justify-content: center; margin-bottom: 2rem;">
-            <div style="width: 80px; height: 80px; background: rgba(66, 133, 244, 0.1); border-radius: 20px; display: flex; align-items: center; justify-content: center; color: var(--primary-color);">
-                <i data-lucide="{% if exam.exam_type == 'listening' %}headphones{% elif exam.exam_type == 'reading' %}book-open{% else %}clipboard-check{% endif %}" style="width: 40px; height: 40px;"></i>
+    <!-- IELTS Header Bar -->
+    <div class="ielts-header-bar">
+        <div class="ielts-logo-sm">
+            <span class="iel">IEL</span><span class="ts">TS</span>
+        </div>
+        <div style="border-left:1px solid #455a64; padding-left:14px;">
+            <div style="font-size:14px; font-weight:700; color:#fff;">{{ exam.title }}</div>
+            <div style="font-size:10px; color:#90a4ae; text-transform:uppercase; letter-spacing:1px;">
+                Computer-Delivered Test — {{ exam.get_exam_type_display }}
+            </div>
+        </div>
+        {% if exam.is_ai_generated %}
+        <div style="margin-left:auto; background:rgba(155,114,203,.2); border:1px solid rgba(155,114,203,.3); color:#ce93d8; border-radius:20px; padding:3px 12px; font-size:11px; font-weight:700; display:flex; align-items:center; gap:5px;">
+            <i data-lucide="sparkles" style="width:12px;"></i> AI Generated
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Main body -->
+    <div style="background:var(--card-bg); border:1px solid var(--border-color); border-top:none; border-radius:0 0 16px 16px; padding:28px 32px; margin-bottom:20px;">
+
+        <!-- Stats row -->
+        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:28px;">
+            <div class="info-stat">
+                <div class="val" style="color:var(--primary-color);">{{ exam.duration_minutes }}</div>
+                <div class="lbl">Daqiqa</div>
+            </div>
+            <div class="info-stat">
+                <div class="val" style="color:#2e7d32;">{{ total_questions }}</div>
+                <div class="lbl">Savollar</div>
+            </div>
+            <div class="info-stat">
+                <div class="val" style="color:#6a1b9a;">{{ exam.sections.count }}</div>
+                <div class="lbl">Bo'limlar</div>
+            </div>
+            <div class="info-stat">
+                <div class="val" {% if exam.price == 0 %}style="color:#22c55e;"{% else %}style="color:#eab308;"{% endif %}>
+                    {% if exam.price == 0 %}Bepul{% else %}{{ exam.price|floatformat:0 }}{% endif %}
+                </div>
+                <div class="lbl">{% if exam.price == 0 %}Narx{% else %}So'm{% endif %}</div>
             </div>
         </div>
 
-        <h1 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 1rem; color: #fff;">{{ exam.title }}</h1>
-        <p style="color: var(--text-muted); font-size: 1.1rem; line-height: 1.6; margin-bottom: 2.5rem;">
-            {{ exam.description|default:"Ushbu imtihon sizning bilim darajangizni aniqlash va xatolaringiz ustida ishlashga yordam beradi." }}
-        </p>
+        <!-- Sections breakdown -->
+        {% if exam.sections.count %}
+        <div style="margin-bottom:24px;">
+            <h3 style="font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:var(--text-muted); margin-bottom:14px;">
+                Test tuzilishi
+            </h3>
+            {% for section in exam.sections.prefetch_related('questions').all %}
+            <div class="section-row">
+                <div class="section-icon-box {{ section.section_type }}">
+                    {% if section.section_type == 'listening' %}
+                    <i data-lucide="headphones" style="width:20px;"></i>
+                    {% elif section.section_type == 'reading' %}
+                    <i data-lucide="book-open" style="width:20px;"></i>
+                    {% elif section.section_type == 'writing' %}
+                    <i data-lucide="pen-line" style="width:20px;"></i>
+                    {% else %}
+                    <i data-lucide="mic" style="width:20px;"></i>
+                    {% endif %}
+                </div>
+                <div style="flex:1;">
+                    <div style="font-weight:600; font-size:14px;">{{ section.title }}</div>
+                    <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">
+                        {{ section.questions.count }} savol
+                        {% if section.duration_minutes %}· {{ section.duration_minutes }} daqiqa{% endif %}
+                    </div>
+                </div>
+                <div style="text-align:right; font-size:12px; color:var(--text-muted);">
+                    {% if section.section_type == 'listening' %}
+                    <div>Gap fill · MCQ</div>
+                    {% elif section.section_type == 'reading' %}
+                    <div>T/F/NG · Gap fill · MCQ</div>
+                    {% elif section.section_type == 'writing' %}
+                    <div>Essay · Report</div>
+                    {% else %}
+                    <div>Part 1 · Part 2 · Part 3</div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
 
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 3rem; padding: 2rem; background: rgba(255,255,255,0.02); border-radius: 16px;">
-            <div>
-                <p style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; margin-bottom: 0.5rem;">Vaqt</p>
-                <p style="font-size: 1.25rem; font-weight: 600; color: #fff;">{{ exam.duration_minutes }} daqiqa</p>
+        <!-- Exam rules -->
+        <div style="background:rgba(255,255,255,.03); border:1px solid var(--border-color); border-radius:12px; padding:18px 20px; margin-bottom:28px;">
+            <h3 style="font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:var(--text-muted); margin-bottom:12px;">
+                ⚠️ Imtihon qoidalari
+            </h3>
+            <div class="rule-item">
+                <span class="rule-icon">⏱</span>
+                <span>Taymer boshlangandan keyin <strong>to'xtatib bo'lmaydi</strong>. Vaqt tugaganda javoblar avtomatik topshiriladi.</span>
             </div>
-            <div>
-                <p style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; margin-bottom: 0.5rem;">Bo'limlar</p>
-                <p style="font-size: 1.25rem; font-weight: 600; color: #fff;">{{ exam.sections.count }} ta</p>
+            <div class="rule-item">
+                <span class="rule-icon">🎧</span>
+                <span>Listening bo'limida audio <strong>faqat bir marta</strong> o'ynaladi. Haqiqiy IELTS CDT qoidasi.</span>
             </div>
-            <div>
-                <p style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; margin-bottom: 0.5rem;">Narxi</p>
-                <p style="font-size: 1.25rem; font-weight: 600; color: #34a853;">{% if exam.price == 0 %}Bepul{% else %}{{ exam.price }} so'm{% endif %}</p>
+            <div class="rule-item">
+                <span class="rule-icon">📋</span>
+                <span>Nusxa ko'chirish va o'ng tugma bosiш <strong>taqiqlangan</strong>.</span>
+            </div>
+            <div class="rule-item">
+                <span class="rule-icon">✍</span>
+                <span>Writing: Task 1 — <strong>kamida 150 so'z</strong>, Task 2 — <strong>kamida 250 so'z</strong>.</span>
+            </div>
+            <div class="rule-item">
+                <span class="rule-icon">🎙</span>
+                <span>Speaking: Part 2 da <strong>1 daqiqa tayyorlanish</strong> vaqti beriladi.</span>
+            </div>
+            <div class="rule-item">
+                <span class="rule-icon">💾</span>
+                <span>Javoblar <strong>avtomatik saqlanadi</strong> — sahifani yangilasangiz ham yo'qolmaydi.</span>
             </div>
         </div>
 
-        <div style="display: flex; flex-direction: column; gap: 1rem; align-items: center;">
-            <a href="{% url 'exams:take_exam' exam.id %}" class="btn" style="background: var(--primary-color); color: white; padding: 1.25rem 4rem; border-radius: 16px; font-size: 1.1rem; font-weight: 700; text-decoration: none; box-shadow: 0 10px 30px rgba(66, 133, 244, 0.3); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-                Imtihonni hozir boshlash
+        <!-- Balance check -->
+        {% if exam.price > 0 %}
+        <div style="background:rgba(234,179,8,.08); border:1px solid rgba(234,179,8,.25); border-radius:10px; padding:14px 18px; margin-bottom:24px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+            <div>
+                <div style="font-size:13px; font-weight:700; color:#eab308;">💳 To'lov talab qilinadi</div>
+                <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">
+                    Balans: <strong>{{ request.user.balance|floatformat:0 }} so'm</strong> ·
+                    Narx: <strong>{{ exam.price|floatformat:0 }} so'm</strong>
+                </div>
+            </div>
+            {% if request.user.balance >= exam.price %}
+            <div style="font-size:12px; color:#22c55e; font-weight:600;">✓ Balans yetarli</div>
+            {% else %}
+            <a href="{% url 'finance' %}"
+               style="background:#eab308; color:#000; padding:8px 16px; border-radius:6px; font-size:12px; font-weight:700; text-decoration:none;">
+                Balansni to'ldirish →
             </a>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 1rem;">
-                <i data-lucide="info" style="width: 14px; margin-bottom: -2px;"></i>
-                Test boshlangandan so'ng vaqtni to'xtatib bo'lmaydi.
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Start button -->
+        <div style="text-align:center;">
+            {% if exam.price > 0 and request.user.balance < exam.price %}
+            <button disabled style="background:#555; color:#888; border:none; padding:16px 48px; border-radius:10px; font-size:1rem; font-weight:700; cursor:not-allowed;">
+                <i data-lucide="lock" style="width:18px;"></i>
+                Balans yetarli emas
+            </button>
+            {% else %}
+            <a href="{% url 'exams:take_exam' exam.id %}" class="start-btn" style="display:inline-flex;">
+                <i data-lucide="play-circle" style="width:22px;"></i>
+                {% if exam.price > 0 %}
+                    {{ exam.price|floatformat:0 }} so'm to'lab boshlash
+                {% else %}
+                    Imtihonni boshlash
+                {% endif %}
+            </a>
+            {% endif %}
+            <p style="margin-top:12px; font-size:12px; color:var(--text-muted);">
+                Boshlangandan so'ng vaqt to'xtatilmaydi
             </p>
         </div>
     </div>
+
+    <!-- Previous attempts -->
+    {% if user_results %}
+    <div style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:16px; padding:24px 28px;">
+        <h3 style="font-size:14px; font-weight:700; margin-bottom:16px; display:flex; align-items:center; gap:8px;">
+            <i data-lucide="history" style="width:16px; color:var(--primary-color);"></i>
+            Oldingi urinishlar
+        </h3>
+        {% for result in user_results %}
+        <div class="attempt-row">
+            <div>
+                <div style="font-weight:600; font-size:13px;">{{ result.completed_at|date:"d M Y, H:i" }}</div>
+                <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">
+                    {% if result.listening_score %}L: {{ result.listening_score|floatformat:1 }}{% endif %}
+                    {% if result.reading_score %} · R: {{ result.reading_score|floatformat:1 }}{% endif %}
+                    {% if result.writing_score %} · W: {{ result.writing_score|floatformat:1 }}{% endif %}
+                    {% if result.speaking_score %} · S: {{ result.speaking_score|floatformat:1 }}{% endif %}
+                </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:12px;">
+                <span class="band-chip {% if result.score >= 7.0 %}band-high{% elif result.score >= 5.5 %}band-mid{% else %}band-low{% endif %}">
+                    {{ result.score|floatformat:1 }}
+                </span>
+                <a href="{% url 'exams:result_detail' result.pk %}"
+                   style="font-size:12px; color:var(--primary-color); text-decoration:none; font-weight:600;">
+                    Ko'rish →
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
 </div>
 {% endblock %}
