@@ -275,6 +275,14 @@ class ProfileView(LoginRequiredMixin, View):
         user.phone_number = request.POST.get('phone_number', user.phone_number)
         user.bio = request.POST.get('bio', user.bio)
         if 'avatar' in request.FILES:
-            user.avatar = request.FILES['avatar']
+            avatar = request.FILES['avatar']
+            allowed_img_types = {'image/jpeg', 'image/png', 'image/webp'}
+            if avatar.size > 5 * 1024 * 1024:
+                messages.error(request, 'Rasm hajmi 5MB dan oshmasligi kerak')
+                return redirect('profile')
+            if avatar.content_type not in allowed_img_types:
+                messages.error(request, 'Faqat JPEG, PNG yoki WEBP formatlar qabul qilinadi')
+                return redirect('profile')
+            user.avatar = avatar
         user.save()
         return redirect('profile')

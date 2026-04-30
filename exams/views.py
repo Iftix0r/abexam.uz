@@ -82,13 +82,17 @@ class TakeExamView(LoginRequiredMixin, DetailView):
         if exam.price > 0 and not request.session.get(f'exam_paid_{exam.pk}'):
             with transaction.atomic():
                 user = User.objects.select_for_update().get(pk=request.user.pk)
-                if user.balance < exam.price:
+                # Re-check session inside the lock to prevent double-charge on concurrent requests
+                if request.session.get(f'exam_paid_{exam.pk}'):
+                    pass
+                elif user.balance < exam.price:
                     messages.error(request, f"Balans yetarli emas. Imtihon narxi: {exam.price} so'm")
                     return redirect('exams:exam_detail', pk=exam.pk)
-                user.balance -= exam.price
-                user.save(update_fields=['balance'])
-                request.user.balance = user.balance
-            request.session[f'exam_paid_{exam.pk}'] = True
+                else:
+                    user.balance -= exam.price
+                    user.save(update_fields=['balance'])
+                    request.user.balance = user.balance
+                    request.session[f'exam_paid_{exam.pk}'] = True
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -153,7 +157,7 @@ class SubmitExamView(LoginRequiredMixin, View):
         s_band = get_band('speaking')
 
         active_bands = [b for b in [l_band, r_band, w_band, s_band] if b > 0]
-        overall = round(sum(active_bands) / len(active_bands) * 2) / 2 if active_bands else 0.0
+        overall = round(sum(active_bands) / len(active_bands) * 2) / 2.0 if active_bands else 0.0
 
         request.session.pop(f'exam_paid_{exam.pk}', None)
 
@@ -267,6 +271,11 @@ class SpeakingEvalView(LoginRequiredMixin, View):
             return JsonResponse({'error': 'Audio fayl topilmadi'}, status=400)
         if not result_id:
             return JsonResponse({'error': 'result_id talab qilinadi'}, status=400)
+        if audio_file.size > 25 * 1024 * 1024:
+            return JsonResponse({'error': 'Audio fayl hajmi 25MB dan oshmasligi kerak'}, status=400)
+        allowed_audio_types = {'audio/webm', 'audio/mp4', 'audio/mpeg', 'audio/ogg', 'audio/wav'}
+        if audio_file.content_type not in allowed_audio_types:
+            return JsonResponse({'error': 'Noto\'g\'ri audio format'}, status=400)
 
         try:
             result = UserResult.objects.get(pk=result_id, user=request.user)

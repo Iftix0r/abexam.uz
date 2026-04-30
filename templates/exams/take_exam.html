@@ -349,32 +349,6 @@
             <div id="passage-content-{{ section.id }}" style="line-height:1.8;">
                 {{ section.content|safe }}
             </div>
-
-            {% if section.section_type == 'writing' %}
-            <div style="margin-top: 2rem; padding: 1.5rem; background: rgba(0, 114, 188, 0.05); border: 1px solid rgba(0, 114, 188, 0.2); border-radius: 12px;">
-                <h4 style="color: #0072bc; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px;">
-                    <i data-lucide="lightbulb" style="width: 18px;"></i> Examiner Maslahati
-                </h4>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
-                    <div>
-                        <div style="font-weight: 700; font-size: 13px; margin-bottom: 5px;">⏱ Vaqtni boshqarish</div>
-                        <p style="font-size: 12px; color: #555;">
-                            {% if section.order == 1 %}
-                                <b>Task 1</b> uchun ko'pi bilan <b>20 daqiqa</b> sarflang. Task 2 ko'proq ball beradi!
-                            {% else %}
-                                <b>Task 2</b> uchun kamida <b>40 daqiqa</b> vaqt qoldiring.
-                            {% endif %}
-                        </p>
-                    </div>
-                    <div>
-                        <div style="font-weight: 700; font-size: 13px; margin-bottom: 5px;">✍️ Struktura</div>
-                        <p style="font-size: 12px; color: #555;">
-                            Introduction ➔ Body Paragraphs ➔ Conclusion. Har bir qism orasida bo'sh qator qoldiring.
-                        </p>
-                    </div>
-                </div>
-            </div>
-            {% endif %}
         </div>
 
         <div class="questions-panel">
@@ -489,28 +463,29 @@
 </div>
 
 <script>
-    lucide.createIcons();
+    document.addEventListener('DOMContentLoaded', () => {
+        lucide.createIcons();
 
-    // Sahifani yopishdan ogohlantirish
-    let examSubmitted = false;
-    window.addEventListener('beforeunload', (e) => {
-        if (!examSubmitted) {
-            e.preventDefault();
-            e.returnValue = '';
-        }
-    });
+        // Sahifani yopishdan ogohlantirish
+        let examSubmitted = false;
+        window.addEventListener('beforeunload', (e) => {
+            if (!examSubmitted) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
 
-    const answers = {};
-    let allQuestions = [];
+        window.answers = {};
+        window.allQuestions = [];
 
-    // Collect all question IDs
-    {% for section in sections %}
-    {% for question in section.questions.all %}
-    allQuestions.push({ id: '{{ question.id }}', sectionId: '{{ section.id }}' });
-    {% endfor %}
-    {% endfor %}
+        // Collect all question IDs
+        {% for section in sections %}
+        {% for question in section.questions.all %}
+        allQuestions.push({ id: '{{ question.id }}', sectionId: '{{ section.id }}' });
+        {% endfor %}
+        {% endfor %}
 
-    const DRAFT_KEY = 'exam_draft_{{ exam.pk }}_{{ request.user.pk }}';
+        const DRAFT_KEY = 'exam_draft_{{ exam.pk }}_{{ request.user.pk }}';
 
     // Load saved draft
     try {
@@ -761,14 +736,7 @@
         buildTracker(id); // Rebuild tracker for the new section
     }
 
-    // Initialize the first section's tracker
-    window.addEventListener('DOMContentLoaded', () => {
-        const firstSection = document.querySelector('.section-content');
-        if (firstSection) {
-            const id = firstSection.id.replace('section-', '');
-            buildTracker(id);
-        }
-    });
+    // (buildTracker already called above after restoreDraft)
 
     // ── Highlighting Logic ───────────────────────────────────────────
     document.addEventListener('mouseup', e => {
@@ -810,13 +778,18 @@
         const h = Math.floor(timeLeft / 3600);
         const m = Math.floor((timeLeft % 3600) / 60);
         const s = timeLeft % 60;
-        timerEl.innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+        
+        if (timerEl) {
+            timerEl.innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+        }
 
         if (timeLeft <= 0) {
             submitExam(true);
         } else {
-            if (timeLeft <= 300) timerBox.className = 'timer-box danger';
-            else if (timeLeft <= 600) timerBox.className = 'timer-box warning';
+            if (timerBox) {
+                if (timeLeft <= 300) timerBox.className = 'timer-box danger';
+                else if (timeLeft <= 600) timerBox.className = 'timer-box warning';
+            }
             timeLeft--;
         }
     }
@@ -865,6 +838,20 @@
         })
         .catch(() => alert("Xatolik yuz berdi. Qayta urinib ko'ring."));
     }
+
+    // Make functions global so they can be called from onclick
+    window.showSection = showSection;
+    window.saveAnswer = saveAnswer;
+    window.saveWriting = saveWriting;
+    window.toggleReview = toggleReview;
+    window.speakTranscript = speakTranscript;
+    window.stopSpeaking = stopSpeaking;
+    window.submitExam = submitExam;
+    window.selectMCQ = selectMCQ;
+    window.selectTFNG = selectTFNG;
+    window.toggleRecording = toggleRecording;
+    window.applyHighlight = applyHighlight;
+    });
 </script>
 </body>
 </html>

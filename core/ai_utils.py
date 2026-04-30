@@ -143,7 +143,7 @@ def evaluate_speaking(transcript: str, question: str = "") -> dict:
             "lexical_resource": _clamp_band(data.get("lexical_resource", 5.0)),
             "grammatical_range": _clamp_band(data.get("grammatical_range", 5.0)),
             "pronunciation": _clamp_band(data.get("pronunciation", 5.0)),
-            "word_count": int(data.get("word_count", len(transcript.split()))),
+            "word_count": int(float(data.get("word_count") or len(transcript.split()))),
             "strengths": data.get("strengths", [])[:3],
             "improvements": data.get("improvements", [])[:3],
             "feedback": data.get("feedback", ""),
@@ -257,11 +257,6 @@ IMPORTANT RULES:
 1. If variant is 'Academic': Task 1 MUST be a visual data description (e.g., 'The graph shows...', 'The chart displays...').
 2. If variant is 'General': Task 1 MUST be a letter (e.g., 'Write a letter to...', 'Dear Sir/Madam...').
 3. Task 2 is always an essay.
-4. MODEL ANSWERS: Must strictly follow this structure: 
-   - Introduction (Paraphrase + Thesis)
-   - Body Paragraph 1
-   - Body Paragraph 2
-   - Conclusion (Summary of main points)
 
 Return JSON:
 {{
@@ -269,13 +264,13 @@ Return JSON:
     "title": "...", 
     "instruction": "...", 
     "data_description": "FOR ACADEMIC: Detailed description of the visual data (numbers, trends, axes) for DALL-E image generation. FOR GENERAL: Background context for the letter.",
-    "model_answer": "A Band 9.0 model answer with clear structure (at least 150 words)..."
+    "model_answer": "A Band 9.0 model answer (at least 150 words). STRUCTURE: Introduction/Overview, Body Paragraphs, and Conclusion (if applicable)."
   }},
   "task2": {{
     "title": "...", 
     "question": "...", 
     "instruction": "...",
-    "model_answer": "A Band 9.0 model answer strictly following the Intro-Body-Conclusion structure (at least 250 words)..."
+    "model_answer": "A Band 9.0 model answer (at least 250 words). STRUCTURE: Introduction (Hook/Thesis), Body Paragraphs (PEEL method), and Conclusion (Summary)."
   }}
 }}"""
 

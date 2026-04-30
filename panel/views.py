@@ -144,7 +144,10 @@ def user_delete(request, pk):
 @require_POST
 def user_add_balance(request, pk):
     user = get_object_or_404(User, pk=pk)
-    data = json.loads(request.body)
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'ok': False, 'error': 'Noto\'g\'ri JSON'}, status=400)
     amount = float(data.get('amount', 0))
     note = data.get('note', "Admin tomonidan qo'shildi")
     if amount > 0:
@@ -161,7 +164,10 @@ def user_add_balance(request, pk):
 @require_POST
 def user_reset_password(request, pk):
     user = get_object_or_404(User, pk=pk)
-    data = json.loads(request.body)
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'ok': False, 'error': 'Noto\'g\'ri JSON'}, status=400)
     new_password = data.get('password', '').strip()
     if len(new_password) < 6:
         return JsonResponse({'ok': False, 'error': 'Parol kamida 6 ta belgi bo\'lishi kerak'})
@@ -174,7 +180,10 @@ def user_reset_password(request, pk):
 @require_POST
 def user_edit(request, pk):
     user = get_object_or_404(User, pk=pk)
-    data = json.loads(request.body)
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'ok': False, 'error': 'Noto\'g\'ri JSON'}, status=400)
     user.first_name = data.get('first_name', user.first_name)
     user.last_name = data.get('last_name', user.last_name)
     user.email = data.get('email', user.email)
@@ -198,7 +207,10 @@ def user_make_staff(request, pk):
 @panel_required
 @require_POST
 def users_bulk_action(request):
-    data = json.loads(request.body)
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'ok': False, 'error': 'Noto\'g\'ri JSON'}, status=400)
     action = data.get('action')
     ids = data.get('ids', [])
     if not ids:
@@ -219,7 +231,7 @@ def users_export_csv(request):
     response['Content-Disposition'] = 'attachment; filename="users.csv"'
     w = csv.writer(response)
     w.writerow(['ID', 'Username', 'Email', 'Telefon', 'Balans', 'Faol', 'Qo\'shilgan'])
-    for u in User.objects.all().order_by('-date_joined'):
+    for u in User.objects.only('pk', 'username', 'email', 'phone_number', 'balance', 'is_active', 'date_joined').order_by('-date_joined'):
         w.writerow([u.pk, u.username, u.email, u.phone_number or '', u.balance, u.is_active, u.date_joined.strftime('%Y-%m-%d')])
     return response
 
@@ -515,13 +527,14 @@ def exam_generate(request):
                         if sec_data.get('image_url'):
                             import requests
                             try:
-                                img_resp = requests.get(sec_data['image_url'])
+                                img_resp = requests.get(sec_data['image_url'], timeout=15)
                                 if img_resp.status_code == 200:
                                     section.image.save(
                                         f"task1_{section.pk}.png",
                                         ContentFile(img_resp.content)
                                     )
-                            except: pass
+                            except requests.RequestException:
+                                pass
 
                         for q_data in sec_data.get('questions', []):
                             Question.objects.create(
@@ -573,7 +586,10 @@ def exam_generate(request):
 def question_edit(request, pk):
     """Inline question edit from exam detail page."""
     question = get_object_or_404(Question, pk=pk)
-    data = json.loads(request.body)
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'ok': False, 'error': 'Noto\'g\'ri JSON'}, status=400)
     question.text = data.get('text', question.text)
     question.correct_answer = data.get('correct_answer', question.correct_answer)
     question.explanation = data.get('explanation', question.explanation)
@@ -603,6 +619,8 @@ def create_admin(request):
 
         if not username or not password:
             error = 'Username va parol majburiy'
+        elif len(password) < 8:
+            error = 'Parol kamida 8 ta belgi bo\'lishi kerak'
         elif password != password2:
             error = 'Parollar mos kelmadi'
         elif User.objects.filter(username=username).exists():
