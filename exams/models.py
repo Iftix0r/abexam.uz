@@ -20,6 +20,7 @@ class Exam(models.Model):
     duration_minutes = models.IntegerField(default=60)
     is_active = models.BooleanField(default=True)
     is_ai_generated = models.BooleanField(default=False)
+    is_reviewed = models.BooleanField(default=False, help_text='Mutaxassis tomonidan ko\'rib chiqilgan')
     ai_metadata = models.JSONField(null=True, blank=True, help_text='AI generation params: variant, topic, model')
     created_at = models.DateTimeField(auto_now_add=True)
 

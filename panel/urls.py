@@ -25,6 +25,7 @@ urlpatterns = [
     path('exams/<int:pk>/edit/', views.exam_edit, name='exam_edit'),
     path('exams/<int:pk>/delete/', views.exam_delete, name='exam_delete'),
     path('exams/<int:pk>/toggle/', views.exam_toggle_active, name='exam_toggle'),
+    path('exams/<int:pk>/review/', views.exam_review, name='exam_review'),
 
     path('transactions/', views.transactions_list, name='transactions'),
     path('transactions/<int:pk>/approve/', views.transaction_approve, name='tx_approve'),

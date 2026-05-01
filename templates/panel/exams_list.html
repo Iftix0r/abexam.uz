@@ -13,6 +13,17 @@
   <a href="{% url 'panel:exam_create' %}" class="btn btn-ghost btn-sm">+ Qo'lda yaratish</a>
 </div>
 
+{% if pending_review_count %}
+<div style="background:linear-gradient(135deg,rgba(245,158,11,.12),rgba(245,158,11,.06));border:1px solid rgba(245,158,11,.3);border-radius:12px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+  <div style="display:flex;align-items:center;gap:10px">
+    <span style="font-size:20px">⚠️</span>
+    <span style="font-size:14px;font-weight:600;color:#f59e0b">{{ pending_review_count }} ta AI imtihon ko'rib chiqishni kutmoqda</span>
+    <span style="font-size:12px;color:var(--muted)">— Mutaxassis tekshiruvidan o'tmagan, foydalanuvchilarga ko'rsatilmaydi</span>
+  </div>
+  <a href="?show=pending_review" class="btn btn-sm" style="background:#f59e0b;color:#000;font-weight:700;border:none">Ko'rib chiqish</a>
+</div>
+{% endif %}
+
 <div class="section-header">
   <form method="get" style="display:flex;gap:10px;flex-wrap:wrap">
     <div class="search-box">
@@ -25,7 +36,11 @@
       <option value="{{ val }}" {% if etype == val %}selected{% endif %}>{{ label }}</option>
       {% endfor %}
     </select>
+    {% if show == 'pending_review' %}
+    <a href="{% url 'panel:exams' %}" class="btn btn-ghost btn-sm">✕ Filterni olib tashlash</a>
+    {% else %}
     <button class="btn btn-ghost btn-sm" type="submit">Filter</button>
+    {% endif %}
   </form>
   <a href="{% url 'panel:exam_create' %}" class="btn btn-primary">
     <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" stroke-width="2"/><line x1="5" y1="12" x2="19" y2="12" stroke-width="2"/></svg>
@@ -39,8 +54,17 @@
       <thead><tr><th>Nomi</th><th>Turi</th><th>Narxi</th><th>Bo'limlar</th><th>Natijalar</th><th>Status</th><th>Sana</th><th></th></tr></thead>
       <tbody>
         {% for e in exams %}
-        <tr>
-          <td><a href="{% url 'panel:exam_detail' e.pk %}" style="color:var(--primary);font-weight:500">{{ e.title }}</a></td>
+        <tr {% if e.is_ai_generated and not e.is_reviewed %}style="background:rgba(245,158,11,.05)"{% endif %}>
+          <td>
+            <a href="{% url 'panel:exam_detail' e.pk %}" style="color:var(--primary);font-weight:500">{{ e.title }}</a>
+            {% if e.is_ai_generated %}
+              {% if e.is_reviewed %}
+                <span style="font-size:10px;background:rgba(34,197,94,.15);color:#22c55e;border-radius:4px;padding:1px 5px;margin-left:4px">✓ AI</span>
+              {% else %}
+                <span style="font-size:10px;background:rgba(245,158,11,.2);color:#f59e0b;border-radius:4px;padding:1px 5px;margin-left:4px">⏳ Tekshirish kerak</span>
+              {% endif %}
+            {% endif %}
+          </td>
           <td><span class="badge badge-blue">{{ e.get_exam_type_display }}</span></td>
           <td>{% if e.price == 0 %}<span style="color:var(--green)">Bepul</span>{% else %}<span style="font-weight:600">{{ e.price|floatformat:0 }} so'm</span>{% endif %}</td>
           <td style="color:var(--muted)">{{ e.sections_count }}</td>
@@ -52,10 +76,23 @@
           </td>
           <td style="color:var(--muted);font-size:12px">{{ e.created_at|date:"d M Y" }}</td>
           <td>
-            <div style="display:flex;gap:6px">
-              <a href="{% url 'panel:exam_edit' e.pk %}" class="btn btn-ghost btn-sm">Tahrir</a>
-              <button onclick="toggleExam({{ e.pk }})" class="btn btn-ghost btn-sm">On/Off</button>
-              <button onclick="deleteExam({{ e.pk }}, this)" class="btn btn-danger btn-sm">O'chir</button>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              {% if e.is_ai_generated and not e.is_reviewed %}
+                <form method="post" action="{% url 'panel:exam_review' e.pk %}" style="display:inline">
+                  {% csrf_token %}
+                  <input type="hidden" name="action" value="approve">
+                  <button type="submit" class="btn btn-sm" style="background:#22c55e;color:#fff;border:none;font-weight:600">✓ Tasdiqlash</button>
+                </form>
+                <form method="post" action="{% url 'panel:exam_review' e.pk %}" style="display:inline" onsubmit="return confirm('Rad etilsa imtihon o\'chiriladi. Davom etasizmi?')">
+                  {% csrf_token %}
+                  <input type="hidden" name="action" value="reject">
+                  <button type="submit" class="btn btn-danger btn-sm">✕ Rad</button>
+                </form>
+              {% else %}
+                <a href="{% url 'panel:exam_edit' e.pk %}" class="btn btn-ghost btn-sm">Tahrir</a>
+                <button onclick="toggleExam({{ e.pk }})" class="btn btn-ghost btn-sm">On/Off</button>
+                <button onclick="deleteExam({{ e.pk }}, this)" class="btn btn-danger btn-sm">O'chir</button>
+              {% endif %}
             </div>
           </td>
         </tr>

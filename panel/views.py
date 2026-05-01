@@ -2,6 +2,7 @@ import csv
 import json
 from datetime import timedelta
 
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db.models import Avg, Count, F, Sum
 from django.http import HttpResponse, JsonResponse
@@ -241,14 +242,20 @@ def users_export_csv(request):
 def exams_list(request):
     q = request.GET.get('q', '')
     etype = request.GET.get('type', '')
+    show = request.GET.get('show', '')
     exams = Exam.objects.annotate(sections_count=Count('sections'), results_count=Count('userresult')).order_by('-created_at')
     if q:
         exams = exams.filter(title__icontains=q)
     if etype:
         exams = exams.filter(exam_type=etype)
+    if show == 'pending_review':
+        exams = exams.filter(is_ai_generated=True, is_reviewed=False)
+    pending_review_count = Exam.objects.filter(is_ai_generated=True, is_reviewed=False).count()
     return render(request, 'panel/exams_list.html', {
         'exams': exams, 'q': q, 'etype': etype,
         'exam_types': Exam.EXAM_TYPES,
+        'pending_review_count': pending_review_count,
+        'show': show,
     })
 
 
@@ -311,6 +318,24 @@ def exam_toggle_active(request, pk):
     exam.is_active = not exam.is_active
     exam.save(update_fields=['is_active'])
     return JsonResponse({'active': exam.is_active})
+
+
+@panel_required
+@require_POST
+def exam_review(request, pk):
+    """Approve or reject an AI-generated exam after human review."""
+    exam = get_object_or_404(Exam, pk=pk, is_ai_generated=True)
+    action = request.POST.get('action')
+    if action == 'approve':
+        exam.is_reviewed = True
+        exam.is_active = True
+        exam.save(update_fields=['is_reviewed', 'is_active'])
+        messages.success(request, f'"{exam.title}" tasdiqlandi va faollashtirildi.')
+    elif action == 'reject':
+        title = exam.title
+        exam.delete()
+        messages.warning(request, f'"{title}" o\'chirildi.')
+    return redirect('panel:exams')
 
 
 @panel_required

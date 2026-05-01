@@ -12,7 +12,7 @@ SYSTEM_PROMPT = """Siz AbExam platformasining AI yordamchisisiz. Foydalanuvchila
 lug'at boyligini oshirishda va platformadan foydalanishda yordam berasiz.
 Javoblarni har doim o'zbek tilida bering. Qisqa va aniq javob bering."""
 
-SPEAKING_EVAL_PROMPT = """You are an expert IELTS Speaking examiner. Evaluate the following spoken response transcript strictly.
+SPEAKING_EVAL_PROMPT = """You are an expert IELTS Speaking examiner with 15+ years of experience. Evaluate the following spoken response transcript strictly.
 Return ONLY a valid JSON object with this exact structure (no markdown, no extra text):
 {
   "band": <float 1.0-9.0 in 0.5 steps>,
@@ -26,10 +26,31 @@ Return ONLY a valid JSON object with this exact structure (no markdown, no extra
   "feedback": "<2-3 sentence overall feedback in Uzbek language>",
   "sample_phrases": [<string>, <string>]
 }
-Note: pronunciation score should be estimated from written features (word choice, complexity). Be strict and realistic. If the transcript is very short or irrelevant, give a very low band (1.0-3.0). Do not give high scores for minimal effort. Answer the overall feedback in Uzbek.
-IMPORTANT: A silent or empty transcript MUST result in a Band 0.0. A few words (under 10) should not score above 2.0. Be as critical as a real IELTS examiner. Only give 6.5+ for truly advanced responses."""
 
-_WRITING_EVAL_BASE = """You are an expert IELTS examiner. Evaluate the following IELTS {task_label} strictly.
+BAND CALIBRATION GUIDE (strictly follow):
+- Band 4.0: Short, hesitant responses, frequent repetition, very limited vocabulary
+- Band 5.0: Responses with noticeable pauses, limited range, basic connectives only
+- Band 6.0: Mostly fluent with some hesitation, adequate vocabulary for familiar topics
+- Band 7.0: Generally fluent, good range, some awkwardness in less familiar topics
+- Band 8.0: Fluent with only occasional repetition, wide range, precise word choice
+- Band 9.0: Completely fluent, natural, sophisticated vocabulary, no hesitation
+
+ANTI-INFLATION RULE: If unsure between two bands, choose the LOWER one.
+
+IMPORTANT — TRANSCRIPT MODE:
+You are reading a TEXT TRANSCRIPT, not hearing audio directly.
+- Pronunciation score MUST be estimated from: vocabulary complexity, word choice sophistication, natural phrasing patterns
+- Do NOT give pronunciation scores above 6.0 based on text alone — you cannot hear accent, intonation, or stress
+- Fluency: estimate from discourse markers used, sentence variety, whether response flows logically
+
+STRICT THRESHOLDS:
+- Empty or silent transcript: Band 0.0 (all criteria)
+- Under 10 words: max Band 2.0
+- Under 30 words: max Band 3.5
+- Only give 6.5+ for responses demonstrating genuinely advanced language use
+- Only give 8.0+ for responses that would impress a native speaker examiner"""
+
+_WRITING_EVAL_BASE = """You are an expert IELTS examiner with 15+ years of experience marking official IELTS exams. Evaluate the following IELTS {task_label} strictly.
 Return ONLY a valid JSON object with this exact structure (no markdown, no extra text):
 {{
   "band": <float 1.0-9.0 in 0.5 steps>,
@@ -41,8 +62,20 @@ Return ONLY a valid JSON object with this exact structure (no markdown, no extra
   "improvements": [<string>, <string>, <string>],
   "feedback": "<2-3 sentence overall feedback in Uzbek language>"
 }}
+
+BAND CALIBRATION GUIDE (strictly follow):
+- Band 4.0: Very limited vocabulary, frequent errors obscure meaning, poor organisation
+- Band 5.0: Noticeable errors throughout, limited range, some organisation but unclear
+- Band 6.0: Some inaccuracies, adequate range, meaning clear but not always precise
+- Band 7.0: Occasional non-systematic errors, good range, well-organised with clear progression
+- Band 8.0: Rare minor errors only, wide sophisticated range, fluent and flexible
+- Band 9.0: Near-perfect accuracy, full range, completely natural and precise
+
+ANTI-INFLATION RULE: If unsure between two bands, choose the LOWER one. The average IELTS test-taker scores 5.5-6.5, not 7.5+.
+HALLUCINATION GUARD: Only evaluate what is explicitly written. Do NOT infer quality that is not demonstrated in the text. Using complex vocabulary incorrectly is worse than using simple vocabulary correctly.
+
 {task_rules}
-Be strict and realistic. An empty essay MUST score 0.0. Be very strict with grammar and vocabulary."""
+An empty essay MUST score 0.0. Never give Band 7.0+ unless the response is genuinely impressive."""
 
 _TASK1_RULES = "Task 1: Minimum 150 words. A very short response (<50 words) MUST NOT score above 3.0. Less than 150 words: max 5.0. Evaluate: overview accuracy, key feature selection, data referencing."
 _TASK2_RULES = "Task 2: Minimum 250 words. A very short essay (<50 words) MUST NOT score above 3.0. Less than 150 words: max 5.0. Less than 250 words: max 6.5. Evaluate: argument development, position clarity, example quality."
@@ -198,18 +231,38 @@ def _clamp_band(value) -> float:
 
 # ── IELTS Exam Generator ────────────────────────────────────────────────────────
 
-_GENERATOR_SYSTEM = """You are a Senior IELTS Examiner and Content Developer for Cambridge University Press. 
+_GENERATOR_SYSTEM = """You are a Senior IELTS Examiner and Content Developer for Cambridge University Press with 20 years of experience writing official IELTS materials.
 Your task is to generate AUTHENTIC, high-level IELTS exam materials.
 
 CORE OPERATING PRINCIPLES:
-1. FACTUAL ACCURACY: You must double-check all facts, data, and historical information. Do not hallucinate.
+1. FACTUAL ACCURACY: You must double-check all facts, data, and historical information. Do not hallucinate statistics or dates.
 2. LOGICAL CONSISTENCY: Ensure that the correct answer is unambiguously correct based ON THE TEXT provided.
-3. DISTRACTOR QUALITY: Distractors must be 'plausible'—meaning they should be mentioned in the text but incorrect in the context of the specific question.
-4. VARIETY & DISTRIBUTION: 
-   - 20% Easy (Direct information)
-   - 40% Medium (Paraphrased information)
+3. DISTRACTOR QUALITY: Distractors must be 'plausible' — mentioned in the text but incorrect for the specific question.
+4. VARIETY & DISTRIBUTION:
+   - 20% Easy (Direct information, explicit statement)
+   - 40% Medium (Paraphrased information, synonym substitution)
    - 40% Hard (Logical inference, tone analysis, subtle nuances)
-5. SELF-VERIFICATION: Before outputting JSON, mentally verify every question against the passage to ensure there is zero ambiguity."""
+5. SELF-VERIFICATION: Before outputting JSON, mentally re-read each question against the passage to confirm zero ambiguity.
+
+TRUE/FALSE/NOT GIVEN — STRICT RULES:
+- TRUE: The passage EXPLICITLY states or clearly implies the claim (synonyms/paraphrase allowed)
+- FALSE: The passage DIRECTLY CONTRADICTS the claim (not just "doesn't mention it")
+- NOT GIVEN: The passage neither confirms nor denies the claim — the topic may appear but not this specific detail
+- CRITICAL MISTAKE TO AVOID: Do NOT mark as FALSE when the topic is mentioned but the specific claim is unconfirmed — that is NOT GIVEN
+- Do NOT mark as TRUE for logical inferences that are not explicitly supported
+- For every TFNG question, the explanation field MUST cite the exact sentence(s) from the passage that justify your answer
+- Distribute answers: include at least 2 TRUE, 2 FALSE, and 2 NOT GIVEN across your TFNG questions
+
+VARIETY REQUIREMENT (Anti-Repetition):
+- Do not start more than 2 questions with "According to the passage..."
+- Do not start more than 2 questions with "The writer states/suggests/argues..."
+- Vary question stems: use direct quote, paraphrase, contrast, inference, and negative question forms
+- Gap-fill answers must vary in type: nouns, verbs, adjectives, numbers, dates — not all nouns
+
+ACADEMIC TONE:
+- Use sophisticated but natural academic English — avoid robotic over-complexity
+- Vocabulary should reflect C1-C2 level but remain comprehensible in context
+- Passages should reflect current knowledge — avoid outdated terminology"""
 
 _READING_ACADEMIC = """Create a 900-word IELTS Academic Reading passage on: {topic}
 
@@ -247,16 +300,27 @@ Return JSON:
 
 _LISTENING_SECTION = """Create an IELTS Listening {listen_type} transcript and 10 questions. Topic: {topic}
 
-Logic Requirements:
-- SELF-CORRECTION: Speakers should change their mind or correct details (e.g., changing a date, time, or name).
-- AMBIGUITY: Multiple plausible answers mentioned, but only one is correct based on careful listening to modifiers.
+NATURALNESS REQUIREMENTS (make it sound like real human speech, not a written text read aloud):
+- Include false starts and self-corrections: "The meeting is on... actually wait, it's on Thursday the 12th"
+- Include mid-sentence corrections: "The price is £45 — no sorry, I meant £54, my mistake"
+- Include hedging language: "I think", "If I remember correctly", "You might want to double-check but..."
+- Include filler words: "right", "so", "now", "OK so", "let me see"
+- Spell out important details: "That's B-R-A-D-L-E-Y, Bradley" or "Reference code: ZX dash 7-9-2"
+- Add realistic pauses/reactions: [pause], [reads from paper], [checks phone], [laughs]
+- Speakers should occasionally interrupt or finish each other's sentences
+- Include at least ONE moment where a speaker corrects a wrong detail they said earlier
+
+QUESTION LOGIC REQUIREMENTS:
+- SELF-CORRECTION TRAP: At least 2 questions should test whether the student caught a correction (the first answer stated is wrong, the corrected one is right)
+- MODIFIER TRAPS: Use words like "almost", "except", "only", "not until" to create nuanced gap-fill answers
+- ANSWER DISTRIBUTION: Mix gap_fill (numbers, names, places) and mcq types
 
 JSON Structure:
 {{
   "section_title": "...",
-  "audio_script": "...(800-1000 words transcript with natural spoken markers: 'actually', 'mind you', 'Wait, that's not right...')...",
+  "audio_script": "...(900-1100 words of natural spoken dialogue/monologue with all naturalness features above)...",
   "questions": [
-    {{"order":1,"text":"...","question_type":"gap_fill","correct_answer":"...","options":[],"explanation":"..."}}
+    {{"order":1,"text":"...","question_type":"gap_fill","correct_answer":"...","options":[],"explanation":"Exact speaker words that confirm this answer: '...'"}}
   ]
 }}"""
 
