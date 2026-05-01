@@ -167,7 +167,7 @@
             <h3 style="font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:var(--text-muted); margin-bottom:14px;">
                 Test tuzilishi
             </h3>
-            {% for section in exam.sections.prefetch_related('questions').all %}
+            {% for section in exam.sections.all %}
             <div class="section-row">
                 <div class="section-icon-box {{ section.section_type }}">
                     {% if section.section_type == 'listening' %}
