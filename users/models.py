@@ -1,9 +1,19 @@
+import re
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ValidationError
 from django.db import models
 
 
+def validate_phone(value):
+    if value and not re.match(r'^\+?[\d\s\-()]{7,15}$', value):
+        raise ValidationError("To'g'ri telefon raqam kiriting (masalan: +998901234567)")
+
+
 class User(AbstractUser):
-    phone_number = models.CharField(max_length=15, unique=True, null=True, blank=True)
+    phone_number = models.CharField(
+        max_length=15, unique=True, null=True, blank=True,
+        validators=[validate_phone],
+    )
     balance = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
     is_active_student = models.BooleanField(default=True)

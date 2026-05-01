@@ -1,5 +1,8 @@
+import os
 from django.db import models
 from django.conf import settings
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 from ckeditor.fields import RichTextField
 
 class Exam(models.Model):
@@ -124,3 +127,16 @@ class UserAnswer(models.Model):
         unique_together = ('result', 'question')
         verbose_name = "Foydalanuvchi javobi"
         verbose_name_plural = "Foydalanuvchi javoblari"
+
+
+def _delete_file(path):
+    if path and os.path.isfile(path):
+        os.remove(path)
+
+
+@receiver(post_delete, sender=Section)
+def section_files_cleanup(sender, instance, **kwargs):
+    if instance.audio_file:
+        _delete_file(instance.audio_file.path)
+    if instance.image:
+        _delete_file(instance.image.path)

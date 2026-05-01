@@ -29,9 +29,9 @@ Return ONLY a valid JSON object with this exact structure (no markdown, no extra
 Note: pronunciation score should be estimated from written features (word choice, complexity). Be strict and realistic. If the transcript is very short or irrelevant, give a very low band (1.0-3.0). Do not give high scores for minimal effort. Answer the overall feedback in Uzbek.
 IMPORTANT: A silent or empty transcript MUST result in a Band 0.0. A few words (under 10) should not score above 2.0. Be as critical as a real IELTS examiner. Only give 6.5+ for truly advanced responses."""
 
-WRITING_EVAL_PROMPT = """You are an expert IELTS examiner. Evaluate the following IELTS Writing Task 2 essay strictly.
+_WRITING_EVAL_BASE = """You are an expert IELTS examiner. Evaluate the following IELTS {task_label} strictly.
 Return ONLY a valid JSON object with this exact structure (no markdown, no extra text):
-{
+{{
   "band": <float 1.0-9.0 in 0.5 steps>,
   "task_achievement": <float 1.0-9.0 in 0.5 steps>,
   "coherence_cohesion": <float 1.0-9.0 in 0.5 steps>,
@@ -40,9 +40,12 @@ Return ONLY a valid JSON object with this exact structure (no markdown, no extra
   "strengths": [<string>, <string>],
   "improvements": [<string>, <string>, <string>],
   "feedback": "<2-3 sentence overall feedback in Uzbek language>"
-}
-Be strict and realistic. An empty essay MUST score 0.0. A very short essay (<50 words) MUST NOT score above 3.0.
-A 250-word essay cannot score above 6.5 if it has errors. Less than 150 words: max 5.0. Be very strict with grammar and vocabulary."""
+}}
+{task_rules}
+Be strict and realistic. An empty essay MUST score 0.0. Be very strict with grammar and vocabulary."""
+
+_TASK1_RULES = "Task 1: Minimum 150 words. A very short response (<50 words) MUST NOT score above 3.0. Less than 150 words: max 5.0. Evaluate: overview accuracy, key feature selection, data referencing."
+_TASK2_RULES = "Task 2: Minimum 250 words. A very short essay (<50 words) MUST NOT score above 3.0. Less than 150 words: max 5.0. Less than 250 words: max 6.5. Evaluate: argument development, position clarity, example quality."
 
 
 def get_ai_response(message, history=None):
@@ -62,27 +65,33 @@ def get_ai_response(message, history=None):
         return f"Xatolik yuz berdi: {str(e)}"
 
 
-def evaluate_writing(text: str) -> dict:
+def evaluate_writing(text: str, task_num: int = 2) -> dict:
     """
-    Evaluate an IELTS Writing Task 2 essay using GPT-4o-mini.
+    Evaluate an IELTS Writing Task (1 or 2) using GPT-4o-mini.
+    task_num=1 → Task 1 criteria; task_num=2 → Task 2 criteria.
     Returns a dict with band scores and feedback, or falls back to word-count scoring on error.
     """
     if not text or not text.strip():
-        return _fallback_writing_eval("")
+        return _fallback_writing_eval("", task_num)
+
+    is_task1 = task_num == 1
+    prompt = _WRITING_EVAL_BASE.format(
+        task_label="Writing Task 1 (report/letter)" if is_task1 else "Writing Task 2 (essay)",
+        task_rules=_TASK1_RULES if is_task1 else _TASK2_RULES,
+    )
 
     try:
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
-                {"role": "system", "content": WRITING_EVAL_PROMPT},
-                {"role": "user", "content": f"Essay to evaluate:\n\n{text[:3000]}"},
+                {"role": "system", "content": prompt},
+                {"role": "user", "content": f"Text to evaluate:\n\n{text[:3000]}"},
             ],
             temperature=0.3,
             max_tokens=600,
             response_format={"type": "json_object"},
         )
-        raw = response.choices[0].message.content
-        data = json.loads(raw)
+        data = json.loads(response.choices[0].message.content)
         return {
             "band": _clamp_band(data.get("band", 5.0)),
             "task_achievement": _clamp_band(data.get("task_achievement", 5.0)),
@@ -95,7 +104,7 @@ def evaluate_writing(text: str) -> dict:
             "ai_graded": True,
         }
     except Exception:
-        return _fallback_writing_eval(text)
+        return _fallback_writing_eval(text, task_num)
 
 
 def transcribe_audio(audio_bytes: bytes, filename: str = "audio.webm") -> str:
@@ -586,16 +595,17 @@ def _normalise_questions(raw: list) -> list:
     return result
 
 
-def _fallback_writing_eval(text: str) -> dict:
+def _fallback_writing_eval(text: str, task_num: int = 2) -> dict:
     """Word-count based fallback when AI is unavailable."""
     words = len(text.split()) if text else 0
+    min_words = 150 if task_num == 1 else 250
     if words == 0: band = 0.0
     elif words < 50: band = 2.0
     elif words < 100: band = 3.5
-    elif words < 150: band = 4.5
-    elif words < 200: band = 5.0
-    elif words < 250: band = 5.5
-    elif words < 300: band = 6.0
+    elif words < min_words // 2: band = 4.5
+    elif words < min_words: band = 5.0
+    elif words < min_words + 50: band = 5.5
+    elif words < min_words + 100: band = 6.0
     else: band = 6.5
     return {
         "band": band,

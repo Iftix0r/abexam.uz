@@ -11,6 +11,28 @@ from .models import Exam, UserAnswer, UserResult, Question
 from users.models import User
 
 
+def _fuzzy_match(user_ans: str, correct: str) -> bool:
+    """IELTS-style flexible answer checking: case, articles, slash-alternatives."""
+    u = user_ans.strip().lower()
+    c = correct.strip().lower()
+    if not u:
+        return False
+    if u == c:
+        return True
+    # Accept any alternative separated by /
+    alternatives = [a.strip() for a in c.split('/')]
+    if u in alternatives:
+        return True
+    # Strip leading articles and compare
+    for art in ('a ', 'an ', 'the '):
+        u2 = u[len(art):] if u.startswith(art) else u
+        for alt in alternatives:
+            c2 = alt[len(art):] if alt.startswith(art) else alt
+            if u2 == c2:
+                return True
+    return False
+
+
 # IELTS Listening/Reading band table (scaled to 40 questions)
 _IELTS_TABLE = [
     (39, 9.0), (37, 8.5), (35, 8.0), (32, 7.5), (30, 7.0),
@@ -79,6 +101,9 @@ class TakeExamView(LoginRequiredMixin, DetailView):
 
     def get(self, request, *args, **kwargs):
         exam = self.get_object()
+        if not exam.is_active:
+            messages.error(request, "Bu imtihon hozirda faol emas.")
+            return redirect('exams:exam_detail', pk=exam.pk)
         if exam.price > 0 and not request.session.get(f'exam_paid_{exam.pk}'):
             with transaction.atomic():
                 user = User.objects.select_for_update().get(pk=request.user.pk)
@@ -111,12 +136,13 @@ class SubmitExamView(LoginRequiredMixin, View):
 
         answers = data.get('answers', {})
         section_stats = {}
-        writing_texts = {}
+        # writing_tasks: list of (order, text) — preserves Task1/Task2 order
+        writing_tasks = []
         total_correct = 0
         total_questions = 0
 
         # Fetch sections once and reuse
-        sections = list(exam.sections.prefetch_related('questions').all())
+        sections = list(exam.sections.prefetch_related('questions').order_by('order'))
 
         for section in sections:
             s_correct = 0
@@ -124,30 +150,51 @@ class SubmitExamView(LoginRequiredMixin, View):
             for question in section.questions.all():
                 user_ans = str(answers.get(str(question.id), '')).strip()
                 if question.question_type == 'writing_task':
-                    writing_texts.setdefault(section.section_type, []).append(user_ans)
+                    writing_tasks.append({
+                        'order': section.order,
+                        'section_title': section.title,
+                        'text': user_ans,
+                    })
                     continue
                 s_total += 1
                 total_questions += 1
                 correct = str(question.correct_answer).strip().lower()
-                if user_ans.lower() == correct:
+                if _fuzzy_match(user_ans, correct):
                     s_correct += 1
                     total_correct += 1
             prev_c, prev_t = section_stats.get(section.section_type, (0, 0))
             section_stats[section.section_type] = (prev_c + s_correct, prev_t + s_total)
 
-        # AI Writing evaluation
+        # AI Writing evaluation — Task 1 and Task 2 separately
         writing_feedback = None
-        if writing_texts.get('writing'):
+        if writing_tasks:
             from core.ai_utils import evaluate_writing
-            combined_writing = '\n\n'.join(writing_texts['writing'])
-            writing_feedback = evaluate_writing(combined_writing)
+            task_feedbacks = []
+            for task in writing_tasks:
+                task_num = len(task_feedbacks) + 1
+                fb = evaluate_writing(task['text'], task_num=task_num)
+                fb['task_num'] = task_num
+                fb['section_title'] = task['section_title']
+                task_feedbacks.append(fb)
+            if task_feedbacks:
+                avg_band = sum(fb['band'] for fb in task_feedbacks) / len(task_feedbacks)
+                writing_feedback = {
+                    'band': round(avg_band * 2) / 2.0,
+                    'tasks': task_feedbacks,
+                    # top-level averages for backward compat
+                    'task_achievement': sum(fb.get('task_achievement', fb['band']) for fb in task_feedbacks) / len(task_feedbacks),
+                    'coherence_cohesion': sum(fb.get('coherence_cohesion', fb['band']) for fb in task_feedbacks) / len(task_feedbacks),
+                    'lexical_resource': sum(fb.get('lexical_resource', fb['band']) for fb in task_feedbacks) / len(task_feedbacks),
+                    'grammatical_accuracy': sum(fb.get('grammatical_accuracy', fb['band']) for fb in task_feedbacks) / len(task_feedbacks),
+                    'ai_graded': any(fb.get('ai_graded') for fb in task_feedbacks),
+                }
 
         def get_band(stype):
             if stype == 'writing':
                 if writing_feedback:
                     return writing_feedback['band']
-                if writing_texts.get('writing'):
-                    return calc_writing_band(' '.join(writing_texts['writing']))
+                if writing_tasks:
+                    return calc_writing_band(' '.join(t['text'] for t in writing_tasks))
             c, t = section_stats.get(stype, (0, 0))
             return calc_band(c, t)
 
@@ -296,10 +343,11 @@ class SpeakingEvalView(LoginRequiredMixin, View):
         transcript = transcribe_audio(audio_bytes, filename)
         feedback = evaluate_speaking(transcript, question=question_text)
 
-        # Merge with existing speaking_feedback (multiple questions → list)
+        # Merge with existing speaking_feedback — replace by question_id if re-submitted
         existing = result.speaking_feedback or []
         if isinstance(existing, dict):
-            existing = [existing]
+            existing = list(existing.values())
+        existing = [e for e in existing if str(e.get('question_id', '')) != str(question_id)]
         existing.append({
             'question_id': question_id,
             'question_text': question_text,

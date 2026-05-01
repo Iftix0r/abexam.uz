@@ -388,14 +388,23 @@ def analytics(request):
                  .annotate(cnt=Count('id'), avg=Avg('score'))
                  .order_by('-cnt')[:8])
 
-    # Band distribution
+    # Band distribution — aggregated in DB, no full table load
+    from django.db.models import Case, When, Value, CharField
     bands = {'4.0-5.0': 0, '5.5-6.0': 0, '6.5-7.0': 0, '7.5-8.0': 0, '8.5-9.0': 0}
-    for r in UserResult.objects.values_list('score', flat=True):
-        if r <= 5.0: bands['4.0-5.0'] += 1
-        elif r <= 6.0: bands['5.5-6.0'] += 1
-        elif r <= 7.0: bands['6.5-7.0'] += 1
-        elif r <= 8.0: bands['7.5-8.0'] += 1
-        else: bands['8.5-9.0'] += 1
+    band_qs = (
+        UserResult.objects
+        .annotate(band_group=Case(
+            When(score__lte=5.0, then=Value('4.0-5.0')),
+            When(score__lte=6.0, then=Value('5.5-6.0')),
+            When(score__lte=7.0, then=Value('6.5-7.0')),
+            When(score__lte=8.0, then=Value('7.5-8.0')),
+            default=Value('8.5-9.0'),
+            output_field=CharField(),
+        ))
+        .values('band_group').annotate(cnt=Count('id'))
+    )
+    for row in band_qs:
+        bands[row['band_group']] = row['cnt']
 
     # Monthly revenue (6 months)
     monthly_labels, monthly_rev = [], []
