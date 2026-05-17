@@ -1,0 +1,769 @@
+{
+  "title": "Copy of Test 10",
+  "description": "IELTS practice test with 2 sections",
+  "status": "both",
+  "created_at": "2026-05-16T05:06:25.512970+00:00",
+  "sections": [
+    {
+      "section_type": "listening",
+      "title": "Listening",
+      "instructions": "You will hear a number of different recordings and you will have to answer questions on what you hear.",
+      "duration_minutes": 30,
+      "order": 1,
+      "parts": [
+        {
+          "title": "Part 1",
+          "instructions": "",
+          "order": 1,
+          "content_blocks": [
+            {
+              "content_type": "audio",
+              "title": "Listening Test 1 Audio",
+              "text_content": "Audio file: /media/tests/TEST1/Listening Test 1.mp3 - Complete listening test for IELTS Practice Test 1",
+              "order": 1,
+              "file_url": "/media/content_files/audiomass-output_10_mkllAxx.mp3"
+            }
+          ],
+          "question_blocks": [
+            {
+              "block_type": "shared_completion",
+              "title": "Questions 1-10",
+              "instructions": "Complete the form below.\nWrite **ONE WORD AND/OR A NUMBER** for each answer.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 1,
+                  "question_text": "Q1 - Address: ___ Road, West Bromwich",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 2,
+                  "question_text": "Q2 - Phone: ___",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 3,
+                  "question_text": "Q3 - Occupation: ___",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 4,
+                  "question_text": "Q4 - A two-bedroom ___ apartment to rent",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 5,
+                  "question_text": "Q5 - The bedrooms must be ___",
+                  "marks": 1,
+                  "order": 5
+                },
+                {
+                  "question_number": 6,
+                  "question_text": "Q6 - Date required: ___",
+                  "marks": 1,
+                  "order": 6
+                },
+                {
+                  "question_number": 7,
+                  "question_text": "Q7 - have a ___ or a",
+                  "marks": 1,
+                  "order": 7
+                },
+                {
+                  "question_number": 8,
+                  "question_text": "Q8 - have a ___ or a 8. ________________",
+                  "marks": 1,
+                  "order": 8
+                },
+                {
+                  "question_number": 9,
+                  "question_text": "Q9 - be near a ___",
+                  "marks": 1,
+                  "order": 9
+                },
+                {
+                  "question_number": 10,
+                  "question_text": "Q10 - have a large ___",
+                  "marks": 1,
+                  "order": 10
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Part 2",
+          "instructions": "",
+          "order": 2,
+          "content_blocks": [],
+          "question_blocks": [
+            {
+              "block_type": "listening_multiple_choice",
+              "title": "Questions 11-16",
+              "instructions": "Choose the correct answer.\n\nStorm Clean-up",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 11,
+                  "question_text": "Compared to last years storm, this year",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 12,
+                  "question_text": "According to the speaker, what should you do if your home has been flooded?",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 13,
+                  "question_text": "What does the speaker advise residents to do with their garden waste?",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 14,
+                  "question_text": "People who cannot cook food should",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 15,
+                  "question_text": "People who want to help out are asked to",
+                  "marks": 1,
+                  "order": 5
+                },
+                {
+                  "question_number": 16,
+                  "question_text": "What problem should residents report to the council?",
+                  "marks": 1,
+                  "order": 6
+                }
+              ]
+            },
+            {
+              "block_type": "listening_matching",
+              "title": "Questions 17-20",
+              "instructions": "What comment does the speaker make about each of the following place?\r\nChoose FOUR correct answers, A–F, next to questions 17–20.",
+              "order": 2,
+              "questions": [
+                {
+                  "question_number": 17,
+                  "question_text": "The school",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 18,
+                  "question_text": "The hospital",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 19,
+                  "question_text": "The High Street",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 20,
+                  "question_text": "The bikeway",
+                  "marks": 1,
+                  "order": 4
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Part 3",
+          "instructions": "",
+          "order": 3,
+          "content_blocks": [],
+          "question_blocks": [
+            {
+              "block_type": "table_completion",
+              "title": "Questions 21-30",
+              "instructions": "Complete the notes below.\nWrite **NO MORE THAN THREE WORDS AND/OR A NUMBER** for each answer.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 21,
+                  "question_text": "21 - Current course",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 22,
+                  "question_text": "22 - Date started",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 23,
+                  "question_text": "23 - 1st choice",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 24,
+                  "question_text": "24 - 2nd choice",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 25,
+                  "question_text": "25 - finds",
+                  "marks": 1,
+                  "order": 5
+                },
+                {
+                  "question_number": 26,
+                  "question_text": "26 - join other students in a",
+                  "marks": 1,
+                  "order": 6
+                },
+                {
+                  "question_number": 27,
+                  "question_text": "27 -",
+                  "marks": 1,
+                  "order": 7
+                },
+                {
+                  "question_number": 28,
+                  "question_text": "28 - arrange meetings in advance",
+                  "marks": 1,
+                  "order": 8
+                },
+                {
+                  "question_number": 29,
+                  "question_text": "29 - Date for next meeting",
+                  "marks": 1,
+                  "order": 9
+                },
+                {
+                  "question_number": 30,
+                  "question_text": "30 - With",
+                  "marks": 1,
+                  "order": 10
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Part 4",
+          "instructions": "",
+          "order": 4,
+          "content_blocks": [],
+          "question_blocks": [
+            {
+              "block_type": "listening_multiple_choice",
+              "title": "Questions 31-40",
+              "instructions": "Choose the correct answer.\n\nPerfume Ornaments",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 31,
+                  "question_text": "The museum started displaying perfume ornaments when",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 32,
+                  "question_text": "People needed to wear perfume in the 11 century because",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 33,
+                  "question_text": "The perfume ornament known as a 'pomander took its name from",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 34,
+                  "question_text": "In medieval times, it was thought that wearing perfume made people",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 35,
+                  "question_text": "Craftsmen found ways of preventing liquid perfume from",
+                  "marks": 1,
+                  "order": 5
+                },
+                {
+                  "question_number": 36,
+                  "question_text": "The perfume in a vinaigrette was",
+                  "marks": 1,
+                  "order": 6
+                },
+                {
+                  "question_number": 37,
+                  "question_text": "Which part of the vinaigrette was made of gold?",
+                  "marks": 1,
+                  "order": 7
+                },
+                {
+                  "question_number": 38,
+                  "question_text": "Perfume bottles used in the mid- 19\"century",
+                  "marks": 1,
+                  "order": 8
+                },
+                {
+                  "question_number": 39,
+                  "question_text": "Tiffany bottles",
+                  "marks": 1,
+                  "order": 9
+                },
+                {
+                  "question_number": 40,
+                  "question_text": "The 'Vanity' was",
+                  "marks": 1,
+                  "order": 10
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "section_type": "reading",
+      "title": "Reading",
+      "instructions": "",
+      "duration_minutes": 60,
+      "order": 2,
+      "parts": [
+        {
+          "title": "Reading Passage 1",
+          "instructions": "",
+          "order": 1,
+          "content_blocks": [
+            {
+              "content_type": "text",
+              "title": "Western Immigration of Canada",
+              "text_content": "IX -  Demand of western immigration \n**A**. By the mid-1870s Canada wanted an immigrant population of agricultural settlers established in the West. No urban centres existed on the prairies in the 1870s, and rural settlement was the focus of the federal government’s attention. The western rural settlement was desired, as it would provide homesteads for the sons and daughters of eastern farmers, as eastern agricultural land filled to capacity. As well, eastern farmers and politicians viewed western Canada, with its broad expanses of unpopulated land, as a prime location for expanding Canada’s agricultural output, especially in terms of wheat production to serve the markets of eastern Canada.\n\n[B-drophere]\n**B**. To bolster Canada’s population and agricultural output, the federal government took steps to secure western land. The Dominion of Canada purchased Rupert's Land from the Hudson’s Bay Company in 1870. In 1872, the federal government enacted the Dominion Lands Act. This act enabled settlers to acquire 160 acres of free land, as long as settlers remained on their land for a period of three years, made certain minor improvements to the land, and paid a $10.00 registration fee. The Canadian government also created a Mounted Police Force in 1873. The Mounties journeyed west to secure the area for future settlers. By 1876 the NWMP had established themselves in the West. The major posts included Swan River, Fort Saskatchewan, Fort Calgary, Fort Walsh and Fort Macleod. All of these initiatives attracted a number of Eastern-Canadian settlers, as well as European and American immigrants, to Canada’s West, and particularly to the area of Manitoba.\n\n[C-drophere]\n**C**. The surest way to protect Canadian territory, and to achieve the secondary goal for joining British Columbia to the rest of the country, was to import large numbers of Eastern Canadian and British settlers. Settling the West also made imperative the building of a transcontinental railway. The railway would work to create an east-west economy, in which western Canada would feed the growing urban industrial population of the east, and in return become a market for eastern Canadian manufactured goods.\n\n[D-drophere]\n**D**. Winnipeg became the metropolis of the West during this period. Winnipeg’s growth before 1900 was the result of a combination of land speculation, growth of housing starts, and the federal government’s solution in 1881 of Winnipeg as a major stop along the CPR. This decision culminated in a land boom between 1881 and 1883 which resulted in the transformation of hamlets like Portage la Prairie and Brandon into towns, and a large increase in Manitoba's population. Soon, Winnipeg stood at the junction of three transcontinental railway lines which employed thousands in rail yards. Winnipeg also became the major processor of agricultural products for the surrounding hinterland.\n\n[E-drophere]\n**E**. The majority of settlers to Winnipeg, and the surrounding countryside, during this early period, were primarily Protestant English-speaking settlers from Ontario and the British Isles. These settlers established Winnipeg upon a British-Ontarian ethos which came to dominate the society's social, political, and economic spirit. This British-Ontarian ethnic homogeneity, however, did not last very long. Increasing numbers of foreign immigrants, especially from Austria-Hungary and Ukraine soon added a new ethnic element to the recent British, the older First Nation Métis, and Selkirk's settler population base. Settling the West with (in particular) Eastern Canadians and British immigrant offered the advantage of safeguarding the 49th parallel from the threat of American take-over, had not the Minnesota legislature passed a resolution which provided for the annexation of the Red River district. The Red River in 1870 was the most important settlement on the Canadian prairies. It contained 11,963 inhabitants of whom 9,700 were Métis and First Nations. But neighbouring Minnesota already had a population of over 100,000.\n\n[F-drophere]\n**F**. Not all of the settlers who came to western Canada in the 1880s, however, desired to remain there. In the 1870s and 1880s, economic depression kept the value of Canada's staple exports low, which discouraged many from permanent settlement in the West. Countries including Brazil, Argentina, Australia, New Zealand and the United States competed with Canada for immigrants. Many immigrants and thousands of Canadians chose to settle in the accessible and attractive American frontier. Canada before 1891 has been called \"a huge demographic railway station\" where thousands of men, women, and children were constantly going and coming, and where the number of departures invariably exceeded that of arrivals.\n\n[G-drophere]\n**G**. By 1891 Eastern Canada had its share of both large urban centres and problems associated with city life. While the booming economic centres of Toronto and Montreal were complete with electricity and telephones in the cities' wealthiest areas by the turn of the century, slum conditions characterised the poorest areas like the district known as 'the Ward' in Toronto. Chickens and pigs ran through the streets; privy buckets spilled onto backyards and lanes creating cesspools in urban slums. These same social reformers believed that rural living, in stark contrast to urban, would lead to a healthy, moral, and charitable way of life. Social reformers praised the ability of fresh air, hard work, and open spaces for 'Canadianizing' immigrants. Agricultural pursuits were seen as especially fitting for attaining this 'moral' and family-oriented way of life, in opposition to the single male-dominated atmosphere of the cities. Certainly, agriculture played an important part in the Canadian economy in 1891. One-third of the workforce worked on farms.\n\n[H-drophere]\n**H**. The Canadian government presented Canada's attractions to potential overseas migrants in several ways. The government offered free or cheap land to potential agriculturists. As well, the government established agents and/or agencies for the purpose of attracting emigrants overseas. Assisted passage schemes, bonuses and commissions to agents and settlers and pamphlets also attracted some immigrants to Canada. The most influential form of attracting others to Canada, however, remained the letters home written by emigrants already in Canada. Letters from trusted friends and family members. Letters home often contained exaggerations of the 'wonder of the new world.' Migrant workers and settlers already in Canada did not want to disappoint, or worry, their family and friends at home. Embellished tales of good fortune and happiness often succeeded in encouraging others to come.",
+              "order": 1
+            }
+          ],
+          "question_blocks": [
+            {
+              "block_type": "matching_headings",
+              "title": "Questions 1-7",
+              "instructions": "The Reading Passage has eight paragraphs, A–H.\nChoose the correct heading from the list below.\nWrite the correct number, i–xii, in boxes 1–7.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 1,
+                  "question_text": "Paragraph B",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 2,
+                  "question_text": "Paragraph C",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 3,
+                  "question_text": "Paragraph D",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 4,
+                  "question_text": "Paragraph E",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 5,
+                  "question_text": "Paragraph F",
+                  "marks": 1,
+                  "order": 5
+                },
+                {
+                  "question_number": 6,
+                  "question_text": "Paragraph G",
+                  "marks": 1,
+                  "order": 6
+                },
+                {
+                  "question_number": 7,
+                  "question_text": "Paragraph H",
+                  "marks": 1,
+                  "order": 7
+                }
+              ]
+            },
+            {
+              "block_type": "shared_completion",
+              "title": "Questions 8-13",
+              "instructions": "Complete the summary below.\nUse **NO MORE THAN TWO WORDS** from the passage for each answer.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 8,
+                  "question_text": "Q8 - supply _____ for the descendants of easterners",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 9,
+                  "question_text": "Q9 - increase _____ of Canada",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 10,
+                  "question_text": "Q10 - according to _____ crop",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 11,
+                  "question_text": "Q11 - bought land from a private _____",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 12,
+                  "question_text": "Q12 - mounted _____ was found",
+                  "marks": 1,
+                  "order": 5
+                },
+                {
+                  "question_number": 13,
+                  "question_text": "Q13 - build a _____ to transport",
+                  "marks": 1,
+                  "order": 6
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Reading Passage 2",
+          "instructions": "",
+          "order": 2,
+          "content_blocks": [
+            {
+              "content_type": "text",
+              "title": "Why don't we sleep?",
+              "text_content": "**A**. Fifty-six million prescriptions for sleeping medication were handed out by doctors in America last year. Yet remarkably little is being done to understand insomnia's root causes. Socially and economically, the undertreatment of sleeplessness is hugely expensive. The Institute of Medicine, an independent scientific advisory group, estimates nearly 20 percent of all major accidents on the road are associated with driver sleepiness. The loss in terms of productivity within the workplace is even higher, costing billions. Then there are the softer costs which remain unmeasured but still exist; for example, the damaged relationships with others. If other medical problems were causing such widespread harm, governments would act, but US authorities contribute only about $230 million a year for the funding of sleep research, comparable to the amount that the manufacturers of popular sleeping pills spent in three months on advertising. Currently most medical school students get no more than four hours of training on sleep disorders; some get none.\n\n**B**. If we don't know why we can't sleep, it's in part because we don't really know why we need to sleep in the first place. We know that we divide it between periods of deep-wave sleep and rapid eye movement (REM) sleep, when the brain is as active as when we're awake, but our voluntary muscles are paralyzed. We know that all mammals sleep, and that there are some insects and reptiles that only half sleep, in order to remain aware of their environment and predators.\n\n**C**. The predominant theory of sleep is that the brain demands it. Recently, researchers at Harvard, led by Robert Stickgold, tested undergraduates on various aptitude tests, allowed them to nap, then tested them again. They found that those who had engaged in REM sleep subsequently performed better in pattern recognition tasks, such as grammar, while those who slept deeply were better at memorization.\n\n**D**. Such studies suggest that memory consolidation may be one function of sleep. Giulio Tononi, a sleep researcher at the University of Wisconsin, published an interesting twist on this theory a few years ago. His study showed that the sleeping brain seems to delete redundant or unnecessary synapses or connections. So the purpose of sleep may be to help us remember what's important, by letting us forget what's not.\n\n**E**. Sleep is likely to have physiological purposes too. Some researchers have found that sleep deprivation impedes wound healing in rats, and others have suggested that sleep helps boost the immune system and control infection. But these studies are not conclusive. At Stanford University, William Dement, co-founder of the Stanford Sleep Medicine Center, explains what he knows after 50 years of research, about the reason we sleep. 'As far as I know,' he said, 'the only reason we need to sleep that is really, really solid is because we get sleepy.'\n\n**F**. The Stanford clinic does more than 3,000 overnight sleep studies a year. Their main diagnostic tool is the polysomnogram, the main element of which is the electroencephalograph (EEG), which captures the electrical output from a patient's brain. As the EEG records a person's sleep patterns, the polysomnogram technicians also measure body temperature, muscle activity, eye movement, and breathing. Then they look over the data for signs of abnormal sleep. When a person has narcolepsy, for instance, they plunge from wakefulness into REM sleep without any intermediate steps. However, Clete Kushida, the clinic director, told me he can spot most people's sleep problems right at the intake interview. 'There are those who cannot keep their eyes open, and those who just speak of their exhaustion but don't actually fall asleep. The former often have sleep apnea where they stop breathing. The latter have true insomnia.'\n\n**G**. In sleep apnea, muscle relaxation allows the soft tissue of the throat to close, shutting off the sleeper's air passage. When the brain realizes it is not getting oxygen, it sends a signal to the body to wake up. The sleeper awakes, inhales, and sleep returns. Apnea is a serious problem but only indirectly a sleep disease. True insomniacs are people who either can't get to, or can't stay asleep for any evident reason.\n\n**H**. While apnea can be treated with a device that forces air down the sleeper's throat to keep the airways open, the treatment of classic insomnia is not so clear cut. Acupuncture may help. It has long had this role in Asian medicine and is being studied at the University of Pittsburgh sleep center now. Typically in the US, insomnia is treated in two ways. First come the sleeping pills. Though safer than they once were, they can still lead to psychological addiction. 'Many users complain that their sleeping-pill sleep seems different, and they feel unfocussed on waking. Sleeping pills are not a natural way to sleep,' points out Charles Czeisler, director of the Harvard Health and Safety Group.\n\n**I**. The second step in treating insomniacs is usually cognitive behavioral therapy (CBT). In CBT, a psychologist teaches insomniacs to think about sleep problems as manageable, and to practice good 'sleep hygiene': sleep in a dark room, go to bed only when you are sleepy, don't exercise beforehand. Studies have shown that CBT is more effective than sleeping pills at treating long-term insomnia, but many sufferers aren't convinced. 'Some people continue in my experience to struggle,' says John Winkelman, another sleep center director. 'They're not super-satisfied with their sleep.'",
+              "order": 1
+            }
+          ],
+          "question_blocks": [
+            {
+              "block_type": "shared_completion",
+              "title": "Questions 14-17",
+              "instructions": "Complete the summary below.\nWrite **ONE WORD ONLY** for each answer.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 14,
+                  "question_text": "Q14 - high number of _____",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 15,
+                  "question_text": "Q15 - serious traffic _____",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 16,
+                  "question_text": "Q16 - effect on company _____",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 17,
+                  "question_text": "Q17 - the _____ given at medical school",
+                  "marks": 1,
+                  "order": 4
+                }
+              ]
+            },
+            {
+              "block_type": "matching_information",
+              "title": "Questions 18-23",
+              "instructions": "Which paragraph contains the following information?\nWrite the correct letter, A–I, in boxes 18–23.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 18,
+                  "question_text": "a mention of different cultural approaches to dealing with insomnia",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 19,
+                  "question_text": "indications that sleep has a positive effect on health",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 20,
+                  "question_text": "The effects of different kinds of sleep on mental performance",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 21,
+                  "question_text": "reasons why various species of animal sleep in different ways",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 22,
+                  "question_text": "the suggestion that sleep allows us to get rid of insignificant information",
+                  "marks": 1,
+                  "order": 5
+                },
+                {
+                  "question_number": 23,
+                  "question_text": "a description of how the brain responds when a person stops breathing",
+                  "marks": 1,
+                  "order": 6
+                }
+              ]
+            },
+            {
+              "block_type": "matching_features",
+              "title": "Questions 24-26",
+              "instructions": "Look at the following statements (Questions 24–26) and the list of people below.\nMatch each statement with the correct person, A–E.\nChoose the correct letter, A–E, in boxes 24–26.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 24,
+                  "question_text": "Research tells us that we sleep as reaction to our body's signals.",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 25,
+                  "question_text": "People suffering from insomnia are easily recognisable.",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 26,
+                  "question_text": "Therapy does not always enable people to achieve good quality sleep.",
+                  "marks": 1,
+                  "order": 3
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Reading Passage 3",
+          "instructions": "",
+          "order": 3,
+          "content_blocks": [
+            {
+              "content_type": "text",
+              "title": "Understanding Symbols",
+              "text_content": "**A**. About 20 years ago I had one of those wonderful moments when research takes an unexpected but fruitful turn. I had been studying toddler memory and was beginning a new experiment with two-and-a-half- and three-year-olds. For the project, I had built a model of a room that was in my laboratory. The real space contained basic furniture such as a couch and table. The miniature version was as similar as possible to its larger counterpart: the furniture was the same shape and material and was arranged in the same position. For the study, a child watched as we hid a miniature toy – a plastic dog we called Little Snoopy* – in the model. We then encouraged the child to find 'Big Snoopy, a large version of the toy 'hiding in the same place in his big room.'\n\n**B**. The three-year-olds were very successful. After they observed the small toy being placed behind the miniature couch, they ran into the room and found the large toy behind the real couch. But the two-and-a-half-year-olds failed abysmally. They cheerfully ran into the room to retrieve the large toy, but most had no idea where to look, even though they remembered where the tiny toy was hidden in the miniature room and could readily find it there.\n\n**C**. Their failure to use what they knew about the model to draw an inference about the real room indicated that they did not appreciate the relation between the model and the room. I realised my memory study was instead a study of symbolic understanding and that the children's failure might be telling us something about how and when children acquire the ability to understand that one object stands for another.\n\n**D**. The first type of symbolic object that infants and young children master is the picture. No symbols seem simpler to adults, but infants initially find pictures perplexing. The problem stems from the duality inherent in all symbolic objects: they are real in themselves and also representations of something else. A few years ago I became intrigued by anecdotes suggesting that infants do not appreciate this duality-stories of a baby trying to pick up a depicted toy or fit a foot into a photograph of a shoe. We assumed such behaviour would be rare and therefore difficult to study.\n\n**E**. Fortunately we were wrong. We began testing infants' understanding of pictures by putting a book of highly realistic colour photographs of individual objects in front of nine-month-olds. To our surprise, every child in the study reached out to feel or scratch the pictures. The confusion seems to be conceptual not perceptual. Infants can perfectly well perceive the difference between objects and pictures and given the choice they will choose the real thing. But they do not yet fully understand what pictures are and how they differ from real objects. However, when depicted objects bear little resemblance to the real thing – as in a black and white drawing – infants rarely explore them. By 18 months, babies have come to appreciate that a picture merely represents an object; instead of manipulating the paper, they point to pictures and name objects. Nevertheless, it takes several years for the nature of pictures to be completely understood.\n\n**F**. Studies have shown that, until the age of four, many children think that turning a picture of a bowl of popcorn upside down will result in the depicted popcorn falling out of the bowl.\n\n**G**. Pictures are not the only source of confusion for very young children. In a third experiment, we brought a group of toddlers (18-to 30-month-old children) Into a room containing a child's slide, a chair, and a toddler-sized car. The children played with these for a while. Then we secretly replaced each object with an identical miniature version. Most children attempted to perform the same actions with the miniature items that they had with the larger ones. Some tried to sit on the chair, others attempted to climb into the car. Interestingly, most of the children showed little or no reaction to their failed attempts. We think this probably reflects the fact that toddlers' daily lives are full of unsuccessful attempts to do one thing or another. This confusion has implications for educational practice. Teachers everywhere use blocks or other objects to represent numerical quantity. However, if young children do not understand the relation between an object and what it represents, this could be counterproductive. To demonstrate this, we taught six-and seven-year-olds a difficult subtraction problem using blocks.\n\n**H**. We taught an identical comparison group the same concept, but using pencil and paper. Both groups learned to solve the problems equally well, but the group using blocks took three times as long to do so.\n\n**I**. Dual representation also comes into play in many children's books. Modern children's books are often 3D, with features that encourage children to interact directly with the book itself, for example flaps that can be lifted to reveal pictures. Graduate student Cynthia Chong and I reasoned that these features might distract children from the information. Accordingly, we used different types of books to teach letters to 30-month-old children. One was a simple old-fashioned alphabet book with each letter accompanied by an appropriate picture. The other was a 3-D version. The children using the traditional book subsequently recognised more letters than those using the 3-D book.\n\n**J**. Presumably, the children could concentrate more easily with the plain 2-D book, whereas with the other one they were distracted by the 3-D activities. Less may be more when it comes to educational books for young children.",
+              "order": 1
+            }
+          ],
+          "question_blocks": [
+            {
+              "block_type": "reading_multiple_choice",
+              "title": "Questions 27-32",
+              "instructions": "",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 27,
+                  "question_text": "In the first paragraph, what did the children in the experiment have to do?",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 28,
+                  "question_text": "What was the result of the first experiment?",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 29,
+                  "question_text": "In the fourth paragraph, what does the writer say about children and pictures?",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 30,
+                  "question_text": "In the third experiment, what did the writer notice about the reactions of the toddlers?",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 31,
+                  "question_text": "What did the experiment involving a mathematical problem suggest about children's learning?",
+                  "marks": 1,
+                  "order": 5
+                },
+                {
+                  "question_number": 32,
+                  "question_text": "What does Deloache conclude about the results of her and Chong's experiment?",
+                  "marks": 1,
+                  "order": 6
+                }
+              ]
+            },
+            {
+              "block_type": "matching_sentence_endings",
+              "title": "Questions 33-35",
+              "instructions": "Complete each sentence with the correct ending, A-F, below.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 33,
+                  "question_text": "The test involving 9-month-old babies attempted to find out",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 34,
+                  "question_text": "The third experiment revealed",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 35,
+                  "question_text": "The maths experiment was designed to access",
+                  "marks": 1,
+                  "order": 3
+                }
+              ]
+            },
+            {
+              "block_type": "yes_no_not_given",
+              "title": "Questions 36-40",
+              "instructions": "Choose YES if the statement agrees with the claims of the writer,\nchoose NO if the statement contradicts the claims of the writer,\nor NOT GIVEN if it is impossible to say what the writer thinks about this.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 36,
+                  "question_text": "The results of the first experiment revealed unexpected information.",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 37,
+                  "question_text": "Infants react the same way to both drawings and photographs.",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 38,
+                  "question_text": "Toddlers are used to failing in many of the tasks they try to perform.",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 39,
+                  "question_text": "The confusion of symbols and real objects has little significance for educational practice.",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 40,
+                  "question_text": "Children enjoy reading 3-D books more than 2-D books.",
+                  "marks": 1,
+                  "order": 5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "section_type": "writing",
+      "title": "Writing",
+      "instructions": "",
+      "duration_minutes": 60,
+      "order": 3,
+      "parts": [
+        {
+          "title": "Writing Task 1",
+          "instructions": "",
+          "order": 1,
+          "content_blocks": [
+            {
+              "content_type": "text",
+              "title": "Task Description",
+              "text_content": "The chart shows the proportion of renewable energy in the total energy supply in 4 countries from 1997 to 2010.",
+              "order": 1
+            },
+            {
+              "content_type": "image",
+              "title": "",
+              "text_content": "",
+              "order": 2,
+              "file_url": "/media/content_files/photo_2026-01-12_11-20-40_nJgoUsF.jpg"
+            }
+          ],
+          "question_blocks": [
+            {
+              "block_type": "graph_description",
+              "title": "Writing Task 1",
+              "instructions": "You should spend about 20 minutes on this task.\n\nThe chart shows the proportion of renewable energy in the total energy supply in 4 countries from 1997 to 2010.\n\nWrite at least 150 words.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 1,
+                  "question_text": "The chart shows the proportion of renewable energy in the total energy supply in 4 countries from 1997 to 2010.",
+                  "marks": 1,
+                  "order": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Writing Task 2",
+          "instructions": "",
+          "order": 2,
+          "content_blocks": [
+            {
+              "content_type": "text",
+              "title": "Essay Topic",
+              "text_content": "Some people believe that children should study all subjects at school, while others think they should only study subjects they are good at or find interesting. Discuss both views and give your opinion.",
+              "order": 1
+            }
+          ],
+          "question_blocks": [
+            {
+              "block_type": "essay",
+              "title": "Writing Task 2",
+              "instructions": "You should spend about 40 minutes on this task.\n\nWrite about the following topic:\n\nSome people believe that children should study all subjects at school, while others think they should only study subjects they are good at or find interesting. Discuss both views and give your opinion.\n\nGive reasons for your answer and include any relevant examples from your own knowledge or experience.\n\nWrite at least 250 words.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 2,
+                  "question_text": "Some people believe that children should study all subjects at school, while others think they should only study subjects they are good at or find interesting. Discuss both views and give your opinion.",
+                  "marks": 1,
+                  "order": 1
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

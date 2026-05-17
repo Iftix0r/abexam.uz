@@ -1,0 +1,793 @@
+{
+  "title": "Test 5",
+  "description": "IELTS practice test with 2 sections",
+  "status": "both",
+  "created_at": "2025-11-03T03:03:08.328957+00:00",
+  "sections": [
+    {
+      "section_type": "listening",
+      "title": "Listening",
+      "instructions": "You will hear a number of different recordings and you will have to answer questions on what you hear.",
+      "duration_minutes": 30,
+      "order": 1,
+      "parts": [
+        {
+          "title": "Part 1",
+          "instructions": "",
+          "order": 1,
+          "content_blocks": [
+            {
+              "content_type": "audio",
+              "title": "Listening Test Audio",
+              "text_content": "Audio file: /media/tests/TEST1/Listening Test 1.mp3 - Complete listening test for IELTS Practice Test 1",
+              "order": 1,
+              "file_url": "/media/content_files/audiomass-output3.mp3"
+            }
+          ],
+          "question_blocks": [
+            {
+              "block_type": "shared_completion",
+              "title": "Questions 1-8",
+              "instructions": "Complete the form below.\nWrite **NO MORE THAN THREE WORDS AND/OR A NUMBER** for each answer.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 1,
+                  "question_text": "Q1 - Package to reach destination by ___ at latest",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 2,
+                  "question_text": "Q2 - Service selected ___ Express",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 3,
+                  "question_text": "Q3 - Sender Address",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 4,
+                  "question_text": "Q4 - Delivery to Name: Anna ___",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 5,
+                  "question_text": "Q5 - Address: Apartment 228, ___",
+                  "marks": 1,
+                  "order": 5
+                },
+                {
+                  "question_number": 6,
+                  "question_text": "Q6 - Upper ___",
+                  "marks": 1,
+                  "order": 6
+                },
+                {
+                  "question_number": 7,
+                  "question_text": "Q7 - Contents",
+                  "marks": 1,
+                  "order": 7
+                },
+                {
+                  "question_number": 8,
+                  "question_text": "Q8 - Contents",
+                  "marks": 1,
+                  "order": 8
+                }
+              ]
+            },
+            {
+              "block_type": "shared_completion",
+              "title": "Questions 9 and 10",
+              "instructions": "Answer the questions below.\nWrite **NO MORE THAN THREE WORDS AND/OR A NUMBER** for each answer.",
+              "order": 2,
+              "questions": [
+                {
+                  "question_number": 9,
+                  "question_text": "What is the total cost of sending the package?",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 10,
+                  "question_text": "What is required in order to find a lost package?",
+                  "marks": 1,
+                  "order": 2
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Part 2",
+          "instructions": "",
+          "order": 2,
+          "content_blocks": [
+            {
+              "content_type": "image",
+              "title": "",
+              "text_content": "",
+              "order": 0,
+              "file_url": "/media/content_files/photo_2025-11-03_08-08-21.jpg"
+            }
+          ],
+          "question_blocks": [
+            {
+              "block_type": "listening_multiple_choice",
+              "title": "Questions 11-15",
+              "instructions": "Choose the correct letter, A, B or C.\n\n**The Montana Resort Hotel**",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 11,
+                  "question_text": "Rob says the hotel is exceptional because of",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 12,
+                  "question_text": "What is the price range for a standard room?",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 13,
+                  "question_text": "All the bedrooms in the deluxe suites have",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 14,
+                  "question_text": "The hotel encourages families to stay by offering",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 15,
+                  "question_text": "What does Rob say visitors can do in the Grill Room?",
+                  "marks": 1,
+                  "order": 5
+                }
+              ]
+            },
+            {
+              "block_type": "shared_map_labeling",
+              "title": "Questions 16-20",
+              "instructions": "Label the map below.\nWrite the correct letter, A-H, next to questions 16-20.\n\nHotel's outdoor facilities",
+              "order": 2,
+              "questions": [
+                {
+                  "question_number": 16,
+                  "question_text": "Barn for horses",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 17,
+                  "question_text": "Tennis courts",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 18,
+                  "question_text": "Swimming pool",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 19,
+                  "question_text": "Golf course",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 20,
+                  "question_text": "Outdoor Facilities Manager's office",
+                  "marks": 1,
+                  "order": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Part 3",
+          "instructions": "",
+          "order": 3,
+          "content_blocks": [],
+          "question_blocks": [
+            {
+              "block_type": "listening_multiple_choice",
+              "title": "Questions 21-25",
+              "instructions": "Choose the correct letter, A, B, or C.\n\n### Oral History",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 21,
+                  "question_text": "What source did Mike use for his definition?",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 22,
+                  "question_text": "According to Mike and his tutor, what is the most important contribution of the intern to oral history?",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 23,
+                  "question_text": "Mike says he chose his particular topic because",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 24,
+                  "question_text": "What does Mike say was his best source of information about the team?",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 25,
+                  "question_text": "How did Mike find the former players he has arranged to interview?",
+                  "marks": 1,
+                  "order": 5
+                }
+              ]
+            },
+            {
+              "block_type": "listening_matching",
+              "title": "Questions 26-30",
+              "instructions": "What problems with the following aspects of the proposed interviews do the speakers identify?\n**Choose FIVE answers** from the box and write the correct letter A-H, next to questions 26-30.",
+              "order": 2,
+              "questions": [
+                {
+                  "question_number": 26,
+                  "question_text": "Questions drafted",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 27,
+                  "question_text": "Time allotted",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 28,
+                  "question_text": "Recording equipment used",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 29,
+                  "question_text": "Subjects chosen",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 30,
+                  "question_text": "Proposed report",
+                  "marks": 1,
+                  "order": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Part 4",
+          "instructions": "",
+          "order": 4,
+          "content_blocks": [],
+          "question_blocks": [
+            {
+              "block_type": "shared_completion",
+              "title": "Questions 31-40",
+              "instructions": "Complete the notes below.\nWrite **ONE WORD ONLY** for each answer.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 31,
+                  "question_text": "Q31 - Scientists once thought of plants as being ___ organisms",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 32,
+                  "question_text": "Q32 - Found on ___",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 33,
+                  "question_text": "Q33 - produces extra ___ to compete for nutrients",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 34,
+                  "question_text": "Q34 - by the type of ___ that they reflect",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 35,
+                  "question_text": "Q35 - all plants have a particular ___",
+                  "marks": 1,
+                  "order": 5
+                },
+                {
+                  "question_number": 36,
+                  "question_text": "Q36 - Is unable to produce ___",
+                  "marks": 1,
+                  "order": 6
+                },
+                {
+                  "question_number": 37,
+                  "question_text": "Q37 - alfalfa, ___ and citrus",
+                  "marks": 1,
+                  "order": 7
+                },
+                {
+                  "question_number": 38,
+                  "question_text": "Q38 - detecting the ___ they give off",
+                  "marks": 1,
+                  "order": 8
+                },
+                {
+                  "question_number": 39,
+                  "question_text": "Q39 - Moves in a ___ to check the environment",
+                  "marks": 1,
+                  "order": 9
+                },
+                {
+                  "question_number": 40,
+                  "question_text": "Q40 - Use of modern ___ provides evidence of plant behaviour",
+                  "marks": 1,
+                  "order": 10
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "section_type": "reading",
+      "title": "Reading",
+      "instructions": "",
+      "duration_minutes": 60,
+      "order": 2,
+      "parts": [
+        {
+          "title": "Reading Passage 1",
+          "instructions": "",
+          "order": 1,
+          "content_blocks": [
+            {
+              "content_type": "text",
+              "title": "Rubber",
+              "text_content": "The plants that produce rubber are spread right across the globe, and grow in many different habitats. One might think it likely, therefore, that humankind has known about rubber for thousands of years. Yet, unlike other crops of economic importance, rubber led a relatively anonymous life until the last 150 years or so. The Indians of South America appear to be the first people to have understood the properties of rubber, and the Aztecs of what is now Mexico were the first to be recorded using the substance; a wall painting dating back to the sixth century depicts a scene of a tributary offering of crude rubber. With the arrival of Columbus in the Americas and the resulting Spanish influx, further evidence starts to appear concerning the Native American use of rubber. Antonio de Herrera y Tordesillas describes a ritual game played with a rubber ball at the court of the Aztec Emperor Montezuma II, and the Mayan and Toltec people are known to have taken part in similar activities. Rubber was also used to make raincoats, shoes, jars, torches and musical instruments, all of which must have been made from the indigenous Castilla elastica, as the Para plant now favoured for rubber cultivation does not grow in the Mexican region.\n\nThe first description of latex (liquid rubber) extraction is made by Juan de Torquemada, who noted that if a receptacle was not at hand the Native Americans would place the latex on their bodies to allow it to solidify. However, no real interest in rubber was shown by any European until Charles de la Condamine, a French mathematician, published an account of his journey to South America in 1735. The journey was undertaken on behalf of the Paris Academy of Sciences to measure an arc of the meridian line on the equator, but the journey home was to turn out to be more significant than the true purpose of the trip. Condamine explored Brazil and Peru and discovered how the local people used one single piece of coagulated latex to make boots. The boots were impervious to water and, when smoked, looked like real leather. In 1747 the first description of the rubber tree and latex tapping was made by a military engineer and amateur botanist, François Fresneau, who was posted to French Guiana. The publications of Condamine and Fresneau created considerable excitement among French scientists, and an attempt was made to discover a solvent that could turn the crude rubber into a substance for commercial exploitation.\n\nIn 1818 a British medical student named James Syme first used rubber to make waterproof cloth. Another early use of the substance was as an eraser of pencil marks, hence the name ‘rubber’. This was complemented by balloons, rubber bands, braces, boots for the army and other ideas that met with varying degrees of success. In 1820 Thomas Hancock, an English manufacturer of rubber goods such as driving belts, industrial rollers and rubber hoses, invented a machine he called the ‘pickle’, which chewed up waste strips for re-use. It was discovered that the masticated rubber was more malleable, while maintaining much of its elasticity. In Scotland at the same time Charles Mackintosh had discovered a way of using rubber as waterproofing material, by a process he patented in 1823. Hancock and Mackintosh joined forces in 1834, and three years later Hancock invented a machine for spreading rubber onto material.\n\nDespite their beneficial qualities, such as waterproofing, rubber goods were still not particularly popular as they had some major flaws, including the fact that they dissolved malodorously. They also became pliant when warm and rigid when cold. Then in 1839 the American Charles Goodyear discovered that it was possible to stabilise rubber by mixing it with sulphur while exposing it to heat - a process he called vulcanisation - and the full versatility of this extraordinary substance became apparent.\n\nRubber goods could now be manufactured which had all the beneficial qualities of the material, such as durability, elasticity and variability, but which were not sticky, soluble or governed by the vagaries of the weather. The economic potential of rubber was now clearly evident. It played an important role in the Industrial Revolution, being employed in the steam engines found in factories, mills, mines and railways. It made a triumphant entrance as a new and innovative material at the Great Exhibition of 1851, where shoes, airbeds, furniture and clothing made out of newly improved rubber were proudly displayed.\n\nOne of the most important rubber inventions was made in 1888, when an Irishman called John Boyd Dunlop produced the first pneumatic tyre. Solid rubber tyres had been used for the previous 18 years, but Dunlop's new design, which he updated in 1890, immediately became popular. In 1895 Dunlop's tyres were first used in motor cars, and with the mass production of cars just over the horizon the rubber industry had never looked healthier. The import levels of rubber over the nineteenth century bear witness to its irrepressible rise. In 1830 Britain had imported just 211 kg of crude rubber. This had risen to 10,000 kg in 1857, and by 1874 levels were just under six times as much again.",
+              "order": 1
+            }
+          ],
+          "question_blocks": [
+            {
+              "block_type": "true_false_not_given",
+              "title": "Questions 1-6",
+              "instructions": "Do the following statements agree with the information given in the text?\nIn boxes 1-6 on your answer sheet, choose\n**TRUE** if the statement agrees with the information\n**FALSE** if the statement contradicts the information\n**NOT GIVEN** if there is no information on this",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 1,
+                  "question_text": "Rubber plants grow only in certain regions of the world.",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 2,
+                  "question_text": "Rubber was extracted in Mexico as early as the sixth century.",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 3,
+                  "question_text": "Rubber from the Castilla elastica plant is of poorer quality than that from the Para plant.",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 4,
+                  "question_text": "A French mathematician inspired real interest in rubber amongst Europeans.",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 5,
+                  "question_text": "The process of vulcanisation was discovered by accident.",
+                  "marks": 1,
+                  "order": 5
+                },
+                {
+                  "question_number": 6,
+                  "question_text": "Imports of crude rubber into Britain fell during the nineteenth century.",
+                  "marks": 1,
+                  "order": 6
+                }
+              ]
+            },
+            {
+              "block_type": "shared_completion",
+              "title": "Questions 7-13",
+              "instructions": "Complete the summary below.\nWrite **NO MORE THAN THREE WORDS** from the passage for each answer.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 7,
+                  "question_text": "In 1818, _____ was produced using rubber",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 8,
+                  "question_text": "recycling _____ of rubber",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 9,
+                  "question_text": "soft or _____ depending on the temperature",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 10,
+                  "question_text": "a new process to _____ the substance",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 11,
+                  "question_text": "the creation of the _____ industry",
+                  "marks": 1,
+                  "order": 5
+                },
+                {
+                  "question_number": 12,
+                  "question_text": "the _____ was developed",
+                  "marks": 1,
+                  "order": 6
+                },
+                {
+                  "question_number": 13,
+                  "question_text": "the _____ of the motor car began",
+                  "marks": 1,
+                  "order": 7
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Reading Passage 2",
+          "instructions": "",
+          "order": 2,
+          "content_blocks": [
+            {
+              "content_type": "text",
+              "title": "The Myth of the Eight-hour Sleep",
+              "text_content": "[A-drophere]\n**A**. We often worry about lying awake in the middle of the night – but it could be good for you. Indications from both science and history suggest that the eight-hour sleep may not be a natural or inborn pattern for humans. In the early 1990s, psychiatrist Thomas Wehr conducted research which implies just that. Wehr kept a group of people in a darkened room for 14 hours a day for a month. It took some time for their sleep to regulate, but by the fourth week the subjects had settled into a very distinct sleeping pattern. Firstly, they slept four hours, then woke for one or two hours before falling into a second four-hour sleep. Though sleep scientists were impressed by the implications of the study, the idea that we must sleep for eight consecutive hours persists amongst the general public.\n\n[B-drophere]\n**B**. In 2001, historian Roger Ekirch of Virginia Tech University in the US published a paper drawn from 16 years of research, revealing historical evidence that humans used to sleep in two distinct periods of time each night. Ekirch’s research found more than 500 references to a segmented sleeping pattern – in diaries, court records, medical books and literature, from the ancient Greeks to tribes in Nigeria. Much like Wehr’s findings, these references describe a first sleep which began not long following sunset. Then there was a waking period of one or two hours and after that a second sleep. During the waking period, people could be quite active. They sometimes got up and moved around the house, although most people stayed in bed, and perhaps read or wrote if they had enough money for candles. In many historic accounts, Ekirch found that people used the time that they were awake between periods of sleep to think about and attempt to analyse their dreams.\n\n[C-drophere]\n**C**. In his book *‘Evening’s Empire’*, historian Craig Koslofsky suggested an explanation for this divided sleep pattern in Europe. 'Associations with night before the 17th century were not good,' he writes. He goes on to explain that the streets of cities and towns at night were often populated by thieves or worse. The streets at night consequently scared many people. Even the wealthy, who could afford to light their way, had better things to spend their money on. There was no prestige or social value with going out or staying up late at night.\n\n[D-drophere]\n**D**. Ekirch found that references to the first and second sleep started to disappear during the late 17th century. The pattern began to alter first among the urban upper classes, changing amongst the rest of Western society. By the 1920s, the idea of a first and second sleep had receded entirely from our social consciousness. Ekirch attributes the initial shift to improvements in street and home lighting. As the night became a time for all kinds of activity, the length of time people used for rest declined. In 1667, Paris became the first city in the world to light its streets, using wax candles in glass lamps. It was followed by another French city, Lille, in the same year and by Amsterdam in Holland two years later, where a much more efficient oil-powered lamp was developed. London didn’t light its streets until 1584, but by the end of the 17th century, more than 50 of Europe's major towns and cities were lit at night. Coffee houses emerged as a fashionable phenomenon and many were open virtually around the clock. Going out at night became commonplace, and spending hours lying in bed was considered a waste of time. 'People were becoming increasingly time-conscious and sensitive to efficiency, certainly before the 19th century,' says Ekirch. 'But the Industrial Revolution intensified that attitude considerably.' Strong evidence of this shifting attitude is contained in a medical journal from 1829 which urged parents to force their children out of the pattern of first and second sleep.\n\n[E-drophere]\n**E**. Today, most people seem to have adapted quite well to the eight-hour sleep, but Ekirch believes many sleeping problems may have roots in the human body's natural preference for divided sleep, as well as in difficulties caused by extended exposure to artificial light in the modern world. This could be the cause of a condition called sleep maintenance insomnia, where people wake during the night and have trouble getting back to sleep. The condition first appears in literature at the end of the 19th century, at the same time as accounts of interrupted sleep disappear. Sleep psychologist Gregg Jacobs says that the idea that we must sleep for an extended period of time could be changing. If it makes people who wake up in the night anxious, as this anxiety can itself discourage sleep and is likely to affect waking life too. Jacobs suggests that the waking period between sleeping, when people simply rested and relaxed, could have played an important part in the human capacity to regulate stress naturally. Russell Foster, a professor of circadian (body clock) neuroscience at Oxford University in the UK, shares this point of view. 'Over 30% of the medical problems that doctors are faced with stem directly or indirectly from sleep. But sleep has been ignored in medical training, and there are very few countries where sleep is studied,' Foster says. He feels this needs to change.",
+              "order": 1
+            }
+          ],
+          "question_blocks": [
+            {
+              "block_type": "matching_headings",
+              "title": "Questions 14-18",
+              "instructions": "Reading Passage 2 has five sections.\nChoose the correct heading for each section from the List of Headings below.\nWrite the correct number, i-vii, in boxes 14-18 on your answer sheet.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 14,
+                  "question_text": "Paragraph A",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 15,
+                  "question_text": "Paragraph B",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 16,
+                  "question_text": "Paragraph C",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 17,
+                  "question_text": "Paragraph D",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 18,
+                  "question_text": "Paragraph E",
+                  "marks": 1,
+                  "order": 5
+                }
+              ]
+            },
+            {
+              "block_type": "matching_features",
+              "title": "Questions 19-23",
+              "instructions": "Look at the following statements (Questions 19-23) and the list of researchers below.\nMatch each statement with the correct researcher, A-E.\nChoose the correct letter, A-E, in boxes 19-23 on your answer sheet.\nNB You may use any letter more than once.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 19,
+                  "question_text": "In certain historical periods, the threat of criminal danger led to segmented sleep.",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 20,
+                  "question_text": "Physicians should learn more about treating people with sleeping difficulties.",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 21,
+                  "question_text": "Historically, when people experienced interrupted sleep, they used the waking period at night for different activities.",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 22,
+                  "question_text": "Technological changes in Europe made people more likely to sleep throughout the night.",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 23,
+                  "question_text": "The belief that humans should have a long continuous sleep can be psychologically harmful.",
+                  "marks": 1,
+                  "order": 5
+                }
+              ]
+            },
+            {
+              "block_type": "shared_completion",
+              "title": "Questions 24-26",
+              "instructions": "Complete the summary below.\nWrite **ONE WORD ONLY** from the passage for each answer.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 24,
+                  "question_text": "soon after _____",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 25,
+                  "question_text": "the meaning of _____",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 26,
+                  "question_text": "they feared _____ in large cities",
+                  "marks": 1,
+                  "order": 3
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Reading Passage 3",
+          "instructions": "",
+          "order": 3,
+          "content_blocks": [
+            {
+              "content_type": "text",
+              "title": "Living dunes",
+              "text_content": "[A-drophere]\n**A**. Things don't come much stranger than heaps of sand that can move and sing of their own accord. Sally Palmer investigates Armies of giant sand dunes are advancing across the world's deserts, engulfing anything that crosses their path. They are tens of metres tall and hundreds of metres long. Fortunately, they aren't going very fast. Even the smallest, speediest dunes only travel about 100 metres over the course of a year, while the bigger ones, which weigh something in the order of 10,000 tonnes, barely move one metre in that time. However, their insidious creep can have serious consequences if there is an oil installation or a railway line in their path.\n\n[B-drophere]\n**B**. About 47% of the world's land mass, including Antarctica, most of Australia and large areas of Africa, is classified as arid or semi-arid desert. Only around 20% of that is sand-covered, however, and over half of that is classified as 'linear' sand dunes. These form in a long curving wave, as a result of wind blowing strongly from several quarters, flipping them from side to side. Although linear dunes are static, sand blowing off them can cause problems for desert villages, burying crops and buildings.\n\n[C-drophere]\n**C**. Moving dunes make up just a small percentage of the rest, but they are of the most interest to scientists. They are known as 'barchans': heavy, crescent-shaped sand piles with a ridged crest and two elongated arms, one curving away to either side. 'Barchan dunes only tend to form where you have one-directional winds on the edge of sandy deserts near coastal areas,' says Giles Wiggs, a geomorphologist at Oxford University, who has been studying the formation and movement of sand dunes for more than a decade.\n\n[D-drophere]\n**D**. But even with strong winds, how can entire barchans move while retaining their form? That question was first answered in the mid-20th century by British explorer Ralph Alger Bagnold, and his answer hinges on the fact that dunes aren't solid, but granular.\n\n[E-drophere]\n**E**. Bagnold figured out how barchan dunes are able to move grain by grain. Imagine a single grain of sand being blown up the back of a dune by the wind and deposited on the top. More grains follow the same pattern, until the accumulated weight of piled-up sand finally pushes the top down the dune face. The grain tumbles, then stops on the face until subsequent mini-avalanches bury it. Eventually, it reappears at the back of the dune, ready to repeat the process. As this happens to every grain of sand in the dune, the whole thing creeps in the direction of the prevailing wind.\n\n[F-drophere]\n**F**. The relationship between the wind and barchan dunes is complex. As a dune grows, it modifies the speed and course of the wind, which in turn alters how that dune and its neighbours evolve. 'Interestingly, the dune can regulate its own shape, and maintain it as it moves,' says Dr Stéphane Douady, a physicist at Ecole Normale Supérieure (ENS) in France. 'Even when two dunes collide, they quickly take on their distinctive shapes again. It's like a living organism.'\n\n[G-drophere]\n**G**. Douady and his colleagues have also been studying an even odder phenomenon than moving dunes: some barchans actually sing. Local legends attributed the sounds to dangerous spirits which were trying to trap unwary travellers. Douady is more pragmatic. 'It's a strong booming noise with a low frequency,' he explains, making a noise like a foghorn to demonstrate. 'It can last for a long time - up to several minutes. It's a very loud sound and you don't understand where it's coming from when you first hear it.' There are about 50 dunes distributed across 35 deserts round the world that are known to sing. Douady says the sound is caused by the way sand avalanches down the faces of particular dunes. Rather than tumbling randomly, the sand grains flow in synchrony and set each other vibrating like the membrane on a gigantic loudspeaker. The synchronisation causes the air to move in and out between the grains, creating a powerful sound wave. What really surprised the scientists, however, was that they were able to take samples of the singing sand back to France and replicate the sound at ENS, proving that it's the sand, not the dune shape, that causes the sound. Their studies show the grains are a uniform shape, well-rounded from years of striking each other, and that the variations in size affect the tone. Crucially, the grains are coated with a special veneer, which Douady calls 'desert glaze', made from a precise combination of minerals from surrounding rocks including iron, aluminium, manganese, silicon and calcium. The team found that after a month or so, the veneer wore off and the grains lost their 'voice'. 'We managed to reproduce the desert glaze and then the grains started to sing again,' says Douady. 'We tried putting the coating onto different grains, but they weren't round enough and it didn't work. But some American colleagues made some artificial grains and managed to make them sing, after covering them in desert glaze.' Douady has now made recordings of dunesong from all over the world which are to be made into a CD.",
+              "order": 1
+            }
+          ],
+          "question_blocks": [
+            {
+              "block_type": "shared_completion",
+              "title": "Questions 37-40",
+              "instructions": "Complete the summary below.\nWrite **NO MORE THAN TWO WORDS** from the passage for each answer.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 37,
+                  "question_text": "the type of dunes known as _____",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 38,
+                  "question_text": "the individual grains have a similar _____",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 39,
+                  "question_text": "alter the _____ of the 'song'",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 40,
+                  "question_text": "a mixture of different _____",
+                  "marks": 1,
+                  "order": 4
+                }
+              ]
+            },
+            {
+              "block_type": "matching_headings",
+              "title": "Questions 27-33",
+              "instructions": "Reading Passage 3 has seven paragraphs.\nChoose the correct heading for each paragraph from the list of headings below.\nChoose the correct number, i-ix, in boxes 27-33 on your answer sheet.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 27,
+                  "question_text": "Paragraph A",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 28,
+                  "question_text": "Paragraph B",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 29,
+                  "question_text": "Paragraph C",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 30,
+                  "question_text": "Paragraph D",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 31,
+                  "question_text": "Paragraph E",
+                  "marks": 1,
+                  "order": 5
+                },
+                {
+                  "question_number": 32,
+                  "question_text": "Paragraph F",
+                  "marks": 1,
+                  "order": 6
+                },
+                {
+                  "question_number": 33,
+                  "question_text": "Paragraph G",
+                  "marks": 1,
+                  "order": 7
+                }
+              ]
+            },
+            {
+              "block_type": "reading_multiple_choice",
+              "title": "Questions 34-36",
+              "instructions": "",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 34,
+                  "question_text": "What are we told about linear dunes?",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 35,
+                  "question_text": "Bagnold discovered that movement in barchans was caused by",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 36,
+                  "question_text": "Why does Dr Douady compare a barchan dune to a living organism?",
+                  "marks": 1,
+                  "order": 3
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "section_type": "writing",
+      "title": "Writing",
+      "instructions": "",
+      "duration_minutes": 60,
+      "order": 3,
+      "parts": [
+        {
+          "title": "Writing Task 1",
+          "instructions": "",
+          "order": 1,
+          "content_blocks": [
+            {
+              "content_type": "text",
+              "title": "Task Description",
+              "text_content": "The pie charts below show the sources of the electricity produced in four countries in four countries between 2003 and 2008.  Summarise the information by selecting and reporting the main features, and make comparison where relevant.",
+              "order": 1
+            },
+            {
+              "content_type": "image",
+              "title": "",
+              "text_content": "",
+              "order": 2,
+              "file_url": "/media/content_files/photo_2025-11-03_08-14-58.jpg"
+            }
+          ],
+          "question_blocks": [
+            {
+              "block_type": "graph_description",
+              "title": "Writing Task 1",
+              "instructions": "You should spend about 20 minutes on this task.\n\nThe pie charts below show the sources of the electricity produced in four countries in four countries between 2003 and 2008.  Summarise the information by selecting and reporting the main features, and make comparison where relevant.\n\nWrite at least 150 words.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 1,
+                  "question_text": "The pie charts below show the sources of the electricity produced in four countries in four countries between 2003 and 2008.  Summarise the information by selecting and reporting the main features, and make comparison where relevant.",
+                  "marks": 1,
+                  "order": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Writing Task 2",
+          "instructions": "",
+          "order": 2,
+          "content_blocks": [
+            {
+              "content_type": "text",
+              "title": "Essay Topic",
+              "text_content": "Some people say that the governments should pay for health care and education, but others think that this is not the government’s responsibility. Discuss both views and give your own opinion.",
+              "order": 1
+            }
+          ],
+          "question_blocks": [
+            {
+              "block_type": "essay",
+              "title": "Writing Task 2",
+              "instructions": "You should spend about 40 minutes on this task.\n\nWrite about the following topic:\n\nSome people say that the governments should pay for health care and education, but others think that this is not the government’s responsibility. Discuss both views and give your own opinion.\n\nGive reasons for your answer and include any relevant examples from your own knowledge or experience.\n\nWrite at least 250 words.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 2,
+                  "question_text": "Some people say that the governments should pay for health care and education, but others think that this is not the government’s responsibility. Discuss both views and give your own opinion.",
+                  "marks": 1,
+                  "order": 1
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

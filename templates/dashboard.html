@@ -1,128 +1,155 @@
 {% extends 'base.html' %}
 
 {% block title %}Bosh sahifa - AbExam{% endblock %}
+{% block page_title %}Bosh sahifa{% endblock %}
 
 {% block extra_css %}
 <style>
-    .gemini-container {
-        max-width: 900px;
-        margin: 0 auto;
-        padding-top: 5vh;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        min-height: 80vh;
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(16px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 
-    .greeting-text {
-        font-size: 3rem;
+    .dash-greeting {
+        animation: fadeInUp 0.5s ease-out;
+        margin-bottom: 2rem;
+    }
+
+    .dash-greeting h2 {
+        font-size: 1.6rem;
+        font-weight: 400;
+        color: var(--text-muted);
+        margin-bottom: 4px;
+    }
+
+    .dash-greeting h1 {
+        font-size: 2.5rem;
         font-weight: 600;
         background: linear-gradient(to right, #4285f4, #9b72cb, #d96570);
         background-clip: text;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        margin-bottom: 3rem;
-        animation: fadeIn 1s ease-out;
+        letter-spacing: -0.03em;
+        line-height: 1.2;
     }
 
-    .gemini-input-container {
-        width: 100%;
-        background: #212121;
-        border: 1px solid #444;
-        border-radius: 32px;
-        padding: 0.75rem 1rem 0.75rem 1.5rem;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        transition: border-color 0.2s, box-shadow 0.2s;
+    .quick-actions {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 16px;
+        margin-bottom: 2rem;
+        animation: fadeInUp 0.6s ease-out 0.1s both;
     }
 
-    .gemini-input-container:focus-within {
-        border-color: #666;
-        box-shadow: 0 15px 40px rgba(0,0,0,0.4);
-    }
-
-    .gemini-input {
-        background: transparent;
-        border: none;
-        flex-grow: 1;
-        color: #fff;
-        font-size: 1.1rem;
-        outline: none;
-        padding: 0.5rem 0;
-    }
-
-    .action-btn {
-        background: transparent;
-        border: none;
-        color: var(--text-muted);
-        cursor: pointer;
-        padding: 8px;
-        border-radius: 50%;
-        transition: background 0.2s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .action-btn:hover {
-        background: rgba(255, 255, 255, 0.05);
-        color: #fff;
-    }
-
-    .send-btn {
-        background: #fff;
-        color: #000;
-        border-radius: 50%;
-        width: 42px;
-        height: 42px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: transform 0.1s;
-    }
-
-    .send-btn:active {
-        transform: scale(0.9);
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    .pill {
-        background: #1e1e1e;
-        border: 1px solid #333;
-        border-radius: 20px;
-        padding: 6px 16px;
-        color: #e3e3e3;
-        font-size: 0.85rem;
-        cursor: pointer;
+    .qa-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 20px;
+        text-decoration: none;
+        color: var(--text-color);
         transition: all 0.2s;
         display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .pill:hover {
-        background: #2a2a2a;
-        border-color: #555;
-    }
-
-    #chat-area {
-        width: 100%;
-        display: none;
         flex-direction: column;
-        gap: 2rem;
-        padding-bottom: 5rem;
+        gap: 10px;
+        position: relative;
+        overflow: hidden;
     }
+
+    .qa-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 2px;
+        opacity: 0;
+        transition: opacity 0.2s;
+    }
+
+    .qa-card:hover {
+        border-color: var(--primary-color);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    }
+
+    .qa-card:hover::before { opacity: 1; }
+
+    .qa-card.exam::before { background: linear-gradient(90deg, #4285f4, #9b72cb); }
+    .qa-card.results::before { background: linear-gradient(90deg, #22c55e, #16a34a); }
+    .qa-card.vocab::before { background: linear-gradient(90deg, #f59e0b, #d97706); }
+    .qa-card.finance::before { background: linear-gradient(90deg, #6366f1, #4f46e5); }
+
+    .qa-icon {
+        width: 40px; height: 40px;
+        border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+    }
+
+    .qa-icon.exam    { background: rgba(66,133,244,.15); color: #4285f4; }
+    .qa-icon.results { background: rgba(34,197,94,.15);  color: #22c55e; }
+    .qa-icon.vocab   { background: rgba(245,158,11,.15); color: #f59e0b; }
+    .qa-icon.finance { background: rgba(99,102,241,.15); color: #6366f1; }
+
+    .qa-card h3 {
+        font-size: 15px;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .qa-card p {
+        font-size: 12px;
+        color: var(--text-muted);
+        margin: 0;
+        line-height: 1.5;
+    }
+
+    .qa-card .arrow {
+        font-size: 18px;
+        color: var(--text-muted);
+        align-self: flex-end;
+        margin-top: auto;
+        transition: transform 0.2s;
+    }
+
+    .qa-card:hover .arrow { transform: translateX(4px); color: var(--primary-color); }
 </style>
 {% endblock %}
 
 {% block content %}
+
+<!-- Greeting -->
+<div class="dash-greeting">
+    <h2>Salom, {{ user.first_name|default:user.username }}</h2>
+    <h1>{% if stats.total_tests %}Davom etamizmi?{% else %}Nimalardan boshlaymiz?{% endif %}</h1>
+</div>
+
+<!-- Quick action cards (always visible) -->
+<div class="quick-actions">
+    <a href="{% url 'exams_list' %}" class="qa-card exam">
+        <div class="qa-icon exam"><i data-lucide="clipboard-check" style="width:20px;"></i></div>
+        <h3>Test topshirish</h3>
+        <p>Mock IELTS imtihonlaridan birini tanlang va boshlang</p>
+        <span class="arrow">→</span>
+    </a>
+    <a href="{% url 'results_list' %}" class="qa-card results">
+        <div class="qa-icon results"><i data-lucide="trophy" style="width:20px;"></i></div>
+        <h3>Natijalar</h3>
+        <p>Oldingi imtihon natijalaringizni ko'ring va tahlil qiling</p>
+        <span class="arrow">→</span>
+    </a>
+    <a href="{% url 'vocabulary' %}" class="qa-card vocab">
+        <div class="qa-icon vocab"><i data-lucide="languages" style="width:20px;"></i></div>
+        <h3>Lug'at</h3>
+        <p>IELTS uchun muhim so'zlarni o'rganing va yodlang</p>
+        <span class="arrow">→</span>
+    </a>
+    <a href="{% url 'finance' %}" class="qa-card finance">
+        <div class="qa-icon finance"><i data-lucide="credit-card" style="width:20px;"></i></div>
+        <h3>Moliya</h3>
+        <p>Balansni to'ldiring va to'lovlarni boshqaring</p>
+        <span class="arrow">→</span>
+    </a>
+</div>
+
 <!-- Analytics section (only if has results) -->
 {% if stats.total_tests %}
 <div style="margin-bottom:28px">
@@ -142,16 +169,10 @@
       <div style="font-size:26px;font-weight:700;color:#eab308">{{ recent_results.0.score|floatformat:1 }}</div>
     </div>
     {% endif %}
-    <div style="background:var(--card-bg);border:1px solid var(--border-color);border-radius:14px;padding:16px 18px;display:flex;align-items:center;justify-content:center">
-      <a href="{% url 'exams_list' %}" style="color:var(--primary-color);font-weight:600;font-size:13px;display:flex;align-items:center;gap:6px;text-decoration:none">
-        <i data-lucide="plus" style="width:15px"></i> Yangi test
-      </a>
-    </div>
   </div>
 
   <!-- Charts row -->
   <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px">
-    <!-- Progress chart -->
     <div style="background:var(--card-bg);border:1px solid var(--border-color);border-radius:14px;padding:18px">
       <div style="font-size:13px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between">
         <span>Ball dinamikasi</span>
@@ -159,7 +180,6 @@
       </div>
       <div style="height:160px"><canvas id="progressChart"></canvas></div>
     </div>
-    <!-- Radar chart -->
     <div style="background:var(--card-bg);border:1px solid var(--border-color);border-radius:14px;padding:18px">
       <div style="font-size:13px;font-weight:600;margin-bottom:14px">Bo'limlar bo'yicha</div>
       <div style="height:160px"><canvas id="radarChart"></canvas></div>
@@ -201,169 +221,43 @@
 </div>
 {% endif %}
 
-<div class="gemini-container" style="justify-content: center; padding-bottom: 10vh;">
-    <div id="home-view" style="width: 100%; text-align: left; margin-bottom: 2rem;">
-        <h2 style="font-size: 2.5rem; font-weight: 400; color: #fff; margin-bottom: 0.25rem; opacity: 0.9; letter-spacing: -0.01em;">Salom, {{ user.first_name|default:user.username }}</h2>
-        <h1 style="font-size: 3.5rem; font-weight: 500; background: linear-gradient(to right, #4285f4, #9b72cb, #d96570); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 3rem; letter-spacing: -0.03em;">Nimalardan boshlaymiz?</h1>
-    </div>
-
-    <div id="chat-area">
-        <!-- Messages will be injected here -->
-    </div>
-
-    <!-- Persistent Input Bar Area -->
-    <div style="width: 100%; max-width: 800px; margin-top: 1rem;">
-        <div class="gemini-input-container">
-            <div style="display: flex; align-items: center; gap: 12px; color: var(--text-muted);">
-                <button class="action-btn"><i data-lucide="plus" style="width: 20px;"></i></button>
-                <div style="font-size: 0.9rem; display: flex; align-items: center; gap: 6px; cursor: pointer;">
-                    <i data-lucide="wrench" style="width: 16px;"></i>
-                    <span>Asboblar</span>
-                </div>
-            </div>
-            <input type="text" id="gemini-input" class="gemini-input" placeholder="Bu yerga yozing..." autocomplete="off">
-            <div style="display: flex; gap: 8px; align-items: center;">
-                <button class="action-btn"><i data-lucide="mic" style="width: 20px;"></i></button>
-                <button id="send-btn" class="send-btn">
-                    <i data-lucide="arrow-up" style="width: 20px;"></i>
-                </button>
-            </div>
-        </div>
-
-        <!-- Prompt Pills UNDER the input -->
-        <div style="display: flex; gap: 10px; justify-content: flex-start; margin-top: 1.5rem; flex-wrap: wrap;">
-            <div class="pill" onclick="setPrompt('Kelajakdagi IELTS imtihonlarini ko\'rsat')">
-                <i data-lucide="file-text" style="width: 14px; color: #4285f4;"></i>
-                <span>Test topshirish</span>
-            </div>
-            <div class="pill" onclick="setPrompt('Lug\'atdagi so\'zlarni takrorlash')">
-                <i data-lucide="languages" style="width: 14px; color: #ea4335;"></i>
-                <span>So'z yodlash</span>
-            </div>
-            <div class="pill" onclick="setPrompt('Natijalarimni ko\'rsat')">
-                <i data-lucide="trophy" style="width: 14px; color: #fbbc04;"></i>
-                <span>Natijalar</span>
-            </div>
-            <div class="pill" onclick="setPrompt('AI bilan suhbatlashish')">
-                <i data-lucide="sparkles" style="width: 14px; color: #9b72cb;"></i>
-                <span>AI Yordam</span>
-            </div>
-        </div>
-
-        <p style="font-size: 0.75rem; color: #555; margin-top: 2rem; text-align: center;">AbExam 4.0 AI xato qilishi mumkin. Muhim ma'lumotlarni tekshiring.</p>
-    </div>
-</div>
-
-<script>
-    const input = document.getElementById('gemini-input');
-    const sendBtn = document.getElementById('send-btn');
-    const homeView = document.getElementById('home-view');
-    const chatArea = document.getElementById('chat-area');
-    const chatHistory = [];
-
-    function setPrompt(text) {
-        input.value = text;
-        sendMessage();
-    }
-
-    async function sendMessage() {
-        const text = input.value.trim();
-        if (!text) return;
-
-        input.value = '';
-        homeView.style.display = 'none';
-        chatArea.style.display = 'flex';
-
-        appendMessage('user', text);
-        chatHistory.push({ role: 'user', content: text });
-
-        const loadingId = 'loading-' + Date.now();
-        appendMessage('ai', '...', loadingId);
-
-        try {
-            const response = await fetch('/api/chat/', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: text, history: chatHistory.slice(-10) })
-            });
-            const data = await response.json();
-            const reply = data.response || 'Xatolik yuz berdi.';
-            document.getElementById(loadingId).innerText = reply;
-            chatHistory.push({ role: 'assistant', content: reply });
-        } catch (e) {
-            document.getElementById(loadingId).innerText = "Server bilan bog'lanishda xatolik.";
-        }
-    }
-
-    function appendMessage(role, text, id) {
-        const div = document.createElement('div');
-        div.style.cssText = 'display:flex;gap:1.5rem;align-items:flex-start;animation:fadeIn 0.5s ease-out;';
-
-        const avatar = document.createElement('div');
-        avatar.style.cssText = 'width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;';
-
-        if (role === 'user') {
-            avatar.style.background = '#4285f4';
-            avatar.innerHTML = '<span style="color:white;font-size:0.8rem;font-weight:600">{{ user.username|slice:":1"|upper }}</span>';
-        } else {
-            avatar.style.background = 'linear-gradient(45deg,#4285f4,#9b72cb)';
-            avatar.innerHTML = '<i data-lucide="sparkles" style="width:16px;color:white;"></i>';
-        }
-
-        const content = document.createElement('div');
-        content.style.cssText = 'font-size:1.05rem;line-height:1.6;color:#ececec;flex:1;';
-        content.innerText = text;
-        if (id) content.id = id;
-
-        div.appendChild(avatar);
-        div.appendChild(content);
-        chatArea.appendChild(div);
-        lucide.createIcons();
-        div.scrollIntoView({ behavior: 'smooth' });
-    }
-
-    sendBtn.addEventListener('click', sendMessage);
-    input.addEventListener('keypress', (e) => { if(e.key === 'Enter') sendMessage(); });
-
-    // Charts
-    {% if stats.total_tests and chart_labels %}
-    const chartDefaults = {
-        responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { labels: { color: '#888', font: { size: 11 } } }, tooltip: { backgroundColor: '#1e1e1e', borderColor: '#333', borderWidth: 1, titleColor: '#e3e3e3', bodyColor: '#aaa' } },
-    };
-    // Progress line chart
-    const pCtx = document.getElementById('progressChart');
-    if(pCtx) new Chart(pCtx.getContext('2d'), {
-        type: 'line',
-        data: {
-            labels: {{ chart_labels|safe }},
-            datasets: [
-                { label: 'Umumiy', data: {{ chart_scores|safe }}, borderColor: '#6366f1', backgroundColor: 'rgba(99,102,241,.12)', tension: .4, fill: true, pointBackgroundColor: '#6366f1', pointRadius: 4 },
-                { label: 'Listening', data: {{ chart_listening|safe }}, borderColor: '#4285f4', backgroundColor: 'transparent', tension: .4, borderDash: [4,3], pointRadius: 2 },
-                { label: 'Reading', data: {{ chart_reading|safe }}, borderColor: '#22c55e', backgroundColor: 'transparent', tension: .4, borderDash: [4,3], pointRadius: 2 },
-            ]
-        },
-        options: { ...chartDefaults, scales: {
-            x: { ticks: { color: '#666', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,.04)' } },
-            y: { min: 0, max: 9, ticks: { color: '#666', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,.04)' } }
-        }}
-    });
-    // Radar chart
-    const rCtx = document.getElementById('radarChart');
-    if(rCtx) new Chart(rCtx.getContext('2d'), {
-        type: 'radar',
-        data: {
-            labels: ['Listening', 'Reading', 'Writing', 'Speaking'],
-            datasets: [{ label: 'O\'rtacha', data: [
-                {{ section_avgs.avg_l|default:0|floatformat:1 }},
-                {{ section_avgs.avg_r|default:0|floatformat:1 }},
-                {{ section_avgs.avg_w|default:0|floatformat:1 }},
-                {{ section_avgs.avg_s|default:0|floatformat:1 }},
-            ], borderColor: '#6366f1', backgroundColor: 'rgba(99,102,241,.15)', pointBackgroundColor: '#6366f1', pointRadius: 4 }]
-        },
-        options: { ...chartDefaults, scales: { r: { min: 0, max: 9, ticks: { color: '#555', font: { size: 9 }, stepSize: 3 }, grid: { color: 'rgba(255,255,255,.08)' }, pointLabels: { color: '#888', font: { size: 10 } } } } }
-    });
-    {% endif %}
-</script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<script>
+{% if stats.total_tests and chart_labels %}
+const chartDefaults = {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: '#888', font: { size: 11 } } }, tooltip: { backgroundColor: '#1e1e1e', borderColor: '#333', borderWidth: 1, titleColor: '#e3e3e3', bodyColor: '#aaa' } },
+};
+const pCtx = document.getElementById('progressChart');
+if(pCtx) new Chart(pCtx.getContext('2d'), {
+    type: 'line',
+    data: {
+        labels: {{ chart_labels|safe }},
+        datasets: [
+            { label: 'Umumiy', data: {{ chart_scores|safe }}, borderColor: '#6366f1', backgroundColor: 'rgba(99,102,241,.12)', tension: .4, fill: true, pointBackgroundColor: '#6366f1', pointRadius: 4 },
+            { label: 'Listening', data: {{ chart_listening|safe }}, borderColor: '#4285f4', backgroundColor: 'transparent', tension: .4, borderDash: [4,3], pointRadius: 2 },
+            { label: 'Reading', data: {{ chart_reading|safe }}, borderColor: '#22c55e', backgroundColor: 'transparent', tension: .4, borderDash: [4,3], pointRadius: 2 },
+        ]
+    },
+    options: { ...chartDefaults, scales: {
+        x: { ticks: { color: '#666', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,.04)' } },
+        y: { min: 0, max: 9, ticks: { color: '#666', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,.04)' } }
+    }}
+});
+const rCtx = document.getElementById('radarChart');
+if(rCtx) new Chart(rCtx.getContext('2d'), {
+    type: 'radar',
+    data: {
+        labels: ['Listening', 'Reading', 'Writing', 'Speaking'],
+        datasets: [{ label: 'O\'rtacha', data: [
+            {{ section_avgs.avg_l|default:0|floatformat:1 }},
+            {{ section_avgs.avg_r|default:0|floatformat:1 }},
+            {{ section_avgs.avg_w|default:0|floatformat:1 }},
+            {{ section_avgs.avg_s|default:0|floatformat:1 }},
+        ], borderColor: '#6366f1', backgroundColor: 'rgba(99,102,241,.15)', pointBackgroundColor: '#6366f1', pointRadius: 4 }]
+    },
+    options: { ...chartDefaults, scales: { r: { min: 0, max: 9, ticks: { color: '#555', font: { size: 9 }, stepSize: 3 }, grid: { color: 'rgba(255,255,255,.08)' }, pointLabels: { color: '#888', font: { size: 10 } } } } }
+});
+{% endif %}
+</script>
 {% endblock %}

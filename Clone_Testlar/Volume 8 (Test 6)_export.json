@@ -1,0 +1,809 @@
+{
+  "title": "Volume 8 (Test 6)",
+  "description": "Listening Test 6 + Reading Test 7",
+  "status": "both",
+  "created_at": "2026-02-16T05:04:08.386257+00:00",
+  "sections": [
+    {
+      "section_type": "listening",
+      "title": "Listening",
+      "instructions": "You will hear a number of different recordings and you will have to answer questions on what you hear.",
+      "duration_minutes": 30,
+      "order": 1,
+      "parts": [
+        {
+          "title": "Part 1",
+          "instructions": "You will hear a man phoning a shipping company to ask about its services.",
+          "order": 1,
+          "content_blocks": [
+            {
+              "content_type": "audio",
+              "title": "Listening Test Audio",
+              "text_content": "Audio file: /media/tests/TEST1/Listening Test 1.mp3 - Complete listening test for IELTS Practice Test 1",
+              "order": 1,
+              "file_url": "/media/content_files/test_6.mp3"
+            }
+          ],
+          "question_blocks": [
+            {
+              "block_type": "shared_completion",
+              "title": "Questions 1-10",
+              "instructions": "Complete the notes below.\nWrite **ONE WORD AND/OR A NUMBER** for each answer.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 1,
+                  "question_text": "Q1 - a ___",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 2,
+                  "question_text": "Q2 - weighing more than ___ kg",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 3,
+                  "question_text": "Q3 - any ___ (for security reasons)",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 4,
+                  "question_text": "Q4 - containers made of ___",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 5,
+                  "question_text": "Q5 - delivery on ___",
+                  "marks": 1,
+                  "order": 5
+                },
+                {
+                  "question_number": 6,
+                  "question_text": "Q6 - organisation of ___",
+                  "marks": 1,
+                  "order": 6
+                },
+                {
+                  "question_number": 7,
+                  "question_text": "Q7 - sent from the UK to ___",
+                  "marks": 1,
+                  "order": 7
+                },
+                {
+                  "question_number": 8,
+                  "question_text": "Q8 - the cost would be about £ ___",
+                  "marks": 1,
+                  "order": 8
+                },
+                {
+                  "question_number": 9,
+                  "question_text": "Q9 - in cash to the ___",
+                  "marks": 1,
+                  "order": 9
+                },
+                {
+                  "question_number": 10,
+                  "question_text": "Q10 - photocopy of ___",
+                  "marks": 1,
+                  "order": 10
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Part 2",
+          "instructions": "You will hear the director of a cooking school talking to a group of people about the different programmes.",
+          "order": 2,
+          "content_blocks": [
+            {
+              "content_type": "image",
+              "title": "",
+              "text_content": "",
+              "order": 1,
+              "file_url": "/media/content_files/photo_2026-02-16_10-05-00.jpg"
+            }
+          ],
+          "question_blocks": [
+            {
+              "block_type": "listening_matching",
+              "title": "Questions 11-16",
+              "instructions": "Which special feature does each of the following cooking tours and classes have?\nChoose **SIX** correct answers, A-H, next to questions 11–16.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 11,
+                  "question_text": "Northern California",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 12,
+                  "question_text": "Italy",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 13,
+                  "question_text": "New Orleans",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 14,
+                  "question_text": "Budget Feasts",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 15,
+                  "question_text": "Cooking for Two",
+                  "marks": 1,
+                  "order": 5
+                },
+                {
+                  "question_number": 16,
+                  "question_text": "Variations on a Theme",
+                  "marks": 1,
+                  "order": 6
+                }
+              ]
+            },
+            {
+              "block_type": "shared_map_labeling",
+              "title": "Questions 17-20",
+              "instructions": "Label the plan below.\nChoose the correct letter, A-J, next to questions 17-20.",
+              "order": 2,
+              "questions": [
+                {
+                  "question_number": 17,
+                  "question_text": "Oven",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 18,
+                  "question_text": "Refrigerator",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 19,
+                  "question_text": "Demonstration kitchen",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 20,
+                  "question_text": "Utensil cabinet",
+                  "marks": 1,
+                  "order": 4
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Part 3",
+          "instructions": "You will hear two engineering students called Ray and Adele discussing an article they have read about making building bricks from waste materials.",
+          "order": 3,
+          "content_blocks": [],
+          "question_blocks": [
+            {
+              "block_type": "listening_multiple_choice",
+              "title": "Questions 21-26",
+              "instructions": "Choose the correct letter, A, B or C.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 21,
+                  "question_text": "Adele read the article about Bitublocks because",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 22,
+                  "question_text": "What does Adele think is the most innovative aspect of the manufacture of Bitublocks?",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 23,
+                  "question_text": "Ray was surprised to read that the Bitublocks are so",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 24,
+                  "question_text": "What do both Adele and Ray say about the manufacture of Bitublocks?",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 25,
+                  "question_text": "What insight did Ray get from reading about the hospital building?",
+                  "marks": 1,
+                  "order": 5
+                },
+                {
+                  "question_number": 26,
+                  "question_text": "Adele thinks the research into the hospital was included in the article to show",
+                  "marks": 1,
+                  "order": 6
+                }
+              ]
+            },
+            {
+              "block_type": "multiple_choice_limited",
+              "title": "Questions 27-28",
+              "instructions": "Choose **TWO** correct answers.\n\n27-28 Which **TWO** things make Veggieblocks different from Bitublocks?",
+              "order": 2,
+              "questions": [
+                {
+                  "question_number": 27,
+                  "question_text": "Which TWO things make Veggieblocks different from Bitublocks?",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 28,
+                  "question_text": "Which TWO things make Veggieblocks different from Bitublocks?",
+                  "marks": 1,
+                  "order": 2
+                }
+              ]
+            },
+            {
+              "block_type": "multiple_choice_limited",
+              "title": "Questions 29-30",
+              "instructions": "Choose **TWO** correct answers.\n\n29-30 Which **TWO** things about the future of the construction industry do Adele and Ray agree on?",
+              "order": 3,
+              "questions": [
+                {
+                  "question_number": 29,
+                  "question_text": "Which TWO things about the future of the construction industry do Adele and Ray agree on?",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 30,
+                  "question_text": "Which TWO things about the future of the construction industry do Adele and Ray agree on?",
+                  "marks": 1,
+                  "order": 2
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Part 4",
+          "instructions": "You will hear part of a student presentation about work on an archaeological site in southern Europe.",
+          "order": 4,
+          "content_blocks": [],
+          "question_blocks": [
+            {
+              "block_type": "shared_completion",
+              "title": "Questions 31-36",
+              "instructions": "Complete the notes below.\nWrite **NO MORE THAN TWO WORDS** for each answer.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 31,
+                  "question_text": "Q31 - trade in grain, olives and ___",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 32,
+                  "question_text": "Q32 - the remains of a ___",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 33,
+                  "question_text": "Q33 - a complete ___ was made",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 34,
+                  "question_text": "Q34 - the ___ was the first place to be excavated",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 35,
+                  "question_text": "Q35 - a number of ___ were discovered",
+                  "marks": 1,
+                  "order": 5
+                },
+                {
+                  "question_number": 36,
+                  "question_text": "Q36 - evidence of a ___ industry was found",
+                  "marks": 1,
+                  "order": 6
+                }
+              ]
+            },
+            {
+              "block_type": "table_completion",
+              "title": "Questions 37-40",
+              "instructions": "Complete the table below.\nWrite **ONE WORD ONLY** for each answer.",
+              "order": 2,
+              "questions": [
+                {
+                  "question_number": 37,
+                  "question_text": "37. collect what",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 38,
+                  "question_text": "38. next to a stone what",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 39,
+                  "question_text": "39. sculptures of what",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 40,
+                  "question_text": "40. statue of a Roman what",
+                  "marks": 1,
+                  "order": 4
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "section_type": "reading",
+      "title": "Reading",
+      "instructions": "",
+      "duration_minutes": 60,
+      "order": 2,
+      "parts": [
+        {
+          "title": "Reading Passage 1",
+          "instructions": "",
+          "order": 1,
+          "content_blocks": [
+            {
+              "content_type": "text",
+              "title": "William Gilbert and Magnetism",
+              "text_content": "[A-drophere]\n**A** The 16th and 17th centuries saw two great pioneers of modern science: Galileo and Gilbert. The impact of their findings is eminent. Gilbert was the first modern scientist, also the accredited father of the science of electricity and magnetism, an Englishman of learning and a physician at the court of Elizabeth. Prior to him, all that was known of electricity and magnetism was what the ancients knew, nothing more than that the lodestone possessed magnetic properties and that amber and jet, when rubbed, would attract bits of paper or other substances of small specific gravity. However, he is less well known than he deserves.\n\n[B-drophere]\n**B** Gilbert's birth pre-dated Galileo. Born in an eminent local family in Colchester County in the UK, on May 24, 1544, he went to grammar school, and then studied medicine at St John's College, Cambridge, graduating in 1573. Later he travelled in the continent and eventually settled down in London.\n\n[C-drophere]\n**C** He was a very successful and eminent doctor. All this culminated in his election to the president of the Royal Science Society. He was also appointed personal physician to the Queen (Elizabeth I), and later knighted by the Queen. He faithfully served her until her death. However, he didn't outlive the Queen for long and died on November 30, 1603, only a few months after his appointment as personal physician to King James.\n\n[D-drophere]\n**D** Gilbert was first interested in chemistry but later changed his focus due to the large portion of mysticism of alchemy involved (such as the transmutation of metal). He gradually developed his interest in physics after the great minds of the ancient, particularly about the knowledge the ancient Greeks had about lodestones, strange minerals with the power to attract iron. In the meantime, Britain became a major seafaring nation in 1588 when the Spanish Armada was defeated, opening the way to British settlement of America. British ships depended on the magnetic compass,\n\n[E-drophere]\n**E** yet no one understood why it worked. Did the Pole Star attract it, as Columbus once speculated; or was there a magnetic mountain at the pole, as described in Odyssey, which ships would never approach, because the sailors thought its pull would yank out all their iron nails and fittings? For nearly 20 years, William Gilbert conducted ingenious experiments to understand magnetism. His works include On the Magnet, Magnetic Bodies, and the Great Magnet of the Earth. Gilbert's discovery was so important to modern physics. He investigated the nature of magnetism and electricity. He even coined the word \"electric\". Though the early beliefs of magnetism were also largely entangled with superstitions such as that rubbing garlic on lodestone can neutralise its magnetism, one example being that sailors even believed the smell of garlic would even interfere with the action of compass, which is why helmsmen were forbidden to eat it near a ship's compass. Gilbert also found that metals can be magnetised by rubbing materials such as fur, plastic or the like on them. He named the ends of a magnet \"north pole\" and \"south pole\". The magnetic poles can attract or repel, depending on polarity. In addition, however, ordinary iron is always attracted to a magnet. Though he started to study the relationship between magnetism and electricity, sadly he didn't complete it. His research of static electricity using amber and jet only demonstrated that objects with electrical charges can work like magnets attracting small pieces of paper and stuff. It is a French guy named du Fay that discovered that there are actually two electrical charges, positive and negative.\n\n[F-drophere]\n**F** He also questioned the traditional astronomical beliefs. Though a Copernican, he didn't express in his quintessential beliefs whether the earth is at the centre of the universe or in orbit around the sun. However, he believed that stars are not equidistant from the earth but have their own earth-like planets orbiting around them. The earth itself is like a giant magnet, which is also why compasses always point north. They spin on an axis that is aligned with the earth's polarity. He even likened the polarity of the magnet to the polarity of the earth and built an entire magnetic philosophy on this analogy. In his explanation, magnetism is the soul of the earth. Thus a perfectly spherical lodestone, when aligned with the earth's poles, would wobble all by itself in 24 hours. Further, he also believed that the sun and other stars wobble just like the earth does around a crystal core, and speculated that the moon might also be a magnet caused to orbit by its magnetic attraction to the earth. This was perhaps the first proposal that a force might cause a heavenly orbit.\n\n[G-drophere]\n**G** His research method was revolutionary in that he used experiments rather than pure logic and reasoning like the ancient Greek philosophers did. It was a new attitude towards scientific investigation. Until then, scientific experiments were not in fashion. It was because of this scientific attitude, together with his contribution to our knowledge of magnetism, that a unit of magneto motive force, also known as magnetic potential, was named Gilbert in his honour. His approach of careful observation and experimentation rather than the authoritative opinion or deductive philosophy of others had laid the very foundation for modern science.",
+              "order": 1
+            }
+          ],
+          "question_blocks": [
+            {
+              "block_type": "matching_headings",
+              "title": "Questions 1-7",
+              "instructions": "Reading Passage 1 has seven paragraphs. Choose the correct heading for each paragraph from the list of headings below. Write the correct number, i-x",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 1,
+                  "question_text": "Paragraph A",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 2,
+                  "question_text": "Paragraph B",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 3,
+                  "question_text": "Paragraph C",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 4,
+                  "question_text": "Paragraph D",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 5,
+                  "question_text": "Paragraph E",
+                  "marks": 1,
+                  "order": 5
+                },
+                {
+                  "question_number": 6,
+                  "question_text": "Paragraph F",
+                  "marks": 1,
+                  "order": 6
+                },
+                {
+                  "question_number": 7,
+                  "question_text": "Paragraph G",
+                  "marks": 1,
+                  "order": 7
+                }
+              ]
+            },
+            {
+              "block_type": "true_false_not_given",
+              "title": "Questions 8-10",
+              "instructions": "Choose **TRUE** if the statement agrees with the information given in the text, choose **FALSE** if the statement contradicts the information, or choose **NOT GIVEN** if there is no information on this.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 8,
+                  "question_text": "He is less famous than he should be.",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 9,
+                  "question_text": "He was famous as a doctor before he was employed by the Queen.",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 10,
+                  "question_text": "He lost faith in the medical theories of his time.",
+                  "marks": 1,
+                  "order": 3
+                }
+              ]
+            },
+            {
+              "block_type": "multiple_choice_limited",
+              "title": "Questions 11-13",
+              "instructions": "Choose **THREE** correct answers.\n**11-13** Which **THREE** of the following are parts of Gilbert's discovery?",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 11,
+                  "question_text": "Which THREE of the following are parts of Gilbert's discovery?",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 12,
+                  "question_text": "Which THREE of the following are parts of Gilbert's discovery?",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 13,
+                  "question_text": "Which THREE of the following are parts of Gilbert's discovery?",
+                  "marks": 1,
+                  "order": 3
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Reading Passage 2",
+          "instructions": "",
+          "order": 2,
+          "content_blocks": [
+            {
+              "content_type": "text",
+              "title": "Multi-tasking and the brain",
+              "text_content": "[A-drophere]\n**A** Do you think you're a master of multi-tasking? Think again. Unless you are one of the three percent of super-taskers in the population, research shows that your brain is incapable of paying close attention to more than one complex task at a time. Researchers who study attention say that effective multi-tasking is beyond most of us. Psychiatrist Edward M Hallowell even describes multi-tasking as a 'mythical activity in which people believe they can perform two or more tasks simultaneously as effectively as they can perform one'.\n\n[B-drophere]\n**B** It's true that you can check your email while eating your lunch, or listen to music while walking. But innate activities like walking, chewing, and breathing do not require you to pay attention, whereas activities such as reading, tapping out a text message or driving a car do require attention. Why is paying attention to two things at once difficult? 'The brain can perform simultaneous tasks, but attention has capacity limitations,' says Associate Professor Paul E Dux, a cognitive neuroscientist at the University of Queensland in Australia. 'When you do only one thing at a time, you're better at that task than when you're doing multiple things concurrently.' Take the classic multi-tasking scenario of talking on a mobile phone while driving – an ill-advised activity that many people believe they have mastered. When David Strayer, Professor of Psychology in the University of Utah in the US, and his team observed 56,000 drivers as they approached an intersection. The majority of drivers who were talking on their phone failed to stop in accordance with traffic laws. And it did not matter if the driver was using a handheld or hands-free device. Even with both eyes on the road and both hands on the wheel, drivers' performance was impaired. Strayer's research shows that performance deteriorates dramatically when attention is split between tasks: more mistakes are made and it takes longer to complete each activity.\n\n[C-drophere]\n**C** The prefrontal cortex is the brain region responsible for choosing what to pay attention to, and for coordinating inputs from other brain areas. By scanning the prefrontal cortex of people while they multi-tasked, scientists at the French Institute of Health and Medical Research in Paris (INSERM) found that when people focused on a single thing, the right and left sides of the prefrontal cortex work together. But when people attempt to perform two things at once, the sides work independently. Neuroscientist Etienne Koechlin says his study demonstrates that while the brain can switch back and forth between two tasks, we might be in great trouble when we try to juggle more than two tasks simply because we have only two frontal lobes.\n\n[D-drophere]\n**D** To the question of whether there is a difference between the sexes, Koechlin's imaging studies uncovered no differences in the ability switch between tasks in the prefrontal cortices of men or women. But other researchers studying real life scenarios such as finding lost keys, believe there might be truth to the claim that women are superior multi-taskers. Women have a much better strategy for finding the keys, whereas men tend to jump to it and be far less organised and thorough. 'It's as if they don't stop to reflect and plan for a moment,' says Professor Keith Laws from the University of Hertfordshire in England. But while the ability to develop strategies for coping with the numerous tasks in everyday life could give women an advantage, 'nobody can juggle two, never mind three, \"complex\" tasks at the same time.'\n\n[E-drophere]\n**E** However, David Strayer's research uncovered that some rare people possess extraordinary multi-tasking ability. These so-called 'super-taskers' exhibit different patterns of brain activity when multi-tasking compared to ordinary people: they show less activity in the prefrontal cortex during multi-tasking suggesting their brains are functioning with a high level of efficiency. Strayer thinks that pilots of high-performance aircraft, high-end chefs who can cook several meals at the same time to perfection, and elite doctors in hospital emergency rooms might all be more likely to be super-taskers. 'All other things being equal, we suspect that super-taskers will rise to a top position in any occupation that places a high demand on juggling numerous tasks that demand attention at the same time.'\n\n[F-drophere]\n**F** The ability to multi-task probably comes down to the DNA you inherit from your parents. To a large extent, says Strayer. 'You are either born with the neural structure that allows you to overcome the usual multi-tasking challenges, or you aren't. Super-taskers' brains are doing something we can't do.' All in all, these findings may have very real consequences on our lives.",
+              "order": 1
+            }
+          ],
+          "question_blocks": [
+            {
+              "block_type": "matching_headings",
+              "title": "Questions 14-19",
+              "instructions": "Reading Passage 2 has six sections. Choose the correct heading for each section from the list of headings below. Write the correct number, i-viii, in boxes 14-19.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 14,
+                  "question_text": "Paragraph A",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 15,
+                  "question_text": "Paragraph B",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 16,
+                  "question_text": "Paragraph C",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 17,
+                  "question_text": "Paragraph D",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 18,
+                  "question_text": "Paragraph E",
+                  "marks": 1,
+                  "order": 5
+                },
+                {
+                  "question_number": 19,
+                  "question_text": "Paragraph F",
+                  "marks": 1,
+                  "order": 6
+                }
+              ]
+            },
+            {
+              "block_type": "matching_features",
+              "title": "Questions 20-23",
+              "instructions": "Look at the following statements (Questions 20-23) and the list of researchers below.\nChoose each statement with the correct researcher, A-E.\n**NB** You may use any letter more than once.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 20,
+                  "question_text": "The brain of a good multi-tasker works differently from other people's.",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 21,
+                  "question_text": "The rate of error is considerably higher when people multi-task.",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 22,
+                  "question_text": "People are mistaken in their assumption that they can multi-task.",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 23,
+                  "question_text": "One gender does not seem to pause to consider before taking action.",
+                  "marks": 1,
+                  "order": 4
+                }
+              ]
+            },
+            {
+              "block_type": "shared_completion",
+              "title": "Questions 24-26",
+              "instructions": "Complete the summary below.\nWrite **ONE WORD ONLY** from the passage for each answer.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 24,
+                  "question_text": "Q24 - achieve a _____ that is high on the career ladder",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 25,
+                  "question_text": "Q25 - need their _____",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 26,
+                  "question_text": "Q26 - special brain _____",
+                  "marks": 1,
+                  "order": 3
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Reading Passage 3",
+          "instructions": "",
+          "order": 3,
+          "content_blocks": [
+            {
+              "content_type": "text",
+              "title": "The benefits of learning an instrument",
+              "text_content": "[A-drophere]\n**A** Are music lessons the way to get smarter? That's what a lot of parents and experts believe: studying an instrument gives children an advantage in the development of their intellectual, perceptual, and cognitive skills. This may, however, turn out to be wishful thinking. Two highly convincing trials carried out recently have found no evidence to support this idea. The IQs of pre-school children who attended several weeks of music classes as part of these studies did not differ significantly from the IQs of those who had not.\n\n[B-drophere]\n**B** But that does not mean that the advantages of learning to play music are limited to expressing yourself, impressing friends, or just having fun. A growing number of studies show that learning an instrument in childhood can do something perhaps more valuable for the brain: it can provide benefits as we age, in the form of an added defense against memory loss cognitive decline, and impaired hearing. Not only that, you may well get those benefits even if you haven't picked up your instrument in years, or decide to take up music for the first time in mid-life or beyond. According to neuropsychologist Brenda Hanna-Pladdy of Emory University in Atlanta, the time spent learning and practicing specific types of motor control and coordination – each finger on each hand doing something different, and for wind and brass instruments also using your mouth and breathing – contributes to the brain boost that shows up later in life.\n\n[C-drophere]\n**C** You can even map the impact of musical training of the brain itself. In one study, Harvard neurologist Gottfried Schlaug found that the brains of adult professional musicians had a larger volume of grey matter than the brains of non-musicians had. Schlaug and colleagues also found that after 15 months of musical training in early childhood, structural brain changes associated with motor and auditory improvements begin to appear. 'What's unique about playing an instrument is that it requires a wide array of brain regions and cognitive functions to work together simultaneously, in both right and left hemispheres of the brain,' says Alison Balbag of the University of Southern California. 'Playing music may be an efficient way to stimulate the brain,' she says, 'cutting across a broad swathe of its regions and cognitive functions and with ripple effects through the decades.'\n\n[D-drophere]\n**D** More research is showing this might well be the case. In her first study on the subject, Hanna-Pladdy divided 70 healthy adults between the ages of 60 and 83 into three groups: musicians who had studied an instrument for at least ten years, those who had played between one and nine years, and a control group who had never learned an instrument. The group who had studied for at least ten years scored the highest when tested in such areas as nonverbal and visuo-spatial memory, naming objects, and taking in and adapting new information. Her follow-up study a year later confirmed those findings and further suggested that starting musical training before the age of nine and keeping at it for ten years or more may yield the greatest benefits. Interestingly, it was the group who had the lowest level of general education which showed the greatest gap in scores between those who had studied an instrument in childhood and those who had not. Hanna-Pladdy suspects that musical training could have made up for the lack of cognitive stimulation these people had academically.\n\n[E-drophere]\n**E** Neuroscientist Nina Kraus of Northwestern University in Chicago has found still more positive effects of early musical training. She measured the electrical activity in the auditory brainstems of adults, ages 55 to 76, as they responded to the synthesized speech syllable 'da'. Although none of the subjects had played a musical instrument in 40 years, those who had trained the longest – between four and fourteen years – responded the fastest. 'That's significant,' says Kraus, 'because hearing tends to decline as we age, including the ability to quickly and accurately discern consonants, a skill crucial to understanding and participating in conversation.' 'If your nervous system is not keeping up with the timing necessary for encoding consonants, you will lose out on the flow and meaning of the conversation, and that can potentially create to a downward spiral leading to a sense of social isolation,' says Kraus. 'In addition, the fact that musical training appears to enhance auditory working memory might help reinforce in later life the memory capacity that facilitates verbal interaction.'\n\n[F-drophere]\n**F** In another study at the University of South Florida, assistant professor of music education Jennifer Bugos studied the impact of elementary piano instruction on adults between the ages of 60 and 85. After six months, those who had received piano lessons showed more robust gains in memory, verbal fluency, the speed at which they processed information, planning ability, and other cognitive functions, compared with those who had not received the lessons. Bugos believes that playing an instrument has beneficial effects, regardless of how old the person is when he or she begins. 'Musical training contains all the components of a cognitive training program that sometimes are overlooked,' she says, 'And just as we work out our bodies, we should work out our minds.'",
+              "order": 1
+            }
+          ],
+          "question_blocks": [
+            {
+              "block_type": "reading_multiple_choice",
+              "title": "",
+              "instructions": "",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 31,
+                  "question_text": "The studies mentioned in the first paragraph",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 32,
+                  "question_text": "According to the second paragraph, there may be many benefits to studying music,",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 33,
+                  "question_text": "The phrase 'this might well be the case' in the fourth paragraph suggests that",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 34,
+                  "question_text": "Which aspect of playing an instrument was included in Hanna-Pladdy's follow-up study but not in her first study?",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 35,
+                  "question_text": "What do Hanna-Pladdy's studies suggest about people's general education?",
+                  "marks": 1,
+                  "order": 5
+                }
+              ]
+            },
+            {
+              "block_type": "matching_sentence_endings",
+              "title": "Questions 36-40",
+              "instructions": "Complete each sentence with the correct ending, **A–F**, below.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 36,
+                  "question_text": "Brenda Hanna-Pladdy believes the cognitive benefits of music lessons are a result of",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 37,
+                  "question_text": "The research undertaken by Gottfried Schlaug focused on",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 38,
+                  "question_text": "According to Alison Balbag, playing an instrument is a unique experience because it involves",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 39,
+                  "question_text": "Nina Kraus believes there is a link between better hearing in later life and the experience of",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 40,
+                  "question_text": "Jennifer Bugos's study involved",
+                  "marks": 1,
+                  "order": 5
+                }
+              ]
+            },
+            {
+              "block_type": "true_false_not_given",
+              "title": "Questions 27-30",
+              "instructions": "Choose TRUE if the statement agrees with the information given in the text, choose FALSE if the statement contradicts the information, or choose NOT GIVEN if there is no information on this.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 27,
+                  "question_text": "Many parents indicate that their children struggle to learn a musical instrument.",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 28,
+                  "question_text": "The findings of the recent research into pre-school children's IQs are unreliable.",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 29,
+                  "question_text": "The main reasons people take up an instrument are that they enjoy playing music and being creative.",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 30,
+                  "question_text": "Evidence about the long-term advantages of learning an instrument is increasing.",
+                  "marks": 1,
+                  "order": 4
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "section_type": "writing",
+      "title": "Writing",
+      "instructions": "",
+      "duration_minutes": 60,
+      "order": 3,
+      "parts": [
+        {
+          "title": "Writing Task 1",
+          "instructions": "",
+          "order": 1,
+          "content_blocks": [
+            {
+              "content_type": "text",
+              "title": "Task Description",
+              "text_content": "The table show information about age, average income per person and population below poverty line in three stages in the USA",
+              "order": 1
+            },
+            {
+              "content_type": "image",
+              "title": "",
+              "text_content": "",
+              "order": 2,
+              "file_url": "/media/content_files/photo_2026-02-16_10-21-11.jpg"
+            }
+          ],
+          "question_blocks": [
+            {
+              "block_type": "graph_description",
+              "title": "Writing Task 1",
+              "instructions": "You should spend about 20 minutes on this task.\n\nThe table show information about age, average income per person and population below poverty line in three stages in the USA\n\nWrite at least 150 words.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 1,
+                  "question_text": "The table show information about age, average income per person and population below poverty line in three stages in the USA",
+                  "marks": 1,
+                  "order": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Writing Task 2",
+          "instructions": "",
+          "order": 2,
+          "content_blocks": [
+            {
+              "content_type": "text",
+              "title": "Essay Topic",
+              "text_content": "The tendency of human copying one another is shown in the popularity of fashion in clothes and other commodities. To what extent do you agree or disagree?",
+              "order": 1
+            }
+          ],
+          "question_blocks": [
+            {
+              "block_type": "essay",
+              "title": "Writing Task 2",
+              "instructions": "You should spend about 40 minutes on this task.\n\nWrite about the following topic:\n\nThe tendency of human copying one another is shown in the popularity of fashion in clothes and other commodities. To what extent do you agree or disagree?\n\nGive reasons for your answer and include any relevant examples from your own knowledge or experience.\n\nWrite at least 250 words.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 2,
+                  "question_text": "The tendency of human copying one another is shown in the popularity of fashion in clothes and other commodities. To what extent do you agree or disagree?",
+                  "marks": 1,
+                  "order": 1
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

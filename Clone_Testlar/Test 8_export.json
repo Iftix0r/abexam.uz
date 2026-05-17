@@ -1,0 +1,801 @@
+{
+  "title": "Test 8",
+  "description": "IELTS practice test with 2 sections",
+  "status": "both",
+  "created_at": "2025-11-14T23:32:33.401388+00:00",
+  "sections": [
+    {
+      "section_type": "listening",
+      "title": "Listening",
+      "instructions": "You will hear a number of different recordings and you will have to answer questions on what you hear.",
+      "duration_minutes": 30,
+      "order": 1,
+      "parts": [
+        {
+          "title": "Part 1",
+          "instructions": "",
+          "order": 1,
+          "content_blocks": [
+            {
+              "content_type": "audio",
+              "title": "Listening Test 7 Audio",
+              "text_content": "Audio file: /media/tests/TEST7/Listening Test 7.mp3 - Complete listening test for IELTS Practice Test 7",
+              "order": 1,
+              "file_url": "/media/content_files/audiomass-output-7.mp3"
+            }
+          ],
+          "question_blocks": [
+            {
+              "block_type": "shared_completion",
+              "title": "Questions 1-10",
+              "instructions": "Complete the notes below.\nWrite **ONE WORD AND/OR A NUMBER** for each answer.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 1,
+                  "question_text": "Q1 - A family ticket is $ ___ .",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 2,
+                  "question_text": "Q2 - The fastest bus takes about ___ minutes.",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 3,
+                  "question_text": "Q3 - You can hold some animals and have a ___ for a small fee.",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 4,
+                  "question_text": "Q4 - John ___ is performing.",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 5,
+                  "question_text": "Q5 - Performance run from Tuesday to ___ .",
+                  "marks": 1,
+                  "order": 5
+                },
+                {
+                  "question_number": 6,
+                  "question_text": "Q6 - There is a ___ on tickets for Monday night's preview.",
+                  "marks": 1,
+                  "order": 6
+                },
+                {
+                  "question_number": 7,
+                  "question_text": "Q7 - Go to the city center ___ to see a special exhibition.",
+                  "marks": 1,
+                  "order": 7
+                },
+                {
+                  "question_number": 8,
+                  "question_text": "Q8 - we'll need to take a small ___ .",
+                  "marks": 1,
+                  "order": 8
+                },
+                {
+                  "question_number": 9,
+                  "question_text": "Q9 - it's on the ___ side of the Island.",
+                  "marks": 1,
+                  "order": 9
+                },
+                {
+                  "question_number": 10,
+                  "question_text": "Q10 - You're not allowed to ___ on the island",
+                  "marks": 1,
+                  "order": 10
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Part 2",
+          "instructions": "",
+          "order": 2,
+          "content_blocks": [
+            {
+              "content_type": "image",
+              "title": "",
+              "text_content": "",
+              "order": 0,
+              "file_url": "/media/content_files/photo_2025-11-15_04-47-02.jpg"
+            }
+          ],
+          "question_blocks": [
+            {
+              "block_type": "shared_completion_with_choice",
+              "title": "Questions 11-14",
+              "instructions": "What does the speaker say about each of the following volunteer roles at the school fair?\nChoose FOUR correct answers, A–F, next to questions 11–14.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 11,
+                  "question_text": "11. Entertainment co-ordinator __________",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 12,
+                  "question_text": "12. Advertising and promotion co-ordinator __________",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 13,
+                  "question_text": "13. Technical co-ordinator __________",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 14,
+                  "question_text": "14. Staffing co-ordinator __________",
+                  "marks": 1,
+                  "order": 4
+                }
+              ]
+            },
+            {
+              "block_type": "shared_map_labeling",
+              "title": "Questions 15-20",
+              "instructions": "Label the map below\nChoose the correct letter, A-I, next to questions 15-20.",
+              "order": 2,
+              "questions": [
+                {
+                  "question_number": 15,
+                  "question_text": "Fairground rides",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 16,
+                  "question_text": "Entertainment stage",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 17,
+                  "question_text": "Café",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 18,
+                  "question_text": "First aid tent",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 19,
+                  "question_text": "Market stalls",
+                  "marks": 1,
+                  "order": 5
+                },
+                {
+                  "question_number": 20,
+                  "question_text": "Pony rides",
+                  "marks": 1,
+                  "order": 6
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Part 3",
+          "instructions": "",
+          "order": 3,
+          "content_blocks": [],
+          "question_blocks": [
+            {
+              "block_type": "listening_matching",
+              "title": "Questions 21-26",
+              "instructions": "What is the student's opinion on each of the following Environment Science modules?\nChoose **SIX** correct answers, A–I, next to questions 21–26.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 21,
+                  "question_text": "Statistics for environmental research",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 22,
+                  "question_text": "Sewage and drainage systems",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 23,
+                  "question_text": "Agriculture and food security",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 24,
+                  "question_text": "Sustainable energy",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 25,
+                  "question_text": "Government policy",
+                  "marks": 1,
+                  "order": 5
+                },
+                {
+                  "question_number": 26,
+                  "question_text": "Water management",
+                  "marks": 1,
+                  "order": 6
+                }
+              ]
+            },
+            {
+              "block_type": "multiple_choice_limited",
+              "title": "Questions 27-28",
+              "instructions": "Which TWO aspects of the course organisation did both Jamie and Martha like?",
+              "order": 2,
+              "questions": [
+                {
+                  "question_number": 27,
+                  "question_text": "Which TWO aspects of the course organisation did both Jamie and Martha like?",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 28,
+                  "question_text": "Which TWO aspects of the course organisation did both Jamie and Martha like?",
+                  "marks": 1,
+                  "order": 2
+                }
+              ]
+            },
+            {
+              "block_type": "multiple_choice_limited",
+              "title": "Questions 29-30",
+              "instructions": "Which TWO suggestions for written assignment do Jamie and Martha agree to recommend to Dr Brown?",
+              "order": 3,
+              "questions": [
+                {
+                  "question_number": 29,
+                  "question_text": "Which TWO suggestions for written assignment do Jamie and Martha agree to recommend to Dr Brown?",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 30,
+                  "question_text": "Which TWO suggestions for written assignment do Jamie and Martha agree to recommend to Dr Brown?",
+                  "marks": 1,
+                  "order": 2
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Part 4",
+          "instructions": "",
+          "order": 4,
+          "content_blocks": [],
+          "question_blocks": [
+            {
+              "block_type": "shared_completion",
+              "title": "Questions 31-40",
+              "instructions": "Complete the notes below.\nWrite **ONE WORD ONLY** for each answer.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 31,
+                  "question_text": "Q31 - As well as music, he has written many ___",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 32,
+                  "question_text": "Q32 - He has worn many awards – including one in 2011 for ___ in music.",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 33,
+                  "question_text": "Q33 - Surprisingly, his music often features ___ and very soft sounds.",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 34,
+                  "question_text": "Q34 - violins often produce sounds which resemble those found in ___",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 35,
+                  "question_text": "Q35 - He is seen as a ___ of music.",
+                  "marks": 1,
+                  "order": 5
+                },
+                {
+                  "question_number": 36,
+                  "question_text": "Q36 - Sciarrino compares his music to a distant ___",
+                  "marks": 1,
+                  "order": 6
+                },
+                {
+                  "question_number": 37,
+                  "question_text": "Q37 - finished in 1979 and written in memory of a ___",
+                  "marks": 1,
+                  "order": 7
+                },
+                {
+                  "question_number": 38,
+                  "question_text": "Q38 - starts with a noise that sounds like ___ , produced by two people moving large pieces of [Q39]",
+                  "marks": 1,
+                  "order": 8
+                },
+                {
+                  "question_number": 39,
+                  "question_text": "Q39 - starts with a noise that sounds like [Q38], produced by two people moving large pieces of ___",
+                  "marks": 1,
+                  "order": 9
+                },
+                {
+                  "question_number": 40,
+                  "question_text": "Q40 - although the music is unusual, it has a traditional ___",
+                  "marks": 1,
+                  "order": 10
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "section_type": "reading",
+      "title": "Reading",
+      "instructions": "",
+      "duration_minutes": 60,
+      "order": 2,
+      "parts": [
+        {
+          "title": "Reading Passage 1",
+          "instructions": "",
+          "order": 1,
+          "content_blocks": [
+            {
+              "content_type": "text",
+              "title": "Deep sea discovery",
+              "text_content": "**A**\nNico Michiels is an ecologist from the University of Tübingen in Germany who spends part of each year in Egypt, where he dives in the Red Sea, observing fish life and gathering data on its coral reefs. In September 2007 he decided to find out how far red light could penetrate the ocean depths. Seawater absorbs different colours at different depths, and as an experienced diver, Michiels was aware that red light is extinguished not far below the surface whereas blue-green light penetrates deeper. To find out the depth at which red disappeared in this particular ocean, however, he attached a special plastic filter to his dive mask which was designed to block out all colours except red. Then he began to descend. In theory, once he reached about 15 metres, he should have been plunged into darkness. Instead, something totally unexpected happened. Sure enough, 20 metres down it was as dark as night. 'All the fish disappeared. With no light from the surface, they were effectively black and had become invisible,' he says. 'But it didn't stay black for long. Then I saw a group of goby fish with bright red eyes lit up against the background. After that red spots began to show up all over the reef.'\n\n**B**\nEven with the red filter removed, Michiels could pick them out without much trouble once his eyes grew accustomed to the gloom. It seems strange that no diver or researcher had spotted all this red before, but as Michiels points out, no one saw it because no one expected to see it. On that one dive Michiels discovered three fish species with prominent red markings, and has found many others since.\n\n**C**\nBut how can fish appear red where there's no red light? Ordinary red pigments* look red because they reflect red light while absorbing all other wavelengths. At 20 metres down, there had to be some other explanation for the red Michiels was seeing. He suspected fluorescence. Fluorescent pigments behave differently from ordinary ones: they receive incoming light of one wavelength, for example blue, and emit light of a longer wavelength, in this case red. On the reef in the Red Sea during daytime, the most likely explanation was that the predominantly blue and green wavelengths at depth triggered the emission of fluorescent red in the fish.\n\n**D**\nWith only a week left in Egypt, and lacking the equipment to confirm that the fish were fluorescent, Michiels photographed as many of them as he could. Then once back in Germany, he bought an assortment of tropical fish and installed them in his lab. Here he confirmed that the fish did indeed fluoresce. In most of the fish he looked at, the fluorescence could be traced to specialised pigment cells that lie in the skin beneath the scales. These cells contain 'guanine crystals', which scatter light to give fish their silvery sheen. However, Michiels says they are still not sure exactly what is fluorescing. 'It's not the crystals themselves. It's probably a fluorescent protein built into the crystals, and we have a suspicion that it might be made by bacteria.'\n\n**E**\nIntrigued, Michiels began a systematic search for red fluorescence in reef fish. He and his colleagues, Nils Anthes and Dennis Sprenger, have identified some 50 species with red fluorescence. The most common markings tend to be on the body towards the head and to a lesser extent around the eyes, and then the fins. To Michiels, the distribution of these markings is one of the strongest indications that red fluorescence has a very particular function: communication with other members of the species. According to several recent studies, a whole range of animals employ fluorescence as a natural highlighter to boost the visibility of body parts they use to signal, for example to ward off enemies. In reef fish, the red tends to be confined to parts of the body used to signal, suggesting these markings serve a similar function. But instead of highlighting an existing colour, the fluorescence gives the fish a colour that otherwise wouldn't exist. For example, fish commonly use eye rings to signal that they are present and their direction of gaze, and Michiels suspects that red-eyed gobies use signals to indicate their location and keep their group together.\n\n**F**\nRed light, whatever its source, doesn't travel far through water, which suggests signals are intended to be private, seen only by nearby fish of the right species. There are several lines of evidence to support this, says Michiels. And closely related species do not have completely identical markings, which suggests they might be important in species recognition.\n\n**G**\nMichiels suspects red fluorescence has another important role for some reef fish: helping them blend in. During his first dive with the red filter, he noticed corals glow a dark but faint red too. Against this irregular red background, a fish that glows red all over would be hard to distinguish. More compelling for Michiels is the case of the scorpionfish, which lies perfectly still until food swims past which it then sucks in.\n\n**H**\nYet if red plays any part in a fish's life then it must be able to see it. Fish that live in a world dominated by blue-green light are assumed to have eyes tuned to those wavelengths, and most marine fish that have been studied are thought incapable of seeing red. One exception is the seahorse, whose eyes are sensitive to red. As for the other fish, it remains to be seen.",
+              "order": 1
+            }
+          ],
+          "question_blocks": [
+            {
+              "block_type": "true_false_not_given",
+              "title": "Questions 1-6",
+              "instructions": "Choose **TRUE** if the statement agrees with the information given in the text, choose **FALSE** if the statement contradicts the information, or choose **NOT GIVEN** if there is no information on this.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 1,
+                  "question_text": "During his 2007 dive, Michiels expected to encounter total darkness at about 15 metres.",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 2,
+                  "question_text": "Michiels could see the red markings on fish without the aid of the red filter.",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 3,
+                  "question_text": "Other divers had assumed they would see fish with red markings.",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 4,
+                  "question_text": "All the fish with red markings that Michiels found during his diving expeditions came from the Red Sea.",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 5,
+                  "question_text": "Michiels first thought of the possibility that fish could fluoresce while he was in Germany.",
+                  "marks": 1,
+                  "order": 5
+                },
+                {
+                  "question_number": 6,
+                  "question_text": "Michiels remains uncertain as to what creates fluorescence in fish.",
+                  "marks": 1,
+                  "order": 6
+                }
+              ]
+            },
+            {
+              "block_type": "shared_completion",
+              "title": "Questions 7-13",
+              "instructions": "Complete the notes below.\nWrite **ONE WORD ONLY** from the passage for each answer.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 7,
+                  "question_text": "markings mainly near the _____",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 8,
+                  "question_text": "red fluorescence is used specifically for _____ purposes",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 9,
+                  "question_text": "use fluorescence to keep _____ away",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 10,
+                  "question_text": "gobies depend on red fluorescence to show their _____",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 11,
+                  "question_text": "variations in the markings of fish among those _____ which are very similar",
+                  "marks": 1,
+                  "order": 5
+                },
+                {
+                  "question_number": 12,
+                  "question_text": "fish cannot easily be seen near backgrounds of _____ which give off a red light",
+                  "marks": 1,
+                  "order": 6
+                },
+                {
+                  "question_number": 13,
+                  "question_text": "the only fish proven to have this ability is the _____",
+                  "marks": 1,
+                  "order": 7
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Reading Passage 2",
+          "instructions": "",
+          "order": 2,
+          "content_blocks": [
+            {
+              "content_type": "text",
+              "title": "Jellyfish – The Dominant Species",
+              "text_content": "**A**\nJellyfish have become the curse of beach holidays, permeating every ocean on the globe, thriving in the Arctic and the tropics. In an ever-changing world where other species struggle to endure, jellyfish populations are on the rise. To the untrained eye, these creatures drift aimlessly on the oceans' currents and appear benign. In addition, they lack sharp claws, piercing teeth or even a brain. Despite this, they are armed with an amazing arsenal of weapons, especially the stinging power of their tentacles. As a result, jellyfish are among the most-feared, least-understood creatures in the seas.\n\n**B**\nAccording to Dr Monty Graham, a jellyfish scientist at the University of South Alabama, US, 'Jellyfish are a pretty good group of animals to track coastal ecosystems. When you start to see jellyfish numbers grow, that usually indicates a stressed system.' While populations appear to be down this year, Dr Graham sees a statistically solid increase' over the longer term. This increase first gained attention in the 1980s when a huge number of jellyfish, Atlantic Ocean natives named *Mnemiopsis leidyi*, devastated the Black Sea, an ecosystem already weakened by overfishing of anchovies. Scientists believe that this species of jellyfish came in on the bottom of a ship and then rapidly multiplied, feeding on anchovy eggs and the plankton that young fish rely on.\n\n**C**\nDense jellyfish aggregations can be a natural feature of healthy ocean ecosystems, but a clear picture is now emerging of more severe and frequent jellyfish outbreaks worldwide. Dr Anthony Richardson, from the University of Queensland, Australia, explains that once jellyfish gain a foothold, if conditions are right they can establish a massive population at the expense of other ocean life. The problem is that parts of the ocean might switch from being dominated by fish to being dominated by jellyfish.\n\n**D**\nA study done by Richardson and his colleagues explores the causes behind jellyfish infestation, and the need for swift, decisive action to stem jellyfish takeover. Jellyfish outbreaks are linked directly to human actions, including overfishing, the input of fertilizer and sewage into the ocean, and climate change. Overfishing has removed fish from marine ecosystems at astounding rates. According to Richardson, this has made it possible for jellyfish to take their place. 'This is because small fish appear to keep jellyfish in check by predation (on jellyfish when they are very small) and competition (when feeding). So, once we remove fish, jellyfish can proliferate.'\n\n**E**\nEutrophication is another human-caused change in the ocean that has likely contributed to jellyfish explosions. Eutrophication is an increase of nitrogen and phosphorus in the ocean, largely caused by fertilizer and waste run-off. This leads to algae blooms, which lower oxygen in the marine ecosystem, creating so-called 'dead zones', which have been increasing dramatically around the world. According to Richardson, these low-oxygen waters give jellyfish the advantage. 'Fish avoid low-oxygen waters but jellyfish, having lower oxygen demands, not only survive but can thrive in these conditions as there is less predation and competition from fish.'\n\n**F**\nFurthermore, Richardson and his colleagues speculate that climate change may expand the traditional geographical range of jellyfish. 'As water warms, tropical species are moving towards the poles. Many venomous jellyfish species are tropical and could move into more densely populated subtropical and temperate regions.'\n\n**G**\nOnce jellyfish appear en masse in an ecosystem they can make it very difficult for fish to stage a comeback. By feeding on fish, the jellyfish successfully prevent fish from returning to their normal population numbers, says Richardson. 'One can thus think of two alternate states with each being stable: one dominated by fish and the other by jellyfish. Unfortunately, where there is a jellyfish-dominated state then this does not support the nutritional needs of other fish, marine mammals, and seabirds.' This state has been defined as a 'monoculture of jellyfish', an apt analogy since the situation shares similarities with other monocultures. One result of large jellyfish populations is the economic effect it has had on the fishing industry. In the Gulf of Mexico, shrimp fishermen are struggling with a jellyfish boom that fills nets, causing them to break and resulting in millions of dollars in losses.\n\n**H**\nExperts say that a greater understanding of jellyfish, including their ideal water temperature and feeding habits, is necessary to determine with certainty what is causing the recent massive invasion, and to come up with ways to combat it. Due to the difficulty of turning ecosystems around once jellyfish have become dominant, Richardson and his colleagues propose focusing on 'prevention rather than cure'. They recommend a halt to overfishing small fish that are vital to keeping jellyfish in check, reducing the amount of fertilizer and sewage running off into the oceans, and finally, if possible, confronting climate change.",
+              "order": 1
+            }
+          ],
+          "question_blocks": [
+            {
+              "block_type": "matching_information",
+              "title": "Questions 14-17",
+              "instructions": "Reading Passage 2 has seven sections, A-G.\nWhich section contains the following information?\nWrite the correct letter, A-G, in boxes 14-17 on your answer sheet.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 14,
+                  "question_text": "a prediction as to the direction in which the jellyfish population may spread",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 15,
+                  "question_text": "a description of some physical characteristics of jellyfish",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 16,
+                  "question_text": "an account of the consequences of jellyfish as lone survivors",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 17,
+                  "question_text": "suggestions on how to avoid further jellyfish invasions",
+                  "marks": 1,
+                  "order": 4
+                }
+              ]
+            },
+            {
+              "block_type": "multiple_choice_limited",
+              "title": "Questions 18–19",
+              "instructions": "The list below gives some effects that jellyfish have had on the world.\r\nWhich TWO of these effects are mentioned by the writer of the text?",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 18,
+                  "question_text": "The list below gives some effects that jellyfish have had on the world. Which TWO of these effects are mentioned by the writer of the text?",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 19,
+                  "question_text": "The list below gives some effects that jellyfish have had on the world. Which TWO of these effects are mentioned by the writer of the text?",
+                  "marks": 1,
+                  "order": 2
+                }
+              ]
+            },
+            {
+              "block_type": "multiple_choice_limited",
+              "title": "Questions 20–21",
+              "instructions": "Which TWO of the following are possible causes of an increase in jellyfish numbers?",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 20,
+                  "question_text": "Which TWO of the following are possible causes of an increase in jellyfish numbers?",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 21,
+                  "question_text": "Which TWO of the following are possible causes of an increase in jellyfish numbers?",
+                  "marks": 1,
+                  "order": 2
+                }
+              ]
+            },
+            {
+              "block_type": "shared_completion",
+              "title": "Questions 22–26",
+              "instructions": "Complete the sentences below.\nWrite **ONE WORD ONLY** from the passage for each answer.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 22,
+                  "question_text": "Some fish in the oceans may be unable to sustain their population as the jellyfish eat their _____.",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 23,
+                  "question_text": "The state of jellyfish becoming the main ocean species has been named _____.",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 24,
+                  "question_text": "Increasing numbers of jellyfish can damage _____ used for commercial fishing.",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 25,
+                  "question_text": "Understanding basic facts about jellyfish, such as the _____ of the ocean which suits them best, may help control their numbers.",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 26,
+                  "question_text": "Richardson believes it is better to direct attention to _____, instead of just trying to solve existing problems.",
+                  "marks": 1,
+                  "order": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Reading Passage 3",
+          "instructions": "",
+          "order": 3,
+          "content_blocks": [
+            {
+              "content_type": "text",
+              "title": "The Pirahã people of Brazil",
+              "text_content": "*The Pirahã language has stirred up debate among experts*\n\nThe Pirahã tribe live deep in Brazil's Amazon forest, and their language is hotly debated by linguists. Since 1977, the ethnologist Daniel Everett has spent a total of seven years living with the Pirahã and has committed his career to studying their puzzling speech. Indeed, he was uncertain for so long about what he was actually hearing while living among the Pirahã that he waited nearly three decades before publishing his findings. The debate over the Pirahã language goes right to the core of the riddle regarding how Homo sapiens managed to develop vocal communication. Although bees dance, birds sing and whales even sing with syntax*, human language is unique, if only for the reason that it enables humans to piece together never-before-constructed thoughts, and be infinitely imaginative – think of Shakespeare's plays or Einstein's theory of relativity.\n\nLinguistics generally focuses on what features all human languages have in common, but the Pirahã language departs from what some academics have long maintained are essential and inalienable features of all human languages. Most of all, it may be unique for not employing subordinate clauses. Instead of saying, 'When I have finished eating, I will speak to you,' the Pirahã say, 'I finish eating, I speak with you.' Equally perplexing, the Pirahã appear not to use numbers. During the time he spent with them, Everett never heard words like 'all', 'every' and 'more'. There is one word, 'hoi', that comes close to the numeral 1, but it can also mean 'small'. And they were never observed to count without language, on their fingers for example, in order to determine important tasks in village life like how many pieces of meat to grill.\n\nEverett's findings among the Pirahã have brought new life to a controversial theory by the linguist Benjamin Whorf, who suggested that people are only capable of constructing thoughts for which they possess actual words. Or to put it another way, because they have no words for numbers, they cannot even begin to understand the concept of numbers or arithmetic.\n\nThe Warlpiri language – spoken by a group of Australian Aborigines – like that of the Pirahã, features only the most rudimentary system of counting. However, the Warlpiri people had no difficulty counting farther than three in a foreign language, in this case English, but when Everett attempted to teach the Pirahã how to count in Portuguese like other Brazilians, not a single person could count to 10.\n\nEverett is at pains to point out that the Pirahã are not unintelligent, for their thinking is not any slower than that of the average university student. And although they reside in a remote part of the forest, they do not live in complete genetic isolation, but mix with people from the surrounding populations and share similar intellectual capacities with their neighbours whose languages do contain numbers.\n\nEventually, after some 30 years of research, Everett has come up with a surprising explanation for the peculiarities of the Pirahã language. Language, he believes, is created by a people’s way of life, their belief system and values. In this way, variety in human language is almost limitless, a function of the human capacity to live in different ways, such as in the forest. What Everett’s research has revealed is that the central tenet of the Pirahã culture is to live in the here and now. The only thing of importance that is worth communicating to others is what is being experienced at that very moment, though this can often be described with great care and detail. In consequence, the language has no means to conjugate verbs in order to describe ‘yesterday’ or ‘last week’ or ‘when I was a child’. Their very literal view of the world curtails abstract thought, and many features taken for granted among other peoples are absent among the Pirahã, such as a creation myth, storytelling and painting. One manifestation of their beliefs is that by tradition the names they give their children are not particularly imaginative. Often they are named after other members of the tribe with whom they share similar character traits. Standing out or being different is not encouraged by the Pirahã, and this is reflected in their perhaps colourless choice of names.\n\nEverett anticipated that these findings would be controversial and the reaction came as expected. Until this point, many linguists had defended the theories of Noam Chomsky, according to which all human languages have a universal grammar. What exactly makes up this universal grammar is the subject of debate, but at its heart is the concept of ‘recursion’, which is defined as replication of a structure within its single parts. Without it, humans would not be able to view separate thoughts as subordinate parts of a complex whole. And, most pertinent to Everett’s work, there would not be subordinate clauses, which are responsible for translating the concept of recursion into grammar. But if the Pirahã do not form subordinate clauses, then recursion cannot explain the uniqueness of human language, and this would negate Chomsky’s theories.\n\nThe logical way forward now would be to try to prove that the Pirahã can think in a recursive fashion. The only problem is, nobody can confirm or deny Everett’s observations since no other researcher can speak Pirahã as well as he does. Despite this, several researchers – including two of Chomsky’s colleagues – will soon travel to Brazil to check his claims. My concern is that soon the Pirahã will simply become one more scientific oddity with every aspect of their lives being exploited and analysed.",
+              "order": 1
+            }
+          ],
+          "question_blocks": [
+            {
+              "block_type": "yes_no_not_given",
+              "title": "Questions 37-40",
+              "instructions": "Choose **YES** if the statement agrees with the claims of the writer, choose **NO** if the statement contradicts the claims of the writer, or choose **NOT GIVEN** if it is impossible to say what the writer thinks about this.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 37,
+                  "question_text": "Everett was surprised by the way his research was greeted.",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 38,
+                  "question_text": "Chomsky has been critical of Everett's research methodology.",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 39,
+                  "question_text": "If 'recursion' as a universal concept is disproved, Chomsky's ideas about language would be wrong.",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 40,
+                  "question_text": "The Pirahã will benefit from their new-found status among academics.",
+                  "marks": 1,
+                  "order": 4
+                }
+              ]
+            },
+            {
+              "block_type": "reading_multiple_choice",
+              "title": "Questions 27–32",
+              "instructions": "Choose the correct letter, A, B, C or D.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 27,
+                  "question_text": "What are we told about Daniel Everett in the first paragraph?",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 28,
+                  "question_text": "Which of the following is the best summary of the second paragraph?",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 29,
+                  "question_text": "Why does the writer refer to subordinate clauses?",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 30,
+                  "question_text": "What point does the writer make about the work of Whorf?",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 31,
+                  "question_text": "The writer refers to the Warlpiri people in order to",
+                  "marks": 1,
+                  "order": 5
+                },
+                {
+                  "question_number": 32,
+                  "question_text": "What is Everett's point about the Pirahã's intellectual capacities?",
+                  "marks": 1,
+                  "order": 6
+                }
+              ]
+            },
+            {
+              "block_type": "shared_completion_with_choice",
+              "title": "Questions 33–36",
+              "instructions": "Complete the summary below.\nChoose **ONE** word from the box for each answer. There are more words than you need.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 33,
+                  "question_text": "a group's language is a product of their ___",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 34,
+                  "question_text": "only place value on the ___",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 35,
+                  "question_text": "have no ___ to describe completed events",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 36,
+                  "question_text": "do not celebrate ___",
+                  "marks": 1,
+                  "order": 4
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "section_type": "writing",
+      "title": "Writing",
+      "instructions": "",
+      "duration_minutes": 60,
+      "order": 3,
+      "parts": [
+        {
+          "title": "Writing Task 1",
+          "instructions": "",
+          "order": 1,
+          "content_blocks": [
+            {
+              "content_type": "text",
+              "title": "Task Description",
+              "text_content": "The chart below shows the percentage of different types of household waste that were recycled in one city between 1992 and 2002.\r\n\r\nSummarise the information by selecting and reporting the main features, and make comparison where relevant.",
+              "order": 1
+            },
+            {
+              "content_type": "image",
+              "title": "",
+              "text_content": "",
+              "order": 2,
+              "file_url": "/media/content_files/photo_2025-11-15_04-53-56.jpg"
+            }
+          ],
+          "question_blocks": [
+            {
+              "block_type": "graph_description",
+              "title": "Writing Task 1",
+              "instructions": "You should spend about 20 minutes on this task.\n\nThe chart below shows the percentage of different types of household waste that were recycled in one city between 1992 and 2002.\r\n\r\nSummarise the information by selecting and reporting the main features, and make \r\ncomparison where relevant.\n\nWrite at least 150 words.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 1,
+                  "question_text": "The chart below shows the percentage of different types of household waste that were recycled in one city between 1992 and 2002.\r\n\r\nSummarise the information by selecting and reporting the main features, and make \r\ncomparison where relevant.",
+                  "marks": 1,
+                  "order": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Writing Task 2",
+          "instructions": "",
+          "order": 2,
+          "content_blocks": [
+            {
+              "content_type": "text",
+              "title": "Essay Topic",
+              "text_content": "More and more students are choosing to study at colleges and universities in a foreign country. Do the benefits of studying abroad outweigh the drawbacks?",
+              "order": 1
+            }
+          ],
+          "question_blocks": [
+            {
+              "block_type": "essay",
+              "title": "Writing Task 2",
+              "instructions": "You should spend about 40 minutes on this task.\n\nWrite about the following topic:\n\nMore and more students are choosing to study at colleges and universities in a foreign country. Do the benefits of studying abroad outweigh the drawbacks?\n\nGive reasons for your answer and include any relevant examples from your own knowledge or experience.\n\nWrite at least 250 words.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 2,
+                  "question_text": "More and more students are choosing to study at colleges and universities in a foreign country. Do the benefits of studying abroad outweigh the drawbacks?",
+                  "marks": 1,
+                  "order": 1
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

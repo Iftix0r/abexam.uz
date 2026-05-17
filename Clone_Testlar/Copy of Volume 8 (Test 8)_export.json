@@ -1,0 +1,801 @@
+{
+  "title": "Copy of Volume 8 (Test 8)",
+  "description": "IELTS practice test with 2 sections",
+  "status": "both",
+  "created_at": "2026-05-14T02:59:51.017082+00:00",
+  "sections": [
+    {
+      "section_type": "listening",
+      "title": "Listening",
+      "instructions": "You will hear a number of different recordings and you will have to answer questions on what you hear.",
+      "duration_minutes": 30,
+      "order": 1,
+      "parts": [
+        {
+          "title": "Part 1",
+          "instructions": "",
+          "order": 1,
+          "content_blocks": [
+            {
+              "content_type": "audio",
+              "title": "Listening Test Audio",
+              "text_content": "Audio file: /media/tests/TEST1/Listening Test 1.mp3 - Complete listening test for IELTS Practice Test 1",
+              "order": 1,
+              "file_url": "/media/content_files/Test_8_DfXDwW1.mp3"
+            }
+          ],
+          "question_blocks": [
+            {
+              "block_type": "shared_completion",
+              "title": "Questions 1-6",
+              "instructions": "Complete the sentences below.\nWrite **NO MORE THAN TWO WORDS AND/OR A NUMBER** for each answer.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 1,
+                  "question_text": "Q1 - Elinor shares the flat with her ___",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 2,
+                  "question_text": "Q2 - Elinor must contact the landlord's ___ about the repairs",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 3,
+                  "question_text": "Q3 - Elinor may have to pay £ ___ towards some repairs",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 4,
+                  "question_text": "Q4 - The agent suggests that Elinor should contact a ___ for urgent repairs",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 5,
+                  "question_text": "Q5 - Elinor can be contacted on her ___ number",
+                  "marks": 1,
+                  "order": 5
+                },
+                {
+                  "question_number": 6,
+                  "question_text": "Q6 - Elinor will need to sign the ___ after the repairs are completed",
+                  "marks": 1,
+                  "order": 6
+                }
+              ]
+            },
+            {
+              "block_type": "listening_multiple_choice",
+              "title": "Questions 7-10",
+              "instructions": "Choose the correct answer.",
+              "order": 2,
+              "questions": [
+                {
+                  "question_number": 7,
+                  "question_text": "According to the agent, what may be the problem with the bathroom window?",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 8,
+                  "question_text": "The agent says that the electricity should be checked",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 9,
+                  "question_text": "The agent thinks the central heating system should be",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 10,
+                  "question_text": "What was the problem in the hall?",
+                  "marks": 1,
+                  "order": 4
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Part 2",
+          "instructions": "",
+          "order": 2,
+          "content_blocks": [],
+          "question_blocks": [
+            {
+              "block_type": "listening_multiple_choice",
+              "title": "Questions 11-16",
+              "instructions": "Choose the correct answer.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 11,
+                  "question_text": "Why does Jane recommend visiting the Music Tent on Tuesday?",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 12,
+                  "question_text": "When do the educational workshops take place in the Music Tent?",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 13,
+                  "question_text": "Why does Jane recommend going to the library to buy a ticket?",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 14,
+                  "question_text": "What will history lovers find interesting about Macquarie House?",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 15,
+                  "question_text": "The Big Barbecue is different this year because",
+                  "marks": 1,
+                  "order": 5
+                },
+                {
+                  "question_number": 16,
+                  "question_text": "What can you do at the Railway Museum?",
+                  "marks": 1,
+                  "order": 6
+                }
+              ]
+            },
+            {
+              "block_type": "multiple_choice_limited",
+              "title": "Questions 17-18",
+              "instructions": "Which **TWO** free things does the family ticket on the steam train include?\nChoose **TWO** correct answers.",
+              "order": 2,
+              "questions": [
+                {
+                  "question_number": 17,
+                  "question_text": "Which TWO free things does the family ticket on the steam train include?",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 18,
+                  "question_text": "Which TWO free things does the family ticket on the steam train include?",
+                  "marks": 1,
+                  "order": 2
+                }
+              ]
+            },
+            {
+              "block_type": "multiple_choice_limited",
+              "title": "Questions 19-20",
+              "instructions": "Which **TWO** things apply when voting for Our Favourite Place?\nChoose **TWO** correct answers.",
+              "order": 3,
+              "questions": [
+                {
+                  "question_number": 19,
+                  "question_text": "Which TWO things apply when voting for Our Favourite Place?",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 20,
+                  "question_text": "Which TWO things apply when voting for Our Favourite Place?",
+                  "marks": 1,
+                  "order": 2
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Part 3",
+          "instructions": "",
+          "order": 3,
+          "content_blocks": [],
+          "question_blocks": [
+            {
+              "block_type": "shared_completion",
+              "title": "Questions 21-30",
+              "instructions": "Complete the notes below.\nWrite **NO MORE THAN THREE WORDS** for each answer.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 21,
+                  "question_text": "Q21 - Time of day: ___",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 22,
+                  "question_text": "Q22 - 40-minute presentation to the ___",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 23,
+                  "question_text": "Q23 - Must bring to discussion: ___",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 24,
+                  "question_text": "Q24 - Must bring to discussion: ___",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 25,
+                  "question_text": "Q25 - Students will receive: ___",
+                  "marks": 1,
+                  "order": 5
+                },
+                {
+                  "question_number": 26,
+                  "question_text": "Q26 - has done ___",
+                  "marks": 1,
+                  "order": 6
+                },
+                {
+                  "question_number": 27,
+                  "question_text": "Q27 - has ability to ___",
+                  "marks": 1,
+                  "order": 7
+                },
+                {
+                  "question_number": 28,
+                  "question_text": "Q28 - has ability to present ___",
+                  "marks": 1,
+                  "order": 8
+                },
+                {
+                  "question_number": 29,
+                  "question_text": "Q29 - produce ___",
+                  "marks": 1,
+                  "order": 9
+                },
+                {
+                  "question_number": 30,
+                  "question_text": "Q30 - www ___ com",
+                  "marks": 1,
+                  "order": 10
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Part 4",
+          "instructions": "",
+          "order": 4,
+          "content_blocks": [],
+          "question_blocks": [
+            {
+              "block_type": "table_completion",
+              "title": "Questions 31-39",
+              "instructions": "Complete the table below.\nWrite **NO MORE THAN TWO WORDS** for each answer.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 31,
+                  "question_text": "regarded as being what",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 32,
+                  "question_text": "example of what",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 33,
+                  "question_text": "behaviour of animals in what",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 34,
+                  "question_text": "influenced by his/her what",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 35,
+                  "question_text": "seen as being what",
+                  "marks": 1,
+                  "order": 5
+                },
+                {
+                  "question_number": 36,
+                  "question_text": "child's what",
+                  "marks": 1,
+                  "order": 6
+                },
+                {
+                  "question_number": 37,
+                  "question_text": "believed to be what",
+                  "marks": 1,
+                  "order": 7
+                },
+                {
+                  "question_number": 38,
+                  "question_text": "importance of what",
+                  "marks": 1,
+                  "order": 8
+                },
+                {
+                  "question_number": 39,
+                  "question_text": "kept in the what",
+                  "marks": 1,
+                  "order": 9
+                }
+              ]
+            },
+            {
+              "block_type": "listening_multiple_choice",
+              "title": "Question 40",
+              "instructions": "Choose the correct answer.",
+              "order": 2,
+              "questions": [
+                {
+                  "question_number": 40,
+                  "question_text": "The speaker thinks that one topic which will be examined closely in future is",
+                  "marks": 1,
+                  "order": 1
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "section_type": "reading",
+      "title": "Reading",
+      "instructions": "",
+      "duration_minutes": 60,
+      "order": 2,
+      "parts": [
+        {
+          "title": "Reading Passage 1",
+          "instructions": "",
+          "order": 1,
+          "content_blocks": [
+            {
+              "content_type": "text",
+              "title": "Ahead of its time",
+              "text_content": "_A chance discovery in New Zealand has challenged the country's recorded history_\n\nOne October afternoon, a young New Zealander, Sam Tobin, called his dogs and went for a walk down to the nearby Ruamahanga River. Having been very high for days, the river had at last fallen, and Tobin was eager to see what changes the floods had brought. The family farm borders the river and a four-metre-high flood bank testifies to its natural tendency to flood.\n\nTobin stepped out onto a broad shoulder of river sand, where he noticed what he initially took to be a whitish rock, lit by the sun. Then, getting closer, he realised it was a bone. Such a thing was not uncommon in these parts - he had often come across bone fragments, or even whole skeletons, of cows and sheep. But as he scraped aside the stones he realised it was a human bone, something quite new in his experience. As he picked it up, he saw it was a skull, discoloured with age.\n\nTobin replaced the skull and hurried home to tell his mother what the river had delivered to their doorstep. It would prove to be a spectacular find, setting in motion an investigation by some of the country’s most respected specialists, and ultimately challenging our most firmly held assertions about the human settlement of New Zealand.\n\nThe police were immediately called, but despite a thorough search could find nothing that might shed light on the identity of the Ruamahanga skull, or the circumstances of its sudden appearance. The skull was then taken north to be examined by forensic pathologist Dr Ferris, at Auckland Hospital. Despite being hampered by its damaged and incomplete condition - the jawbone and lower left portion of the cranium were missing - Dr Ferris determined that the skull was that of a female. He then consulted with a colleague, Dr Koelmeyer, who believed that the deterioration of the bone placed the time of death 'before living memory' and, most significantly as it would turn out, the skull appeared to be European in origin.\n\nWellington-based forensic anthropologist Dr Watt also examined the skull, and suggested it belonged to a 40-45 year-old. He believed that it could be the remains of an old farm burial, but was not certain, and proposed the use of radiocarbon dating to make sure it wasn't a recent death. As a result, the Institute of Geological and Nuclear Sciences (GNS) in Lower Hutt was contacted, and provided with a sample of bone that had originated in the top of the skull. In a little over three weeks the seemingly astonishing results from the GNS laboratory came back. Cutting through the bewildering complexity of the scientific analysis was a single line\n\nreading: conventional radiocarbon age approximately 296 years. This was staggering, for the skull was about 200 years older than Dr Koelmeyer had believed.\n\nOf course, a skull of this age wasn't particularly unusual in New Zealand. The Maori people have been living in the country for at least 800 years and scientists frequently come across human remains of considerable age. The fascinating question, however, was how a skull of this race, let alone this gender, had reached these remote islands in the South Pacific at such a time, long before the arrival of the explorer Captain Cook in 1769, and perhaps even before the very first European landfall - the fleeting visit of the Dutch explorer Tasman in 1642 - neither of whom had women among their crews.\n\nThe first known European women in the Pacific came with a doomed colonising venture which sailed from Peru in 1595 under the command of Spanish captain Mendana. However, it is unlikely the Ruamahanga skull originated from this expedition because no evidence of Mendana's ships has ever been found in New Zealand, while a team of archaeologists working in the Solomon Islands in 1970 did discover the remains of European vessels dating from the 16th century.\n\nTwo centuries were to pass before the first recorded European females arrived in New Zealand, both having escaped from prison in Australia. Kathleen Hagerty and Charlotte Edgar are known to have reached the country in 1806. How then do we account for the Ruamahanga skull, which appears to be about 100 years older than that? It is impossible to say with certainty, but the most likely explanation is that a Spanish or Portuguese trading-ship was washed onto these wild shores as a result of a shipwreck and a woman got ashore. Implausible, perhaps, but the Ruamahanga skull, today resting in the Wellington Museum, could be the kind of concrete evidence that demands such a drastic re-evaluation of history.",
+              "order": 1
+            }
+          ],
+          "question_blocks": [
+            {
+              "block_type": "true_false_not_given",
+              "title": "Questions 1-4",
+              "instructions": "Choose **TRUE** if the statement agrees with the information given in the text, choose **FALSE** if the statement contradicts the information, or choose **NOT GIVEN** if there is no information on this.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 1,
+                  "question_text": "The Ruamahanga River often floods.",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 2,
+                  "question_text": "When Tobin first found the object in the river, he mistook it for something else.",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 3,
+                  "question_text": "Tobin could not decide what part of the body the bone came from.",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 4,
+                  "question_text": "Tobin's mother was surprised that the skull caused debate among specialists.",
+                  "marks": 1,
+                  "order": 4
+                }
+              ]
+            },
+            {
+              "block_type": "shared_completion",
+              "title": "Questions 5-9",
+              "instructions": "Complete the flow-chart below.\nWrite **NO MORE THAN TWO WORDS AND/OR A NUMBER** from the passage for each answer.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 5,
+                  "question_text": "The _____ were initially involved",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 6,
+                  "question_text": "Dr Koelmeyer suggested it was a _____ skull",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 7,
+                  "question_text": "Dr Watt recommended _____ to establish the skull's age",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 8,
+                  "question_text": "A bone _____ was sent to the GNS",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 9,
+                  "question_text": "The age of the skull was about _____ years",
+                  "marks": 1,
+                  "order": 5
+                }
+              ]
+            },
+            {
+              "block_type": "shared_completion",
+              "title": "Questions 10-13",
+              "instructions": "Complete the notes below.\nWrite **ONE WORD ONLY** from the passage for each answer.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 10,
+                  "question_text": "Ruamahanga skull surprising because of its age, race and gender",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 11,
+                  "question_text": "Evidence of this expedition found elsewhere by archaeologists",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 12,
+                  "question_text": "Hagerty and Edgar arrived in 1806 from Australia where they had been imprisoned",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 13,
+                  "question_text": "Ruamahanga skull may have reached NZ in 17th century after a shipwreck",
+                  "marks": 1,
+                  "order": 4
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Reading Passage 2",
+          "instructions": "",
+          "order": 2,
+          "content_blocks": [
+            {
+              "content_type": "text",
+              "title": "REMOVING UNWANTED NOISE",
+              "text_content": "[A-drophere]\n14 A noisy restaurant, a busy road, or a windy day are all situations that can be intensely frustrating for the hearing impaired when trying to understand what other people are saying. Some 10 million people in the UK suffer from hearing difficulties and, helpful as hearing aids are, those who wear them often complain that background noise continues to interfere with their understanding. But what if hearing aid wearers could choose to filter out all the troublesome sounds and focus just on the voices they want to hear?\n\n[B-drophere]\n15 Engineer Dr Richard Turner believes that this is fast becoming a possibility. He is developing a system that identifies the distracting noise and ‘rubs it out’. ‘The poor performance in noise of current hearing devices is a major reason why six million people in the UK who would benefit from hearing aids do not use them,’ he said. Moreover, as the population ages, a greater number of people will be hindered by the inability to hear clearly. In addition, hearing-impaired patients who have been fitted with cochlear implants – devices implanted to help those whose auditory hair cells have died – suffer from similar limitations.\n\nThe solution lies in the statistics of sound, as Turner explained: ‘Many interfering noises are immediately recognisable. Raindrops patter on a surface, a fire crackles, talkers babble at a party and the wind howls. But what makes these different noises sound the way they do? No two rain sounds are identical because the precise arrangement of falling water droplets is never repeated. Nonetheless, there must be statistical similarities in the sounds of these raindrops compared with, say, the crackle of a fire.’ He believes that for this reason, the brain may be able to group similar types of sounds together based on their specific characteristics.\n\nTurner and his colleagues have analysed this process mathematically and then developed algorithms that mimic what the brain is doing. The mathematical system that they have developed is capable of being ‘trained’ – a process that uses new methods from the field of machine learning – so that it can recognise new sounds. ‘Rather surprisingly, it seems that a relatively small set of statistics is sufficient to describe a large number of sounds’ he says. Crucially, the system that Turner and his team have come up with is capable of telling the difference between speech and other types of sound.\n\n[C-drophere]\n16 ‘What we can now do is to erase background noise and pass these cleaned-up sounds to a listener to improve their perception in difficult surroundings,’ said Turner. The idea is that future devices will have several different modes in which they can operate. These might include a mode for travelling in a car or on a train, a mode for places like a noisy party or a busy restaurant, a mode that can be used outdoors in windy weather, and so on. The device might intelligently select an appropriate mode based on the characteristics of the incoming sound.\n\n[D-drophere]\n17 ‘In a sense we are developing the technology to underpin intelligent hearing devices,’ said Turner. An additional possibility would be for users to override the selection made by the device and select a processing mode based upon what sorts of noise they wish to erase. They could even guide the processing on their device using an interface on a mobile phone through wireless communication. Turner anticipates that his team will need two more years of simulating the effect of modifications that clean up sound before they start to work with device specialists. 'If these preliminary tests go well, then we'll be looking to work with hearing device companies to try to adapt their processing in order to incorporate these machine learning techniques.'\n\n[E-drophere]\n18 Tinnitus sufferers, who are plagued by a constant ringing in their ears, could also benefit from the technology. At present, people with tinnitus sometimes use environmental sound generators as a distraction from the ringing in their ears. But such generators offer only a limited selection of sounds – a gently flowing stream, waves lapping on the seashore, or leaves rustling. With the new technology, individual patients could select the best sound to distract them from their tinnitus.\n\n[F-drophere]\n19 The technology not only holds promise for helping the hearing impaired, but it also has the potential to improve phone calls – anyone who has ever tried to hold a conversation with someone phoning from a crowded room will recognise the possible benefits of such a facility. Systems that can deal with unwanted audio content would also be welcomed by the increasing numbers of people using video-sharing websites. For example, a video containing a conversation that takes place by a busy roadside on a windy day could be made more intelligible by isolating the speech from the noises – users could even be offered the chance to de-noise their video during the upload process.",
+              "order": 1
+            }
+          ],
+          "question_blocks": [
+            {
+              "block_type": "matching_headings",
+              "title": "Questions 14-19",
+              "instructions": "The text has six sections.\nChoose the correct heading for each section from the list of headings below.\nChoose the correct number, i – ix, in boxes 14 – 19 below.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 14,
+                  "question_text": "Paragraph A",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 15,
+                  "question_text": "Paragraph B",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 16,
+                  "question_text": "Paragraph C",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 17,
+                  "question_text": "Paragraph D",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 18,
+                  "question_text": "Paragraph E",
+                  "marks": 1,
+                  "order": 5
+                },
+                {
+                  "question_number": 19,
+                  "question_text": "Paragraph F",
+                  "marks": 1,
+                  "order": 6
+                }
+              ]
+            },
+            {
+              "block_type": "shared_completion",
+              "title": "Questions 20-23",
+              "instructions": "Complete the summary below.\nWrite **NO MORE THAN TWO WORDS** from the passage for each answer.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 20,
+                  "question_text": "Although sounds are never identical",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 21,
+                  "question_text": "mathematical system using algorithms",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 22,
+                  "question_text": "limited number of statistics",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 23,
+                  "question_text": "distinguish speech from other sounds",
+                  "marks": 1,
+                  "order": 4
+                }
+              ]
+            },
+            {
+              "block_type": "reading_multiple_choice",
+              "title": "Questions 24-26",
+              "instructions": "",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 24,
+                  "question_text": "Turner’s team are now planning a new development involving a device which could",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 25,
+                  "question_text": "In the 5th section, a stream, waves and leaves are examples of the sounds that tinnitus sufferers",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 26,
+                  "question_text": "The writer refers to ‘a busy roadside on a windy day’ in the 6th section to illustrate that",
+                  "marks": 1,
+                  "order": 3
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Reading Passage 3",
+          "instructions": "",
+          "order": 3,
+          "content_blocks": [
+            {
+              "content_type": "text",
+              "title": "An enterprise education programme in Hong Kong",
+              "text_content": "The Teen Entrepreneurs Competition (TEC) is an enterprise education programme developed by the Business Studies Division at the Hong Kong Institute of Education (HKIEd) - the major training body for school teachers in Hong Kong. It has the following key objectives: to enable secondary school business students to integrate their conceptual learning with real business practices; to promote a collaborative approach to enterprise education; and to build up formal links between HKIEd, schools and entrepreneurs.\n\nAmong the various enterprise programmes in Hong Kong, TEC is unique as it is principally organised by pre-service teachers on their B.Ed course. At the beginning of the academic year, these pre-service teachers form an executive committee. They are advised by tutors in the Business Studies Division and some of them are selected to act as TEC instructors. These instructors attend a series of training sessions that cover the concepts of entrepreneurship and practical skills for business start-ups. They are then sent to the schools to co-work with teachers and meet the competition teams.\n\nOver a three-month period, the teams are required to brainstorm an innovative business start-up that is suitable for the Chinese New Year. They then draft a business proposal, turn this into a real business by sourcing or creating their products, and set up a market stall at the HKIEd campus. The teams' business ideas and sales performance are assessed by an adjudicating panel that is made up of entrepreneurs, school principals, teachers, students and customers.\n\nTEC has run annually for three years and has received favourable responses from both the education and local communities. In a recent evaluation survey, most participants ranked themselves in the satisfactory performance category and considered they had gained practical skills to run a small business. A typical response was: 'I understand enterprise better and have developed a good team spirit. Moreover, positive views were obtained from some participants despite the fact that they had not had a good experience. For example, one participant reflected: 'I initially received a lot of criticism and even thought about giving up. However, I eventually learned to work in a systematic way.'\n\nThe positive evaluation outcomes came not only from participants but from other stakeholders as well. The adjudicators commented that most of the business plans demonstrated an adequate understanding and application of entrepreneurship in the context of seasonal sales. In addition, the school teachers stated that TEC was a good platform in that it enabled their students to engage in business. They felt the zero drop-out rate strongly supported their views on the promising future of TEC.\n\nThe positive post-activity evaluations were indications of the programme's success, but an assessment of how well TEC met its objectives will clarify how sustainable it is as an enterprise education programme. One objective was to provide participant with the opportunity to integrate conceptual learning with real business situations. The research studies that were carried out indicated that the school students taking part in TEC were able to apply entrepreneurial knowledge gained in their studies to the authentic business situations created by the programme. In fact, participants not only succeeded in doing this, but also increased their overall understanding of business enterprise.\n\nHowever, the financial and manpower support required by this kind of practical experience is beyond the resources of many schools. In fact, most teachers have little choice but to adopt a limited range of teaching methods, mostly based around traditional ones. Moreover, the dominant examination-orientated culture leads teachers to concentrate on written tests rather than explore practical experiences. TEC, however, is able to empower participants to be active learning agents, and provides a feasible means of filling the gap in educational provision.\n\nThe research studies also demonstrated that the objective of promoting a collaborative approach to enterprise education was met. From the very start of the programme considerable emphasis was placed on collaboration and teamwork. The participants had to cope in a learning environment which was full of ever-changing challenges, and this meant they had to find ways to deal with events as they occurred. This involved participants taking responsibility for their assigned role within the team and working closely with other team members. Moreover, at certain points, participants had to collaborate with other TEC stakeholders such as entrepreneurs and members of the local community.\n\nThe third aim was to develop a network between business and the business education field. Local entrepreneurs acted as sponsors and had an important role in ensuring the programme was financially viable. The network broadly consisted of three tiers. The first tier was made up of key players, including the participants, the teachers, the instructors and the executive committee. There was close collaboration amongst these groups: members of the committee communicated regularly with instructors to disseminate information to participants, and the school teachers and instructors met often to provide suitable guidance to participants. The second tier was an organisational level that mainly consisted of the participating schools and the HKIEd. The contribution of the teacher training institute was to provide logistical support for implementing the programme, including the provision of a venue and a credible point of contact between the schools and the committee. Finally, the third tier consisted of the entrepreneurs who served as judges or sponsors, community groups, the local press and the customers themselves. The positive responses of all these stakeholders and their continuing support is a vote of confidence for the sustainability of TEC in Hong Kong.",
+              "order": 1
+            }
+          ],
+          "question_blocks": [
+            {
+              "block_type": "yes_no_not_given",
+              "title": "Questions 33-36",
+              "instructions": "Choose **YES** if the statement agrees with the claims of the writer, choose **NO** if the statement contradicts the claims of the writer, or **NOT GIVEN** if it is impossible to say what the writer thinks about this.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 33,
+                  "question_text": "The questionnaire results indicated that relatively few participants were satisfied with their performance in TEC.",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 34,
+                  "question_text": "One participant was initially tempted to withdraw from the competition.",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 35,
+                  "question_text": "School teachers believed that some of their students were better suited to taking part in the competition than others.",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 36,
+                  "question_text": "School teachers thought that participants sustained interest in the programme confirmed their positive opinion of it.",
+                  "marks": 1,
+                  "order": 4
+                }
+              ]
+            },
+            {
+              "block_type": "reading_multiple_choice",
+              "title": "Questions 37-40",
+              "instructions": "",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 37,
+                  "question_text": "In the sixth paragraph what point does the writer make about the TEC programme?",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 38,
+                  "question_text": "What does the writer say about the objective of promoting a collaborative approach?",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 39,
+                  "question_text": "What does the writer say about TEC's connections with the business world?",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 40,
+                  "question_text": "According to the final paragraph, the Hong Kong Institute of Education",
+                  "marks": 1,
+                  "order": 4
+                }
+              ]
+            },
+            {
+              "block_type": "shared_completion_with_choice",
+              "title": "Questions 27-32",
+              "instructions": "Complete the summary using the list of words, A-K, below.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 27,
+                  "question_text": "receive guidance from HKIEd staff",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 28,
+                  "question_text": "The aims of the programme include",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 29,
+                  "question_text": "developing a network consisting of",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 30,
+                  "question_text": "instructors go to workshops",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 31,
+                  "question_text": "taught a range of entrepreneurial theories",
+                  "marks": 1,
+                  "order": 5
+                },
+                {
+                  "question_number": 32,
+                  "question_text": "new business venture for the Chinese New Year",
+                  "marks": 1,
+                  "order": 6
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "section_type": "writing",
+      "title": "Writing",
+      "instructions": "",
+      "duration_minutes": 60,
+      "order": 3,
+      "parts": [
+        {
+          "title": "Writing Task 1",
+          "instructions": "",
+          "order": 1,
+          "content_blocks": [
+            {
+              "content_type": "text",
+              "title": "Task Description",
+              "text_content": "The diagram illustrates the process of olive oil production from olives.",
+              "order": 1
+            },
+            {
+              "content_type": "image",
+              "title": "",
+              "text_content": "",
+              "order": 2,
+              "file_url": "/media/content_files/photo_2026-02-19_09-19-21.jpg"
+            }
+          ],
+          "question_blocks": [
+            {
+              "block_type": "graph_description",
+              "title": "Writing Task 1",
+              "instructions": "You should spend about 20 minutes on this task.\n\nThe diagram illustrates the process of olive oil production from olives.\n\nWrite at least 150 words.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 1,
+                  "question_text": "The diagram illustrates the process of olive oil production from olives.",
+                  "marks": 1,
+                  "order": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Writing Task 2",
+          "instructions": "",
+          "order": 2,
+          "content_blocks": [
+            {
+              "content_type": "text",
+              "title": "Essay Topic",
+              "text_content": "Today, artists, such as musicians and painters, are still valued despite the advancements in technology and science. Why is this the case? Is the impact of art on people's lives the same as the impact of science and technology?",
+              "order": 1
+            }
+          ],
+          "question_blocks": [
+            {
+              "block_type": "essay",
+              "title": "Writing Task 2",
+              "instructions": "You should spend about 40 minutes on this task.\n\nWrite about the following topic:\n\nToday, artists, such as musicians and painters, are still valued despite the advancements in technology and science. Why is this the case? Is the impact of art on people's lives the same as the impact of science and technology?\n\nGive reasons for your answer and include any relevant examples from your own knowledge or experience.\n\nWrite at least 250 words.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 2,
+                  "question_text": "Today, artists, such as musicians and painters, are still valued despite the advancements in technology and science. Why is this the case? Is the impact of art on people's lives the same as the impact of science and technology?",
+                  "marks": 1,
+                  "order": 1
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,793 @@
+{
+  "title": "Volume 8 (Test 3)",
+  "description": "Listening Test 3 + Reading Test 3 + Writing",
+  "status": "both",
+  "created_at": "2026-01-12T05:34:19.009932+00:00",
+  "sections": [
+    {
+      "section_type": "listening",
+      "title": "Listening",
+      "instructions": "You will hear a number of different recordings and you will have to answer questions on what you hear.",
+      "duration_minutes": 30,
+      "order": 1,
+      "parts": [
+        {
+          "title": "Part 1",
+          "instructions": "",
+          "order": 1,
+          "content_blocks": [
+            {
+              "content_type": "audio",
+              "title": "Listening Test Audio",
+              "text_content": "Audio file: /media/tests/TEST1/Listening Test 1.mp3 - Complete listening test for IELTS Practice Test 1",
+              "order": 1,
+              "file_url": "/media/content_files/test_31.mp3"
+            }
+          ],
+          "question_blocks": [
+            {
+              "block_type": "shared_completion",
+              "title": "Questions 1-10",
+              "instructions": "Complete the notes below.\nWrite **ONE WORD AND/OR A NUMBER** for each answer.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 1,
+                  "question_text": "Q1 - Date of arrival: ___",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 2,
+                  "question_text": "Q2 - Book a ___ on the beach",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 3,
+                  "question_text": "Q3 - Budget is around ___ a night",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 4,
+                  "question_text": "Q4 - The children want to go ___",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 5,
+                  "question_text": "Q5 - arrange for them to have a ___",
+                  "marks": 1,
+                  "order": 5
+                },
+                {
+                  "question_number": 6,
+                  "question_text": "Q6 - Book a time ... to play ___",
+                  "marks": 1,
+                  "order": 6
+                },
+                {
+                  "question_number": 7,
+                  "question_text": "Q7 - Duncan wants to go ___",
+                  "marks": 1,
+                  "order": 7
+                },
+                {
+                  "question_number": 8,
+                  "question_text": "Q8 - book a ___ ($100 per night)",
+                  "marks": 1,
+                  "order": 8
+                },
+                {
+                  "question_number": 9,
+                  "question_text": "Q9 - Arrange a ___ for Jenny",
+                  "marks": 1,
+                  "order": 9
+                },
+                {
+                  "question_number": 10,
+                  "question_text": "Q10 - Send Duncan a ___ for Marco’s",
+                  "marks": 1,
+                  "order": 10
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Part 2",
+          "instructions": "",
+          "order": 2,
+          "content_blocks": [
+            {
+              "content_type": "image",
+              "title": "",
+              "text_content": "",
+              "order": 2,
+              "file_url": "/media/content_files/photo_2026-01-12_10-38-35.jpg"
+            }
+          ],
+          "question_blocks": [
+            {
+              "block_type": "shared_completion_with_choice",
+              "title": "Questions 11-15",
+              "instructions": "Complete the flow-chart below.\nChoose **FIVE** correct answers, A–I, next to questions 11–15.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 11,
+                  "question_text": "Select a bike by using the ___",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 12,
+                  "question_text": "Release the bike by using the ___ of your chosen bike",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 13,
+                  "question_text": "Remove the bike from the ___",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 14,
+                  "question_text": "Make sure you have a ___ before setting off",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 15,
+                  "question_text": "A ___ will tell you the bike is locked correctly",
+                  "marks": 1,
+                  "order": 5
+                }
+              ]
+            },
+            {
+              "block_type": "shared_map_labeling",
+              "title": "Questions 16-20",
+              "instructions": "Label the plan below.\nChoose the correct letter, A-H, next to questions 16-20.",
+              "order": 2,
+              "questions": [
+                {
+                  "question_number": 16,
+                  "question_text": "Coffee cart",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 17,
+                  "question_text": "Workshop",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 18,
+                  "question_text": "Lockers",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 19,
+                  "question_text": "Showers",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 20,
+                  "question_text": "Towel",
+                  "marks": 1,
+                  "order": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Part 3",
+          "instructions": "",
+          "order": 3,
+          "content_blocks": [],
+          "question_blocks": [
+            {
+              "block_type": "shared_completion",
+              "title": "Questions 21-23",
+              "instructions": "Complete the notes below.\nWrite **ONE WORD ONLY** for each answer.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 21,
+                  "question_text": "Q21 - can use wind power in any ___",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 22,
+                  "question_text": "Q22 - uses ___ as a power source",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 23,
+                  "question_text": "Q23 - less likely to ___",
+                  "marks": 1,
+                  "order": 3
+                }
+              ]
+            },
+            {
+              "block_type": "multiple_choice_limited",
+              "title": "Questions 24-25",
+              "instructions": "Choose **TWO** correct answers.\n\n24–25 Who will Sylvia and Greg ask to take part in the survey?",
+              "order": 2,
+              "questions": [
+                {
+                  "question_number": 24,
+                  "question_text": "Who will Sylvia and Greg ask to take part in the survey?",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 25,
+                  "question_text": "Who will Sylvia and Greg ask to take part in the survey?",
+                  "marks": 1,
+                  "order": 2
+                }
+              ]
+            },
+            {
+              "block_type": "listening_multiple_choice",
+              "title": "Questions 26-30",
+              "instructions": "Choose the correct answer, A, B or C.",
+              "order": 3,
+              "questions": [
+                {
+                  "question_number": 26,
+                  "question_text": "What does Sylvia say about people’s knowledge of renewable energy?",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 27,
+                  "question_text": "What do Sylvia and Greg decide to ask about traditional energy consumption?",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 28,
+                  "question_text": "What does Greg say about nuclear power?",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 29,
+                  "question_text": "What do Sylvia and Greg agree about the cost of renewable energy?",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 30,
+                  "question_text": "Sylvia and Greg agree that modern windmills",
+                  "marks": 1,
+                  "order": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Part 4",
+          "instructions": "",
+          "order": 4,
+          "content_blocks": [],
+          "question_blocks": [
+            {
+              "block_type": "shared_completion",
+              "title": "Questions 31-40",
+              "instructions": "Complete the notes below.\nWrite **ONE WORD ONLY** for each answer.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 31,
+                  "question_text": "Q31 - the ___ of employees",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 32,
+                  "question_text": "Q32 - employees' ___",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 33,
+                  "question_text": "Q33 - the ___ of the organization",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 34,
+                  "question_text": "Q34 - higher absence among employees in ___",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 35,
+                  "question_text": "Q35 - the ___ of an employees work group",
+                  "marks": 1,
+                  "order": 5
+                },
+                {
+                  "question_number": 36,
+                  "question_text": "Q36 - the public sector is less ___",
+                  "marks": 1,
+                  "order": 6
+                },
+                {
+                  "question_number": 37,
+                  "question_text": "Q37 - because of ___ factors",
+                  "marks": 1,
+                  "order": 7
+                },
+                {
+                  "question_number": 38,
+                  "question_text": "Q38 - have a ___ workforce",
+                  "marks": 1,
+                  "order": 8
+                },
+                {
+                  "question_number": 39,
+                  "question_text": "Q39 - provide ___ for longer",
+                  "marks": 1,
+                  "order": 9
+                },
+                {
+                  "question_number": 40,
+                  "question_text": "Q40 - are less likely to ___ employer",
+                  "marks": 1,
+                  "order": 10
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "section_type": "reading",
+      "title": "Reading",
+      "instructions": "",
+      "duration_minutes": 60,
+      "order": 2,
+      "parts": [
+        {
+          "title": "Reading Passage 1",
+          "instructions": "",
+          "order": 1,
+          "content_blocks": [
+            {
+              "content_type": "text",
+              "title": "The History of the Chicken",
+              "text_content": "The story begins 10,000 years ago in a jungle in Asia and ends today in kitchens all over the world.\n\nChicken is the universal food of our era, crossing cultural boundaries with ease. With its mild taste and uniform texture, chicken presents a blank canvas for the national flavours of almost any cuisine. However, until the introduction of large-scale industrial production in the 20th century, the economic and nutritional contribution of chickens was small. Chickens were considered domestic birds that were useful to humanity, but unlike other animals such as the horse or the ox, they did little to change the course of history. Nonetheless, the chicken has inspired contributions to culture, art, cuisine, science and religion over the millennia. Chickens were, and still are, a sacred animal in some cultures. The hen is a worldwide symbol of nurturing and fertility. The rooster is a universal sign of masculinity.\n\nThe domesticated chicken has a complicated family tree stretching back 10,000 years. Recent DNA testing has shown that the chicken’s wild ancestor is the red junglefowl. The bird’s resemblance to modern chickens is seen in the red feathers on top of its head, the red flesh around its mouth, and its distinctive call in the morning. The females of this breed protect their eggs in the same way modern-day chickens do, and they make the same clucking sounds. In its habitat, which stretches from north-eastern India to the Philippines, the red junglefowl looks on the forest floor for insects, seeds and fruit, and flies up to nest in the trees at night. That is about as much flying as it can manage, a trait that made it relatively easy for humans to capture and domesticate it. However, the red junglefowl is not the sole ancestor of the modern chicken. Scientists have identified three closely related species that might have bred with the red junglefowl. Precisely how much genetic material these other birds contributed to the DNA of domesticated chickens is unknown. Recent research suggests that modern chickens inherited at least one trait—their yellow skin—from the grey junglefowl of southern India.\n\nOnce chickens were domesticated, cultural contact, trade, migration and territorial conquest resulted in their introduction to different regions of the world over several thousand years. Chickens arrived in Egypt around 1750 BC as fighting birds and additions to zoos. Drawings of the birds decorated royal tombs containing treasures intended for the afterlife. However, it took another 100 years before chickens became popular among ordinary Egyptians.\n\nDuring this period, Egyptians mastered the technique of artificial incubation, freeing hens to lay more eggs. Eggs hatch in three weeks only if the temperature remains around 38 degrees Celsius. They must be turned several times a day, and humidity must remain stable. Egyptians constructed large oven-like complexes with corridors and vents to control heat. These methods were kept secret for centuries.\n\nAround the Mediterranean, archaeologists have uncovered chicken bones dating from about 800 BC. Chickens were considered a delicacy among the Romans, who developed culinary practices such as omelettes and stuffing birds. European farmers later adopted methods to fatten chickens, including feeding them bread soaked in wine. However, the chicken's status declined after the fall of the Roman Empire, and chicken farms disappeared. Birds returned to their former size.\n\nWell into the 20th century, chickens played a minor role in diet and the economy. Production remained small-scale until antibiotics and vitamins were added to chicken feed, allowing birds to be raised indoors. This marked the rise of factory farming.\n\nFactory farming increased both supply and demand. Modern chickens convert grain into protein with great efficiency. Less than one kilogram of feed produces 400 grams of chicken, compared to three kilograms for the same amount of beef. A chick can now reach two kilograms in six weeks.\n\nChickens are also popular as pets. In the USA, exotic and heritage breeds are increasingly kept in backyards and sold for significant sums of money.\n\nOverall, the chicken's global success story spans evolution, agriculture and cuisine, with chickens now outnumbering humans nearly three to one.",
+              "order": 1
+            }
+          ],
+          "question_blocks": [
+            {
+              "block_type": "true_false_not_given",
+              "title": "Questions 1-7",
+              "instructions": "Do the following statements agree with the information given in Reading Passage 1?\n**TRUE** if the statement agrees with the information\n**FALSE** if the statement contradicts the information\n**NOT GIVEN** if there is no information on this",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 1,
+                  "question_text": "Chicken is globally popular because it can be used for different styles of cooking.",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 2,
+                  "question_text": "Chickens have poor capacity for flight compared to Junglefowl.",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 3,
+                  "question_text": "Scientists believe that the domestic chicken has more than one ancestor.",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 4,
+                  "question_text": "A modern chicken has the same skin colour as the grey junglefowl.",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 5,
+                  "question_text": "After the Roman Empire ended, chicken consumption in Europe declined.",
+                  "marks": 1,
+                  "order": 5
+                },
+                {
+                  "question_number": 6,
+                  "question_text": "Some people criticise the methods involved in factory farming chickens.",
+                  "marks": 1,
+                  "order": 6
+                },
+                {
+                  "question_number": 7,
+                  "question_text": "In the USA, fewer people are keeping expensive breeds of chicken at home.",
+                  "marks": 1,
+                  "order": 7
+                }
+              ]
+            },
+            {
+              "block_type": "shared_completion",
+              "title": "Questions 8-13",
+              "instructions": "Complete the notes below.\nWrite **ONE WORD ONLY** from the passage for each answer.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 8,
+                  "question_text": "In 1750 BC the first chickens were seen in Egyptian",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 9,
+                  "question_text": "Pictures of chickens were used on the",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 10,
+                  "question_text": "Egyptians developed a method of egg",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 11,
+                  "question_text": "For eggs to hatch, heat and",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 12,
+                  "question_text": "The eggs were hatched in rooms that functioned as",
+                  "marks": 1,
+                  "order": 5
+                },
+                {
+                  "question_number": 13,
+                  "question_text": "Chickens were kept inside, safe from bad weather and",
+                  "marks": 1,
+                  "order": 6
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Reading Passage 2",
+          "instructions": "",
+          "order": 2,
+          "content_blocks": [
+            {
+              "content_type": "text",
+              "title": "A Study of Introvert and Extrovert Characters",
+              "text_content": "[A-drophere]\nA. We are often labelled as introverts or extroverts, and humans do seem to have biological propensities to behave in certain ways; some of us are naturally more talkative and sociable while others prefer more time alone. But, according to Canadian-born research psychologist Professor Brian Little, our traits are by no means fixed. In his book Me, Myself and Us: The Science of Personality and the Art of Well-Being, Little suggests that we are often able to override our biological make-up through the adoption of what he calls 'free-traits', which allow us to behave in a manner which contrasts with our natural selves. According to Little, we adopt these free-traits only when we need them, in order to meet the demands of different situations and reach targets and goals that are important to us - our 'persona projects'. These projects might be big (such as career ambitions) or small (like cleaning the car) and pursuing them shapes our day-to-day behavior and our relationships with friends, family and workmates.\n\n[B-drophere]\nB. Little recommends that we might usefully think of ourselves as amateur scientists. We are continually exploring and testing the world around us to discover what works and what doesn't. We do things, say things, and then we observe the reactions and unconsciously store the results. We apply the knowledge gained from our 'experiments' to the advancement of our personal projects. Sometimes our personal project pursuit requires us to engage in free traits; at other times, we can just be ourselves. Little proposes that the successful pursuit of personal projects which are meaningful, manageable, supported by others and generate positive feelings can greatly impact our happiness and the quality of our lives.\n\n[C-drophere]\nC. Professor Little and one of his graduate students, Sanna Balsari-Palsule, have looked into the experiences of employees in a range of organisations. The reason for basing the research on this environment, as Balsari-Palsule explains, is that 'in an ideal world, one's job would fit one's traits perfectly, but that's very rarely the case. As so much can hinge on how we behave with others while at work, I wanted to discover what happens when people push the limits of their ability to act out of character. Do employees experience detriments in their well-being or work performance and does this increase their chances of burnout?\"\n\n[D-drophere]\nD. Their findings suggest that extroverts initially experience advantages over introverts at work, in terms of getting noticed and promoted more rapidly. However, when introvert employees higher up in the organisation act out of character and take on extrovert traits, they have equal performance ratings to those extroverts, and do not report any negative effects of this use of free traits. Balsari Palsule offers an explanation: Introvert employees make frequent use of ‘restorative resources ‘These are spaces designed to allow employees to read quietly or simply relax in order to recover their equilibrium after a strenuous session of acting out of character that would otherwise leave them feeling drained. However, if the same employees were expected to act out of character for more prolonged periods, without the chance to recover, the benefits could quickly turn into costs.\n\n[E-drophere]\nE. In the same study, however, extroverts report strikingly different, and much less rewarding, experiences of acting out of character. It appears that more outwardly confident personality types find it extremely hard-and stressful-to rein back their personalities and act as if they were introverted. We found this difference was most common among younger employees. It may be that introverts are generally so used to acting extrovertly in situations outside of the workplace that it becomes a relatively easy force of habit, particularly in Western cultures where extroversion is often highly valued. On the other hand, extrovert employees at the beginning of their careers are much less used to being isolated in an office for long periods of time, so may feel like caged animals, needing to feed off the energy of others in order to thrive, ‘says Balsari-Palsule.\n\n[F-drophere]\nF. In the second stage of research, Balsari-Palsule is looking into the idiosyncrasies of people's work projects and how the work environment plays a vital role in supporting or, in some cases, constraining them. For example, highly competitive environments, which place demands on employees to conform to certain types of behaviour, may leave little time for employees to pursue projects which are important to them on a personal level. This could eventually be detrimental to their well-being. She expects that a closer look at the influences of different factors in the work environment, in conjunction with how people behave, will shed more light on what acting out of character may lead to.\n\n[G-drophere]\nG. The implications of Little and BalsariPalsule's research are numerous and need to be taken into account by businesses. Balsari-Palsule suggests that it would serve companies well not to dismiss the costs of free-trait acting. She points out that compromised psychological and physical well-being can quickly result in more frequent occurrences of absenteeism. She also believes that management should rely less on handing out personality surveys that pigeonhole employees into introvert and extrovert categories. Instead, organisations should adopt policies and build work environments that are supportive of free-trait expression, and also provide the spaces for people to be themselves. Furthermore, making these changes is also likely to lead to increases in productivity in the long run.",
+              "order": 1
+            }
+          ],
+          "question_blocks": [
+            {
+              "block_type": "matching_headings",
+              "title": "Questions 14-20",
+              "instructions": "Reading Passage 2 has seven paragraphs.\nChoose the correct heading for each paragraph from the list of headings below.\nWrite the correct number, i-viii, in boxes 14-20 on your answer sheet.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 14,
+                  "question_text": "Paragraph A",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 15,
+                  "question_text": "Paragraph B",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 16,
+                  "question_text": "Paragraph C",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 17,
+                  "question_text": "Paragraph D",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 18,
+                  "question_text": "Paragraph E",
+                  "marks": 1,
+                  "order": 5
+                },
+                {
+                  "question_number": 19,
+                  "question_text": "Paragraph F",
+                  "marks": 1,
+                  "order": 6
+                },
+                {
+                  "question_number": 20,
+                  "question_text": "Paragraph G",
+                  "marks": 1,
+                  "order": 7
+                }
+              ]
+            },
+            {
+              "block_type": "multiple_choice_limited",
+              "title": "Questions 21-22",
+              "instructions": "Choose **TWO** correct answers.\nWhich **TWO** statements are made by Professor Brian Little in the first paragraph?",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 21,
+                  "question_text": "Which TWO statements are made by Professor Brian Little in the first paragraph?",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 22,
+                  "question_text": "Which TWO statements are made by Professor Brian Little in the first paragraph?",
+                  "marks": 1,
+                  "order": 2
+                }
+              ]
+            },
+            {
+              "block_type": "shared_completion",
+              "title": "Questions 23-26",
+              "instructions": "Complete the sentences below.\nWrite **ONE WORD ONLY** from the passage for each answer.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 23,
+                  "question_text": "In the second stage of her research, Balsari-Palsule will explore her theory that very __________ workplaces prevent employees from completing projects of personal importance.",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 24,
+                  "question_text": "The research done by Little and Balsari-Palsule has many __________ for businesses.",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 25,
+                  "question_text": "Balsari-Palsule thinks that managers depend too much on __________ aimed at determining personality types.",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 26,
+                  "question_text": "Balsari-Palsule thinks that relieving the stress caused by free-trait acting could boost a company's __________ over time",
+                  "marks": 1,
+                  "order": 4
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Reading Passage 3",
+          "instructions": "",
+          "order": 3,
+          "content_blocks": [
+            {
+              "content_type": "text",
+              "title": "When the senses mix together",
+              "text_content": "A What is the colour of five? What is the sound of blue? To most of us such questions are either meaningless or suitable only for poetry. But for some people these are questions to which very precise answers can be given. Five, for example, for some people is green, while others say the sound of a guitar is like someone blowing on their ankles. People who 'see' colour in numbers or letters of the alphabet and 'feel' sensation in sound have synesthesia – meaning literally 'joined sensation' – an extraordinary condition that causes certain senses to 'leak' into one another.\n\nB People whose senses behave in this way are called 'synesthetes'. Some synesthetes take pleasure in it. To me it's like other people see the world in black and white, says one, who sees every letter, number, sound and pain in colour. Others learn to keep it a secret for fear of people laughing at them. But to neurologists investigating the brain it is of great interest. 'When scientists study normal perception,' says Daniel Smilek of the University of Waterloo in Ontario, Canada, 'there are lots of things we don't question because most of us perceive in the same way. Synesthesia, because it's abnormal, can give us new insights into normal perception.\n\nC Seventeenth-century English philosopher John Locke was the first westerner to describe synesthesia. He wrote about a man who experienced bright red as the sound of the trumpet. Later, the condition excited the imagination of nineteenth-century European painters, such as the non-synesthete Wassily Kandinsky, who believed synesthetes were like good, much-played violins, which vibrate in all their parts and fibres. But it proved impossible to research and people lost interest. Recently, however, advances in brain imaging have sparked renewed interest.\n\nD Early claims that the multi-sensory experiences of synesthesia were linked with the hallucinations of mental illness have long been disproved. Until 1993, many researchers dismissed it as another name for a vivid imagination, but then an experiment by Simon Baron-Cohen of Cambridge University in the UK showed that synesthetes who, when tested, had linked particular colours or shapes to letters, gave the same answers in 92 per cent of instances when tested again a week later. Non-synesthetes, given similar examples to imagine, returned the same answers in only 37 per cent of instances.\n\nE Although there is some overlap between synesthetes as to what colour is linked to what – 56 per cent see the letter 'o' as white – most of the responses are individual. There are 30 possible sensory combinations, but links between sounds and colours are the most common. Women are between two and eight times more likely than men to have the condition.\n\nF As yet there is no explanation for any of this, but small pieces of the jigsaw are emerging. A brain scanning experiment by Baron-Cohen in 1995 found that when synesthetes were listening to words, areas of the brain lit up that are normally only active in response to vision and colour. From this comes the notion that we may all have synesthesia at birth, when many parts of the brain are linked, but, as we develop, connections are pruned, so our senses become separated and the synesthetic mechanism is no longer intact. Somehow, synesthetes have kept their synaptic connections intact. It's an idea that has been challenged, however, on the grounds that if you give people certain drugs they will have synesthetic experiences, which suggests the mechanism is intact in adults but repressed.\n\nG There are many more unanswered questions about synesthesia. For example, is the synesthete's colour response to a number five triggered by actually seeing the number five written on a page, or does the synesthete 'see' the colour just by thinking of the number five? The neurologist Vilyanur Ramachandran came up with a test for synesthesia which seemed to suggest it was the sight of the number that was important. He asked people to look at a page made up of specially drawn twos and fives that were a mirror image of each other. The fives were placed at random on the page but the twos were placed to form shapes such as circles or triangles. To most people the numbers just looked like a jumble without order, but to synesthetes the patterns made by the twos were very obvious as a different colour from the fives. 'This shows they were really sensing colour in the numbers they saw,' says Ramachandran 'Ideas don't form these kinds of patterns.'\n\nH However, Smilek subsequently came up with evidence that what really matters is the idea of a number rather than the sight of it on a page. He asked a synesthete to do some simple mental arithmetic while looking at different coloured papers, The subject did not write her answers, but only thought of them and said them aloud. Smilek found that when the colour of the paper clashed with the colour of the answer, the subject's response was slower than when the colours were the same. An actual colour (the colour of the paper) could interfere with the colour of a number that existed only in her head (the answer to the mental arithmetic question). 'My research suggests that colour experiences coincide with the processing of meaning,' says Smilek. 'It's the concept of a number that's coloured.'\n\nI So which is it? At present, we don't know, but in the future neurologists may be able to explain what's going on in the brains of people like the novelist Nabokov, who perceived the English 'a' as dark brown and the French 'e' as black.",
+              "order": 1
+            }
+          ],
+          "question_blocks": [
+            {
+              "block_type": "true_false_not_given",
+              "title": "Questions 36-40",
+              "instructions": "Do the following statements agree with the information given in Reading Passage 3? Write:\n**TRUE** if the statement agrees with the information\n**FALSE** if the statement contradicts the information\n**NOT GIVEN** if there is no information on this",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 36,
+                  "question_text": "The painter Kandinsky admired synesthetes.",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 37,
+                  "question_text": "It is no longer believed that synesthesia is associated with mental illness.",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 38,
+                  "question_text": "Equal numbers of men and women have synesthesia.",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 39,
+                  "question_text": "Synesthetes have greater powers of logic than people with normal perception.",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 40,
+                  "question_text": "It is possible that we are all born with synesthesia.",
+                  "marks": 1,
+                  "order": 5
+                }
+              ]
+            },
+            {
+              "block_type": "matching_features",
+              "title": "Questions 27-30",
+              "instructions": "Match each statement with the correct person.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 27,
+                  "question_text": "For synesthetes, hearing the names of things affects the brain in the same way that looking at things does.",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 28,
+                  "question_text": "Synesthetes are consistent in their association of a certain colour with a certain written symbol.",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 29,
+                  "question_text": "One synesthete heard a particular musical instrument when he saw a certain colour.",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 30,
+                  "question_text": "Because synesthetes experience things differently to other people, studying synesthesia can give fresh perspectives on how the senses usually work.",
+                  "marks": 1,
+                  "order": 4
+                }
+              ]
+            },
+            {
+              "block_type": "matching_information",
+              "title": "Questions 31-35",
+              "instructions": "Which paragraph (A–I) contains the following information?",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 31,
+                  "question_text": "an investigation into synesthesia using modern medical technology",
+                  "marks": 1,
+                  "order": 1
+                },
+                {
+                  "question_number": 32,
+                  "question_text": "a mention of a writer who was a synesthete",
+                  "marks": 1,
+                  "order": 2
+                },
+                {
+                  "question_number": 33,
+                  "question_text": "a definition of synesthesia",
+                  "marks": 1,
+                  "order": 3
+                },
+                {
+                  "question_number": 34,
+                  "question_text": "two different explanations of why synesthesia is uncommon in adults",
+                  "marks": 1,
+                  "order": 4
+                },
+                {
+                  "question_number": 35,
+                  "question_text": "a reason why some synesthetes do not tell people about their experience",
+                  "marks": 1,
+                  "order": 5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "section_type": "writing",
+      "title": "Writing",
+      "instructions": "",
+      "duration_minutes": 60,
+      "order": 3,
+      "parts": [
+        {
+          "title": "Writing Task 1",
+          "instructions": "",
+          "order": 1,
+          "content_blocks": [
+            {
+              "content_type": "text",
+              "title": "",
+              "text_content": "The charts below show the proportion of holidaymakers using four different types of accommodations in three different years.",
+              "order": 1
+            },
+            {
+              "content_type": "image",
+              "title": "Task Description",
+              "text_content": "The charts below show the proportion of holidaymakers using four different types of accommodations in three different years.",
+              "order": 2,
+              "file_url": "/media/content_files/photo_2026-01-12_10-39-42.jpg"
+            }
+          ],
+          "question_blocks": [
+            {
+              "block_type": "graph_description",
+              "title": "Writing Task 1",
+              "instructions": "You should spend about 20 minutes on this task.\n\nThe charts below show the proportion of holidaymakers using four different types of accommodations in three different years.\n\nWrite at least 150 words.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 1,
+                  "question_text": "The charts below show the proportion of holidaymakers using four different types of accommodations in three different years.",
+                  "marks": 1,
+                  "order": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Writing Task 2",
+          "instructions": "",
+          "order": 2,
+          "content_blocks": [
+            {
+              "content_type": "text",
+              "title": "Essay Topic",
+              "text_content": "Nowadays, young people are admiring media and sports stars, even though they do not set a good example. Do you think this is a positive or negative development.",
+              "order": 1
+            }
+          ],
+          "question_blocks": [
+            {
+              "block_type": "essay",
+              "title": "Writing Task 2",
+              "instructions": "You should spend about 40 minutes on this task.\n\nWrite about the following topic:\n\nNowadays, young people are admiring media and sports stars, even though they do not set a good example. Do you think this is a positive or negative development.\n\nGive reasons for your answer and include any relevant examples from your own knowledge or experience.\n\nWrite at least 250 words.",
+              "order": 1,
+              "questions": [
+                {
+                  "question_number": 2,
+                  "question_text": "Nowadays, young people are admiring media and sports stars, even though they do not set a good example. Do you think this is a positive or negative development.",
+                  "marks": 1,
+                  "order": 1
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
