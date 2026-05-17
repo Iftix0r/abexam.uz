@@ -168,7 +168,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        base_dir = Path(__file__).resolve().parents[4]
+        base_dir = Path(__file__).resolve().parents[3]
         clone_dir = base_dir / 'Clone_Testlar'
 
         if options['file']:
