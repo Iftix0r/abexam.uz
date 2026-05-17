@@ -517,6 +517,57 @@
         /* ─── UTILITY ───────────────────────────────────── */
         .flex-center { display: flex; align-items: center; gap: 8px; }
         .text-muted { color: #78909c; }
+
+        /* ─── SECTION INSTRUCTION OVERLAY ───────────────── */
+        #sectionInstrOverlay {
+            position: fixed; inset: 0; z-index: 2000;
+            background: rgba(0,0,0,0.6);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .instr-card {
+            background: #fff; border-radius: 16px;
+            padding: 36px 40px; max-width: 500px; width: 92%;
+            text-align: center; box-shadow: 0 30px 70px rgba(0,0,0,0.35);
+        }
+        .instr-icon-big {
+            font-size: 2.4rem; margin-bottom: 14px;
+        }
+        .instr-card h2 { font-size: 1.5rem; font-weight: 800; color: #1a1a2e; margin-bottom: 4px; }
+        .instr-section-label { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #90a4ae; margin-bottom: 18px; }
+        .instr-meta { display: flex; justify-content: center; gap: 28px; margin-bottom: 20px; }
+        .instr-meta-item .val { font-size: 1.25rem; font-weight: 800; color: #1a1a2e; }
+        .instr-meta-item .lbl { font-size: 11px; color: #90a4ae; text-transform: uppercase; margin-top: 2px; }
+        .instr-rules { background: #f5f7fa; border-radius: 10px; padding: 14px 18px; text-align: left; margin-bottom: 22px; }
+        .instr-rules p { font-size: 13px; color: #455a64; margin-bottom: 6px; line-height: 1.5; }
+        .instr-rules p:last-child { margin-bottom: 0; }
+        .btn-start-section {
+            background: #1a1a2e; color: #fff;
+            border: none; border-radius: 10px;
+            padding: 13px 52px;
+            font-size: 1rem; font-weight: 800;
+            cursor: pointer; letter-spacing: 0.5px; transition: opacity 0.2s;
+        }
+        .btn-start-section:hover { opacity: 0.88; }
+
+        /* ─── INLINE GAP INPUT ───────────────────────────── */
+        .inline-gap {
+            display: inline-block; width: 100px;
+            padding: 2px 6px;
+            border: 1.5px solid var(--border);
+            border-radius: 4px; background: #fffde7;
+            font-size: 0.87rem; font-family: inherit;
+            text-align: center; vertical-align: middle;
+            transition: border-color 0.2s;
+        }
+        .inline-gap:focus { outline: none; border-color: var(--primary); background: #fff; }
+
+        /* ─── QUESTION BLOCK HEADER ──────────────────────── */
+        .q-block-header {
+            font-size: 11.5px; font-weight: 700; color: #546e7a;
+            background: #eceff1; border-radius: 5px;
+            padding: 5px 12px; margin: 12px 0 8px;
+            border-left: 3px solid #1565c0;
+        }
     </style>
 </head>
 <body oncopy="alert('Imtihon paytida nusxa ko\'chirish taqiqlangan!'); return false" oncontextmenu="return false">
@@ -554,6 +605,27 @@
     </div>
 </header>
 
+<!-- ─── SECTION INSTRUCTION OVERLAY ──────────────────── -->
+<div id="sectionInstrOverlay">
+    <div class="instr-card">
+        <div class="instr-icon-big" id="instrIcon">🎧</div>
+        <div class="instr-section-label" id="instrLabel">SECTION 1 OF 3</div>
+        <h2 id="instrTitle">Listening</h2>
+        <div class="instr-meta">
+            <div class="instr-meta-item">
+                <div class="val" id="instrDuration">30</div>
+                <div class="lbl">Minutes</div>
+            </div>
+            <div class="instr-meta-item">
+                <div class="val" id="instrQuestions">40</div>
+                <div class="lbl">Questions</div>
+            </div>
+        </div>
+        <div class="instr-rules" id="instrRules"></div>
+        <button class="btn-start-section" id="instrStartBtn" onclick="closeInstructionAndStart()">START</button>
+    </div>
+</div>
+
 <!-- ─── PRE-SUBMIT REVIEW MODAL ───────────────────────── -->
 <div class="overlay-modal" id="reviewModal">
     <div class="review-card">
@@ -575,6 +647,8 @@
     {% for section in sections %}
     <div class="reading-layout section-content" id="section-{{ section.id }}"
          data-section-type="{{ section.section_type }}"
+         data-section-title="{{ section.title }}"
+         data-duration="{% if section.duration_minutes %}{{ section.duration_minutes }}{% elif section.section_type == 'listening' %}30{% elif section.section_type == 'reading' %}60{% elif section.section_type == 'writing' %}60{% else %}15{% endif %}"
          {% if not forloop.first %}style="display:none;"{% endif %}>
 
         <!-- LEFT PANEL: passage / audio / task / guide -->
@@ -997,7 +1071,60 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ─── SECTION NAVIGATION ───────────────────────────────
-    window.showSection = function(id, el) {
+    // ─── SECTION INSTRUCTION ─────────────────────────────
+    const SECTION_INFO = {
+        listening: {
+            icon: '🎧', label: 'Audio-based Comprehension',
+            rules: [
+                '🔊 Audio <strong>faqat bir marta</strong> o\'ynaladi — diqqat bilan tinglang.',
+                '⏱ Vaqt: <strong>30 daqiqa</strong>. Taymer avtomatik boshlanadi.',
+                '✍ Gap-fill, MCQ va matching savollar mavjud.',
+            ],
+        },
+        reading: {
+            icon: '📖', label: 'Academic Reading Comprehension',
+            rules: [
+                '📄 3 ta o\'qish matni va 40 ta savol.',
+                '⏱ Vaqt: <strong>60 daqiqa</strong>. Sahifalar o\'rtasida o\'tish erkin.',
+                '✍ True/False/NG, matching headings, gap-fill va MCQ.',
+            ],
+        },
+        writing: {
+            icon: '✏️', label: 'Written Task Assessment',
+            rules: [
+                '📝 Task 1: kamida <strong>150 so\'z</strong> (20 daqiqa tavsiya).',
+                '📝 Task 2: kamida <strong>250 so\'z</strong> (40 daqiqa tavsiya).',
+                '🤖 Javobingiz AI tomonidan baholanadi.',
+            ],
+        },
+    };
+
+    let pendingSectionId = null;
+    let pendingTabEl = null;
+    let firstSection = true;
+
+    function showSectionInstruction(id, el, sectionType, sectionTitle, qCount, duration) {
+        pendingSectionId = id;
+        pendingTabEl = el;
+        const info = SECTION_INFO[sectionType] || { icon: '📋', label: sectionType, rules: [] };
+        document.getElementById('instrIcon').textContent = info.icon;
+        document.getElementById('instrTitle').textContent = sectionTitle;
+        // find index
+        const tabs = Array.from(document.querySelectorAll('.section-tab'));
+        const idx = tabs.findIndex(t => t.getAttribute('onclick') && t.getAttribute('onclick').includes("'" + id + "'"));
+        document.getElementById('instrLabel').textContent = 'SECTION ' + (idx + 1) + ' OF ' + tabs.length + ' — ' + info.label;
+        document.getElementById('instrDuration').textContent = duration || '—';
+        document.getElementById('instrQuestions').textContent = qCount || '—';
+        document.getElementById('instrRules').innerHTML = info.rules.map(r => '<p>• ' + r + '</p>').join('');
+        document.getElementById('sectionInstrOverlay').style.display = 'flex';
+    }
+
+    window.closeInstructionAndStart = function() {
+        document.getElementById('sectionInstrOverlay').style.display = 'none';
+        if (pendingSectionId) _doShowSection(pendingSectionId, pendingTabEl);
+    };
+
+    function _doShowSection(id, el) {
         document.querySelectorAll('.section-content').forEach(s => s.style.display = 'none');
         document.querySelectorAll('.section-tab').forEach(t => t.classList.remove('active'));
         document.getElementById('section-' + id).style.display = 'flex';
@@ -1005,6 +1132,17 @@ document.addEventListener('DOMContentLoaded', () => {
         stopSpeaking();
         buildTracker(id);
         updateAnsweredCount(id);
+    }
+
+    window.showSection = function(id, el) {
+        // Get section info from data attributes
+        const sectionEl = document.getElementById('section-' + id);
+        const stype = sectionEl ? sectionEl.dataset.sectionType : 'listening';
+        const title = sectionEl ? (sectionEl.dataset.sectionTitle || stype) : stype;
+        const qCount = (sectionQuestions[id] || []).length;
+        const duration = sectionEl ? sectionEl.dataset.duration : '';
+
+        showSectionInstruction(id, el, stype, title, qCount, duration);
     };
 
     // ─── AUTOSAVE ─────────────────────────────────────────
@@ -1376,6 +1514,54 @@ document.addEventListener('DOMContentLoaded', () => {
             alert("Xatolik yuz berdi. Qayta urinib ko'ring.");
         });
     };
+
+    // ─── INLINE GAP-FILL RENDERING ───────────────────────
+    function renderInlineGapFill() {
+        document.querySelectorAll('.question-item').forEach(item => {
+            const qtype = item.dataset.qtype;
+            if (qtype !== 'gap_fill' && qtype !== 'matching') return;
+            const textEl = item.querySelector('.question-text');
+            const inputEl = item.querySelector('input.ans-input');
+            if (!textEl || !inputEl) return;
+            const qid = inputEl.dataset.qid;
+            const raw = textEl.textContent || '';
+            if (!raw.includes('___')) return;
+
+            // Split on ___ and insert inline input
+            const parts = raw.split('___');
+            let html = '';
+            parts.forEach((part, i) => {
+                html += part.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                if (i < parts.length - 1) {
+                    const val = (answers[qid] || '').replace(/"/g, '&quot;');
+                    html += `<input class="inline-gap" type="text" data-qid="${qid}" value="${val}" placeholder="  ${i+1}  " oninput="saveAnswer('${qid}', this.value)">`;
+                }
+            });
+            textEl.innerHTML = html;
+            inputEl.style.display = 'none'; // hide original input
+        });
+    }
+
+    // Show first section instruction on load
+    (function() {
+        {% for section in sections %}
+        {% if forloop.first %}
+        const firstEl = document.getElementById('section-{{ section.id }}');
+        if (firstEl) {
+            showSectionInstruction(
+                '{{ section.id }}', null,
+                '{{ section.section_type }}',
+                '{{ section.title }}',
+                {{ section.questions.count }},
+                '{% if section.duration_minutes %}{{ section.duration_minutes }}{% elif section.section_type == "listening" %}30{% elif section.section_type == "reading" %}60{% else %}60{% endif %}'
+            );
+        }
+        {% endif %}
+        {% endfor %}
+    })();
+
+    // Render inline gaps after draft restore
+    setTimeout(renderInlineGapFill, 100);
 
     // Prevent accidental close
     window.addEventListener('beforeunload', e => {
