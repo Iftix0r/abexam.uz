@@ -4,95 +4,112 @@
 {% block nav_users %}active{% endblock %}
 
 {% block content %}
-<div style="margin-bottom:16px;display:flex;align-items:center;justify-content:space-between">
-  <a href="{% url 'panel:users' %}" style="color:var(--muted);font-size:13px">← Foydalanuvchilarga qaytish</a>
-  <div style="display:flex;gap:8px">
-    <button onclick="openEditModal()" class="btn btn-ghost btn-sm">✏ Tahrirlash</button>
-    <button onclick="openPasswordModal()" class="btn btn-ghost btn-sm">🔑 Parol</button>
-    {% if not obj.is_superuser and obj.pk != request.user.pk %}
-    <button onclick="makeStaff({{ obj.pk }})" class="btn btn-ghost btn-sm" id="staff-btn">
-      {% if obj.is_staff %}Admin olib tashlash{% else %}Admin qilish{% endif %}
+<div style="margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
+  <a href="{% url 'panel:users' %}" class="btn btn-ghost" style="padding:8px 16px">
+    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    Orqaga
+  </a>
+  <div style="display:flex;gap:12px;flex-wrap:wrap">
+    <button onclick="openEditModal()" class="btn btn-ghost" style="background:rgba(99, 102, 241, 0.1);color:var(--primary);border:1px solid rgba(99, 102, 241, 0.2)">
+      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path stroke-width="2" d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      Tahrirlash
     </button>
-    <button onclick="deleteUser({{ obj.pk }})" class="btn btn-danger btn-sm">O'chirish</button>
+    <button onclick="openPasswordModal()" class="btn btn-ghost" style="background:rgba(245, 158, 11, 0.1);color:var(--yellow);border:1px solid rgba(245, 158, 11, 0.2)">
+      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke-width="2"/><path stroke-width="2" d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      Parol
+    </button>
+    {% if not obj.is_superuser and obj.pk != request.user.pk %}
+    <button onclick="makeStaff({{ obj.pk }})" class="btn btn-ghost" id="staff-btn" style="background:rgba(16, 185, 129, 0.1);color:var(--green);border:1px solid rgba(16, 185, 129, 0.2)">
+      {% if obj.is_staff %}<svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4" stroke-width="2"/><line x1="23" y1="11" x2="17" y2="11" stroke-width="2"/></svg> Adminni olib tashlash
+      {% else %}<svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4" stroke-width="2"/><line x1="20" y1="8" x2="20" y2="14" stroke-width="2"/><line x1="23" y1="11" x2="17" y2="11" stroke-width="2"/></svg> Admin qilish{% endif %}
+    </button>
+    <button onclick="deleteUser({{ obj.pk }})" class="btn btn-ghost" style="background:rgba(239, 68, 68, 0.1);color:var(--red);border:1px solid rgba(239, 68, 68, 0.2)">
+      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+      O'chirish
+    </button>
     {% endif %}
   </div>
 </div>
 
-<div style="display:grid;grid-template-columns:300px 1fr;gap:20px">
+<div style="display:grid;grid-template-columns:320px 1fr;gap:24px;align-items:start">
 
   <!-- Left col -->
-  <div style="display:flex;flex-direction:column;gap:16px">
+  <div style="display:flex;flex-direction:column;gap:24px">
 
     <!-- Profile card -->
-    <div class="card" style="text-align:center">
-      <div style="width:80px;height:80px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:#fff;margin:0 auto 14px;overflow:hidden;border:3px solid var(--border)">
+    <div class="card" style="text-align:center;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:100px;background:var(--gradient-primary);opacity:0.2"></div>
+      <div style="width:96px;height:96px;border-radius:50%;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:800;color:var(--primary);margin:20px auto 16px;overflow:hidden;border:4px solid var(--surface);box-shadow:0 8px 24px rgba(0,0,0,0.3);position:relative;z-index:1">
         {% if obj.avatar %}<img src="{{ obj.avatar.url }}" style="width:100%;height:100%;object-fit:cover">{% else %}{{ obj.username|first|upper }}{% endif %}
       </div>
-      <div style="font-size:17px;font-weight:700">{{ obj.get_full_name|default:obj.username }}</div>
-      <div style="font-size:12px;color:var(--muted);margin-top:3px">@{{ obj.username }}</div>
-      <div style="margin-top:10px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap">
-        {% if obj.is_active %}<span class="badge badge-green">Faol</span>{% else %}<span class="badge badge-red">Bloklangan</span>{% endif %}
-        {% if obj.is_superuser %}<span class="badge badge-purple">Superadmin</span>
-        {% elif obj.is_staff %}<span class="badge badge-blue">Admin</span>{% endif %}
-        {% if obj.is_active_student %}<span class="badge badge-yellow">Talaba</span>{% endif %}
+      <div style="font-size:20px;font-weight:800;position:relative;z-index:1">{{ obj.get_full_name|default:obj.username }}</div>
+      <div style="font-size:14px;color:var(--muted);margin-top:4px;font-weight:500">@{{ obj.username }}</div>
+      <div style="margin-top:16px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+        {% if obj.is_active %}<span class="badge badge-green" style="padding:4px 10px">Faol</span>{% else %}<span class="badge badge-red" style="padding:4px 10px">Bloklangan</span>{% endif %}
+        {% if obj.is_superuser %}<span class="badge badge-purple" style="padding:4px 10px">Superadmin</span>
+        {% elif obj.is_staff %}<span class="badge badge-blue" style="padding:4px 10px">Admin</span>{% endif %}
+        {% if obj.is_active_student %}<span class="badge badge-yellow" style="padding:4px 10px">Talaba</span>{% endif %}
       </div>
       {% if obj.bio %}
-      <div style="font-size:12px;color:var(--muted);margin-top:10px;line-height:1.5">{{ obj.bio }}</div>
+      <div style="font-size:13px;color:var(--muted);margin-top:16px;line-height:1.6;padding:0 8px">{{ obj.bio }}</div>
       {% endif %}
-      <button onclick="toggleUser({{ obj.pk }})" class="btn btn-ghost btn-sm" style="margin-top:14px;width:100%" id="toggle-btn">
+      <button onclick="toggleUser({{ obj.pk }})" class="btn btn-ghost" style="margin-top:20px;width:100%;background:var(--surface2)" id="toggle-btn">
         {% if obj.is_active %}⛔ Bloklash{% else %}✓ Faollashtirish{% endif %}
       </button>
     </div>
 
     <!-- Info -->
     <div class="card">
-      <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:12px;text-transform:uppercase;letter-spacing:.06em">Ma'lumotlar</div>
-      <div style="display:flex;flex-direction:column;gap:9px;font-size:13px">
-        <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Email</span><span>{{ obj.email|default:"—" }}</span></div>
-        <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Telefon</span><span>{{ obj.phone_number|default:"—" }}</span></div>
-        <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Qo'shilgan</span><span>{{ obj.date_joined|date:"d M Y" }}</span></div>
-        <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Oxirgi kirish</span><span>{{ obj.last_login|date:"d M Y, H:i"|default:"—" }}</span></div>
-        <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">IP manzil</span>
-          <span style="font-family:monospace;font-size:11px;color:var(--primary)">{{ obj.last_ip|default:"—" }}</span>
+      <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:16px;text-transform:uppercase;letter-spacing:0.1em;border-bottom:1px solid var(--border);padding-bottom:12px">Ma'lumotlar</div>
+      <div style="display:flex;flex-direction:column;gap:12px;font-size:14px">
+        <div style="display:flex;justify-content:space-between;align-items:center"><span style="color:var(--muted);display:flex;align-items:center;gap:8px"><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6" stroke-width="2"/></svg> Email</span><span style="font-weight:500">{{ obj.email|default:"—" }}</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center"><span style="color:var(--muted);display:flex;align-items:center;gap:8px"><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> Telefon</span><span style="font-weight:500">{{ obj.phone_number|default:"—" }}</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center"><span style="color:var(--muted);display:flex;align-items:center;gap:8px"><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke-width="2"/><line x1="16" y1="2" x2="16" y2="6" stroke-width="2"/><line x1="8" y1="2" x2="8" y2="6" stroke-width="2"/><line x1="3" y1="10" x2="21" y2="10" stroke-width="2"/></svg> Qo'shilgan</span><span style="font-weight:500">{{ obj.date_joined|date:"d M Y" }}</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center"><span style="color:var(--muted);display:flex;align-items:center;gap:8px"><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="2"/><polyline points="12 6 12 12 16 14" stroke-width="2"/></svg> Oxirgi kirish</span><span style="font-weight:500">{{ obj.last_login|date:"d M Y, H:i"|default:"—" }}</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center"><span style="color:var(--muted);display:flex;align-items:center;gap:8px"><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="2"/><line x1="2" y1="12" x2="22" y2="12" stroke-width="2"/><path stroke-width="2" d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> IP manzil</span>
+          <span style="font-family:monospace;font-size:12px;color:var(--primary);background:rgba(99,102,241,0.1);padding:2px 6px;border-radius:4px">{{ obj.last_ip|default:"—" }}</span>
         </div>
       </div>
-      <a href="{% url 'panel:user_logs' obj.pk %}" class="btn btn-ghost btn-sm" style="margin-top:12px;width:100%">🔍 Login tarixi</a>
+      <a href="{% url 'panel:user_logs' obj.pk %}" class="btn btn-ghost" style="margin-top:16px;width:100%;border:1px solid var(--border)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke-width="2"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke-width="2"/></svg>
+        Login tarixi
+      </a>
     </div>
 
     <!-- Balans -->
     <div class="card">
-      <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.06em">Balans</div>
-      <div style="font-size:26px;font-weight:700;color:var(--green)" id="balance-val">{{ obj.balance|floatformat:0 }} so'm</div>
-      <div style="display:flex;gap:8px;margin-top:12px">
-        <input type="number" id="add-amount" placeholder="Summa (+/-)" style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-size:13px;outline:none">
-        <button onclick="addBalance({{ obj.pk }})" class="btn btn-primary btn-sm">Qo'shish</button>
+      <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.1em">Balans</div>
+      <div style="font-size:32px;font-weight:800;color:var(--green);text-shadow:0 2px 12px rgba(16,185,129,0.2)" id="balance-val">{{ obj.balance|floatformat:0 }} so'm</div>
+      <div style="display:flex;gap:8px;margin-top:16px">
+        <input type="number" id="add-amount" placeholder="Summa (+/-)" style="flex:1;background:rgba(0,0,0,0.2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:14px;outline:none;transition:border-color 0.2s">
+        <button onclick="addBalance({{ obj.pk }})" class="btn" style="background:var(--green);color:#fff;border:none;font-weight:700">Qo'shish</button>
       </div>
-      <input type="text" id="balance-note" placeholder="Izoh (ixtiyoriy)" style="width:100%;margin-top:8px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-size:12px;outline:none">
+      <input type="text" id="balance-note" placeholder="Izoh (ixtiyoriy)" style="width:100%;margin-top:10px;background:rgba(0,0,0,0.2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:13px;outline:none">
     </div>
 
     <!-- Stats -->
     <div class="card">
-      <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:12px;text-transform:uppercase;letter-spacing:.06em">Statistika</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <div style="background:var(--surface2);border-radius:8px;padding:12px;text-align:center">
-          <div style="font-size:20px;font-weight:700;color:var(--primary)">{{ stats.total|default:0 }}</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:2px">Imtihonlar</div>
+      <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:16px;text-transform:uppercase;letter-spacing:0.1em">Statistika</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div style="background:rgba(99,102,241,0.05);border:1px solid rgba(99,102,241,0.1);border-radius:12px;padding:16px;text-align:center">
+          <div style="font-size:28px;font-weight:800;color:var(--primary)">{{ stats.total|default:0 }}</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:4px;font-weight:600">Imtihonlar</div>
         </div>
-        <div style="background:var(--surface2);border-radius:8px;padding:12px;text-align:center">
-          <div style="font-size:20px;font-weight:700;color:var(--green)">{{ stats.avg|floatformat:1|default:"—" }}</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:2px">O'rtacha ball</div>
+        <div style="background:rgba(16,185,129,0.05);border:1px solid rgba(16,185,129,0.1);border-radius:12px;padding:16px;text-align:center">
+          <div style="font-size:28px;font-weight:800;color:var(--green)">{{ stats.avg|floatformat:1|default:"—" }}</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:4px;font-weight:600">O'rtacha ball</div>
         </div>
       </div>
     </div>
   </div>
 
   <!-- Right col -->
-  <div style="display:flex;flex-direction:column;gap:16px">
+  <div style="display:flex;flex-direction:column;gap:24px;min-width:0">
 
     <!-- Natijalar -->
-    <div class="card">
-      <div class="section-header">
-        <span class="section-title">Natijalar ({{ results|length }})</span>
+    <div class="card" style="padding:0;overflow:hidden">
+      <div class="section-header" style="padding:20px 24px;margin:0;border-bottom:1px solid var(--border);background:var(--surface2)">
+        <span class="section-title" style="font-size:16px;font-weight:700">Imtihon Natijalari ({{ results|length }})</span>
       </div>
       <div class="table-wrap">
         <table>
@@ -100,15 +117,32 @@
           <tbody>
             {% for r in results %}
             <tr>
-              <td><a href="{% url 'panel:exam_detail' r.exam.pk %}" style="color:var(--text)">{{ r.exam.title|truncatechars:28 }}</a></td>
-              <td>{% if r.score >= 7.5 %}<span class="badge badge-green">{{ r.score }}</span>{% elif r.score >= 6.0 %}<span class="badge badge-yellow">{{ r.score }}</span>{% else %}<span class="badge badge-red">{{ r.score }}</span>{% endif %}</td>
-              <td style="color:var(--muted);font-size:12px">{{ r.listening_score }}</td>
-              <td style="color:var(--muted);font-size:12px">{{ r.reading_score }}</td>
-              <td style="color:var(--muted);font-size:12px">{{ r.writing_score }}</td>
-              <td style="color:var(--muted);font-size:12px">{{ r.speaking_score }}</td>
-              <td style="color:var(--muted);font-size:11px">{{ r.completed_at|date:"d M Y" }}</td>
+              <td>
+                <a href="{% url 'panel:exam_detail' r.exam.pk %}" style="color:var(--text);font-weight:600;display:flex;align-items:center;gap:8px">
+                  <div style="width:24px;height:24px;background:rgba(99,102,241,0.1);color:var(--primary);border-radius:6px;display:flex;align-items:center;justify-content:center">
+                    <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8" stroke-width="2"/></svg>
+                  </div>
+                  {{ r.exam.title|truncatechars:35 }}
+                </a>
+              </td>
+              <td>
+                {% if r.score >= 7.5 %}
+                  <span class="badge badge-green" style="font-size:14px;padding:4px 8px">{{ r.score }}</span>
+                {% elif r.score >= 6.0 %}
+                  <span class="badge badge-yellow" style="font-size:14px;padding:4px 8px">{{ r.score }}</span>
+                {% else %}
+                  <span class="badge badge-red" style="font-size:14px;padding:4px 8px">{{ r.score }}</span>
+                {% endif %}
+              </td>
+              <td style="color:var(--muted);font-weight:500">{{ r.listening_score }}</td>
+              <td style="color:var(--muted);font-weight:500">{{ r.reading_score }}</td>
+              <td style="color:var(--muted);font-weight:500">{{ r.writing_score }}</td>
+              <td style="color:var(--muted);font-weight:500">{{ r.speaking_score }}</td>
+              <td style="color:var(--muted);font-size:12px">{{ r.completed_at|date:"d M Y" }}</td>
             </tr>
-            {% empty %}<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--muted)">Natija yo'q</td></tr>
+            {% empty %}<tr><td colspan="7" style="text-align:center;padding:48px;color:var(--muted)">
+              <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="opacity:0.2;margin-bottom:16px"><path stroke-width="2" d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg><br>Natijalar topilmadi
+            </td></tr>
             {% endfor %}
           </tbody>
         </table>
@@ -116,9 +150,9 @@
     </div>
 
     <!-- Tranzaksiyalar -->
-    <div class="card">
-      <div class="section-header">
-        <span class="section-title">Tranzaksiyalar</span>
+    <div class="card" style="padding:0;overflow:hidden">
+      <div class="section-header" style="padding:20px 24px;margin:0;border-bottom:1px solid var(--border);background:var(--surface2)">
+        <span class="section-title" style="font-size:16px;font-weight:700">Tranzaksiyalar tarixi</span>
       </div>
       <div class="table-wrap">
         <table>
@@ -126,13 +160,25 @@
           <tbody>
             {% for tx in transactions %}
             <tr>
-              <td style="font-weight:600;color:var(--green)">+{{ tx.amount|floatformat:0 }} so'm</td>
-              <td><span class="badge badge-blue" style="font-size:10px">{{ tx.get_method_display }}</span></td>
-              <td>{% if tx.status == 'success' %}<span class="badge badge-green" style="font-size:10px">OK</span>{% elif tx.status == 'pending' %}<span class="badge badge-yellow" style="font-size:10px">Kutilmoqda</span>{% else %}<span class="badge badge-red" style="font-size:10px">Xato</span>{% endif %}</td>
-              <td style="color:var(--muted);font-size:12px">{{ tx.description|default:"—"|truncatechars:30 }}</td>
-              <td style="color:var(--muted);font-size:11px">{{ tx.created_at|date:"d M Y, H:i" }}</td>
+              <td style="font-weight:700;color:var(--green)">
+                <span style="background:rgba(16,185,129,0.1);padding:4px 8px;border-radius:6px">+{{ tx.amount|floatformat:0 }} s.</span>
+              </td>
+              <td><span class="badge badge-blue" style="font-size:11px">{{ tx.get_method_display }}</span></td>
+              <td>
+                {% if tx.status == 'success' %}
+                  <span class="badge badge-green" style="font-size:11px">Muvaffaqiyatli</span>
+                {% elif tx.status == 'pending' %}
+                  <span class="badge badge-yellow" style="font-size:11px">Kutilmoqda</span>
+                {% else %}
+                  <span class="badge badge-red" style="font-size:11px">Xato</span>
+                {% endif %}
+              </td>
+              <td style="color:var(--muted);font-size:13px;max-width:250px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ tx.description|default:"—" }}</td>
+              <td style="color:var(--muted);font-size:12px">{{ tx.created_at|date:"d M Y, H:i" }}</td>
             </tr>
-            {% empty %}<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--muted)">Tranzaksiya yo'q</td></tr>
+            {% empty %}<tr><td colspan="5" style="text-align:center;padding:48px;color:var(--muted)">
+              <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="opacity:0.2;margin-bottom:16px"><rect x="1" y="4" width="22" height="16" rx="2" stroke-width="2"/><line x1="1" y1="10" x2="23" y2="10" stroke-width="2"/></svg><br>Tranzaksiyalar topilmadi
+            </td></tr>
             {% endfor %}
           </tbody>
         </table>
@@ -143,18 +189,19 @@
 
 <!-- Edit Modal -->
 <div class="modal-overlay" id="edit-modal">
-  <div class="modal">
+  <div class="modal" style="max-width:500px">
     <div class="modal-title">Foydalanuvchini tahrirlash</div>
     <div class="form-group"><label class="form-label">Ism</label><input class="form-input" id="e-first" value="{{ obj.first_name }}"></div>
     <div class="form-group"><label class="form-label">Familiya</label><input class="form-input" id="e-last" value="{{ obj.last_name }}"></div>
     <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="e-email" value="{{ obj.email }}"></div>
     <div class="form-group"><label class="form-label">Telefon</label><input class="form-input" id="e-phone" value="{{ obj.phone_number|default:'' }}"></div>
-    <div class="form-group">
-      <label class="form-check"><input type="checkbox" id="e-student" {% if obj.is_active_student %}checked{% endif %}> Faol talaba</label>
+    <div class="form-group" style="background:var(--surface2);padding:16px;border-radius:10px;border:1px solid var(--border)">
+      <label class="form-check" style="font-weight:600"><input type="checkbox" id="e-student" {% if obj.is_active_student %}checked{% endif %} style="accent-color:var(--primary);width:18px;height:18px"> Faol talaba maqomi</label>
+      <div style="font-size:12px;color:var(--muted);margin-left:26px;margin-top:4px">Ushbu foydalanuvchiga talaba maqomini berish</div>
     </div>
     <div class="modal-actions">
-      <button onclick="closeModal('edit-modal')" class="btn btn-ghost">Bekor</button>
-      <button onclick="saveEdit({{ obj.pk }})" class="btn btn-primary">Saqlash</button>
+      <button onclick="closeModal('edit-modal')" class="btn btn-ghost">Bekor qilish</button>
+      <button onclick="saveEdit({{ obj.pk }})" class="btn btn-primary" style="background:var(--gradient-primary);border:none;box-shadow:0 4px 12px var(--primary-glow)">Saqlash</button>
     </div>
   </div>
 </div>
@@ -166,8 +213,8 @@
     <div class="form-group"><label class="form-label">Yangi parol</label><input class="form-input" id="new-pass" type="password" placeholder="Kamida 6 ta belgi"></div>
     <div class="form-group"><label class="form-label">Tasdiqlash</label><input class="form-input" id="new-pass2" type="password" placeholder="Qayta kiriting"></div>
     <div class="modal-actions">
-      <button onclick="closeModal('password-modal')" class="btn btn-ghost">Bekor</button>
-      <button onclick="resetPassword({{ obj.pk }})" class="btn btn-primary">Saqlash</button>
+      <button onclick="closeModal('password-modal')" class="btn btn-ghost">Bekor qilish</button>
+      <button onclick="resetPassword({{ obj.pk }})" class="btn btn-primary" style="background:var(--gradient-primary);border:none;box-shadow:0 4px 12px var(--primary-glow)">Saqlash</button>
     </div>
   </div>
 </div>
@@ -180,22 +227,32 @@ function openPasswordModal(){document.getElementById('password-modal').classList
 function closeModal(id){document.getElementById(id).classList.remove('show')}
 
 async function toggleUser(pk){
-  const r=await fetch(`/panel/users/${pk}/toggle/`,{method:'POST',headers:{'X-CSRFToken':csrf}});
-  const d=await r.json();
-  document.getElementById('toggle-btn').textContent=d.active?'⛔ Bloklash':'✓ Faollashtirish';
-  toast(d.active?'Faollashtirildi':'Bloklandi', d.active?'#22c55e':'#ef4444');
+  try {
+    const r=await fetch(`/panel/users/${pk}/toggle/`,{method:'POST',headers:{'X-CSRFToken':csrf}});
+    const d=await r.json();
+    document.getElementById('toggle-btn').textContent=d.active?'⛔ Bloklash':'✓ Faollashtirish';
+    toast(d.active?'Faollashtirildi':'Bloklandi', d.active?'#10b981':'#ef4444');
+    setTimeout(()=>location.reload(),800);
+  } catch(e) { toast('Xatolik', '#ef4444'); }
 }
 
 async function addBalance(pk){
   const amount=document.getElementById('add-amount').value;
   const note=document.getElementById('balance-note').value||"Admin tomonidan qo'shildi";
   if(!amount)return;
-  const r=await fetch(`/panel/users/${pk}/balance/`,{method:'POST',headers:{'X-CSRFToken':csrf,'Content-Type':'application/json'},body:JSON.stringify({amount:parseFloat(amount),note})});
-  const d=await r.json();
-  document.getElementById('balance-val').textContent=parseFloat(d.balance).toLocaleString()+' so\'m';
-  document.getElementById('add-amount').value='';
-  document.getElementById('balance-note').value='';
-  toast('Balans yangilandi');
+  try {
+    const r=await fetch(`/panel/users/${pk}/balance/`,{method:'POST',headers:{'X-CSRFToken':csrf,'Content-Type':'application/json'},body:JSON.stringify({amount:parseFloat(amount),note})});
+    const d=await r.json();
+    if (d.ok) {
+      document.getElementById('balance-val').textContent=parseFloat(d.balance).toLocaleString()+' so\'m';
+      document.getElementById('add-amount').value='';
+      document.getElementById('balance-note').value='';
+      toast('Balans muvaffaqiyatli yangilandi');
+      setTimeout(()=>location.reload(), 1000);
+    } else {
+      toast(d.error || 'Xatolik', '#ef4444');
+    }
+  } catch(e) { toast('Tarmoq xatosi', '#ef4444'); }
 }
 
 async function saveEdit(pk){
@@ -206,33 +263,49 @@ async function saveEdit(pk){
     phone_number:document.getElementById('e-phone').value,
     is_active_student:document.getElementById('e-student').checked,
   };
-  const r=await fetch(`/panel/users/${pk}/edit/`,{method:'POST',headers:{'X-CSRFToken':csrf,'Content-Type':'application/json'},body:JSON.stringify(body)});
-  const d=await r.json();
-  if(d.ok){closeModal('edit-modal');toast('Saqlandi');setTimeout(()=>location.reload(),800);}
+  try {
+    const r=await fetch(`/panel/users/${pk}/edit/`,{method:'POST',headers:{'X-CSRFToken':csrf,'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const d=await r.json();
+    if(d.ok){closeModal('edit-modal');toast('Muvaffaqiyatli saqlandi');setTimeout(()=>location.reload(),800);}
+    else { toast(d.error || 'Xatolik', '#ef4444'); }
+  } catch(e) { toast('Tarmoq xatosi', '#ef4444'); }
 }
 
 async function resetPassword(pk){
   const p1=document.getElementById('new-pass').value;
   const p2=document.getElementById('new-pass2').value;
   if(p1!==p2){toast('Parollar mos kelmadi','#ef4444');return;}
-  const r=await fetch(`/panel/users/${pk}/reset-password/`,{method:'POST',headers:{'X-CSRFToken':csrf,'Content-Type':'application/json'},body:JSON.stringify({password:p1})});
-  const d=await r.json();
-  if(d.ok){closeModal('password-modal');toast('Parol yangilandi');}
-  else toast(d.error,'#ef4444');
+  if(p1.length < 6){toast('Parol kamida 6ta belgi bo\'lishi kerak','#ef4444');return;}
+  try {
+    const r=await fetch(`/panel/users/${pk}/reset-password/`,{method:'POST',headers:{'X-CSRFToken':csrf,'Content-Type':'application/json'},body:JSON.stringify({password:p1})});
+    const d=await r.json();
+    if(d.ok){closeModal('password-modal');toast('Parol muvaffaqiyatli yangilandi');}
+    else toast(d.error,'#ef4444');
+  } catch(e) { toast('Tarmoq xatosi', '#ef4444'); }
 }
 
 async function makeStaff(pk){
-  const r=await fetch(`/panel/users/${pk}/make-staff/`,{method:'POST',headers:{'X-CSRFToken':csrf}});
-  const d=await r.json();
-  if(d.ok){document.getElementById('staff-btn').textContent=d.is_staff?'Admin olib tashlash':'Admin qilish';toast(d.is_staff?'Admin qilindi':'Admin olib tashlandi');}
+  try {
+    const r=await fetch(`/panel/users/${pk}/make-staff/`,{method:'POST',headers:{'X-CSRFToken':csrf}});
+    const d=await r.json();
+    if(d.ok){
+      document.getElementById('staff-btn').innerHTML=d.is_staff?
+        '<svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4" stroke-width="2"/><line x1="23" y1="11" x2="17" y2="11" stroke-width="2"/></svg> Adminni olib tashlash' : 
+        '<svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4" stroke-width="2"/><line x1="20" y1="8" x2="20" y2="14" stroke-width="2"/><line x1="23" y1="11" x2="17" y2="11" stroke-width="2"/></svg> Admin qilish';
+      toast(d.is_staff?'Admin huquqi berildi':'Admin huquqi olib tashlandi');
+      setTimeout(()=>location.reload(),800);
+    }
+  } catch(e) { toast('Xatolik', '#ef4444'); }
 }
 
 async function deleteUser(pk){
-  if(!confirm('Foydalanuvchini o\'chirishni tasdiqlaysizmi?'))return;
-  const r=await fetch(`/panel/users/${pk}/delete/`,{method:'POST',headers:{'X-CSRFToken':csrf}});
-  const d=await r.json();
-  if(d.ok){toast('O\'chirildi','#ef4444');setTimeout(()=>location.href='/panel/users/',800);}
-  else toast(d.error,'#ef4444');
+  if(!confirm('Foydalanuvchini va unga tegishli barcha ma\'lumotlarni o\'chirishni tasdiqlaysizmi? Bu amalni ortga qaytarib bo\'lmaydi.'))return;
+  try {
+    const r=await fetch(`/panel/users/${pk}/delete/`,{method:'POST',headers:{'X-CSRFToken':csrf}});
+    const d=await r.json();
+    if(d.ok){toast('Foydalanuvchi o\'chirildi','#10b981');setTimeout(()=>location.href='/panel/users/',800);}
+    else toast(d.error,'#ef4444');
+  } catch(e) { toast('Tarmoq xatosi', '#ef4444'); }
 }
 
 // Close modal on overlay click

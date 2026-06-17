@@ -4,71 +4,106 @@
 {% block nav_exams %}active{% endblock %}
 
 {% block content %}
-<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
-  <a href="{% url 'panel:exam_generate' %}"
-    style="display:flex;align-items:center;gap:8px;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:700;text-decoration:none;transition:.15s"
-    onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
-    🤖 AI bilan Test Yaratish
-  </a>
-  <a href="{% url 'panel:exam_create' %}" class="btn btn-ghost btn-sm">+ Qo'lda yaratish</a>
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
+  <div style="display:flex;gap:12px">
+    <a href="{% url 'panel:exam_generate' %}"
+      style="display:flex;align-items:center;gap:8px;background:var(--gradient-primary);color:#fff;border:none;border-radius:12px;padding:12px 20px;font-size:14px;font-weight:700;text-decoration:none;transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);box-shadow:0 8px 24px var(--primary-glow)"
+      onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 12px 32px var(--primary-glow)'" onmouseout="this.style.transform='none';this.style.boxShadow='0 8px 24px var(--primary-glow)'">
+      <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M12 2a10 10 0 1 0 10 10H12V2z"/><path stroke-width="2" d="M12 12 2.1 12"/><path stroke-width="2" d="m12 12 6.3 6.3"/></svg>
+      AI bilan Test Yaratish
+    </a>
+    <a href="{% url 'panel:exam_create' %}" class="btn btn-ghost" style="padding:12px 20px;border-radius:12px;background:var(--surface2)">+ Qo'lda yaratish</a>
+  </div>
 </div>
 
 {% if pending_review_count %}
-<div style="background:linear-gradient(135deg,rgba(245,158,11,.12),rgba(245,158,11,.06));border:1px solid rgba(245,158,11,.3);border-radius:12px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:12px">
-  <div style="display:flex;align-items:center;gap:10px">
-    <span style="font-size:20px">⚠️</span>
-    <span style="font-size:14px;font-weight:600;color:#f59e0b">{{ pending_review_count }} ta AI imtihon ko'rib chiqishni kutmoqda</span>
-    <span style="font-size:12px;color:var(--muted)">— Mutaxassis tekshiruvidan o'tmagan, foydalanuvchilarga ko'rsatilmaydi</span>
+<div class="alert-box">
+  <div style="display:flex;align-items:center;gap:12px">
+    <div style="width:32px;height:32px;background:rgba(245,158,11,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--yellow)">
+      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    </div>
+    <div>
+      <div style="color:var(--yellow);font-size:14px;font-weight:700">AI imtihonlari tekshiruvda</div>
+      <div style="color:rgba(245,158,11,.8);font-size:12px;margin-top:2px">{{ pending_review_count }} ta imtihon mutaxassis tasdiqlashini kutmoqda. Ularni hozir hech kim ko'rmaydi.</div>
+    </div>
   </div>
-  <a href="?show=pending_review" class="btn btn-sm" style="background:#f59e0b;color:#000;font-weight:700;border:none">Ko'rib chiqish</a>
+  <a href="?show=pending_review" class="btn btn-sm" style="background:var(--yellow);color:#000;border:none">Ko'rib chiqish</a>
 </div>
 {% endif %}
 
 <div class="section-header">
-  <form method="get" style="display:flex;gap:10px;flex-wrap:wrap">
+  <form method="get" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
     <div class="search-box">
-      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke-width="1.8"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke-width="1.8"/></svg>
-      <input name="q" value="{{ q }}" placeholder="Qidirish...">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke-width="2"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke-width="2"/></svg>
+      <input name="q" value="{{ q }}" placeholder="Imtihon nomini izlash...">
     </div>
-    <select name="type" class="form-input" style="width:auto" onchange="this.form.submit()">
+    <select name="type" class="form-input" style="width:auto;padding:8px 36px 8px 16px" onchange="this.form.submit()">
       <option value="">Barcha turlar</option>
       {% for val, label in exam_types %}
       <option value="{{ val }}" {% if etype == val %}selected{% endif %}>{{ label }}</option>
       {% endfor %}
     </select>
     {% if show == 'pending_review' %}
-    <a href="{% url 'panel:exams' %}" class="btn btn-ghost btn-sm">✕ Filterni olib tashlash</a>
-    {% else %}
-    <button class="btn btn-ghost btn-sm" type="submit">Filter</button>
+    <a href="{% url 'panel:exams' %}" class="btn btn-ghost btn-sm" style="color:var(--red)">✕ Filterni tozalash</a>
     {% endif %}
   </form>
-  <a href="{% url 'panel:exam_create' %}" class="btn btn-primary">
-    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" stroke-width="2"/><line x1="5" y1="12" x2="19" y2="12" stroke-width="2"/></svg>
-    Yangi imtihon
-  </a>
 </div>
 
-<div class="card" style="padding:0">
+<div class="card" style="padding:0;overflow:hidden">
   <div class="table-wrap">
     <table>
-      <thead><tr><th>Nomi</th><th>Turi</th><th>Narxi</th><th>Bo'limlar</th><th>Natijalar</th><th>Status</th><th>Sana</th><th></th></tr></thead>
+      <thead>
+        <tr>
+          <th>Imtihon Nomi</th>
+          <th>Turi</th>
+          <th>Narxi</th>
+          <th>Bo'limlar</th>
+          <th>Natijalar</th>
+          <th>Holat</th>
+          <th>Sana</th>
+          <th>Harakatlar</th>
+        </tr>
+      </thead>
       <tbody>
         {% for e in exams %}
-        <tr {% if e.is_ai_generated and not e.is_reviewed %}style="background:rgba(245,158,11,.05)"{% endif %}>
+        <tr style="{% if e.is_ai_generated and not e.is_reviewed %}background:rgba(245,158,11,.05){% endif %}">
           <td>
-            <a href="{% url 'panel:exam_detail' e.pk %}" style="color:var(--primary);font-weight:500">{{ e.title }}</a>
-            {% if e.is_ai_generated %}
-              {% if e.is_reviewed %}
-                <span style="font-size:10px;background:rgba(34,197,94,.15);color:#22c55e;border-radius:4px;padding:1px 5px;margin-left:4px">✓ AI</span>
-              {% else %}
-                <span style="font-size:10px;background:rgba(245,158,11,.2);color:#f59e0b;border-radius:4px;padding:1px 5px;margin-left:4px">⏳ Tekshirish kerak</span>
-              {% endif %}
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:36px;height:36px;border-radius:10px;background:rgba(99,102,241,0.1);display:flex;align-items:center;justify-content:center;color:var(--primary)">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8" stroke-width="2"/></svg>
+              </div>
+              <div>
+                <a href="{% url 'panel:exam_detail' e.pk %}" style="color:var(--text);font-weight:600;font-size:14px;display:block">{{ e.title }}</a>
+                {% if e.is_ai_generated %}
+                  {% if e.is_reviewed %}
+                    <span style="font-size:10px;background:rgba(16,185,129,.15);color:var(--green);border-radius:4px;padding:2px 6px;font-weight:600">✓ AI Generation</span>
+                  {% else %}
+                    <span style="font-size:10px;background:rgba(245,158,11,.15);color:var(--yellow);border-radius:4px;padding:2px 6px;font-weight:600">⏳ AI: Tasdiqlanmagan</span>
+                  {% endif %}
+                {% endif %}
+              </div>
+            </div>
+          </td>
+          <td><span class="badge badge-blue" style="font-size:11px">{{ e.get_exam_type_display }}</span></td>
+          <td>
+            {% if e.price == 0 %}
+              <span class="badge badge-green" style="background:transparent;border-color:var(--green)">Bepul</span>
+            {% else %}
+              <span style="font-weight:700;color:var(--green);background:rgba(16,185,129,0.1);padding:4px 8px;border-radius:6px">{{ e.price|floatformat:0 }} s.</span>
             {% endif %}
           </td>
-          <td><span class="badge badge-blue">{{ e.get_exam_type_display }}</span></td>
-          <td>{% if e.price == 0 %}<span style="color:var(--green)">Bepul</span>{% else %}<span style="font-weight:600">{{ e.price|floatformat:0 }} so'm</span>{% endif %}</td>
-          <td style="color:var(--muted)">{{ e.sections_count }}</td>
-          <td style="color:var(--muted)">{{ e.results_count }}</td>
+          <td style="color:var(--muted)">
+            <div style="display:flex;align-items:center;gap:4px">
+              <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" stroke-width="2"/><line x1="3" y1="9" x2="21" y2="9" stroke-width="2"/><line x1="9" y1="21" x2="9" y2="9" stroke-width="2"/></svg>
+              {{ e.sections_count }}
+            </div>
+          </td>
+          <td style="color:var(--muted)">
+            <div style="display:flex;align-items:center;gap:4px">
+              <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4" stroke-width="2"/></svg>
+              {{ e.results_count }}
+            </div>
+          </td>
           <td>
             <span class="badge {% if e.is_active %}badge-green{% else %}badge-gray{% endif %}" id="exam-status-{{ e.pk }}">
               {% if e.is_active %}Faol{% else %}Nofaol{% endif %}
@@ -81,23 +116,32 @@
                 <form method="post" action="{% url 'panel:exam_review' e.pk %}" style="display:inline">
                   {% csrf_token %}
                   <input type="hidden" name="action" value="approve">
-                  <button type="submit" class="btn btn-sm" style="background:#22c55e;color:#fff;border:none;font-weight:600">✓ Tasdiqlash</button>
+                  <button type="submit" class="btn btn-sm" style="background:var(--green);color:#fff;border:none;font-weight:600;box-shadow:0 4px 12px rgba(16,185,129,0.3)">✓ Tasdiqlash</button>
                 </form>
                 <form method="post" action="{% url 'panel:exam_review' e.pk %}" style="display:inline" onsubmit="return confirm('Rad etilsa imtihon o\'chiriladi. Davom etasizmi?')">
                   {% csrf_token %}
                   <input type="hidden" name="action" value="reject">
-                  <button type="submit" class="btn btn-danger btn-sm">✕ Rad</button>
+                  <button type="submit" class="btn btn-danger btn-sm">✕ Rad etish</button>
                 </form>
               {% else %}
-                <a href="{% url 'panel:exam_edit' e.pk %}" class="btn btn-ghost btn-sm">Tahrir</a>
-                <button onclick="toggleExam({{ e.pk }})" class="btn btn-ghost btn-sm">On/Off</button>
-                <button onclick="deleteExam({{ e.pk }}, this)" class="btn btn-danger btn-sm">O'chir</button>
+                <a href="{% url 'panel:exam_edit' e.pk %}" class="btn btn-ghost btn-sm" style="padding:6px">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path stroke-width="2" d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                </a>
+                <button onclick="toggleExam({{ e.pk }})" class="btn btn-ghost btn-sm" style="padding:6px" title="Yoqish/O'chirish">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12" stroke-width="2"/></svg>
+                </button>
+                <button onclick="deleteExam({{ e.pk }}, this)" class="btn btn-ghost btn-sm" style="color:var(--red);border-color:rgba(239,68,68,0.2);padding:6px" title="O'chirish">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </button>
               {% endif %}
             </div>
           </td>
         </tr>
         {% empty %}
-        <tr><td colspan="8" style="text-align:center;padding:32px;color:var(--muted)">Imtihon topilmadi</td></tr>
+        <tr><td colspan="8" style="text-align:center;padding:48px;color:var(--muted)">
+          <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="opacity:0.2;margin-bottom:16px"><path stroke-width="2" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8" stroke-width="2"/></svg><br>
+          Hech qanday imtihon topilmadi
+        </td></tr>
         {% endfor %}
       </tbody>
     </table>
@@ -108,18 +152,35 @@
 {% block extra_js %}
 <script>
 async function toggleExam(pk){
-  const r=await fetch(`/panel/exams/${pk}/toggle/`,{method:'POST',headers:{'X-CSRFToken':csrf}});
-  const d=await r.json();
-  const el=document.getElementById('exam-status-'+pk);
-  el.textContent=d.active?'Faol':'Nofaol';
-  el.className='badge '+(d.active?'badge-green':'badge-gray');
-  toast(d.active?'Yoqildi':'O\'chirildi');
+  try {
+    const r=await fetch(`/panel/exams/${pk}/toggle/`,{method:'POST',headers:{'X-CSRFToken':csrf}});
+    const d=await r.json();
+    const el=document.getElementById('exam-status-'+pk);
+    el.textContent=d.active?'Faol':'Nofaol';
+    el.className='badge '+(d.active?'badge-green':'badge-gray');
+    toast(d.active?'Imtihon faollashtirildi':'Imtihon o\'chirib qo\'yildi');
+  } catch(e) {
+    toast('Xatolik yuz berdi', '#ef4444');
+  }
 }
 async function deleteExam(pk, btn){
-  if(!confirm('Imtihonni o\'chirishni tasdiqlaysizmi?')) return;
-  const r=await fetch(`/panel/exams/${pk}/delete/`,{method:'POST',headers:{'X-CSRFToken':csrf}});
-  const d=await r.json();
-  if(d.ok){btn.closest('tr').remove();toast('Imtihon o\'chirildi','#ef4444');}
+  if(!confirm('Imtihonni va uning barcha natijalarini o\'chirishni tasdiqlaysizmi? Bu amalni ortga qaytarib bo\'lmaydi.')) return;
+  try {
+    const r=await fetch(`/panel/exams/${pk}/delete/`,{method:'POST',headers:{'X-CSRFToken':csrf}});
+    const d=await r.json();
+    if(d.ok){
+      const row = btn.closest('tr');
+      row.style.opacity = '0';
+      row.style.transform = 'translateX(-20px)';
+      row.style.transition = 'all 0.3s';
+      setTimeout(() => row.remove(), 300);
+      toast('Imtihon muvaffaqiyatli o\'chirildi');
+    } else {
+      toast('Xatolik: ' + (d.error||'Noma\'lum'), '#ef4444');
+    }
+  } catch(e) {
+    toast('Xatolik yuz berdi', '#ef4444');
+  }
 }
 </script>
 {% endblock %}
