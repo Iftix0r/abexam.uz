@@ -4,133 +4,105 @@
 {% block nav_analytics %}active{% endblock %}
 
 {% block content %}
-<style>
-.analytics-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; margin-bottom: 24px; }
-@media (max-width: 1400px) { .analytics-grid { grid-template-columns: repeat(3, 1fr); } }
-@media (max-width: 768px) { .analytics-grid { grid-template-columns: repeat(2, 1fr); } }
-
-.astat-card {
-  background: var(--surface);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 20px;
-  position: relative;
-  overflow: hidden;
-  transition: var(--transition);
-}
-.astat-card:hover { transform: translateY(-4px); border-color: var(--border-hover); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
-.astat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; margin-bottom: 8px; }
-.astat-val { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; }
-</style>
-
 <!-- Stats -->
-<div class="analytics-grid">
-  <div class="astat-card">
-    <div class="astat-label">Foydalanuvchilar</div>
-    <div class="astat-val" style="color:#a5b4fc">{{ stats.total_users }}</div>
+<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:24px">
+  <div class="card" style="padding:16px">
+    <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Foydalanuvchilar</div>
+    <div style="font-size:24px;font-weight:700;color:var(--primary)">{{ stats.total_users }}</div>
   </div>
-  <div class="astat-card">
-    <div class="astat-label">Natijalar</div>
-    <div class="astat-val" style="color:#93c5fd">{{ stats.total_results }}</div>
+  <div class="card" style="padding:16px">
+    <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Natijalar</div>
+    <div style="font-size:24px;font-weight:700;color:var(--blue)">{{ stats.total_results }}</div>
   </div>
-  <div class="astat-card">
-    <div class="astat-label">Daromad</div>
-    <div class="astat-val" style="color:#6ee7b7">{{ stats.total_revenue|floatformat:0 }} <span style="font-size:14px;color:var(--muted);font-weight:600">s.</span></div>
+  <div class="card" style="padding:16px">
+    <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Daromad</div>
+    <div style="font-size:22px;font-weight:700;color:var(--green)">{{ stats.total_revenue|floatformat:0 }}</div>
   </div>
-  <div class="astat-card">
-    <div class="astat-label">O'rtacha ball</div>
-    <div class="astat-val" style="color:#fde047">{{ stats.avg_score|floatformat:1 }}</div>
+  <div class="card" style="padding:16px">
+    <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">O'rtacha ball</div>
+    <div style="font-size:24px;font-weight:700;color:var(--yellow)">{{ stats.avg_score|floatformat:1 }}</div>
   </div>
-  <div class="astat-card">
-    <div class="astat-label">Faol imtihonlar</div>
-    <div class="astat-val" style="color:#e2e8f0">{{ stats.active_exams }}</div>
+  <div class="card" style="padding:16px">
+    <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Faol imtihonlar</div>
+    <div style="font-size:24px;font-weight:700">{{ stats.active_exams }}</div>
   </div>
-  <div class="astat-card" style="{% if stats.pending_tx %}border-color:rgba(245,158,11,0.3);background:rgba(245,158,11,0.05){% endif %}">
-    <div class="astat-label" style="{% if stats.pending_tx %}color:var(--yellow){% endif %}">Kutilayotgan to'lov</div>
-    <div class="astat-val" style="color:{% if stats.pending_tx %}var(--yellow){% else %}var(--muted){% endif %}">{{ stats.pending_tx }}</div>
+  <div class="card" style="padding:16px">
+    <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Kutilayotgan to'lov</div>
+    <div style="font-size:24px;font-weight:700;color:{% if stats.pending_tx %}var(--yellow){% else %}var(--muted){% endif %}">{{ stats.pending_tx }}</div>
   </div>
 </div>
 
 <!-- Main chart: 30 days activity -->
-<div class="card" style="margin-bottom:24px;padding:24px">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:16px">
-    <span style="font-size:16px;font-weight:700">So'nggi 30 kun faolligi</span>
-    <div style="display:flex;gap:6px;background:rgba(0,0,0,0.2);border:1px solid var(--border);border-radius:10px;padding:4px">
+<div class="card" style="margin-bottom:20px">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+    <span style="font-size:14px;font-weight:600">So'nggi 30 kun faolligi</span>
+    <div style="display:flex;gap:6px;background:rgba(255,255,255,.04);border-radius:8px;padding:3px">
       <button class="tab-btn active" onclick="switchMain('users',this)">Foydalanuvchilar</button>
       <button class="tab-btn" onclick="switchMain('results',this)">Natijalar</button>
       <button class="tab-btn" onclick="switchMain('revenue',this)">Daromad</button>
     </div>
   </div>
-  <div style="height:320px"><canvas id="mainChart"></canvas></div>
+  <div style="height:240px"><canvas id="mainChart"></canvas></div>
 </div>
 
 <!-- 3 col charts -->
-<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-bottom:24px">
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-bottom:20px">
   <div class="card">
-    <div style="font-size:14px;font-weight:600;margin-bottom:20px">Imtihon turlari</div>
-    <div style="height:220px"><canvas id="typeChart"></canvas></div>
+    <div style="font-size:13px;font-weight:600;margin-bottom:14px">Imtihon turlari</div>
+    <div style="height:180px"><canvas id="typeChart"></canvas></div>
   </div>
   <div class="card">
-    <div style="font-size:14px;font-weight:600;margin-bottom:20px">Band score taqsimoti</div>
-    <div style="height:220px"><canvas id="bandChart"></canvas></div>
+    <div style="font-size:13px;font-weight:600;margin-bottom:14px">Band score taqsimoti</div>
+    <div style="height:180px"><canvas id="bandChart"></canvas></div>
   </div>
   <div class="card">
-    <div style="font-size:14px;font-weight:600;margin-bottom:20px">Bo'limlar o'rtachasi (Radar)</div>
-    <div style="height:220px"><canvas id="radarChart"></canvas></div>
+    <div style="font-size:13px;font-weight:600;margin-bottom:14px">Bo'limlar o'rtachasi (Radar)</div>
+    <div style="height:180px"><canvas id="radarChart"></canvas></div>
   </div>
 </div>
 
 <!-- 2 col -->
-<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin-bottom:24px">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px">
   <!-- Monthly revenue -->
   <div class="card">
-    <div style="font-size:14px;font-weight:600;margin-bottom:20px">Oylik daromad (so'nggi 6 oy)</div>
-    <div style="height:260px"><canvas id="revenueChart"></canvas></div>
+    <div style="font-size:13px;font-weight:600;margin-bottom:14px">Oylik daromad (so'nggi 6 oy)</div>
+    <div style="height:180px"><canvas id="revenueChart"></canvas></div>
   </div>
   <!-- Top users -->
-  <div class="card" style="padding:0">
-    <div style="padding:24px 24px 16px;font-size:14px;font-weight:600;border-bottom:1px solid var(--border)">Eng faol foydalanuvchilar</div>
-    <div style="padding:0 24px 24px">
-      {% for u in top_users %}
-      <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)">
-        <div style="width:36px;height:36px;border-radius:10px;background:var(--gradient-primary);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0;box-shadow:0 4px 12px var(--primary-glow)">{{ u.user__username|first|upper }}</div>
-        <div style="flex:1">
-          <div style="font-size:14px;font-weight:600">{{ u.user__username }}</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:2px">Natijalar: {{ u.cnt }} ta</div>
-        </div>
-        <div style="text-align:right">
-          <div style="font-size:16px;font-weight:800;color:{% if u.avg >= 7.5 %}var(--green){% elif u.avg >= 6.0 %}var(--yellow){% else %}var(--red){% endif %}">{{ u.avg|floatformat:1 }}</div>
-          <div style="font-size:10px;color:var(--muted);text-transform:uppercase">O'rtacha</div>
-        </div>
-      </div>
-      {% empty %}
-      <p style="color:var(--muted);font-size:14px;text-align:center;padding:32px">Ma'lumot yo'q</p>
-      {% endfor %}
+  <div class="card">
+    <div style="font-size:13px;font-weight:600;margin-bottom:14px">Eng faol foydalanuvchilar</div>
+    {% for u in top_users %}
+    <div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border)">
+      <div style="width:28px;height:28px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0">{{ u.user__username|first|upper }}</div>
+      <div style="flex:1;font-size:13px;font-weight:500">{{ u.user__username }}</div>
+      <span class="badge badge-blue" style="font-size:10px">{{ u.cnt }} ta</span>
+      <span style="font-size:12px;font-weight:600;color:{% if u.avg >= 7.5 %}var(--green){% elif u.avg >= 6.0 %}var(--yellow){% else %}var(--red){% endif %}">{{ u.avg|floatformat:1 }}</span>
     </div>
+    {% empty %}
+    <p style="color:var(--muted);font-size:13px;text-align:center;padding:20px">Ma'lumot yo'q</p>
+    {% endfor %}
   </div>
 </div>
 
 <!-- Section averages bars -->
 <div class="card">
-  <div style="font-size:14px;font-weight:600;margin-bottom:24px">Bo'limlar bo'yicha o'rtacha ball (barcha foydalanuvchilar)</div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+  <div style="font-size:13px;font-weight:600;margin-bottom:16px">Bo'limlar bo'yicha o'rtacha ball (barcha foydalanuvchilar)</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
     <div>
-      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:8px;font-weight:500"><span style="color:var(--muted)">Listening</span><span style="font-weight:700">{{ stats.avg_l|floatformat:1 }}</span></div>
-      <div style="height:10px;background:rgba(255,255,255,.05);border-radius:6px;overflow:hidden"><div style="width:{{ stats.avg_l|floatformat:0 }}0%;height:100%;background:linear-gradient(90deg, #3b82f6, #60a5fa);border-radius:6px"></div></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:var(--muted)">Listening</span><span style="font-weight:600">{{ stats.avg_l|floatformat:1 }}</span></div>
+      <div style="height:7px;background:rgba(255,255,255,.06);border-radius:4px"><div style="width:{{ stats.avg_l|floatformat:0 }}0%;height:100%;background:#4285f4;border-radius:4px"></div></div>
     </div>
     <div>
-      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:8px;font-weight:500"><span style="color:var(--muted)">Reading</span><span style="font-weight:700">{{ stats.avg_r|floatformat:1 }}</span></div>
-      <div style="height:10px;background:rgba(255,255,255,.05);border-radius:6px;overflow:hidden"><div style="width:{{ stats.avg_r|floatformat:0 }}0%;height:100%;background:linear-gradient(90deg, #10b981, #34d399);border-radius:6px"></div></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:var(--muted)">Reading</span><span style="font-weight:600">{{ stats.avg_r|floatformat:1 }}</span></div>
+      <div style="height:7px;background:rgba(255,255,255,.06);border-radius:4px"><div style="width:{{ stats.avg_r|floatformat:0 }}0%;height:100%;background:#22c55e;border-radius:4px"></div></div>
     </div>
     <div>
-      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:8px;font-weight:500"><span style="color:var(--muted)">Writing</span><span style="font-weight:700">{{ stats.avg_w|floatformat:1 }}</span></div>
-      <div style="height:10px;background:rgba(255,255,255,.05);border-radius:6px;overflow:hidden"><div style="width:{{ stats.avg_w|floatformat:0 }}0%;height:100%;background:linear-gradient(90deg, #f59e0b, #fbbf24);border-radius:6px"></div></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:var(--muted)">Writing</span><span style="font-weight:600">{{ stats.avg_w|floatformat:1 }}</span></div>
+      <div style="height:7px;background:rgba(255,255,255,.06);border-radius:4px"><div style="width:{{ stats.avg_w|floatformat:0 }}0%;height:100%;background:#eab308;border-radius:4px"></div></div>
     </div>
     <div>
-      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:8px;font-weight:500"><span style="color:var(--muted)">Speaking</span><span style="font-weight:700">{{ stats.avg_s|floatformat:1 }}</span></div>
-      <div style="height:10px;background:rgba(255,255,255,.05);border-radius:6px;overflow:hidden"><div style="width:{{ stats.avg_s|floatformat:0 }}0%;height:100%;background:linear-gradient(90deg, #ef4444, #f87171);border-radius:6px"></div></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:var(--muted)">Speaking</span><span style="font-weight:600">{{ stats.avg_s|floatformat:1 }}</span></div>
+      <div style="height:7px;background:rgba(255,255,255,.06);border-radius:4px"><div style="width:{{ stats.avg_s|floatformat:0 }}0%;height:100%;background:#ef4444;border-radius:4px"></div></div>
     </div>
   </div>
 </div>
@@ -139,11 +111,9 @@
 {% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 <script>
-Chart.defaults.font.family = 'Inter';
-
 const C = {
-  grid:'rgba(255,255,255,.05)', tick:'#64748b',
-  tooltip:{backgroundColor:'rgba(15, 17, 21, 0.9)',borderColor:'rgba(255,255,255,0.1)',borderWidth:1,titleColor:'#fff',bodyColor:'#cbd5e1', padding: 12, cornerRadius: 8}
+  grid:'rgba(255,255,255,.05)', tick:'#666',
+  tooltip:{backgroundColor:'#1e1e1e',borderColor:'#333',borderWidth:1,titleColor:'#e3e3e3',bodyColor:'#aaa'}
 };
 
 const labels = {{ chart_labels|safe }};
@@ -153,27 +123,22 @@ const revenueData = {{ chart_revenue|safe }};
 
 // Main chart
 const mainCtx = document.getElementById('mainChart').getContext('2d');
-let currentGradient = mainCtx.createLinearGradient(0, 0, 0, 320);
-currentGradient.addColorStop(0, 'rgba(99, 102, 241, 0.4)');
-currentGradient.addColorStop(1, 'rgba(99, 102, 241, 0)');
-
 const mainChart = new Chart(mainCtx, {
   type:'line',
   data:{
     labels,
     datasets:[{
       label:'Yangi foydalanuvchilar', data:usersData,
-      borderColor:'#6366f1', backgroundColor: currentGradient,
-      tension:.4, fill:true, pointRadius:4, pointHoverRadius: 6, pointBackgroundColor:'#6366f1', borderWidth: 3
+      borderColor:'#6366f1', backgroundColor:'rgba(99,102,241,.12)',
+      tension:.4, fill:true, pointRadius:3, pointBackgroundColor:'#6366f1'
     }]
   },
   options:{
     responsive:true, maintainAspectRatio:false,
-    interaction: { mode: 'index', intersect: false },
     plugins:{legend:{display:false}, tooltip:C.tooltip},
     scales:{
-      x:{ticks:{color:C.tick,font:{size:12}}, grid:{color:C.grid}},
-      y:{ticks:{color:C.tick,font:{size:12},precision:0}, grid:{color:C.grid}, beginAtZero:true, border: {dash: [4, 4]}}
+      x:{ticks:{color:C.tick,font:{size:10},maxTicksLimit:10}, grid:{color:C.grid}},
+      y:{ticks:{color:C.tick,font:{size:10},precision:0}, grid:{color:C.grid}, beginAtZero:true}
     }
   }
 });
@@ -181,23 +146,15 @@ const mainChart = new Chart(mainCtx, {
 function switchMain(type, btn){
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  
   const map = {
     users:{data:usersData, color:'#6366f1', label:'Yangi foydalanuvchilar'},
-    results:{data:resultsData, color:'#10b981', label:'Natijalar'},
-    revenue:{data:revenueData, color:'#f59e0b', label:'Daromad (so\'m)'},
+    results:{data:resultsData, color:'#22c55e', label:'Natijalar'},
+    revenue:{data:revenueData, color:'#eab308', label:'Daromad (so\'m)'},
   };
   const m = map[type];
-  
-  let grad = mainCtx.createLinearGradient(0, 0, 0, 320);
-  // hex to rgb wrapper hack for simplicity
-  const rgb = type==='users'?'99, 102, 241':type==='results'?'16, 185, 129':'245, 158, 11';
-  grad.addColorStop(0, `rgba(${rgb}, 0.4)`);
-  grad.addColorStop(1, `rgba(${rgb}, 0)`);
-
   mainChart.data.datasets[0].data = m.data;
   mainChart.data.datasets[0].borderColor = m.color;
-  mainChart.data.datasets[0].backgroundColor = grad;
+  mainChart.data.datasets[0].backgroundColor = m.color+'20';
   mainChart.data.datasets[0].pointBackgroundColor = m.color;
   mainChart.data.datasets[0].label = m.label;
   mainChart.update();
@@ -208,9 +165,9 @@ new Chart(document.getElementById('typeChart').getContext('2d'),{
   type:'doughnut',
   data:{
     labels:{{ chart_type_labels|safe }},
-    datasets:[{data:{{ chart_type_counts|safe }}, backgroundColor:['#6366f1','#10b981','#f59e0b','#ef4444','#3b82f6'], borderWidth:0, hoverOffset:6}]
+    datasets:[{data:{{ chart_type_counts|safe }}, backgroundColor:['#6366f1','#22c55e','#eab308','#ef4444','#3b82f6'], borderWidth:0, hoverOffset:6}]
   },
-  options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{position:'bottom',labels:{color:'#94a3b8',font:{size:12},padding:16,usePointStyle:true}},tooltip:C.tooltip}}
+  options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'bottom',labels:{color:'#888',font:{size:10},padding:8}},tooltip:C.tooltip}}
 });
 
 // Band doughnut
@@ -218,9 +175,9 @@ new Chart(document.getElementById('bandChart').getContext('2d'),{
   type:'doughnut',
   data:{
     labels:{{ chart_band_labels|safe }},
-    datasets:[{data:{{ chart_band_data|safe }}, backgroundColor:['#ef4444','#f97316','#eab308','#10b981','#6366f1'], borderWidth:0, hoverOffset:6}]
+    datasets:[{data:{{ chart_band_data|safe }}, backgroundColor:['#ef4444','#f97316','#eab308','#22c55e','#6366f1'], borderWidth:0, hoverOffset:6}]
   },
-  options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{position:'bottom',labels:{color:'#94a3b8',font:{size:12},padding:16,usePointStyle:true}},tooltip:C.tooltip}}
+  options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'bottom',labels:{color:'#888',font:{size:10},padding:8}},tooltip:C.tooltip}}
 });
 
 // Radar
@@ -228,24 +185,19 @@ new Chart(document.getElementById('radarChart').getContext('2d'),{
   type:'radar',
   data:{
     labels:['Listening','Reading','Writing','Speaking'],
-    datasets:[{label:"O'rtacha",data:[{{ stats.avg_l|floatformat:1 }},{{ stats.avg_r|floatformat:1 }},{{ stats.avg_w|floatformat:1 }},{{ stats.avg_s|floatformat:1 }}],borderColor:'#6366f1',backgroundColor:'rgba(99,102,241,.2)',pointBackgroundColor:'#6366f1',pointRadius:4,borderWidth:2}]
+    datasets:[{label:"O'rtacha",data:[{{ stats.avg_l|floatformat:1 }},{{ stats.avg_r|floatformat:1 }},{{ stats.avg_w|floatformat:1 }},{{ stats.avg_s|floatformat:1 }}],borderColor:'#6366f1',backgroundColor:'rgba(99,102,241,.15)',pointBackgroundColor:'#6366f1',pointRadius:4}]
   },
-  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:C.tooltip},scales:{r:{min:0,max:9,ticks:{color:'#64748b',font:{size:10},stepSize:3,backdropColor:'transparent'},grid:{color:'rgba(255,255,255,.08)'},pointLabels:{color:'#94a3b8',font:{size:12,weight:'bold'}}}}}
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:C.tooltip},scales:{r:{min:0,max:9,ticks:{color:'#555',font:{size:9},stepSize:3},grid:{color:'rgba(255,255,255,.08)'},pointLabels:{color:'#888',font:{size:10}}}}}
 });
 
 // Monthly revenue bar
-const revCtx = document.getElementById('revenueChart').getContext('2d');
-let revGrad = revCtx.createLinearGradient(0, 0, 0, 260);
-revGrad.addColorStop(0, '#10b981');
-revGrad.addColorStop(1, 'rgba(16, 185, 129, 0.4)');
-
-new Chart(revCtx,{
+new Chart(document.getElementById('revenueChart').getContext('2d'),{
   type:'bar',
   data:{
     labels:{{ chart_monthly_labels|safe }},
-    datasets:[{label:"Daromad",data:{{ chart_monthly_rev|safe }},backgroundColor:revGrad,borderRadius:8,borderSkipped:false,barPercentage:0.6}]
+    datasets:[{label:"Daromad",data:{{ chart_monthly_rev|safe }},backgroundColor:'rgba(34,197,94,.7)',borderRadius:6,borderSkipped:false}]
   },
-  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:C.tooltip},scales:{x:{ticks:{color:C.tick,font:{size:12}},grid:{display:false}},y:{ticks:{color:C.tick,font:{size:12}},grid:{color:C.grid},beginAtZero:true,border:{dash:[4,4]}}}}
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:C.tooltip},scales:{x:{ticks:{color:C.tick,font:{size:10}},grid:{display:false}},y:{ticks:{color:C.tick,font:{size:10}},grid:{color:C.grid},beginAtZero:true}}}
 });
 </script>
 {% endblock %}
