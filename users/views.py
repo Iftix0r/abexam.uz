@@ -11,21 +11,11 @@ from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import CreateView, TemplateView
 
-from core.utils import monthly_series, parse_json_body, validate_image_upload
+from core.utils import get_client_ip, monthly_series, notify_admin_telegram, parse_json_body, validate_image_upload
 from exams.models import Exam, UserResult
 from .forms import RegisterForm
 from .models import LoginLog, User, Vocabulary
 from payments.models import Transaction
-
-
-def get_client_ip(request):
-    # Reverse proxy appends the real client IP as the last hop (nginx's
-    # $proxy_add_x_forwarded_for); earlier entries can be forged by the
-    # client, so the first entry must not be trusted for rate-limiting.
-    x_forwarded = request.META.get('HTTP_X_FORWARDED_FOR')
-    if x_forwarded:
-        return x_forwarded.split(',')[-1].strip()
-    return request.META.get('REMOTE_ADDR', '0.0.0.0')
 
 
 def _is_blocked(ip):
@@ -57,6 +47,12 @@ class CustomLoginView(BaseLoginView):
             username_attempt=self.request.POST.get('username', ''),
             ip=ip, user_agent=ua, status='success',
         )
+        notify_admin_telegram(
+            f"✅ <b>Kirish</b>\n"
+            f"👤 {logged_user.get_full_name() or logged_user.username} (@{logged_user.username})\n"
+            f"🌐 IP: {ip}\n"
+            f"💻 {ua}"
+        )
         return super().form_valid(form)
 
     def form_invalid(self, form):
@@ -71,6 +67,13 @@ class CustomLoginView(BaseLoginView):
             username_attempt=username, ip=ip,
             user_agent=ua, status=status,
         )
+        if status == 'blocked':
+            notify_admin_telegram(
+                f"⛔ <b>IP bloklandi (ko'p noto'g'ri urinish)</b>\n"
+                f"👤 Urinilgan username: {username or '—'}\n"
+                f"🌐 IP: {ip}\n"
+                f"💻 {ua}"
+            )
         return super().form_invalid(form)
 
 
@@ -82,8 +85,17 @@ class RegisterView(CreateView):
     def form_valid(self, form):
         user = form.save(commit=False)
         user.set_password(form.cleaned_data['password'])
-        user.last_ip = get_client_ip(self.request)
+        ip = get_client_ip(self.request)
+        user.last_ip = ip
         user.save()
+        notify_admin_telegram(
+            f"🆕 <b>Yangi ro'yxatdan o'tish</b>\n"
+            f"👤 {user.get_full_name() or '—'} (@{user.username})\n"
+            f"📞 {user.phone_number or '—'}\n"
+            f"📧 {user.email or '—'}\n"
+            f"🌐 IP: {ip}\n"
+            f"💻 {self.request.META.get('HTTP_USER_AGENT', '—')[:300]}"
+        )
         return redirect(self.success_url)
 
 

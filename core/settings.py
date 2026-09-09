@@ -150,3 +150,9 @@ DEFAULT_FROM_EMAIL = os.getenv('EMAIL_HOST_USER', 'noreply@abexam.uz')
 
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/dashboard/'
+
+# Telegram bot notifications to admin (registration/login/logout activity).
+# Get TELEGRAM_BOT_TOKEN from @BotFather and TELEGRAM_ADMIN_CHAT_ID by
+# messaging the bot then checking https://api.telegram.org/bot<token>/getUpdates
+TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN', '')
+TELEGRAM_ADMIN_CHAT_ID = os.getenv('TELEGRAM_ADMIN_CHAT_ID', '')

@@ -1,9 +1,50 @@
 import json
+import logging
+import threading
 from datetime import date, timedelta
 
+from django.conf import settings
 from django.db.models.functions import TruncDate, TruncMonth
 from django.http import JsonResponse
 from django.utils import timezone
+
+logger = logging.getLogger(__name__)
+
+
+def get_client_ip(request):
+    # Reverse proxy appends the real client IP as the last hop (nginx's
+    # $proxy_add_x_forwarded_for); earlier entries can be forged by the
+    # client, so the first entry must not be trusted.
+    x_forwarded = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded:
+        return x_forwarded.split(',')[-1].strip()
+    return request.META.get('REMOTE_ADDR', '0.0.0.0')
+
+
+def notify_admin_telegram(message: str):
+    """Fire-and-forget Telegram notification to the admin chat.
+
+    No-ops silently if TELEGRAM_BOT_TOKEN/TELEGRAM_ADMIN_CHAT_ID aren't
+    configured, and never raises into the caller — a Telegram outage or
+    misconfiguration must not break login/registration/logout for users.
+    """
+    token = settings.TELEGRAM_BOT_TOKEN
+    chat_id = settings.TELEGRAM_ADMIN_CHAT_ID
+    if not token or not chat_id:
+        return
+
+    def _send():
+        import requests
+        try:
+            requests.post(
+                f'https://api.telegram.org/bot{token}/sendMessage',
+                json={'chat_id': chat_id, 'text': message, 'parse_mode': 'HTML'},
+                timeout=5,
+            )
+        except requests.RequestException:
+            logger.warning('Telegram admin notification failed', exc_info=True)
+
+    threading.Thread(target=_send, daemon=True).start()
 
 
 _IMAGE_TYPE_LABELS = {
