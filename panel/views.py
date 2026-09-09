@@ -1,5 +1,6 @@
 import csv
 import json
+import logging
 from datetime import timedelta
 
 from django.contrib import messages
@@ -12,9 +13,12 @@ from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from core.models import SiteSettings, Notification, PromoCode
+from core.utils import daily_series, monthly_series, parse_json_body
 from exams.models import Exam, Question, Section, UserResult
 from payments.models import Transaction
 from users.models import LoginLog, User, Vocabulary
+
+logger = logging.getLogger(__name__)
 
 
 def is_staff(user):
@@ -32,14 +36,8 @@ def dashboard(request):
     month_ago = now - timedelta(days=30)
 
     # last 7 days chart data
-    days_labels, days_users, days_results = [], [], []
-    for i in range(6, -1, -1):
-        day = now - timedelta(days=i)
-        start = day.replace(hour=0, minute=0, second=0, microsecond=0)
-        end = start + timedelta(days=1)
-        days_labels.append(day.strftime('%d %b'))
-        days_users.append(User.objects.filter(date_joined__gte=start, date_joined__lt=end).count())
-        days_results.append(UserResult.objects.filter(completed_at__gte=start, completed_at__lt=end).count())
+    days_labels, days_users = daily_series(User.objects.all(), 'date_joined', 7, Count('id'))
+    _, days_results = daily_series(UserResult.objects.all(), 'completed_at', 7, Count('id'))
 
     stats = {
         'total_users': User.objects.count(),
@@ -148,10 +146,9 @@ def user_delete(request, pk):
 @require_POST
 def user_add_balance(request, pk):
     user = get_object_or_404(User, pk=pk)
-    try:
-        data = json.loads(request.body)
-    except json.JSONDecodeError:
-        return JsonResponse({'ok': False, 'error': 'Noto\'g\'ri JSON'}, status=400)
+    data, err = parse_json_body(request, error_message="Noto'g'ri JSON", ok_field=True)
+    if err:
+        return err
     try:
         amount = float(data.get('amount', 0))
     except (ValueError, TypeError):
@@ -171,10 +168,9 @@ def user_add_balance(request, pk):
 @require_POST
 def user_reset_password(request, pk):
     user = get_object_or_404(User, pk=pk)
-    try:
-        data = json.loads(request.body)
-    except json.JSONDecodeError:
-        return JsonResponse({'ok': False, 'error': 'Noto\'g\'ri JSON'}, status=400)
+    data, err = parse_json_body(request, error_message="Noto'g'ri JSON", ok_field=True)
+    if err:
+        return err
     new_password = data.get('password', '').strip()
     if len(new_password) < 6:
         return JsonResponse({'ok': False, 'error': 'Parol kamida 6 ta belgi bo\'lishi kerak'})
@@ -187,10 +183,9 @@ def user_reset_password(request, pk):
 @require_POST
 def user_edit(request, pk):
     user = get_object_or_404(User, pk=pk)
-    try:
-        data = json.loads(request.body)
-    except json.JSONDecodeError:
-        return JsonResponse({'ok': False, 'error': 'Noto\'g\'ri JSON'}, status=400)
+    data, err = parse_json_body(request, error_message="Noto'g'ri JSON", ok_field=True)
+    if err:
+        return err
     user.first_name = data.get('first_name', user.first_name)
     user.last_name = data.get('last_name', user.last_name)
     user.email = data.get('email', user.email)
@@ -216,10 +211,9 @@ def user_make_staff(request, pk):
 @panel_required
 @require_POST
 def users_bulk_action(request):
-    try:
-        data = json.loads(request.body)
-    except json.JSONDecodeError:
-        return JsonResponse({'ok': False, 'error': 'Noto\'g\'ri JSON'}, status=400)
+    data, err = parse_json_body(request, error_message="Noto'g'ri JSON", ok_field=True)
+    if err:
+        return err
     action = data.get('action')
     ids = data.get('ids', [])
     if not ids:
@@ -400,18 +394,12 @@ def analytics(request):
     now = timezone.now()
 
     # Last 30 days — daily new users
-    days_labels, days_users, days_results, days_revenue = [], [], [], []
-    for i in range(29, -1, -1):
-        day = now - timedelta(days=i)
-        start = day.replace(hour=0, minute=0, second=0, microsecond=0)
-        end = start + timedelta(days=1)
-        days_labels.append(day.strftime('%d %b'))
-        days_users.append(User.objects.filter(date_joined__gte=start, date_joined__lt=end).count())
-        days_results.append(UserResult.objects.filter(completed_at__gte=start, completed_at__lt=end).count())
-        days_revenue.append(float(
-            Transaction.objects.filter(status='success', created_at__gte=start, created_at__lt=end)
-            .aggregate(t=Sum('amount'))['t'] or 0
-        ))
+    days_labels, days_users = daily_series(User.objects.all(), 'date_joined', 30, Count('id'))
+    _, days_results = daily_series(UserResult.objects.all(), 'completed_at', 30, Count('id'))
+    _, days_revenue_raw = daily_series(
+        Transaction.objects.filter(status='success'), 'created_at', 30, Sum('amount')
+    )
+    days_revenue = [float(v) for v in days_revenue_raw]
 
     # Exam type distribution
     by_type = (UserResult.objects.values('exam__exam_type')
@@ -441,15 +429,10 @@ def analytics(request):
         bands[row['band_group']] = row['cnt']
 
     # Monthly revenue (6 months)
-    monthly_labels, monthly_rev = [], []
-    for i in range(5, -1, -1):
-        ms = (now.replace(day=1) - timedelta(days=i * 30)).replace(day=1, hour=0, minute=0, second=0)
-        me = (ms + timedelta(days=32)).replace(day=1)
-        monthly_labels.append(ms.strftime('%b %Y'))
-        monthly_rev.append(float(
-            Transaction.objects.filter(status='success', created_at__gte=ms, created_at__lt=me)
-            .aggregate(t=Sum('amount'))['t'] or 0
-        ))
+    monthly_labels, monthly_rev_raw = monthly_series(
+        Transaction.objects.filter(status='success'), 'created_at', 6, Sum('amount')
+    )
+    monthly_rev = [float(v) for v in monthly_rev_raw]
 
     stats = {
         'total_users': User.objects.count(),
@@ -577,7 +560,10 @@ def exam_generate(request):
                                         ContentFile(img_resp.content)
                                     )
                             except requests.RequestException:
-                                pass
+                                logger.warning(
+                                    "AI exam generation: failed to download chart image for section %s from %s",
+                                    section.pk, sec_data['image_url'], exc_info=True,
+                                )
 
                         for q_data in sec_data.get('questions', []):
                             Question.objects.create(
@@ -629,10 +615,9 @@ def exam_generate(request):
 def question_edit(request, pk):
     """Inline question edit from exam detail page."""
     question = get_object_or_404(Question, pk=pk)
-    try:
-        data = json.loads(request.body)
-    except json.JSONDecodeError:
-        return JsonResponse({'ok': False, 'error': 'Noto\'g\'ri JSON'}, status=400)
+    data, err = parse_json_body(request, error_message="Noto'g'ri JSON", ok_field=True)
+    if err:
+        return err
     question.text = data.get('text', question.text)
     question.correct_answer = data.get('correct_answer', question.correct_answer)
     question.explanation = data.get('explanation', question.explanation)

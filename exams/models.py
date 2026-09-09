@@ -98,20 +98,24 @@ class UserResult(models.Model):
     def __str__(self):
         return f"{self.user.username} - {self.exam.title} ({self.score})"
 
+    @staticmethod
+    def _band_pct(band):
+        return round(band / 9 * 100) if band else 0
+
     def score_pct(self):
-        return round(self.score / 9 * 100) if self.score else 0
+        return self._band_pct(self.score)
 
     def listening_pct(self):
-        return round(self.listening_score / 9 * 100) if self.listening_score else 0
+        return self._band_pct(self.listening_score)
 
     def reading_pct(self):
-        return round(self.reading_score / 9 * 100) if self.reading_score else 0
+        return self._band_pct(self.reading_score)
 
     def writing_pct(self):
-        return round(self.writing_score / 9 * 100) if self.writing_score else 0
+        return self._band_pct(self.writing_score)
 
     def speaking_pct(self):
-        return round(self.speaking_score / 9 * 100) if self.speaking_score else 0
+        return self._band_pct(self.speaking_score)
 
     class Meta:
         verbose_name = 'Natija'

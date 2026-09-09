@@ -1,14 +1,36 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.cache import cache
 from django.db import transaction
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.views import View
 from django.views.generic import DetailView
-import json
 
+from core.utils import parse_json_body
 from .models import Exam, UserAnswer, UserResult, Question
 from users.models import User
+
+# Generous enough to cover sitting on the exam-detail page plus the full
+# attempt; a stale flag just means a benign extra grace period, not a way
+# to get free access (payment already happened when it was set).
+_EXAM_PAID_TTL = 6 * 3600
+
+
+def _exam_paid_key(user_pk, exam_pk):
+    return f'exam_paid_{user_pk}_{exam_pk}'
+
+
+def exam_is_paid(user_pk, exam_pk):
+    return bool(cache.get(_exam_paid_key(user_pk, exam_pk)))
+
+
+def mark_exam_paid(user_pk, exam_pk):
+    cache.set(_exam_paid_key(user_pk, exam_pk), True, timeout=_EXAM_PAID_TTL)
+
+
+def clear_exam_paid(user_pk, exam_pk):
+    cache.delete(_exam_paid_key(user_pk, exam_pk))
 
 
 def _fuzzy_match(user_ans: str, correct: str) -> bool:
@@ -115,20 +137,32 @@ class TakeExamView(LoginRequiredMixin, DetailView):
         if not exam.is_active:
             messages.error(request, "Bu imtihon hozirda faol emas.")
             return redirect('exams:exam_detail', pk=exam.pk)
-        if exam.price > 0 and not request.session.get(f'exam_paid_{exam.pk}'):
-            with transaction.atomic():
-                user = User.objects.select_for_update().get(pk=request.user.pk)
-                # Re-check session inside the lock to prevent double-charge on concurrent requests
-                if request.session.get(f'exam_paid_{exam.pk}'):
-                    pass
-                elif user.balance < exam.price:
-                    messages.error(request, f"Balans yetarli emas. Imtihon narxi: {exam.price} so'm")
-                    return redirect('exams:exam_detail', pk=exam.pk)
-                else:
-                    user.balance -= exam.price
-                    user.save(update_fields=['balance'])
-                    request.user.balance = user.balance
-                    request.session[f'exam_paid_{exam.pk}'] = True
+        if exam.price > 0 and not exam_is_paid(request.user.pk, exam.pk):
+            # A Django session write only persists at the end of the
+            # request, so two concurrent requests (double-click, retry)
+            # can both see "not paid yet" before either commits — the DB
+            # row lock below only serializes the balance update, not that
+            # check. A short-lived cache lock closes that window, and the
+            # "paid" flag itself lives in cache (not the session) so it's
+            # visible immediately to any request, including ones on a
+            # different session/tab.
+            lock_key = f'exam_pay_lock_{request.user.pk}_{exam.pk}'
+            if not cache.add(lock_key, 1, timeout=10):
+                messages.error(request, "So'rov qayta ishlanmoqda, biroz kutib qayta urinib ko'ring.")
+                return redirect('exams:exam_detail', pk=exam.pk)
+            try:
+                if not exam_is_paid(request.user.pk, exam.pk):
+                    with transaction.atomic():
+                        user = User.objects.select_for_update().get(pk=request.user.pk)
+                        if user.balance < exam.price:
+                            messages.error(request, f"Balans yetarli emas. Imtihon narxi: {exam.price} so'm")
+                            return redirect('exams:exam_detail', pk=exam.pk)
+                        user.balance -= exam.price
+                        user.save(update_fields=['balance'])
+                        request.user.balance = user.balance
+                    mark_exam_paid(request.user.pk, exam.pk)
+            finally:
+                cache.delete(lock_key)
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -140,12 +174,11 @@ class TakeExamView(LoginRequiredMixin, DetailView):
 class SubmitExamView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         exam = get_object_or_404(Exam, pk=kwargs['pk'])
-        if exam.price > 0 and not request.session.get(f'exam_paid_{exam.pk}'):
+        if exam.price > 0 and not exam_is_paid(request.user.pk, exam.pk):
             return JsonResponse({'error': "Bu imtihon uchun to'lov amalga oshirilmagan"}, status=402)
-        try:
-            data = json.loads(request.body)
-        except json.JSONDecodeError:
-            return JsonResponse({'error': 'Noto\'g\'ri so\'rov'}, status=400)
+        data, err = parse_json_body(request)
+        if err:
+            return err
 
         answers = data.get('answers', {})
         section_stats = {}
@@ -156,6 +189,11 @@ class SubmitExamView(LoginRequiredMixin, View):
 
         # Fetch sections once and reuse
         sections = list(exam.sections.prefetch_related('questions').order_by('order'))
+
+        # (question, user_answer, is_correct) captured here so the second
+        # pass building UserAnswer rows can reuse it instead of recomputing
+        # _fuzzy_match for every question again.
+        answer_records = []
 
         for section in sections:
             s_correct = 0
@@ -168,11 +206,14 @@ class SubmitExamView(LoginRequiredMixin, View):
                         'section_title': section.title,
                         'text': user_ans,
                     })
+                    answer_records.append((question, user_ans, False))
                     continue
                 s_total += 1
                 total_questions += 1
                 correct = str(question.correct_answer).strip().lower()
-                if _fuzzy_match(user_ans, correct):
+                is_correct = _fuzzy_match(user_ans, correct)
+                answer_records.append((question, user_ans, is_correct))
+                if is_correct:
                     s_correct += 1
                     total_correct += 1
             prev_c, prev_t = section_stats.get(section.section_type, (0, 0))
@@ -219,7 +260,7 @@ class SubmitExamView(LoginRequiredMixin, View):
         band_by_type = {'listening': l_band, 'reading': r_band, 'writing': w_band, 'speaking': s_band}
         overall = compute_overall_band(band_by_type, present_section_types(exam))
 
-        request.session.pop(f'exam_paid_{exam.pk}', None)
+        clear_exam_paid(request.user.pk, exam.pk)
 
         result = UserResult.objects.create(
             user=request.user,
@@ -232,20 +273,10 @@ class SubmitExamView(LoginRequiredMixin, View):
             writing_feedback=writing_feedback,
         )
 
-        answer_objs = []
-        for section in sections:
-            for question in section.questions.all():
-                user_ans = str(answers.get(str(question.id), '')).strip()
-                is_correct = (
-                    False if question.question_type == 'writing_task'
-                    else _fuzzy_match(user_ans, question.correct_answer)
-                )
-                answer_objs.append(UserAnswer(
-                    result=result,
-                    question=question,
-                    user_answer=user_ans,
-                    is_correct=is_correct,
-                ))
+        answer_objs = [
+            UserAnswer(result=result, question=question, user_answer=user_ans, is_correct=is_correct)
+            for question, user_ans, is_correct in answer_records
+        ]
         UserAnswer.objects.bulk_create(answer_objs, ignore_conflicts=True)
 
         return JsonResponse({

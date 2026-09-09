@@ -679,10 +679,15 @@ def _fallback_writing_eval(text: str, task_num: int = 2) -> dict:
     """Word-count based fallback when AI is unavailable."""
     words = len(text.split()) if text else 0
     min_words = 150 if task_num == 1 else 250
+    # min_words // 2 is below 100 for Task 1 (75 vs 250//2=125 for Task 2),
+    # so comparing thresholds out of numeric order made the 4.5 tier
+    # unreachable for Task 1 — sort the two midpoints instead of hardcoding
+    # which comes first.
+    lower_mid, upper_mid = sorted((100, min_words // 2))
     if words == 0: band = 0.0
     elif words < 50: band = 2.0
-    elif words < 100: band = 3.5
-    elif words < min_words // 2: band = 4.5
+    elif words < lower_mid: band = 3.5
+    elif words < upper_mid: band = 4.5
     elif words < min_words: band = 5.0
     elif words < min_words + 50: band = 5.5
     elif words < min_words + 100: band = 6.0

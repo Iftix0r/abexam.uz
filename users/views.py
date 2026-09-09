@@ -8,10 +8,10 @@ from django.db.models import Avg, Count
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
-from django.utils import timezone
 from django.views import View
 from django.views.generic import CreateView, TemplateView
 
+from core.utils import monthly_series, parse_json_body
 from exams.models import Exam, UserResult
 from .forms import RegisterForm
 from .models import LoginLog, User, Vocabulary
@@ -188,10 +188,9 @@ class FinanceView(LoginRequiredMixin, TemplateView):
 class ChatAIView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         from core.ai_utils import get_ai_response
-        try:
-            data = json.loads(request.body)
-        except json.JSONDecodeError:
-            return JsonResponse({'error': 'Noto\'g\'ri so\'rov'}, status=400)
+        data, err = parse_json_body(request)
+        if err:
+            return err
         message = data.get('message', '').strip()
         history = data.get('history', [])
         if not message:
@@ -203,7 +202,6 @@ class AnalyticsView(LoginRequiredMixin, TemplateView):
     template_name = 'analytics.html'
 
     def get_context_data(self, **kwargs):
-        from datetime import timedelta
         from django.db.models import Max, Min
         context = super().get_context_data(**kwargs)
         user = self.request.user
@@ -217,12 +215,16 @@ class AnalyticsView(LoginRequiredMixin, TemplateView):
         )
         context['stats'] = stats
 
-        context['chart_dates'] = json.dumps([r.completed_at.strftime('%d %b %Y') for r in results])
-        context['chart_scores'] = json.dumps([r.score for r in results])
-        context['chart_l'] = json.dumps([r.listening_score for r in results])
-        context['chart_r'] = json.dumps([r.reading_score for r in results])
-        context['chart_w'] = json.dumps([r.writing_score for r in results])
-        context['chart_s'] = json.dumps([r.speaking_score for r in results])
+        # Materialize once — `results` was otherwise re-queried on every
+        # separate iteration below (chart fields, band bucketing, recent).
+        results_list = list(results)
+
+        context['chart_dates'] = json.dumps([r.completed_at.strftime('%d %b %Y') for r in results_list])
+        context['chart_scores'] = json.dumps([r.score for r in results_list])
+        context['chart_l'] = json.dumps([r.listening_score for r in results_list])
+        context['chart_r'] = json.dumps([r.reading_score for r in results_list])
+        context['chart_w'] = json.dumps([r.writing_score for r in results_list])
+        context['chart_s'] = json.dumps([r.speaking_score for r in results_list])
 
         by_type = results.values('exam__exam_type').annotate(cnt=Count('id'), avg=Avg('score')).order_by('-cnt')
         context['by_type'] = list(by_type)
@@ -230,18 +232,12 @@ class AnalyticsView(LoginRequiredMixin, TemplateView):
         context['chart_type_counts'] = json.dumps([b['cnt'] for b in by_type])
         context['chart_type_avgs'] = json.dumps([round(b['avg'] or 0, 1) for b in by_type])
 
-        now = timezone.now()
-        monthly, monthly_labels = [], []
-        for i in range(5, -1, -1):
-            month_start = (now.replace(day=1) - timedelta(days=i * 30)).replace(day=1, hour=0, minute=0, second=0)
-            month_end = (month_start + timedelta(days=32)).replace(day=1)
-            monthly.append(results.filter(completed_at__gte=month_start, completed_at__lt=month_end).count())
-            monthly_labels.append(month_start.strftime('%b %Y'))
+        monthly_labels, monthly = monthly_series(results, 'completed_at', 6, Count('id'))
         context['chart_monthly_labels'] = json.dumps(monthly_labels)
         context['chart_monthly'] = json.dumps(monthly)
 
         bands = {'4.0-5.0': 0, '5.5-6.0': 0, '6.5-7.0': 0, '7.5-8.0': 0, '8.5-9.0': 0}
-        for r in results:
+        for r in results_list:
             if r.score <= 5.0:
                 bands['4.0-5.0'] += 1
             elif r.score <= 6.0:
@@ -255,9 +251,9 @@ class AnalyticsView(LoginRequiredMixin, TemplateView):
         context['chart_band_labels'] = json.dumps(list(bands.keys()))
         context['chart_band_data'] = json.dumps(list(bands.values()))
 
-        context['recent_results'] = list(results.order_by('-completed_at')[:5])
-        context['best_result'] = results.order_by('-score').first()
-        context['worst_result'] = results.order_by('score').first()
+        context['recent_results'] = list(reversed(results_list[-5:]))
+        context['best_result'] = max(results_list, key=lambda r: r.score, default=None)
+        context['worst_result'] = min(results_list, key=lambda r: r.score, default=None)
         return context
 
 

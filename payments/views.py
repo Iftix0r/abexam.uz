@@ -1,18 +1,17 @@
 from django.http import JsonResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
+from core.utils import parse_json_body
 from .models import Transaction
-import json
 
 
 class TopUpView(LoginRequiredMixin, View):
     """Balance top-up request (requires admin approval for manual method)."""
 
     def post(self, request):
-        try:
-            data = json.loads(request.body)
-        except Exception:
-            return JsonResponse({'error': 'Noto\'g\'ri so\'rov'}, status=400)
+        data, err = parse_json_body(request)
+        if err:
+            return err
 
         amount = data.get('amount', 0)
         method = data.get('method', 'manual')
