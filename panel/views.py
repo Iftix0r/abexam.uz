@@ -533,6 +533,12 @@ def exam_generate(request):
                         is_ai_generated=True,
                         ai_metadata=exam_data.get('ai_metadata'),
                     )
+                    # Types the AI must give an exact answer for; writing_task
+                    # and short_answer (speaking) are graded separately and
+                    # are expected to have an empty correct_answer.
+                    _GRADABLE_TYPES = {'mcq', 'tfng', 'gap_fill', 'matching'}
+                    empty_answer_count = 0
+
                     for order, sec_data in enumerate(exam_data.get('sections', []), start=1):
                         from django.core.files.base import ContentFile
                         section = Section.objects.create(
@@ -566,19 +572,35 @@ def exam_generate(request):
                                 )
 
                         for q_data in sec_data.get('questions', []):
+                            qtype = q_data.get('question_type', 'gap_fill')
+                            answer = q_data.get('correct_answer', '')
+                            if qtype in _GRADABLE_TYPES and not str(answer).strip():
+                                empty_answer_count += 1
                             Question.objects.create(
                                 section=section,
                                 order=q_data.get('order', 1),
                                 text=q_data['text'],
-                                question_type=q_data.get('question_type', 'gap_fill'),
-                                correct_answer=q_data.get('correct_answer', ''),
+                                question_type=qtype,
+                                correct_answer=answer,
                                 options=q_data.get('options', []),
                                 explanation=q_data.get('explanation', ''),
                                 model_answer=q_data.get('model_answer', ''),
                                 word_limit=q_data.get('word_limit', 0),
                             )
-                
-                yield f'<script>updateProgress(100, "Tayyor! Yo\'naltirilmoqda..."); window.location.href="{redirect("panel:exam_detail", pk=exam.pk).url}";</script>'
+
+                redirect_url = redirect("panel:exam_detail", pk=exam.pk).url
+                if empty_answer_count:
+                    # AI hit its token budget before finishing some questions
+                    # (see _normalise_questions' placeholder fallback) — flag
+                    # it loudly instead of silently shipping a broken exam.
+                    warn_msg = (
+                        f"Diqqat: {empty_answer_count} ta savolda AI javob bermadi "
+                        f"(token limitiga yetgan bo'lishi mumkin). Faollashtirishdan oldin "
+                        f"bo'limlarni ochib, bo'sh javoblarni qo'lda to'ldiring yoki bo'limni qayta generatsiya qiling."
+                    )
+                    yield f'<script>updateProgress(100, "Tayyor (ogohlantirish bilan)"); alert({json.dumps(warn_msg)}); window.location.href="{redirect_url}";</script>'
+                else:
+                    yield f'<script>updateProgress(100, "Tayyor! Yo\'naltirilmoqda..."); window.location.href="{redirect_url}";</script>'
 
             except Exception as e:
                 import traceback

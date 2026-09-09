@@ -533,7 +533,12 @@ def _gen_reading(topic: str, variant: str, model: str):
     all_sections = []
     for i in range(1, 4):
         yield i * 33 - 15, f"Reading Passage {i} yaratilmoqda...", None
-        data = _call_ai(template.format(topic=f"{topic} (Passage {i})"), model, max_tokens=3500)
+        # 900-word passage(s) + 13-14 fully-detailed questions (text,
+        # options, explanation) + vocabulary list routinely exceeds 3500
+        # tokens; under token pressure the model still returns valid JSON
+        # but with the question objects present and empty (see
+        # _normalise_questions' placeholder fallback) rather than erroring.
+        data = _call_ai(template.format(topic=f"{topic} (Passage {i})"), model, max_tokens=6000)
         questions = _normalise_questions(data.get("questions", []))
         all_sections.append({
             "title": f"Reading Passage {i}: {data.get('passage_title', 'Untitled')}",
