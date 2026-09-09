@@ -5,7 +5,7 @@ from datetime import timedelta
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.db import transaction as db_transaction
+from django.db import IntegrityError, transaction as db_transaction
 from django.db.models import Avg, Count, F, Sum
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -13,7 +13,7 @@ from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from core.models import SiteSettings, Notification, PromoCode
-from core.utils import daily_series, monthly_series, parse_json_body
+from core.utils import daily_series, monthly_series, parse_json_body, validate_image_upload
 from exams.models import Exam, Question, Section, UserResult
 from payments.models import Transaction
 from users.models import LoginLog, User, Vocabulary
@@ -671,14 +671,30 @@ def create_admin(request):
 def site_settings(request):
     settings_obj = SiteSettings.get()
     if request.method == 'POST':
-        settings_obj.site_name = request.POST.get('site_name', settings_obj.site_name).strip()
+        # Only touch site_name if the form actually sent it, so a request
+        # that omits the field (rather than clearing it) doesn't get
+        # rejected wholesale — the empty-value check only guards against an
+        # explicit blank submission from the settings form itself.
+        if 'site_name' in request.POST:
+            site_name = request.POST.get('site_name', '').strip()
+            if not site_name:
+                messages.error(request, "Sayt nomi bo'sh bo'lishi mumkin emas")
+                return redirect('panel:site_settings')
+            settings_obj.site_name = site_name
+
+        if 'logo' in request.FILES:
+            logo = request.FILES['logo']
+            error = validate_image_upload(logo, 2, {'image/jpeg', 'image/png', 'image/webp', 'image/svg+xml'})
+            if error:
+                messages.error(request, error)
+                return redirect('panel:site_settings')
+            settings_obj.logo = logo
+
         settings_obj.site_description = request.POST.get('site_description', '').strip()
         settings_obj.announcement = request.POST.get('announcement', '').strip()
         settings_obj.announcement_active = request.POST.get('announcement_active') == 'on'
         settings_obj.maintenance_mode = request.POST.get('maintenance_mode') == 'on'
         settings_obj.maintenance_message = request.POST.get('maintenance_message', '').strip()
-        if 'logo' in request.FILES:
-            settings_obj.logo = request.FILES['logo']
         settings_obj.save()
         messages.success(request, 'Sozlamalar saqlandi')
         return redirect('panel:site_settings')
@@ -744,19 +760,30 @@ def promocodes_list(request):
             messages.error(request, "Chegirma/soni noto'g'ri formatda")
             return redirect('panel:promocodes')
 
+        # Negative values would make TopUpView's bonus calculation reduce
+        # (or zero out) the amount instead of adding to it — clamp to the
+        # sane range implied by the form (0-100% and a non-negative bonus).
+        discount_amount = max(Decimal('0'), discount_amount)
+        discount_percent = max(0, min(100, discount_percent))
+        max_uses = max(1, max_uses)
+
         expires_at = None
         if expires_raw:
             expires_at = parse_datetime(expires_raw)
             if expires_at and timezone.is_naive(expires_at):
                 expires_at = timezone.make_aware(expires_at)
 
-        PromoCode.objects.create(
-            code=code,
-            discount_amount=discount_amount,
-            discount_percent=max(0, min(100, discount_percent)),
-            max_uses=max_uses,
-            expires_at=expires_at,
-        )
+        try:
+            PromoCode.objects.create(
+                code=code,
+                discount_amount=discount_amount,
+                discount_percent=discount_percent,
+                max_uses=max_uses,
+                expires_at=expires_at,
+            )
+        except IntegrityError:
+            messages.error(request, 'Bu kod allaqachon mavjud')
+            return redirect('panel:promocodes')
         messages.success(request, 'Promo kod yaratildi')
         return redirect('panel:promocodes')
 

@@ -1485,31 +1485,34 @@ document.addEventListener('DOMContentLoaded', () => {
             headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
             body: JSON.stringify({ answers })
         })
-        .then(r => r.json())
-        .then(data => {
-            if (data.status === 'success') {
-                document.getElementById('resultScore').innerText = parseFloat(data.score).toFixed(1);
-                const bandLabels = {9:'Expert',8.5:'Expert',8:'Very Good User',7.5:'Very Good User',7:'Good User',6.5:'Competent User',6:'Competent User',5.5:'Modest User',5:'Modest User',4.5:'Limited User',4:'Limited User'};
-                const bl = document.getElementById('bandLabel');
-                if (bl) bl.innerText = bandLabels[data.score] || 'IELTS Band Score';
-
-                const sc = document.getElementById('sectionScores');
-                sc.innerHTML = '';
-                [['Listening', data.listening],['Reading', data.reading],['Writing', data.writing],['Speaking', data.speaking]].forEach(([label, val]) => {
-                    if (val > 0) {
-                        sc.innerHTML += `<div class="score-cell">
-                            <div class="label">${label}</div>
-                            <div class="val">${parseFloat(val).toFixed(1)}</div>
-                        </div>`;
-                    }
-                });
-
-                document.getElementById('resultDetailLink').href = `/exams/result/${data.result_id}/`;
-                localStorage.removeItem(DRAFT_KEY);
-                document.getElementById('resultModal').classList.add('active');
-                lucide.createIcons();
-                uploadSpeakingAudios(data.result_id);
+        .then(r => r.json().then(data => ({ ok: r.ok, data })))
+        .then(({ ok, data }) => {
+            if (!ok || data.status !== 'success') {
+                examSubmitted = false;
+                alert(data.error || "Xatolik yuz berdi. Qayta urinib ko'ring.");
+                return;
             }
+            document.getElementById('resultScore').innerText = parseFloat(data.score).toFixed(1);
+            const bandLabels = {9:'Expert',8.5:'Expert',8:'Very Good User',7.5:'Very Good User',7:'Good User',6.5:'Competent User',6:'Competent User',5.5:'Modest User',5:'Modest User',4.5:'Limited User',4:'Limited User'};
+            const bl = document.getElementById('bandLabel');
+            if (bl) bl.innerText = bandLabels[data.score] || 'IELTS Band Score';
+
+            const sc = document.getElementById('sectionScores');
+            sc.innerHTML = '';
+            [['Listening', data.listening],['Reading', data.reading],['Writing', data.writing],['Speaking', data.speaking]].forEach(([label, val]) => {
+                if (val > 0) {
+                    sc.innerHTML += `<div class="score-cell">
+                        <div class="label">${label}</div>
+                        <div class="val">${parseFloat(val).toFixed(1)}</div>
+                    </div>`;
+                }
+            });
+
+            document.getElementById('resultDetailLink').href = `/exams/result/${data.result_id}/`;
+            localStorage.removeItem(DRAFT_KEY);
+            document.getElementById('resultModal').classList.add('active');
+            lucide.createIcons();
+            uploadSpeakingAudios(data.result_id);
         })
         .catch(() => {
             examSubmitted = false;

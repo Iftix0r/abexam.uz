@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import JsonResponse
 from django.shortcuts import render
 
 from .models import SiteSettings
@@ -33,6 +33,17 @@ class MaintenanceModeMiddleware:
 
         settings_obj = SiteSettings.get()
         if settings_obj.maintenance_mode and not (request.user.is_authenticated and request.user.is_staff):
+            # Exam submission, top-up, and chat all expect JSON and would
+            # otherwise choke trying to parse the HTML maintenance page.
+            wants_json = (
+                request.content_type == 'application/json'
+                or request.headers.get('x-requested-with') == 'XMLHttpRequest'
+                or 'application/json' in request.headers.get('accept', '')
+            )
+            if wants_json:
+                return JsonResponse({
+                    'error': settings_obj.maintenance_message or "Sayt texnik ishlar uchun vaqtincha to'xtatilgan.",
+                }, status=503)
             return render(request, 'maintenance.html', {
                 'message': settings_obj.maintenance_message,
                 'site_name': settings_obj.site_name,

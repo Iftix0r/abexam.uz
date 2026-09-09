@@ -6,6 +6,24 @@ from django.http import JsonResponse
 from django.utils import timezone
 
 
+_IMAGE_TYPE_LABELS = {
+    'image/jpeg': 'JPEG', 'image/png': 'PNG', 'image/webp': 'WEBP', 'image/svg+xml': 'SVG',
+}
+
+
+def validate_image_upload(file, max_mb, allowed_types):
+    """Validate an uploaded image's size and content type.
+
+    Returns an Uzbek error message if invalid, or None if the file is OK.
+    """
+    if file.size > max_mb * 1024 * 1024:
+        return f"Rasm hajmi {max_mb}MB dan oshmasligi kerak"
+    if file.content_type not in allowed_types:
+        names = ', '.join(_IMAGE_TYPE_LABELS.get(t, t) for t in allowed_types)
+        return f"Faqat {names} formatlar qabul qilinadi"
+    return None
+
+
 def parse_json_body(request, error_message="Noto'g'ri so'rov", ok_field=False):
     """Parse `request.body` as JSON.
 

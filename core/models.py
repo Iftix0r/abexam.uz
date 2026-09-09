@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from django.db import models
 from django.conf import settings
 
@@ -18,10 +19,22 @@ class SiteSettings(models.Model):
     def __str__(self):
         return self.site_name
 
+    _CACHE_KEY = 'site_settings_singleton'
+
     @classmethod
     def get(cls):
-        obj, _ = cls.objects.get_or_create(pk=1)
+        # Read on every request (maintenance-mode middleware + the
+        # announcement/notification context processor), so cache it rather
+        # than hitting the DB twice per request site-wide.
+        obj = cache.get(cls._CACHE_KEY)
+        if obj is None:
+            obj, _ = cls.objects.get_or_create(pk=1)
+            cache.set(cls._CACHE_KEY, obj, 300)
         return obj
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        cache.set(self._CACHE_KEY, self, 300)
 
 
 class Notification(models.Model):

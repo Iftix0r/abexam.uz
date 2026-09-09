@@ -11,7 +11,7 @@ from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import CreateView, TemplateView
 
-from core.utils import monthly_series, parse_json_body
+from core.utils import monthly_series, parse_json_body, validate_image_upload
 from exams.models import Exam, UserResult
 from .forms import RegisterForm
 from .models import LoginLog, User, Vocabulary
@@ -275,12 +275,9 @@ class ProfileView(LoginRequiredMixin, View):
         user.bio = request.POST.get('bio', user.bio)
         if 'avatar' in request.FILES:
             avatar = request.FILES['avatar']
-            allowed_img_types = {'image/jpeg', 'image/png', 'image/webp'}
-            if avatar.size > 5 * 1024 * 1024:
-                messages.error(request, 'Rasm hajmi 5MB dan oshmasligi kerak')
-                return redirect('profile')
-            if avatar.content_type not in allowed_img_types:
-                messages.error(request, 'Faqat JPEG, PNG yoki WEBP formatlar qabul qilinadi')
+            error = validate_image_upload(avatar, 5, {'image/jpeg', 'image/png', 'image/webp'})
+            if error:
+                messages.error(request, error)
                 return redirect('profile')
             user.avatar = avatar
         user.save()
