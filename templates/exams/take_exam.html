@@ -1430,6 +1430,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const s = timeLeft % 60;
         if (timerEl) timerEl.innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
         if (timeLeft <= 0) {
+            clearInterval(timerInterval);
             submitExam(true);
         } else {
             if (timerBox) {
@@ -1439,7 +1440,7 @@ document.addEventListener('DOMContentLoaded', () => {
             timeLeft--;
         }
     }
-    setInterval(updateTimer, 1000);
+    const timerInterval = setInterval(updateTimer, 1000);
 
     // ─── PRE-SUBMIT REVIEW ────────────────────────────────
     window.preSubmitReview = function() {

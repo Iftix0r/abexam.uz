@@ -19,9 +19,12 @@ from payments.models import Transaction
 
 
 def get_client_ip(request):
+    # Reverse proxy appends the real client IP as the last hop (nginx's
+    # $proxy_add_x_forwarded_for); earlier entries can be forged by the
+    # client, so the first entry must not be trusted for rate-limiting.
     x_forwarded = request.META.get('HTTP_X_FORWARDED_FOR')
     if x_forwarded:
-        return x_forwarded.split(',')[0].strip()
+        return x_forwarded.split(',')[-1].strip()
     return request.META.get('REMOTE_ADDR', '0.0.0.0')
 
 

@@ -4,6 +4,7 @@ from datetime import timedelta
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.db import transaction as db_transaction
 from django.db.models import Avg, Count, F, Sum
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -135,10 +136,12 @@ def user_toggle_active(request, pk):
 @require_POST
 def user_delete(request, pk):
     user = get_object_or_404(User, pk=pk)
-    if user.pk != request.user.pk:
-        user.delete()
-        return JsonResponse({'ok': True})
-    return JsonResponse({'ok': False, 'error': 'O\'zingizni o\'chira olmaysiz'})
+    if user.pk == request.user.pk:
+        return JsonResponse({'ok': False, 'error': 'O\'zingizni o\'chira olmaysiz'})
+    if user.is_superuser and not request.user.is_superuser:
+        return JsonResponse({'ok': False, 'error': 'Faqat superadmin superadminni o\'chira oladi'}, status=403)
+    user.delete()
+    return JsonResponse({'ok': True})
 
 
 @panel_required
@@ -149,7 +152,10 @@ def user_add_balance(request, pk):
         data = json.loads(request.body)
     except json.JSONDecodeError:
         return JsonResponse({'ok': False, 'error': 'Noto\'g\'ri JSON'}, status=400)
-    amount = float(data.get('amount', 0))
+    try:
+        amount = float(data.get('amount', 0))
+    except (ValueError, TypeError):
+        return JsonResponse({'ok': False, 'error': 'Noto\'g\'ri summa'}, status=400)
     note = data.get('note', "Admin tomonidan qo'shildi")
     if amount > 0:
         User.objects.filter(pk=user.pk).update(balance=F('balance') + amount)
@@ -365,11 +371,12 @@ def transactions_list(request):
 @panel_required
 @require_POST
 def transaction_approve(request, pk):
-    tx = get_object_or_404(Transaction, pk=pk)
-    if tx.status == 'pending':
-        tx.status = 'success'
-        tx.save(update_fields=['status'])
-        User.objects.filter(pk=tx.user_id).update(balance=F('balance') + tx.amount)
+    with db_transaction.atomic():
+        tx = get_object_or_404(Transaction.objects.select_for_update(), pk=pk)
+        if tx.status == 'pending':
+            tx.status = 'success'
+            tx.save(update_fields=['status'])
+            User.objects.filter(pk=tx.user_id).update(balance=F('balance') + tx.amount)
     return JsonResponse({'status': tx.status})
 
 

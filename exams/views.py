@@ -65,6 +65,17 @@ def calc_writing_band(text):
     return 4.0
 
 
+def present_section_types(exam):
+    """Section types the exam actually has, so a legitimate 0.0 band isn't
+    mistaken for a section that doesn't exist in the exam."""
+    return set(exam.sections.values_list('section_type', flat=True))
+
+
+def compute_overall_band(band_by_type, present_types):
+    active = [band_by_type[t] for t in present_types if t in band_by_type]
+    return round(sum(active) / len(active) * 2) / 2.0 if active else 0.0
+
+
 def band_label(score):
     if score >= 8.5: return "Expert"
     if score >= 7.5: return "Very Good User"
@@ -129,6 +140,8 @@ class TakeExamView(LoginRequiredMixin, DetailView):
 class SubmitExamView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         exam = get_object_or_404(Exam, pk=kwargs['pk'])
+        if exam.price > 0 and not request.session.get(f'exam_paid_{exam.pk}'):
+            return JsonResponse({'error': "Bu imtihon uchun to'lov amalga oshirilmagan"}, status=402)
         try:
             data = json.loads(request.body)
         except json.JSONDecodeError:
@@ -203,8 +216,8 @@ class SubmitExamView(LoginRequiredMixin, View):
         w_band = get_band('writing')
         s_band = get_band('speaking')
 
-        active_bands = [b for b in [l_band, r_band, w_band, s_band] if b > 0]
-        overall = round(sum(active_bands) / len(active_bands) * 2) / 2.0 if active_bands else 0.0
+        band_by_type = {'listening': l_band, 'reading': r_band, 'writing': w_band, 'speaking': s_band}
+        overall = compute_overall_band(band_by_type, present_section_types(exam))
 
         request.session.pop(f'exam_paid_{exam.pk}', None)
 
@@ -361,7 +374,13 @@ class SpeakingEvalView(LoginRequiredMixin, View):
             result.speaking_score = overall_band
 
         result.speaking_feedback = existing
-        result.save(update_fields=['speaking_feedback', 'speaking_score'])
+
+        band_by_type = {
+            'listening': result.listening_score, 'reading': result.reading_score,
+            'writing': result.writing_score, 'speaking': result.speaking_score,
+        }
+        result.score = compute_overall_band(band_by_type, present_section_types(result.exam))
+        result.save(update_fields=['speaking_feedback', 'speaking_score', 'score'])
 
         return JsonResponse({
             'status': 'ok',

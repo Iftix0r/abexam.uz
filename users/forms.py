@@ -1,5 +1,7 @@
 from django import forms
 from django.contrib.auth import get_user_model
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 
 User = get_user_model()
 
@@ -21,6 +23,14 @@ class RegisterForm(forms.ModelForm):
             'email': forms.EmailInput(attrs={**_input_attrs, 'placeholder': 'Email manzil'}),
             'phone_number': forms.TextInput(attrs={**_input_attrs, 'placeholder': '+998XXXXXXXXX'}),
         }
+
+    def clean_password(self):
+        password = self.cleaned_data.get('password', '')
+        try:
+            validate_password(password)
+        except ValidationError as e:
+            raise forms.ValidationError(e.messages)
+        return password
 
     def clean(self):
         cleaned_data = super().clean()
