@@ -1,10 +1,13 @@
 import json
+import logging
 import os
 
 from openai import OpenAI
 from dotenv import load_dotenv
 
 load_dotenv()
+
+logger = logging.getLogger(__name__)
 
 # Default client timeout is several minutes, which under exam-day load would
 # tie up a WSGI worker for that long on a single slow/hung call — with only
@@ -280,41 +283,66 @@ ACADEMIC TONE:
 - Vocabulary should reflect C1-C2 level but remain comprehensible in context
 - Passages should reflect current knowledge — avoid outdated terminology"""
 
-_READING_ACADEMIC = """Create a 900-word IELTS Academic Reading passage on: {topic}
+# Split into a passage-only call and a questions-only call (below). Asking
+# for a full passage plus 13-14 fully-detailed questions in one response
+# proved unreliable even with a large token budget and retries — the model
+# would return syntactically valid JSON with some questions' text/answer
+# left blank rather than erroring. Two focused calls give each step its own
+# full attention/budget instead of splitting it across a much harder task.
+_READING_PASSAGE_ACADEMIC = """Create a 900-word IELTS Academic Reading passage on: {topic}
 
 Requirements:
 - Tone: Analytical, sophisticated, academic.
 - Content: Include conflicting viewpoints, data-driven analysis, and complex arguments.
 
-JSON Structure:
+Return JSON:
 {{
   "passage_title": "...",
   "passage": "...",
-  "questions": [
-    {{"order":1,"text":"...","question_type":"tfng","correct_answer":"NOT GIVEN","options":[{{"key":"TRUE","text":"TRUE"}},{{"key":"FALSE","text":"FALSE"}},{{"key":"NOT GIVEN","text":"NOT GIVEN"}}],"explanation":"Detailed logical derivation..."}},
-    ...
-    {{"order":12,"text":"...","question_type":"mcq","correct_answer":"C","options":[{{"key":"A","text":"Logical trap A"}},{{"key":"B","text":"Logical trap B"}},{{"key":"C","text":"Nuanced correct answer"}},{{"key":"D","text":"Logical trap D"}],"explanation":"..."}}
-  ],
   "key_vocabulary": [
     {{"word": "word1", "definition": "English definition", "uzbek": "o'zbekcha ma'nosi", "example": "example sentence from passage"}},
     ... (10-12 advanced words from the text)
   ]
-}}
-Items: 6 TFNG, 5 Gap-fill, 3 MCQ. Level: C1-C2."""
+}}"""
 
-_READING_GENERAL = """Create an IELTS General Training Reading section. Topic hint: {topic}
+_READING_PASSAGE_GENERAL = """Create an IELTS General Training Reading section. Topic hint: {topic}
 Include ONE short text (200-250 words, e.g. advertisement, notice, letter) and ONE longer text (400-450 words, e.g. article, report).
 
 Return JSON:
 {{
   "passage_title": "...",
-  "passage": "...(short text first, then longer text, total 600-700 words)...",
-  "questions": [
-    (5 tfng for short text, 8 gap_fill/mcq for longer text — 13 total)
-  ]
+  "passage": "...(short text first, then longer text, total 600-700 words)..."
 }}"""
 
-_LISTENING_SECTION = """Create an IELTS Listening {listen_type} transcript and 10 questions. Topic: {topic}
+_READING_QUESTIONS_ACADEMIC = """Based on this IELTS Academic Reading passage, write exactly 14 questions: 6 TFNG, 5 Gap-fill, 3 MCQ. Level: C1-C2.
+
+PASSAGE:
+{passage}
+
+Return JSON:
+{{
+  "questions": [
+    {{"order":1,"text":"...","question_type":"tfng","correct_answer":"NOT GIVEN","options":[{{"key":"TRUE","text":"TRUE"}},{{"key":"FALSE","text":"FALSE"}},{{"key":"NOT GIVEN","text":"NOT GIVEN"}}],"explanation":"Detailed logical derivation..."}},
+    ...
+    {{"order":14,"text":"...","question_type":"mcq","correct_answer":"C","options":[{{"key":"A","text":"Logical trap A"}},{{"key":"B","text":"Logical trap B"}},{{"key":"C","text":"Nuanced correct answer"}},{{"key":"D","text":"Logical trap D"}],"explanation":"..."}}
+  ]
+}}
+Every single question MUST have non-empty "text" and "correct_answer" — this is critical, do not leave any blank."""
+
+_READING_QUESTIONS_GENERAL = """Based on this IELTS General Training Reading section (a short text followed by a longer text), write exactly 13 questions: 5 TFNG for the short text, 8 gap_fill/mcq for the longer text.
+
+TEXT:
+{passage}
+
+Return JSON:
+{{
+  "questions": [ ... 13 question objects, each with order, text, question_type, correct_answer, options, explanation ... ]
+}}
+Every single question MUST have non-empty "text" and "correct_answer" — this is critical, do not leave any blank."""
+
+# Split like reading: script generation and question generation each get
+# their own focused call instead of competing for one shared budget.
+_LISTENING_SCRIPT = """Create an IELTS Listening {listen_type} transcript. Topic: {topic}
 
 NATURALNESS REQUIREMENTS (make it sound like real human speech, not a written text read aloud):
 - Include false starts and self-corrections: "The meeting is on... actually wait, it's on Thursday the 12th"
@@ -326,19 +354,29 @@ NATURALNESS REQUIREMENTS (make it sound like real human speech, not a written te
 - Speakers should occasionally interrupt or finish each other's sentences
 - Include at least ONE moment where a speaker corrects a wrong detail they said earlier
 
+Return JSON:
+{{
+  "section_title": "...",
+  "audio_script": "...(900-1100 words of natural spoken dialogue/monologue with all naturalness features above)..."
+}}"""
+
+_LISTENING_QUESTIONS = """Based on this IELTS Listening transcript, write exactly 10 questions.
+
 QUESTION LOGIC REQUIREMENTS:
 - SELF-CORRECTION TRAP: At least 2 questions should test whether the student caught a correction (the first answer stated is wrong, the corrected one is right)
 - MODIFIER TRAPS: Use words like "almost", "except", "only", "not until" to create nuanced gap-fill answers
 - ANSWER DISTRIBUTION: Mix gap_fill (numbers, names, places) and mcq types
 
-JSON Structure:
+TRANSCRIPT:
+{script}
+
+Return JSON:
 {{
-  "section_title": "...",
-  "audio_script": "...(900-1100 words of natural spoken dialogue/monologue with all naturalness features above)...",
   "questions": [
     {{"order":1,"text":"...","question_type":"gap_fill","correct_answer":"...","options":[],"explanation":"Exact speaker words that confirm this answer: '...'"}}
   ]
-}}"""
+}}
+Every single question MUST have non-empty "text" and "correct_answer" — this is critical, do not leave any blank."""
 
 _WRITING_TASKS = """Create IELTS Writing Task 1 and Task 2 for {variant} IELTS. Topic area: {topic}
 
@@ -498,6 +536,11 @@ def _call_ai(prompt: str, model: str, max_tokens: int = 3000) -> dict:
     return json.loads(resp.choices[0].message.content)
 
 
+# writing_task/short_answer (speaking) are graded separately (AI essay
+# review, audio evaluation) and are expected to have an empty correct_answer.
+_GRADABLE_QUESTION_TYPES = {'mcq', 'tfng', 'gap_fill', 'matching'}
+
+
 def _questions_complete(raw_questions: list) -> bool:
     """True if every question has real text, and a real correct_answer
     unless it's a type that's graded separately (writing/speaking)."""
@@ -508,7 +551,7 @@ def _questions_complete(raw_questions: list) -> bool:
             return False
         if not str(q.get('text', '')).strip():
             return False
-        if q.get('question_type') not in ('writing_task', 'short_answer') and not str(q.get('correct_answer', '')).strip():
+        if q.get('question_type', 'gap_fill') in _GRADABLE_QUESTION_TYPES and not str(q.get('correct_answer', '')).strip():
             return False
     return True
 
@@ -562,26 +605,35 @@ def _generate_image(prompt: str) -> str:
 
 
 def _gen_reading(topic: str, variant: str, model: str):
-    template = _READING_ACADEMIC if variant == 'academic' else _READING_GENERAL
+    passage_template = _READING_PASSAGE_ACADEMIC if variant == 'academic' else _READING_PASSAGE_GENERAL
+    questions_template = _READING_QUESTIONS_ACADEMIC if variant == 'academic' else _READING_QUESTIONS_GENERAL
     all_sections = []
     for i in range(1, 4):
-        yield i * 33 - 15, f"Reading Passage {i} yaratilmoqda...", None
-        # 900-word passage(s) + 13-14 fully-detailed questions (text,
-        # options, explanation) + vocabulary list can exceed even a generous
-        # token budget for verbose topics; under token pressure the model
-        # still returns valid JSON but with question objects present and
-        # empty (see _normalise_questions' placeholder fallback) rather than
-        # erroring, so retry with more room instead of just raising the cap.
-        data = _call_ai_with_retry(template.format(topic=f"{topic} (Passage {i})"), model, max_tokens=6000)
-        questions = _normalise_questions(data.get("questions", []))
+        yield i * 33 - 15, f"Reading Passage {i} matni yaratilmoqda...", None
+        passage_data = _call_ai(passage_template.format(topic=f"{topic} (Passage {i})"), model, max_tokens=2500)
+        passage_text = passage_data.get('passage', '')
+
+        yield i * 33 - 5, f"Reading Passage {i} savollari yaratilmoqda...", None
+        questions_data = _call_ai_with_retry(
+            questions_template.format(passage=passage_text), model, max_tokens=4000,
+        )
+        questions = _normalise_questions(questions_data.get("questions", []))
+        still_empty = sum(1 for q in questions if q['question_type'] in _GRADABLE_QUESTION_TYPES and not q['correct_answer'])
+        if still_empty:
+            logger.warning(
+                "AI exam generation: Reading passage %s still has %s question(s) with no "
+                "correct_answer after retries — raw AI response: %s",
+                i, still_empty, json.dumps(questions_data)[:2000],
+            )
+
         all_sections.append({
-            "title": f"Reading Passage {i}: {data.get('passage_title', 'Untitled')}",
+            "title": f"Reading Passage {i}: {passage_data.get('passage_title', 'Untitled')}",
             "section_type": "reading",
             "order": i,
             "duration_minutes": 20,
-            "content": f"<div style='line-height:1.8;font-size:14px'><h3>{data.get('passage_title','')}</h3><p>{data.get('passage','').replace(chr(10),'</p><p>')}</p></div>",
+            "content": f"<div style='line-height:1.8;font-size:14px'><h3>{passage_data.get('passage_title','')}</h3><p>{passage_text.replace(chr(10),'</p><p>')}</p></div>",
             "questions": questions,
-            "extra_data": {"key_vocabulary": data.get("key_vocabulary", [])}
+            "extra_data": {"key_vocabulary": passage_data.get("key_vocabulary", [])}
         })
     yield 100, "Reading tayyor", all_sections
 
@@ -646,27 +698,38 @@ def _gen_writing(topic: str, variant: str, model: str) -> list:
 def _gen_listening(topic: str, model: str):
     all_sections = []
     for i in range(1, 5):
-        yield i * 25 - 10, f"Listening Section {i} yaratilmoqda...", None
         listen_type = _LISTEN_TYPES[i-1] if i <= len(_LISTEN_TYPES) else random.choice(_LISTEN_TYPES)
-        data = _call_ai_with_retry(_LISTENING_SECTION.format(topic=topic, listen_type=listen_type[1]), model, max_tokens=2500)
-        questions = _normalise_questions(data.get("questions", []))
-        script = data.get("audio_script", "")
-        
+
+        yield i * 25 - 15, f"Listening Section {i} matni yaratilmoqda...", None
+        script_data = _call_ai(_LISTENING_SCRIPT.format(topic=topic, listen_type=listen_type[1]), model, max_tokens=2000)
+        script = script_data.get("audio_script", "")
+
+        yield i * 25 - 5, f"Listening Section {i} savollari yaratilmoqda...", None
+        questions_data = _call_ai_with_retry(_LISTENING_QUESTIONS.format(script=script), model, max_tokens=2500)
+        questions = _normalise_questions(questions_data.get("questions", []))
+        still_empty = sum(1 for q in questions if q['question_type'] in _GRADABLE_QUESTION_TYPES and not q['correct_answer'])
+        if still_empty:
+            logger.warning(
+                "AI exam generation: Listening section %s still has %s question(s) with no "
+                "correct_answer after retries — raw AI response: %s",
+                i, still_empty, json.dumps(questions_data)[:2000],
+            )
+
         # Generate real audio
         voices = ["alloy", "echo", "fable", "onyx", "nova", "shimmer"]
         audio_bytes = _generate_audio(script, voice=random.choice(voices))
 
-        content = f"<div style='line-height:1.8'><h3>Listening Section {i}: {data.get('section_title', 'Untitled')}</h3><p><strong>Topshiriq:</strong> Quyidagi audioni eshiting va savollarga javob bering.</p></div>"
-        
+        content = f"<div style='line-height:1.8'><h3>Listening Section {i}: {script_data.get('section_title', 'Untitled')}</h3><p><strong>Topshiriq:</strong> Quyidagi audioni eshiting va savollarga javob bering.</p></div>"
+
         all_sections.append({
-            "title": f"Listening Section {i}: {data.get('section_title', 'Untitled')}",
+            "title": f"Listening Section {i}: {script_data.get('section_title', 'Untitled')}",
             "section_type": "listening",
             "order": i,
             "duration_minutes": 8,
             "content": content,
             "questions": questions,
             "audio_bytes": audio_bytes, # Pass bytes to view for saving
-            "extra_data": {"key_vocabulary": data.get("key_vocabulary", [])}
+            "extra_data": {},
         })
     yield 100, "Listening tayyor", all_sections
 
