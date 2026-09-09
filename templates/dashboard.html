@@ -25,7 +25,7 @@
     .dash-greeting h1 {
         font-size: 2.5rem;
         font-weight: 600;
-        background: linear-gradient(to right, #4285f4, #9b72cb, #d96570);
+        background: linear-gradient(to right, #d32f2f, #b71c1c);
         background-clip: text;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -73,7 +73,7 @@
 
     .qa-card:hover::before { opacity: 1; }
 
-    .qa-card.exam::before { background: linear-gradient(90deg, #4285f4, #9b72cb); }
+    .qa-card.exam::before { background: linear-gradient(90deg, #d32f2f, #b71c1c); }
     .qa-card.results::before { background: linear-gradient(90deg, #22c55e, #16a34a); }
     .qa-card.vocab::before { background: linear-gradient(90deg, #f59e0b, #d97706); }
     .qa-card.finance::before { background: linear-gradient(90deg, #6366f1, #4f46e5); }
@@ -84,7 +84,7 @@
         display: flex; align-items: center; justify-content: center;
     }
 
-    .qa-icon.exam    { background: rgba(66,133,244,.15); color: #4285f4; }
+    .qa-icon.exam    { background: rgba(211,47,47,.15); color: #d32f2f; }
     .qa-icon.results { background: rgba(34,197,94,.15);  color: #22c55e; }
     .qa-icon.vocab   { background: rgba(245,158,11,.15); color: #f59e0b; }
     .qa-icon.finance { background: rgba(99,102,241,.15); color: #6366f1; }
@@ -194,25 +194,25 @@
       {% if section_avgs.avg_l %}
       <div>
         <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:var(--text-muted)">Listening</span><span style="font-weight:600">{{ section_avgs.avg_l|floatformat:1 }}</span></div>
-        <div style="height:6px;background:rgba(255,255,255,.06);border-radius:3px"><div style="width:{{ section_avgs.avg_l|floatformat:0 }}0%;height:100%;background:#4285f4;border-radius:3px"></div></div>
+        <div style="height:6px;background:rgba(255,255,255,.06);border-radius:3px"><div style="width:{{ section_avgs.avg_l|floatformat:0 }}0%;height:100%;background:#1565c0;border-radius:3px"></div></div>
       </div>
       {% endif %}
       {% if section_avgs.avg_r %}
       <div>
         <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:var(--text-muted)">Reading</span><span style="font-weight:600">{{ section_avgs.avg_r|floatformat:1 }}</span></div>
-        <div style="height:6px;background:rgba(255,255,255,.06);border-radius:3px"><div style="width:{{ section_avgs.avg_r|floatformat:0 }}0%;height:100%;background:#22c55e;border-radius:3px"></div></div>
+        <div style="height:6px;background:rgba(255,255,255,.06);border-radius:3px"><div style="width:{{ section_avgs.avg_r|floatformat:0 }}0%;height:100%;background:#2e7d32;border-radius:3px"></div></div>
       </div>
       {% endif %}
       {% if section_avgs.avg_w %}
       <div>
         <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:var(--text-muted)">Writing</span><span style="font-weight:600">{{ section_avgs.avg_w|floatformat:1 }}</span></div>
-        <div style="height:6px;background:rgba(255,255,255,.06);border-radius:3px"><div style="width:{{ section_avgs.avg_w|floatformat:0 }}0%;height:100%;background:#eab308;border-radius:3px"></div></div>
+        <div style="height:6px;background:rgba(255,255,255,.06);border-radius:3px"><div style="width:{{ section_avgs.avg_w|floatformat:0 }}0%;height:100%;background:#6a1b9a;border-radius:3px"></div></div>
       </div>
       {% endif %}
       {% if section_avgs.avg_s %}
       <div>
         <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:var(--text-muted)">Speaking</span><span style="font-weight:600">{{ section_avgs.avg_s|floatformat:1 }}</span></div>
-        <div style="height:6px;background:rgba(255,255,255,.06);border-radius:3px"><div style="width:{{ section_avgs.avg_s|floatformat:0 }}0%;height:100%;background:#ef4444;border-radius:3px"></div></div>
+        <div style="height:6px;background:rgba(255,255,255,.06);border-radius:3px"><div style="width:{{ section_avgs.avg_s|floatformat:0 }}0%;height:100%;background:#e65100;border-radius:3px"></div></div>
       </div>
       {% endif %}
     </div>
@@ -234,9 +234,9 @@ if(pCtx) new Chart(pCtx.getContext('2d'), {
     data: {
         labels: {{ chart_labels|safe }},
         datasets: [
-            { label: 'Umumiy', data: {{ chart_scores|safe }}, borderColor: '#6366f1', backgroundColor: 'rgba(99,102,241,.12)', tension: .4, fill: true, pointBackgroundColor: '#6366f1', pointRadius: 4 },
-            { label: 'Listening', data: {{ chart_listening|safe }}, borderColor: '#4285f4', backgroundColor: 'transparent', tension: .4, borderDash: [4,3], pointRadius: 2 },
-            { label: 'Reading', data: {{ chart_reading|safe }}, borderColor: '#22c55e', backgroundColor: 'transparent', tension: .4, borderDash: [4,3], pointRadius: 2 },
+            { label: 'Umumiy', data: {{ chart_scores|safe }}, borderColor: '#d32f2f', backgroundColor: 'rgba(211,47,47,.12)', tension: .4, fill: true, pointBackgroundColor: '#d32f2f', pointRadius: 4 },
+            { label: 'Listening', data: {{ chart_listening|safe }}, borderColor: '#1565c0', backgroundColor: 'transparent', tension: .4, borderDash: [4,3], pointRadius: 2 },
+            { label: 'Reading', data: {{ chart_reading|safe }}, borderColor: '#2e7d32', backgroundColor: 'transparent', tension: .4, borderDash: [4,3], pointRadius: 2 },
         ]
     },
     options: { ...chartDefaults, scales: {
@@ -254,7 +254,7 @@ if(rCtx) new Chart(rCtx.getContext('2d'), {
             {{ section_avgs.avg_r|default:0|floatformat:1 }},
             {{ section_avgs.avg_w|default:0|floatformat:1 }},
             {{ section_avgs.avg_s|default:0|floatformat:1 }},
-        ], borderColor: '#6366f1', backgroundColor: 'rgba(99,102,241,.15)', pointBackgroundColor: '#6366f1', pointRadius: 4 }]
+        ], borderColor: '#d32f2f', backgroundColor: 'rgba(211,47,47,.15)', pointBackgroundColor: '#d32f2f', pointRadius: 4 }]
     },
     options: { ...chartDefaults, scales: { r: { min: 0, max: 9, ticks: { color: '#555', font: { size: 9 }, stepSize: 3 }, grid: { color: 'rgba(255,255,255,.08)' }, pointLabels: { color: '#888', font: { size: 10 } } } } }
 });

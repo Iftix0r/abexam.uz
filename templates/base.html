@@ -11,10 +11,13 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
-            --bg-color: #0e0e0e;
+            --bg-color: #0e0e10;
             --sidebar-color: #1a1a1c;
             --card-bg: #1e1e1e;
-            --primary-color: #4285f4;
+            --primary-color: #d32f2f;
+            --primary-color-dark: #b71c1c;
+            --success-color: #2e7d32;
+            --danger-color: #e53935;
             --text-color: #e3e3e3;
             --text-muted: #b4b4b4;
             --border-color: rgba(255, 255, 255, 0.05);
@@ -26,7 +29,10 @@
             --bg-color: #ffffff;
             --sidebar-color: #f9f9f9;
             --card-bg: #f7f7f8;
-            --primary-color: #10a37f;
+            --primary-color: #d32f2f;
+            --primary-color-dark: #b71c1c;
+            --success-color: #2e7d32;
+            --danger-color: #c62828;
             --text-color: #2d2d2d;
             --text-muted: #676767;
             --border-color: rgba(0, 0, 0, 0.1);
@@ -367,7 +373,7 @@
                 </div>
             </a>
 
-            <a href="{% url 'users:logout' %}" class="profile-link" style="color: #ff4d4d; border-top: 1px solid var(--border-color); border-radius: 0;">
+            <a href="{% url 'users:logout' %}" class="profile-link" style="color: var(--danger-color); border-top: 1px solid var(--border-color); border-radius: 0;">
                 <i data-lucide="log-out" style="width: 20px; min-width: 20px;"></i>
                 <span>Chiqish</span>
             </a>
@@ -386,7 +392,7 @@
             <div style="display: flex; align-items: center; gap: 1rem;">
                 {% if messages %}
                     {% for message in messages %}
-                    <span style="font-size: 0.85rem; color: {% if message.tags == 'error' %}#ff4d4d{% else %}#34a853{% endif %};">{{ message }}</span>
+                    <span style="font-size: 0.85rem; color: {% if message.tags == 'error' %}var(--danger-color){% else %}var(--success-color){% endif %};">{{ message }}</span>
                     {% endfor %}
                 {% endif %}
                 <button id="theme-toggle" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; padding: 0.5rem; border-radius: 8px;" onmouseover="this.style.background='var(--border-color)'" onmouseout="this.style.background='transparent'">

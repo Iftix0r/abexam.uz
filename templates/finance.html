@@ -182,9 +182,9 @@
                 <td>{{ tx.get_method_display }}</td>
                 <td>
                     <span style="padding: 3px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;
-                        {% if tx.status == 'success' %}background: rgba(52,168,83,0.15); color: #34a853;
-                        {% elif tx.status == 'failed' %}background: rgba(234,67,53,0.15); color: #ea4335;
-                        {% else %}background: rgba(251,188,4,0.15); color: #fbbc04;{% endif %}">
+                        {% if tx.status == 'success' %}background: rgba(46,125,50,0.15); color: #2e7d32;
+                        {% elif tx.status == 'failed' %}background: rgba(198,40,40,0.15); color: #c62828;
+                        {% else %}background: rgba(230,81,0,0.15); color: #e65100;{% endif %}">
                         {{ tx.get_status_display }}
                     </span>
                 </td>
@@ -255,7 +255,7 @@
         const method = document.querySelector('input[name="topupMethod"]:checked').value;
         const msg = document.getElementById('topupMsg');
         if (!amount || parseFloat(amount) <= 0) {
-            msg.style.display = 'block'; msg.style.color = '#e74c3c';
+            msg.style.display = 'block'; msg.style.color = '#c62828';
             msg.innerText = "Summani to'g'ri kiriting"; return;
         }
         fetch('/payments/topup/', {
@@ -266,11 +266,11 @@
         .then(r => r.json())
         .then(data => {
             msg.style.display = 'block';
-            msg.style.color = data.status === 'success' ? '#34a853' : '#fbbc04';
+            msg.style.color = data.status === 'success' ? '#2e7d32' : '#e65100';
             msg.innerText = data.message || "To'lov kutilmoqda";
             if (data.status === 'success') setTimeout(() => location.reload(), 1200);
         })
-        .catch(() => { msg.style.display='block'; msg.style.color='#e74c3c'; msg.innerText='Xatolik yuz berdi'; });
+        .catch(() => { msg.style.display='block'; msg.style.color='#c62828'; msg.innerText='Xatolik yuz berdi'; });
     }
 </script>
 {% endblock %}
