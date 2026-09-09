@@ -1,0 +1,75 @@
+{% extends 'panel/base.html' %}
+{% block title %}Xabarnomalar{% endblock %}
+{% block page_title %}Xabarnomalar{% endblock %}
+{% block nav_notifications %}active{% endblock %}
+
+{% block content %}
+<div class="grid-2">
+  <div class="card" style="padding:0">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Sarlavha</th><th>Kimga</th><th>Turi</th><th>O'qildi</th><th>Sana</th><th></th></tr></thead>
+        <tbody>
+          {% for n in notifications %}
+          <tr id="notif-row-{{ n.pk }}">
+            <td style="font-weight:500">{{ n.title }}</td>
+            <td>{% if n.user %}<span style="color:var(--primary)">{{ n.user.username }}</span>{% else %}<span class="badge badge-blue">Barchaga</span>{% endif %}</td>
+            <td>
+              {% if n.type == 'success' %}<span class="badge badge-green">{{ n.get_type_display }}</span>
+              {% elif n.type == 'warning' %}<span class="badge badge-yellow">{{ n.get_type_display }}</span>
+              {% elif n.type == 'danger' %}<span class="badge badge-red">{{ n.get_type_display }}</span>
+              {% else %}<span class="badge badge-gray">{{ n.get_type_display }}</span>{% endif %}
+            </td>
+            <td>{% if n.is_read %}<span class="badge badge-gray">Ha</span>{% else %}<span class="badge badge-yellow">Yo'q</span>{% endif %}</td>
+            <td style="color:var(--muted);font-size:12px">{{ n.created_at|date:"d M Y, H:i" }}</td>
+            <td><button onclick="deleteNotif({{ n.pk }})" class="btn btn-danger btn-sm">O'chirish</button></td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="6" style="text-align:center;padding:32px;color:var(--muted)">Xabarnomalar yo'q</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-header"><span class="section-title">Yangi xabarnoma yuborish</span></div>
+    <form method="post">
+      {% csrf_token %}
+      <div class="form-group">
+        <label class="form-label">Kimga (bo'sh = barchaga)</label>
+        <input class="form-input" type="text" name="target_username" placeholder="username">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Sarlavha</label>
+        <input class="form-input" type="text" name="title" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Matn</label>
+        <textarea class="form-input" name="message" rows="4" required></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Turi</label>
+        <select class="form-input" name="type">
+          <option value="info">Ma'lumot</option>
+          <option value="success">Muvaffaqiyat</option>
+          <option value="warning">Ogohlantirish</option>
+          <option value="danger">Xato</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%">Yuborish</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+async function deleteNotif(pk){
+  if(!confirm("O'chirilsinmi?")) return;
+  await fetch(`/panel/notifications/${pk}/delete/`,{method:'POST',headers:{'X-CSRFToken':csrf}});
+  document.getElementById('notif-row-'+pk).remove();
+  toast("O'chirildi",'#ef4444');
+}
+</script>
+{% endblock %}

@@ -285,3 +285,28 @@ class ProfileView(LoginRequiredMixin, View):
             user.avatar = avatar
         user.save()
         return redirect('profile')
+
+
+class NotificationsView(LoginRequiredMixin, View):
+    def get(self, request):
+        from datetime import timedelta
+        from django.utils import timezone
+        from core.models import Notification
+
+        personal = Notification.objects.filter(user=request.user).order_by('-created_at')
+        broadcasts = Notification.objects.filter(
+            user__isnull=True, created_at__gte=timezone.now() - timedelta(days=30),
+        ).order_by('-created_at')
+        return render(request, 'notifications.html', {
+            'personal': personal,
+            'broadcasts': broadcasts,
+        })
+
+    def post(self, request):
+        from core.models import Notification
+        action = request.POST.get('action')
+        if action == 'mark_read':
+            Notification.objects.filter(pk=request.POST.get('id'), user=request.user).update(is_read=True)
+        elif action == 'mark_all_read':
+            Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
+        return redirect('notifications')

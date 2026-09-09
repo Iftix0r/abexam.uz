@@ -664,3 +664,117 @@ def create_admin(request):
             return redirect('panel:user_detail', pk=user.pk)
 
     return render(request, 'panel/create_admin.html', {'error': error})
+
+
+# ── Site settings ────────────────────────────────────────────────────────────
+@panel_required
+def site_settings(request):
+    settings_obj = SiteSettings.get()
+    if request.method == 'POST':
+        settings_obj.site_name = request.POST.get('site_name', settings_obj.site_name).strip()
+        settings_obj.site_description = request.POST.get('site_description', '').strip()
+        settings_obj.announcement = request.POST.get('announcement', '').strip()
+        settings_obj.announcement_active = request.POST.get('announcement_active') == 'on'
+        settings_obj.maintenance_mode = request.POST.get('maintenance_mode') == 'on'
+        settings_obj.maintenance_message = request.POST.get('maintenance_message', '').strip()
+        if 'logo' in request.FILES:
+            settings_obj.logo = request.FILES['logo']
+        settings_obj.save()
+        messages.success(request, 'Sozlamalar saqlandi')
+        return redirect('panel:site_settings')
+    return render(request, 'panel/settings.html', {'settings': settings_obj})
+
+
+# ── Notifications ─────────────────────────────────────────────────────────────
+@panel_required
+def panel_notifications(request):
+    if request.method == 'POST':
+        title = request.POST.get('title', '').strip()
+        message_text = request.POST.get('message', '').strip()
+        ntype = request.POST.get('type', 'info')
+        target_username = request.POST.get('target_username', '').strip()
+        if not title or not message_text:
+            messages.error(request, "Sarlavha va matn kiritilishi shart")
+            return redirect('panel:notifications')
+        target_user = None
+        if target_username:
+            try:
+                target_user = User.objects.get(username=target_username)
+            except User.DoesNotExist:
+                messages.error(request, f"'{target_username}' nomli foydalanuvchi topilmadi")
+                return redirect('panel:notifications')
+        Notification.objects.create(user=target_user, title=title, message=message_text, type=ntype)
+        messages.success(request, 'Xabarnoma yuborildi' if target_user else "Xabarnoma barchaga yuborildi")
+        return redirect('panel:notifications')
+
+    notifications = Notification.objects.select_related('user').order_by('-created_at')[:100]
+    return render(request, 'panel/notifications.html', {'notifications': notifications})
+
+
+@panel_required
+@require_POST
+def notification_delete(request, pk):
+    Notification.objects.filter(pk=pk).delete()
+    return JsonResponse({'ok': True})
+
+
+# ── Promo codes ────────────────────────────────────────────────────────────────
+@panel_required
+def promocodes_list(request):
+    from decimal import Decimal, InvalidOperation
+    from django.utils.dateparse import parse_datetime
+
+    if request.method == 'POST':
+        code = request.POST.get('code', '').strip().upper()
+        max_uses = request.POST.get('max_uses') or 1
+        expires_raw = request.POST.get('expires_at', '').strip()
+
+        if not code:
+            messages.error(request, 'Kod kiritilishi shart')
+            return redirect('panel:promocodes')
+        if PromoCode.objects.filter(code=code).exists():
+            messages.error(request, 'Bu kod allaqachon mavjud')
+            return redirect('panel:promocodes')
+
+        try:
+            discount_amount = Decimal(request.POST.get('discount_amount') or '0')
+            discount_percent = int(request.POST.get('discount_percent') or 0)
+            max_uses = int(max_uses)
+        except (InvalidOperation, ValueError):
+            messages.error(request, "Chegirma/soni noto'g'ri formatda")
+            return redirect('panel:promocodes')
+
+        expires_at = None
+        if expires_raw:
+            expires_at = parse_datetime(expires_raw)
+            if expires_at and timezone.is_naive(expires_at):
+                expires_at = timezone.make_aware(expires_at)
+
+        PromoCode.objects.create(
+            code=code,
+            discount_amount=discount_amount,
+            discount_percent=max(0, min(100, discount_percent)),
+            max_uses=max_uses,
+            expires_at=expires_at,
+        )
+        messages.success(request, 'Promo kod yaratildi')
+        return redirect('panel:promocodes')
+
+    promocodes = PromoCode.objects.order_by('-created_at')
+    return render(request, 'panel/promocodes.html', {'promocodes': promocodes})
+
+
+@panel_required
+@require_POST
+def promocode_toggle(request, pk):
+    promo = get_object_or_404(PromoCode, pk=pk)
+    promo.is_active = not promo.is_active
+    promo.save(update_fields=['is_active'])
+    return JsonResponse({'ok': True, 'is_active': promo.is_active})
+
+
+@panel_required
+@require_POST
+def promocode_delete(request, pk):
+    get_object_or_404(PromoCode, pk=pk).delete()
+    return JsonResponse({'ok': True})

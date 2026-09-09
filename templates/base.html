@@ -301,6 +301,34 @@
             .page-container { padding: 1rem; }
             #toggle-sidebar { display: none; }
         }
+
+        .announcement-banner {
+            background: var(--primary-color);
+            color: #fff;
+            padding: 0.6rem 1.5rem;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            text-align: center;
+            position: relative;
+        }
+        .announcement-banner button {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            color: #fff;
+            opacity: 0.8;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            padding: 4px;
+        }
+        .announcement-banner button:hover { opacity: 1; }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
@@ -381,6 +409,14 @@
     </aside>
 
     <main class="main-content" id="main-content">
+        {% if site_settings.announcement_active and site_settings.announcement %}
+        <div class="announcement-banner" id="announcementBanner" data-key="announcement-dismissed-{{ site_settings.updated_at|date:'U' }}">
+            <span>📢 {{ site_settings.announcement }}</span>
+            <button id="announcementDismiss" aria-label="Yopish">
+                <i data-lucide="x" style="width: 16px;"></i>
+            </button>
+        </div>
+        {% endif %}
         <header class="top-navbar">
             <div style="display: flex; align-items: center; gap: 1rem;">
                 <button id="toggle-sidebar-top" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; padding: 0.5rem; border-radius: 8px;" onmouseover="this.style.background='var(--border-color)'" onmouseout="this.style.background='transparent'">
@@ -395,6 +431,12 @@
                     <span style="font-size: 0.85rem; color: {% if message.tags == 'error' %}var(--danger-color){% else %}var(--success-color){% endif %};">{{ message }}</span>
                     {% endfor %}
                 {% endif %}
+                <a href="{% url 'notifications' %}" style="position: relative; background: transparent; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; padding: 0.5rem; border-radius: 8px; text-decoration: none;" onmouseover="this.style.background='var(--border-color)'" onmouseout="this.style.background='transparent'">
+                    <i data-lucide="bell" style="width: 20px;"></i>
+                    {% if unread_notifications_count %}
+                    <span style="position: absolute; top: 2px; right: 2px; background: var(--danger-color); color: #fff; font-size: 0.6rem; font-weight: 700; min-width: 15px; height: 15px; border-radius: 50%; display: flex; align-items: center; justify-content: center; padding: 0 3px;">{{ unread_notifications_count }}</span>
+                    {% endif %}
+                </a>
                 <button id="theme-toggle" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; padding: 0.5rem; border-radius: 8px;" onmouseover="this.style.background='var(--border-color)'" onmouseout="this.style.background='transparent'">
                     <i data-lucide="sun" id="theme-icon" style="width: 20px;"></i>
                 </button>
@@ -408,6 +450,21 @@
 
     <script>
         lucide.createIcons();
+
+        // Announcement banner — dismissible per-announcement (localStorage keyed
+        // by the announcement's last-updated timestamp, so editing it re-shows it)
+        const banner = document.getElementById('announcementBanner');
+        if (banner) {
+            const key = banner.dataset.key;
+            if (localStorage.getItem(key) === '1') {
+                banner.style.display = 'none';
+            } else {
+                document.getElementById('announcementDismiss').addEventListener('click', () => {
+                    localStorage.setItem(key, '1');
+                    banner.style.display = 'none';
+                });
+            }
+        }
 
         const sidebar = document.getElementById('sidebar');
         const mainContent = document.getElementById('main-content');

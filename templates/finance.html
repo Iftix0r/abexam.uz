@@ -212,6 +212,10 @@
             <input type="number" id="topupAmount" min="1000" step="1000" placeholder="50000"
                 style="width:100%;background:rgba(255,255,255,0.05);border:1px solid var(--border-color);border-radius:10px;padding:0.8rem 1rem;color:var(--text-color);font-size:1rem;outline:none;">
         </div>
+        <div style="margin-bottom:1.25rem;">
+            <label style="font-size:0.85rem;color:var(--text-muted);display:block;margin-bottom:0.5rem;">Promo kod (ixtiyoriy)</label>
+            <input type="text" id="topupPromo" placeholder="IELTS2026" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid var(--border-color);border-radius:10px;padding:0.8rem 1rem;color:var(--text-color);font-size:1rem;outline:none;text-transform:uppercase;">
+        </div>
         <div style="margin-bottom:1.5rem;">
             <label style="font-size:0.85rem;color:var(--text-muted);display:block;margin-bottom:0.75rem;">To'lov usuli</label>
             <div style="display:flex;gap:0.75rem;">
@@ -253,6 +257,7 @@
     function submitTopUp() {
         const amount = document.getElementById('topupAmount').value;
         const method = document.querySelector('input[name="topupMethod"]:checked').value;
+        const promo_code = document.getElementById('topupPromo').value.trim();
         const msg = document.getElementById('topupMsg');
         if (!amount || parseFloat(amount) <= 0) {
             msg.style.display = 'block'; msg.style.color = '#c62828';
@@ -261,14 +266,14 @@
         fetch('/payments/topup/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
-            body: JSON.stringify({ amount: parseFloat(amount), method })
+            body: JSON.stringify({ amount: parseFloat(amount), method, promo_code })
         })
-        .then(r => r.json())
-        .then(data => {
+        .then(r => r.json().then(data => ({ ok: r.ok, data })))
+        .then(({ ok, data }) => {
             msg.style.display = 'block';
-            msg.style.color = data.status === 'success' ? '#2e7d32' : '#e65100';
-            msg.innerText = data.message || "To'lov kutilmoqda";
-            if (data.status === 'success') setTimeout(() => location.reload(), 1200);
+            msg.style.color = ok ? '#2e7d32' : '#c62828';
+            msg.innerText = ok ? (data.message || "So'rov qabul qilindi") : (data.error || 'Xatolik yuz berdi');
+            if (ok) setTimeout(() => location.reload(), 1500);
         })
         .catch(() => { msg.style.display='block'; msg.style.color='#c62828'; msg.innerText='Xatolik yuz berdi'; });
     }

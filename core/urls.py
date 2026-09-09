@@ -7,7 +7,7 @@ from core.admin_site import AbExamAdminSite
 from users.views import (
     HomeView, DashboardView, CustomLoginView, RegisterView,
     ExamsListView, ResultsListView, VocabularyView, FinanceView,
-    ChatAIView, ProfileView
+    ChatAIView, ProfileView, NotificationsView
 )
 
 admin.site.__class__ = AbExamAdminSite
@@ -22,6 +22,7 @@ urlpatterns = [
     path('results-list/', ResultsListView.as_view(), name='results_list'),
     path('vocabulary/', VocabularyView.as_view(), name='vocabulary'),
     path('finance/', FinanceView.as_view(), name='finance'),
+    path('notifications/', NotificationsView.as_view(), name='notifications'),
     path('api/chat/', ChatAIView.as_view(), name='chat_api'),
     path('login/', CustomLoginView.as_view(), name='login'),
     path('register/', RegisterView.as_view(), name='register'),

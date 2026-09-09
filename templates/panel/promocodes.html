@@ -1,0 +1,88 @@
+{% extends 'panel/base.html' %}
+{% block title %}Promo kodlar{% endblock %}
+{% block page_title %}Promo kodlar{% endblock %}
+{% block nav_promocodes %}active{% endblock %}
+
+{% block content %}
+<div class="grid-2">
+  <div class="card" style="padding:0">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Kod</th><th>Chegirma</th><th>Ishlatilgan</th><th>Muddati</th><th>Holat</th><th></th></tr></thead>
+        <tbody>
+          {% for p in promocodes %}
+          <tr id="promo-row-{{ p.pk }}">
+            <td style="font-weight:700;font-family:monospace">{{ p.code }}</td>
+            <td>
+              {% if p.discount_percent %}{{ p.discount_percent }}%{% endif %}
+              {% if p.discount_percent and p.discount_amount %} + {% endif %}
+              {% if p.discount_amount %}{{ p.discount_amount|floatformat:0 }} so'm{% endif %}
+              {% if not p.discount_percent and not p.discount_amount %}—{% endif %}
+            </td>
+            <td>{{ p.used_count }} / {{ p.max_uses }}</td>
+            <td style="color:var(--muted);font-size:12px">{% if p.expires_at %}{{ p.expires_at|date:"d M Y" }}{% else %}Chegarasiz{% endif %}</td>
+            <td id="promo-status-{{ p.pk }}">
+              {% if p.is_active %}<span class="badge badge-green">Faol</span>{% else %}<span class="badge badge-gray">O'chirilgan</span>{% endif %}
+            </td>
+            <td style="display:flex;gap:6px">
+              <button onclick="togglePromo({{ p.pk }})" class="btn btn-ghost btn-sm">Yoqish/O'chirish</button>
+              <button onclick="deletePromo({{ p.pk }})" class="btn btn-danger btn-sm">O'chirish</button>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="6" style="text-align:center;padding:32px;color:var(--muted)">Promo kodlar yo'q</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-header"><span class="section-title">Yangi promo kod</span></div>
+    <form method="post">
+      {% csrf_token %}
+      <div class="form-group">
+        <label class="form-label">Kod</label>
+        <input class="form-input" type="text" name="code" placeholder="IELTS2026" required style="text-transform:uppercase">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Chegirma foizi (0-100)</label>
+        <input class="form-input" type="number" name="discount_percent" min="0" max="100" value="0">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Qo'shimcha bonus (so'm)</label>
+        <input class="form-input" type="number" name="discount_amount" min="0" value="0">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Maksimal ishlatish soni</label>
+        <input class="form-input" type="number" name="max_uses" min="1" value="1">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Amal qilish muddati (ixtiyoriy)</label>
+        <input class="form-input" type="datetime-local" name="expires_at">
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%">Yaratish</button>
+    </form>
+    <p style="font-size:11.5px;color:var(--muted);margin-top:12px">Balans to'ldirishda promo kod kiritilsa, foydalanuvchi so'ragan summaga ushbu chegirma/bonus qo'shiladi.</p>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+async function togglePromo(pk){
+  const r=await fetch(`/panel/promocodes/${pk}/toggle/`,{method:'POST',headers:{'X-CSRFToken':csrf}});
+  const d=await r.json();
+  document.getElementById('promo-status-'+pk).innerHTML = d.is_active
+    ? '<span class="badge badge-green">Faol</span>'
+    : '<span class="badge badge-gray">O\'chirilgan</span>';
+  toast(d.is_active ? 'Faollashtirildi' : "O'chirildi");
+}
+async function deletePromo(pk){
+  if(!confirm("O'chirilsinmi?")) return;
+  await fetch(`/panel/promocodes/${pk}/delete/`,{method:'POST',headers:{'X-CSRFToken':csrf}});
+  document.getElementById('promo-row-'+pk).remove();
+  toast("O'chirildi",'#ef4444');
+}
+</script>
+{% endblock %}

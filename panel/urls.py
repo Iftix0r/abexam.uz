@@ -40,4 +40,13 @@ urlpatterns = [
     path('exams/generate/', views.exam_generate, name='exam_generate'),
     path('questions/<int:pk>/edit/', views.question_edit, name='question_edit'),
     path('questions/<int:pk>/delete/', views.question_delete, name='question_delete'),
+
+    path('settings/', views.site_settings, name='site_settings'),
+
+    path('notifications/', views.panel_notifications, name='notifications'),
+    path('notifications/<int:pk>/delete/', views.notification_delete, name='notification_delete'),
+
+    path('promocodes/', views.promocodes_list, name='promocodes'),
+    path('promocodes/<int:pk>/toggle/', views.promocode_toggle, name='promocode_toggle'),
+    path('promocodes/<int:pk>/delete/', views.promocode_delete, name='promocode_delete'),
 ]

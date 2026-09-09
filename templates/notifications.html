@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}Xabarnomalar - AbExam{% endblock %}
+{% block page_title %}Xabarnomalar{% endblock %}
+
+{% block extra_css %}
+<style>
+    .notif-section-title {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin: 1.5rem 0 0.75rem;
+    }
+    .notif-section-title:first-child { margin-top: 0; }
+    .notif-item {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1rem 1.25rem;
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    .notif-item.unread { border-left: 3px solid var(--primary-color); }
+    .notif-dot {
+        width: 8px; height: 8px; border-radius: 50%;
+        background: var(--primary-color);
+        margin-top: 6px; flex-shrink: 0;
+    }
+    .notif-title { font-weight: 600; font-size: 0.95rem; margin-bottom: 2px; }
+    .notif-msg { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
+    .notif-time { font-size: 0.75rem; color: var(--text-muted); margin-top: 6px; }
+    .notif-mark-btn {
+        background: transparent; border: 1px solid var(--border-color);
+        color: var(--text-muted); border-radius: 8px; padding: 4px 10px;
+        font-size: 0.75rem; cursor: pointer; white-space: nowrap;
+    }
+    .notif-mark-btn:hover { border-color: var(--primary-color); color: var(--primary-color); }
+    .notif-empty { color: var(--text-muted); font-size: 0.9rem; padding: 1rem 0; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+    <h1 style="font-size: 1.3rem; font-weight: 700;">Xabarnomalar</h1>
+    {% if personal %}
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="mark_all_read">
+        <button type="submit" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">Barchasini o'qilgan deb belgilash</button>
+    </form>
+    {% endif %}
+</div>
+
+<div class="notif-section-title">Shaxsiy xabarlar</div>
+{% if personal %}
+    {% for n in personal %}
+    <div class="notif-item {% if not n.is_read %}unread{% endif %}">
+        {% if not n.is_read %}<div class="notif-dot"></div>{% endif %}
+        <div style="flex: 1;">
+            <div class="notif-title">{{ n.title }}</div>
+            <div class="notif-msg">{{ n.message }}</div>
+            <div class="notif-time">{{ n.created_at|date:"d M Y, H:i" }}</div>
+        </div>
+        {% if not n.is_read %}
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="mark_read">
+            <input type="hidden" name="id" value="{{ n.id }}">
+            <button type="submit" class="notif-mark-btn">O'qildi</button>
+        </form>
+        {% endif %}
+    </div>
+    {% endfor %}
+{% else %}
+    <div class="notif-empty">Shaxsiy xabarlaringiz yo'q.</div>
+{% endif %}
+
+<div class="notif-section-title">E'lonlar</div>
+{% if broadcasts %}
+    {% for n in broadcasts %}
+    <div class="notif-item">
+        <div style="flex: 1;">
+            <div class="notif-title">{{ n.title }}</div>
+            <div class="notif-msg">{{ n.message }}</div>
+            <div class="notif-time">{{ n.created_at|date:"d M Y, H:i" }}</div>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+    <div class="notif-empty">So'nggi 30 kunda e'lonlar yo'q.</div>
+{% endif %}
+{% endblock %}
