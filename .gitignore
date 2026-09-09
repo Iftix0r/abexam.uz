@@ -17,10 +17,13 @@ env/
 
 # Django
 *.sqlite3
+*.sqlite3-wal
+*.sqlite3-shm
 *.log
 local_settings.py
 db.sqlite3
 media/
+cache_data/
 
 # Environment variables
 .env

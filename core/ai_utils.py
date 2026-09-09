@@ -6,7 +6,19 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+# Default client timeout is several minutes, which under exam-day load would
+# tie up a WSGI worker for that long on a single slow/hung call — with only
+# a handful of workers, a few stuck requests can stall the whole site for
+# everyone else. The student-facing calls (evaluate_writing/evaluate_speaking/
+# transcribe_audio/get_ai_response) pass a tighter per-call `timeout=` below
+# so they fail fast into their existing fallback path; this default just
+# caps the slower staff-only exam-generation calls.
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"), timeout=60.0, max_retries=1)
+
+# Timeout for calls in the hot path of an active exam (writing/speaking
+# grading, chat) — short enough that a stuck OpenAI request can't pin a
+# worker through an exam rush.
+_HOT_PATH_TIMEOUT = 30.0
 
 SYSTEM_PROMPT = """Siz AbExam platformasining AI yordamchisisiz. Foydalanuvchilarga IELTS imtihoniga tayyorlanishda,
 lug'at boyligini oshirishda va platformadan foydalanishda yordam berasiz.
@@ -92,6 +104,7 @@ def get_ai_response(message, history=None):
             messages=messages,
             temperature=0.7,
             max_tokens=1000,
+            timeout=_HOT_PATH_TIMEOUT,
         )
         return response.choices[0].message.content
     except Exception as e:
@@ -123,6 +136,7 @@ def evaluate_writing(text: str, task_num: int = 2) -> dict:
             temperature=0.3,
             max_tokens=600,
             response_format={"type": "json_object"},
+            timeout=_HOT_PATH_TIMEOUT,
         )
         data = json.loads(response.choices[0].message.content)
         return {
@@ -150,6 +164,7 @@ def transcribe_audio(audio_bytes: bytes, filename: str = "audio.webm") -> str:
             model="whisper-1",
             file=audio_file,
             language="en",
+            timeout=_HOT_PATH_TIMEOUT,
         )
         text = transcript.text or ""
         return text.strip()
@@ -177,6 +192,7 @@ def evaluate_speaking(transcript: str, question: str = "") -> dict:
             temperature=0.3,
             max_tokens=600,
             response_format={"type": "json_object"},
+            timeout=_HOT_PATH_TIMEOUT,
         )
         data = json.loads(response.choices[0].message.content)
         return {

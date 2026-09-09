@@ -61,8 +61,32 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+        'OPTIONS': {
+            # SQLite raises "database is locked" once a writer holds the
+            # lock longer than this — bump it well above the default 5s so
+            # a burst of concurrent exam submissions queues instead of
+            # erroring out for the last-in requests.
+            'timeout': 30,
+        },
     }
 }
+
+# SQLite's default rollback-journal mode blocks readers while a write is in
+# progress, so with many students submitting exams at once, page loads for
+# everyone else stall behind whichever request is writing. WAL mode lets
+# reads proceed concurrently with a single writer, which is the single
+# biggest lever available without migrating off SQLite entirely.
+from django.db.backends.signals import connection_created
+
+
+def _tune_sqlite(sender, connection, **kwargs):
+    if connection.vendor == 'sqlite':
+        with connection.cursor() as cursor:
+            cursor.execute('PRAGMA journal_mode=WAL;')
+            cursor.execute('PRAGMA synchronous=NORMAL;')
+
+
+connection_created.connect(_tune_sqlite)
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
@@ -89,8 +113,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
-        'LOCATION': 'cache_table',
+        # File-based rather than DB-backed: login rate-limiting hits this
+        # cache on every attempt, and right before an exam that's a burst
+        # of writes competing with exam traffic for the same sqlite file.
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': BASE_DIR / 'cache_data',
     }
 }
 
