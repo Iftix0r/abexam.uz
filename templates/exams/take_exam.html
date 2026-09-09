@@ -1231,10 +1231,14 @@ document.addEventListener('DOMContentLoaded', () => {
         label.innerText = 'Tinglanyapti...';
         btn.disabled = true;
 
-        audio.play().catch(() => {
+        audio.play().catch(err => {
+            console.error('Audio playback failed for section ' + sectionId + ':', err, 'src=' + audio.currentSrc, 'networkState=' + audio.networkState, 'error=' + (audio.error ? audio.error.code : 'none'));
+            alert("Audio ochilmadi (fayl yuklanmadi yoki brauzer bloklab qo'ydi). Sahifani yangilab qayta urinib ko'ring, muammo davom etsa administratorga xabar bering.");
             label.innerText = 'Eshitishni boshlash';
             btn.disabled = false;
             audioPlayCounts[sectionId] = 0;
+            playsLeft.innerText = '1 marta tinglash mumkin';
+            playsLeft.className = 'plays-left-badge';
         });
 
         // Progress bar
@@ -1615,6 +1619,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Render inline gaps after draft restore
     setTimeout(renderInlineGapFill, 100);
+
+    // Surface listening-audio load failures loudly instead of a silent
+    // stuck "0:00 / 0:00" — the browser's audio.play() promise rejection
+    // doesn't always fire for a load error, so this catches that path too.
+    document.querySelectorAll('audio[id^="audio-el-"]').forEach(audioEl => {
+        audioEl.addEventListener('error', () => {
+            const code = audioEl.error ? audioEl.error.code : 'unknown';
+            console.error('Audio element load error:', audioEl.id, 'src=' + audioEl.currentSrc, 'code=' + code);
+        });
+    });
 
     // Prevent accidental close
     window.addEventListener('beforeunload', e => {
