@@ -59,13 +59,13 @@
   </div>
   {% if stats.avg_l %}
   <div class="an-card">
-    <div class="an-val" style="color:#4285f4">{{ stats.avg_l|floatformat:1 }}</div>
+    <div class="an-val" style="color:#1565c0">{{ stats.avg_l|floatformat:1 }}</div>
     <div class="an-lbl">Listening avg</div>
   </div>
   {% endif %}
   {% if stats.avg_r %}
   <div class="an-card">
-    <div class="an-val" style="color:#22c55e">{{ stats.avg_r|floatformat:1 }}</div>
+    <div class="an-val" style="color:#2e7d32">{{ stats.avg_r|floatformat:1 }}</div>
     <div class="an-lbl">Reading avg</div>
   </div>
   {% endif %}
@@ -117,28 +117,28 @@
   {% if stats.avg_l %}
   <div class="section-bar">
     <span style="width:90px;font-size:13px;color:var(--text-muted)">Listening</span>
-    <div class="bar-track"><div class="bar-fill" style="width:{{ stats.avg_l|floatformat:0 }}0%;background:#4285f4"></div></div>
+    <div class="bar-track"><div class="bar-fill" style="width:{{ stats.avg_l|floatformat:0 }}0%;background:#1565c0"></div></div>
     <span style="width:36px;font-weight:600;font-size:13px;text-align:right">{{ stats.avg_l|floatformat:1 }}</span>
   </div>
   {% endif %}
   {% if stats.avg_r %}
   <div class="section-bar">
     <span style="width:90px;font-size:13px;color:var(--text-muted)">Reading</span>
-    <div class="bar-track"><div class="bar-fill" style="width:{{ stats.avg_r|floatformat:0 }}0%;background:#22c55e"></div></div>
+    <div class="bar-track"><div class="bar-fill" style="width:{{ stats.avg_r|floatformat:0 }}0%;background:#2e7d32"></div></div>
     <span style="width:36px;font-weight:600;font-size:13px;text-align:right">{{ stats.avg_r|floatformat:1 }}</span>
   </div>
   {% endif %}
   {% if stats.avg_w %}
   <div class="section-bar">
     <span style="width:90px;font-size:13px;color:var(--text-muted)">Writing</span>
-    <div class="bar-track"><div class="bar-fill" style="width:{{ stats.avg_w|floatformat:0 }}0%;background:#eab308"></div></div>
+    <div class="bar-track"><div class="bar-fill" style="width:{{ stats.avg_w|floatformat:0 }}0%;background:#6a1b9a"></div></div>
     <span style="width:36px;font-weight:600;font-size:13px;text-align:right">{{ stats.avg_w|floatformat:1 }}</span>
   </div>
   {% endif %}
   {% if stats.avg_s %}
   <div class="section-bar">
     <span style="width:90px;font-size:13px;color:var(--text-muted)">Speaking</span>
-    <div class="bar-track"><div class="bar-fill" style="width:{{ stats.avg_s|floatformat:0 }}0%;background:#ef4444"></div></div>
+    <div class="bar-track"><div class="bar-fill" style="width:{{ stats.avg_s|floatformat:0 }}0%;background:#e65100"></div></div>
     <span style="width:36px;font-weight:600;font-size:13px;text-align:right">{{ stats.avg_s|floatformat:1 }}</span>
   </div>
   {% endif %}
@@ -213,11 +213,11 @@ const pChart = new Chart(document.getElementById('progressChart').getContext('2d
   data: {
     labels: {{ chart_dates|safe }},
     datasets: [
-      { label:'Umumiy', data:{{ chart_scores|safe }}, borderColor:'#6366f1', backgroundColor:'rgba(99,102,241,.1)', tension:.4, fill:true, pointRadius:4, pointBackgroundColor:'#6366f1' },
-      { label:'Listening', data:{{ chart_l|safe }}, borderColor:'#4285f4', tension:.4, pointRadius:2, hidden:true },
-      { label:'Reading',   data:{{ chart_r|safe }}, borderColor:'#22c55e', tension:.4, pointRadius:2, hidden:true },
-      { label:'Writing',   data:{{ chart_w|safe }}, borderColor:'#eab308', tension:.4, pointRadius:2, hidden:true },
-      { label:'Speaking',  data:{{ chart_s|safe }}, borderColor:'#ef4444', tension:.4, pointRadius:2, hidden:true },
+      { label:'Umumiy', data:{{ chart_scores|safe }}, borderColor:'#d32f2f', backgroundColor:'rgba(211,47,47,.1)', tension:.4, fill:true, pointRadius:4, pointBackgroundColor:'#d32f2f' },
+      { label:'Listening', data:{{ chart_l|safe }}, borderColor:'#1565c0', tension:.4, pointRadius:2, hidden:true },
+      { label:'Reading',   data:{{ chart_r|safe }}, borderColor:'#2e7d32', tension:.4, pointRadius:2, hidden:true },
+      { label:'Writing',   data:{{ chart_w|safe }}, borderColor:'#6a1b9a', tension:.4, pointRadius:2, hidden:true },
+      { label:'Speaking',  data:{{ chart_s|safe }}, borderColor:'#e65100', tension:.4, pointRadius:2, hidden:true },
     ]
   },
   options: {
@@ -243,7 +243,7 @@ new Chart(document.getElementById('radarChart').getContext('2d'), {
     datasets:[{
       label:"O'rtacha",
       data:[{{ stats.avg_l|default:0|floatformat:1 }},{{ stats.avg_r|default:0|floatformat:1 }},{{ stats.avg_w|default:0|floatformat:1 }},{{ stats.avg_s|default:0|floatformat:1 }}],
-      borderColor:'#6366f1', backgroundColor:'rgba(99,102,241,.15)', pointBackgroundColor:'#6366f1', pointRadius:5
+      borderColor:'#d32f2f', backgroundColor:'rgba(211,47,47,.15)', pointBackgroundColor:'#d32f2f', pointRadius:5
     }]
   },
   options:{

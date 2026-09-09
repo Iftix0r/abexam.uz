@@ -90,19 +90,19 @@
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
     <div>
       <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:var(--muted)">Listening</span><span style="font-weight:600">{{ stats.avg_l|floatformat:1 }}</span></div>
-      <div style="height:7px;background:rgba(255,255,255,.06);border-radius:4px"><div style="width:{{ stats.avg_l|floatformat:0 }}0%;height:100%;background:#4285f4;border-radius:4px"></div></div>
+      <div style="height:7px;background:rgba(255,255,255,.06);border-radius:4px"><div style="width:{{ stats.avg_l|floatformat:0 }}0%;height:100%;background:#1565c0;border-radius:4px"></div></div>
     </div>
     <div>
       <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:var(--muted)">Reading</span><span style="font-weight:600">{{ stats.avg_r|floatformat:1 }}</span></div>
-      <div style="height:7px;background:rgba(255,255,255,.06);border-radius:4px"><div style="width:{{ stats.avg_r|floatformat:0 }}0%;height:100%;background:#22c55e;border-radius:4px"></div></div>
+      <div style="height:7px;background:rgba(255,255,255,.06);border-radius:4px"><div style="width:{{ stats.avg_r|floatformat:0 }}0%;height:100%;background:#2e7d32;border-radius:4px"></div></div>
     </div>
     <div>
       <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:var(--muted)">Writing</span><span style="font-weight:600">{{ stats.avg_w|floatformat:1 }}</span></div>
-      <div style="height:7px;background:rgba(255,255,255,.06);border-radius:4px"><div style="width:{{ stats.avg_w|floatformat:0 }}0%;height:100%;background:#eab308;border-radius:4px"></div></div>
+      <div style="height:7px;background:rgba(255,255,255,.06);border-radius:4px"><div style="width:{{ stats.avg_w|floatformat:0 }}0%;height:100%;background:#6a1b9a;border-radius:4px"></div></div>
     </div>
     <div>
       <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:var(--muted)">Speaking</span><span style="font-weight:600">{{ stats.avg_s|floatformat:1 }}</span></div>
-      <div style="height:7px;background:rgba(255,255,255,.06);border-radius:4px"><div style="width:{{ stats.avg_s|floatformat:0 }}0%;height:100%;background:#ef4444;border-radius:4px"></div></div>
+      <div style="height:7px;background:rgba(255,255,255,.06);border-radius:4px"><div style="width:{{ stats.avg_s|floatformat:0 }}0%;height:100%;background:#e65100;border-radius:4px"></div></div>
     </div>
   </div>
 </div>
@@ -185,7 +185,7 @@ new Chart(document.getElementById('radarChart').getContext('2d'),{
   type:'radar',
   data:{
     labels:['Listening','Reading','Writing','Speaking'],
-    datasets:[{label:"O'rtacha",data:[{{ stats.avg_l|floatformat:1 }},{{ stats.avg_r|floatformat:1 }},{{ stats.avg_w|floatformat:1 }},{{ stats.avg_s|floatformat:1 }}],borderColor:'#6366f1',backgroundColor:'rgba(99,102,241,.15)',pointBackgroundColor:'#6366f1',pointRadius:4}]
+    datasets:[{label:"O'rtacha",data:[{{ stats.avg_l|floatformat:1 }},{{ stats.avg_r|floatformat:1 }},{{ stats.avg_w|floatformat:1 }},{{ stats.avg_s|floatformat:1 }}],borderColor:'#d32f2f',backgroundColor:'rgba(211,47,47,.15)',pointBackgroundColor:'#d32f2f',pointRadius:4}]
   },
   options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:C.tooltip},scales:{r:{min:0,max:9,ticks:{color:'#555',font:{size:9},stepSize:3},grid:{color:'rgba(255,255,255,.08)'},pointLabels:{color:'#888',font:{size:10}}}}}
 });

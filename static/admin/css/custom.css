@@ -59,10 +59,10 @@
     padding: 4px 10px !important;
     font-weight: 600 !important;
 }
-.badge-success { background: #34a853 !important; }
-.badge-warning { background: #fbbc04 !important; color: #000 !important; }
-.badge-danger  { background: #ea4335 !important; }
-.badge-primary { background: #4285f4 !important; }
+.badge-success { background: #2e7d32 !important; }
+.badge-warning { background: #e65100 !important; }
+.badge-danger  { background: #c62828 !important; }
+.badge-primary { background: #d32f2f !important; }
 
 /* Buttons */
 .btn {
@@ -70,14 +70,14 @@
     font-weight: 600 !important;
     font-size: 0.85rem !important;
 }
-.btn-outline-primary { border-color: #4285f4 !important; color: #4285f4 !important; }
-.btn-outline-primary:hover { background: #4285f4 !important; color: #fff !important; }
-.btn-outline-success { border-color: #34a853 !important; color: #34a853 !important; }
-.btn-outline-success:hover { background: #34a853 !important; color: #fff !important; }
-.btn-outline-warning { border-color: #fbbc04 !important; color: #fbbc04 !important; }
-.btn-outline-warning:hover { background: #fbbc04 !important; color: #000 !important; }
-.btn-outline-danger { border-color: #ea4335 !important; color: #ea4335 !important; }
-.btn-outline-danger:hover { background: #ea4335 !important; color: #fff !important; }
+.btn-outline-primary { border-color: #d32f2f !important; color: #d32f2f !important; }
+.btn-outline-primary:hover { background: #d32f2f !important; color: #fff !important; }
+.btn-outline-success { border-color: #2e7d32 !important; color: #2e7d32 !important; }
+.btn-outline-success:hover { background: #2e7d32 !important; color: #fff !important; }
+.btn-outline-warning { border-color: #e65100 !important; color: #e65100 !important; }
+.btn-outline-warning:hover { background: #e65100 !important; color: #fff !important; }
+.btn-outline-danger { border-color: #c62828 !important; color: #c62828 !important; }
+.btn-outline-danger:hover { background: #c62828 !important; color: #fff !important; }
 
 /* Sidebar nav */
 .nav-sidebar .nav-item > .nav-link {
@@ -86,7 +86,7 @@
     transition: all 0.2s !important;
 }
 .nav-sidebar .nav-item > .nav-link.active {
-    box-shadow: 0 4px 12px rgba(66,133,244,0.3) !important;
+    box-shadow: 0 4px 12px rgba(211,47,47,0.3) !important;
 }
 
 /* List group */
