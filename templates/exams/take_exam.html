@@ -1016,12 +1016,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     restoreDraft();
 
-    // Build tracker + answered counts after restore
-    buildTracker();
-    updateAllTabCounts();
-    updateAnsweredCount();
-
     // ─── ANSWER TRACKER ──────────────────────────────────
+    // Must be declared before buildTracker() is called below — buildTracker
+    // reads `reviews`, and as a `const` it's only usable after this line
+    // runs (calling it earlier throws "Cannot access 'reviews' before
+    // initialization" and aborts the rest of this script, including the
+    // window.closeInstructionAndStart assignment further down).
     const reviews = new Set();
 
     window.toggleReview = function(qid, isReview) {
@@ -1032,6 +1032,11 @@ document.addEventListener('DOMContentLoaded', () => {
             dot.classList.toggle('review', isReview);
         }
     };
+
+    // Build tracker + answered counts after restore
+    buildTracker();
+    updateAllTabCounts();
+    updateAnsweredCount();
 
     function buildTracker(activeSectionId) {
         const tracker = document.getElementById('answerTracker');
