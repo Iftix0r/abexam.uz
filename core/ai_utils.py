@@ -498,6 +498,39 @@ def _call_ai(prompt: str, model: str, max_tokens: int = 3000) -> dict:
     return json.loads(resp.choices[0].message.content)
 
 
+def _questions_complete(raw_questions: list) -> bool:
+    """True if every question has real text, and a real correct_answer
+    unless it's a type that's graded separately (writing/speaking)."""
+    if not raw_questions:
+        return False
+    for q in raw_questions:
+        if not isinstance(q, dict):
+            return False
+        if not str(q.get('text', '')).strip():
+            return False
+        if q.get('question_type') not in ('writing_task', 'short_answer') and not str(q.get('correct_answer', '')).strip():
+            return False
+    return True
+
+
+def _call_ai_with_retry(prompt: str, model: str, max_tokens: int, questions_key: str = 'questions', retries: int = 2) -> dict:
+    """Some topics produce enough passage/question content that the model
+    runs out of its token budget mid-question and returns valid JSON with
+    blank text/correct_answer fields instead of erroring (see
+    _normalise_questions' placeholder fallback). Retry with a growing
+    budget before giving up — the exam_generate warning is the last-resort
+    safety net if even that isn't enough.
+    """
+    data = None
+    attempt_tokens = max_tokens
+    for _ in range(retries + 1):
+        data = _call_ai(prompt, model, max_tokens=attempt_tokens)
+        if _questions_complete(data.get(questions_key, [])):
+            return data
+        attempt_tokens = int(attempt_tokens * 1.5)
+    return data
+
+
 def _generate_audio(text: str, voice: str = "alloy") -> bytes:
     """Generate audio bytes using OpenAI TTS."""
     try:
@@ -534,11 +567,12 @@ def _gen_reading(topic: str, variant: str, model: str):
     for i in range(1, 4):
         yield i * 33 - 15, f"Reading Passage {i} yaratilmoqda...", None
         # 900-word passage(s) + 13-14 fully-detailed questions (text,
-        # options, explanation) + vocabulary list routinely exceeds 3500
-        # tokens; under token pressure the model still returns valid JSON
-        # but with the question objects present and empty (see
-        # _normalise_questions' placeholder fallback) rather than erroring.
-        data = _call_ai(template.format(topic=f"{topic} (Passage {i})"), model, max_tokens=6000)
+        # options, explanation) + vocabulary list can exceed even a generous
+        # token budget for verbose topics; under token pressure the model
+        # still returns valid JSON but with question objects present and
+        # empty (see _normalise_questions' placeholder fallback) rather than
+        # erroring, so retry with more room instead of just raising the cap.
+        data = _call_ai_with_retry(template.format(topic=f"{topic} (Passage {i})"), model, max_tokens=6000)
         questions = _normalise_questions(data.get("questions", []))
         all_sections.append({
             "title": f"Reading Passage {i}: {data.get('passage_title', 'Untitled')}",
@@ -614,7 +648,7 @@ def _gen_listening(topic: str, model: str):
     for i in range(1, 5):
         yield i * 25 - 10, f"Listening Section {i} yaratilmoqda...", None
         listen_type = _LISTEN_TYPES[i-1] if i <= len(_LISTEN_TYPES) else random.choice(_LISTEN_TYPES)
-        data = _call_ai(_LISTENING_SECTION.format(topic=topic, listen_type=listen_type[1]), model, max_tokens=2500)
+        data = _call_ai_with_retry(_LISTENING_SECTION.format(topic=topic, listen_type=listen_type[1]), model, max_tokens=2500)
         questions = _normalise_questions(data.get("questions", []))
         script = data.get("audio_script", "")
         
