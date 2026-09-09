@@ -80,7 +80,6 @@
     transition: background 0.15s;
 }
 .section-row:last-child { border-bottom: none; }
-.section-row.available:hover { background: rgba(211,47,47,.05); }
 
 .section-num {
     width: 42px; height: 42px;
@@ -90,7 +89,6 @@
     flex-shrink: 0;
 }
 .section-num.unlocked { background: #1a1a2e; color: #fff; }
-.section-num.locked { background: var(--border-color); color: var(--text-muted); }
 
 .section-type-icon {
     width: 40px; height: 40px;
@@ -112,25 +110,6 @@
     font-size: 12px; color: var(--text-muted); margin-top: 4px;
 }
 
-.section-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-
-.badge-available {
-    padding: 5px 14px;
-    border-radius: 20px;
-    font-size: 11px; font-weight: 800; letter-spacing: .5px;
-    background: rgba(211,47,47,.1);
-    color: #d32f2f;
-    border: 1px solid rgba(211,47,47,.2);
-    white-space: nowrap;
-}
-.badge-locked {
-    padding: 5px 14px;
-    border-radius: 20px;
-    font-size: 11px; font-weight: 700; letter-spacing: .5px;
-    background: var(--border-color);
-    color: var(--text-muted);
-    white-space: nowrap;
-}
 .btn-start {
     padding: 8px 22px;
     border-radius: 8px;
@@ -143,15 +122,6 @@
     white-space: nowrap;
 }
 .btn-start:hover { opacity: 0.85; }
-.btn-locked {
-    padding: 8px 18px;
-    border-radius: 8px;
-    font-size: 13px; font-weight: 700;
-    background: var(--border-color);
-    color: var(--text-muted);
-    border: none; cursor: not-allowed;
-    white-space: nowrap;
-}
 
 /* ── Back link ─────────────────────────────────── */
 .back-link {
@@ -183,7 +153,6 @@
 @media (max-width: 600px) {
     .test-header { flex-direction: column; }
     .section-row { flex-wrap: wrap; gap: 12px; }
-    .section-actions { width: 100%; justify-content: flex-end; }
     .test-meta { gap: 12px; }
 }
 </style>
@@ -226,6 +195,13 @@
                 </div>
             </div>
         </div>
+        <div style="padding: 0 30px 26px;">
+            {% if exam.price > 0 and request.user.balance < exam.price %}
+            <button class="btn-start" disabled style="width:100%; padding:13px; cursor:not-allowed; opacity:.5;">Balans yetarli emas</button>
+            {% else %}
+            <a href="{% url 'exams:take_exam' exam.id %}" class="btn-start" style="display:block; width:100%; padding:13px; text-align:center; box-sizing:border-box;">Testni boshlash</a>
+            {% endif %}
+        </div>
     </div>
 
     <!-- ── Progress ─────────────────────────────────── -->
@@ -251,13 +227,17 @@
     </div>
 
     <!-- ── Sections ─────────────────────────────────── -->
+    <!-- Informational only — the exam is one continuous timed attempt
+         (all sections are answered together in take_exam.html once
+         started), so this list previews the sections rather than gating
+         access to them one by one. -->
     <div class="card sections-card">
         <div class="sections-title">TEST SECTIONS</div>
         {% for section in exam.sections.all %}
-        {% with is_first=forloop.first stype=section.section_type %}
-        <div class="section-row {% if is_first %}available{% endif %}">
+        {% with stype=section.section_type %}
+        <div class="section-row">
 
-            <div class="section-num {% if is_first %}unlocked{% else %}locked{% endif %}">
+            <div class="section-num unlocked">
                 {{ forloop.counter }}
             </div>
 
@@ -269,36 +249,12 @@
             </div>
 
             <div class="section-info">
-                <h4>{{ section.get_section_type_display }}</h4>
-                <p>
-                    {% if stype == 'listening' %}
-                        4 parts • {{ section.questions.count }} questions • Audio-based comprehension test
-                    {% elif stype == 'reading' %}
-                        3 passages • {{ section.questions.count }} questions • Academic reading comprehension
-                    {% elif stype == 'writing' %}
-                        2 tasks • Graph description and essay writing
-                    {% else %}
-                        3 parts • {{ section.questions.count }} questions • Speaking assessment
-                    {% endif %}
-                </p>
+                <h4>{{ section.title }}</h4>
+                <p>{{ section.get_section_type_display }} • {{ section.questions.count }} savol</p>
                 <div class="duration">
                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                    {% if section.duration_minutes %}{{ section.duration_minutes }}{% elif stype == 'listening' %}30{% elif stype == 'reading' %}60{% elif stype == 'writing' %}60{% else %}15{% endif %} minutes
+                    {% if section.duration_minutes %}{{ section.duration_minutes }}{% elif stype == 'listening' %}30{% elif stype == 'reading' %}60{% elif stype == 'writing' %}60{% else %}15{% endif %} daqiqa
                 </div>
-            </div>
-
-            <div class="section-actions">
-                {% if is_first %}
-                    <span class="badge-available">AVAILABLE</span>
-                    {% if exam.price > 0 and request.user.balance < exam.price %}
-                    <button class="btn-locked" disabled>Balans yetarli emas</button>
-                    {% else %}
-                    <a href="{% url 'exams:take_exam' exam.id %}" class="btn-start">START</a>
-                    {% endif %}
-                {% else %}
-                    <span class="badge-locked">LOCKED</span>
-                    <button class="btn-locked">LOCKED</button>
-                {% endif %}
             </div>
         </div>
         {% endwith %}
