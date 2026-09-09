@@ -197,6 +197,8 @@ def user_edit(request, pk):
 @panel_required
 @require_POST
 def user_make_staff(request, pk):
+    if not request.user.is_superuser:
+        return JsonResponse({'ok': False, 'error': 'Faqat superadmin xodim huquqini bera oladi'}, status=403)
     user = get_object_or_404(User, pk=pk)
     if user.pk == request.user.pk:
         return JsonResponse({'ok': False, 'error': 'O\'zingizni o\'zgartira olmaysiz'})

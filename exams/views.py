@@ -225,7 +225,7 @@ class SubmitExamView(LoginRequiredMixin, View):
                 user_ans = str(answers.get(str(question.id), '')).strip()
                 is_correct = (
                     False if question.question_type == 'writing_task'
-                    else user_ans.lower() == str(question.correct_answer).strip().lower()
+                    else _fuzzy_match(user_ans, question.correct_answer)
                 )
                 answer_objs.append(UserAnswer(
                     result=result,
@@ -272,11 +272,10 @@ class ResultDetailView(LoginRequiredMixin, DetailView):
             correct_count = 0
             for q in section.questions.all():
                 user_ans = str(db_answers.get(str(q.id), '')).strip()
-                correct = str(q.correct_answer).strip().lower()
                 if q.question_type == 'writing_task':
                     is_correct = None
                 else:
-                    is_correct = user_ans.lower() == correct
+                    is_correct = _fuzzy_match(user_ans, q.correct_answer)
                     if is_correct:
                         correct_count += 1
                 questions_data.append({

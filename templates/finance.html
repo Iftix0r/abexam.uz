@@ -260,7 +260,7 @@
         }
         fetch('/payments/topup/', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
             body: JSON.stringify({ amount: parseFloat(amount), method })
         })
         .then(r => r.json())
