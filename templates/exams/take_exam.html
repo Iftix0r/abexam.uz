@@ -595,6 +595,12 @@
         <span id="countdown">00:00:00</span>
     </div>
 
+    {% if request.user.is_superuser %}
+    <button id="demoFillBtn" onclick="demoFillAndSubmit()" title="Superadmin QA: to'g'ri javoblarni avtomatik to'ldirib, testni yuboradi — AI baholashini tekshirish uchun" style="background:#6a1b9a; color:#fff; border:none; border-radius:6px; padding:0 14px; height:38px; font-size:12px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:6px;">
+        🧪 Demo to'ldirish
+    </button>
+    {% endif %}
+
     <div class="flex-center" style="gap: 10px;">
         <div style="text-align: right; line-height: 1.3;">
             <div style="font-size: 13px; font-weight: 700;">{{ user.get_full_name|default:user.username }}</div>
@@ -1474,6 +1480,43 @@ document.addEventListener('DOMContentLoaded', () => {
     window.confirmSubmit = function() {
         document.getElementById('reviewModal').classList.remove('active');
         submitExam(false);
+    };
+
+    // ─── SUPERADMIN QA: DEMO FILL + AUTO-SUBMIT ───────────
+    // Fetches correct answers from a superuser-only endpoint (never sent to
+    // the page normally) and fills them in, so staff can verify the AI
+    // grading pipeline end-to-end without answering 40+ questions by hand.
+    // Speaking questions need a real recording and are left unanswered.
+    window.demoFillAndSubmit = async function() {
+        if (examSubmitted) return;
+        if (!confirm("Demo: to'g'ri javoblar bilan avtomatik to'ldirilib, test darhol yuboriladi (Speaking bundan mustasno — audio kerak). Davom etilsinmi?")) return;
+
+        const btn = document.getElementById('demoFillBtn');
+        if (btn) { btn.disabled = true; btn.innerText = "Tayyorlanmoqda..."; }
+
+        try {
+            const resp = await fetch("{% url 'exams:demo_answers' exam.id %}");
+            if (!resp.ok) {
+                const err = await resp.json().catch(() => ({}));
+                alert('Demo javoblarni olishda xatolik: ' + (err.error || resp.status));
+                return;
+            }
+            const demoAnswers = await resp.json();
+
+            const typeByQid = {};
+            Object.values(sectionQuestions).forEach(list => list.forEach(q => { typeByQid[q.id] = q.type; }));
+
+            Object.entries(demoAnswers).forEach(([qid, value]) => {
+                if (!value) return;
+                document.querySelectorAll(`[data-qid="${qid}"]`).forEach(el => { el.value = value; });
+                if (typeByQid[qid] === 'writing_task') saveWriting(qid, value);
+                else saveAnswer(qid, value);
+            });
+
+            submitExam(false);
+        } finally {
+            if (btn) { btn.disabled = false; btn.innerText = "🧪 Demo to'ldirish"; }
+        }
     };
 
     // ─── SUBMIT ───────────────────────────────────────────

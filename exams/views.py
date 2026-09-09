@@ -171,6 +171,32 @@ class TakeExamView(LoginRequiredMixin, DetailView):
         return context
 
 
+class DemoAnswersView(LoginRequiredMixin, View):
+    """Superuser-only QA tool: returns the correct answer for every gradable
+    question in the exam, so staff can auto-fill + auto-submit an AI-generated
+    exam and verify the scoring pipeline grades it correctly — without
+    exposing answers to anyone else (this is a real leak vector otherwise)."""
+
+    # Speaking questions require an actual audio recording and can't be
+    # auto-answered; they're intentionally left out of the response.
+    _GRADABLE_TYPES = {'mcq', 'tfng', 'gap_fill', 'matching'}
+
+    def get(self, request, *args, **kwargs):
+        if not request.user.is_superuser:
+            return JsonResponse({'error': "Ruxsat yo'q"}, status=403)
+        exam = get_object_or_404(Exam, pk=kwargs['pk'])
+        answers = {}
+        for question in Question.objects.filter(section__exam=exam):
+            if question.question_type in self._GRADABLE_TYPES:
+                if question.correct_answer.strip():
+                    answers[question.id] = question.correct_answer
+            elif question.question_type == 'writing_task':
+                answers[question.id] = question.model_answer.strip() or (
+                    "This is a demo answer used only to verify the AI grading pipeline. " * 40
+                )
+        return JsonResponse(answers)
+
+
 class SubmitExamView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         exam = get_object_or_404(Exam, pk=kwargs['pk'])
