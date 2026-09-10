@@ -85,31 +85,35 @@ def validate_audio_upload(file, max_mb, allowed_types):
 
 
 def text_to_html_paragraphs(text):
-    """Turn plain text (blank-line-separated paragraphs) into `<p>` blocks,
-    matching how AI-generated section content is formatted (see
-    core/ai_utils.py's passage_text.replace(chr(10), '</p><p>')) so manually
-    entered content renders the same way on the take-exam page, where
-    Section.content is dropped into the template with |safe.
+    """Turn plain text into `<p>`/`<br>` HTML — blank-line-separated blocks
+    become paragraphs (matching how AI-generated section content is
+    formatted, see core/ai_utils.py's passage_text.replace(chr(10),
+    '</p><p>')), single line breaks within a block become `<br>`, and the
+    text is HTML-escaped. Section.content is dropped into the take-exam
+    template with |safe, so unescaped `<`/`&`/etc. in staff-typed text would
+    otherwise break the page — django.utils.html.linebreaks handles both
+    concerns using Django's own well-tested implementation.
     """
+    from django.utils.html import linebreaks
     text = (text or '').strip()
-    if not text:
-        return ''
-    paragraphs = [p.strip() for p in text.replace('\r\n', '\n').split('\n\n')]
-    return ''.join(f'<p>{p}</p>' for p in paragraphs if p)
+    return linebreaks(text, autoescape=True) if text else ''
 
 
 def html_paragraphs_to_text(html):
     """Reverse of text_to_html_paragraphs — pulls plain-text paragraphs back
-    out of simple <p>...</p> markup so it can be shown/edited in a plain
-    <textarea>. Falls back to stripping all tags for content that wasn't
-    produced by text_to_html_paragraphs (e.g. AI-generated markup)."""
+    out of <p>/<br> markup (unescaping HTML entities) so it can be
+    shown/edited in a plain <textarea>. Falls back to stripping all tags for
+    content that wasn't produced by text_to_html_paragraphs (e.g.
+    AI-generated markup)."""
+    import html as html_stdlib
     html = (html or '').strip()
     if not html:
         return ''
     paragraphs = re.findall(r'<p>(.*?)</p>', html, re.DOTALL)
     if not paragraphs:
-        return re.sub(r'<[^>]+>', '', html).strip()
-    return '\n\n'.join(p.strip() for p in paragraphs)
+        return html_stdlib.unescape(re.sub(r'<[^>]+>', '', html)).strip()
+    texts = [html_stdlib.unescape(re.sub(r'<br\s*/?>', '\n', p)).strip() for p in paragraphs]
+    return '\n\n'.join(texts)
 
 
 def parse_json_body(request, error_message="Noto'g'ri so'rov", ok_field=False):

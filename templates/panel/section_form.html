@@ -24,7 +24,7 @@
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
         <div class="form-group">
           <label class="form-label">Turi *</label>
-          <select class="form-input" name="section_type" required>
+          <select class="form-input" name="section_type" id="section_type" onchange="updateSectionTypeUI()" required>
             <option value="">— Tanlang —</option>
             {% for val, label in section_types %}
             <option value="{{ val }}" {% if request.POST.section_type|default:initial.section_type == val %}selected{% endif %}>{{ label }}</option>
@@ -42,12 +42,12 @@
         <div style="font-size:11px;color:var(--muted);margin-top:4px">Paragraflar orasida bo'sh qator qoldiring — har bir paragraf alohida chiqadi.</div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-        <div class="form-group">
+        <div class="form-group" id="field-audio">
           <label class="form-label">Audio fayl (Listening uchun)</label>
           <input class="form-input" name="audio_file" type="file" accept="audio/*">
           {% if section.audio_file %}<div style="font-size:11px;color:var(--muted);margin-top:4px">Joriy: {{ section.audio_file.name }} (yangisini tanlasangiz almashtiriladi)</div>{% endif %}
         </div>
-        <div class="form-group">
+        <div class="form-group" id="field-image">
           <label class="form-label">Rasm (Writing Task 1 grafik uchun)</label>
           <input class="form-input" name="image" type="file" accept="image/*">
           {% if section.image %}<div style="font-size:11px;color:var(--muted);margin-top:4px">Joriy: {{ section.image.name }} (yangisini tanlasangiz almashtiriladi)</div>{% endif %}
@@ -60,4 +60,15 @@
     </form>
   </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function updateSectionTypeUI() {
+  const val = document.getElementById('section_type').value;
+  document.getElementById('field-audio').hidden = (val !== 'listening');
+  document.getElementById('field-image').hidden = (val !== 'writing');
+}
+updateSectionTypeUI();
+</script>
 {% endblock %}
