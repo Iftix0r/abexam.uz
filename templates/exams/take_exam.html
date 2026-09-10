@@ -1565,6 +1565,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert(data.error || "Xatolik yuz berdi. Qayta urinib ko'ring.");
                 return;
             }
+            localStorage.removeItem(DRAFT_KEY);
+            document.getElementById('resultModal').classList.add('active');
+            lucide.createIcons();
+
+            if (demoSpeakingQids && demoSpeakingQids.length) {
+                // The submit response's speaking band is a 0.0 placeholder — the
+                // real score only exists once the demo transcript grading below
+                // finishes — so don't show it, show a loading state instead.
+                document.getElementById('resultScore').innerText = '…';
+                const bl = document.getElementById('bandLabel');
+                if (bl) bl.innerText = 'AI Speaking javoblarini baholamoqda...';
+                document.getElementById('sectionScores').innerHTML = '';
+                const link = document.getElementById('resultDetailLink');
+                link.style.visibility = 'hidden';
+                demoFillSpeaking(data.result_id, demoSpeakingQids).then(() => {
+                    window.location.href = `/exams/result/${data.result_id}/`;
+                });
+                return;
+            }
+
             document.getElementById('resultScore').innerText = parseFloat(data.score).toFixed(1);
             const bandLabels = {9:'Expert',8.5:'Expert',8:'Very Good User',7.5:'Very Good User',7:'Good User',6.5:'Competent User',6:'Competent User',5.5:'Modest User',5:'Modest User',4.5:'Limited User',4:'Limited User'};
             const bl = document.getElementById('bandLabel');
@@ -1582,16 +1602,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             document.getElementById('resultDetailLink').href = `/exams/result/${data.result_id}/`;
-            localStorage.removeItem(DRAFT_KEY);
-            document.getElementById('resultModal').classList.add('active');
-            lucide.createIcons();
-            if (demoSpeakingQids && demoSpeakingQids.length) {
-                demoFillSpeaking(data.result_id, demoSpeakingQids).then(() => {
-                    window.location.href = `/exams/result/${data.result_id}/`;
-                });
-            } else {
-                uploadSpeakingAudios(data.result_id);
-            }
+            uploadSpeakingAudios(data.result_id);
         })
         .catch(() => {
             examSubmitted = false;
