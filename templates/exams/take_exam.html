@@ -1490,10 +1490,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fetches correct answers from a superuser-only endpoint (never sent to
     // the page normally) and fills them in, so staff can verify the AI
     // grading pipeline end-to-end without answering 40+ questions by hand.
-    // Speaking questions need a real recording and are left unanswered.
+    // Speaking questions can't be auto-recorded, so they're graded via a
+    // canned demo transcript through the same speaking_eval endpoint instead.
     window.demoFillAndSubmit = async function() {
         if (examSubmitted) return;
-        if (!confirm("Demo: to'g'ri javoblar bilan avtomatik to'ldirilib, test darhol yuboriladi (Speaking bundan mustasno — audio kerak). Davom etilsinmi?")) return;
+        if (!confirm("Demo: to'g'ri javoblar bilan avtomatik to'ldirilib, test darhol yuboriladi (Speaking uchun demo transkript ishlatiladi). Davom etilsinmi?")) return;
 
         const btn = document.getElementById('demoFillBtn');
         if (btn) { btn.disabled = true; btn.innerText = "Tayyorlanmoqda..."; }
@@ -1517,14 +1518,34 @@ document.addEventListener('DOMContentLoaded', () => {
                 else saveAnswer(qid, value);
             });
 
-            submitExam(false);
+            const speakingQids = Object.values(sectionQuestions)
+                .flat()
+                .filter(q => q.type === 'short_answer')
+                .map(q => q.id);
+
+            submitExam(false, speakingQids);
         } finally {
             if (btn) { btn.disabled = false; btn.innerText = "🧪 Demo to'ldirish"; }
         }
     };
 
+    async function demoFillSpeaking(resultId, qids) {
+        for (const qid of qids) {
+            try {
+                const fd = new FormData();
+                fd.append('demo', '1');
+                fd.append('result_id', resultId);
+                fd.append('question_id', qid);
+                fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+                await fetch("{% url 'exams:speaking_eval' %}", { method: 'POST', body: fd });
+            } catch(e) { console.warn('Demo speaking eval failed for q' + qid, e); }
+        }
+    }
+
     // ─── SUBMIT ───────────────────────────────────────────
-    window.submitExam = function(auto = false) {
+    // demoSpeakingQids: superadmin QA only — question ids to grade via a
+    // canned demo transcript instead of a real recording (see demoFillAndSubmit).
+    window.submitExam = function(auto = false, demoSpeakingQids = null) {
         if (examSubmitted) return;
         if (auto && !confirm('Vaqt tugadi! Test avtomatik yakunlanmoqda.')) {
             // Still submit on timeout
@@ -1564,7 +1585,13 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.removeItem(DRAFT_KEY);
             document.getElementById('resultModal').classList.add('active');
             lucide.createIcons();
-            uploadSpeakingAudios(data.result_id);
+            if (demoSpeakingQids && demoSpeakingQids.length) {
+                demoFillSpeaking(data.result_id, demoSpeakingQids).then(() => {
+                    window.location.href = `/exams/result/${data.result_id}/`;
+                });
+            } else {
+                uploadSpeakingAudios(data.result_id);
+            }
         })
         .catch(() => {
             examSubmitted = false;

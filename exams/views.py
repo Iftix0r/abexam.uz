@@ -376,22 +376,34 @@ class SpeakingEvalView(LoginRequiredMixin, View):
           → Whisper transcription → GPT evaluation
           → saves speaking_feedback to UserResult
     """
+    # Canned transcript for the superuser-only demo path — lets QA verify
+    # the speaking grading pipeline without recording real audio.
+    _DEMO_TRANSCRIPT = (
+        "This is a demo spoken response used only to verify the AI grading pipeline. "
+        "In a real answer I would speak fluently, use a good range of vocabulary and "
+        "accurate grammar, and give specific reasons and examples to support my point of view."
+    )
+
     def post(self, request, *args, **kwargs):
         from core.ai_utils import transcribe_audio, evaluate_speaking
 
         result_id = request.POST.get('result_id')
         question_id = request.POST.get('question_id', '')
         audio_file = request.FILES.get('audio')
+        is_demo = request.POST.get('demo') == '1'
 
-        if not audio_file:
+        if is_demo and not request.user.is_superuser:
+            return JsonResponse({'error': "Ruxsat yo'q"}, status=403)
+        if not is_demo and not audio_file:
             return JsonResponse({'error': 'Audio fayl topilmadi'}, status=400)
         if not result_id:
             return JsonResponse({'error': 'result_id talab qilinadi'}, status=400)
-        if audio_file.size > 25 * 1024 * 1024:
-            return JsonResponse({'error': 'Audio fayl hajmi 25MB dan oshmasligi kerak'}, status=400)
-        allowed_audio_types = {'audio/webm', 'audio/mp4', 'audio/mpeg', 'audio/ogg', 'audio/wav'}
-        if audio_file.content_type not in allowed_audio_types:
-            return JsonResponse({'error': 'Noto\'g\'ri audio format'}, status=400)
+        if audio_file:
+            if audio_file.size > 25 * 1024 * 1024:
+                return JsonResponse({'error': 'Audio fayl hajmi 25MB dan oshmasligi kerak'}, status=400)
+            allowed_audio_types = {'audio/webm', 'audio/mp4', 'audio/mpeg', 'audio/ogg', 'audio/wav'}
+            if audio_file.content_type not in allowed_audio_types:
+                return JsonResponse({'error': 'Noto\'g\'ri audio format'}, status=400)
 
         try:
             result = UserResult.objects.get(pk=result_id, user=request.user)
@@ -406,10 +418,13 @@ class SpeakingEvalView(LoginRequiredMixin, View):
             except Question.DoesNotExist:
                 pass
 
-        audio_bytes = audio_file.read()
-        filename = audio_file.name or 'audio.webm'
+        if is_demo:
+            transcript = self._DEMO_TRANSCRIPT
+        else:
+            audio_bytes = audio_file.read()
+            filename = audio_file.name or 'audio.webm'
+            transcript = transcribe_audio(audio_bytes, filename)
 
-        transcript = transcribe_audio(audio_bytes, filename)
         feedback = evaluate_speaking(transcript, question=question_text)
 
         # Merge with existing speaking_feedback — replace by question_id if re-submitted
