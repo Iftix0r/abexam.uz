@@ -373,9 +373,11 @@ TRANSCRIPT:
 Return JSON:
 {{
   "questions": [
-    {{"order":1,"text":"...","question_type":"gap_fill","correct_answer":"...","options":[],"explanation":"Exact speaker words that confirm this answer: '...'"}}
+    {{"order":1,"text":"...","question_type":"gap_fill","correct_answer":"...","options":[],"explanation":"Exact speaker words that confirm this answer: '...'"}},
+    {{"order":2,"text":"...","question_type":"mcq","correct_answer":"B","options":[{{"key":"A","text":"Distractor A"}},{{"key":"B","text":"Correct option text"}},{{"key":"C","text":"Distractor C"}}],"explanation":"Exact speaker words that confirm this answer: '...'"}}
   ]
 }}
+For "mcq" questions, "options" MUST be a list of objects shaped exactly like the example above: each with a "key" (A/B/C/...) and a "text" (the option's wording) — never plain strings and never any other field names.
 Every single question MUST have non-empty "text" and "correct_answer" — this is critical, do not leave any blank."""
 
 _WRITING_TASKS = """Create IELTS Writing Task 1 and Task 2 for {variant} IELTS. Topic area: {topic}
@@ -738,27 +740,52 @@ def _gen_speaking(topic: str, model: str) -> list:
     cue = random.choice(_CUE_CARDS)
     data = _call_ai(_SPEAKING_PARTS.format(topic=topic, cue_card_topic=cue), model, max_tokens=1500)
     sections = []
-    p1_qs = _normalise_questions(data.get("part1_questions", []))
+    p1_qs = _normalise_questions(data.get("part1_questions", []), default_type="short_answer")
     sections.append({"title": "Speaking — Part 1: Introduction", "section_type": "speaking", "order": 1, "duration_minutes": 5, "content": "<div><h3>Speaking Part 1</h3><p>Answer each question naturally. Aim for 2–4 sentences per answer.</p></div>", "questions": p1_qs})
     card = data.get("part2_card", {})
     sections.append({"title": "Speaking — Part 2: Long Turn", "section_type": "speaking", "order": 2, "duration_minutes": 4, "content": "<div><h3>Speaking Part 2</h3><p>Prepare 1 minute, then speak for 1–2 minutes.</p></div>", "questions": [{"order": 1, "text": card.get("text", ""), "question_type": "short_answer", "correct_answer": "", "options": [], "explanation": card.get("explanation", ""), "word_limit": 0}]})
-    p3_qs = _normalise_questions(data.get("part3_questions", []))
+    p3_qs = _normalise_questions(data.get("part3_questions", []), default_type="short_answer")
     sections.append({"title": "Speaking — Part 3: Discussion", "section_type": "speaking", "order": 3, "duration_minutes": 5, "content": "<div><h3>Speaking Part 3</h3><p>Give analytical, extended answers. Aim for 40–60 seconds each.</p></div>", "questions": p3_qs})
     return sections
 
 
-def _normalise_questions(raw: list) -> list:
+def _normalise_questions(raw: list, default_type: str = "gap_fill") -> list:
     """Ensure every question dict has the fields the loader expects."""
     result = []
     for i, q in enumerate(raw, start=1):
         if not isinstance(q, dict): continue
-        qtype = q.get("question_type", "gap_fill")
-        
-        # Fix empty MCQ options
+        qtype = q.get("question_type", default_type)
+
+        # Fix empty/malformed MCQ options — the AI sometimes returns options
+        # as bare strings or with different key names (e.g. "letter"/"option")
+        # instead of the {"key":..., "text":...} shape the template renders,
+        # which produces radio buttons with no visible label text.
         options = q.get("options", [])
-        if qtype == "mcq" and (not options or len(options) < 2):
-            # Emergency fallback if AI failed to provide options
-            options = [{"key": "A", "text": "Option A"}, {"key": "B", "text": "Option B"}, {"key": "C", "text": "Option C"}, {"key": "D", "text": "Option D"}]
+        if qtype == "mcq":
+            fixed_options = []
+            for idx, opt in enumerate(options):
+                letter = chr(65 + idx)  # A, B, C, ...
+                if isinstance(opt, dict):
+                    key, text = str(opt.get("key", "")).strip(), str(opt.get("text", "")).strip()
+                    if not text:
+                        # AI used different field names for key/text (e.g. "letter"/"option",
+                        # "label"/"value") — guess by length: the short value is the letter,
+                        # the long value is the option wording.
+                        values = [str(v).strip() for v in opt.values() if isinstance(v, (str, int, float)) and str(v).strip()]
+                        values.sort(key=len)
+                        if len(values) >= 2:
+                            key, text = values[0], values[-1]
+                        elif len(values) == 1:
+                            text = values[0]
+                    key = key or letter
+                else:
+                    key, text = letter, str(opt).strip()
+                if text:
+                    fixed_options.append({"key": key, "text": text})
+            options = fixed_options
+            if len(options) < 2:
+                # Emergency fallback if AI failed to provide usable options
+                options = [{"key": "A", "text": "Option A"}, {"key": "B", "text": "Option B"}, {"key": "C", "text": "Option C"}, {"key": "D", "text": "Option D"}]
         
         # Fix empty question text
         qtext = str(q.get("text", "")).strip()
