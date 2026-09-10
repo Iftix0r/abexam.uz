@@ -31,8 +31,10 @@ urlpatterns = [
     path('sections/<int:pk>/edit/', views.section_edit, name='section_edit'),
     path('sections/<int:pk>/delete/', views.section_delete, name='section_delete'),
     path('sections/<int:pk>/move/', views.section_move, name='section_move'),
+    path('sections/<int:pk>/duplicate/', views.section_duplicate, name='section_duplicate'),
     path('sections/<int:section_pk>/questions/create/', views.question_create, name='question_create'),
     path('questions/<int:pk>/move/', views.question_move, name='question_move'),
+    path('questions/<int:pk>/duplicate/', views.question_duplicate, name='question_duplicate'),
 
     path('transactions/', views.transactions_list, name='transactions'),
     path('transactions/<int:pk>/approve/', views.transaction_approve, name='tx_approve'),

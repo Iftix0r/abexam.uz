@@ -111,6 +111,7 @@
 async function toggleExam(pk){
   const r=await fetch(`/panel/exams/${pk}/toggle/`,{method:'POST',headers:{'X-CSRFToken':csrf}});
   const d=await r.json();
+  if(d.error){toast(d.error,'#ef4444');return;}
   const el=document.getElementById('exam-status-'+pk);
   el.textContent=d.active?'Faol':'Nofaol';
   el.className='badge '+(d.active?'badge-green':'badge-gray');

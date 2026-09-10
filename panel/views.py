@@ -293,6 +293,12 @@ def exam_create(request):
     return render(request, 'panel/exam_form.html', {'exam_types': Exam.EXAM_TYPES, 'exam': None})
 
 
+def _exam_has_content(exam):
+    """True if the exam has at least one section with at least one
+    question — the minimum needed for a student to actually take it."""
+    return Question.objects.filter(section__exam=exam).exists()
+
+
 @panel_required
 def exam_edit(request, pk):
     exam = get_object_or_404(Exam, pk=pk)
@@ -302,7 +308,11 @@ def exam_edit(request, pk):
         exam.price = request.POST.get('price', exam.price)
         exam.duration_minutes = request.POST.get('duration_minutes', exam.duration_minutes)
         exam.description = request.POST.get('description', exam.description)
-        exam.is_active = request.POST.get('is_active') == 'on'
+        want_active = request.POST.get('is_active') == 'on'
+        if want_active and not exam.is_active and not _exam_has_content(exam):
+            messages.error(request, "Imtihonda hali birorta savol yo'q — avval bo'lim va savol qo'shing, keyin faollashtiring.")
+        else:
+            exam.is_active = want_active
         exam.save()
         return redirect('panel:exam_detail', pk=exam.pk)
     return render(request, 'panel/exam_form.html', {'exam_types': Exam.EXAM_TYPES, 'exam': exam})
@@ -320,6 +330,11 @@ def exam_delete(request, pk):
 @require_POST
 def exam_toggle_active(request, pk):
     exam = get_object_or_404(Exam, pk=pk)
+    if not exam.is_active and not _exam_has_content(exam):
+        return JsonResponse({
+            'active': False,
+            'error': "Imtihonda hali birorta savol yo'q — avval bo'lim va savol qo'shing.",
+        }, status=400)
     exam.is_active = not exam.is_active
     exam.save(update_fields=['is_active'])
     return JsonResponse({'active': exam.is_active})
@@ -333,9 +348,13 @@ def exam_review(request, pk):
     action = request.POST.get('action')
     if action == 'approve':
         exam.is_reviewed = True
-        exam.is_active = True
-        exam.save(update_fields=['is_reviewed', 'is_active'])
-        messages.success(request, f'"{exam.title}" tasdiqlandi va faollashtirildi.')
+        if _exam_has_content(exam):
+            exam.is_active = True
+            exam.save(update_fields=['is_reviewed', 'is_active'])
+            messages.success(request, f'"{exam.title}" tasdiqlandi va faollashtirildi.')
+        else:
+            exam.save(update_fields=['is_reviewed'])
+            messages.error(request, f'"{exam.title}" tasdiqlandi, lekin savollar yo\'q — faollashtirish uchun avval savol qo\'shing.')
     elif action == 'reject':
         title = exam.title
         exam.delete()
@@ -453,6 +472,42 @@ def section_move(request, pk):
     section.order, other.order = other.order, section.order
     Section.objects.bulk_update([section, other], ['order'])
     return JsonResponse({'ok': True})
+
+
+@panel_required
+@require_POST
+def section_duplicate(request, pk):
+    """Deep-copy a section (title, content, audio/image files) and all its
+    questions — a faster starting point than re-typing a similar passage."""
+    from django.core.files.base import ContentFile
+    section = get_object_or_404(Section, pk=pk)
+    new_section = Section(
+        exam=section.exam,
+        title=f"{section.title} (nusxa)",
+        section_type=section.section_type,
+        content=section.content,
+        extra_data=section.extra_data,
+        duration_minutes=section.duration_minutes,
+        order=(section.exam.sections.aggregate(Max('order'))['order__max'] or 0) + 1,
+    )
+    # Copy the actual file content into a new file rather than pointing at
+    # the same one — deleting either section later must not take the
+    # other's file with it (Section's post_delete signal removes the file).
+    if section.audio_file:
+        new_section.audio_file.save(
+            section.audio_file.name.rsplit('/', 1)[-1], ContentFile(section.audio_file.read()), save=False)
+    if section.image:
+        new_section.image.save(
+            section.image.name.rsplit('/', 1)[-1], ContentFile(section.image.read()), save=False)
+    new_section.save()
+
+    for q in section.questions.all():
+        Question.objects.create(
+            section=new_section, text=q.text, question_type=q.question_type,
+            options=q.options, correct_answer=q.correct_answer, explanation=q.explanation,
+            model_answer=q.model_answer, order=q.order, word_limit=q.word_limit,
+        )
+    return redirect('panel:exam_detail', pk=section.exam.pk)
 
 
 @panel_required
@@ -866,6 +921,21 @@ def question_move(request, pk):
     question.order, other.order = other.order, question.order
     Question.objects.bulk_update([question, other], ['order'])
     return JsonResponse({'ok': True})
+
+
+@panel_required
+@require_POST
+def question_duplicate(request, pk):
+    """Copy a question into the same section, then drop straight into
+    editing the copy — faster than retyping near-identical MCQs by hand."""
+    question = get_object_or_404(Question, pk=pk)
+    new_question = Question.objects.create(
+        section=question.section, text=question.text, question_type=question.question_type,
+        options=question.options, correct_answer=question.correct_answer, explanation=question.explanation,
+        model_answer=question.model_answer, word_limit=question.word_limit,
+        order=(question.section.questions.aggregate(Max('order'))['order__max'] or 0) + 1,
+    )
+    return redirect('panel:question_edit', pk=new_question.pk)
 
 
 @panel_required

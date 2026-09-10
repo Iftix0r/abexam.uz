@@ -134,9 +134,15 @@ class TakeExamView(LoginRequiredMixin, DetailView):
 
     def get(self, request, *args, **kwargs):
         exam = self.get_object()
-        if not exam.is_active:
+        # Staff previewing a draft/paid exam before publishing it skips the
+        # active/payment gates — only when explicitly requested, so a
+        # staff member's own normal exam-taking flow is unaffected.
+        is_preview = request.user.is_staff and request.GET.get('preview') == '1'
+        if not exam.is_active and not is_preview:
             messages.error(request, "Bu imtihon hozirda faol emas.")
             return redirect('exams:exam_detail', pk=exam.pk)
+        if is_preview:
+            return super().get(request, *args, **kwargs)
         if exam.price > 0 and not exam_is_paid(request.user.pk, exam.pk):
             # A Django session write only persists at the end of the
             # request, so two concurrent requests (double-click, retry)

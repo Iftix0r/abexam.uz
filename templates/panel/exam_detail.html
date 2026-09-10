@@ -44,6 +44,7 @@
           {% if exam.is_ai_generated %}<span style="background:rgba(99,102,241,.15);color:#a5b4fc;border:1px solid rgba(99,102,241,.3);border-radius:20px;padding:2px 10px;font-size:11px;font-weight:700">🤖 AI Generated</span>{% endif %}
         </div>
         <div style="display:flex;gap:8px">
+          <a href="{% url 'exams:take_exam' exam.pk %}?preview=1" target="_blank" class="btn btn-ghost btn-sm">👁 Talaba sifatida ko'rish</a>
           <a href="{% url 'panel:exam_edit' exam.pk %}" class="btn btn-ghost btn-sm">Tahrirlash</a>
           <button onclick="toggleExam({{ exam.pk }})" class="btn btn-ghost btn-sm" id="toggle-btn">
             {% if exam.is_active %}O'chirish{% else %}Yoqish{% endif %}
@@ -65,6 +66,10 @@
           <button onclick="moveSection({{ section.pk }},'up')" class="btn btn-ghost btn-sm" title="Yuqoriga">▲</button>
           <button onclick="moveSection({{ section.pk }},'down')" class="btn btn-ghost btn-sm" title="Pastga">▼</button>
           <a href="{% url 'panel:section_edit' section.pk %}" class="btn btn-ghost btn-sm">✎ Tahrirlash</a>
+          <form method="post" action="{% url 'panel:section_duplicate' section.pk %}" style="display:inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-ghost btn-sm" title="Nusxalash">⧉ Nusxalash</button>
+          </form>
           <button onclick="deleteSection({{ section.pk }})" class="btn btn-ghost btn-sm" style="color:var(--red)">🗑 O'chirish</button>
         </div>
       </div>
@@ -76,7 +81,7 @@
             <th style="text-align:left;font-size:11px;color:var(--muted);padding:6px 0;border-bottom:1px solid var(--border)">Savol matni</th>
             <th style="text-align:left;font-size:11px;color:var(--muted);padding:6px 0;border-bottom:1px solid var(--border);width:100px">Turi</th>
             <th style="text-align:left;font-size:11px;color:var(--muted);padding:6px 0;border-bottom:1px solid var(--border);width:120px">To'g'ri javob</th>
-            <th style="width:110px;border-bottom:1px solid var(--border)"></th>
+            <th style="width:140px;border-bottom:1px solid var(--border)"></th>
           </tr>
         </thead>
         <tbody>
@@ -98,6 +103,11 @@
                 <button onclick="moveQuestion({{ q.pk }},'down')" class="btn btn-ghost btn-sm" title="Pastga">▼</button>
                 <a href="{% url 'panel:question_edit' q.pk %}"
                   style="background:rgba(99,102,241,.1);color:var(--primary);border:none;border-radius:6px;padding:4px 8px;font-size:11px">✎</a>
+                <form method="post" action="{% url 'panel:question_duplicate' q.pk %}" style="display:inline">
+                  {% csrf_token %}
+                  <button type="submit" title="Nusxalash"
+                    style="background:rgba(99,102,241,.1);color:var(--primary);border:none;border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer">⧉</button>
+                </form>
                 <button onclick="deleteQuestion({{ q.pk }})"
                   style="background:rgba(239,68,68,.1);color:var(--red);border:none;border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer">✕</button>
               </div>
@@ -165,6 +175,7 @@ const csrf = getCookie('csrftoken');
 async function toggleExam(pk){
   const r=await fetch(`/panel/exams/${pk}/toggle/`,{method:'POST',headers:{'X-CSRFToken':csrf}});
   const d=await r.json();
+  if(d.error){toast(d.error,'#ef4444');return;}
   const btn=document.getElementById('toggle-btn');
   if(btn) btn.innerText=d.active?'O\'chirish':'Yoqish';
   toast(d.active?'Yoqildi ✓':'O\'chirildi');
@@ -173,6 +184,7 @@ async function toggleExam(pk){
 async function activateExam(pk){
   const r=await fetch(`/panel/exams/${pk}/toggle/`,{method:'POST',headers:{'X-CSRFToken':csrf}});
   const d=await r.json();
+  if(d.error){toast(d.error,'#ef4444');return;}
   if(d.active){toast('Test nashr qilindi ✓');setTimeout(()=>location.reload(),800);}
 }
 

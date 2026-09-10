@@ -240,6 +240,12 @@ function toast(msg, color='#22c55e'){
   setTimeout(()=>t.style.display='none',2800);
 }
 
+{% if messages %}
+{% for message in messages %}
+setTimeout(()=>toast("{{ message|escapejs }}", "{% if message.tags == 'error' %}#ef4444{% elif message.tags == 'warning' %}#eab308{% else %}#22c55e{% endif %}"), {{ forloop.counter0 }}*3200);
+{% endfor %}
+{% endif %}
+
 // CSRF
 function getCookie(n){const v=document.cookie.match('(^|;) ?'+n+'=([^;]*)(;|$)');return v?v[2]:null}
 const csrf=getCookie('csrftoken');
