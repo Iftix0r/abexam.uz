@@ -342,7 +342,7 @@ class ResultDetailView(LoginRequiredMixin, DetailView):
             correct_count = 0
             for q in section.questions.all():
                 user_ans = str(db_answers.get(str(q.id), '')).strip()
-                if q.question_type == 'writing_task':
+                if q.question_type in ('writing_task', 'short_answer'):
                     is_correct = None
                 else:
                     is_correct = _fuzzy_match(user_ans, q.correct_answer)
@@ -359,7 +359,7 @@ class ResultDetailView(LoginRequiredMixin, DetailView):
                     'word_limit': q.word_limit,
                 })
             section.correct = correct_count
-            section.total = len([q for q in questions_data if q['question_type'] != 'writing_task'])
+            section.total = len([q for q in questions_data if q['question_type'] not in ('writing_task', 'short_answer')])
             sections_data.append((section, questions_data))
 
         context['sections_data'] = sections_data
