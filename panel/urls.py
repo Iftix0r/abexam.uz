@@ -27,6 +27,13 @@ urlpatterns = [
     path('exams/<int:pk>/toggle/', views.exam_toggle_active, name='exam_toggle'),
     path('exams/<int:pk>/review/', views.exam_review, name='exam_review'),
 
+    path('exams/<int:exam_pk>/sections/create/', views.section_create, name='section_create'),
+    path('sections/<int:pk>/edit/', views.section_edit, name='section_edit'),
+    path('sections/<int:pk>/delete/', views.section_delete, name='section_delete'),
+    path('sections/<int:pk>/move/', views.section_move, name='section_move'),
+    path('sections/<int:section_pk>/questions/create/', views.question_create, name='question_create'),
+    path('questions/<int:pk>/move/', views.question_move, name='question_move'),
+
     path('transactions/', views.transactions_list, name='transactions'),
     path('transactions/<int:pk>/approve/', views.transaction_approve, name='tx_approve'),
     path('transactions/<int:pk>/reject/', views.transaction_reject, name='tx_reject'),

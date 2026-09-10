@@ -6,14 +6,17 @@ from datetime import timedelta
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db import IntegrityError, transaction as db_transaction
-from django.db.models import Avg, Count, F, Sum
+from django.db.models import Avg, Count, F, Max, Sum
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from core.models import SiteSettings, Notification, PromoCode
-from core.utils import daily_series, monthly_series, parse_json_body, validate_image_upload
+from core.utils import (
+    daily_series, html_paragraphs_to_text, monthly_series, parse_json_body,
+    text_to_html_paragraphs, validate_audio_upload, validate_image_upload,
+)
 from exams.models import Exam, Question, Section, UserResult
 from payments.models import Transaction
 from users.models import LoginLog, User, Vocabulary
@@ -340,6 +343,118 @@ def exam_review(request, pk):
     return redirect('panel:exams')
 
 
+# ── Manual exam builder: sections ───────────────────────────────────────────
+_AUDIO_TYPES = {'audio/webm', 'audio/mp4', 'audio/mpeg', 'audio/ogg', 'audio/wav'}
+_IMAGE_TYPES = {'image/jpeg', 'image/png', 'image/webp'}
+
+
+def _save_section_from_post(request, exam, section=None):
+    """Validate + save Section fields from request.POST/FILES.
+    Returns an Uzbek error message on failure, or None on success."""
+    title = request.POST.get('title', '').strip()
+    section_type = request.POST.get('section_type', '')
+    content_raw = request.POST.get('content', '')
+
+    if not title:
+        return "Bo'lim nomini kiriting"
+    if section_type not in dict(Section.SECTION_TYPES):
+        return "Bo'lim turini tanlang"
+    try:
+        duration_minutes = int(request.POST.get('duration_minutes') or 0)
+    except ValueError:
+        return "Davomiylik butun son bo'lishi kerak"
+
+    audio_file = request.FILES.get('audio_file')
+    if audio_file:
+        error = validate_audio_upload(audio_file, 25, _AUDIO_TYPES)
+        if error:
+            return error
+
+    image = request.FILES.get('image')
+    if image:
+        error = validate_image_upload(image, 5, _IMAGE_TYPES)
+        if error:
+            return error
+
+    if section is None:
+        section = Section(exam=exam)
+        section.order = (exam.sections.aggregate(Max('order'))['order__max'] or 0) + 1
+
+    section.title = title
+    section.section_type = section_type
+    section.content = text_to_html_paragraphs(content_raw)
+    section.duration_minutes = duration_minutes
+    if audio_file:
+        section.audio_file = audio_file
+    if image:
+        section.image = image
+    section.save()
+    return None
+
+
+def _section_initial(section):
+    """Plain-dict field defaults for section_form.html — always a real
+    dict (never None), same rationale as _question_initial."""
+    if section is None:
+        return {'title': '', 'section_type': '', 'duration_minutes': 0}
+    return {'title': section.title, 'section_type': section.section_type, 'duration_minutes': section.duration_minutes}
+
+
+@panel_required
+def section_create(request, exam_pk):
+    exam = get_object_or_404(Exam, pk=exam_pk)
+    error = None
+    if request.method == 'POST':
+        error = _save_section_from_post(request, exam)
+        if not error:
+            return redirect('panel:exam_detail', pk=exam.pk)
+    return render(request, 'panel/section_form.html', {
+        'exam': exam, 'section': None, 'section_types': Section.SECTION_TYPES, 'error': error,
+        'initial_content': '', 'initial': _section_initial(None),
+    })
+
+
+@panel_required
+def section_edit(request, pk):
+    section = get_object_or_404(Section, pk=pk)
+    exam = section.exam
+    error = None
+    if request.method == 'POST':
+        error = _save_section_from_post(request, exam, section)
+        if not error:
+            return redirect('panel:exam_detail', pk=exam.pk)
+    return render(request, 'panel/section_form.html', {
+        'exam': exam, 'section': section, 'section_types': Section.SECTION_TYPES, 'error': error,
+        'initial_content': html_paragraphs_to_text(section.content), 'initial': _section_initial(section),
+    })
+
+
+@panel_required
+@require_POST
+def section_delete(request, pk):
+    section = get_object_or_404(Section, pk=pk)
+    section.delete()
+    return JsonResponse({'ok': True})
+
+
+@panel_required
+@require_POST
+def section_move(request, pk):
+    section = get_object_or_404(Section, pk=pk)
+    data, err = parse_json_body(request, ok_field=True)
+    if err:
+        return err
+    siblings = list(Section.objects.filter(exam=section.exam).order_by('order', 'pk'))
+    idx = next((i for i, s in enumerate(siblings) if s.pk == section.pk), None)
+    swap_idx = idx - 1 if data.get('direction') == 'up' else idx + 1
+    if idx is None or swap_idx < 0 or swap_idx >= len(siblings):
+        return JsonResponse({'ok': True})
+    other = siblings[swap_idx]
+    section.order, other.order = other.order, section.order
+    Section.objects.bulk_update([section, other], ['order'])
+    return JsonResponse({'ok': True})
+
+
 @panel_required
 def results_export_csv(request):
     response = HttpResponse(content_type='text/csv')
@@ -632,18 +747,124 @@ def exam_generate(request):
     })
 
 
+def _save_question_from_post(request, section, question=None):
+    """Validate + save Question fields (type-specific) from request.POST.
+    Returns an Uzbek error message on failure, or None on success."""
+    text = request.POST.get('text', '').strip()
+    qtype = request.POST.get('question_type', '')
+    explanation = request.POST.get('explanation', '').strip()
+
+    if not text:
+        return "Savol matnini kiriting"
+    if qtype not in dict(Question.QUESTION_TYPES):
+        return "Savol turini tanlang"
+
+    options, correct_answer, model_answer, word_limit = [], '', '', 0
+
+    if qtype == 'mcq':
+        option_texts = [t.strip() for t in request.POST.getlist('option_text') if t.strip()]
+        if len(option_texts) < 2:
+            return "Kamida 2 ta variant kiriting"
+        try:
+            correct_idx = int(request.POST.get('correct_option', ''))
+        except ValueError:
+            return "To'g'ri javobni belgilang"
+        if not (0 <= correct_idx < len(option_texts)):
+            return "To'g'ri javobni belgilang"
+        options = [{'key': chr(65 + i), 'text': t} for i, t in enumerate(option_texts)]
+        correct_answer = options[correct_idx]['key']
+    elif qtype == 'tfng':
+        correct_answer = request.POST.get('correct_answer_tfng', '').strip()
+        if correct_answer not in ('True', 'False', 'Not Given'):
+            return "To'g'ri javobni tanlang"
+    elif qtype in ('gap_fill', 'matching'):
+        correct_answer = request.POST.get('correct_answer_text', '').strip()
+        if not correct_answer:
+            return "To'g'ri javobni kiriting"
+    elif qtype == 'writing_task':
+        model_answer = request.POST.get('model_answer', '').strip()
+        try:
+            word_limit = int(request.POST.get('word_limit') or 0)
+        except ValueError:
+            return "So'z chegarasi butun son bo'lishi kerak"
+    # short_answer: text + explanation (tip) only, no extra fields
+
+    if question is None:
+        question = Question(section=section)
+        question.order = (section.questions.aggregate(Max('order'))['order__max'] or 0) + 1
+
+    question.text = text
+    question.question_type = qtype
+    question.options = options
+    question.correct_answer = correct_answer
+    question.explanation = explanation
+    question.model_answer = model_answer
+    question.word_limit = word_limit
+    question.save()
+    return None
+
+
+def _question_initial(question):
+    """Plain-dict field defaults for question_form.html — always a real
+    dict (never None) so `{{ x|default:initial.field }}` in the template
+    never has to resolve an attribute on a possibly-None `question`."""
+    if question is None:
+        return {'text': '', 'question_type': '', 'correct_answer_tfng': '', 'correct_answer_text': '',
+                'model_answer': '', 'word_limit': 0, 'explanation': ''}
+    return {
+        'text': question.text, 'question_type': question.question_type,
+        'correct_answer_tfng': question.correct_answer, 'correct_answer_text': question.correct_answer,
+        'model_answer': question.model_answer, 'word_limit': question.word_limit,
+        'explanation': question.explanation,
+    }
+
+
+@panel_required
+def question_create(request, section_pk):
+    section = get_object_or_404(Section, pk=section_pk)
+    error = None
+    if request.method == 'POST':
+        error = _save_question_from_post(request, section)
+        if not error:
+            return redirect('panel:exam_detail', pk=section.exam.pk)
+    return render(request, 'panel/question_form.html', {
+        'exam': section.exam, 'section': section, 'question': None,
+        'question_types': Question.QUESTION_TYPES, 'error': error,
+        'initial': _question_initial(None),
+    })
+
+
+@panel_required
+def question_edit(request, pk):
+    question = get_object_or_404(Question, pk=pk)
+    section = question.section
+    error = None
+    if request.method == 'POST':
+        error = _save_question_from_post(request, section, question)
+        if not error:
+            return redirect('panel:exam_detail', pk=section.exam.pk)
+    return render(request, 'panel/question_form.html', {
+        'exam': section.exam, 'section': section, 'question': question,
+        'question_types': Question.QUESTION_TYPES, 'error': error,
+        'initial': _question_initial(question),
+    })
+
+
 @panel_required
 @require_POST
-def question_edit(request, pk):
-    """Inline question edit from exam detail page."""
+def question_move(request, pk):
     question = get_object_or_404(Question, pk=pk)
-    data, err = parse_json_body(request, error_message="Noto'g'ri JSON", ok_field=True)
+    data, err = parse_json_body(request, ok_field=True)
     if err:
         return err
-    question.text = data.get('text', question.text)
-    question.correct_answer = data.get('correct_answer', question.correct_answer)
-    question.explanation = data.get('explanation', question.explanation)
-    question.save(update_fields=['text', 'correct_answer', 'explanation'])
+    siblings = list(Question.objects.filter(section=question.section).order_by('order', 'pk'))
+    idx = next((i for i, q in enumerate(siblings) if q.pk == question.pk), None)
+    swap_idx = idx - 1 if data.get('direction') == 'up' else idx + 1
+    if idx is None or swap_idx < 0 or swap_idx >= len(siblings):
+        return JsonResponse({'ok': True})
+    other = siblings[swap_idx]
+    question.order, other.order = other.order, question.order
+    Question.objects.bulk_update([question, other], ['order'])
     return JsonResponse({'ok': True})
 
 

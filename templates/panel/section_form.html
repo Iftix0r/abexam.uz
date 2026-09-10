@@ -1,0 +1,63 @@
+{% extends 'panel/base.html' %}
+{% block title %}{% if section %}Bo'limni tahrirlash{% else %}Yangi bo'lim{% endif %}{% endblock %}
+{% block page_title %}{% if section %}Tahrirlash: {{ section.title }}{% else %}Yangi bo'lim{% endif %}{% endblock %}
+{% block nav_exams %}active{% endblock %}
+
+{% block content %}
+<div style="max-width:640px">
+  <div style="margin-bottom:20px">
+    <a href="{% url 'panel:exam_detail' exam.pk %}" style="color:var(--muted);font-size:13px">← {{ exam.title }}ga qaytish</a>
+  </div>
+
+  <div class="card">
+    {% if error %}
+    <div style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:var(--red);border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:16px">
+      ⚠ {{ error }}
+    </div>
+    {% endif %}
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="form-group">
+        <label class="form-label">Bo'lim nomi *</label>
+        <input class="form-input" name="title" value="{{ request.POST.title|default:initial.title }}" placeholder="Masalan: Listening Section 1" required>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="form-group">
+          <label class="form-label">Turi *</label>
+          <select class="form-input" name="section_type" required>
+            <option value="">— Tanlang —</option>
+            {% for val, label in section_types %}
+            <option value="{{ val }}" {% if request.POST.section_type|default:initial.section_type == val %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Davomiyligi (daqiqa)</label>
+          <input class="form-input" name="duration_minutes" type="number" min="0" value="{{ request.POST.duration_minutes|default:initial.duration_minutes }}" placeholder="0 = umumiy vaqtdan foydalaniladi">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Matn (o'qish matni / ko'rsatma / audio skript)</label>
+        <textarea class="form-input" name="content" rows="10" placeholder="Matnni shu yerga yozing. Paragraflar orasida bo'sh qator qoldiring.">{{ request.POST.content|default:initial_content }}</textarea>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">Paragraflar orasida bo'sh qator qoldiring — har bir paragraf alohida chiqadi.</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="form-group">
+          <label class="form-label">Audio fayl (Listening uchun)</label>
+          <input class="form-input" name="audio_file" type="file" accept="audio/*">
+          {% if section.audio_file %}<div style="font-size:11px;color:var(--muted);margin-top:4px">Joriy: {{ section.audio_file.name }} (yangisini tanlasangiz almashtiriladi)</div>{% endif %}
+        </div>
+        <div class="form-group">
+          <label class="form-label">Rasm (Writing Task 1 grafik uchun)</label>
+          <input class="form-input" name="image" type="file" accept="image/*">
+          {% if section.image %}<div style="font-size:11px;color:var(--muted);margin-top:4px">Joriy: {{ section.image.name }} (yangisini tanlasangiz almashtiriladi)</div>{% endif %}
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:8px">
+        <button type="submit" class="btn btn-primary">{% if section %}Saqlash{% else %}Qo'shish{% endif %}</button>
+        <a href="{% url 'panel:exam_detail' exam.pk %}" class="btn btn-ghost">Bekor qilish</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

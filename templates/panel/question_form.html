@@ -1,0 +1,146 @@
+{% extends 'panel/base.html' %}
+{% block title %}{% if question %}Savolni tahrirlash{% else %}Yangi savol{% endif %}{% endblock %}
+{% block page_title %}{% if question %}Savolni tahrirlash{% else %}Yangi savol{% endif %} — {{ section.title }}{% endblock %}
+{% block nav_exams %}active{% endblock %}
+
+{% block content %}
+<div style="max-width:680px">
+  <div style="margin-bottom:20px">
+    <a href="{% url 'panel:exam_detail' exam.pk %}" style="color:var(--muted);font-size:13px">← {{ exam.title }}ga qaytish</a>
+  </div>
+
+  <div class="card">
+    {% if error %}
+    <div style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:var(--red);border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:16px">
+      ⚠ {{ error }}
+    </div>
+    {% endif %}
+    <form method="post" onsubmit="prepareMcqSubmit(this)">
+      {% csrf_token %}
+      <div class="form-group">
+        <label class="form-label">Savol matni *</label>
+        <textarea class="form-input" name="text" rows="3" required>{{ request.POST.text|default:initial.text }}</textarea>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">Bo'sh joy to'ldirish (Gap-fill/Matching) turlari uchun matn ichida bo'sh joy o'rniga uch pastki chiziqcha (<code>___</code>) yozing.</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Savol turi *</label>
+        <select class="form-input" name="question_type" id="question_type" onchange="updateQuestionTypeUI()" required>
+          <option value="">— Tanlang —</option>
+          {% for val, label in question_types %}
+          <option value="{{ val }}" {% if request.POST.question_type|default:initial.question_type == val %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- MCQ -->
+      <div class="form-group qtype-block" id="block-mcq">
+        <label class="form-label">Variantlar (kamida 2 ta, to'g'ri javobni belgilang)</label>
+        <div id="mcq-rows">
+          {% for opt in question.options %}
+          <div class="opt-row" style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+            <input type="radio" name="correct_option_radio" class="opt-radio" {% if opt.key == question.correct_answer %}checked{% endif %}>
+            <input type="text" name="option_text" class="form-input opt-text" style="flex:1" value="{{ opt.text }}" placeholder="Variant matni">
+            <button type="button" onclick="this.closest('.opt-row').remove()" class="btn btn-ghost btn-sm">✕</button>
+          </div>
+          {% empty %}
+          <div class="opt-row" style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+            <input type="radio" name="correct_option_radio" class="opt-radio">
+            <input type="text" name="option_text" class="form-input opt-text" style="flex:1" placeholder="Variant matni">
+            <button type="button" onclick="this.closest('.opt-row').remove()" class="btn btn-ghost btn-sm">✕</button>
+          </div>
+          <div class="opt-row" style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+            <input type="radio" name="correct_option_radio" class="opt-radio">
+            <input type="text" name="option_text" class="form-input opt-text" style="flex:1" placeholder="Variant matni">
+            <button type="button" onclick="this.closest('.opt-row').remove()" class="btn btn-ghost btn-sm">✕</button>
+          </div>
+          {% endfor %}
+        </div>
+        <input type="hidden" name="correct_option" id="correct_option_hidden" value="-1">
+        <button type="button" class="btn btn-ghost btn-sm" onclick="addOption()">+ Variant qo'shish</button>
+        <div style="font-size:11px;color:var(--muted);margin-top:6px">Chap tomondagi doiracha (⭘) — to'g'ri javobni belgilash uchun.</div>
+      </div>
+
+      <!-- TFNG -->
+      <div class="form-group qtype-block" id="block-tfng">
+        <label class="form-label">To'g'ri javob</label>
+        <select class="form-input" name="correct_answer_tfng">
+          <option value="True" {% if initial.correct_answer_tfng == "True" %}selected{% endif %}>True</option>
+          <option value="False" {% if initial.correct_answer_tfng == "False" %}selected{% endif %}>False</option>
+          <option value="Not Given" {% if initial.correct_answer_tfng == "Not Given" %}selected{% endif %}>Not Given</option>
+        </select>
+      </div>
+
+      <!-- Gap-fill / Matching -->
+      <div class="form-group qtype-block" id="block-text">
+        <label class="form-label">To'g'ri javob</label>
+        <input class="form-input" name="correct_answer_text" type="text" value="{{ request.POST.correct_answer_text|default:initial.correct_answer_text }}" placeholder="Masalan: colour/color">
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">Bir necha to'g'ri variant bo'lsa, / bilan ajratib yozing (masalan: colour/color).</div>
+      </div>
+
+      <!-- Writing task -->
+      <div class="form-group qtype-block" id="block-writing">
+        <label class="form-label">Namunaviy javob (Band 9.0)</label>
+        <textarea class="form-input" name="model_answer" rows="6" placeholder="Ideal javob namunasi...">{{ request.POST.model_answer|default:initial.model_answer }}</textarea>
+      </div>
+      <div class="form-group qtype-block" id="block-wordlimit">
+        <label class="form-label">Minimum so'z soni</label>
+        <input class="form-input" name="word_limit" type="number" min="0" value="{{ request.POST.word_limit|default:initial.word_limit }}" placeholder="0 = chegarasiz">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Izoh (ixtiyoriy — javobdan keyin ko'rsatiladi / Speaking uchun maslahat)</label>
+        <textarea class="form-input" name="explanation" rows="2">{{ request.POST.explanation|default:initial.explanation }}</textarea>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:8px">
+        <button type="submit" class="btn btn-primary">{% if question %}Saqlash{% else %}Qo'shish{% endif %}</button>
+        <a href="{% url 'panel:exam_detail' exam.pk %}" class="btn btn-ghost">Bekor qilish</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function setBlockVisible(id, visible) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.hidden = !visible;
+  el.querySelectorAll('input,select,textarea').forEach(f => f.disabled = !visible);
+}
+
+function updateQuestionTypeUI() {
+  const val = document.getElementById('question_type').value;
+  setBlockVisible('block-mcq', val === 'mcq');
+  setBlockVisible('block-tfng', val === 'tfng');
+  setBlockVisible('block-text', val === 'gap_fill' || val === 'matching');
+  setBlockVisible('block-writing', val === 'writing_task');
+  setBlockVisible('block-wordlimit', val === 'writing_task');
+}
+updateQuestionTypeUI();
+
+function addOption() {
+  const container = document.getElementById('mcq-rows');
+  const row = document.createElement('div');
+  row.className = 'opt-row';
+  row.style.cssText = 'display:flex;gap:8px;align-items:center;margin-bottom:8px';
+  row.innerHTML = `
+    <input type="radio" name="correct_option_radio" class="opt-radio">
+    <input type="text" name="option_text" class="form-input opt-text" style="flex:1" placeholder="Variant matni">
+    <button type="button" onclick="this.closest('.opt-row').remove()" class="btn btn-ghost btn-sm">✕</button>
+  `;
+  container.appendChild(row);
+}
+
+function prepareMcqSubmit(form) {
+  const rows = Array.from(form.querySelectorAll('.opt-row'));
+  const nonBlank = rows.filter(r => r.querySelector('.opt-text').value.trim());
+  const checkedRow = rows.find(r => r.querySelector('.opt-radio').checked);
+  const idx = checkedRow ? nonBlank.indexOf(checkedRow) : -1;
+  form.querySelector('#correct_option_hidden').value = idx;
+  return true;
+}
+</script>
+{% endblock %}

@@ -1,5 +1,6 @@
 import json
 import logging
+import re
 import threading
 from datetime import date, timedelta
 
@@ -63,6 +64,52 @@ def validate_image_upload(file, max_mb, allowed_types):
         names = ', '.join(_IMAGE_TYPE_LABELS.get(t, t) for t in allowed_types)
         return f"Faqat {names} formatlar qabul qilinadi"
     return None
+
+
+_AUDIO_TYPE_LABELS = {
+    'audio/webm': 'WEBM', 'audio/mp4': 'MP4', 'audio/mpeg': 'MP3', 'audio/ogg': 'OGG', 'audio/wav': 'WAV',
+}
+
+
+def validate_audio_upload(file, max_mb, allowed_types):
+    """Validate an uploaded audio file's size and content type.
+
+    Returns an Uzbek error message if invalid, or None if the file is OK.
+    """
+    if file.size > max_mb * 1024 * 1024:
+        return f"Audio hajmi {max_mb}MB dan oshmasligi kerak"
+    if file.content_type not in allowed_types:
+        names = ', '.join(_AUDIO_TYPE_LABELS.get(t, t) for t in allowed_types)
+        return f"Faqat {names} formatlar qabul qilinadi"
+    return None
+
+
+def text_to_html_paragraphs(text):
+    """Turn plain text (blank-line-separated paragraphs) into `<p>` blocks,
+    matching how AI-generated section content is formatted (see
+    core/ai_utils.py's passage_text.replace(chr(10), '</p><p>')) so manually
+    entered content renders the same way on the take-exam page, where
+    Section.content is dropped into the template with |safe.
+    """
+    text = (text or '').strip()
+    if not text:
+        return ''
+    paragraphs = [p.strip() for p in text.replace('\r\n', '\n').split('\n\n')]
+    return ''.join(f'<p>{p}</p>' for p in paragraphs if p)
+
+
+def html_paragraphs_to_text(html):
+    """Reverse of text_to_html_paragraphs — pulls plain-text paragraphs back
+    out of simple <p>...</p> markup so it can be shown/edited in a plain
+    <textarea>. Falls back to stripping all tags for content that wasn't
+    produced by text_to_html_paragraphs (e.g. AI-generated markup)."""
+    html = (html or '').strip()
+    if not html:
+        return ''
+    paragraphs = re.findall(r'<p>(.*?)</p>', html, re.DOTALL)
+    if not paragraphs:
+        return re.sub(r'<[^>]+>', '', html).strip()
+    return '\n\n'.join(p.strip() for p in paragraphs)
 
 
 def parse_json_body(request, error_message="Noto'g'ri so'rov", ok_field=False):
