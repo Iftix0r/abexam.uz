@@ -169,9 +169,6 @@
 
 {% block extra_js %}
 <script>
-function getCookie(n){const v=document.cookie.match('(^|;) ?'+n+'=([^;]*)(;|$)');return v?v[2]:null}
-const csrf = getCookie('csrftoken');
-
 async function toggleExam(pk){
   const r=await fetch(`/panel/exams/${pk}/toggle/`,{method:'POST',headers:{'X-CSRFToken':csrf}});
   const d=await r.json();
