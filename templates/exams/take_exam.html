@@ -195,7 +195,7 @@
         .tfng-btn.selected-ng   { background: #fffde7; border-color: #f9a825; color: #e65100; }
 
         /* ─── ANSWER TRACKER ────────────────────────────── */
-        .answer-tracker { display: flex; flex-wrap: wrap; gap: 3px; }
+        .answer-tracker { display: flex; flex-wrap: wrap; gap: 3px; max-width: 300px; }
         .tracker-dot {
             width: 22px; height: 22px;
             border-radius: 3px;
@@ -569,6 +569,50 @@
             padding: 5px 12px; margin: 12px 0 8px;
             border-left: 3px solid #1565c0;
         }
+
+        /* ─── MOBILE RESPONSIVE ──────────────────────────── */
+        /* Desktop uses a fixed 100vh split-screen (passage | questions);
+           on a phone that leaves each side ~40% of screen width, unusable
+           for a reading passage. Below 768px we drop the fixed-height
+           layout, stack the two panels, and let the page scroll normally
+           — the header stays pinned via `sticky` so the timer/exam name
+           are still visible while scrolling. */
+        @media (max-width: 768px) {
+            header {
+                height: auto; min-height: 50px;
+                flex-wrap: wrap; row-gap: 6px;
+                padding: 8px 10px;
+                position: sticky; top: 0; z-index: 500;
+            }
+            .header-title-block { max-width: 140px; overflow: hidden; padding-left: 10px; }
+            .header-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .header-subtitle, #autosave-indicator, .header-user-info { display: none; }
+            .timer-box { height: 32px; padding: 0 10px; font-size: 1rem; }
+            .header-demo-btn { height: 32px !important; padding: 0 10px !important; font-size: 11px !important; }
+
+            body { height: auto; overflow: visible; }
+            main { overflow: visible; }
+            .reading-layout { flex-direction: column; height: auto; }
+            .passage-panel, .questions-panel {
+                width: 100%; padding: 1rem 1.1rem;
+            }
+            .passage-panel {
+                border-right: none; border-bottom: 3px solid var(--border);
+                max-height: 55vh; overflow-y: auto;
+            }
+            .questions-panel { overflow-y: visible; }
+
+            footer { padding: 10px; }
+            .footer-row { flex-wrap: wrap; justify-content: center; gap: 10px; }
+            .answer-tracker { max-width: 100%; justify-content: center; order: 2; }
+            .section-tabs { flex-wrap: wrap; justify-content: center; order: 1; width: 100%; }
+            .submit-btn { width: 100%; justify-content: center; order: 3; }
+
+            .result-card { padding: 1.75rem 1.25rem; }
+            .band-score { font-size: 3.6rem; }
+            .instr-card { padding: 24px 20px; }
+            .instr-meta { gap: 16px; }
+        }
     </style>
 </head>
 <body oncopy="alert('Imtihon paytida nusxa ko\'chirish taqiqlangan!'); return false" oncontextmenu="return false">
@@ -579,13 +623,13 @@
 
 <!-- ─── HEADER ─────────────────────────────────────────── -->
 <header>
-    <div class="flex-center" style="gap:16px;">
+    <div class="flex-center header-brand" style="gap:16px;">
         <div class="ielts-logo">
             <span class="iel">IEL</span><span class="ts">TS</span>
         </div>
-        <div style="border-left: 1px solid #455a64; padding-left: 14px; line-height: 1.3;">
-            <div style="font-size: 13px; font-weight: 700;">{{ exam.title }}</div>
-            <div style="font-size: 10px; color: #90a4ae; text-transform: uppercase; letter-spacing: 1px;">Computer-Delivered Test</div>
+        <div class="header-title-block" style="border-left: 1px solid #455a64; padding-left: 14px; line-height: 1.3;">
+            <div class="header-title" style="font-size: 13px; font-weight: 700;">{{ exam.title }}</div>
+            <div class="header-subtitle" style="font-size: 10px; color: #90a4ae; text-transform: uppercase; letter-spacing: 1px;">Computer-Delivered Test</div>
         </div>
         <span id="autosave-indicator">✓ Saqlandi</span>
     </div>
@@ -596,17 +640,17 @@
     </div>
 
     {% if request.user.is_superuser %}
-    <button id="demoFillBtn" onclick="demoFillAndSubmit()" title="Superadmin QA: to'g'ri javoblarni avtomatik to'ldirib, testni yuboradi — AI baholashini tekshirish uchun" style="background:#6a1b9a; color:#fff; border:none; border-radius:6px; padding:0 14px; height:38px; font-size:12px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:6px;">
+    <button id="demoFillBtn" onclick="demoFillAndSubmit()" title="Superadmin QA: to'g'ri javoblarni avtomatik to'ldirib, testni yuboradi — AI baholashini tekshirish uchun" class="header-demo-btn" style="background:#6a1b9a; color:#fff; border:none; border-radius:6px; padding:0 14px; height:38px; font-size:12px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:6px;">
         🧪 Demo to'ldirish
     </button>
     {% endif %}
 
-    <div class="flex-center" style="gap: 10px;">
-        <div style="text-align: right; line-height: 1.3;">
+    <div class="flex-center header-user" style="gap: 10px;">
+        <div class="header-user-info" style="text-align: right; line-height: 1.3;">
             <div style="font-size: 13px; font-weight: 700;">{{ user.get_full_name|default:user.username }}</div>
             <div style="font-size: 10px; color: #90a4ae;">ID: {{ user.pk|stringformat:"06d" }}</div>
         </div>
-        <div style="width: 34px; height: 34px; background: #455a64; border-radius: 50%; display:flex; align-items:center; justify-content:center;">
+        <div style="width: 34px; height: 34px; background: #455a64; border-radius: 50%; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
             <i data-lucide="user" style="width:16px; color:#cfd8dc;"></i>
         </div>
     </div>
@@ -939,7 +983,7 @@
 <!-- ─── FOOTER ─────────────────────────────────────────── -->
 <footer>
     <div class="footer-row">
-        <div class="answer-tracker" id="answerTracker" style="max-width:300px;"></div>
+        <div class="answer-tracker" id="answerTracker"></div>
 
         <div class="section-tabs" id="sectionTabsContainer">
             {% regroup sections by get_section_type_display as section_groups %}
