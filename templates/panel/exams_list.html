@@ -89,6 +89,7 @@
                   <button type="submit" class="btn btn-danger btn-sm">✕ Rad</button>
                 </form>
               {% else %}
+                <a href="{% url 'panel:exam_detail' e.pk %}" class="btn btn-primary btn-sm">Ko'rish</a>
                 <a href="{% url 'panel:exam_edit' e.pk %}" class="btn btn-ghost btn-sm">Tahrir</a>
                 <button onclick="toggleExam({{ e.pk }})" class="btn btn-ghost btn-sm">On/Off</button>
                 <button onclick="deleteExam({{ e.pk }}, this)" class="btn btn-danger btn-sm">O'chir</button>
