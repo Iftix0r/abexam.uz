@@ -565,7 +565,23 @@
             localStorage.setItem('theme', next);
             themeIcon.setAttribute('data-lucide', next === 'light' ? 'moon' : 'sun');
             lucide.createIcons();
+            window.dispatchEvent(new Event('sitethemechange'));
         });
+
+        // Theme-aware colors for Chart.js — pages with charts call this instead of
+        // hardcoding hex values (canvas can't resolve CSS var() strings itself),
+        // and re-call it on 'sitethemechange' to re-color already-rendered charts.
+        window.siteChartColors = function () {
+            const cs = getComputedStyle(document.documentElement);
+            return {
+                grid: cs.getPropertyValue('--tint-a').trim(),
+                gridStrong: cs.getPropertyValue('--tint-b').trim(),
+                tick: cs.getPropertyValue('--text-muted').trim(),
+                text: cs.getPropertyValue('--text-color').trim(),
+                surface: cs.getPropertyValue('--card-bg').trim(),
+                border: cs.getPropertyValue('--border-color').trim(),
+            };
+        };
     </script>
     {% block extra_js %}{% endblock %}
 </body>

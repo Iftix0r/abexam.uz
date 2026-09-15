@@ -199,33 +199,108 @@
 <script>
 lucide.createIcons();
 
-const C = {
-  grid: 'var(--tint-a)',
-  tick: '#666',
-  tooltip: { backgroundColor:'#1e1e1e', borderColor:'#333', borderWidth:1, titleColor:'#e3e3e3', bodyColor:'#aaa' }
-};
+function analyticsChartTheme(){
+  const c = siteChartColors();
+  return {
+    grid: c.grid, gridStrong: c.gridStrong, tick: c.tick,
+    tooltip: { backgroundColor:c.surface, borderColor:c.border, borderWidth:1, titleColor:c.text, bodyColor:c.tick }
+  };
+}
+let C = analyticsChartTheme();
 
 {% if stats.total %}
+let pChart, radarChart, bandChart, monthlyChart, typeChart;
 
-// 1. Progress line chart
-const pChart = new Chart(document.getElementById('progressChart').getContext('2d'), {
-  type: 'line',
-  data: {
-    labels: {{ chart_dates|safe }},
-    datasets: [
-      { label:'Umumiy', data:{{ chart_scores|safe }}, borderColor:'#d32f2f', backgroundColor:'rgba(211,47,47,.1)', tension:.4, fill:true, pointRadius:4, pointBackgroundColor:'#d32f2f' },
-      { label:'Listening', data:{{ chart_l|safe }}, borderColor:'#1565c0', tension:.4, pointRadius:2, hidden:true },
-      { label:'Reading',   data:{{ chart_r|safe }}, borderColor:'#2e7d32', tension:.4, pointRadius:2, hidden:true },
-      { label:'Writing',   data:{{ chart_w|safe }}, borderColor:'#6a1b9a', tension:.4, pointRadius:2, hidden:true },
-      { label:'Speaking',  data:{{ chart_s|safe }}, borderColor:'#e65100', tension:.4, pointRadius:2, hidden:true },
-    ]
-  },
-  options: {
-    responsive:true, maintainAspectRatio:false,
-    plugins:{ legend:{ labels:{ color:'#888', font:{size:11} } }, tooltip: C.tooltip },
-    scales:{ x:{ ticks:{color:C.tick,font:{size:10}}, grid:{color:C.grid} }, y:{ min:0, max:9, ticks:{color:C.tick,font:{size:10}}, grid:{color:C.grid} } }
-  }
-});
+function buildAnalyticsCharts(){
+  C = analyticsChartTheme();
+
+  // 1. Progress line chart
+  pChart = new Chart(document.getElementById('progressChart').getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: {{ chart_dates|safe }},
+      datasets: [
+        { label:'Umumiy', data:{{ chart_scores|safe }}, borderColor:'#d32f2f', backgroundColor:'rgba(211,47,47,.1)', tension:.4, fill:true, pointRadius:4, pointBackgroundColor:'#d32f2f' },
+        { label:'Listening', data:{{ chart_l|safe }}, borderColor:'#1565c0', tension:.4, pointRadius:2, hidden:true },
+        { label:'Reading',   data:{{ chart_r|safe }}, borderColor:'#2e7d32', tension:.4, pointRadius:2, hidden:true },
+        { label:'Writing',   data:{{ chart_w|safe }}, borderColor:'#6a1b9a', tension:.4, pointRadius:2, hidden:true },
+        { label:'Speaking',  data:{{ chart_s|safe }}, borderColor:'#e65100', tension:.4, pointRadius:2, hidden:true },
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ labels:{ color:C.tick, font:{size:11} } }, tooltip: C.tooltip },
+      scales:{ x:{ ticks:{color:C.tick,font:{size:10}}, grid:{color:C.grid} }, y:{ min:0, max:9, ticks:{color:C.tick,font:{size:10}}, grid:{color:C.grid} } }
+    }
+  });
+
+  // 2. Radar
+  radarChart = new Chart(document.getElementById('radarChart').getContext('2d'), {
+    type:'radar',
+    data:{
+      labels:['Listening','Reading','Writing','Speaking'],
+      datasets:[{
+        label:"O'rtacha",
+        data:[{{ stats.avg_l|default:0|floatformat:1 }},{{ stats.avg_r|default:0|floatformat:1 }},{{ stats.avg_w|default:0|floatformat:1 }},{{ stats.avg_s|default:0|floatformat:1 }}],
+        borderColor:'#d32f2f', backgroundColor:'rgba(211,47,47,.15)', pointBackgroundColor:'#d32f2f', pointRadius:5
+      }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false}, tooltip:C.tooltip },
+      scales:{ r:{ min:0, max:9, ticks:{color:C.tick,font:{size:9},stepSize:3}, grid:{color:C.gridStrong}, pointLabels:{color:C.tick,font:{size:11}} } }
+    }
+  });
+
+  // 3. Band distribution doughnut
+  bandChart = new Chart(document.getElementById('bandChart').getContext('2d'), {
+    type:'doughnut',
+    data:{
+      labels: {{ chart_band_labels|safe }},
+      datasets:[{ data:{{ chart_band_data|safe }}, backgroundColor:['#ef4444','#f97316','#eab308','#22c55e','#6366f1'], borderWidth:0, hoverOffset:6 }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false, cutout:'65%',
+      plugins:{ legend:{ position:'right', labels:{color:C.tick,font:{size:11},padding:12} }, tooltip:C.tooltip }
+    }
+  });
+
+  // 4. Monthly bar
+  monthlyChart = new Chart(document.getElementById('monthlyChart').getContext('2d'), {
+    type:'bar',
+    data:{
+      labels: {{ chart_monthly_labels|safe }},
+      datasets:[{ label:"Imtihonlar", data:{{ chart_monthly|safe }}, backgroundColor:'rgba(99,102,241,.7)', borderRadius:6, borderSkipped:false }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false}, tooltip:C.tooltip },
+      scales:{ x:{ticks:{color:C.tick,font:{size:10}},grid:{display:false}}, y:{ticks:{color:C.tick,font:{size:10},precision:0},grid:{color:C.grid}} }
+    }
+  });
+
+  // 5. Exam type bar
+  typeChart = new Chart(document.getElementById('typeChart').getContext('2d'), {
+    type:'bar',
+    data:{
+      labels: {{ chart_type_labels|safe }},
+      datasets:[
+        { label:'Soni', data:{{ chart_type_counts|safe }}, backgroundColor:'rgba(59,130,246,.7)', borderRadius:6, yAxisID:'y' },
+        { label:"O'rtacha ball", data:{{ chart_type_avgs|safe }}, backgroundColor:'rgba(34,197,94,.7)', borderRadius:6, yAxisID:'y1' },
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ labels:{color:C.tick,font:{size:11}} }, tooltip:C.tooltip },
+      scales:{
+        x:{ticks:{color:C.tick,font:{size:10}},grid:{display:false}},
+        y:{ticks:{color:C.tick,font:{size:10},precision:0},grid:{color:C.grid},position:'left'},
+        y1:{ticks:{color:C.tick,font:{size:10}},grid:{display:false},position:'right',min:0,max:9}
+      }
+    }
+  });
+}
+buildAnalyticsCharts();
 
 function toggleLine(mode, btn){
   document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
@@ -235,72 +310,22 @@ function toggleLine(mode, btn){
   pChart.update();
 }
 
-// 2. Radar
-new Chart(document.getElementById('radarChart').getContext('2d'), {
-  type:'radar',
-  data:{
-    labels:['Listening','Reading','Writing','Speaking'],
-    datasets:[{
-      label:"O'rtacha",
-      data:[{{ stats.avg_l|default:0|floatformat:1 }},{{ stats.avg_r|default:0|floatformat:1 }},{{ stats.avg_w|default:0|floatformat:1 }},{{ stats.avg_s|default:0|floatformat:1 }}],
-      borderColor:'#d32f2f', backgroundColor:'rgba(211,47,47,.15)', pointBackgroundColor:'#d32f2f', pointRadius:5
-    }]
-  },
-  options:{
-    responsive:true, maintainAspectRatio:false,
-    plugins:{ legend:{display:false}, tooltip:C.tooltip },
-    scales:{ r:{ min:0, max:9, ticks:{color:'#555',font:{size:9},stepSize:3}, grid:{color:'var(--tint-b)'}, pointLabels:{color:'#888',font:{size:11}} } }
-  }
-});
-
-// 3. Band distribution doughnut
-new Chart(document.getElementById('bandChart').getContext('2d'), {
-  type:'doughnut',
-  data:{
-    labels: {{ chart_band_labels|safe }},
-    datasets:[{ data:{{ chart_band_data|safe }}, backgroundColor:['#ef4444','#f97316','#eab308','#22c55e','#6366f1'], borderWidth:0, hoverOffset:6 }]
-  },
-  options:{
-    responsive:true, maintainAspectRatio:false, cutout:'65%',
-    plugins:{ legend:{ position:'right', labels:{color:'#888',font:{size:11},padding:12} }, tooltip:C.tooltip }
-  }
-});
-
-// 4. Monthly bar
-new Chart(document.getElementById('monthlyChart').getContext('2d'), {
-  type:'bar',
-  data:{
-    labels: {{ chart_monthly_labels|safe }},
-    datasets:[{ label:"Imtihonlar", data:{{ chart_monthly|safe }}, backgroundColor:'rgba(99,102,241,.7)', borderRadius:6, borderSkipped:false }]
-  },
-  options:{
-    responsive:true, maintainAspectRatio:false,
-    plugins:{ legend:{display:false}, tooltip:C.tooltip },
-    scales:{ x:{ticks:{color:C.tick,font:{size:10}},grid:{display:false}}, y:{ticks:{color:C.tick,font:{size:10},precision:0},grid:{color:C.grid}} }
-  }
-});
-
-// 5. Exam type bar
-new Chart(document.getElementById('typeChart').getContext('2d'), {
-  type:'bar',
-  data:{
-    labels: {{ chart_type_labels|safe }},
-    datasets:[
-      { label:'Soni', data:{{ chart_type_counts|safe }}, backgroundColor:'rgba(59,130,246,.7)', borderRadius:6, yAxisID:'y' },
-      { label:"O'rtacha ball", data:{{ chart_type_avgs|safe }}, backgroundColor:'rgba(34,197,94,.7)', borderRadius:6, yAxisID:'y1' },
-    ]
-  },
-  options:{
-    responsive:true, maintainAspectRatio:false,
-    plugins:{ legend:{ labels:{color:'#888',font:{size:11}} }, tooltip:C.tooltip },
-    scales:{
-      x:{ticks:{color:C.tick,font:{size:10}},grid:{display:false}},
-      y:{ticks:{color:C.tick,font:{size:10},precision:0},grid:{color:C.grid},position:'left'},
-      y1:{ticks:{color:C.tick,font:{size:10}},grid:{display:false},position:'right',min:0,max:9}
+window.addEventListener('sitethemechange', () => {
+  C = analyticsChartTheme();
+  [pChart, radarChart, bandChart, monthlyChart, typeChart].forEach(ch => {
+    if(!ch) return;
+    if(ch.options.plugins.tooltip) ch.options.plugins.tooltip = C.tooltip;
+    if(ch.options.plugins.legend && ch.options.plugins.legend.labels) ch.options.plugins.legend.labels.color = C.tick;
+    if(ch.options.scales){
+      Object.entries(ch.options.scales).forEach(([key, scale])=>{
+        if(scale.ticks) scale.ticks.color = C.tick;
+        if(scale.grid) scale.grid.color = key === 'r' ? C.gridStrong : C.grid;
+        if(scale.pointLabels) scale.pointLabels.color = C.tick;
+      });
     }
-  }
+    ch.update();
+  });
 });
-
 {% endif %}
 </script>
 {% endblock %}

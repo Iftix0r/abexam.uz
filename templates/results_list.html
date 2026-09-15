@@ -95,8 +95,19 @@
 <script>
 lucide.createIcons();
 {% if results %}
+function resultsChartOptions(){
+  const C = siteChartColors();
+  return {
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{backgroundColor:C.surface,borderColor:C.border,borderWidth:1,titleColor:C.text,bodyColor:C.tick}},
+    scales:{
+      x:{ticks:{color:C.tick,font:{size:11}},grid:{color:C.grid}},
+      y:{min:0,max:9,ticks:{color:C.tick,font:{size:11}},grid:{color:C.grid}}
+    }
+  };
+}
 const ctx=document.getElementById('progressChart').getContext('2d');
-new Chart(ctx,{
+const resultsChart=new Chart(ctx,{
   type:'line',
   data:{
     labels:[{% for r in results reversed %}"{{ r.completed_at|date:'d M' }}"{% if not forloop.last %},{% endif %}{% endfor %}],
@@ -106,14 +117,11 @@ new Chart(ctx,{
       borderColor:'#d32f2f',backgroundColor:'rgba(211,47,47,.1)',tension:.4,fill:true,pointBackgroundColor:'#d32f2f',pointRadius:4
     }]
   },
-  options:{
-    responsive:true,maintainAspectRatio:false,
-    plugins:{legend:{display:false},tooltip:{backgroundColor:'#1e1e1e',borderColor:'#333',borderWidth:1,titleColor:'#e3e3e3',bodyColor:'#aaa'}},
-    scales:{
-      x:{ticks:{color:'#888',font:{size:11}},grid:{color:'var(--tint-a)'}},
-      y:{min:0,max:9,ticks:{color:'#888',font:{size:11}},grid:{color:'var(--tint-a)'}}
-    }
-  }
+  options:resultsChartOptions()
+});
+window.addEventListener('sitethemechange',()=>{
+  Object.assign(resultsChart.options, resultsChartOptions());
+  resultsChart.update();
 });
 {% endif %}
 </script>

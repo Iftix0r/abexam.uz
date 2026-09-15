@@ -224,39 +224,68 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 <script>
 {% if stats.total_tests and chart_labels %}
-const chartDefaults = {
-    responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { labels: { color: '#888', font: { size: 11 } } }, tooltip: { backgroundColor: '#1e1e1e', borderColor: '#333', borderWidth: 1, titleColor: '#e3e3e3', bodyColor: '#aaa' } },
-};
-const pCtx = document.getElementById('progressChart');
-if(pCtx) new Chart(pCtx.getContext('2d'), {
-    type: 'line',
-    data: {
-        labels: {{ chart_labels|safe }},
-        datasets: [
-            { label: 'Umumiy', data: {{ chart_scores|safe }}, borderColor: '#d32f2f', backgroundColor: 'rgba(211,47,47,.12)', tension: .4, fill: true, pointBackgroundColor: '#d32f2f', pointRadius: 4 },
-            { label: 'Listening', data: {{ chart_listening|safe }}, borderColor: '#1565c0', backgroundColor: 'transparent', tension: .4, borderDash: [4,3], pointRadius: 2 },
-            { label: 'Reading', data: {{ chart_reading|safe }}, borderColor: '#2e7d32', backgroundColor: 'transparent', tension: .4, borderDash: [4,3], pointRadius: 2 },
-        ]
-    },
-    options: { ...chartDefaults, scales: {
-        x: { ticks: { color: '#666', font: { size: 10 } }, grid: { color: 'var(--tint-a)' } },
-        y: { min: 0, max: 9, ticks: { color: '#666', font: { size: 10 } }, grid: { color: 'var(--tint-a)' } }
-    }}
-});
-const rCtx = document.getElementById('radarChart');
-if(rCtx) new Chart(rCtx.getContext('2d'), {
-    type: 'radar',
-    data: {
-        labels: ['Listening', 'Reading', 'Writing', 'Speaking'],
-        datasets: [{ label: 'O\'rtacha', data: [
-            {{ section_avgs.avg_l|default:0|floatformat:1 }},
-            {{ section_avgs.avg_r|default:0|floatformat:1 }},
-            {{ section_avgs.avg_w|default:0|floatformat:1 }},
-            {{ section_avgs.avg_s|default:0|floatformat:1 }},
-        ], borderColor: '#d32f2f', backgroundColor: 'rgba(211,47,47,.15)', pointBackgroundColor: '#d32f2f', pointRadius: 4 }]
-    },
-    options: { ...chartDefaults, scales: { r: { min: 0, max: 9, ticks: { color: '#555', font: { size: 9 }, stepSize: 3 }, grid: { color: 'var(--tint-b)' }, pointLabels: { color: '#888', font: { size: 10 } } } } }
+function buildChartDefaults(){
+    const C = siteChartColors();
+    return {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { labels: { color: C.tick, font: { size: 11 } } }, tooltip: { backgroundColor: C.surface, borderColor: C.border, borderWidth: 1, titleColor: C.text, bodyColor: C.tick } },
+    };
+}
+
+let progressChart, radarChart;
+
+function buildDashCharts(){
+    const chartDefaults = buildChartDefaults();
+    const C = siteChartColors();
+
+    const pCtx = document.getElementById('progressChart');
+    if(pCtx) progressChart = new Chart(pCtx.getContext('2d'), {
+        type: 'line',
+        data: {
+            labels: {{ chart_labels|safe }},
+            datasets: [
+                { label: 'Umumiy', data: {{ chart_scores|safe }}, borderColor: '#d32f2f', backgroundColor: 'rgba(211,47,47,.12)', tension: .4, fill: true, pointBackgroundColor: '#d32f2f', pointRadius: 4 },
+                { label: 'Listening', data: {{ chart_listening|safe }}, borderColor: '#1565c0', backgroundColor: 'transparent', tension: .4, borderDash: [4,3], pointRadius: 2 },
+                { label: 'Reading', data: {{ chart_reading|safe }}, borderColor: '#2e7d32', backgroundColor: 'transparent', tension: .4, borderDash: [4,3], pointRadius: 2 },
+            ]
+        },
+        options: { ...chartDefaults, scales: {
+            x: { ticks: { color: C.tick, font: { size: 10 } }, grid: { color: C.grid } },
+            y: { min: 0, max: 9, ticks: { color: C.tick, font: { size: 10 } }, grid: { color: C.grid } }
+        }}
+    });
+
+    const rCtx = document.getElementById('radarChart');
+    if(rCtx) radarChart = new Chart(rCtx.getContext('2d'), {
+        type: 'radar',
+        data: {
+            labels: ['Listening', 'Reading', 'Writing', 'Speaking'],
+            datasets: [{ label: 'O\'rtacha', data: [
+                {{ section_avgs.avg_l|default:0|floatformat:1 }},
+                {{ section_avgs.avg_r|default:0|floatformat:1 }},
+                {{ section_avgs.avg_w|default:0|floatformat:1 }},
+                {{ section_avgs.avg_s|default:0|floatformat:1 }},
+            ], borderColor: '#d32f2f', backgroundColor: 'rgba(211,47,47,.15)', pointBackgroundColor: '#d32f2f', pointRadius: 4 }]
+        },
+        options: { ...chartDefaults, scales: { r: { min: 0, max: 9, ticks: { color: C.tick, font: { size: 9 }, stepSize: 3 }, grid: { color: C.gridStrong }, pointLabels: { color: C.tick, font: { size: 10 } } } } }
+    });
+}
+buildDashCharts();
+
+window.addEventListener('sitethemechange', () => {
+    const chartDefaults = buildChartDefaults();
+    const C = siteChartColors();
+    [progressChart, radarChart].forEach(ch => {
+        if(!ch) return;
+        ch.options.plugins.tooltip = chartDefaults.plugins.tooltip;
+        ch.options.plugins.legend.labels.color = C.tick;
+        Object.values(ch.options.scales).forEach(scale => {
+            if(scale.ticks) scale.ticks.color = C.tick;
+            if(scale.grid) scale.grid.color = scale === ch.options.scales.r ? C.gridStrong : C.grid;
+            if(scale.pointLabels) scale.pointLabels.color = C.tick;
+        });
+        ch.update();
+    });
 });
 {% endif %}
 </script>

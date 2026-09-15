@@ -551,6 +551,11 @@ function showTab(name, btn){
 
 // Compare chart
 let compareBuilt = false;
+let compareChart = null;
+function compareChartOptions(){
+  const C = siteChartColors();
+  return {responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:9,ticks:{color:C.tick,font:{size:10}},grid:{color:C.grid}},x:{ticks:{color:C.tick,font:{size:10}},grid:{color:C.grid}}}};
+}
 function buildCompareChart(){
   if(compareBuilt) return;
   compareBuilt = true;
@@ -558,12 +563,17 @@ function buildCompareChart(){
   if(!canvas) return;
   const labels = [{% for r in prev_results %}"{{ r.completed_at|date:'d M' }}"{% if not forloop.last %},{% endif %}{% endfor %}];
   const data = [{% for r in prev_results %}{{ r.score }}{% if not forloop.last %},{% endif %}{% endfor %}];
-  new Chart(canvas.getContext('2d'),{
+  compareChart = new Chart(canvas.getContext('2d'),{
     type:'line',
     data:{labels,datasets:[{label:'Ball',data,borderColor:'#d32f2f',backgroundColor:'rgba(211,47,47,.1)',tension:.4,fill:true,pointBackgroundColor:'#d32f2f',pointRadius:5}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:9,ticks:{color:'#888',font:{size:10}},grid:{color:'var(--tint-a)'}},x:{ticks:{color:'#888',font:{size:10}},grid:{color:'var(--tint-a)'}}}}
+    options:compareChartOptions()
   });
 }
+window.addEventListener('sitethemechange',()=>{
+  if(!compareChart) return;
+  Object.assign(compareChart.options, compareChartOptions());
+  compareChart.update();
+});
 
 // PDF
 function downloadPDF(){
