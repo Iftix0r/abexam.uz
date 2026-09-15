@@ -24,7 +24,7 @@
       <!-- Section type -->
       <div>
         <label style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:10px">Bo'lim turi</label>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px" id="section-grid">
+        <div class="grid-2-eq" style="gap:8px" id="section-grid">
           {% for val, label in section_types %}
           <label style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:.15s" id="st-label-{{ val }}" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="if(!document.getElementById('st-{{ val }}').checked)this.style.borderColor='var(--border)'">
             <input type="radio" name="section_type" id="st-{{ val }}" value="{{ val }}" {% if val == 'reading' %}checked{% endif %}
@@ -72,7 +72,7 @@
       </div>
 
       <!-- Model -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px">
+      <div class="grid-2-eq" style="gap:15px">
         <div>
           <label style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:8px">AI Model</label>
           <select name="model" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:13px;width:100%;outline:none">

@@ -5,8 +5,8 @@
 
 {% block content %}
 <div class="section-header">
-  <form method="get" style="display:flex;gap:10px">
-    <select name="exam" class="form-input" style="width:auto" onchange="this.form.submit()">
+  <form method="get" style="display:flex;gap:10px;max-width:100%">
+    <select name="exam" class="form-input" style="width:auto;max-width:100%" onchange="this.form.submit()">
       <option value="">Barcha imtihonlar</option>
       {% for e in exams %}
       <option value="{{ e.pk }}" {% if exam_id == e.pk|stringformat:"s" %}selected{% endif %}>{{ e.title }}</option>

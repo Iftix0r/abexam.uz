@@ -34,7 +34,7 @@
 </div>
 {% endif %}
 
-<div style="display:grid;grid-template-columns:1fr 320px;gap:20px">
+<div class="grid-sidebar-r">
   <div style="display:flex;flex-direction:column;gap:16px">
     <div class="card">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">
@@ -90,7 +90,8 @@
         </div>
       </div>
 
-      <table style="width:100%;border-collapse:collapse" id="tbl-{{ section.pk }}">
+      <div class="table-wrap">
+      <table style="width:100%;border-collapse:collapse;min-width:560px" id="tbl-{{ section.pk }}">
         <thead>
           <tr>
             <th style="text-align:left;font-size:11px;color:var(--muted);padding:6px 0;border-bottom:1px solid var(--border);width:32px">#</th>
@@ -132,6 +133,7 @@
           {% endfor %}
         </tbody>
       </table>
+      </div>
       <a href="{% url 'panel:question_create' section.pk %}" class="btn btn-ghost btn-sm" style="margin-top:12px;display:inline-block">+ Savol qo'shish</a>
     </div>
     {% endfor %}

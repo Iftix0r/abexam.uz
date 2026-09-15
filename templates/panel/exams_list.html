@@ -14,8 +14,8 @@
 </div>
 
 {% if pending_review_count %}
-<div style="background:linear-gradient(135deg,rgba(245,158,11,.12),rgba(245,158,11,.06));border:1px solid rgba(245,158,11,.3);border-radius:12px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:12px">
-  <div style="display:flex;align-items:center;gap:10px">
+<div style="background:linear-gradient(135deg,rgba(245,158,11,.12),rgba(245,158,11,.06));border:1px solid rgba(245,158,11,.3);border-radius:12px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
     <span style="font-size:20px">⚠️</span>
     <span style="font-size:14px;font-weight:600;color:#f59e0b">{{ pending_review_count }} ta AI imtihon ko'rib chiqishni kutmoqda</span>
     <span style="font-size:12px;color:var(--muted)">— Mutaxassis tekshiruvidan o'tmagan, foydalanuvchilarga ko'rsatilmaydi</span>

@@ -35,13 +35,19 @@ input,select,textarea{font-family:inherit}
 .avatar img{width:100%;height:100%;object-fit:cover}
 
 /* Main */
-.main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-height:100vh}
+.main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-height:100vh;min-width:0}
 .topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;gap:16px}
 .topbar-title{font-size:15px;font-weight:600;white-space:nowrap}
-.content{padding:28px;flex:1}
+.content{padding:28px;flex:1;min-width:0}
+
+/* Mobile nav */
+.menu-toggle{display:none;background:transparent;border:1px solid var(--border);border-radius:8px;width:34px;height:34px;align-items:center;justify-content:center;color:var(--text);cursor:pointer;flex-shrink:0}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:#000a;z-index:49}
+.sidebar-overlay.show{display:block}
+.sidebar-close{display:none}
 
 /* Global search */
-.gsearch{position:relative;flex:1;max-width:400px}
+.gsearch{position:relative;flex:1;max-width:400px;min-width:0}
 .gsearch input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 14px 8px 36px;color:var(--text);font-size:13px;outline:none;transition:.15s}
 .gsearch input:focus{border-color:var(--primary)}
 .gsearch-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
@@ -103,14 +109,21 @@ textarea.form-input{resize:vertical;min-height:80px}
 .form-check input{width:16px;height:16px;accent-color:var(--primary);cursor:pointer}
 
 /* Search */
-.search-box{display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 14px;width:280px}
+.search-box{display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 14px;width:280px;max-width:100%}
 .search-box input{background:none;border:none;outline:none;color:var(--text);font-size:13px;width:100%}
 .search-box svg{width:15px;height:15px;color:var(--muted);flex-shrink:0}
 
 /* Section header */
-.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px}
 .section-title{font-size:14px;font-weight:600}
 .grid-2{display:grid;grid-template-columns:2fr 1fr;gap:20px}
+
+/* Reusable responsive grids — collapse to fewer columns on smaller screens */
+.grid-sidebar-r{display:grid;grid-template-columns:1fr 320px;gap:20px}
+.grid-sidebar-l{display:grid;grid-template-columns:300px 1fr;gap:20px}
+.grid-2-eq{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-3-eq{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px}
+.grid-6-stat{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
 .u-avatar{width:32px;height:32px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:#fff;overflow:hidden;flex-shrink:0}
 .u-avatar img{width:100%;height:100%;object-fit:cover}
 .u-info{display:flex;align-items:center;gap:10px}
@@ -129,18 +142,50 @@ textarea.form-input{resize:vertical;min-height:80px}
 .chart-wrap{position:relative;height:200px}
 .tab-btn{padding:6px 14px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--muted);transition:.15s}
 .tab-btn.active{background:rgba(255,255,255,.1);color:var(--text);font-weight:600}
+
+/* ── Responsive: tablet & below — off-canvas sidebar ── */
+@media (max-width:960px){
+  .sidebar{position:fixed;top:0;left:0;transform:translateX(-100%);transition:transform .25s ease;z-index:60;box-shadow:0 0 40px #0008}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .menu-toggle{display:flex}
+  .topbar{padding:0 16px}
+  .content{padding:18px}
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
+  .grid-2,.grid-sidebar-r,.grid-sidebar-l,.grid-3-eq{grid-template-columns:1fr}
+  .grid-6-stat{grid-template-columns:repeat(3,1fr)}
+  .gsearch{max-width:none}
+}
+
+/* ── Responsive: phone ── */
+@media (max-width:560px){
+  .topbar{padding:0 12px;gap:10px}
+  .topbar-title{font-size:14px}
+  .content{padding:14px}
+  .card{padding:16px}
+  .stat-grid{grid-template-columns:1fr}
+  .grid-6-stat{grid-template-columns:repeat(2,1fr)}
+  .grid-2-eq{grid-template-columns:1fr}
+  .section-header{flex-direction:column;align-items:stretch}
+  .modal{padding:20px}
+}
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-<aside class="sidebar">
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<aside class="sidebar" id="sidebar">
   <div class="logo">
     <div class="logo-icon">A</div>
     <div>
       <div class="logo-text">AbExam</div>
       <div class="logo-sub">Admin Panel</div>
     </div>
+    <button class="menu-toggle sidebar-close" onclick="closeSidebar()" aria-label="Yopish" style="margin-left:auto">
+      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18" stroke-width="2"/><line x1="6" y1="6" x2="18" y2="18" stroke-width="2"/></svg>
+    </button>
   </div>
 
   <span class="nav-section">Asosiy</span>
@@ -214,6 +259,9 @@ textarea.form-input{resize:vertical;min-height:80px}
 
 <main class="main">
   <div class="topbar">
+    <button class="menu-toggle" onclick="openSidebar()" aria-label="Menyu">
+      <svg width="17" height="17" fill="none" stroke="currentColor" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6" stroke-width="2"/><line x1="3" y1="12" x2="21" y2="12" stroke-width="2"/><line x1="3" y1="18" x2="21" y2="18" stroke-width="2"/></svg>
+    </button>
     <span class="topbar-title">{% block page_title %}{% endblock %}</span>
 
     <div class="gsearch">
@@ -249,6 +297,11 @@ setTimeout(()=>toast("{{ message|escapejs }}", "{% if message.tags == 'error' %}
 // CSRF
 function getCookie(n){const v=document.cookie.match('(^|;) ?'+n+'=([^;]*)(;|$)');return v?v[2]:null}
 const csrf=getCookie('csrftoken');
+
+// Mobile sidebar
+function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('sidebar-overlay').classList.add('show')}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.remove('show')}
+document.querySelectorAll('.sidebar .nav-item').forEach(el=>el.addEventListener('click',closeSidebar));
 
 // Global search
 const gInput=document.getElementById('gsearch-input');

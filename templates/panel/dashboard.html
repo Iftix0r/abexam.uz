@@ -47,7 +47,7 @@
 </div>
 
 {% if stats.pending_tx %}
-<div style="background:#eab30812;border:1px solid #eab30830;border-radius:10px;padding:12px 18px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between">
+<div style="background:#eab30812;border:1px solid #eab30830;border-radius:10px;padding:12px 18px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
   <span style="color:var(--yellow);font-size:13px;font-weight:600">⚠ {{ stats.pending_tx }} ta to'lov tasdiqlash kutmoqda</span>
   <a href="{% url 'panel:transactions' %}?status=pending" class="btn btn-sm" style="background:#eab30820;color:var(--yellow);border:1px solid #eab30840">Ko'rish</a>
 </div>

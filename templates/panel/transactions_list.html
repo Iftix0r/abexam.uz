@@ -5,7 +5,7 @@
 
 {% block content %}
 <div class="section-header">
-  <div style="display:flex;gap:8px">
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
     <a href="?status=" class="btn btn-sm {% if not status %}btn-primary{% else %}btn-ghost{% endif %}">Barchasi</a>
     <a href="?status=pending" class="btn btn-sm {% if status == 'pending' %}btn-primary{% else %}btn-ghost{% endif %}">Kutilmoqda</a>
     <a href="?status=success" class="btn btn-sm {% if status == 'success' %}btn-primary{% else %}btn-ghost{% endif %}">Muvaffaqiyatli</a>
