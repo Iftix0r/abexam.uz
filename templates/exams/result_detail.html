@@ -3,11 +3,11 @@
 
 {% block extra_css %}
 <style>
-.score-ring{width:160px;height:160px;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;margin:0 auto 16px;background:conic-gradient(var(--primary-color) calc(var(--pct)*1%),rgba(255,255,255,.06) 0)}
+.score-ring{width:160px;height:160px;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;margin:0 auto 16px;background:conic-gradient(var(--primary-color) calc(var(--pct)*1%),var(--tint-a) 0)}
 .score-ring::before{content:'';position:absolute;width:120px;height:120px;border-radius:50%;background:var(--card-bg)}
 .score-ring span{position:relative;z-index:1;font-size:2.5rem;font-weight:700}
 .bar-row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
-.bar-track{flex:1;height:8px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden}
+.bar-track{flex:1;height:8px;background:var(--tint-a);border-radius:4px;overflow:hidden}
 .bar-fill{height:100%;border-radius:4px;transition:width 1s ease}
 .section-card{background:var(--card-bg);border:1px solid var(--border-color);border-radius:16px;padding:20px;margin-bottom:16px}
 .q-item{padding:14px 0;border-bottom:1px solid var(--border-color)}
@@ -17,13 +17,13 @@
 .answer-wrong{background:#ef444418;color:#ef4444}
 .answer-right{background:#3b82f618;color:#3b82f6}
 .action-btn{display:flex;align-items:center;gap:7px;padding:9px 18px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid var(--border-color);background:var(--card-bg);color:var(--text-color);transition:.15s;text-decoration:none}
-.action-btn:hover{background:rgba(255,255,255,.06);border-color:var(--primary-color)}
+.action-btn:hover{background:var(--tint-a);border-color:var(--primary-color)}
 .tab-btn{padding:8px 18px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--text-muted);transition:.15s}
-.tab-btn.active{background:rgba(255,255,255,.08);color:var(--text-color);font-weight:600}
+.tab-btn.active{background:var(--tint-b);color:var(--text-color);font-weight:600}
 .ai-badge{display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,#4285f420,#9b72cb20);border:1px solid #9b72cb44;color:#9b72cb;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600}
 .criteria-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border-color)}
 .criteria-row:last-child{border-bottom:none}
-.criteria-bar{flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden}
+.criteria-bar{flex:1;height:6px;background:var(--tint-a);border-radius:3px;overflow:hidden}
 .criteria-fill{height:100%;border-radius:3px;transition:width 1.2s ease}
 
 /* Print styles */
@@ -95,7 +95,7 @@
     </div>
 
     <!-- Band tavsifi -->
-    <div style="margin-top:20px;padding:14px;background:rgba(255,255,255,.04);border-radius:12px;font-size:13px;color:var(--text-muted)">
+    <div style="margin-top:20px;padding:14px;background:var(--tint-a);border-radius:12px;font-size:13px;color:var(--text-muted)">
       {% if result.score >= 8.5 %}Band {{ result.score|floatformat:1 }} — Expert: To'liq operatsional qobiliyat
       {% elif result.score >= 8.0 %}Band {{ result.score|floatformat:1 }} — Very Good User: Ajoyib natija!
       {% elif result.score >= 7.0 %}Band {{ result.score|floatformat:1 }} — Good User: Yaxshi natija, yana oshirishingiz mumkin
@@ -112,7 +112,7 @@
   </div>
 
   <!-- Tabs -->
-  <div class="no-print" style="display:flex;gap:4px;margin-bottom:16px;background:rgba(255,255,255,.04);border-radius:10px;padding:4px;width:fit-content;flex-wrap:wrap">
+  <div class="no-print" style="display:flex;gap:4px;margin-bottom:16px;background:var(--tint-a);border-radius:10px;padding:4px;width:fit-content;flex-wrap:wrap">
     <button class="tab-btn active" onclick="showTab('analysis', this)">Javoblar tahlili</button>
     {% if result.writing_feedback %}<button class="tab-btn" onclick="showTab('ai', this)"><i data-lucide="sparkles" style="width:13px;display:inline;vertical-align:middle;margin-right:4px"></i>Writing AI</button>{% endif %}
     {% if result.speaking_feedback %}<button class="tab-btn" onclick="showTab('speaking', this)"><i data-lucide="mic" style="width:13px;display:inline;vertical-align:middle;margin-right:4px"></i>Speaking AI</button>{% endif %}
@@ -130,7 +130,7 @@
         {% if section.total %}
         <div style="display:flex;align-items:center;gap:10px">
           <span style="font-size:12px;color:var(--text-muted)">{{ section.correct }}/{{ section.total }} to'g'ri</span>
-          <div style="width:60px;height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden">
+          <div style="width:60px;height:6px;background:var(--tint-a);border-radius:3px;overflow:hidden">
             <div style="width:{% widthratio section.correct section.total 100 %}%;height:100%;background:#22c55e;border-radius:3px"></div>
           </div>
         </div>
@@ -153,7 +153,7 @@
         {% if q.question_type == 'writing_task' %}
         <div style="padding-left:23px">
           <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">Yozgan javobingiz (so'zlar: {{ q.user_answer|wordcount }}):</div>
-          <div style="background:rgba(255,255,255,.04);border:1px solid var(--border-color);border-radius:8px;padding:10px;font-size:12px;line-height:1.6;white-space:pre-wrap;max-height:200px;overflow-y:auto">{{ q.user_answer|default:"(Javob berilmagan)" }}</div>
+          <div style="background:var(--tint-a);border:1px solid var(--border-color);border-radius:8px;padding:10px;font-size:12px;line-height:1.6;white-space:pre-wrap;max-height:200px;overflow-y:auto">{{ q.user_answer|default:"(Javob berilmagan)" }}</div>
           {% if q.word_limit %}<div style="font-size:11px;color:var(--text-muted);margin-top:4px">Minimum: {{ q.word_limit }} so'z</div>{% endif %}
         </div>
         {% elif q.question_type == 'short_answer' %}
@@ -368,7 +368,7 @@
         </div>
 
         {% if entry.feedback %}
-        <div style="font-size:13px;line-height:1.7;color:var(--text-color);padding:12px;background:rgba(255,255,255,.03);border-radius:8px;border-left:3px solid #f59e0b;margin-bottom:12px">
+        <div style="font-size:13px;line-height:1.7;color:var(--text-color);padding:12px;background:var(--tint-a);border-radius:8px;border-left:3px solid #f59e0b;margin-bottom:12px">
           {{ entry.feedback }}
         </div>
         {% endif %}
@@ -377,7 +377,7 @@
         {% if entry.transcript %}
         <details style="margin-top:8px">
           <summary style="font-size:12px;color:var(--text-muted);cursor:pointer">📝 Transkript ko'rish ({{ entry.word_count|default:0 }} so'z)</summary>
-          <div style="margin-top:8px;padding:10px;background:rgba(255,255,255,.03);border-radius:6px;font-size:12px;line-height:1.6;color:var(--text-muted);white-space:pre-wrap">{{ entry.transcript }}</div>
+          <div style="margin-top:8px;padding:10px;background:var(--tint-a);border-radius:6px;font-size:12px;line-height:1.6;color:var(--text-muted);white-space:pre-wrap">{{ entry.transcript }}</div>
         </details>
         {% endif %}
 
@@ -477,10 +477,10 @@
         <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(300px, 1fr));gap:15px">
           {% for section in result.exam.sections.all %}
             {% if section.extra_data.key_vocabulary %}
-              <div style="background:rgba(255,255,255,0.03);border:1px solid var(--border-color);border-radius:12px;padding:16px">
+              <div style="background:var(--tint-a);border:1px solid var(--border-color);border-radius:12px;padding:16px">
                 <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;margin-bottom:10px">{{ section.get_section_type_display }} — {{ section.title|truncatechars:30 }}</div>
                 {% for item in section.extra_data.key_vocabulary %}
-                  <div style="margin-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.05);padding-bottom:10px">
+                  <div style="margin-bottom:12px;border-bottom:1px solid var(--tint-a);padding-bottom:10px">
                     <div style="display:flex;justify-content:space-between;align-items:baseline">
                       <b style="color:var(--primary-color);font-size:15px">{{ item.word }}</b>
                       <span style="font-size:12px;color:var(--text-muted)">[{{ item.translation }}]</span>
@@ -521,7 +521,7 @@
 <div id="share-modal" style="display:none;position:fixed;inset:0;background:#0009;z-index:200;align-items:center;justify-content:center">
   <div style="background:var(--card-bg);border:1px solid var(--border-color);border-radius:16px;padding:28px;width:100%;max-width:400px;margin:16px">
     <div style="font-size:16px;font-weight:700;margin-bottom:16px">Natijani ulashish</div>
-    <div style="background:rgba(255,255,255,.05);border:1px solid var(--border-color);border-radius:8px;padding:10px 14px;font-size:13px;font-family:monospace;margin-bottom:12px;word-break:break-all" id="share-url"></div>
+    <div style="background:var(--tint-a);border:1px solid var(--border-color);border-radius:8px;padding:10px 14px;font-size:13px;font-family:monospace;margin-bottom:12px;word-break:break-all" id="share-url"></div>
     <div style="display:flex;gap:8px">
       <button onclick="copyLink()" class="action-btn" style="flex:1;justify-content:center">
         <i data-lucide="copy" style="width:14px"></i> Nusxa olish
@@ -561,7 +561,7 @@ function buildCompareChart(){
   new Chart(canvas.getContext('2d'),{
     type:'line',
     data:{labels,datasets:[{label:'Ball',data,borderColor:'#d32f2f',backgroundColor:'rgba(211,47,47,.1)',tension:.4,fill:true,pointBackgroundColor:'#d32f2f',pointRadius:5}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:9,ticks:{color:'#888',font:{size:10}},grid:{color:'rgba(255,255,255,.05)'}},x:{ticks:{color:'#888',font:{size:10}},grid:{color:'rgba(255,255,255,.05)'}}}}
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:9,ticks:{color:'#888',font:{size:10}},grid:{color:'var(--tint-a)'}},x:{ticks:{color:'#888',font:{size:10}},grid:{color:'var(--tint-a)'}}}}
   });
 }
 

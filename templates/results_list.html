@@ -11,7 +11,7 @@
 .result-row:hover{border-color:var(--primary-color);transform:translateX(4px)}
 .score-circle{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;flex-shrink:0}
 .section-scores{display:flex;gap:10px;font-size:12px;color:var(--text-muted);flex-wrap:wrap}
-.section-scores span{background:rgba(255,255,255,.05);padding:3px 8px;border-radius:6px}
+.section-scores span{background:var(--tint-a);padding:3px 8px;border-radius:6px}
 .chart-wrap{background:var(--card-bg);border:1px solid var(--border-color);border-radius:16px;padding:20px;margin-bottom:24px}
 </style>
 {% endblock %}
@@ -34,7 +34,7 @@
   <div class="stat-card">
     <div class="stat-val" style="color:#d32f2f">{{ stats.avg_score|floatformat:1|default:"—" }}</div>
     <div class="stat-lbl">O'rtacha ball</div>
-    <div style="margin-top:8px;height:4px;background:rgba(255,255,255,.06);border-radius:2px">
+    <div style="margin-top:8px;height:4px;background:var(--tint-a);border-radius:2px">
       <div style="width:{{ stats.avg_score_percentage|default:0 }}%;height:100%;background:#d32f2f;border-radius:2px"></div>
     </div>
   </div>
@@ -110,8 +110,8 @@ new Chart(ctx,{
     responsive:true,maintainAspectRatio:false,
     plugins:{legend:{display:false},tooltip:{backgroundColor:'#1e1e1e',borderColor:'#333',borderWidth:1,titleColor:'#e3e3e3',bodyColor:'#aaa'}},
     scales:{
-      x:{ticks:{color:'#888',font:{size:11}},grid:{color:'rgba(255,255,255,.05)'}},
-      y:{min:0,max:9,ticks:{color:'#888',font:{size:11}},grid:{color:'rgba(255,255,255,.05)'}}
+      x:{ticks:{color:'#888',font:{size:11}},grid:{color:'var(--tint-a)'}},
+      y:{min:0,max:9,ticks:{color:'#888',font:{size:11}},grid:{color:'var(--tint-a)'}}
     }
   }
 });

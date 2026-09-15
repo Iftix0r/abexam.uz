@@ -194,25 +194,25 @@
       {% if section_avgs.avg_l %}
       <div>
         <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:var(--text-muted)">Listening</span><span style="font-weight:600">{{ section_avgs.avg_l|floatformat:1 }}</span></div>
-        <div style="height:6px;background:rgba(255,255,255,.06);border-radius:3px"><div style="width:{{ section_avgs.avg_l|floatformat:0 }}0%;height:100%;background:#1565c0;border-radius:3px"></div></div>
+        <div style="height:6px;background:var(--tint-a);border-radius:3px"><div style="width:{{ section_avgs.avg_l|floatformat:0 }}0%;height:100%;background:#1565c0;border-radius:3px"></div></div>
       </div>
       {% endif %}
       {% if section_avgs.avg_r %}
       <div>
         <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:var(--text-muted)">Reading</span><span style="font-weight:600">{{ section_avgs.avg_r|floatformat:1 }}</span></div>
-        <div style="height:6px;background:rgba(255,255,255,.06);border-radius:3px"><div style="width:{{ section_avgs.avg_r|floatformat:0 }}0%;height:100%;background:#2e7d32;border-radius:3px"></div></div>
+        <div style="height:6px;background:var(--tint-a);border-radius:3px"><div style="width:{{ section_avgs.avg_r|floatformat:0 }}0%;height:100%;background:#2e7d32;border-radius:3px"></div></div>
       </div>
       {% endif %}
       {% if section_avgs.avg_w %}
       <div>
         <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:var(--text-muted)">Writing</span><span style="font-weight:600">{{ section_avgs.avg_w|floatformat:1 }}</span></div>
-        <div style="height:6px;background:rgba(255,255,255,.06);border-radius:3px"><div style="width:{{ section_avgs.avg_w|floatformat:0 }}0%;height:100%;background:#6a1b9a;border-radius:3px"></div></div>
+        <div style="height:6px;background:var(--tint-a);border-radius:3px"><div style="width:{{ section_avgs.avg_w|floatformat:0 }}0%;height:100%;background:#6a1b9a;border-radius:3px"></div></div>
       </div>
       {% endif %}
       {% if section_avgs.avg_s %}
       <div>
         <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:var(--text-muted)">Speaking</span><span style="font-weight:600">{{ section_avgs.avg_s|floatformat:1 }}</span></div>
-        <div style="height:6px;background:rgba(255,255,255,.06);border-radius:3px"><div style="width:{{ section_avgs.avg_s|floatformat:0 }}0%;height:100%;background:#e65100;border-radius:3px"></div></div>
+        <div style="height:6px;background:var(--tint-a);border-radius:3px"><div style="width:{{ section_avgs.avg_s|floatformat:0 }}0%;height:100%;background:#e65100;border-radius:3px"></div></div>
       </div>
       {% endif %}
     </div>
@@ -240,8 +240,8 @@ if(pCtx) new Chart(pCtx.getContext('2d'), {
         ]
     },
     options: { ...chartDefaults, scales: {
-        x: { ticks: { color: '#666', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,.04)' } },
-        y: { min: 0, max: 9, ticks: { color: '#666', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,.04)' } }
+        x: { ticks: { color: '#666', font: { size: 10 } }, grid: { color: 'var(--tint-a)' } },
+        y: { min: 0, max: 9, ticks: { color: '#666', font: { size: 10 } }, grid: { color: 'var(--tint-a)' } }
     }}
 });
 const rCtx = document.getElementById('radarChart');
@@ -256,7 +256,7 @@ if(rCtx) new Chart(rCtx.getContext('2d'), {
             {{ section_avgs.avg_s|default:0|floatformat:1 }},
         ], borderColor: '#d32f2f', backgroundColor: 'rgba(211,47,47,.15)', pointBackgroundColor: '#d32f2f', pointRadius: 4 }]
     },
-    options: { ...chartDefaults, scales: { r: { min: 0, max: 9, ticks: { color: '#555', font: { size: 9 }, stepSize: 3 }, grid: { color: 'rgba(255,255,255,.08)' }, pointLabels: { color: '#888', font: { size: 10 } } } } }
+    options: { ...chartDefaults, scales: { r: { min: 0, max: 9, ticks: { color: '#555', font: { size: 9 }, stepSize: 3 }, grid: { color: 'var(--tint-b)' }, pointLabels: { color: '#888', font: { size: 10 } } } } }
 });
 {% endif %}
 </script>

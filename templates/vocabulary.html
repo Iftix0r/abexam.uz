@@ -88,7 +88,7 @@
     }
     .form-input {
         width: 100%;
-        background: rgba(255, 255, 255, 0.03);
+        background: var(--tint-a);
         border: 1px solid var(--border-color);
         padding: 0.75rem 1rem;
         border-radius: 10px;
@@ -111,7 +111,7 @@
     <div style="display: flex; gap: 1rem; align-items: center;">
         <div style="position: relative;">
             <i data-lucide="search" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 18px; color: var(--text-muted);"></i>
-            <input type="text" id="vocabSearch" placeholder="Lug'atdan qidirish..." onkeyup="filterWords()" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); padding: 0.8rem 1rem 0.8rem 2.8rem; border-radius: 12px; font-size: 0.95rem; color: var(--text-color); outline: none; width: 300px; transition: all 0.2s;">
+            <input type="text" id="vocabSearch" placeholder="Lug'atdan qidirish..." onkeyup="filterWords()" style="background: var(--tint-a); border: 1px solid var(--border-color); padding: 0.8rem 1rem 0.8rem 2.8rem; border-radius: 12px; font-size: 0.95rem; color: var(--text-color); outline: none; width: 300px; transition: all 0.2s;">
         </div>
         {% if words %}
         <button onclick="startPractice()" class="btn" style="background: var(--primary-color); color: white; padding: 0.8rem 1.5rem; border-radius: 12px; font-size: 0.9rem; display: flex; align-items: center; gap: 10px; font-weight: 600; box-shadow: 0 4px 15px rgba(16, 163, 127, 0.2);">
@@ -173,7 +173,7 @@
                 Ro'yxatga qo'shish
             </button>
         </form>
-        <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(255,255,255,0.02); border-radius: 12px; font-size: 0.8rem; color: var(--text-muted);">
+        <div style="margin-top: 1.5rem; padding: 1rem; background: var(--tint-a); border-radius: 12px; font-size: 0.8rem; color: var(--text-muted);">
             <i data-lucide="info" style="width: 14px; margin-bottom: -2px;"></i>
             Tezkor maslahat: So'zlarni har kuni takrorlab turish ularni eslab qolish samaradorligini 70% ga oshiradi.
         </div>

@@ -66,7 +66,7 @@
         font-weight: 700;
         text-transform: uppercase;
         margin-bottom: 1rem;
-        background: rgba(255, 255, 255, 0.05);
+        background: var(--tint-a);
     }
 
     .transaction-table {
@@ -112,7 +112,7 @@
                     <i data-lucide="plus" style="width: 18px; margin-bottom: -3px; margin-right: 4px;"></i>
                     To'ldirish
                 </button>
-                <button class="btn" style="background: rgba(255,255,255,0.05); color: #fff; padding: 0.8rem 2rem; border-radius: 12px; font-weight: 600; border: 1px solid var(--border-color);">
+                <button class="btn" style="background: var(--tint-a); color: #fff; padding: 0.8rem 2rem; border-radius: 12px; font-weight: 600; border: 1px solid var(--border-color);">
                     Tafsilotlar
                 </button>
             </div>
@@ -142,7 +142,7 @@
         <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">Free Plan</h3>
         <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem; flex-grow: 1;">Savollar bilan tanishish va cheklangan mock testlar.</p>
         <div style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem;">0 SO'M <span style="font-size: 0.9rem; font-weight: 400; opacity: 0.5;">/oy</span></div>
-        <button class="btn" style="width: 100%; padding: 0.8rem; border-radius: 12px; background: rgba(255,255,255,0.05); color: #888;" disabled>Joriy reja</button>
+        <button class="btn" style="width: 100%; padding: 0.8rem; border-radius: 12px; background: var(--tint-a); color: #888;" disabled>Joriy reja</button>
     </div>
 
     <div class="plan-card featured">
@@ -210,11 +210,11 @@
         <div style="margin-bottom:1.25rem;">
             <label style="font-size:0.85rem;color:var(--text-muted);display:block;margin-bottom:0.5rem;">Summa (so'm)</label>
             <input type="number" id="topupAmount" min="1000" step="1000" placeholder="50000"
-                style="width:100%;background:rgba(255,255,255,0.05);border:1px solid var(--border-color);border-radius:10px;padding:0.8rem 1rem;color:var(--text-color);font-size:1rem;outline:none;">
+                style="width:100%;background:var(--tint-a);border:1px solid var(--border-color);border-radius:10px;padding:0.8rem 1rem;color:var(--text-color);font-size:1rem;outline:none;">
         </div>
         <div style="margin-bottom:1.25rem;">
             <label style="font-size:0.85rem;color:var(--text-muted);display:block;margin-bottom:0.5rem;">Promo kod (ixtiyoriy)</label>
-            <input type="text" id="topupPromo" placeholder="IELTS2026" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid var(--border-color);border-radius:10px;padding:0.8rem 1rem;color:var(--text-color);font-size:1rem;outline:none;text-transform:uppercase;">
+            <input type="text" id="topupPromo" placeholder="IELTS2026" style="width:100%;background:var(--tint-a);border:1px solid var(--border-color);border-radius:10px;padding:0.8rem 1rem;color:var(--text-color);font-size:1rem;outline:none;text-transform:uppercase;">
         </div>
         <div style="margin-bottom:1.5rem;">
             <label style="font-size:0.85rem;color:var(--text-muted);display:block;margin-bottom:0.75rem;">To'lov usuli</label>
@@ -233,7 +233,7 @@
         <div id="topupMsg" style="font-size:0.85rem;margin-bottom:1rem;display:none;"></div>
         <div style="display:flex;gap:0.75rem;">
             <button onclick="submitTopUp()" style="flex:1;background:var(--primary-color);color:#fff;border:none;padding:0.9rem;border-radius:12px;font-weight:600;cursor:pointer;">To'ldirish</button>
-            <button onclick="closeTopUp()" style="flex:1;background:rgba(255,255,255,0.05);color:var(--text-color);border:1px solid var(--border-color);padding:0.9rem;border-radius:12px;cursor:pointer;">Bekor qilish</button>
+            <button onclick="closeTopUp()" style="flex:1;background:var(--tint-a);color:var(--text-color);border:1px solid var(--border-color);padding:0.9rem;border-radius:12px;cursor:pointer;">Bekor qilish</button>
         </div>
     </div>
 </div>

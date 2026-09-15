@@ -23,6 +23,9 @@
             --border-color: rgba(255, 255, 255, 0.05);
             --sidebar-width: 280px;
             --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --tint-a: rgba(255, 255, 255, 0.05);
+            --tint-b: rgba(255, 255, 255, 0.09);
+            --shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
         }
 
         [data-theme="light"] {
@@ -36,6 +39,9 @@
             --text-color: #2d2d2d;
             --text-muted: #676767;
             --border-color: rgba(0, 0, 0, 0.1);
+            --tint-a: rgba(0, 0, 0, 0.035);
+            --tint-b: rgba(0, 0, 0, 0.06);
+            --shadow: 0 8px 28px rgba(0, 0, 0, 0.1);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -48,6 +54,14 @@
             min-height: 100vh;
             overflow-x: hidden;
             transition: var(--transition);
+        }
+
+        a, button, input, select, textarea { font-family: inherit; }
+        a:focus-visible, button:focus-visible, .btn:focus-visible, .nav-link:focus-visible,
+        input:focus-visible, select:focus-visible, textarea:focus-visible {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+            border-radius: 4px;
         }
 
         .sidebar {
@@ -80,8 +94,18 @@
             width: 100%;
         }
 
-        .nav-link:hover, .nav-link.active {
-            background-color: rgba(255, 255, 255, 0.08);
+        .nav-link:hover {
+            background-color: var(--tint-b);
+        }
+
+        .nav-link.active {
+            background-color: var(--primary-color);
+            color: #fff;
+            font-weight: 600;
+        }
+
+        [data-theme="light"] .nav-link:hover {
+            background-color: rgba(0, 0, 0, 0.05);
         }
 
         .sidebar.collapsed .nav-link {
@@ -206,6 +230,16 @@
             flex-grow: 1;
             display: flex;
             flex-direction: column;
+            animation: pageFadeIn 0.3s ease;
+        }
+
+        @keyframes pageFadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .page-container { animation: none; }
         }
 
         .card {
@@ -213,6 +247,7 @@
             border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
         }
 
         .btn {
@@ -220,14 +255,23 @@
             border-radius: 8px;
             cursor: pointer;
             font-weight: 500;
-            transition: opacity 0.2s;
+            transition: opacity 0.2s, transform 0.1s;
             text-decoration: none;
             display: inline-block;
+        }
+
+        .btn:active {
+            transform: scale(0.97);
         }
 
         .btn-primary {
             background-color: var(--primary-color);
             color: #fff;
+            box-shadow: 0 1px 2px rgba(211, 47, 47, 0.25);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 2px 10px rgba(211, 47, 47, 0.35);
         }
 
         .nav-links {
@@ -239,13 +283,13 @@
 
         .nav-links::-webkit-scrollbar { width: 5px; }
         .nav-links::-webkit-scrollbar-track { background: transparent; }
-        .nav-links::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        .nav-links::-webkit-scrollbar-thumb { background: var(--tint-b); border-radius: 10px; }
 
         .new-chat-btn {
             display: flex;
             align-items: center;
             gap: 12px;
-            background: rgba(255, 255, 255, 0.05);
+            background: var(--tint-a);
             border-radius: 24px;
             padding: 0.8rem 1rem;
             margin-bottom: 1.5rem;
@@ -254,7 +298,7 @@
             transition: var(--transition);
         }
 
-        .new-chat-btn:hover { background: rgba(255, 255, 255, 0.1); }
+        .new-chat-btn:hover { background: var(--tint-b); }
 
         .sidebar.collapsed .new-chat-btn {
             justify-content: center;
@@ -387,7 +431,7 @@
                 <i data-lucide="chevron-right" style="width: 14px; color: #666;"></i>
             </a>
 
-            <a href="{% url 'profile' %}" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 12px; padding: 0.8rem; border-radius: 12px; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+            <a href="{% url 'profile' %}" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 12px; padding: 0.8rem; border-radius: 12px; transition: background 0.2s;" onmouseover="this.style.background='var(--tint-a)'" onmouseout="this.style.background='transparent'">
                 <div class="user-avatar" style="overflow: hidden;">
                     {% if user.avatar %}
                         <img src="{{ user.avatar.url }}" style="width: 100%; height: 100%; object-fit: cover;">
