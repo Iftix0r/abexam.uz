@@ -58,8 +58,15 @@ input,select,textarea{font-family:inherit}
 .content{padding:28px;flex:1;min-width:0}
 
 /* Theme toggle */
-.theme-toggle{background:transparent;border:1px solid var(--border);border-radius:8px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;color:var(--text);cursor:pointer;flex-shrink:0;transition:.15s}
-.theme-toggle:hover{background:var(--surface2)}
+.theme-toggle{position:relative;background:transparent;border:1px solid var(--border);border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:background-color .15s,border-color .15s,transform .1s}
+.theme-toggle:hover{background:var(--surface2);border-color:#71717a55}
+.theme-toggle:active{transform:scale(.9)}
+.theme-toggle svg{position:absolute;transition:opacity .35s ease,transform .45s cubic-bezier(.34,1.56,.64,1)}
+.theme-toggle #theme-icon-moon{color:#818cf8;opacity:1;transform:rotate(0deg) scale(1)}
+.theme-toggle #theme-icon-sun{color:#f59e0b;opacity:0;transform:rotate(-90deg) scale(.4)}
+.theme-toggle.is-light #theme-icon-moon{opacity:0;transform:rotate(90deg) scale(.4)}
+.theme-toggle.is-light #theme-icon-sun{opacity:1;transform:rotate(0deg) scale(1)}
+@media (prefers-reduced-motion:reduce){.theme-toggle svg{transition:opacity .01s linear}}
 
 /* Mobile nav */
 .menu-toggle{display:none;background:transparent;border:1px solid var(--border);border-radius:8px;width:34px;height:34px;align-items:center;justify-content:center;color:var(--text);cursor:pointer;flex-shrink:0}
@@ -292,8 +299,8 @@ textarea.form-input{resize:vertical;min-height:80px}
     </div>
 
     <button class="theme-toggle" onclick="toggleTheme()" id="theme-toggle-btn" aria-label="Mavzuni almashtirish" title="Kunduzgi/tungi mavzu">
-      <svg id="theme-icon-moon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-      <svg id="theme-icon-sun" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" hidden><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      <svg id="theme-icon-moon" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg id="theme-icon-sun" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
     </button>
     <a href="/" style="font-size:12px;color:var(--muted);white-space:nowrap">← Sayt</a>
   </div>
@@ -331,8 +338,9 @@ document.querySelectorAll('.sidebar .nav-item').forEach(el=>el.addEventListener(
 // Theme toggle (kunduzgi/tungi mavzu)
 function updateThemeIcon(){
   const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-  document.getElementById('theme-icon-sun').hidden = !isLight;
-  document.getElementById('theme-icon-moon').hidden = isLight;
+  const btn = document.getElementById('theme-toggle-btn');
+  btn.classList.toggle('is-light', isLight);
+  btn.title = isLight ? "Tungi rejimga o'tish" : 'Kunduzgi rejimga o\'tish';
 }
 function toggleTheme(){
   const isLight = document.documentElement.getAttribute('data-theme') === 'light';
