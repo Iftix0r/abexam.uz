@@ -5,6 +5,12 @@
 
 {% block content %}
 
+<nav class="breadcrumb">
+  <a href="{% url 'panel:exams' %}">Imtihonlar</a>
+  <span class="bc-sep">/</span>
+  <span class="bc-current">{{ exam.title }}</span>
+</nav>
+
 {% if exam.is_ai_generated and not exam.is_active %}
 <div style="background:linear-gradient(135deg,rgba(99,102,241,.12),rgba(245,158,11,.08));border:1px solid rgba(99,102,241,.3);border-radius:14px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
   <div style="display:flex;align-items:center;gap:12px">

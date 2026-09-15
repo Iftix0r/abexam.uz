@@ -5,9 +5,11 @@
 
 {% block content %}
 <div style="max-width:640px">
-  <div style="margin-bottom:20px">
-    <a href="{% url 'panel:exams' %}" style="color:var(--muted);font-size:13px">← Imtihonlarga qaytish</a>
-  </div>
+  <nav class="breadcrumb">
+    <a href="{% url 'panel:exams' %}">Imtihonlar</a>
+    <span class="bc-sep">/</span>
+    <span class="bc-current">{% if exam %}Tahrirlash{% else %}Yangi imtihon{% endif %}</span>
+  </nav>
 
   <div class="card">
     <form method="post">

@@ -5,9 +5,15 @@
 
 {% block content %}
 <div style="max-width:680px">
-  <div style="margin-bottom:20px">
-    <a href="{% url 'panel:exam_detail' exam.pk %}" style="color:var(--muted);font-size:13px">← {{ exam.title }}ga qaytish</a>
-  </div>
+  <nav class="breadcrumb">
+    <a href="{% url 'panel:exams' %}">Imtihonlar</a>
+    <span class="bc-sep">/</span>
+    <a href="{% url 'panel:exam_detail' exam.pk %}">{{ exam.title }}</a>
+    <span class="bc-sep">/</span>
+    <a href="{% url 'panel:exam_detail' exam.pk %}">{{ section.title }}</a>
+    <span class="bc-sep">/</span>
+    <span class="bc-current">{% if question %}Tahrirlash{% else %}Yangi savol{% endif %}</span>
+  </nav>
 
   <div class="card">
     {% if error %}

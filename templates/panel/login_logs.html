@@ -4,9 +4,13 @@
 {% block nav_users %}active{% endblock %}
 
 {% block content %}
-<div style="margin-bottom:16px">
-  <a href="{% url 'panel:user_detail' obj.pk %}" style="color:var(--muted);font-size:13px">← {{ obj.username }} ga qaytish</a>
-</div>
+<nav class="breadcrumb">
+  <a href="{% url 'panel:users' %}">Foydalanuvchilar</a>
+  <span class="bc-sep">/</span>
+  <a href="{% url 'panel:user_detail' obj.pk %}">{{ obj.username }}</a>
+  <span class="bc-sep">/</span>
+  <span class="bc-current">Login tarixi</span>
+</nav>
 
 <div class="card" style="padding:0">
   <div class="table-wrap">
