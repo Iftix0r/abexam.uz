@@ -86,8 +86,6 @@
             overflow: hidden;
         }
 
-        .sidebar.collapsed { width: 72px; }
-
         .nav-link {
             text-decoration: none;
             color: var(--text-color);
@@ -116,28 +114,11 @@
             background-color: rgba(0, 0, 0, 0.05);
         }
 
-        .sidebar.collapsed .nav-link {
-            justify-content: center;
-            padding: 0.8rem 0;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            margin: 4px auto;
-        }
-
         .bottom-section {
             padding-top: 1rem;
             border-top: 1px solid var(--border-color);
             margin-top: auto;
             width: 100%;
-        }
-
-        .sidebar.collapsed .bottom-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1.5rem;
-            padding-bottom: 1.5rem;
         }
 
         .upgrade-btn {
@@ -155,15 +136,6 @@
             transition: background 0.2s;
         }
 
-        .sidebar.collapsed .upgrade-btn {
-            border: none;
-            justify-content: center;
-            padding: 0.6rem 0;
-        }
-
-        .sidebar.collapsed .upgrade-btn span,
-        .sidebar.collapsed .upgrade-btn i[data-lucide="chevron-right"] { display: none; }
-
         .profile-link {
             display: flex;
             align-items: center;
@@ -174,9 +146,6 @@
             color: var(--text-color);
             font-size: 0.85rem;
         }
-
-        .sidebar.collapsed .profile-link { justify-content: center; padding: 0.6rem 0; }
-        .sidebar.collapsed .profile-link span { display: none; }
 
         .user-avatar {
             width: 32px;
@@ -199,11 +168,6 @@
             flex-direction: column;
             width: calc(100% - var(--sidebar-width));
             transition: var(--transition);
-        }
-
-        .main-content.expanded {
-            margin-left: 72px;
-            width: calc(100% - 72px);
         }
 
         .top-navbar {
@@ -230,11 +194,9 @@
 
         .model-selector:hover { background: var(--border-color); }
 
-        /* Only one sidebar-toggle button should ever be visible at a time:
-           the one inside the sidebar itself on desktop (it stays reachable
-           even when collapsed to icon-only width), and the one in the top
-           navbar on mobile (the sidebar is fully off-canvas there, so its
-           own toggle isn't reachable). */
+        /* Sidebar always stays open on desktop (no collapse). The top-navbar
+           toggle only exists for mobile, where the sidebar is an off-canvas
+           drawer that needs an open/close control. */
         #toggle-sidebar-top { display: none !important; }
 
         .page-container {
@@ -315,25 +277,12 @@
 
         .new-chat-btn:hover { background: var(--tint-b); }
 
-        .sidebar.collapsed .new-chat-btn {
-            justify-content: center;
-            width: 44px;
-            height: 44px;
-            padding: 0;
-            border-radius: 50%;
-        }
-
-        .sidebar.collapsed .new-chat-btn span { display: none; }
-
         .sidebar-header {
             display: flex;
             align-items: center;
             gap: 12px;
             padding: 0.5rem 0.5rem 2rem 0.5rem;
         }
-
-        .sidebar.collapsed .nav-toggle-text,
-        .sidebar.collapsed .sidebar-label { display: none !important; }
 
         .sidebar-overlay {
             display: none;
@@ -358,7 +307,6 @@
                 width: 100% !important;
             }
             .page-container { padding: 1rem; }
-            #toggle-sidebar { display: none !important; }
             #toggle-sidebar-top { display: flex !important; }
         }
 
@@ -396,10 +344,7 @@
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <button id="toggle-sidebar" style="background: transparent; border: none; color: var(--text-color); cursor: pointer; display: flex; align-items: center; padding: 4px;">
-                <i data-lucide="menu" style="width: 24px;"></i>
-            </button>
-            <a href="/" style="text-decoration: none; display: flex; align-items: center; gap: 8px;" class="nav-toggle-text">
+            <a href="/" style="text-decoration: none; display: flex; align-items: center; gap: 8px;">
                 <span style="font-weight: 600; font-size: 1.25rem; color: var(--text-color); letter-spacing: -0.02em;">AbExam</span>
             </a>
         </div>
@@ -469,16 +414,6 @@
     </aside>
 
     <main class="main-content" id="main-content">
-        <script>
-            (function(){
-                try{
-                    if (window.innerWidth > 768 && localStorage.getItem('sidebar-collapsed') === 'true') {
-                        document.getElementById('sidebar').classList.add('collapsed');
-                        document.getElementById('main-content').classList.add('expanded');
-                    }
-                }catch(e){}
-            })();
-        </script>
         {% if site_settings.announcement_active and site_settings.announcement %}
         <div class="announcement-banner" id="announcementBanner" data-key="announcement-dismissed-{{ site_settings.updated_at|date:'U' }}">
             <span>📢 {{ site_settings.announcement }}</span>
@@ -537,18 +472,10 @@
         }
 
         const sidebar = document.getElementById('sidebar');
-        const mainContent = document.getElementById('main-content');
         const overlay = document.getElementById('sidebarOverlay');
         const themeToggleBtn = document.getElementById('theme-toggle');
         const themeIcon = document.getElementById('theme-icon');
         const htmlElement = document.documentElement;
-        const isMobile = () => window.innerWidth <= 768;
-
-        // Init state
-        if (!isMobile() && localStorage.getItem('sidebar-collapsed') === 'true') {
-            sidebar.classList.add('collapsed');
-            mainContent.classList.add('expanded');
-        }
 
         const savedTheme = localStorage.getItem('theme') || 'dark';
         htmlElement.setAttribute('data-theme', savedTheme);
@@ -557,15 +484,11 @@
             lucide.createIcons();
         }
 
+        // Sidebar is always expanded on desktop; on mobile it's an
+        // off-canvas drawer opened/closed with this toggle.
         function toggleSidebar() {
-            if (isMobile()) {
-                const isOpen = sidebar.classList.toggle('mobile-open');
-                overlay.classList.toggle('active', isOpen);
-            } else {
-                const isCollapsed = sidebar.classList.toggle('collapsed');
-                mainContent.classList.toggle('expanded');
-                localStorage.setItem('sidebar-collapsed', isCollapsed);
-            }
+            const isOpen = sidebar.classList.toggle('mobile-open');
+            overlay.classList.toggle('active', isOpen);
         }
 
         overlay.addEventListener('click', () => {
@@ -573,7 +496,6 @@
             overlay.classList.remove('active');
         });
 
-        document.getElementById('toggle-sidebar').addEventListener('click', toggleSidebar);
         document.getElementById('toggle-sidebar-top').addEventListener('click', toggleSidebar);
 
         themeToggleBtn.addEventListener('click', () => {
