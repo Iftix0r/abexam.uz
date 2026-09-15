@@ -230,6 +230,13 @@
 
         .model-selector:hover { background: var(--border-color); }
 
+        /* Only one sidebar-toggle button should ever be visible at a time:
+           the one inside the sidebar itself on desktop (it stays reachable
+           even when collapsed to icon-only width), and the one in the top
+           navbar on mobile (the sidebar is fully off-canvas there, so its
+           own toggle isn't reachable). */
+        #toggle-sidebar-top { display: none !important; }
+
         .page-container {
             width: 100%;
             max-width: 1200px;
@@ -351,7 +358,8 @@
                 width: 100% !important;
             }
             .page-container { padding: 1rem; }
-            #toggle-sidebar { display: none; }
+            #toggle-sidebar { display: none !important; }
+            #toggle-sidebar-top { display: flex !important; }
         }
 
         .announcement-banner {
@@ -461,6 +469,16 @@
     </aside>
 
     <main class="main-content" id="main-content">
+        <script>
+            (function(){
+                try{
+                    if (window.innerWidth > 768 && localStorage.getItem('sidebar-collapsed') === 'true') {
+                        document.getElementById('sidebar').classList.add('collapsed');
+                        document.getElementById('main-content').classList.add('expanded');
+                    }
+                }catch(e){}
+            })();
+        </script>
         {% if site_settings.announcement_active and site_settings.announcement %}
         <div class="announcement-banner" id="announcementBanner" data-key="announcement-dismissed-{{ site_settings.updated_at|date:'U' }}">
             <span>📢 {{ site_settings.announcement }}</span>
