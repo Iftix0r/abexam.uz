@@ -33,6 +33,25 @@
         </select>
       </div>
 
+      <div id="qtype-hint-mcq" class="qtype-hint" hidden>
+        ✅ <strong>Multiple Choice:</strong> talaba bir nechta variantdan bittasini tanlaydi. Savol matni oddiy savol shaklida yoziladi (masalan: "What is the capital of France?"). Pastda variantlarni kiriting va chap tomondagi doiracha bilan to'g'ri javobni belgilang.
+      </div>
+      <div id="qtype-hint-tfng" class="qtype-hint" hidden>
+        ✅ <strong>True/False/Not Given:</strong> savol matni matndagi bir fikr/da'vo bo'lishi kerak (savol emas), masalan: "The museum was built in 1990." Talaba buni True, False yoki Not Given deb belgilaydi.
+      </div>
+      <div id="qtype-hint-gapfill" class="qtype-hint" hidden>
+        ✅ <strong>Gap Fill:</strong> savol matnida bo'sh joy o'rniga <code>___</code> yozing, masalan: "The train leaves at ___." To'g'ri javobni pastda kiriting (bir nechta to'g'ri variant bo'lsa <code>/</code> bilan ajrating, masalan: colour/color).
+      </div>
+      <div id="qtype-hint-matching" class="qtype-hint" hidden>
+        ✅ <strong>Matching:</strong> ikki ro'yxatni mosligini tekshirish uchun. Savol matnida nimani moslashtirish kerakligini yozing (masalan: "Match the person to their opinion: Dr. Smith ___"), to'g'ri javob sifatida mos harf/raqamni kiriting (masalan: C).
+      </div>
+      <div id="qtype-hint-writing" class="qtype-hint" hidden>
+        ✅ <strong>Writing Task:</strong> savol matniga insho/topshiriq mavzusini yozing. Talaba javobni erkin matn ko'rinishida yozadi — tizim avtomatik tekshirmaydi, keyinroq baholanadi. "Namunaviy javob" — talabalarga emas, faqat o'qituvchiga ko'rsatma sifatida.
+      </div>
+      <div id="qtype-hint-short" class="qtype-hint" hidden>
+        ✅ <strong>Short Answer:</strong> ko'pincha Speaking savollari yoki ochiq javobli qisqa savollar uchun. To'g'ri javob avtomatik tekshirilmaydi — "Izoh" maydoniga talabaga ko'rsatma/maslahat yozishingiz mumkin.
+      </div>
+
       <!-- MCQ -->
       <div class="form-group qtype-block" id="block-mcq">
         <label class="form-label">Variantlar (kamida 2 ta, to'g'ri javobni belgilang)</label>
@@ -103,6 +122,11 @@
 {% endblock %}
 
 {% block extra_js %}
+<style>
+.qtype-hint{background:rgba(211,47,47,.06);border:1px solid rgba(211,47,47,.18);border-radius:8px;padding:10px 14px;font-size:12px;line-height:1.6;color:var(--text);margin-bottom:16px}
+.qtype-hint strong{color:var(--primary)}
+.qtype-hint code{background:var(--surface2);border-radius:4px;padding:1px 5px}
+</style>
 <script>
 function setBlockVisible(id, visible) {
   const el = document.getElementById(id);
@@ -118,6 +142,11 @@ function updateQuestionTypeUI() {
   setBlockVisible('block-text', val === 'gap_fill' || val === 'matching');
   setBlockVisible('block-writing', val === 'writing_task');
   setBlockVisible('block-wordlimit', val === 'writing_task');
+
+  const hints = {mcq: 'qtype-hint-mcq', tfng: 'qtype-hint-tfng', gap_fill: 'qtype-hint-gapfill',
+    matching: 'qtype-hint-matching', writing_task: 'qtype-hint-writing', short_answer: 'qtype-hint-short'};
+  Object.values(hints).forEach(id => document.getElementById(id).hidden = true);
+  if (hints[val]) document.getElementById(hints[val]).hidden = false;
 }
 updateQuestionTypeUI();
 

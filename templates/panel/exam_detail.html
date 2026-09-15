@@ -54,6 +54,22 @@
       <div style="font-size:13px;color:var(--muted);line-height:1.6">{{ exam.description|default:"Tavsif yo'q" }}</div>
     </div>
 
+    {% if not sections %}
+    <div class="card" style="border-color:rgba(211,47,47,.25);background:rgba(211,47,47,.04)">
+      <div style="font-size:14px;font-weight:700;margin-bottom:10px">📋 Qo'lda test qanday yaratiladi?</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.8">
+        IELTS testi odatda 4 bo'limdan iborat: <strong style="color:var(--text)">Listening</strong> (4 qism, ~40 savol),
+        <strong style="color:var(--text)">Reading</strong> (3 passage, ~40 savol),
+        <strong style="color:var(--text)">Writing</strong> (Task 1 + Task 2),
+        <strong style="color:var(--text)">Speaking</strong> (Part 1-3). Barchasini qo'shish shart emas — masalan faqat Reading practice ham yaratsa bo'ladi.<br><br>
+        <strong style="color:var(--text)">1-qadam:</strong> pastdagi "+ Bo'lim qo'shish" tugmasi bilan kerakli bo'lim(lar)ni qo'shing. Bo'lim turini tanlaganda, nima kiritish kerakligi haqida ko'rsatma chiqadi.<br>
+        <strong style="color:var(--text)">2-qadam:</strong> har bir bo'lim ichida "+ Savol qo'shish" orqali savollarni birma-bir kiriting — savol turini tanlaganingizda uni qanday to'ldirish kerakligi tushuntiriladi.<br>
+        <strong style="color:var(--text)">3-qadam:</strong> barcha savollar tayyor bo'lgach, yuqoridagi "Tahrirlash" sahifasida testni <strong style="color:var(--text)">Faol</strong> qiling — shundagina talabalar uni ko'radi.<br><br>
+        💡 Har bir bo'lim va savolni "👁 Talaba sifatida ko'rish" orqali tekshirib borishingiz mumkin.
+      </div>
+    </div>
+    {% endif %}
+
     <a href="{% url 'panel:section_create' exam.pk %}" class="btn btn-primary" style="align-self:flex-start">+ Bo'lim qo'shish</a>
 
     {% for section in sections %}

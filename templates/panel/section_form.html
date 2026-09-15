@@ -36,6 +36,22 @@
           <input class="form-input" name="duration_minutes" type="number" min="0" value="{{ request.POST.duration_minutes|default:initial.duration_minutes }}" placeholder="0 = umumiy vaqtdan foydalaniladi">
         </div>
       </div>
+
+      <div id="type-hint-listening" class="type-hint" hidden>
+        🎧 <strong>Listening bo'limi:</strong> pastda audio fayl yuklang — talaba shuni tinglaydi va matn ko'rinmaydi.
+        Agar audio yuklamasangiz, "Matn" maydoniga yozgan skriptingiz sun'iy ovoz (TTS) orqali o'qib beriladi — shuning uchun audio bo'lmasa, skriptni albatta to'ldiring.
+        Savollarni pastda (bo'lim saqlangach) qo'shasiz — odatda 10 tadan, jami 40 ta.
+      </div>
+      <div id="type-hint-reading" class="type-hint" hidden>
+        📖 <strong>Reading bo'limi:</strong> "Matn" maydoniga o'qish matnini (passage) joylashtiring — talaba buni ekranda o'qib, pastdagi savollarga javob beradi. Odatda 3 ta passage, har birida ~13-14 savol (jami ~40).
+      </div>
+      <div id="type-hint-writing" class="type-hint" hidden>
+        ✍️ <strong>Writing bo'limi:</strong> "Matn" maydoniga vazifa ko'rsatmasini yozing (masalan, grafikni tasvirlang yoki insho mavzusi). Task 1 bo'lsa pastdan grafik/rasm yuklang. Bo'lim saqlangach, savol qo'shishda "Writing Task" turini tanlab, so'z chegarasini kiriting (Task 1 ≥150, Task 2 ≥250 so'z).
+      </div>
+      <div id="type-hint-speaking" class="type-hint" hidden>
+        🗣 <strong>Speaking bo'limi:</strong> "Matn" maydoniga Part 1/2/3 uchun mavzu va savollarni yozing. Har bir savolni pastda "Short Answer" turi bilan alohida qo'shishingiz mumkin (talaba javobni matn/audio ko'rinishida yozadi, baholash qo'lda amalga oshiriladi).
+      </div>
+
       <div class="form-group">
         <label class="form-label">Matn (o'qish matni / ko'rsatma / audio skript)</label>
         <textarea class="form-input" name="content" rows="10" placeholder="Matnni shu yerga yozing. Paragraflar orasida bo'sh qator qoldiring.">{{ request.POST.content|default:initial_content }}</textarea>
@@ -63,11 +79,18 @@
 {% endblock %}
 
 {% block extra_js %}
+<style>
+.type-hint{background:rgba(211,47,47,.06);border:1px solid rgba(211,47,47,.18);border-radius:8px;padding:10px 14px;font-size:12px;line-height:1.6;color:var(--text);margin-bottom:16px}
+.type-hint strong{color:var(--primary)}
+</style>
 <script>
 function updateSectionTypeUI() {
   const val = document.getElementById('section_type').value;
   document.getElementById('field-audio').hidden = (val !== 'listening');
   document.getElementById('field-image').hidden = (val !== 'writing');
+  ['listening', 'reading', 'writing', 'speaking'].forEach(t => {
+    document.getElementById('type-hint-' + t).hidden = (val !== t);
+  });
 }
 updateSectionTypeUI();
 </script>
