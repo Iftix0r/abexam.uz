@@ -36,7 +36,7 @@
 <div class="card" style="margin-bottom:20px">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
     <span style="font-size:14px;font-weight:600">So'nggi 30 kun faolligi</span>
-    <div style="display:flex;gap:6px;background:rgba(255,255,255,.04);border-radius:8px;padding:3px;flex-wrap:wrap">
+    <div style="display:flex;gap:6px;background:var(--tint1);border-radius:8px;padding:3px;flex-wrap:wrap">
       <button class="tab-btn active" onclick="switchMain('users',this)">Foydalanuvchilar</button>
       <button class="tab-btn" onclick="switchMain('results',this)">Natijalar</button>
       <button class="tab-btn" onclick="switchMain('revenue',this)">Daromad</button>
@@ -90,19 +90,19 @@
   <div class="grid-2-eq">
     <div>
       <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:var(--muted)">Listening</span><span style="font-weight:600">{{ stats.avg_l|floatformat:1 }}</span></div>
-      <div style="height:7px;background:rgba(255,255,255,.06);border-radius:4px"><div style="width:{{ stats.avg_l|floatformat:0 }}0%;height:100%;background:#1565c0;border-radius:4px"></div></div>
+      <div style="height:7px;background:var(--tint1);border-radius:4px"><div style="width:{{ stats.avg_l|floatformat:0 }}0%;height:100%;background:#1565c0;border-radius:4px"></div></div>
     </div>
     <div>
       <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:var(--muted)">Reading</span><span style="font-weight:600">{{ stats.avg_r|floatformat:1 }}</span></div>
-      <div style="height:7px;background:rgba(255,255,255,.06);border-radius:4px"><div style="width:{{ stats.avg_r|floatformat:0 }}0%;height:100%;background:#2e7d32;border-radius:4px"></div></div>
+      <div style="height:7px;background:var(--tint1);border-radius:4px"><div style="width:{{ stats.avg_r|floatformat:0 }}0%;height:100%;background:#2e7d32;border-radius:4px"></div></div>
     </div>
     <div>
       <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:var(--muted)">Writing</span><span style="font-weight:600">{{ stats.avg_w|floatformat:1 }}</span></div>
-      <div style="height:7px;background:rgba(255,255,255,.06);border-radius:4px"><div style="width:{{ stats.avg_w|floatformat:0 }}0%;height:100%;background:#6a1b9a;border-radius:4px"></div></div>
+      <div style="height:7px;background:var(--tint1);border-radius:4px"><div style="width:{{ stats.avg_w|floatformat:0 }}0%;height:100%;background:#6a1b9a;border-radius:4px"></div></div>
     </div>
     <div>
       <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:var(--muted)">Speaking</span><span style="font-weight:600">{{ stats.avg_s|floatformat:1 }}</span></div>
-      <div style="height:7px;background:rgba(255,255,255,.06);border-radius:4px"><div style="width:{{ stats.avg_s|floatformat:0 }}0%;height:100%;background:#e65100;border-radius:4px"></div></div>
+      <div style="height:7px;background:var(--tint1);border-radius:4px"><div style="width:{{ stats.avg_s|floatformat:0 }}0%;height:100%;background:#e65100;border-radius:4px"></div></div>
     </div>
   </div>
 </div>
@@ -111,10 +111,15 @@
 {% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 <script>
-const C = {
-  grid:'rgba(255,255,255,.05)', tick:'#666',
-  tooltip:{backgroundColor:'#1e1e1e',borderColor:'#333',borderWidth:1,titleColor:'#e3e3e3',bodyColor:'#aaa'}
-};
+// Colors follow the active theme (dark/light) — see panelChartColors() in base.html
+function chartTheme(){
+  const c = panelChartColors();
+  return {
+    grid:c.grid, tick:c.tick,
+    tooltip:{backgroundColor:c.surface,borderColor:c.grid,borderWidth:1,titleColor:c.text,bodyColor:c.tick}
+  };
+}
+let C = chartTheme();
 
 const labels = {{ chart_labels|safe }};
 const usersData = {{ chart_users|safe }};
@@ -161,43 +166,60 @@ function switchMain(type, btn){
 }
 
 // Exam type doughnut
-new Chart(document.getElementById('typeChart').getContext('2d'),{
+const typeChart = new Chart(document.getElementById('typeChart').getContext('2d'),{
   type:'doughnut',
   data:{
     labels:{{ chart_type_labels|safe }},
     datasets:[{data:{{ chart_type_counts|safe }}, backgroundColor:['#6366f1','#22c55e','#eab308','#ef4444','#3b82f6'], borderWidth:0, hoverOffset:6}]
   },
-  options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'bottom',labels:{color:'#888',font:{size:10},padding:8}},tooltip:C.tooltip}}
+  options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'bottom',labels:{color:C.tick,font:{size:10},padding:8}},tooltip:C.tooltip}}
 });
 
 // Band doughnut
-new Chart(document.getElementById('bandChart').getContext('2d'),{
+const bandChart = new Chart(document.getElementById('bandChart').getContext('2d'),{
   type:'doughnut',
   data:{
     labels:{{ chart_band_labels|safe }},
     datasets:[{data:{{ chart_band_data|safe }}, backgroundColor:['#ef4444','#f97316','#eab308','#22c55e','#6366f1'], borderWidth:0, hoverOffset:6}]
   },
-  options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'bottom',labels:{color:'#888',font:{size:10},padding:8}},tooltip:C.tooltip}}
+  options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'bottom',labels:{color:C.tick,font:{size:10},padding:8}},tooltip:C.tooltip}}
 });
 
 // Radar
-new Chart(document.getElementById('radarChart').getContext('2d'),{
+const radarChart = new Chart(document.getElementById('radarChart').getContext('2d'),{
   type:'radar',
   data:{
     labels:['Listening','Reading','Writing','Speaking'],
     datasets:[{label:"O'rtacha",data:[{{ stats.avg_l|floatformat:1 }},{{ stats.avg_r|floatformat:1 }},{{ stats.avg_w|floatformat:1 }},{{ stats.avg_s|floatformat:1 }}],borderColor:'#d32f2f',backgroundColor:'rgba(211,47,47,.15)',pointBackgroundColor:'#d32f2f',pointRadius:4}]
   },
-  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:C.tooltip},scales:{r:{min:0,max:9,ticks:{color:'#555',font:{size:9},stepSize:3},grid:{color:'rgba(255,255,255,.08)'},pointLabels:{color:'#888',font:{size:10}}}}}
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:C.tooltip},scales:{r:{min:0,max:9,ticks:{color:C.tick,font:{size:9},stepSize:3},grid:{color:C.grid},pointLabels:{color:C.tick,font:{size:10}}}}}
 });
 
 // Monthly revenue bar
-new Chart(document.getElementById('revenueChart').getContext('2d'),{
+const revenueChart = new Chart(document.getElementById('revenueChart').getContext('2d'),{
   type:'bar',
   data:{
     labels:{{ chart_monthly_labels|safe }},
     datasets:[{label:"Daromad",data:{{ chart_monthly_rev|safe }},backgroundColor:'rgba(34,197,94,.7)',borderRadius:6,borderSkipped:false}]
   },
   options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:C.tooltip},scales:{x:{ticks:{color:C.tick,font:{size:10}},grid:{display:false}},y:{ticks:{color:C.tick,font:{size:10}},grid:{color:C.grid},beginAtZero:true}}}
+});
+
+window.addEventListener('panelthemechange',()=>{
+  C = chartTheme();
+  const charts = [mainChart, typeChart, bandChart, radarChart, revenueChart];
+  charts.forEach(ch=>{
+    if(ch.options.plugins.tooltip) ch.options.plugins.tooltip = C.tooltip;
+    if(ch.options.plugins.legend && ch.options.plugins.legend.labels) ch.options.plugins.legend.labels.color = C.tick;
+    if(ch.options.scales){
+      Object.values(ch.options.scales).forEach(scale=>{
+        if(scale.ticks) scale.ticks.color = C.tick;
+        if(scale.grid) scale.grid.color = C.grid;
+        if(scale.pointLabels) scale.pointLabels.color = C.tick;
+      });
+    }
+    ch.update();
+  });
 });
 </script>
 {% endblock %}

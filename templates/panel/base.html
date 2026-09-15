@@ -21,11 +21,13 @@
   --green:#22c55e;--yellow:#eab308;--red:#ef4444;--blue:#3b82f6;
   --radius:12px;--sidebar:240px;
   --shadow:0 8px 32px #0008;
+  --tint1:rgba(255,255,255,.04);--tint2:rgba(255,255,255,.1);
 }
 :root[data-theme="light"]{
   --bg:#f4f4f6;--surface:#ffffff;--surface2:#f1f1f4;--border:#e3e3e8;
   --text:#18181b;--muted:#6b6b76;--primary:#d32f2f;--primary-dark:#b71c1c;--primary-dim:#d32f2f14;
   --shadow:0 8px 32px #00000014;
+  --tint1:rgba(0,0,0,.035);--tint2:#ffffff;
 }
 body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;font-size:14px;transition:background-color .15s,color .15s}
 a{color:inherit;text-decoration:none}
@@ -160,7 +162,7 @@ textarea.form-input{resize:vertical;min-height:80px}
 /* Chart */
 .chart-wrap{position:relative;height:200px}
 .tab-btn{padding:6px 14px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--muted);transition:.15s}
-.tab-btn.active{background:rgba(255,255,255,.1);color:var(--text);font-weight:600}
+.tab-btn.active{background:var(--tint2);color:var(--text);font-weight:600;box-shadow:0 1px 3px #00000014}
 
 /* ── Responsive: tablet & below — off-canvas sidebar ── */
 @media (max-width:960px){
@@ -342,8 +344,21 @@ function toggleTheme(){
     try{localStorage.setItem('panelTheme','light')}catch(e){}
   }
   updateThemeIcon();
+  window.dispatchEvent(new Event('panelthemechange'));
 }
 updateThemeIcon();
+
+// Theme-aware colors for Chart.js — pages with charts call this instead of
+// hardcoding hex values, so charts stay legible after a theme switch.
+function panelChartColors(){
+  const cs = getComputedStyle(document.documentElement);
+  return {
+    grid: cs.getPropertyValue('--border').trim(),
+    tick: cs.getPropertyValue('--muted').trim(),
+    text: cs.getPropertyValue('--text').trim(),
+    surface: cs.getPropertyValue('--surface').trim(),
+  };
+}
 
 // Global search
 const gInput=document.getElementById('gsearch-input');
