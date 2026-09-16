@@ -67,7 +67,11 @@ if os.getenv('DB_NAME'):
             'NAME': os.getenv('DB_NAME'),
             'USER': os.getenv('DB_USER'),
             'PASSWORD': os.getenv('DB_PASSWORD'),
-            'HOST': os.getenv('DB_HOST', 'localhost'),
+            # '127.0.0.1', not 'localhost': on shared hosts (e.g. cPanel)
+            # "localhost" often resolves to ::1 first, but pg_hba.conf there
+            # is commonly only configured for the IPv4 loopback — that
+            # mismatch is what "no pg_hba.conf entry for host ::1" means.
+            'HOST': os.getenv('DB_HOST', '127.0.0.1'),
             'PORT': os.getenv('DB_PORT', '5432'),
         }
     }
