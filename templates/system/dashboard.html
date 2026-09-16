@@ -32,7 +32,30 @@
     <div class="stat-label">Django / Python</div>
     <div class="stat-val" style="font-size:13px">{{ django_version }} / {{ python_version }}</div>
   </div>
+  <div class="stat-card">
+    <div class="stat-label">Xato kuzatuvi (Sentry)</div>
+    <div class="stat-val" style="display:flex;align-items:center;gap:8px">
+      {% if sentry_enabled %}
+        <span class="badge badge-green">Yoqilgan</span>
+        <a href="{% url 'system:sentry_test' %}" class="btn btn-ghost" style="padding:3px 10px;font-size:11px">Sinov xatosi</a>
+      {% else %}
+        <span class="badge badge-gray">Sozlanmagan</span>
+      {% endif %}
+    </div>
+  </div>
 </div>
+
+{% if not sentry_enabled %}
+<div class="card" style="border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.05)">
+  <div class="section-title" style="color:#f59e0b">Xato kuzatuvini yoqish</div>
+  <p style="font-size:13px;color:var(--muted);line-height:1.7">
+    1. <a href="https://sentry.io" style="color:var(--primary)">sentry.io</a>da bepul hisob oching, yangi Django loyihasi yarating<br>
+    2. Berilgan DSN havolasini nusxalang<br>
+    3. Serverdagi <code class="inline">.env</code>ga qo'shing: <code class="inline">SENTRY_DSN=https://...</code><br>
+    4. <code class="inline">touch tmp/restart.txt</code> bilan qayta ishga tushiring
+  </p>
+</div>
+{% endif %}
 
 <div class="card">
   <div class="section-title">Disk maydoni</div>

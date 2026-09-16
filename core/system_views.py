@@ -21,6 +21,8 @@ from django.http import FileResponse, Http404
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_POST
 
+from .utils import read_task_history
+
 _BACKUP_NAME_RE = re.compile(r'^[\w.-]+\.(json\.gz|tar\.gz)$')
 _LOG_TAIL_LINES = 300
 
@@ -87,6 +89,7 @@ def dashboard(request):
         'maintenance_mode': SiteSettings.get().maintenance_mode,
         'git_commit': _git_commit(),
         'backup_count': sum(1 for f in _backups_dir().iterdir() if f.is_file()),
+        'sentry_enabled': bool(settings.SENTRY_DSN),
     }
     return render(request, 'system/dashboard.html', context)
 
@@ -150,14 +153,34 @@ def backup_delete(request, filename):
     return redirect('system:backups')
 
 
+def _tail(path, n=_LOG_TAIL_LINES):
+    if not path.is_file():
+        return ''
+    with open(path, 'r', errors='replace') as f:
+        return ''.join(f.readlines()[-n:])
+
+
 @system_required
 def logs(request):
-    log_path = _backups_dir() / 'cron.log'
-    content = ''
-    if log_path.is_file():
-        with open(log_path, 'r', errors='replace') as f:
-            lines = f.readlines()
-        content = ''.join(lines[-_LOG_TAIL_LINES:])
+    cron_log = _backups_dir() / 'cron.log'
+    slow_log = Path(settings.LOGS_DIR) / 'slow_queries.log'
     return render(request, 'system/logs.html', {
-        'content': content, 'log_exists': log_path.is_file(),
+        'cron_content': _tail(cron_log),
+        'cron_exists': cron_log.is_file(),
+        'slow_content': _tail(slow_log),
+        'slow_exists': slow_log.is_file(),
+        'slow_threshold': settings.SLOW_QUERY_THRESHOLD,
     })
+
+
+@system_required
+def tasks(request):
+    return render(request, 'system/tasks.html', {'runs': read_task_history()})
+
+
+@system_required
+def sentry_test(request):
+    if not settings.SENTRY_DSN:
+        messages.error(request, "SENTRY_DSN .env'da sozlanmagan — avval uni qo'shing.")
+        return redirect('system:dashboard')
+    1 / 0

@@ -28,6 +28,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'core.middleware.SlowQueryLogMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -172,3 +173,45 @@ LOGIN_REDIRECT_URL = '/dashboard/'
 # messaging the bot then checking https://api.telegram.org/bot<token>/getUpdates
 TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN', '')
 TELEGRAM_ADMIN_CHAT_ID = os.getenv('TELEGRAM_ADMIN_CHAT_ID', '')
+
+# ── Logging (slow queries, background task history) ────────────────────────
+LOGS_DIR = BASE_DIR / 'logs'
+LOGS_DIR.mkdir(exist_ok=True)
+
+# How long a single SQL query has to take before it's written to
+# logs/slow_queries.log — set SLOW_QUERY_THRESHOLD=0 in .env to disable.
+SLOW_QUERY_THRESHOLD = float(os.getenv('SLOW_QUERY_THRESHOLD', '0.5'))
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'slow_queries_file': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': LOGS_DIR / 'slow_queries.log',
+            'maxBytes': 2 * 1024 * 1024,
+            'backupCount': 3,
+        },
+    },
+    'loggers': {
+        'slow_queries': {
+            'handlers': ['slow_queries_file'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+    },
+}
+
+# ── Error tracking (Sentry) — no-op unless SENTRY_DSN is set in .env ───────
+SENTRY_DSN = os.getenv('SENTRY_DSN', '')
+if SENTRY_DSN:
+    import sentry_sdk
+    from sentry_sdk.integrations.django import DjangoIntegration
+
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        integrations=[DjangoIntegration()],
+        traces_sample_rate=0.1,
+        send_default_pii=False,
+        environment='production' if not DEBUG else 'development',
+    )

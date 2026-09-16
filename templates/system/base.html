@@ -79,6 +79,10 @@ code.inline{background:var(--surface2);padding:2px 6px;border-radius:5px;font-si
     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8" stroke-width="1.8"/><line x1="8" y1="13" x2="16" y2="13" stroke-width="1.8"/><line x1="8" y1="17" x2="16" y2="17" stroke-width="1.8"/></svg>
     Loglar
   </a>
+  <a href="{% url 'system:tasks' %}" class="nav-item {% block nav_tasks %}{% endblock %}">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="1.8"/><polyline points="12,6 12,12 16,14" stroke-width="1.8"/></svg>
+    Vazifalar
+  </a>
   <div class="sidebar-footer">
     <a href="/panel/" class="back-link">← Admin panel</a>
     <a href="/admin/" class="back-link">← Django admin</a>

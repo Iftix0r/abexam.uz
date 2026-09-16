@@ -25,6 +25,7 @@ db.sqlite3
 media/
 cache_data/
 backups/
+logs/
 
 # Environment variables
 .env

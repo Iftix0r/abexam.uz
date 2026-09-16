@@ -187,3 +187,38 @@ def monthly_series(queryset, date_field, months, agg):
         labels.append(date(y, m, 1).strftime('%b %Y'))
         values.append(by_bucket.get((y, m)) or 0)
     return labels, values
+
+
+_TASK_HISTORY_MAX = 200
+
+
+def record_task_run(name, success, duration, note=''):
+    """Appends one JSON line to logs/task_history.jsonl for a scheduled/cron
+    command (e.g. backup_data), then trims the file to the last N runs.
+    Used by /system/ to show whether background tasks are actually
+    succeeding without needing to grep raw cron output."""
+    path = settings.LOGS_DIR / 'task_history.jsonl'
+    entry = {
+        'name': name, 'success': success, 'duration': round(duration, 2),
+        'note': note[:500], 'at': timezone.now().isoformat(),
+    }
+    lines = []
+    if path.exists():
+        lines = path.read_text().splitlines()
+    lines.append(json.dumps(entry))
+    lines = lines[-_TASK_HISTORY_MAX:]
+    path.write_text('\n'.join(lines) + '\n')
+
+
+def read_task_history(limit=50):
+    path = settings.LOGS_DIR / 'task_history.jsonl'
+    if not path.exists():
+        return []
+    lines = path.read_text().splitlines()[-limit:]
+    entries = []
+    for line in reversed(lines):
+        try:
+            entries.append(json.loads(line))
+        except ValueError:
+            continue
+    return entries

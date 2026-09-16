@@ -1,0 +1,27 @@
+{% extends 'system/base.html' %}
+{% block title %}Vazifalar{% endblock %}
+{% block nav_tasks %}active{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="section-title">Fon vazifalar tarixi (oxirgi {{ runs|length }} ta)</div>
+  <table>
+    <thead><tr><th>Vazifa</th><th>Sana</th><th>Davomiyligi</th><th>Holat</th><th>Izoh</th></tr></thead>
+    <tbody>
+      {% for r in runs %}
+      <tr>
+        <td>{{ r.name }}</td>
+        <td style="color:var(--muted)">{{ r.at|slice:":19"|default:r.at }}</td>
+        <td style="color:var(--muted)">{{ r.duration }}s</td>
+        <td>
+          {% if r.success %}<span class="badge badge-green">✓ OK</span>{% else %}<span class="badge badge-red">✕ Xato</span>{% endif %}
+        </td>
+        <td style="color:var(--muted);font-size:12px;max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="{{ r.note }}">{{ r.note }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5" style="text-align:center;color:var(--muted);padding:24px">Hali fon vazifa ishga tushmagan</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

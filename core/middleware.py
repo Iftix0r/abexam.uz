@@ -1,7 +1,41 @@
+import logging
+import time
+
+from django.conf import settings
+from django.db import connection
 from django.http import JsonResponse
 from django.shortcuts import render
 
 from .models import SiteSettings
+
+slow_query_logger = logging.getLogger('slow_queries')
+
+
+class SlowQueryLogMiddleware:
+    """Times every SQL query for the request and logs the ones slower than
+    settings.SLOW_QUERY_THRESHOLD to logs/slow_queries.log — works
+    regardless of DEBUG (unlike connection.queries, which only fills in
+    when DEBUG=True), since it hooks the query executor directly."""
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        threshold = settings.SLOW_QUERY_THRESHOLD
+        if threshold <= 0:
+            return self.get_response(request)
+
+        def wrapper(execute, sql, params, many, context):
+            start = time.monotonic()
+            try:
+                return execute(sql, params, many, context)
+            finally:
+                duration = time.monotonic() - start
+                if duration >= threshold:
+                    slow_query_logger.warning('%.3fs  %s  [%s]', duration, sql[:300], request.path)
+
+        with connection.execute_wrapper(wrapper):
+            return self.get_response(request)
 
 
 class PanelBadgeMiddleware:

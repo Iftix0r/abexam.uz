@@ -5,11 +5,22 @@
 {% block content %}
 <div class="card">
   <div class="section-title">Backup cron log (oxirgi qatorlar)</div>
-  {% if log_exists %}
-  <pre class="log">{{ content }}</pre>
+  {% if cron_exists %}
+  <pre class="log">{{ cron_content }}</pre>
   {% else %}
   <p style="color:var(--muted);font-size:13px">
     Hali <code class="inline">backups/cron.log</code> fayli yo'q — cron ishga tushgach bu yerda ko'rinadi.
+  </p>
+  {% endif %}
+</div>
+
+<div class="card">
+  <div class="section-title">Sekin so'rovlar ({{ slow_threshold }}s dan ortiq)</div>
+  {% if slow_exists %}
+  <pre class="log">{{ slow_content }}</pre>
+  {% else %}
+  <p style="color:var(--muted);font-size:13px">
+    Hali {{ slow_threshold }} soniyadan sekin bazaviy so'rov qayd etilmagan.
   </p>
   {% endif %}
 </div>
