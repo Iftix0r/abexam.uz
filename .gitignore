@@ -24,6 +24,7 @@ local_settings.py
 db.sqlite3
 media/
 cache_data/
+backups/
 
 # Environment variables
 .env
