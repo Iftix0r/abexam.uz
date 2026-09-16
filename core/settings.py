@@ -60,19 +60,31 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-        'OPTIONS': {
-            # SQLite raises "database is locked" once a writer holds the
-            # lock longer than this — bump it well above the default 5s so
-            # a burst of concurrent exam submissions queues instead of
-            # erroring out for the last-in requests.
-            'timeout': 30,
-        },
+if os.getenv('DB_NAME'):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('DB_NAME'),
+            'USER': os.getenv('DB_USER'),
+            'PASSWORD': os.getenv('DB_PASSWORD'),
+            'HOST': os.getenv('DB_HOST', 'localhost'),
+            'PORT': os.getenv('DB_PORT', '5432'),
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+            'OPTIONS': {
+                # SQLite raises "database is locked" once a writer holds the
+                # lock longer than this — bump it well above the default 5s so
+                # a burst of concurrent exam submissions queues instead of
+                # erroring out for the last-in requests.
+                'timeout': 30,
+            },
+        }
+    }
 
 # SQLite's default rollback-journal mode blocks readers while a write is in
 # progress, so with many students submitting exams at once, page loads for
