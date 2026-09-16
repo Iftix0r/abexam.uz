@@ -21,12 +21,17 @@ from django.core.management import call_command
 from django.db import connection
 from django.http import FileResponse, Http404
 from django.shortcuts import redirect, render
+from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from .utils import notify_admin_telegram, read_audit, read_task_history, record_audit
 
 _BACKUP_NAME_RE = re.compile(r'^[\w.-]+\.(json\.gz|tar\.gz)$')
 _LOG_TAIL_LINES = 300
+# There's no Celery/queue here — scheduled work is a single daily cron job
+# (backup_data). "Active" just means it ran recently; this buffer covers
+# ordinary cron drift without flagging a merely-late run as broken.
+_CRON_STALE_HOURS = 30
 
 # Never previewed or downloaded through the file browser — still listed
 # (nothing is hidden from view), but content stays out of reach: these
@@ -79,6 +84,16 @@ def _safe_backup_path(filename):
     return path
 
 
+def _cron_health():
+    history = read_task_history(limit=1)
+    if not history:
+        return {'name': None, 'at': None, 'success': None, 'active': False}
+    last = history[0]
+    at = datetime.fromisoformat(last['at'])
+    active = (timezone.now() - at).total_seconds() < _CRON_STALE_HOURS * 3600
+    return {'name': last['name'], 'at': at, 'success': last['success'], 'active': active}
+
+
 def _git_commit():
     try:
         out = subprocess.run(
@@ -102,6 +117,7 @@ def dashboard(request):
         db_ok = False
         db_latency_ms = None
 
+    cron = _cron_health()
     disk = shutil.disk_usage(settings.BASE_DIR)
     mem = psutil.virtual_memory()
     # A short interval blocks briefly but gives a real reading instead of
@@ -117,6 +133,10 @@ def dashboard(request):
         'db_vendor': connection.vendor,
         'db_ok': db_ok,
         'db_latency_ms': db_latency_ms,
+        'cron_task_name': cron['name'],
+        'cron_task_at': cron['at'],
+        'cron_task_success': cron['success'],
+        'cron_active': cron['active'],
         'disk_free_gb': round(disk.free / (1024 ** 3), 1),
         'disk_total_gb': round(disk.total / (1024 ** 3), 1),
         'disk_used_pct': round(disk.used / disk.total * 100),

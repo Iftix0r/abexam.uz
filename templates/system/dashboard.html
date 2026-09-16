@@ -34,6 +34,21 @@
     <div class="stat-val" style="font-size:13px">{{ django_version }} / {{ python_version }}</div>
   </div>
   <div class="stat-card">
+    <div class="stat-label">Vazifalar (Cron)</div>
+    <div class="stat-val" style="display:flex;align-items:center;gap:8px">
+      {% if cron_task_name %}
+        {% if cron_active %}<span class="badge badge-green">Faol</span>{% else %}<span class="badge badge-red">Nofaol</span>{% endif %}
+      {% else %}
+        <span class="badge badge-gray">Ma'lumot yo'q</span>
+      {% endif %}
+    </div>
+    {% if cron_task_name %}
+    <div style="font-size:11px;color:var(--muted);margin-top:6px;line-height:1.5">
+      {{ cron_task_name }} {% if cron_task_success %}✓{% else %}✕{% endif %} · {{ cron_task_at|timesince }} oldin
+    </div>
+    {% endif %}
+  </div>
+  <div class="stat-card">
     <div class="stat-label">Xato kuzatuvi (Sentry)</div>
     <div class="stat-val" style="display:flex;align-items:center;gap:8px">
       {% if sentry_enabled %}
