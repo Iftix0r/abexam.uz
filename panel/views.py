@@ -248,19 +248,34 @@ def exams_list(request):
     q = request.GET.get('q', '')
     etype = request.GET.get('type', '')
     show = request.GET.get('show', '')
-    exams = Exam.objects.annotate(sections_count=Count('sections'), results_count=Count('userresult')).order_by('-created_at')
+    all_exams = Exam.objects.annotate(
+        sections_count=Count('sections', distinct=True),
+        questions_count=Count('sections__questions', distinct=True),
+        results_count=Count('userresult', distinct=True),
+    ).order_by('-created_at')
+    stats = {
+        'total': all_exams.count(),
+        'active': all_exams.filter(is_active=True).count(),
+        'draft': all_exams.filter(is_active=False).count(),
+        'results': UserResult.objects.count(),
+    }
+    exams = all_exams
     if q:
         exams = exams.filter(title__icontains=q)
     if etype:
         exams = exams.filter(exam_type=etype)
     if show == 'pending_review':
         exams = exams.filter(is_ai_generated=True, is_reviewed=False)
+    elif show == 'active':
+        exams = exams.filter(is_active=True)
+    elif show == 'draft':
+        exams = exams.filter(is_active=False)
     pending_review_count = Exam.objects.filter(is_ai_generated=True, is_reviewed=False).count()
     return render(request, 'panel/exams_list.html', {
         'exams': exams, 'q': q, 'etype': etype,
         'exam_types': Exam.EXAM_TYPES,
         'pending_review_count': pending_review_count,
-        'show': show,
+        'show': show, 'stats': stats,
     })
 
 
@@ -341,6 +356,29 @@ def exam_toggle_active(request, pk):
     exam.is_active = not exam.is_active
     exam.save(update_fields=['is_active'])
     return JsonResponse({'active': exam.is_active})
+
+
+@panel_required
+@require_POST
+def exams_bulk_action(request):
+    data, err = parse_json_body(request, error_message="Noto'g'ri JSON", ok_field=True)
+    if err:
+        return err
+    action = data.get('action')
+    ids = data.get('ids', [])
+    if not ids:
+        return JsonResponse({'ok': False})
+    exams = Exam.objects.filter(pk__in=ids)
+    if action == 'activate':
+        exam_objs = list(exams)
+        activate_ids = [e.pk for e in exam_objs if _exam_has_content(e)]
+        Exam.objects.filter(pk__in=activate_ids).update(is_active=True)
+        return JsonResponse({'ok': True, 'count': len(activate_ids), 'skipped': len(exam_objs) - len(activate_ids)})
+    elif action == 'deactivate':
+        exams.update(is_active=False)
+    elif action == 'delete':
+        exams.delete()
+    return JsonResponse({'ok': True, 'count': len(ids)})
 
 
 @panel_required

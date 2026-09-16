@@ -4,13 +4,52 @@
 {% block nav_exams %}active{% endblock %}
 
 {% block content %}
+<style>
+.toggle-switch{position:relative;display:inline-block;width:38px;height:22px;flex-shrink:0}
+.toggle-switch input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;inset:0;background:var(--border);border-radius:22px;cursor:pointer;transition:.15s}
+.toggle-slider::before{content:'';position:absolute;width:16px;height:16px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.15s}
+.toggle-switch input:checked + .toggle-slider{background:var(--green)}
+.toggle-switch input:checked + .toggle-slider::before{transform:translateX(16px)}
+.toggle-switch input:disabled + .toggle-slider{opacity:.5;cursor:not-allowed}
+.exam-warn{color:var(--yellow);font-size:12px;margin-left:6px;cursor:help}
+.filter-pill{font-size:12px;padding:6px 14px;border-radius:8px;font-weight:600}
+</style>
+
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
   <a href="{% url 'panel:exam_generate' %}"
     style="display:flex;align-items:center;gap:8px;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:700;text-decoration:none;transition:.15s"
     onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
     🤖 AI bilan Test Yaratish
   </a>
-  <a href="{% url 'panel:exam_create' %}" class="btn btn-ghost btn-sm">+ Qo'lda yaratish</a>
+  <a href="{% url 'panel:exam_create' %}" class="btn btn-primary btn-sm">+ Qo'lda yaratish</a>
+</div>
+
+<div class="stat-grid">
+  <div class="stat-card">
+    <div class="stat-icon" style="background:#3b82f618">
+      <svg width="20" height="20" fill="none" stroke="#3b82f6" viewBox="0 0 24 24"><path stroke-width="1.8" d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path stroke-width="1.8" d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+    </div>
+    <div><div class="stat-val">{{ stats.total }}</div><div class="stat-label">Jami imtihonlar</div></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon" style="background:#22c55e18">
+      <svg width="20" height="20" fill="none" stroke="#22c55e" viewBox="0 0 24 24"><path stroke-width="1.8" d="M20 6 9 17l-5-5"/></svg>
+    </div>
+    <div><div class="stat-val">{{ stats.active }}</div><div class="stat-label">Faol</div></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon" style="background:#71717a18">
+      <svg width="20" height="20" fill="none" stroke="#71717a" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke-width="1.8"/><path stroke-width="1.8" d="M12 7v5l3 3"/></svg>
+    </div>
+    <div><div class="stat-val">{{ stats.draft }}</div><div class="stat-label">Draft</div></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon" style="background:#eab30818">
+      <svg width="20" height="20" fill="none" stroke="#eab308" viewBox="0 0 24 24"><path stroke-width="1.8" d="M9 11l3 3L22 4"/><path stroke-width="1.8" d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+    </div>
+    <div><div class="stat-val">{{ stats.results }}</div><div class="stat-label">Jami natijalar</div></div>
+  </div>
 </div>
 
 {% if pending_review_count %}
@@ -25,7 +64,7 @@
 {% endif %}
 
 <div class="section-header">
-  <form method="get" style="display:flex;gap:10px;flex-wrap:wrap">
+  <form method="get" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
     <div class="search-box">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke-width="1.8"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke-width="1.8"/></svg>
       <input name="q" value="{{ q }}" placeholder="Qidirish...">
@@ -36,25 +75,35 @@
       <option value="{{ val }}" {% if etype == val %}selected{% endif %}>{{ label }}</option>
       {% endfor %}
     </select>
-    {% if show == 'pending_review' %}
-    <a href="{% url 'panel:exams' %}" class="btn btn-ghost btn-sm">✕ Filterni olib tashlash</a>
-    {% else %}
     <button class="btn btn-ghost btn-sm" type="submit">Filter</button>
-    {% endif %}
   </form>
-  <a href="{% url 'panel:exam_create' %}" class="btn btn-primary">
-    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" stroke-width="2"/><line x1="5" y1="12" x2="19" y2="12" stroke-width="2"/></svg>
-    Yangi imtihon
-  </a>
+  <div style="display:flex;gap:6px">
+    <a href="?" class="btn filter-pill {% if not show %}btn-primary{% else %}btn-ghost{% endif %}">Barchasi</a>
+    <a href="?show=active" class="btn filter-pill {% if show == 'active' %}btn-primary{% else %}btn-ghost{% endif %}">Faol</a>
+    <a href="?show=draft" class="btn filter-pill {% if show == 'draft' %}btn-primary{% else %}btn-ghost{% endif %}">Draft</a>
+  </div>
+</div>
+
+<!-- Bulk actions (hidden until selection) -->
+<div id="bulk-bar" style="display:none;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 16px;margin-bottom:14px;align-items:center;gap:12px">
+  <span id="bulk-count" style="font-size:13px;color:var(--muted)">0 ta tanlandi</span>
+  <button onclick="bulkAction('activate')" class="btn btn-success btn-sm">✓ Faollashtirish</button>
+  <button onclick="bulkAction('deactivate')" class="btn btn-ghost btn-sm">Nofaollashtirish</button>
+  <button onclick="bulkAction('delete')" class="btn btn-danger btn-sm">O'chirish</button>
+  <button onclick="clearSelection()" class="btn btn-ghost btn-sm" style="margin-left:auto">Bekor</button>
 </div>
 
 <div class="card" style="padding:0">
   <div class="table-wrap">
     <table>
-      <thead><tr><th>Nomi</th><th>Turi</th><th>Narxi</th><th>Bo'limlar</th><th>Natijalar</th><th>Status</th><th>Sana</th><th></th></tr></thead>
+      <thead><tr>
+        <th style="width:36px"><input type="checkbox" id="select-all" onchange="toggleAll(this)" style="accent-color:var(--primary)"></th>
+        <th>Nomi</th><th>Turi</th><th>Narxi</th><th>Bo'limlar</th><th>Savollar</th><th>Natijalar</th><th>Status</th><th>Sana</th><th></th>
+      </tr></thead>
       <tbody>
         {% for e in exams %}
-        <tr {% if e.is_ai_generated and not e.is_reviewed %}style="background:rgba(245,158,11,.05)"{% endif %}>
+        <tr id="exam-row-{{ e.pk }}" {% if e.is_ai_generated and not e.is_reviewed %}style="background:rgba(245,158,11,.05)"{% endif %}>
+          <td><input type="checkbox" class="row-check" value="{{ e.pk }}" onchange="updateBulk()" style="accent-color:var(--primary)"></td>
           <td>
             <a href="{% url 'panel:exam_detail' e.pk %}" style="color:var(--primary);font-weight:500">{{ e.title }}</a>
             {% if e.is_ai_generated %}
@@ -68,15 +117,19 @@
           <td><span class="badge badge-blue">{{ e.get_exam_type_display }}</span></td>
           <td>{% if e.price == 0 %}<span style="color:var(--green)">Bepul</span>{% else %}<span style="font-weight:600">{{ e.price|floatformat:0 }} so'm</span>{% endif %}</td>
           <td style="color:var(--muted)">{{ e.sections_count }}</td>
+          <td style="color:var(--muted)">{{ e.questions_count }}</td>
           <td style="color:var(--muted)">{{ e.results_count }}</td>
           <td>
             <span class="badge {% if e.is_active %}badge-green{% else %}badge-gray{% endif %}" id="exam-status-{{ e.pk }}">
               {% if e.is_active %}Faol{% else %}Nofaol{% endif %}
             </span>
+            {% if e.is_active and e.questions_count == 0 %}
+            <span class="exam-warn" title="Faol, lekin birorta savoli yo'q — talabalar bo'sh imtihonga duch keladi">⚠️</span>
+            {% endif %}
           </td>
           <td style="color:var(--muted);font-size:12px">{{ e.created_at|date:"d M Y" }}</td>
           <td>
-            <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
               {% if e.is_ai_generated and not e.is_reviewed %}
                 <form method="post" action="{% url 'panel:exam_review' e.pk %}" style="display:inline">
                   {% csrf_token %}
@@ -89,16 +142,19 @@
                   <button type="submit" class="btn btn-danger btn-sm">✕ Rad</button>
                 </form>
               {% else %}
-                <a href="{% url 'panel:exam_detail' e.pk %}" class="btn btn-primary btn-sm">Ko'rish</a>
+                <a href="{% url 'panel:exam_detail' e.pk %}" class="btn btn-ghost btn-sm">Ko'rish</a>
                 <a href="{% url 'panel:exam_edit' e.pk %}" class="btn btn-ghost btn-sm">Tahrir</a>
-                <button onclick="toggleExam({{ e.pk }})" class="btn btn-ghost btn-sm">On/Off</button>
+                <label class="toggle-switch" title="{% if e.is_active %}Nofaollashtirish{% else %}Faollashtirish{% endif %}">
+                  <input type="checkbox" {% if e.is_active %}checked{% endif %} onchange="toggleExam({{ e.pk }}, this)">
+                  <span class="toggle-slider"></span>
+                </label>
                 <button onclick="deleteExam({{ e.pk }}, this)" class="btn btn-danger btn-sm">O'chir</button>
               {% endif %}
             </div>
           </td>
         </tr>
         {% empty %}
-        <tr><td colspan="8" style="text-align:center;padding:32px;color:var(--muted)">Imtihon topilmadi</td></tr>
+        <tr><td colspan="9" style="text-align:center;padding:32px;color:var(--muted)">Imtihon topilmadi</td></tr>
         {% endfor %}
       </tbody>
     </table>
@@ -108,10 +164,43 @@
 
 {% block extra_js %}
 <script>
-async function toggleExam(pk){
+function toggleAll(cb){
+  document.querySelectorAll('.row-check').forEach(c=>c.checked=cb.checked);
+  updateBulk();
+}
+function updateBulk(){
+  const checked=document.querySelectorAll('.row-check:checked');
+  const bar=document.getElementById('bulk-bar');
+  document.getElementById('bulk-count').textContent=checked.length+' ta tanlandi';
+  bar.style.display=checked.length?'flex':'none';
+}
+function clearSelection(){
+  document.querySelectorAll('.row-check').forEach(c=>c.checked=false);
+  document.getElementById('select-all').checked=false;
+  updateBulk();
+}
+async function bulkAction(action){
+  const ids=[...document.querySelectorAll('.row-check:checked')].map(c=>c.value);
+  if(!ids.length)return;
+  if(action==='delete'&&!confirm(ids.length+' ta imtihonni o\'chirishni tasdiqlaysizmi?'))return;
+  const r=await fetch('/panel/exams/bulk/',{method:'POST',headers:{'X-CSRFToken':csrf,'Content-Type':'application/json'},body:JSON.stringify({action,ids})});
+  const d=await r.json();
+  if(d.ok){
+    if(action==='delete'){ids.forEach(id=>document.getElementById('exam-row-'+id)?.remove());}
+    let msg={activate:'faollashtirildi',deactivate:'nofaollashtirildi',delete:'o\'chirildi'}[action];
+    if(action==='activate'&&d.skipped){msg=d.count+' ta faollashtirildi, '+d.skipped+' tasi savolsiz bo\'lgani uchun o\'tkazib yuborildi';toast(msg,'#eab308');}
+    else toast((d.count||ids.length)+' ta imtihon '+msg);
+    clearSelection();
+    if(action!=='delete')setTimeout(()=>location.reload(),1000);
+  }
+}
+async function toggleExam(pk, checkbox){
+  checkbox.disabled=true;
   const r=await fetch(`/panel/exams/${pk}/toggle/`,{method:'POST',headers:{'X-CSRFToken':csrf}});
   const d=await r.json();
-  if(d.error){toast(d.error,'#ef4444');return;}
+  checkbox.disabled=false;
+  if(d.error){checkbox.checked=!checkbox.checked;toast(d.error,'#ef4444');return;}
+  checkbox.checked=d.active;
   const el=document.getElementById('exam-status-'+pk);
   el.textContent=d.active?'Faol':'Nofaol';
   el.className='badge '+(d.active?'badge-green':'badge-gray');

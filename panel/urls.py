@@ -20,6 +20,7 @@ urlpatterns = [
     path('users/bulk/', views.users_bulk_action, name='users_bulk'),
 
     path('exams/', views.exams_list, name='exams'),
+    path('exams/bulk/', views.exams_bulk_action, name='exams_bulk'),
     path('exams/create/', views.exam_create, name='exam_create'),
     path('exams/<int:pk>/', views.exam_detail, name='exam_detail'),
     path('exams/<int:pk>/edit/', views.exam_edit, name='exam_edit'),
