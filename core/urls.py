@@ -27,6 +27,7 @@ urlpatterns = [
         path('logs/', system_views.logs, name='logs'),
         path('tasks/', system_views.tasks, name='tasks'),
         path('sentry-test/', system_views.sentry_test, name='sentry_test'),
+        path('audit/', system_views.audit, name='audit'),
     ], 'system'), namespace='system')),
     path('', HomeView.as_view(), name='home'),
     path('dashboard/', DashboardView.as_view(), name='dashboard'),

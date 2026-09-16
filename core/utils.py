@@ -222,3 +222,37 @@ def read_task_history(limit=50):
         except ValueError:
             continue
     return entries
+
+
+_AUDIT_LOG_MAX = 500
+
+
+def record_audit(username, action, detail=''):
+    """Appends one line to logs/audit.jsonl — who did what in /system/ and
+    when. Append-only on purpose: an admin action log that could itself be
+    edited from the same panel wouldn't be trustworthy."""
+    path = settings.LOGS_DIR / 'audit.jsonl'
+    entry = {
+        'user': username, 'action': action, 'detail': detail[:300],
+        'at': timezone.now().isoformat(),
+    }
+    lines = []
+    if path.exists():
+        lines = path.read_text().splitlines()
+    lines.append(json.dumps(entry))
+    lines = lines[-_AUDIT_LOG_MAX:]
+    path.write_text('\n'.join(lines) + '\n')
+
+
+def read_audit(limit=100):
+    path = settings.LOGS_DIR / 'audit.jsonl'
+    if not path.exists():
+        return []
+    lines = path.read_text().splitlines()[-limit:]
+    entries = []
+    for line in reversed(lines):
+        try:
+            entries.append(json.loads(line))
+        except ValueError:
+            continue
+    return entries

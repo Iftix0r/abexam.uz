@@ -21,18 +21,28 @@ from django.http import FileResponse, Http404
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_POST
 
-from .utils import read_task_history
+from .utils import notify_admin_telegram, read_audit, read_task_history, record_audit
 
 _BACKUP_NAME_RE = re.compile(r'^[\w.-]+\.(json\.gz|tar\.gz)$')
 _LOG_TAIL_LINES = 300
 
 
-def is_superuser(user):
-    return user.is_authenticated and user.is_superuser
+def _can_access_system(user):
+    if not user.is_authenticated:
+        return False
+    if user.is_superuser:
+        return True
+    # A logged-in, non-superuser account reaching for /system/ is worth
+    # knowing about immediately — either a curious staff member or a
+    # compromised account probing for admin tools.
+    notify_admin_telegram(
+        f"🚨 <b>Ruxsatsiz /system/ kirish urinishi</b>\n👤 {user.username}"
+    )
+    return False
 
 
 def system_required(view_func):
-    return login_required(user_passes_test(is_superuser, login_url='/login/')(view_func))
+    return login_required(user_passes_test(_can_access_system, login_url='/login/')(view_func))
 
 
 def _backups_dir():
@@ -101,7 +111,9 @@ def toggle_maintenance(request):
     s = SiteSettings.get()
     s.maintenance_mode = not s.maintenance_mode
     s.save()
-    messages.success(request, "Texnik xizmat rejimi " + ("yoqildi." if s.maintenance_mode else "o'chirildi."))
+    state = "yoqildi" if s.maintenance_mode else "o'chirildi"
+    record_audit(request.user.username, f"Texnik xizmat rejimini {state}")
+    messages.success(request, f"Texnik xizmat rejimi {state}.")
     return redirect('system:dashboard')
 
 
@@ -109,6 +121,7 @@ def toggle_maintenance(request):
 @require_POST
 def cache_clear(request):
     cache.clear()
+    record_audit(request.user.username, "Keshni tozaladi")
     messages.success(request, "Kesh tozalandi.")
     return redirect('system:dashboard')
 
@@ -132,6 +145,7 @@ def backups(request):
 def backup_run(request):
     try:
         call_command('backup_data')
+        record_audit(request.user.username, "Zaxira nusxa oldi (qo'lda)")
         messages.success(request, "Zaxira nusxa muvaffaqiyatli olindi.")
     except Exception as e:
         messages.error(request, f"Zaxira olishda xato: {e}")
@@ -149,6 +163,7 @@ def backup_download(request, filename):
 def backup_delete(request, filename):
     path = _safe_backup_path(filename)
     path.unlink()
+    record_audit(request.user.username, "Zaxira nusxani o'chirdi", detail=filename)
     messages.success(request, f"{filename} o'chirildi.")
     return redirect('system:backups')
 
@@ -184,3 +199,8 @@ def sentry_test(request):
         messages.error(request, "SENTRY_DSN .env'da sozlanmagan — avval uni qo'shing.")
         return redirect('system:dashboard')
     1 / 0
+
+
+@system_required
+def audit(request):
+    return render(request, 'system/audit.html', {'entries': read_audit()})

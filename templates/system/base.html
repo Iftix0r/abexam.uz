@@ -83,6 +83,10 @@ code.inline{background:var(--surface2);padding:2px 6px;border-radius:5px;font-si
     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="1.8"/><polyline points="12,6 12,12 16,14" stroke-width="1.8"/></svg>
     Vazifalar
   </a>
+  <a href="{% url 'system:audit' %}" class="nav-item {% block nav_audit %}{% endblock %}">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M9 11l3 3L22 4"/><path stroke-width="1.8" d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+    Audit
+  </a>
   <div class="sidebar-footer">
     <a href="/panel/" class="back-link">← Admin panel</a>
     <a href="/admin/" class="back-link">← Django admin</a>
