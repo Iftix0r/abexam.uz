@@ -40,12 +40,18 @@
         <label class="form-label">Tavsif</label>
         <textarea class="form-input" name="description" placeholder="Imtihon haqida qisqacha...">{{ exam.description|default:'' }}</textarea>
       </div>
+      {% if exam %}
       <div class="form-group">
         <label class="form-check">
-          <input type="checkbox" name="is_active" {% if not exam or exam.is_active %}checked{% endif %}>
+          <input type="checkbox" name="is_active" {% if exam.is_active %}checked{% endif %}>
           Faol (foydalanuvchilarga ko'rinadi)
         </label>
       </div>
+      {% else %}
+      <p style="font-size:12px;color:var(--muted);margin:0 0 4px">
+        Yaratilgandan so'ng avval bo'lim va savol qo'shasiz, keyin uni "Tahrir" orqali faollashtirasiz.
+      </p>
+      {% endif %}
       <div style="display:flex;gap:10px;margin-top:8px">
         <button type="submit" class="btn btn-primary">{% if exam %}Saqlash{% else %}Yaratish{% endif %}</button>
         <a href="{% url 'panel:exams' %}" class="btn btn-ghost">Bekor qilish</a>

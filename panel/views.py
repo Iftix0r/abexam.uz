@@ -283,11 +283,14 @@ def exam_create(request):
         price = request.POST.get('price', 0)
         duration = request.POST.get('duration_minutes', 60)
         description = request.POST.get('description', '')
-        is_active = request.POST.get('is_active') == 'on'
         if title:
             exam = Exam.objects.create(
                 title=title, exam_type=exam_type, price=price,
-                duration_minutes=duration, description=description, is_active=is_active
+                duration_minutes=duration, description=description,
+                # A brand-new exam has no sections/questions yet, so it can
+                # never legitimately start active — same rule exam_edit and
+                # exam_toggle_active enforce once content exists.
+                is_active=False,
             )
             return redirect('panel:exam_detail', pk=exam.pk)
     return render(request, 'panel/exam_form.html', {'exam_types': Exam.EXAM_TYPES, 'exam': None})
