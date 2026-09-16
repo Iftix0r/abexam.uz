@@ -26,6 +26,19 @@ from .utils import notify_admin_telegram, read_audit, read_task_history, record_
 _BACKUP_NAME_RE = re.compile(r'^[\w.-]+\.(json\.gz|tar\.gz)$')
 _LOG_TAIL_LINES = 300
 
+# Never previewed or downloaded through the file browser — still listed
+# (nothing is hidden from view), but content stays out of reach: these
+# hold the DB password, SECRET_KEY, API keys and every user's password
+# hash. A read-only browser is still a browser; this is the one thing it
+# must never serve.
+_SENSITIVE_FILES = {
+    '.env', '.env.local', '.env.production',
+    'db.sqlite3', 'db.sqlite3-wal', 'db.sqlite3-shm',
+}
+# Not sensitive, just noise/irrelevant to browse — skipped from listings.
+_SKIP_ENTRIES = {'.git', '__pycache__', 'node_modules'}
+_FILE_PREVIEW_MAX_BYTES = 500_000
+
 
 def _can_access_system(user):
     if not user.is_authenticated:
@@ -204,3 +217,84 @@ def sentry_test(request):
 @system_required
 def audit(request):
     return render(request, 'system/audit.html', {'entries': read_audit()})
+
+
+def _human_size(n):
+    for unit in ('B', 'KB', 'MB', 'GB'):
+        if n < 1024:
+            return f'{n:.0f} {unit}' if unit == 'B' else f'{n:.1f} {unit}'
+        n /= 1024
+    return f'{n:.1f} TB'
+
+
+def _resolve_project_path(subpath):
+    """Confines any path under settings.BASE_DIR — resolve() collapses
+    '..' segments, and the parents check (rather than a naive startswith)
+    avoids a sibling directory with a matching name-prefix slipping
+    through (e.g. BASE_DIR=examab vs examab2)."""
+    base = Path(settings.BASE_DIR).resolve()
+    target = (base / subpath).resolve()
+    if target != base and base not in target.parents:
+        raise Http404
+    if not target.exists():
+        raise Http404
+    return target, base
+
+
+def _breadcrumbs(target, base):
+    rel = target.relative_to(base)
+    crumbs = [{'name': 'loyiha', 'path': ''}]
+    parts = [] if rel == Path('.') else list(rel.parts)
+    for i, part in enumerate(parts):
+        crumbs.append({'name': part, 'path': '/'.join(parts[:i + 1])})
+    return crumbs
+
+
+@system_required
+def files(request, subpath=''):
+    target, base = _resolve_project_path(subpath)
+
+    if target.is_dir():
+        entries = []
+        for p in sorted(target.iterdir(), key=lambda x: (not x.is_dir(), x.name.lower())):
+            if p.name in _SKIP_ENTRIES:
+                continue
+            rel = p.relative_to(base)
+            stat = p.stat()
+            entries.append({
+                'name': p.name,
+                'is_dir': p.is_dir(),
+                'path': str(rel),
+                'size': '' if p.is_dir() else _human_size(stat.st_size),
+                'mtime': datetime.fromtimestamp(stat.st_mtime),
+                'sensitive': p.name in _SENSITIVE_FILES,
+            })
+        return render(request, 'system/files.html', {
+            'is_dir': True, 'entries': entries,
+            'crumbs': _breadcrumbs(target, base),
+        })
+
+    sensitive = target.name in _SENSITIVE_FILES
+    stat = target.stat()
+    content, is_text, too_large = None, False, stat.st_size > _FILE_PREVIEW_MAX_BYTES
+    if not sensitive and not too_large:
+        try:
+            content = target.read_text(encoding='utf-8')
+            is_text = True
+        except (UnicodeDecodeError, ValueError):
+            is_text = False
+    return render(request, 'system/files.html', {
+        'is_dir': False, 'file_name': target.name, 'file_path': subpath,
+        'sensitive': sensitive, 'is_text': is_text, 'content': content,
+        'too_large': too_large, 'size': _human_size(stat.st_size),
+        'mtime': datetime.fromtimestamp(stat.st_mtime),
+        'crumbs': _breadcrumbs(target, base),
+    })
+
+
+@system_required
+def files_download(request, subpath):
+    target, base = _resolve_project_path(subpath)
+    if target.is_dir() or target.name in _SENSITIVE_FILES:
+        raise Http404
+    return FileResponse(open(target, 'rb'), as_attachment=True, filename=target.name)

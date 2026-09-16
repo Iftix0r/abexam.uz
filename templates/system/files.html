@@ -1,0 +1,72 @@
+{% extends 'system/base.html' %}
+{% block title %}Fayllar{% endblock %}
+{% block nav_files %}active{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom:14px">
+  <div style="font-size:13px;display:flex;flex-wrap:wrap;align-items:center;gap:4px">
+    {% for c in crumbs %}
+      {% if not forloop.last %}
+        <a href="{% if c.path %}{% url 'system:files' subpath=c.path %}{% else %}{% url 'system:files_root' %}{% endif %}" style="color:var(--primary)">{{ c.name }}</a>
+        <span style="color:var(--muted)">/</span>
+      {% else %}
+        <span style="font-weight:600">{{ c.name }}</span>
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>
+
+{% if is_dir %}
+<div class="card">
+  <table>
+    <thead><tr><th></th><th>Nomi</th><th>Hajmi</th><th>O'zgartirilgan</th><th></th></tr></thead>
+    <tbody>
+      {% for e in entries %}
+      <tr>
+        <td style="width:28px">{% if e.is_dir %}📁{% else %}📄{% endif %}</td>
+        <td>
+          {% if e.is_dir %}
+            <a href="{% url 'system:files' subpath=e.path %}" style="color:var(--primary);font-weight:500">{{ e.name }}</a>
+          {% elif e.sensitive %}
+            <span style="color:var(--muted)">{{ e.name }}</span> <span class="badge badge-red" style="margin-left:4px">🔒 maxfiy</span>
+          {% else %}
+            <a href="{% url 'system:files' subpath=e.path %}" style="color:var(--text)">{{ e.name }}</a>
+          {% endif %}
+        </td>
+        <td style="color:var(--muted);font-size:12px">{{ e.size }}</td>
+        <td style="color:var(--muted);font-size:12px">{{ e.mtime|date:"d M Y H:i" }}</td>
+        <td>
+          {% if not e.is_dir and not e.sensitive %}
+          <a href="{% url 'system:files_download' subpath=e.path %}" class="btn btn-ghost" style="padding:4px 10px;font-size:11px">↓</a>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5" style="text-align:center;color:var(--muted);padding:24px">Bo'sh papka</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="card">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+    <div>
+      <div style="font-weight:600">{{ file_name }}</div>
+      <div style="color:var(--muted);font-size:12px;margin-top:2px">{{ size }} · {{ mtime|date:"d M Y H:i" }}</div>
+    </div>
+    {% if not sensitive %}
+    <a href="{% url 'system:files_download' subpath=file_path %}" class="btn btn-primary">↓ Yuklab olish</a>
+    {% endif %}
+  </div>
+  {% if sensitive %}
+  <p style="color:var(--red);font-size:13px">🔒 Bu fayl maxfiy ma'lumot saqlaydi — ko'rsatilmaydi va yuklab olinmaydi.</p>
+  {% elif too_large %}
+  <p style="color:var(--muted);font-size:13px">Fayl juda katta — faqat yuklab olish mumkin.</p>
+  {% elif is_text %}
+  <pre class="log">{{ content }}</pre>
+  {% else %}
+  <p style="color:var(--muted);font-size:13px">Matn sifatida ko'rsatib bo'lmaydi (binary fayl) — yuklab oling.</p>
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}
