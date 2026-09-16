@@ -1,0 +1,77 @@
+{% extends 'system/base.html' %}
+{% block title %}Tizim paneli{% endblock %}
+
+{% block content %}
+<div class="stat-grid">
+  <div class="stat-card">
+    <div class="stat-label">Baza</div>
+    <div class="stat-val">
+      {% if db_ok %}<span class="badge badge-green">{{ db_vendor }} ✓</span>{% else %}<span class="badge badge-red">{{ db_vendor }} ✕</span>{% endif %}
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">DEBUG</div>
+    <div class="stat-val">
+      {% if debug %}<span class="badge badge-red">Yoqilgan ⚠️</span>{% else %}<span class="badge badge-green">O'chiq</span>{% endif %}
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Texnik xizmat rejimi</div>
+    <div class="stat-val">
+      {% if maintenance_mode %}<span class="badge badge-red">Yoqilgan</span>{% else %}<span class="badge badge-gray">O'chiq</span>{% endif %}
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Django / Python</div>
+    <div class="stat-val" style="font-size:13px">{{ django_version }} / {{ python_version }}</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="section-title">Disk maydoni</div>
+  <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--muted)">
+    <span>{{ disk_free_gb }} GB bo'sh / {{ disk_total_gb }} GB jami</span>
+    <span>{{ disk_used_pct }}% band</span>
+  </div>
+  <div class="progress"><div class="progress-bar" style="width:{{ disk_used_pct }}%"></div></div>
+</div>
+
+<div class="card">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+    <div class="section-title" style="margin:0">Zaxira nusxalar</div>
+    <div style="display:flex;gap:8px">
+      <form method="post" action="{% url 'system:cache_clear' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-ghost">Keshni tozalash</button>
+      </form>
+      <form method="post" action="{% url 'system:backup_run' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">+ Hozir zaxira olish</button>
+      </form>
+    </div>
+  </div>
+  <table>
+    <thead><tr><th>Fayl</th><th>Hajmi</th><th>Sana</th><th></th></tr></thead>
+    <tbody>
+      {% for b in backups %}
+      <tr>
+        <td>{{ b.name }}</td>
+        <td style="color:var(--muted)">{{ b.size_kb }} KB</td>
+        <td style="color:var(--muted)">{{ b.mtime|date:"d M Y H:i" }}</td>
+        <td>
+          <div style="display:flex;gap:6px;justify-content:flex-end">
+            <a href="{% url 'system:backup_download' b.name %}" class="btn btn-ghost">↓ Yuklab olish</a>
+            <form method="post" action="{% url 'system:backup_delete' b.name %}" onsubmit="return confirm('O\'chirishni tasdiqlaysizmi?')">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger">O'chir</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="4" style="text-align:center;color:var(--muted);padding:24px">Hali zaxira nusxa olinmagan</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

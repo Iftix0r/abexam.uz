@@ -4,6 +4,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
 from core.admin_site import AbExamAdminSite
+from core import system_views
 from users.views import (
     HomeView, DashboardView, CustomLoginView, RegisterView,
     ExamsListView, ResultsListView, VocabularyView, FinanceView,
@@ -15,6 +16,13 @@ admin.site.__class__ = AbExamAdminSite
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('panel/', include('panel.urls', namespace='panel')),
+    path('system/', include(([
+        path('', system_views.dashboard, name='dashboard'),
+        path('backup/run/', system_views.backup_run, name='backup_run'),
+        path('backup/<str:filename>/download/', system_views.backup_download, name='backup_download'),
+        path('backup/<str:filename>/delete/', system_views.backup_delete, name='backup_delete'),
+        path('cache/clear/', system_views.cache_clear, name='cache_clear'),
+    ], 'system'), namespace='system')),
     path('', HomeView.as_view(), name='home'),
     path('dashboard/', DashboardView.as_view(), name='dashboard'),
     path('profile/', ProfileView.as_view(), name='profile'),
