@@ -26,6 +26,7 @@ media/
 cache_data/
 backups/
 logs/
+tmp/
 
 # Environment variables
 .env

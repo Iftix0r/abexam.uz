@@ -6,8 +6,9 @@
 <div class="stat-grid">
   <div class="stat-card">
     <div class="stat-label">Baza</div>
-    <div class="stat-val">
+    <div class="stat-val" style="display:flex;align-items:center;gap:8px">
       {% if db_ok %}<span class="badge badge-green">{{ db_vendor }} ✓</span>{% else %}<span class="badge badge-red">{{ db_vendor }} ✕</span>{% endif %}
+      {% if db_latency_ms %}<span style="font-size:12px;color:var(--muted)">{{ db_latency_ms }} ms</span>{% endif %}
     </div>
   </div>
   <div class="stat-card">
@@ -42,6 +43,24 @@
         <span class="badge badge-gray">Sozlanmagan</span>
       {% endif %}
     </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="section-title">Tezkor amallar</div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <form method="post" action="{% url 'system:cache_clear' %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-ghost">Keshni tozalash</button>
+    </form>
+    <form method="post" action="{% url 'system:clear_temp' %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-ghost">Vaqtinchalik fayllarni tozalash</button>
+    </form>
+    <form method="post" action="{% url 'system:app_restart' %}" onsubmit="return confirm('Ilova qayta ishga tushiriladi, foydalanuvchilar bir necha soniya kuta oladi. Davom etilsinmi?')">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-ghost">Ilovani qayta ishga tushirish</button>
+    </form>
   </div>
 </div>
 
@@ -101,13 +120,7 @@
       <div class="section-title" style="margin:0">Zaxira nusxalar</div>
       <div style="color:var(--muted);font-size:13px;margin-top:4px">{{ backup_count }} ta fayl saqlangan</div>
     </div>
-    <div style="display:flex;gap:8px">
-      <form method="post" action="{% url 'system:cache_clear' %}">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-ghost">Keshni tozalash</button>
-      </form>
-      <a href="{% url 'system:backups' %}" class="btn btn-primary">Barchasini ko'rish →</a>
-    </div>
+    <a href="{% url 'system:backups' %}" class="btn btn-primary">Barchasini ko'rish →</a>
   </div>
 </div>
 {% endblock %}

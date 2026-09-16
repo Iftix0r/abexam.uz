@@ -7,6 +7,7 @@ import re
 import shutil
 import subprocess
 import sys
+import time
 from datetime import datetime
 from pathlib import Path
 
@@ -92,11 +93,14 @@ def _git_commit():
 @system_required
 def dashboard(request):
     try:
+        start = time.perf_counter()
         with connection.cursor() as cursor:
             cursor.execute('SELECT 1')
-            db_ok = True
+        db_latency_ms = round((time.perf_counter() - start) * 1000, 1)
+        db_ok = True
     except Exception:
         db_ok = False
+        db_latency_ms = None
 
     disk = shutil.disk_usage(settings.BASE_DIR)
     mem = psutil.virtual_memory()
@@ -112,6 +116,7 @@ def dashboard(request):
         'debug': settings.DEBUG,
         'db_vendor': connection.vendor,
         'db_ok': db_ok,
+        'db_latency_ms': db_latency_ms,
         'disk_free_gb': round(disk.free / (1024 ** 3), 1),
         'disk_total_gb': round(disk.total / (1024 ** 3), 1),
         'disk_used_pct': round(disk.used / disk.total * 100),
@@ -147,6 +152,55 @@ def cache_clear(request):
     cache.clear()
     record_audit(request.user.username, "Keshni tozaladi")
     messages.success(request, "Kesh tozalandi.")
+    return redirect('system:dashboard')
+
+
+@system_required
+@require_POST
+def app_restart(request):
+    """Passenger (production host) watches this file's mtime and respawns
+    the app worker on change — no process signal or sudo needed. Under
+    runserver/gunicorn nothing is watching it, so it's a harmless no-op."""
+    (Path(settings.BASE_DIR) / 'tmp').mkdir(exist_ok=True)
+    (Path(settings.BASE_DIR) / 'tmp' / 'restart.txt').touch()
+    record_audit(request.user.username, "Ilovani qayta ishga tushirdi")
+    messages.success(request, "Qayta ishga tushirish so'raldi. Bir necha soniyada yangi so'rovlar yangi jarayonga tushadi.")
+    return redirect('system:dashboard')
+
+
+@system_required
+@require_POST
+def clear_temp(request):
+    """Deletes only what's safe to lose without touching user content:
+    __pycache__ (Python regenerates it) and expired DB sessions. Orphaned
+    media/static files are deliberately left alone — telling "no longer
+    referenced" from "still in use" needs a real reference scan, and
+    guessing wrong here means deleting someone's uploaded file."""
+    freed = 0
+    removed_dirs = 0
+    for pycache in Path(settings.BASE_DIR).rglob('__pycache__'):
+        if '.venv-tmp' in pycache.parts or 'node_modules' in pycache.parts:
+            continue
+        for f in pycache.rglob('*'):
+            if f.is_file():
+                freed += f.stat().st_size
+        shutil.rmtree(pycache, ignore_errors=True)
+        removed_dirs += 1
+
+    try:
+        call_command('clearsessions')
+        sessions_note = ''
+    except Exception as e:
+        sessions_note = f" (sessiyalarni tozalashda xato: {e})"
+
+    record_audit(
+        request.user.username, "Vaqtinchalik fayllarni tozaladi",
+        detail=f"{removed_dirs} ta __pycache__, {_human_size(freed)}",
+    )
+    messages.success(
+        request,
+        f"{removed_dirs} ta __pycache__ papkasi ({_human_size(freed)}) va eskirgan sessiyalar tozalandi.{sessions_note}",
+    )
     return redirect('system:dashboard')
 
 
