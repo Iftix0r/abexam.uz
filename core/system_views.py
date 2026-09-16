@@ -3,6 +3,7 @@ a couple of quick actions (cache clear, maintenance toggle). Separate from
 /panel/ (teachers/staff, is_staff) on purpose: nothing here is meant for
 day-to-day exam/content management, only for whoever is technically
 responsible for the deployment."""
+import io
 import re
 import shutil
 import subprocess
@@ -32,6 +33,12 @@ _LOG_TAIL_LINES = 300
 # (backup_data). "Active" just means it ran recently; this buffer covers
 # ordinary cron drift without flagging a merely-late run as broken.
 _CRON_STALE_HOURS = 30
+# Local git ops (log, status, rev-list) touch only the on-disk repo, so a
+# few seconds is plenty. fetch/pull cross the network to GitHub over SSH —
+# generous but still bounded, so a hung connection can't wedge the worker.
+_GIT_LOCAL_TIMEOUT = 5
+_GIT_NETWORK_TIMEOUT = 25
+_GIT_UPDATE_CACHE_KEY = 'system_git_update_check'
 
 # Never previewed or downloaded through the file browser — still listed
 # (nothing is hidden from view), but content stays out of reach: these
@@ -94,15 +101,37 @@ def _cron_health():
     return {'name': last['name'], 'at': at, 'success': last['success'], 'active': active}
 
 
-def _git_commit():
+def _run_git(args, timeout=_GIT_LOCAL_TIMEOUT):
+    return subprocess.run(
+        ['git', *args], cwd=settings.BASE_DIR, capture_output=True, text=True, timeout=timeout,
+    )
+
+
+def _git_branch():
     try:
-        out = subprocess.run(
-            ['git', 'log', '-1', '--format=%h %cd %s', '--date=short'],
-            cwd=settings.BASE_DIR, capture_output=True, text=True, timeout=3,
-        )
+        out = _run_git(['rev-parse', '--abbrev-ref', 'HEAD'])
         return out.stdout.strip() if out.returncode == 0 else None
     except Exception:
         return None
+
+
+def _git_commit_info():
+    # \x1f (unit separator) instead of a visible delimiter — it can't appear
+    # in a commit subject by accident the way "|" or "-" could.
+    try:
+        out = _run_git(['log', '-1', '--format=%h\x1f%cd\x1f%an\x1f%s', '--date=short'])
+        if out.returncode != 0 or not out.stdout.strip():
+            return None
+        h, date, author, subject = out.stdout.strip().split('\x1f', 3)
+        return {'hash': h, 'date': date, 'author': author, 'subject': subject}
+    except Exception:
+        return None
+
+
+def _git_update_status():
+    """Never hits the network itself — just reads whatever the last
+    check_updates run cached, so loading the dashboard stays fast."""
+    return cache.get(_GIT_UPDATE_CACHE_KEY)
 
 
 @system_required
@@ -146,7 +175,9 @@ def dashboard(request):
         'cpu_pct': round(cpu_pct),
         'proc_rss': _human_size(proc_rss),
         'maintenance_mode': SiteSettings.get().maintenance_mode,
-        'git_commit': _git_commit(),
+        'git_branch': _git_branch(),
+        'git_info': _git_commit_info(),
+        'git_update': _git_update_status(),
         'backup_count': sum(1 for f in _backups_dir().iterdir() if f.is_file()),
         'sentry_enabled': bool(settings.SENTRY_DSN),
     }
@@ -221,6 +252,96 @@ def clear_temp(request):
         request,
         f"{removed_dirs} ta __pycache__ papkasi ({_human_size(freed)}) va eskirgan sessiyalar tozalandi.{sessions_note}",
     )
+    return redirect('system:dashboard')
+
+
+@system_required
+@require_POST
+def git_check_updates(request):
+    """Read-only against the working tree — only 'git fetch' touches
+    anything, and that just updates the local origin/<branch> ref, never
+    the checked-out files. Safe to run as often as someone clicks it."""
+    branch = _git_branch() or 'main'
+    try:
+        fetch = _run_git(['fetch', 'origin', branch], timeout=_GIT_NETWORK_TIMEOUT)
+        if fetch.returncode != 0:
+            raise RuntimeError(fetch.stderr.strip() or "git fetch xato qaytardi")
+
+        count_out = _run_git(['rev-list', '--count', f'HEAD..origin/{branch}'])
+        ahead = int(count_out.stdout.strip() or 0)
+        commits = []
+        if ahead:
+            log_out = _run_git(['log', f'HEAD..origin/{branch}', '--format=%h %s', '-n', '10'])
+            commits = log_out.stdout.strip().splitlines()
+
+        result = {'ahead': ahead, 'commits': commits, 'checked_at': timezone.now().isoformat(), 'error': None}
+        if ahead:
+            messages.info(request, f"{ahead} ta yangi commit topildi (origin/{branch}).")
+        else:
+            messages.success(request, "Loyiha eng so'nggi versiyada.")
+    except Exception as e:
+        result = {'ahead': None, 'commits': [], 'checked_at': timezone.now().isoformat(), 'error': str(e)}
+        messages.error(request, f"Yangilanishlarni tekshirishda xato: {e}")
+    cache.set(_GIT_UPDATE_CACHE_KEY, result, None)
+    return redirect('system:dashboard')
+
+
+@system_required
+@require_POST
+def git_deploy(request):
+    """Pull + migrate + restart in one step. Two guards keep this from
+    quietly wrecking production: a dirty working tree aborts before
+    touching anything (never auto-discards whatever's sitting there), and
+    the restart only fires after 'migrate' succeeds — if migrate fails,
+    the old worker just keeps serving the old (still schema-matching)
+    code instead of restarting into a broken half-deployed state."""
+    branch = _git_branch() or 'main'
+
+    dirty = _run_git(['status', '--porcelain'])
+    if dirty.stdout.strip():
+        messages.error(
+            request,
+            "Serverda saqlanmagan lokal o'zgarishlar bor — avval ularni SSH orqali hal qiling.",
+        )
+        return redirect('system:dashboard')
+
+    before = _git_commit_info()
+    try:
+        fetch = _run_git(['fetch', 'origin', branch], timeout=_GIT_NETWORK_TIMEOUT)
+        if fetch.returncode != 0:
+            raise RuntimeError(fetch.stderr.strip() or "git fetch xato qaytardi")
+
+        merge = _run_git(['merge', '--ff-only', f'origin/{branch}'], timeout=_GIT_NETWORK_TIMEOUT)
+        if merge.returncode != 0:
+            raise RuntimeError(
+                merge.stderr.strip() or merge.stdout.strip()
+                or "Fast-forward qilib bo'lmadi (lokal tarix origin'dan uzilib qolgan bo'lishi mumkin)"
+            )
+
+        after = _git_commit_info()
+        if before and after and before['hash'] == after['hash']:
+            cache.delete(_GIT_UPDATE_CACHE_KEY)
+            messages.success(request, "Loyiha allaqachon eng so'nggi versiyada, hech narsa o'zgarmadi.")
+            return redirect('system:dashboard')
+
+        buf = io.StringIO()
+        call_command('migrate', interactive=False, stdout=buf, stderr=buf)
+
+        (Path(settings.BASE_DIR) / 'tmp').mkdir(exist_ok=True)
+        (Path(settings.BASE_DIR) / 'tmp' / 'restart.txt').touch()
+
+        cache.delete(_GIT_UPDATE_CACHE_KEY)
+        record_audit(
+            request.user.username, "Kodni yangiladi (git pull + migrate)",
+            detail=f"{before['hash'] if before else '?'} → {after['hash'] if after else '?'}",
+        )
+        messages.success(
+            request,
+            f"{after['hash']} versiyasiga yangilandi — migratsiya bajarildi, ilova qayta ishga tushmoqda.",
+        )
+    except Exception as e:
+        record_audit(request.user.username, "Kodni yangilashda xato", detail=str(e))
+        messages.error(request, f"Yangilashda xato: {e}. Kod holatini SSH orqali tekshiring.")
     return redirect('system:dashboard')
 
 

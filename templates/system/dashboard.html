@@ -121,12 +121,47 @@
 </div>
 
 <div class="card">
-  <div class="section-title">Joriy versiya</div>
-  {% if git_commit %}
-  <code class="inline">{{ git_commit }}</code>
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+    <div class="section-title" style="margin:0">Joriy versiya</div>
+    {% if git_branch %}<span class="badge badge-gray">{{ git_branch }}</span>{% endif %}
+  </div>
+
+  {% if git_info %}
+  <div style="font-size:13px;color:var(--muted);margin-top:10px;line-height:1.8">
+    <code class="inline">{{ git_info.hash }}</code> · {{ git_info.date }} · {{ git_info.author }}<br>
+    {{ git_info.subject }}
+  </div>
   {% else %}
   <span style="color:var(--muted);font-size:13px">Git ma'lumoti topilmadi</span>
   {% endif %}
+
+  <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
+    {% if git_update.error %}
+      <div style="font-size:13px;color:var(--red);margin-bottom:10px">Tekshirishda xato: {{ git_update.error }}</div>
+    {% elif git_update.ahead == 0 %}
+      <div style="margin-bottom:10px"><span class="badge badge-green">So'nggi versiyada</span></div>
+    {% elif git_update.ahead %}
+      <div style="margin-bottom:10px">
+        <span class="badge badge-red">{{ git_update.ahead }} ta yangi commit</span>
+        <div style="margin-top:8px;font-size:12px;color:var(--muted);line-height:1.8">
+          {% for line in git_update.commits %}{{ line }}<br>{% endfor %}
+        </div>
+      </div>
+    {% else %}
+      <div style="font-size:13px;color:var(--muted);margin-bottom:10px">Hali tekshirilmagan.</div>
+    {% endif %}
+
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <form method="post" action="{% url 'system:git_check_updates' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-ghost">Yangilanishlarni tekshirish</button>
+      </form>
+      <form method="post" action="{% url 'system:git_deploy' %}" onsubmit="return confirm('Kod origin/{{ git_branch }} dan tortib olinadi, migratsiya bajariladi va ilova qayta ishga tushiriladi. Davom etilsinmi?')">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">Yangilash (pull + migrate)</button>
+      </form>
+    </div>
+  </div>
 </div>
 
 <div class="card">
