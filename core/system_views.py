@@ -11,6 +11,7 @@ from datetime import datetime
 from pathlib import Path
 
 import django
+import psutil
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -98,6 +99,11 @@ def dashboard(request):
         db_ok = False
 
     disk = shutil.disk_usage(settings.BASE_DIR)
+    mem = psutil.virtual_memory()
+    # A short interval blocks briefly but gives a real reading instead of
+    # the meaningless 0.0% psutil returns on a bare first call.
+    cpu_pct = psutil.cpu_percent(interval=0.1)
+    proc_rss = psutil.Process().memory_info().rss
 
     from .models import SiteSettings
     context = {
@@ -109,6 +115,11 @@ def dashboard(request):
         'disk_free_gb': round(disk.free / (1024 ** 3), 1),
         'disk_total_gb': round(disk.total / (1024 ** 3), 1),
         'disk_used_pct': round(disk.used / disk.total * 100),
+        'ram_used_gb': round(mem.used / (1024 ** 3), 1),
+        'ram_total_gb': round(mem.total / (1024 ** 3), 1),
+        'ram_used_pct': round(mem.percent),
+        'cpu_pct': round(cpu_pct),
+        'proc_rss': _human_size(proc_rss),
         'maintenance_mode': SiteSettings.get().maintenance_mode,
         'git_commit': _git_commit(),
         'backup_count': sum(1 for f in _backups_dir().iterdir() if f.is_file()),

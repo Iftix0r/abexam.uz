@@ -9,3 +9,4 @@ psycopg2-binary==2.9.11
 django-ckeditor==6.7.1
 requests==2.32.3
 sentry-sdk==2.69.2
+psutil==7.0.0

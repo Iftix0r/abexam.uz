@@ -67,6 +67,26 @@
 </div>
 
 <div class="card">
+  <div class="section-title">Operativ xotira (RAM)</div>
+  <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--muted)">
+    <span>{{ ram_used_gb }} GB / {{ ram_total_gb }} GB</span>
+    <span>{{ ram_used_pct }}% band</span>
+  </div>
+  <div class="progress"><div class="progress-bar" style="width:{{ ram_used_pct }}%"></div></div>
+</div>
+
+<div class="stat-grid">
+  <div class="stat-card">
+    <div class="stat-label">Protsessor (CPU)</div>
+    <div class="stat-val">{{ cpu_pct }}%</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Jarayon xotirasi (RSS)</div>
+    <div class="stat-val">{{ proc_rss }}</div>
+  </div>
+</div>
+
+<div class="card">
   <div class="section-title">Joriy versiya</div>
   {% if git_commit %}
   <code class="inline">{{ git_commit }}</code>
