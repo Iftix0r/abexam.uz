@@ -11,18 +11,27 @@
 :root{
   color-scheme:dark;
   --bg:#0f0f11;--surface:#18181b;--surface2:#1e1e23;--border:#2a2a32;
-  --text:#e4e4e7;--muted:#71717a;--primary:#d32f2f;--primary-dark:#b71c1c;
+  --text:#e4e4e7;--muted:#71717a;--primary:#d32f2f;--primary-dark:#b71c1c;--primary-dim:#d32f2f18;
   --green:#22c55e;--yellow:#eab308;--red:#ef4444;
-  --radius:12px;
+  --radius:12px;--sidebar:220px;
 }
-body{font-family:-apple-system,'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px}
-a{color:inherit}
-.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 28px;display:flex;align-items:center;justify-content:space-between}
-.topbar-title{font-weight:700;font-size:15px;display:flex;align-items:center;gap:8px}
-.topbar-title .tag{background:var(--primary);color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.04em}
-.topbar a.back{color:var(--muted);font-size:13px;text-decoration:none}
-.topbar a.back:hover{color:var(--text)}
-.content{padding:28px;max-width:960px;margin:0 auto}
+body{font-family:-apple-system,'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;display:flex}
+a{color:inherit;text-decoration:none}
+
+.sidebar{width:var(--sidebar);background:var(--surface);border-right:1px solid var(--border);position:fixed;height:100vh;padding:20px 12px;display:flex;flex-direction:column}
+.logo{display:flex;align-items:center;gap:8px;padding:8px 12px;margin-bottom:8px;font-weight:700;font-size:14px}
+.logo .tag{background:var(--primary);color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;text-transform:uppercase;letter-spacing:.04em}
+.nav-section{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;padding:0 12px;margin:14px 0 6px}
+.nav-item{display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:8px;color:var(--muted);font-size:13px;font-weight:500;margin-bottom:2px}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.active{background:var(--primary-dim);color:var(--primary);font-weight:600}
+.nav-item svg{width:15px;height:15px;flex-shrink:0}
+.sidebar-footer{margin-top:auto;padding-top:14px;border-top:1px solid var(--border)}
+.back-link{display:block;padding:9px 12px;font-size:12.5px;color:var(--muted)}
+.back-link:hover{color:var(--text)}
+
+.main{margin-left:var(--sidebar);flex:1;min-width:0}
+.content{padding:28px;max-width:900px}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:20px}
 .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:20px}
 .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
@@ -36,12 +45,13 @@ table{width:100%;border-collapse:collapse}
 th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--border)}
 td{padding:10px;border-bottom:1px solid var(--border);font-size:13px}
 tr:last-child td{border-bottom:none}
-.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;font-size:12.5px;font-weight:600;cursor:pointer;border:none;text-decoration:none}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;font-size:12.5px;font-weight:600;cursor:pointer;border:none}
 .btn-primary{background:var(--primary);color:#fff}
 .btn-primary:hover{background:var(--primary-dark)}
 .btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border)}
 .btn-ghost:hover{background:var(--surface2);color:var(--text)}
 .btn-danger{background:#ef444418;color:var(--red);border:1px solid #ef444430}
+.btn-success{background:#22c55e18;color:var(--green);border:1px solid #22c55e30}
 .section-title{font-size:13px;font-weight:700;margin-bottom:14px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
 .progress{height:6px;background:var(--surface2);border-radius:6px;overflow:hidden;margin-top:8px}
 .progress-bar{height:100%;background:var(--primary)}
@@ -49,22 +59,42 @@ tr:last-child td{border-bottom:none}
 .msg{padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:8px}
 .msg.success{background:#22c55e18;color:var(--green);border:1px solid #22c55e30}
 .msg.error{background:#ef444418;color:var(--red);border:1px solid #ef444430}
+pre.log{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:14px;font-size:12px;line-height:1.6;overflow-x:auto;white-space:pre-wrap;word-break:break-all;max-height:500px;overflow-y:auto}
+code.inline{background:var(--surface2);padding:2px 6px;border-radius:5px;font-size:12px}
 </style>
 </head>
 <body>
-<div class="topbar">
-  <div class="topbar-title">🛠 Tizim paneli <span class="tag">Superuser</span></div>
-  <a href="/panel/" class="back">← Admin panelga qaytish</a>
-</div>
-<div class="content">
-  {% if messages %}
-  <div class="messages">
-    {% for message in messages %}
-    <div class="msg {{ message.tags }}">{{ message }}</div>
-    {% endfor %}
+<div class="sidebar">
+  <div class="logo">🛠 Tizim <span class="tag">Superuser</span></div>
+  <span class="nav-section">Ops</span>
+  <a href="{% url 'system:dashboard' %}" class="nav-item {% block nav_dashboard %}{% endblock %}">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+    Holat
+  </a>
+  <a href="{% url 'system:backups' %}" class="nav-item {% block nav_backups %}{% endblock %}">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M21 8v13H3V8M1 3h22v5H1zM10 12h4"/></svg>
+    Zaxira nusxalar
+  </a>
+  <a href="{% url 'system:logs' %}" class="nav-item {% block nav_logs %}{% endblock %}">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8" stroke-width="1.8"/><line x1="8" y1="13" x2="16" y2="13" stroke-width="1.8"/><line x1="8" y1="17" x2="16" y2="17" stroke-width="1.8"/></svg>
+    Loglar
+  </a>
+  <div class="sidebar-footer">
+    <a href="/panel/" class="back-link">← Admin panel</a>
+    <a href="/admin/" class="back-link">← Django admin</a>
   </div>
-  {% endif %}
-  {% block content %}{% endblock %}
+</div>
+<div class="main">
+  <div class="content">
+    {% if messages %}
+    <div class="messages">
+      {% for message in messages %}
+      <div class="msg {{ message.tags }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </div>
 </div>
 </body>
 </html>

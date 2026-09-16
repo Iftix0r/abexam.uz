@@ -1,0 +1,16 @@
+{% extends 'system/base.html' %}
+{% block title %}Loglar{% endblock %}
+{% block nav_logs %}active{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="section-title">Backup cron log (oxirgi qatorlar)</div>
+  {% if log_exists %}
+  <pre class="log">{{ content }}</pre>
+  {% else %}
+  <p style="color:var(--muted);font-size:13px">
+    Hali <code class="inline">backups/cron.log</code> fayli yo'q — cron ishga tushgach bu yerda ko'rinadi.
+  </p>
+  {% endif %}
+</div>
+{% endblock %}
