@@ -803,7 +803,7 @@
     </div>
 
     {% if request.user.is_superuser %}
-    <button id="demoFillBtn" onclick="demoFillAndSubmit()" title="Superadmin QA: to'g'ri javoblarni avtomatik to'ldirib, testni yuboradi — AI baholashini tekshirish uchun" class="header-demo-btn" style="background:#6a1b9a; color:#fff; border:none; border-radius:6px; padding:0 14px; height:38px; font-size:12px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:6px;">
+    <button id="demoFillBtn" onclick="demoFillAndSubmit()" title="Superadmin QA: to'g'ri javoblarni avtomatik to'ldiradi (yubormaydi) — 'Yakunlash'ni o'zingiz bosasiz" class="header-demo-btn" style="background:#6a1b9a; color:#fff; border:none; border-radius:6px; padding:0 14px; height:38px; font-size:12px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:6px;">
         🧪 Demo to'ldirish
     </button>
     {% endif %}
@@ -1977,7 +1977,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // canned demo transcript through the same speaking_eval endpoint instead.
     window.demoFillAndSubmit = async function() {
         if (examSubmitted) return;
-        if (!confirm("Demo: to'g'ri javoblar bilan avtomatik to'ldirilib, test darhol yuboriladi (Speaking uchun demo transkript ishlatiladi). Davom etilsinmi?")) return;
+        if (!confirm("Demo: to'g'ri javoblar bilan avtomatik to'ldiriladi (Speaking bundan mustasno — audio yozib bo'lmaydi). Test darhol yuborilmaydi — ko'rib chiqib, tayyor bo'lganda 'Yakunlash' tugmasini o'zingiz bosasiz. Davom etilsinmi?")) return;
 
         const btn = document.getElementById('demoFillBtn');
         if (btn) { btn.disabled = true; btn.innerText = "Tayyorlanmoqda..."; }
@@ -2000,13 +2000,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (typeByQid[qid] === 'writing_task') saveWriting(qid, value);
                 else saveAnswer(qid, value);
             });
-
-            const speakingQids = Object.values(sectionQuestions)
-                .flat()
-                .filter(q => q.type === 'short_answer')
-                .map(q => q.id);
-
-            submitExam(false, speakingQids);
         } finally {
             if (btn) { btn.disabled = false; btn.innerText = "🧪 Demo to'ldirish"; }
         }
