@@ -1479,6 +1479,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (ids.length) showGroupSection(ids[0], type);
         if (el) el.classList.add('active');
         stopSpeaking();
+        pauseAllListeningAudio();
     }
 
     window.showGroupSection = function(sectionId, type) {
@@ -1695,6 +1696,13 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     window.stopSpeaking = function() { synth.cancel(); };
+
+    // Pauses any Listening audio still playing — nothing else does this
+    // automatically, so without it the audio kept running in the
+    // background after moving on to Reading/Writing/the next section.
+    window.pauseAllListeningAudio = function() {
+        document.querySelectorAll('audio[id^="audio-el-"]').forEach(a => { if (!a.paused) a.pause(); });
+    };
 
     // ─── SPEAKING: PREPARATION TIMER (Part 2) ─────────────
     const prepIntervals = {};
@@ -2045,6 +2053,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (examSubmitted) return;
         examSubmitted = true;
         stopSpeaking();
+        pauseAllListeningAudio();
         document.getElementById('submittingOverlay').classList.add('active');
 
         fetch("{% url 'exams:submit_exam' exam.id %}", {
