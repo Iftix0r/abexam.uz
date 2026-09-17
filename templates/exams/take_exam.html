@@ -894,18 +894,23 @@
 </header>
 
 <!-- ─── SECTION INSTRUCTION OVERLAY ──────────────────── -->
+<!-- Server-rendered with the real first section's data (not a hardcoded
+     guess) so the very first paint is correct even before the JS below
+     re-renders it — a client-side timing/exception there previously left
+     some users stuck looking at made-up placeholder numbers with a START
+     button that silently did nothing (pendingSectionId was still null). -->
 <div id="sectionInstrOverlay">
     <div class="instr-card">
         <div class="instr-icon-big" id="instrIcon">🎧</div>
-        <div class="instr-section-label" id="instrLabel">SECTION 1 OF 3</div>
-        <h2 id="instrTitle">Listening</h2>
+        <div class="instr-section-label" id="instrLabel">SECTION 1 OF {{ tab_groups|length }}</div>
+        <h2 id="instrTitle">{{ tab_groups.0.title }}</h2>
         <div class="instr-meta">
             <div class="instr-meta-item">
-                <div class="val" id="instrDuration">30</div>
+                <div class="val" id="instrDuration">{{ tab_groups.0.duration_minutes }}</div>
                 <div class="lbl">Minutes</div>
             </div>
             <div class="instr-meta-item">
-                <div class="val" id="instrQuestions">40</div>
+                <div class="val" id="instrQuestions">{{ tab_groups.0.question_count }}</div>
                 <div class="lbl">Questions</div>
             </div>
         </div>
@@ -1573,9 +1578,13 @@ document.addEventListener('DOMContentLoaded', () => {
         },
     };
 
-    let pendingSectionId = null;
+    // Seeded from the real first section instead of null/60 — the START
+    // button reads these, so if the bootstrap call further down ever fails
+    // to run (or throws) before the user clicks it, START still works
+    // instead of silently doing nothing.
+    let pendingSectionId = {% if tab_groups.0 %}'{{ tab_groups.0.type }}'{% else %}null{% endif %};
     let pendingTabEl = null;
-    let pendingDurationMinutes = 60;
+    let pendingDurationMinutes = {{ tab_groups.0.duration_minutes|default:60 }};
     let firstSection = true;
 
     function showSectionInstruction(id, el, sectionType, sectionTitle, qCount, duration) {
