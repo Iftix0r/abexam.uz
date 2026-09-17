@@ -987,7 +987,7 @@
             {% elif section.section_type == 'writing' %}
             <!-- WRITING: Task info + image + content -->
             {% for q in section.questions.all %}{% if q.question_type == 'writing_task' %}
-            <div class="writing-task-bar">
+            <div class="writing-task-bar" data-task-index="{{ forloop.counter0 }}">
                 <span class="task-badge">
                     Task {% if q.word_limit and q.word_limit <= 175 %}1{% else %}2{% endif %}
                 </span>
@@ -1006,7 +1006,7 @@
             {% endif %}{% endfor %}
 
             {% if section.image %}
-            <div style="margin-bottom: 1.5rem; text-align: center; background: #fff; padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border);">
+            <div class="writing-task-chart" data-task-index="0" style="margin-bottom: 1.5rem; text-align: center; background: #fff; padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border);">
                 <img src="{{ section.image.url }}" alt="IELTS Task Chart"
                      style="max-width:100%; height:auto; border-radius:4px;">
                 <p style="font-size: 11px; color: #777; margin-top: 6px;">Figure: Data for Task 1</p>
@@ -1018,15 +1018,17 @@
                 <h5><i data-lucide="lightbulb" style="width:13px;"></i> Examiner maslahati</h5>
                 <ul>
                     {% for q in section.questions.all %}{% if q.question_type == 'writing_task' %}
+                    <li data-task-index="{{ forloop.counter0 }}" style="display:none">
                     {% if q.word_limit and q.word_limit <= 175 %}
-                    <li><strong>Tuzilish:</strong> Introduction → Key Features → Summary/Overview</li>
-                    <li><strong>Vaqt:</strong> 20 daqiqadan ko'p sarflamang — Task 2 ko'proq ball beradi.</li>
-                    <li><strong>Minimal:</strong> Kamida 150 so'z yozing.</li>
+                    <strong>Tuzilish:</strong> Introduction → Key Features → Summary/Overview</li>
+                    <li data-task-index="{{ forloop.counter0 }}" style="display:none"><strong>Vaqt:</strong> 20 daqiqadan ko'p sarflamang — Task 2 ko'proq ball beradi.</li>
+                    <li data-task-index="{{ forloop.counter0 }}" style="display:none"><strong>Minimal:</strong> Kamida 150 so'z yozing.
                     {% else %}
-                    <li><strong>Tuzilish:</strong> Introduction (thesis) → Body 1 → Body 2 → Conclusion</li>
-                    <li><strong>Vaqt:</strong> Kamida 40 daqiqa ajrating.</li>
-                    <li><strong>Minimal:</strong> Kamida 250 so'z yozing.</li>
+                    <strong>Tuzilish:</strong> Introduction (thesis) → Body 1 → Body 2 → Conclusion</li>
+                    <li data-task-index="{{ forloop.counter0 }}" style="display:none"><strong>Vaqt:</strong> Kamida 40 daqiqa ajrating.</li>
+                    <li data-task-index="{{ forloop.counter0 }}" style="display:none"><strong>Minimal:</strong> Kamida 250 so'z yozing.
                     {% endif %}
+                    </li>
                     {% endif %}{% endfor %}
                 </ul>
             </div>
@@ -1272,6 +1274,14 @@
         <i data-lucide="chevron-right" style="width:18px;"></i>
     </button>
 </div>
+<div class="listening-part-nav" id="writingPartNav" style="display:none;">
+    <button type="button" id="writingPrevBtn" onclick="typePrevPart('writing')" title="Oldingi Task">
+        <i data-lucide="chevron-left" style="width:18px;"></i>
+    </button>
+    <button type="button" id="writingNextBtn" onclick="typeNextPart('writing')" title="Keyingi Task">
+        <i data-lucide="chevron-right" style="width:18px;"></i>
+    </button>
+</div>
 
 <!-- ─── FOOTER ─────────────────────────────────────────── -->
 <footer>
@@ -1434,8 +1444,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const PART_SIZES = {
         listening: [10, 10, 10, 10],
         reading: [13, 13, 14],
+        writing: [1, 1],
     };
-    const PART_LABEL = { listening: 'Part ', reading: 'Passage ' };
+    const PART_LABEL = { listening: 'Part ', reading: 'Passage ', writing: 'Task ' };
     const currentPartByType = {};
 
     function partBoundsFor(type) {
@@ -1565,33 +1576,36 @@ document.addEventListener('DOMContentLoaded', () => {
             container.scrollTop = 0;
         }
 
-        // Reading's 3 passages sit concatenated in one content blob, split
-        // only by <h3>READING PASSAGE N</h3> markers — group the nodes
-        // between them so the passage text panel can follow the same
-        // active-passage-only view as the questions beside it.
-        if (type === 'reading') {
-            const passagePanel = document.querySelector('.section-content[data-section-type="reading"] .passage-panel');
-            if (passagePanel) {
-                if (!passagePanel.dataset.passagesSplit) {
-                    passagePanel.dataset.passagesSplit = '1';
+        // Reading's 3 passages and Writing's 2 tasks each sit concatenated
+        // in one content blob per section, split only by their own <h3>
+        // heading markers — group the nodes between them so the left
+        // panel's text follows the same active-part-only view as the
+        // questions beside it.
+        const CONTENT_HEADING = {
+            reading: /^READING PASSAGE\s+\d+/i,
+            writing: /^Writing Task\s+\d/i,
+        };
+        if (CONTENT_HEADING[type]) {
+            const panel = document.querySelector('.section-content[data-section-type="' + type + '"] .passage-panel');
+            if (panel) {
+                const headingRe = CONTENT_HEADING[type];
+                const isHeading = h => h.nodeType === 1 && h.tagName === 'H3' && !h.className && headingRe.test(h.textContent.trim());
+                if (!panel.dataset.contentSplit) {
+                    panel.dataset.contentSplit = '1';
                     // The section content is server-rendered as one HTML
-                    // blob inside its own wrapper div (not passagePanel's
-                    // direct children), so split that wrapper's children,
-                    // found via the first heading actually in it.
-                    const firstHeading = Array.from(passagePanel.querySelectorAll('h3')).find(
-                        h => !h.className && /^READING PASSAGE\s+\d+/i.test(h.textContent.trim())
-                    );
+                    // blob inside its own wrapper div (not panel's direct
+                    // children), so split that wrapper's children, found
+                    // via the first heading actually in it.
+                    const firstHeading = Array.from(panel.querySelectorAll('h3')).find(isHeading);
                     const contentWrapper = firstHeading ? firstHeading.parentElement : null;
                     if (contentWrapper) {
                         let currentGroup = null;
                         const groups = [];
                         Array.from(contentWrapper.childNodes).forEach(node => {
-                            const isPassageHeading = node.nodeType === 1 && node.tagName === 'H3'
-                                && !node.className && /^READING PASSAGE\s+\d+/i.test(node.textContent.trim());
-                            if (isPassageHeading) {
+                            if (isHeading(node)) {
                                 currentGroup = document.createElement('div');
-                                currentGroup.className = 'reading-passage-block';
-                                currentGroup.dataset.passageIndex = groups.length;
+                                currentGroup.className = 'content-part-block';
+                                currentGroup.dataset.partIndex = groups.length;
                                 groups.push(currentGroup);
                             }
                             if (currentGroup) currentGroup.appendChild(node);
@@ -1599,10 +1613,17 @@ document.addEventListener('DOMContentLoaded', () => {
                         groups.forEach(g => contentWrapper.appendChild(g));
                     }
                 }
-                passagePanel.querySelectorAll('.reading-passage-block').forEach(block => {
-                    block.style.display = (Number(block.dataset.passageIndex) === partIndex) ? '' : 'none';
+                panel.querySelectorAll('.content-part-block').forEach(block => {
+                    block.style.display = (Number(block.dataset.partIndex) === partIndex) ? '' : 'none';
                 });
-                passagePanel.scrollTop = 0;
+                // Writing also has task-bar/chart/tips pieces that aren't
+                // part of that content blob (rendered directly by the
+                // template instead, since — unlike the passage/task text —
+                // their per-task boundary is already known there).
+                panel.querySelectorAll('[data-task-index]').forEach(el => {
+                    el.style.display = (Number(el.dataset.taskIndex) === partIndex) ? '' : 'none';
+                });
+                panel.scrollTop = 0;
             }
         }
 
@@ -1732,7 +1753,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // shows only the first one here — switching between the rest goes
         // through the pills above, not a silent scroll past the first one.
         if (ids.length) showGroupSection(ids[0], type);
-        ['listening', 'reading'].forEach(t => {
+        ['listening', 'reading', 'writing'].forEach(t => {
             if (t === type) {
                 showTypePart(t, 0);
             } else {
