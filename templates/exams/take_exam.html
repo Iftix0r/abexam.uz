@@ -333,6 +333,13 @@
             margin-left: 4px;
         }
         .section-tab:not(.active) .tab-count { background: rgba(0,0,0,0.08); color: #333; }
+        /* Sections open strictly in order (like the real computer-delivered
+           test) — a locked tab can't be jumped to ahead of time, and a
+           completed one can't be revisited once its time is used. */
+        .section-tab.tab-locked { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+        .section-tab.tab-locked::after { content: ' 🔒'; }
+        .section-tab.tab-completed { opacity: 0.65; }
+        .section-tab.tab-completed::after { content: ' ✓'; }
 
         .submit-btn {
             background: var(--ielts-red);
@@ -791,6 +798,7 @@
 
     <div class="timer-box" id="timerBox">
         <i data-lucide="clock" style="width:16px;"></i>
+        <span id="timerSectionLabel" style="font-weight:600; margin-right:2px;"></span>
         <span id="countdown">00:00:00</span>
     </div>
 
@@ -844,13 +852,13 @@
 <!-- ─── PRE-SUBMIT REVIEW MODAL ───────────────────────── -->
 <div class="overlay-modal" id="reviewModal">
     <div class="review-card">
-        <h3>⚠️ Testni yakunlash</h3>
+        <h3 id="reviewTitle">⚠️ Testni yakunlash</h3>
         <div id="reviewBody"></div>
         <div class="review-actions">
             <button class="btn-back" onclick="document.getElementById('reviewModal').classList.remove('active')">
                 Orqaga qaytish
             </button>
-            <button class="btn-confirm" onclick="confirmSubmit()">
+            <button class="btn-confirm" id="reviewConfirmBtn" onclick="confirmSubmit()">
                 Ha, yakunlash
             </button>
         </div>
@@ -1228,9 +1236,9 @@
             {% endfor %}
         </div>
 
-        <button class="submit-btn" onclick="preSubmitReview()">
+        <button class="submit-btn" id="footerActionBtn" onclick="preSubmitReview()">
             <i data-lucide="check-circle" style="width:15px;"></i>
-            Testni yakunlash
+            <span id="footerActionLabel">Testni yakunlash</span>
         </button>
     </div>
 </footer>
@@ -1273,6 +1281,16 @@ document.addEventListener('DOMContentLoaded', () => {
     sectionQuestions['{{ section.id }}'].push({ id: '{{ question.id }}', type: '{{ question.question_type }}' });
     {% endfor %}
     {% endfor %}
+
+    // ─── SEQUENTIAL SECTION LOCKING ───────────────────────
+    // Mirrors the real computer-delivered test: Listening -> Reading ->
+    // Writing -> Speaking open strictly in order, each with its own timer,
+    // and a section can't be revisited once its time is spent.
+    const sectionOrder = Array.from(document.querySelectorAll('.section-tab[data-type]')).map(t => t.dataset.type);
+    let currentSectionIdx = 0;
+    sectionOrder.forEach((type, i) => {
+        if (i > 0) document.getElementById('tab-type-' + type)?.classList.add('tab-locked');
+    });
 
     // Load draft
     try {
@@ -1418,11 +1436,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let pendingSectionId = null;
     let pendingTabEl = null;
+    let pendingDurationMinutes = 60;
     let firstSection = true;
 
     function showSectionInstruction(id, el, sectionType, sectionTitle, qCount, duration) {
         pendingSectionId = id;
         pendingTabEl = el;
+        pendingDurationMinutes = Number(duration) || 60;
         const info = SECTION_INFO[sectionType] || { icon: '📋', label: sectionType, rules: [] };
         document.getElementById('instrIcon').textContent = info.icon;
         document.getElementById('instrTitle').textContent = sectionTitle;
@@ -1438,7 +1458,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.closeInstructionAndStart = function() {
         document.getElementById('sectionInstrOverlay').style.display = 'none';
-        if (pendingSectionId) _doShowSection(pendingSectionId, pendingTabEl);
+        if (pendingSectionId) {
+            _doShowSection(pendingSectionId, pendingTabEl);
+            startSectionTimer(pendingDurationMinutes, pendingSectionId);
+            updateFooterActionButton();
+        }
     };
 
     function _doShowSection(type, el) {
@@ -1472,6 +1496,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     window.showSection = function(type, el) {
+        if (el && el.classList.contains('tab-locked')) return;
         // Tab data attributes already hold the aggregated title/question
         // count/duration for every section of this type (computed server-side
         // in TakeExamView, since a naive per-section duration_minutes sum
@@ -1481,6 +1506,47 @@ document.addEventListener('DOMContentLoaded', () => {
         const duration = el ? el.dataset.duration : '';
 
         showSectionInstruction(type, el, type, title, qCount, duration);
+    };
+
+    function updateFooterActionButton() {
+        const isLast = currentSectionIdx >= sectionOrder.length - 1;
+        const label = document.getElementById('footerActionLabel');
+        if (label) label.innerText = isLast ? 'Testni yakunlash' : "Keyingi bo'limga o'tish";
+    }
+
+    // Locks the current section's tab, unlocks the next one (or submits the
+    // whole exam if this was the last section) and shows its instruction
+    // overlay. `isTimeout` only changes the user-facing message — either
+    // way the exam moves forward, never back.
+    window.finishCurrentSectionAndAdvance = function(isTimeout) {
+        if (examSubmitted) return;
+        clearInterval(timerInterval);
+        const finishedType = sectionOrder[currentSectionIdx];
+        const finishedTab = document.getElementById('tab-type-' + finishedType);
+        if (finishedTab) {
+            finishedTab.classList.remove('active');
+            finishedTab.classList.add('tab-completed', 'tab-locked');
+        }
+        currentSectionIdx++;
+
+        if (currentSectionIdx >= sectionOrder.length) {
+            if (isTimeout) {
+                alert("Vaqt tugadi! Test avtomatik yakunlanmoqda.");
+                submitExam(true);
+            } else {
+                submitExam(false);
+            }
+            return;
+        }
+
+        const nextType = sectionOrder[currentSectionIdx];
+        const nextTab = document.getElementById('tab-type-' + nextType);
+        if (nextTab) nextTab.classList.remove('tab-locked');
+        const title = nextTab ? nextTab.dataset.title : nextType;
+        const qCount = nextTab ? nextTab.dataset.qcount : '';
+        const duration = nextTab ? nextTab.dataset.duration : '';
+        if (isTimeout) alert("Vaqt tugadi! Keyingi bo'limga o'tilmoqda: " + title);
+        showSectionInstruction(nextType, nextTab, nextType, title, qCount, duration);
     };
 
     // ─── AUTOSAVE ─────────────────────────────────────────
@@ -1826,11 +1892,15 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // ─── TIMER ───────────────────────────────────────────
-    let durationMinutes = Number("{{ exam.duration_minutes }}");
-    if (!durationMinutes || isNaN(durationMinutes)) durationMinutes = 60;
-    let timeLeft = durationMinutes * 60;
+    // One countdown per section, not one for the whole exam — restarted by
+    // startSectionTimer() every time closeInstructionAndStart() opens a new
+    // section. Running out just advances to the next section (or submits
+    // on the last one) instead of ending the whole attempt early.
+    let timeLeft = 0;
+    let timerInterval = null;
     const timerEl = document.getElementById('countdown');
     const timerBox = document.getElementById('timerBox');
+    const timerLabelEl = document.getElementById('timerSectionLabel');
 
     function updateTimer() {
         const h = Math.floor(timeLeft / 3600);
@@ -1838,27 +1908,46 @@ document.addEventListener('DOMContentLoaded', () => {
         const s = timeLeft % 60;
         if (timerEl) timerEl.innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
         if (timeLeft <= 0) {
-            clearInterval(timerInterval);
-            submitExam(true);
+            finishCurrentSectionAndAdvance(true);
         } else {
             if (timerBox) {
                 if (timeLeft <= 300) timerBox.className = 'timer-box danger';
                 else if (timeLeft <= 600) timerBox.className = 'timer-box warning';
+                else timerBox.className = 'timer-box';
             }
             timeLeft--;
         }
     }
-    const timerInterval = setInterval(updateTimer, 1000);
+
+    function startSectionTimer(minutes, sectionType) {
+        clearInterval(timerInterval);
+        timeLeft = (Number(minutes) || 60) * 60;
+        if (timerLabelEl) timerLabelEl.innerText = (sectionType || '').toUpperCase();
+        updateTimer();
+        timerInterval = setInterval(updateTimer, 1000);
+    }
 
     // ─── PRE-SUBMIT REVIEW ────────────────────────────────
+    // On every section but the last, this reviews only the CURRENT
+    // section's unanswered questions (you're moving on, not finishing the
+    // exam) — the full-exam review only applies to the last section, right
+    // before the actual submit.
     window.preSubmitReview = function() {
-        const unanswered = allQuestions.filter(q => !answers[q.id] || answers[q.id] === '');
+        const isLast = currentSectionIdx >= sectionOrder.length - 1;
+        const activeType = sectionOrder[currentSectionIdx];
+        const scopeIds = isLast ? null : new Set(sectionIdsOfType(activeType));
+        const scoped = isLast ? allQuestions : allQuestions.filter(q => scopeIds.has(q.sectionId));
+        const unanswered = scoped.filter(q => !answers[q.id] || answers[q.id] === '');
         const body = document.getElementById('reviewBody');
         if (!body) return;
 
+        document.getElementById('reviewTitle').innerText = isLast ? '⚠️ Testni yakunlash' : "⚠️ Bo'limni yakunlash";
+        document.getElementById('reviewConfirmBtn').innerText = isLast ? 'Ha, yakunlash' : "Ha, keyingi bo'limga o'tish";
+        const confirmQuestion = isLast ? 'Testni yakunlashni tasdiqlaysizmi?' : "Bu bo'limga qaytib bo'lmaydi. Keyingi bo'limga o'tishni tasdiqlaysizmi?";
+
         if (unanswered.length === 0) {
             body.innerHTML = `<p style="color:#2e7d32; font-weight:600; margin-bottom:8px;">✅ Barcha savollar javoblandi.</p>
-                              <p style="font-size:13px; color:#555;">Testni yakunlashni tasdiqlaysizmi?</p>`;
+                              <p style="font-size:13px; color:#555;">${confirmQuestion}</p>`;
         } else {
             const listItems = unanswered.map((q, i) => {
                 const sectionEl = document.getElementById('section-' + q.sectionId);
@@ -1869,14 +1958,15 @@ document.addEventListener('DOMContentLoaded', () => {
             body.innerHTML = `<p style="color:#e65100; font-weight:600; margin-bottom:8px;">
                 ⚠️ ${unanswered.length} ta savol javobsiz qoldi:</p>
                 <ul class="unanswered-list">${listItems}</ul>
-                <p style="font-size:13px; color:#555;">Shunga qaramay yakunlashni xohlaysizmi?</p>`;
+                <p style="font-size:13px; color:#555;">${confirmQuestion}</p>`;
         }
         document.getElementById('reviewModal').classList.add('active');
     };
 
     window.confirmSubmit = function() {
         document.getElementById('reviewModal').classList.remove('active');
-        submitExam(false);
+        if (currentSectionIdx >= sectionOrder.length - 1) submitExam(false);
+        else finishCurrentSectionAndAdvance(false);
     };
 
     // ─── SUPERADMIN QA: DEMO FILL + AUTO-SUBMIT ───────────
@@ -1940,9 +2030,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // canned demo transcript instead of a real recording (see demoFillAndSubmit).
     window.submitExam = function(auto = false, demoSpeakingQids = null) {
         if (examSubmitted) return;
-        if (auto && !confirm('Vaqt tugadi! Test avtomatik yakunlanmoqda.')) {
-            // Still submit on timeout
-        }
         examSubmitted = true;
         stopSpeaking();
         document.getElementById('submittingOverlay').classList.add('active');
