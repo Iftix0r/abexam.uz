@@ -76,8 +76,12 @@
         }
 
         /* ─── LAYOUT ─────────────────────────────────────── */
-        main { flex-grow: 1; display: flex; overflow: hidden; position: relative; }
-        .reading-layout { display: flex; width: 100%; height: 100%; }
+        /* column, not row: when a skill spans several sections (e.g. 3
+           Reading passages), all of them are displayed at once so every
+           one is reachable — stacked full-height blocks you scroll past,
+           rather than being squeezed side by side. */
+        main { flex-grow: 1; display: flex; flex-direction: column; overflow-y: auto; overflow-x: hidden; position: relative; }
+        .reading-layout { display: flex; width: 100%; height: 100%; flex-shrink: 0; margin-bottom: 8px; }
         .passage-panel {
             overflow-y: auto;
             padding: 1.5rem 2rem;
@@ -1177,13 +1181,16 @@
         <div class="answer-tracker" id="answerTracker"></div>
 
         <div class="section-tabs" id="sectionTabsContainer">
-            {% regroup sections by get_section_type_display as section_groups %}
-            {% for group in section_groups %}
+            {% for tab in tab_groups %}
             <div class="section-tab {% if forloop.first %}active{% endif %}"
-                 id="tab-{{ group.list.0.id }}"
-                 onclick="showSection('{{ group.list.0.id }}', this)">
-                {{ group.grouper }}
-                <span class="tab-count" id="tab-count-{{ group.list.0.id }}">0</span>
+                 id="tab-type-{{ tab.type }}"
+                 data-type="{{ tab.type }}"
+                 data-title="{{ tab.title }}"
+                 data-qcount="{{ tab.question_count }}"
+                 data-duration="{{ tab.duration_minutes }}"
+                 onclick="showSection('{{ tab.type }}', this)">
+                {{ tab.label }}
+                <span class="tab-count" id="tab-count-type-{{ tab.type }}">0</span>
             </div>
             {% endfor %}
         </div>
@@ -1279,19 +1286,34 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // A skill (listening/reading/writing/speaking) can be spread across
+    // several Section rows — one per part/passage — that all share one
+    // footer tab. These resolve a section id <-> its skill type from the
+    // DOM (each .section-content already carries data-section-type), so
+    // the tracker/counts/navigation below operate on "every section of
+    // this type" instead of accidentally only the first one.
+    function sectionTypeOf(sectionId) {
+        return document.getElementById('section-' + sectionId)?.dataset?.sectionType;
+    }
+    function sectionIdsOfType(type) {
+        return Array.from(document.querySelectorAll('.section-content[data-section-type="' + type + '"]'))
+            .map(el => el.id.slice('section-'.length));
+    }
+
     // Build tracker + answered counts after restore
     buildTracker();
     updateAllTabCounts();
     updateAnsweredCount();
 
-    function buildTracker(activeSectionId) {
+    function buildTracker(activeType) {
         const tracker = document.getElementById('answerTracker');
         if (!tracker) return;
         tracker.innerHTML = '';
-        if (!activeSectionId && allQuestions.length > 0) {
-            activeSectionId = allQuestions[0].sectionId;
+        if (!activeType && allQuestions.length > 0) {
+            activeType = sectionTypeOf(allQuestions[0].sectionId);
         }
-        const filtered = allQuestions.filter(q => q.sectionId == activeSectionId);
+        const ids = new Set(sectionIdsOfType(activeType));
+        const filtered = allQuestions.filter(q => ids.has(q.sectionId));
         filtered.forEach((q, index) => {
             const dot = document.createElement('div');
             dot.className = 'tracker-dot' + (answers[q.id] && answers[q.id] !== '' ? ' answered' : '');
@@ -1303,22 +1325,29 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function updateAnsweredCount(activeSectionId) {
-        if (!activeSectionId && allQuestions.length > 0) {
-            activeSectionId = allQuestions[0].sectionId;
+    function updateAnsweredCount(activeType) {
+        if (!activeType && allQuestions.length > 0) {
+            activeType = sectionTypeOf(allQuestions[0].sectionId);
         }
-        const questions = sectionQuestions[activeSectionId] || [];
-        const answeredCount = questions.filter(q => answers[q.id] && answers[q.id] !== '').length;
-        const el = document.getElementById('answered-count-' + activeSectionId);
-        if (el) el.innerText = `${answeredCount} / ${questions.length} javob berildi`;
+        sectionIdsOfType(activeType).forEach(sectionId => {
+            const questions = sectionQuestions[sectionId] || [];
+            const answeredCount = questions.filter(q => answers[q.id] && answers[q.id] !== '').length;
+            const el = document.getElementById('answered-count-' + sectionId);
+            if (el) el.innerText = `${answeredCount} / ${questions.length} javob berildi`;
+        });
     }
 
     function updateAllTabCounts() {
-        Object.keys(sectionQuestions).forEach(sectionId => {
-            const questions = sectionQuestions[sectionId] || [];
-            const answeredCount = questions.filter(q => answers[q.id] && answers[q.id] !== '').length;
-            const tabCount = document.getElementById('tab-count-' + sectionId);
-            if (tabCount) tabCount.innerText = `${answeredCount}/${questions.length}`;
+        document.querySelectorAll('.section-tab[data-type]').forEach(tab => {
+            const type = tab.dataset.type;
+            let total = 0, answered = 0;
+            sectionIdsOfType(type).forEach(sectionId => {
+                const questions = sectionQuestions[sectionId] || [];
+                total += questions.length;
+                answered += questions.filter(q => answers[q.id] && answers[q.id] !== '').length;
+            });
+            const tabCount = document.getElementById('tab-count-type-' + type);
+            if (tabCount) tabCount.innerText = `${answered}/${total}`;
         });
     }
 
@@ -1376,25 +1405,29 @@ document.addEventListener('DOMContentLoaded', () => {
         if (pendingSectionId) _doShowSection(pendingSectionId, pendingTabEl);
     };
 
-    function _doShowSection(id, el) {
+    function _doShowSection(type, el) {
         document.querySelectorAll('.section-content').forEach(s => s.style.display = 'none');
         document.querySelectorAll('.section-tab').forEach(t => t.classList.remove('active'));
-        document.getElementById('section-' + id).style.display = 'flex';
+        sectionIdsOfType(type).forEach(id => {
+            const target = document.getElementById('section-' + id);
+            if (target) target.style.display = 'flex';
+        });
         if (el) el.classList.add('active');
         stopSpeaking();
-        buildTracker(id);
-        updateAnsweredCount(id);
+        buildTracker(type);
+        updateAnsweredCount(type);
     }
 
-    window.showSection = function(id, el) {
-        // Get section info from data attributes
-        const sectionEl = document.getElementById('section-' + id);
-        const stype = sectionEl ? sectionEl.dataset.sectionType : 'listening';
-        const title = sectionEl ? (sectionEl.dataset.sectionTitle || stype) : stype;
-        const qCount = (sectionQuestions[id] || []).length;
-        const duration = sectionEl ? sectionEl.dataset.duration : '';
+    window.showSection = function(type, el) {
+        // Tab data attributes already hold the aggregated title/question
+        // count/duration for every section of this type (computed server-side
+        // in TakeExamView, since a naive per-section duration_minutes sum
+        // would double-count sections that use "0 = shared exam time").
+        const title = el ? (el.dataset.title || type) : type;
+        const qCount = el ? el.dataset.qcount : '';
+        const duration = el ? el.dataset.duration : '';
 
-        showSectionInstruction(id, el, stype, title, qCount, duration);
+        showSectionInstruction(type, el, type, title, qCount, duration);
     };
 
     // ─── AUTOSAVE ─────────────────────────────────────────
@@ -1411,7 +1444,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const dot = document.getElementById('dot-' + qid);
         if (dot) dot.className = 'tracker-dot' + (answers[qid] ? ' answered' : '') + (reviews.has(qid) ? ' review' : '');
         updateAllTabCounts();
-        updateAnsweredCount(allQuestions.find(q => q.id == qid)?.sectionId);
+        updateAnsweredCount(sectionTypeOf(allQuestions.find(q => q.id == qid)?.sectionId));
         autosave();
     };
 
@@ -1450,7 +1483,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const dot = document.getElementById('dot-' + qid);
         if (dot) dot.className = 'tracker-dot' + (text.trim() ? ' answered' : '') + (reviews.has(qid) ? ' review' : '');
         updateAllTabCounts();
-        updateAnsweredCount(allQuestions.find(q => q.id == qid)?.sectionId);
+        updateAnsweredCount(sectionTypeOf(allQuestions.find(q => q.id == qid)?.sectionId));
         autosave();
     };
 
@@ -1611,7 +1644,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const dot = document.getElementById('dot-' + qid);
                 if (dot) dot.className = 'tracker-dot answered';
                 updateAllTabCounts();
-                updateAnsweredCount(allQuestions.find(q => q.id == qid)?.sectionId);
+                updateAnsweredCount(sectionTypeOf(allQuestions.find(q => q.id == qid)?.sectionId));
                 autosave();
             };
 
@@ -1949,20 +1982,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Show first section instruction on load
     (function() {
-        {% for section in sections %}
-        {% if forloop.first %}
-        const firstEl = document.getElementById('section-{{ section.id }}');
-        if (firstEl) {
-            showSectionInstruction(
-                '{{ section.id }}', null,
-                '{{ section.section_type }}',
-                '{{ section.title }}',
-                {{ section.questions.count }},
-                '{% if section.duration_minutes %}{{ section.duration_minutes }}{% elif section.section_type == "listening" %}30{% elif section.section_type == "reading" %}60{% else %}60{% endif %}'
-            );
-        }
+        {% with first_tab=tab_groups.0 %}
+        {% if first_tab %}
+        showSectionInstruction(
+            '{{ first_tab.type }}', null,
+            '{{ first_tab.type }}',
+            '{{ first_tab.title }}',
+            {{ first_tab.question_count }},
+            '{{ first_tab.duration_minutes }}'
+        );
         {% endif %}
-        {% endfor %}
+        {% endwith %}
     })();
 
     // Render inline gaps after draft restore

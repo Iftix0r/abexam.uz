@@ -1,3 +1,5 @@
+from itertools import groupby
+
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.cache import cache
@@ -171,6 +173,8 @@ class TakeExamView(LoginRequiredMixin, DetailView):
                 cache.delete(lock_key)
         return super().get(request, *args, **kwargs)
 
+    _DEFAULT_DURATION = {'listening': 30, 'reading': 60, 'writing': 60, 'speaking': 60}
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         sections = list(self.object.sections.prefetch_related('questions').all())
@@ -179,7 +183,27 @@ class TakeExamView(LoginRequiredMixin, DetailView):
             for i, q in enumerate(questions, start=1):
                 q.display_number = i
             section.render_blocks = _build_render_blocks(questions)
+            section.q_count = len(questions)
+
+        # A skill (listening/reading/writing/speaking) can be modelled as
+        # several Section rows (one per part/passage) sharing the same
+        # exam-wide footer tab. Bundling them here — instead of letting the
+        # template key everything off "the first section in the group" —
+        # is what lets every part actually be reachable and counted, not
+        # just the first one.
+        tab_groups = []
+        for stype, group_iter in groupby(sections, key=lambda s: s.section_type):
+            group = list(group_iter)
+            tab_groups.append({
+                'type': stype,
+                'label': group[0].get_section_type_display(),
+                'title': group[0].title if len(group) == 1 else group[0].get_section_type_display(),
+                'question_count': sum(s.q_count for s in group),
+                'duration_minutes': sum(s.duration_minutes for s in group) or self._DEFAULT_DURATION.get(stype, 60),
+            })
+
         context['sections'] = sections
+        context['tab_groups'] = tab_groups
         return context
 
 
