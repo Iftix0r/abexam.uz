@@ -1,7 +1,7 @@
 [
   {
     "title": "Cambridge IELTS 17 Academic — Test 3",
-    "description": "Rasmiy Cambridge IELTS 17 Academic to'plamidan 3-test (Listening, Reading, Writing). Javoblar kitobdagi rasmiy answer key asosida kiritilgan.",
+    "description": "Rasmiy Cambridge IELTS 17 Academic to'plamidan 3-test (Listening, Reading, Writing, Speaking). Javoblar kitobdagi rasmiy answer key asosida kiritilgan.",
     "exam_type": "mock",
     "price": 0,
     "duration_minutes": 170,
@@ -1964,6 +1964,87 @@
             "options": [],
             "explanation": "",
             "word_limit": 250
+          }
+        ]
+      },
+      {
+        "title": "Speaking Part 1-3",
+        "section_type": "speaking",
+        "order": 4,
+        "duration_minutes": 0,
+        "content": "",
+        "questions": [
+          {
+            "order": 1,
+            "text": "What do you like to drink with your dinner? [Why?]",
+            "question_type": "short_answer",
+            "correct_answer": "",
+            "options": [],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 2,
+            "text": "Do you drink a lot of water every day? [Why/Why not?]",
+            "question_type": "short_answer",
+            "correct_answer": "",
+            "options": [],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 3,
+            "text": "Do you prefer drinking tea or coffee? [Why?] If people visit you in your home, what do you usually offer them to drink? [Why/Why not?]",
+            "question_type": "short_answer",
+            "correct_answer": "",
+            "options": [],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 4,
+            "text": "Describe a monument (e.g., a statue or sculpture) that you like.\nYou should say:\n- what this monument is\n- where this monument is\n- what it looks like\nand explain why you like this monument.",
+            "question_type": "short_answer",
+            "correct_answer": "",
+            "options": [],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 5,
+            "text": "What kinds of monuments do tourists in your country enjoy visiting?",
+            "question_type": "short_answer",
+            "correct_answer": "",
+            "options": [],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 6,
+            "text": "Why do you think there are often statues of famous people in public places? Do you agree that old monuments and buildings should always be preserved?",
+            "question_type": "short_answer",
+            "correct_answer": "",
+            "options": [],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 7,
+            "text": "Why is architecture such a popular university subject? In what ways has the design of homes changed in recent years?",
+            "question_type": "short_answer",
+            "correct_answer": "",
+            "options": [],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 8,
+            "text": "To what extent does the design of buildings affect people's moods?",
+            "question_type": "short_answer",
+            "correct_answer": "",
+            "options": [],
+            "explanation": "",
+            "word_limit": 0
           }
         ]
       }
