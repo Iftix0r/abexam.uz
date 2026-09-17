@@ -706,6 +706,7 @@
             transition: border-color 0.2s;
         }
         .inline-gap:focus { outline: none; border-color: var(--primary); background: #fff; }
+        .inline-gap-single { width: 160px; font-size: 1rem; font-weight: 600; }
 
         /* ─── QUESTION BLOCK HEADER ──────────────────────── */
         .q-block-header {
@@ -2115,21 +2116,24 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!textEl || !inputEl) return;
             const qid = inputEl.dataset.qid;
             const raw = textEl.textContent || '';
-            // Split on ___ and insert inline input
+            if (!raw.includes('___')) return;
+            // Split on ___ and insert inline input, right where the blank
+            // reads in the sentence (matches the real IELTS layout) instead
+            // of a separate box below repeating the same question. A
+            // question with a single blank already has its own number
+            // badge to the left, so numbering the inline box too ("1") is
+            // redundant and reads as a stray digit — only a genuinely
+            // multi-blank shared passage needs per-blank numbers to tell
+            // them apart.
             const parts = raw.split('___');
-            // A single blank is one whole question (our normal case: every
-            // IELTS gap has its own Question row) — the full-width box
-            // below the question already handles that fine. Only a
-            // genuinely multi-blank shared passage needs inline inputs;
-            // converting a single blank just swaps a clear answer box for
-            // a cramped 100px one showing a bare "1" placeholder.
-            if (parts.length < 3) return;
+            const multiBlank = parts.length > 2;
             let html = '';
             parts.forEach((part, i) => {
                 html += part.replace(/</g, '&lt;').replace(/>/g, '&gt;');
                 if (i < parts.length - 1) {
                     const val = (answers[qid] || '').replace(/"/g, '&quot;');
-                    html += `<input class="inline-gap" type="text" data-qid="${qid}" value="${val}" placeholder="  ${i+1}  " oninput="saveAnswer('${qid}', this.value)">`;
+                    const placeholder = multiBlank ? `${i+1}` : '';
+                    html += `<input class="inline-gap${multiBlank ? '' : ' inline-gap-single'}" type="text" data-qid="${qid}" value="${val}" placeholder="${placeholder}" oninput="saveAnswer('${qid}', this.value)">`;
                 }
             });
             textEl.innerHTML = html;
