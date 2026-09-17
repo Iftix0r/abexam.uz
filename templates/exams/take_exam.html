@@ -2163,7 +2163,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const inputEl = item.querySelector('input.ans-input');
             if (!textEl || !inputEl) return;
             const qid = inputEl.dataset.qid;
-            const raw = textEl.textContent || '';
+            // .question-num (the round number badge) is a child of
+            // .question-text, so its digits are part of textContent too —
+            // read the blank text from a copy with that badge stripped out,
+            // otherwise rebuilding innerHTML below silently deletes the
+            // badge and leaves its bare number as plain text instead.
+            const numEl = textEl.querySelector('.question-num');
+            const textClone = textEl.cloneNode(true);
+            textClone.querySelector('.question-num')?.remove();
+            const raw = textClone.textContent || '';
             if (!raw.includes('___')) return;
             // Split on ___ and insert inline input, right where the blank
             // reads in the sentence (matches the real IELTS layout) instead
@@ -2184,7 +2192,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     html += `<input class="inline-gap${multiBlank ? '' : ' inline-gap-single'}" type="text" data-qid="${qid}" value="${val}" placeholder="${placeholder}" oninput="saveAnswer('${qid}', this.value)">`;
                 }
             });
-            textEl.innerHTML = html;
+            textEl.innerHTML = (numEl ? numEl.outerHTML : '') + html;
             inputEl.style.display = 'none'; // hide original input
         });
     }
