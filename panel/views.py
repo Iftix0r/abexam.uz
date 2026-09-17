@@ -702,6 +702,27 @@ def results_list(request):
     })
 
 
+@panel_required
+@require_POST
+def result_delete(request, pk):
+    result = get_object_or_404(UserResult, pk=pk)
+    result.delete()
+    return JsonResponse({'ok': True})
+
+
+@panel_required
+@require_POST
+def results_bulk_delete(request):
+    data, err = parse_json_body(request)
+    if err:
+        return err
+    ids = data.get('ids', [])
+    qs = UserResult.objects.filter(pk__in=ids)
+    deleted = qs.count()
+    qs.delete()
+    return JsonResponse({'ok': True, 'deleted': deleted})
+
+
 # ── AI Exam Generator ──────────────────────────────────────────────────────────
 @panel_required
 def exam_generate(request):

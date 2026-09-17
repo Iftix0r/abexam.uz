@@ -417,7 +417,10 @@ class ResultDetailView(LoginRequiredMixin, DetailView):
     context_object_name = 'result'
 
     def get_queryset(self):
-        return UserResult.objects.filter(user=self.request.user).select_related('exam')
+        qs = UserResult.objects.select_related('exam')
+        if self.request.user.is_staff:
+            return qs
+        return qs.filter(user=self.request.user)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

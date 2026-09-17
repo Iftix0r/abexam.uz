@@ -13,16 +13,23 @@
       {% endfor %}
     </select>
   </form>
-  <a href="{% url 'panel:results_export' %}" class="btn btn-ghost btn-sm">↓ CSV yuklab olish</a>
+  <div style="display:flex;gap:10px">
+    <button id="bulkDeleteBtn" onclick="bulkDeleteResults()" class="btn btn-danger btn-sm" style="display:none">Tanlanganlarni o'chirish (<span id="bulkDeleteCount">0</span>)</button>
+    <a href="{% url 'panel:results_export' %}" class="btn btn-ghost btn-sm">↓ CSV yuklab olish</a>
+  </div>
 </div>
 
 <div class="card" style="padding:0">
   <div class="table-wrap">
     <table>
-      <thead><tr><th>Foydalanuvchi</th><th>Imtihon</th><th>Ball</th><th>Listening</th><th>Reading</th><th>Writing</th><th>Speaking</th><th>Sana</th></tr></thead>
+      <thead><tr>
+        <th style="width:32px"><input type="checkbox" id="selectAllResults" onchange="toggleAllResults(this)"></th>
+        <th>Foydalanuvchi</th><th>Imtihon</th><th>Ball</th><th>Listening</th><th>Reading</th><th>Writing</th><th>Speaking</th><th>Sana</th><th></th>
+      </tr></thead>
       <tbody>
         {% for r in results %}
-        <tr>
+        <tr id="result-row-{{ r.pk }}">
+          <td><input type="checkbox" class="result-checkbox" value="{{ r.pk }}" onchange="updateBulkDeleteBtn()"></td>
           <td><a href="{% url 'panel:user_detail' r.user.pk %}" style="color:var(--primary);font-weight:500">{{ r.user.username }}</a></td>
           <td><a href="{% url 'panel:exam_detail' r.exam.pk %}" style="color:var(--muted)">{{ r.exam.title|truncatechars:26 }}</a></td>
           <td>{% if r.score >= 7.5 %}<span class="badge badge-green">{{ r.score }}</span>{% elif r.score >= 6.0 %}<span class="badge badge-yellow">{{ r.score }}</span>{% else %}<span class="badge badge-red">{{ r.score }}</span>{% endif %}</td>
@@ -31,12 +38,54 @@
           <td style="color:var(--muted)">{{ r.writing_score }}</td>
           <td style="color:var(--muted)">{{ r.speaking_score }}</td>
           <td style="color:var(--muted);font-size:12px">{{ r.completed_at|date:"d M Y, H:i" }}</td>
+          <td style="white-space:nowrap">
+            <a href="{% url 'exams:result_detail' r.pk %}" target="_blank" class="btn btn-ghost btn-sm">Batafsil</a>
+            <button onclick="deleteResult({{ r.pk }}, this)" class="btn btn-danger btn-sm">O'chir</button>
+          </td>
         </tr>
         {% empty %}
-        <tr><td colspan="8" style="text-align:center;padding:32px;color:var(--muted)">Natija yo'q</td></tr>
+        <tr><td colspan="10" style="text-align:center;padding:32px;color:var(--muted)">Natija yo'q</td></tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function toggleAllResults(master){
+  document.querySelectorAll('.result-checkbox').forEach(cb => cb.checked = master.checked);
+  updateBulkDeleteBtn();
+}
+function updateBulkDeleteBtn(){
+  const checked = document.querySelectorAll('.result-checkbox:checked');
+  const btn = document.getElementById('bulkDeleteBtn');
+  document.getElementById('bulkDeleteCount').textContent = checked.length;
+  btn.style.display = checked.length ? 'inline-flex' : 'none';
+}
+async function deleteResult(pk, btn){
+  if(!confirm('Bu natijani o\'chirishni tasdiqlaysizmi?')) return;
+  const r = await fetch(`/panel/results/${pk}/delete/`, {method:'POST', headers:{'X-CSRFToken':csrf}});
+  const d = await r.json();
+  if(d.ok){ document.getElementById('result-row-'+pk).remove(); toast('Natija o\'chirildi', '#ef4444'); }
+}
+async function bulkDeleteResults(){
+  const ids = Array.from(document.querySelectorAll('.result-checkbox:checked')).map(cb => Number(cb.value));
+  if(!ids.length) return;
+  if(!confirm(`${ids.length} ta natijani o'chirishni tasdiqlaysizmi?`)) return;
+  const r = await fetch('/panel/results/bulk-delete/', {
+    method: 'POST',
+    headers: {'X-CSRFToken': csrf, 'Content-Type': 'application/json'},
+    body: JSON.stringify({ids}),
+  });
+  const d = await r.json();
+  if(d.ok){
+    ids.forEach(id => document.getElementById('result-row-'+id)?.remove());
+    document.getElementById('selectAllResults').checked = false;
+    updateBulkDeleteBtn();
+    toast(`${d.deleted} ta natija o'chirildi`, '#ef4444');
+  }
+}
+</script>
 {% endblock %}
