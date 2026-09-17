@@ -1,0 +1,1972 @@
+[
+  {
+    "title": "Cambridge IELTS 17 Academic — Test 3",
+    "description": "Rasmiy Cambridge IELTS 17 Academic to'plamidan 3-test (Listening, Reading, Writing). Javoblar kitobdagi rasmiy answer key asosida kiritilgan.",
+    "exam_type": "mock",
+    "price": 0,
+    "duration_minutes": 170,
+    "is_active": true,
+    "sections": [
+      {
+        "title": "Listening",
+        "section_type": "listening",
+        "order": 1,
+        "duration_minutes": 40,
+        "content": "<div style='line-height:1.8;font-size:14px'>\n<p><strong>Diqqat:</strong> Bu bo'lim uchun audio hozircha yuklanmagan — admin panelidan tegishli audio faylni yuklashingiz mumkin. Savollar rasmiy Cambridge IELTS 17 Academic to'plamidagi 3-test asosida tuzilgan.</p>\n<h4>Part 1 — Questions 1-10</h4>\n<p><em>Advice on surfing holidays haqida suhbat. Complete the notes below. Write ONE WORD AND/OR A NUMBER for each answer.</em></p>\n<h4>Part 2 — Questions 11-20</h4>\n<p><em>Maktabning extended hours childcare xizmati va bolalar uchun turli faoliyatlar haqida ma'lumot.</em></p>\n<h4>Part 3 — Questions 21-30</h4>\n<p><em>Holly va o'qituvchisi o'rtasida Orion Stadium'dagi ish tajribasi va events management ko'nikmalari haqida suhbat.</em></p>\n<h4>Part 4 — Questions 31-40</h4>\n<p><em>Bird Migration Theory (qushlar migratsiyasi nazariyalari) haqida akademik ma'ruza. Write ONE WORD ONLY for each answer.</em></p>\n</div>",
+        "questions": [
+          {
+            "order": 1,
+            "text": "[Advice on surfing holidays] Complete the notes below. Write ONE WORD AND/OR A NUMBER for each answer.\nRecommends surfing for ___ holidays in the summer",
+            "question_type": "gap_fill",
+            "correct_answer": "family",
+            "options": [],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 2,
+            "text": "Need to be quite ___.",
+            "question_type": "gap_fill",
+            "correct_answer": "fit",
+            "options": [],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 3,
+            "text": "Lahinch has some good quality ___ and surf schools",
+            "question_type": "gap_fill",
+            "correct_answer": "hotels",
+            "options": [],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 4,
+            "text": "Good surf school at ___ beach",
+            "question_type": "gap_fill",
+            "correct_answer": "Carrowniskey",
+            "options": [],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 5,
+            "text": "Surf camp lasts for one ___",
+            "question_type": "gap_fill",
+            "correct_answer": "week",
+            "options": [],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 6,
+            "text": "Can also explore the local ___ by kayak",
+            "question_type": "gap_fill",
+            "correct_answer": "bay",
+            "options": [],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 7,
+            "text": "Best month to go: ___",
+            "question_type": "gap_fill",
+            "correct_answer": "September",
+            "options": [],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 8,
+            "text": "Average temperature in summer: approx ___ degrees",
+            "question_type": "gap_fill",
+            "correct_answer": "19",
+            "options": [],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 9,
+            "text": "Wetsuit and surfboard: ___ euros per day",
+            "question_type": "gap_fill",
+            "correct_answer": "30",
+            "options": [],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 10,
+            "text": "Also advisable to hire ___ for warmth",
+            "question_type": "gap_fill",
+            "correct_answer": "boots",
+            "options": [],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 11,
+            "text": "[Questions 11 and 12] Choose TWO letters, A-E.\nWhich TWO facts are given about the school's extended hours childcare service?",
+            "question_type": "mcq",
+            "correct_answer": "B",
+            "options": [
+              {
+                "key": "A",
+                "text": "It started recently."
+              },
+              {
+                "key": "B",
+                "text": "More children attend after school than before school."
+              },
+              {
+                "key": "C",
+                "text": "An average of 50 children attend in the mornings."
+              },
+              {
+                "key": "D",
+                "text": "A child cannot attend both the before and after school sessions."
+              },
+              {
+                "key": "E",
+                "text": "The maximum number of children who can attend is 70."
+              }
+            ],
+            "explanation": "Either order accepted together with Q12: B & E.",
+            "word_limit": 0
+          },
+          {
+            "order": 12,
+            "text": "Which TWO facts are given about the school's extended hours childcare service? (second answer)",
+            "question_type": "mcq",
+            "correct_answer": "E",
+            "options": [
+              {
+                "key": "A",
+                "text": "It started recently."
+              },
+              {
+                "key": "B",
+                "text": "More children attend after school than before school."
+              },
+              {
+                "key": "C",
+                "text": "An average of 50 children attend in the mornings."
+              },
+              {
+                "key": "D",
+                "text": "A child cannot attend both the before and after school sessions."
+              },
+              {
+                "key": "E",
+                "text": "The maximum number of children who can attend is 70."
+              }
+            ],
+            "explanation": "Either order accepted together with Q11: B & E.",
+            "word_limit": 0
+          },
+          {
+            "order": 13,
+            "text": "Choose the correct letter, A, B or C.\nHow much does childcare cost for a complete afternoon session per child?",
+            "question_type": "mcq",
+            "correct_answer": "C",
+            "options": [
+              {
+                "key": "A",
+                "text": "£3.50"
+              },
+              {
+                "key": "B",
+                "text": "£5.70"
+              },
+              {
+                "key": "C",
+                "text": "£7.20"
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 14,
+            "text": "What does the manager say about food?",
+            "question_type": "mcq",
+            "correct_answer": "C",
+            "options": [
+              {
+                "key": "A",
+                "text": "Children with allergies should bring their own food."
+              },
+              {
+                "key": "B",
+                "text": "Children may bring healthy snacks with them."
+              },
+              {
+                "key": "C",
+                "text": "Children are given a proper meal at 5 p.m."
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 15,
+            "text": "What is different about arrangements in the school holidays?",
+            "question_type": "mcq",
+            "correct_answer": "A",
+            "options": [
+              {
+                "key": "A",
+                "text": "Children from other schools can attend."
+              },
+              {
+                "key": "B",
+                "text": "Older children can attend."
+              },
+              {
+                "key": "C",
+                "text": "A greater number of children can attend."
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 16,
+            "text": "[Questions 16-20] What information is given about each of the following activities on offer? Choose FIVE answers from the box.\nSpanish",
+            "question_type": "matching",
+            "correct_answer": "E",
+            "options": [
+              {
+                "key": "A",
+                "text": "has limited availability"
+              },
+              {
+                "key": "B",
+                "text": "is no longer available"
+              },
+              {
+                "key": "C",
+                "text": "is for over 8s only"
+              },
+              {
+                "key": "D",
+                "text": "requires help from parents"
+              },
+              {
+                "key": "E",
+                "text": "involves an additional fee"
+              },
+              {
+                "key": "F",
+                "text": "is a new activity"
+              },
+              {
+                "key": "G",
+                "text": "was requested by children"
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 17,
+            "text": "Music",
+            "question_type": "matching",
+            "correct_answer": "D",
+            "options": [
+              {
+                "key": "A",
+                "text": "has limited availability"
+              },
+              {
+                "key": "B",
+                "text": "is no longer available"
+              },
+              {
+                "key": "C",
+                "text": "is for over 8s only"
+              },
+              {
+                "key": "D",
+                "text": "requires help from parents"
+              },
+              {
+                "key": "E",
+                "text": "involves an additional fee"
+              },
+              {
+                "key": "F",
+                "text": "is a new activity"
+              },
+              {
+                "key": "G",
+                "text": "was requested by children"
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 18,
+            "text": "Painting",
+            "question_type": "matching",
+            "correct_answer": "G",
+            "options": [
+              {
+                "key": "A",
+                "text": "has limited availability"
+              },
+              {
+                "key": "B",
+                "text": "is no longer available"
+              },
+              {
+                "key": "C",
+                "text": "is for over 8s only"
+              },
+              {
+                "key": "D",
+                "text": "requires help from parents"
+              },
+              {
+                "key": "E",
+                "text": "involves an additional fee"
+              },
+              {
+                "key": "F",
+                "text": "is a new activity"
+              },
+              {
+                "key": "G",
+                "text": "was requested by children"
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 19,
+            "text": "Yoga",
+            "question_type": "matching",
+            "correct_answer": "F",
+            "options": [
+              {
+                "key": "A",
+                "text": "has limited availability"
+              },
+              {
+                "key": "B",
+                "text": "is no longer available"
+              },
+              {
+                "key": "C",
+                "text": "is for over 8s only"
+              },
+              {
+                "key": "D",
+                "text": "requires help from parents"
+              },
+              {
+                "key": "E",
+                "text": "involves an additional fee"
+              },
+              {
+                "key": "F",
+                "text": "is a new activity"
+              },
+              {
+                "key": "G",
+                "text": "was requested by children"
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 20,
+            "text": "Cooking",
+            "question_type": "matching",
+            "correct_answer": "C",
+            "options": [
+              {
+                "key": "A",
+                "text": "has limited availability"
+              },
+              {
+                "key": "B",
+                "text": "is no longer available"
+              },
+              {
+                "key": "C",
+                "text": "is for over 8s only"
+              },
+              {
+                "key": "D",
+                "text": "requires help from parents"
+              },
+              {
+                "key": "E",
+                "text": "involves an additional fee"
+              },
+              {
+                "key": "F",
+                "text": "is a new activity"
+              },
+              {
+                "key": "G",
+                "text": "was requested by children"
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 21,
+            "text": "Holly has chosen the Orion Stadium placement because",
+            "question_type": "mcq",
+            "correct_answer": "B",
+            "options": [
+              {
+                "key": "A",
+                "text": "it involves children."
+              },
+              {
+                "key": "B",
+                "text": "it is outdoors."
+              },
+              {
+                "key": "C",
+                "text": "it sounds like fun."
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 22,
+            "text": "Which aspect of safety does Dr Green emphasise most?",
+            "question_type": "mcq",
+            "correct_answer": "A",
+            "options": [
+              {
+                "key": "A",
+                "text": "ensuring children stay in the stadium"
+              },
+              {
+                "key": "B",
+                "text": "checking the equipment children will use"
+              },
+              {
+                "key": "C",
+                "text": "removing obstacles in changing rooms"
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 23,
+            "text": "What does Dr Green say about the spectators?",
+            "question_type": "mcq",
+            "correct_answer": "A",
+            "options": [
+              {
+                "key": "A",
+                "text": "They can be hard to manage."
+              },
+              {
+                "key": "B",
+                "text": "They make useful volunteers."
+              },
+              {
+                "key": "C",
+                "text": "They shouldn't take photographs."
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 24,
+            "text": "What has affected the schedule in the past?",
+            "question_type": "mcq",
+            "correct_answer": "B",
+            "options": [
+              {
+                "key": "A",
+                "text": "bad weather"
+              },
+              {
+                "key": "B",
+                "text": "an injury"
+              },
+              {
+                "key": "C",
+                "text": "extra time"
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 25,
+            "text": "[Questions 25-30] What do Holly and her tutor agree is an important aspect of each of the following events management skills? Choose SIX answers from the box.\nCommunication",
+            "question_type": "matching",
+            "correct_answer": "C",
+            "options": [
+              {
+                "key": "A",
+                "text": "being flexible"
+              },
+              {
+                "key": "B",
+                "text": "focusing on details"
+              },
+              {
+                "key": "C",
+                "text": "having a smart appearance"
+              },
+              {
+                "key": "D",
+                "text": "hiding your emotions"
+              },
+              {
+                "key": "E",
+                "text": "relying on experts"
+              },
+              {
+                "key": "F",
+                "text": "trusting your own views"
+              },
+              {
+                "key": "G",
+                "text": "doing one thing at a time"
+              },
+              {
+                "key": "H",
+                "text": "thinking of the future"
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 26,
+            "text": "Organisation",
+            "question_type": "matching",
+            "correct_answer": "A",
+            "options": [
+              {
+                "key": "A",
+                "text": "being flexible"
+              },
+              {
+                "key": "B",
+                "text": "focusing on details"
+              },
+              {
+                "key": "C",
+                "text": "having a smart appearance"
+              },
+              {
+                "key": "D",
+                "text": "hiding your emotions"
+              },
+              {
+                "key": "E",
+                "text": "relying on experts"
+              },
+              {
+                "key": "F",
+                "text": "trusting your own views"
+              },
+              {
+                "key": "G",
+                "text": "doing one thing at a time"
+              },
+              {
+                "key": "H",
+                "text": "thinking of the future"
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 27,
+            "text": "Time management",
+            "question_type": "matching",
+            "correct_answer": "D",
+            "options": [
+              {
+                "key": "A",
+                "text": "being flexible"
+              },
+              {
+                "key": "B",
+                "text": "focusing on details"
+              },
+              {
+                "key": "C",
+                "text": "having a smart appearance"
+              },
+              {
+                "key": "D",
+                "text": "hiding your emotions"
+              },
+              {
+                "key": "E",
+                "text": "relying on experts"
+              },
+              {
+                "key": "F",
+                "text": "trusting your own views"
+              },
+              {
+                "key": "G",
+                "text": "doing one thing at a time"
+              },
+              {
+                "key": "H",
+                "text": "thinking of the future"
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 28,
+            "text": "Creativity",
+            "question_type": "matching",
+            "correct_answer": "B",
+            "options": [
+              {
+                "key": "A",
+                "text": "being flexible"
+              },
+              {
+                "key": "B",
+                "text": "focusing on details"
+              },
+              {
+                "key": "C",
+                "text": "having a smart appearance"
+              },
+              {
+                "key": "D",
+                "text": "hiding your emotions"
+              },
+              {
+                "key": "E",
+                "text": "relying on experts"
+              },
+              {
+                "key": "F",
+                "text": "trusting your own views"
+              },
+              {
+                "key": "G",
+                "text": "doing one thing at a time"
+              },
+              {
+                "key": "H",
+                "text": "thinking of the future"
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 29,
+            "text": "Leadership",
+            "question_type": "matching",
+            "correct_answer": "F",
+            "options": [
+              {
+                "key": "A",
+                "text": "being flexible"
+              },
+              {
+                "key": "B",
+                "text": "focusing on details"
+              },
+              {
+                "key": "C",
+                "text": "having a smart appearance"
+              },
+              {
+                "key": "D",
+                "text": "hiding your emotions"
+              },
+              {
+                "key": "E",
+                "text": "relying on experts"
+              },
+              {
+                "key": "F",
+                "text": "trusting your own views"
+              },
+              {
+                "key": "G",
+                "text": "doing one thing at a time"
+              },
+              {
+                "key": "H",
+                "text": "thinking of the future"
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 30,
+            "text": "Networking",
+            "question_type": "matching",
+            "correct_answer": "H",
+            "options": [
+              {
+                "key": "A",
+                "text": "being flexible"
+              },
+              {
+                "key": "B",
+                "text": "focusing on details"
+              },
+              {
+                "key": "C",
+                "text": "having a smart appearance"
+              },
+              {
+                "key": "D",
+                "text": "hiding your emotions"
+              },
+              {
+                "key": "E",
+                "text": "relying on experts"
+              },
+              {
+                "key": "F",
+                "text": "trusting your own views"
+              },
+              {
+                "key": "G",
+                "text": "doing one thing at a time"
+              },
+              {
+                "key": "H",
+                "text": "thinking of the future"
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 31,
+            "text": "[Bird Migration Theory] Complete the notes below. Write ONE WORD ONLY for each answer.\nHibernation theory: it was believed that birds hibernated underwater or buried themselves in ___",
+            "question_type": "gap_fill",
+            "correct_answer": "mud",
+            "options": [],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 32,
+            "text": "Transmutation theory: in autumn Aristotle observed that redstarts experience the loss of ___ and thought they then turned into robins",
+            "question_type": "gap_fill",
+            "correct_answer": "feathers",
+            "options": [],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 33,
+            "text": "Aristotle's assumptions were logical because the two species of birds had a similar ___",
+            "question_type": "gap_fill",
+            "correct_answer": "shape",
+            "options": [],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 34,
+            "text": "17th century: Charles Morton popularised the idea that birds fly to the ___ in winter",
+            "question_type": "gap_fill",
+            "correct_answer": "moon",
+            "options": [],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 35,
+            "text": "Scientific developments: in 1822, a stork was killed in Germany which had an African spear in its ___",
+            "question_type": "gap_fill",
+            "correct_answer": "neck",
+            "options": [],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 36,
+            "text": "Previously there had been no ___ that storks migrate to Africa",
+            "question_type": "gap_fill",
+            "correct_answer": "evidence",
+            "options": [],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 37,
+            "text": "Little was known about the ___ and journeys of migrating birds until the practice of ringing was established",
+            "question_type": "gap_fill",
+            "correct_answer": "destinations",
+            "options": [],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 38,
+            "text": "It was thought large birds carried small birds on some journeys because they were considered incapable of travelling across huge ___",
+            "question_type": "gap_fill",
+            "correct_answer": "oceans",
+            "options": [],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 39,
+            "text": "Ringing depended on what is called the '___' of dead birds",
+            "question_type": "gap_fill",
+            "correct_answer": "recovery",
+            "options": [],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 40,
+            "text": "In 1931, the first ___ to show the migration of European birds was printed",
+            "question_type": "gap_fill",
+            "correct_answer": "atlas",
+            "options": [],
+            "explanation": "",
+            "word_limit": 0
+          }
+        ]
+      },
+      {
+        "title": "Reading",
+        "section_type": "reading",
+        "order": 2,
+        "duration_minutes": 60,
+        "content": "<div style='line-height:1.8;font-size:14px'>\n<h3>READING PASSAGE 1</h3>\n<h3 class=\"passage-title\">The thylacine</h3>\n<p>The extinct thylacine, also known as the Tasmanian tiger, was a marsupial* that bore a superficial resemblance to a dog. Its most distinguishing feature was the 13&ndash;19 dark brown stripes over its back, beginning at the rear of the body and extending onto the tail. The thylacine's average nose-to-tail length for adult males was 162.6 cm, compared to 153.7 cm for females.</p>\n<p>The thylacine appeared to occupy most types of terrain except dense rainforest, with open eucalyptus forest thought to be its prime habitat. In terms of feeding, it was exclusively carnivorous, and its stomach was muscular with an ability to distend so that it could eat large amounts of food at one time, probably an adaptation to compensate for long periods when hunting was unsuccessful and food scarce. The thylacine was not a fast runner and probably caught its prey by exhausting it during a long pursuit. During long-distance chases, thylacines were likely to have relied more on scent than any other sense. They emerged to hunt during the evening, night and early morning and tended to retreat to the hills and forest for shelter during the day. Despite the common name 'tiger', the thylacine had a shy, nervous temperament. Although mainly nocturnal, it was sighted moving during the day and some individuals were even recorded basking in the sun.</p>\n<p>The thylacine had an extended breeding season from winter to spring, with indications that some breeding took place throughout the year. The thylacine, like all marsupials, was tiny and hairless when born. Newborns crawled into the pouch on the belly of their mother, and attached themselves to one of the four teats, remaining there for up to three months. When old enough to leave the pouch, the young stayed in a lair such as a deep rocky cave, well-hidden nest or hollow log, whilst the mother hunted.</p>\n<p>Approximately 4,000 years ago, the thylacine was widespread throughout New Guinea and most of mainland Australia, as well as the island of Tasmania. The most recent, well-dated occurrence of a thylacine on the mainland is a carbon-dated fossil from Murray Cave in Western Australia, which is around 3,100 years old. Its extinction coincided closely with the arrival of wild dogs called dingoes in Australia and a similar predator in New Guinea. Dingoes never reached Tasmania, and most scientists see this as the main reason for the thylacine's survival there.</p>\n<p>The dramatic decline of the thylacine in Tasmania, which began in the 1830s and continued for a century, is generally attributed to the relentless efforts of sheep farmers and bounty hunters** with shotguns. While this determined campaign undoubtedly played a large part, it is likely that various other factors also contributed to the decline and eventual extinction of the species. These include competition with wild dogs introduced by European settlers, loss of habitat along with the disappearance of prey species, and a distemper-like disease which may also have affected the thylacine.</p>\n<p>There was only one successful attempt to breed a thylacine in captivity, at Melbourne Zoo in 1899. This was despite the large numbers that went through some zoos, particularly London Zoo and Tasmania's Hobart Zoo. The famous naturalist John Gould foresaw the thylacine's demise when he published his <em>Mammals of Australia</em> between 1848 and 1863, writing, 'The numbers of this singular animal will speedily diminish, extermination will have its full sway, and it will then, like the wolf of England and Scotland, be recorded as an animal of the past.'</p>\n<p>However, there seems to have been little public pressure to preserve the thylacine, nor was much concern expressed by scientists at the decline of this species in the decades that followed. A notable exception was T.T. Flynn, Professor of Biology at the University of Tasmania. In 1914, he was sufficiently concerned about the scarcity of the thylacine to suggest that some should be captured and placed on a small island. But it was not until 1929, with the species on the very edge of extinction, that Tasmania's Animals and Birds Protection Board passed a motion protecting thylacines only for the month of December, which was thought to be their prime breeding season. The last known wild thylacine to be killed was shot by a farmer in the north-east of Tasmania in 1930, leaving just captive specimens. Official protection of the species by the Tasmanian government was introduced in July 1936, 59 days before the last known individual died in Hobart Zoo on 7th September, 1936.</p>\n<p>There have been numerous expeditions and searches for the thylacine over the years, none of which has produced definitive evidence that thylacines still exist. The species was declared extinct by the Tasmanian government in 1986.</p>\n<p><em>* marsupial: a mammal, such as a kangaroo, whose young are born incompletely developed and are typically carried and suckled in a pouch on the mother's belly</em><br>\n<em>** bounty hunters: people who are paid a reward for killing a wild animal</em></p>\n\n<h3>READING PASSAGE 2</h3>\n<h3 class=\"passage-title\">Palm oil</h3>\n<p><strong>A</strong> Palm oil is an edible oil derived from the fruit of the African oil palm tree, and is currently the most consumed vegetable oil in the world. It's almost certainly in the soap we wash with in the morning, the sandwich we have for lunch, and the biscuits we snack on during the day. Why is palm oil so attractive for manufacturers? Primarily because its unique properties &mdash; such as remaining solid at room temperature &mdash; make it an ideal ingredient for long-term preservation, allowing many packaged foods on supermarket shelves to have 'best before' dates of months, even years, into the future.</p>\n<p><strong>B</strong> Many farmers have seized the opportunity to maximise the planting of oil palm trees. Between 1990 and 2012, the global land area devoted to growing oil palm trees grew from 6 to 17 million hectares, now accounting for around ten percent of total cropland in the entire world. From a mere two million tonnes of palm oil being produced annually globally 50 years ago, there are now around 60 million tonnes produced every single year, a figure looking likely to double or even triple by the middle of the century.</p>\n<p><strong>C</strong> However, there are multiple reasons why conservationists cite the rapid spread of oil palm plantations as a major concern. There are countless news stories of deforestation, habitat destruction and dwindling species populations, all as a direct result of land clearing to establish oil palm tree monoculture on an industrial scale, particularly in Malaysia and Indonesia. Endangered species &mdash; most famously the Sumatran orangutan, but also rhinos, elephants, tigers, and numerous other fauna &mdash; have suffered from the unstoppable spread of oil palm plantations.</p>\n<p><strong>D</strong> 'Palm oil is surely one of the greatest threats to global biodiversity,' declares Dr Farnon Ellwood of the University of the West of England, Bristol. 'Palm oil is replacing rainforest, and rainforest is where all the species are. That's a problem.' This has led to some radical questions among environmentalists, such as whether consumers should try to boycott palm oil entirely.</p>\n<p>Meanwhile Bhavani Shankar, Professor at London's School of Oriental and African Studies, argues, 'It's easy to say that palm oil is the enemy and we should be against it. It makes for a more dramatic story, and it's very intuitive. But given the complexity of the argument, I think a much more nuanced story is closer to the truth.'</p>\n<p><strong>E</strong> One response to the boycott movement has been the argument for the vital role palm oil plays in lifting many millions of people in the developing world out of poverty. Is it desirable to have palm oil boycotted, replaced, eliminated from the global supply chain, given how many low-income people in developing countries depend on it for their livelihoods? How best to strike a utilitarian balance between these competing factors has become a serious bone of contention.</p>\n<p><strong>F</strong> Even the deforestation argument isn't as straightforward as it seems. Oil palm plantations produce at least four and potentially up to ten times more oil per hectare than soybean, rapeseed, sunflower or other competing oils. That immensely high yield &mdash; which is predominantly what makes it so profitable &mdash; is potentially also an ecological benefit. If ten times more palm oil can be produced from a patch of land than any competing oil, then ten times more land would need to be cleared in order to produce the same volume of oil from that competitor.</p>\n<p>As for the question of carbon emissions, the issue really depends on what oil palm trees are replacing. Crops vary in the degree to which they sequester carbon &mdash; in other words, the amount of carbon they capture from the atmosphere and store within the plant. The more carbon a plant sequesters, the more it reduces the effect of climate change. As Shankar explains: '[Palm oil production] actually sequesters more carbon in some ways than other alternatives. [&hellip;] Of course, if you're cutting down virgin forest it's terrible &mdash; that's what's happening in Indonesia and Malaysia, it's been allowed to get out of hand. But if it's replacing rice, for example, it might actually sequester more carbon.'</p>\n<p><strong>G</strong> The industry is now regulated by a group called the Roundtable on Sustainable Palm Oil (RSPO), consisting of palm growers, retailers, product manufacturers, and other interested parties. Over the past decade or so, an agreement has gradually been reached regarding standards that producers of palm oil have to meet in order for their product to be regarded as officially 'sustainable'. The RSPO insists upon no virgin forest clearing, transparency and regular assessment of carbon stocks, among other criteria. Only once these requirements are fully satisfied is the oil allowed to be sold as certified sustainable palm oil (CSPO). Recent figures show that the RSPO now certifies around 12 million tonnes of palm oil annually, equivalent to roughly 21 percent of the world's total palm oil production.</p>\n<p><strong>H</strong> There is even hope that oil palm plantations might not need to be such sterile monocultures, or 'green deserts', as Ellwood describes them. New research at Ellwood's lab hints at one plant which might make all the difference. The bird's nest fern (<em>Asplenium nidus</em>) grows on trees in an epiphytic fashion (meaning it's dependent on the tree only for support, not for nutrients), and is native to many tropical regions, where as a keystone species it performs a vital ecological role. Ellwood believes that reintroducing the bird's nest fern into oil palm plantations could potentially allow these areas to recover their biodiversity, providing a home for all manner of species, from fungi and bacteria, to invertebrates such as insects, amphibians, reptiles and even mammals.</p>\n\n<h3>READING PASSAGE 3</h3>\n<h3 class=\"passage-title\">Building the Skyline: The Birth and Growth of Manhattan's Skyscrapers</h3>\n<p><em>Katharine L. Shester reviews a book by Jason Barr about the development of New York City</em></p>\n<p>In <em>Building the Skyline</em>, Jason Barr takes the reader through a detailed history of New York City. The book combines geology, history, economics, and a lot of data to explain why business clusters developed where they did and how the early decisions of workers and firms shaped the skyline we see today. <em>Building the Skyline</em> is organized into two distinct parts. The first is primarily historical and addresses New York's settlement and growth from 1609 to 1900; the second deals primarily with the 20th century and is a compilation of chapters commenting on different aspects of New York's urban development. The tone and organization of the book changes somewhat between the first and second parts, as the latter chapters incorporate aspects of Barr's related research papers.</p>\n<p>Barr begins chapter one by taking the reader on a 'helicopter time-machine' ride &mdash; giving a fascinating account of how the New York landscape in 1609 might have looked from the sky. He then moves on to a subterranean walking tour of the city, indicating the location of rock and water below the subsoil, before taking the reader back to the surface. His love of the city comes through as he describes various fun facts about the location of the New York residence of early 19th-century vice-president Aaron Burr as well as a number of legends about the city.</p>\n<p>Chapters two and three take the reader up to the Civil War (1861&ndash;1865), with chapter two focusing on the early development of land and the implementation of a grid system in 1811. Chapter three focuses on land use before the Civil War. Both chapters are informative and well researched and set the stage for the economic analysis that comes later in the book. I would have liked Barr to expand upon his claim that existing tenements* prevented skyscrapers in certain neighborhoods because 'likely no skyscraper developer was interested in performing the necessary \"slum clearance\"'. Later in the book, Barr makes the claim that the depth of bedrock** was not a limiting factor for developers, as foundation costs were a small fraction of the cost of development. At first glance, it is not obvious why slum clearance would be limiting, while more expensive foundations would not.</p>\n<p>Chapter four focuses on immigration and the location of neighborhoods and tenements in the late 19th century. Barr identifies four primary immigrant enclaves and analyzes their locations in terms of the amenities available in the area. Most of these enclaves were located on the least valuable land, between the industries located on the waterfront and the wealthy neighborhoods bordering Central Park.</p>\n<p>Part two of the book begins with a discussion of the economics of skyscraper height. In chapter five, Barr distinguishes between engineering height, economic height, and developer height &mdash; where engineering height is the tallest building that can be safely made at a given time, economic height is the height that is most efficient from society's point of view, and developer height is the actual height chosen by the developer, who is attempting to maximize return on investment.</p>\n<p>Chapter five also has an interesting discussion of the technological advances that led to the construction of skyscrapers. For example, the introduction of iron and steel skeletal frames made thick, load-bearing walls unnecessary, expanding the usable square footage of buildings and increasing the use of windows and availability of natural light. Chapter six then presents data on building height throughout the 20th century and uses regression analysis to 'predict' building construction. While less technical than the research paper on which the chapter is based, it is probably more technical than would be preferred by a general audience.</p>\n<p>Chapter seven tackles the 'bedrock myth', the assumption that the absence of bedrock close to the surface between Downtown and Midtown New York is the reason for skyscrapers not being built between the two urban centers. Rather, Barr argues that while deeper bedrock does increase foundation costs, these costs were neither prohibitively high nor were they large compared to the overall cost of building a skyscraper. What I enjoyed the most about this chapter was Barr's discussion of how foundations are actually built. He describes the use of caissons, which enable workers to dig down for considerable distances, often below the water table, until they reach bedrock. Barr's thorough technological history discusses not only how caissons work, but also the dangers involved. While this chapter references empirical research papers, it is a relatively easy read.</p>\n<p>Chapters eight and nine focus on the birth of Midtown and the building boom of the 1920s. Chapter eight contains lengthy discussions of urban economic theory that may serve as a distraction to readers primarily interested in New York. However, they would be well-suited for undergraduates learning about the economics of cities. In the next chapter, Barr considers two of the primary explanations for the building boom of the 1920s &mdash; the first being exuberance, and the second being financing. He uses data to assess the viability of these two explanations and finds that supply and demand factors explain much of the development of the 1920s; though it enabled the boom, cheap credit was not, he argues, the primary cause.</p>\n<p>In the final chapter (chapter 10), Barr discusses another of his empirical papers that estimates Manhattan land values from the mid-19th century to the present day. The data work that went into these estimations is particularly impressive. Toward the end of the chapter, Barr assesses 'whether skyscrapers are a cause or an effect of high land values'. He finds that changes in land values predict future building height, but the reverse is not true. The book ends with an epilogue, in which Barr discusses the impact of climate change on the city and makes policy suggestions for New York going forward.</p>\n<p><em>* a tenement: a multi-occupancy building of any sort, but particularly a run-down apartment building or slum building</em><br>\n<em>** bedrock: the solid, hard rock in the ground that lies under a loose layer of soil</em></p>\n</div>",
+        "questions": [
+          {
+            "order": 41,
+            "text": "[The thylacine] Complete the notes below. Choose ONE WORD ONLY from the passage for each answer.\nAppearance and behaviour: ate an entirely ___ diet",
+            "question_type": "gap_fill",
+            "correct_answer": "carnivorous",
+            "options": [],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 42,
+            "text": "Probably depended mainly on ___ when hunting",
+            "question_type": "gap_fill",
+            "correct_answer": "scent",
+            "options": [],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 43,
+            "text": "Young spent first months of life inside its mother's ___",
+            "question_type": "gap_fill",
+            "correct_answer": "pouch",
+            "options": [],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 44,
+            "text": "Decline and extinction: last evidence in mainland Australia is a 3,100-year-old ___",
+            "question_type": "gap_fill",
+            "correct_answer": "fossil",
+            "options": [],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 45,
+            "text": "Reduction in ___ and available sources of food were partly responsible for decline in Tasmania",
+            "question_type": "gap_fill",
+            "correct_answer": "habitat",
+            "options": [],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 46,
+            "text": "Significant numbers of thylacines were killed by humans from the 1830s onwards.",
+            "question_type": "tfng",
+            "correct_answer": "TRUE",
+            "options": [
+              {
+                "key": "TRUE",
+                "text": "TRUE"
+              },
+              {
+                "key": "FALSE",
+                "text": "FALSE"
+              },
+              {
+                "key": "NOT GIVEN",
+                "text": "NOT GIVEN"
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 47,
+            "text": "Several thylacines were born in zoos during the late 1800s.",
+            "question_type": "tfng",
+            "correct_answer": "FALSE",
+            "options": [
+              {
+                "key": "TRUE",
+                "text": "TRUE"
+              },
+              {
+                "key": "FALSE",
+                "text": "FALSE"
+              },
+              {
+                "key": "NOT GIVEN",
+                "text": "NOT GIVEN"
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 48,
+            "text": "John Gould's prediction about the thylacine surprised some biologists.",
+            "question_type": "tfng",
+            "correct_answer": "NOT GIVEN",
+            "options": [
+              {
+                "key": "TRUE",
+                "text": "TRUE"
+              },
+              {
+                "key": "FALSE",
+                "text": "FALSE"
+              },
+              {
+                "key": "NOT GIVEN",
+                "text": "NOT GIVEN"
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 49,
+            "text": "In the early 1900s, many scientists became worried about the possible extinction of the thylacine.",
+            "question_type": "tfng",
+            "correct_answer": "FALSE",
+            "options": [
+              {
+                "key": "TRUE",
+                "text": "TRUE"
+              },
+              {
+                "key": "FALSE",
+                "text": "FALSE"
+              },
+              {
+                "key": "NOT GIVEN",
+                "text": "NOT GIVEN"
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 50,
+            "text": "T. T. Flynn's proposal to rehome captive thylacines on an island proved to be impractical.",
+            "question_type": "tfng",
+            "correct_answer": "NOT GIVEN",
+            "options": [
+              {
+                "key": "TRUE",
+                "text": "TRUE"
+              },
+              {
+                "key": "FALSE",
+                "text": "FALSE"
+              },
+              {
+                "key": "NOT GIVEN",
+                "text": "NOT GIVEN"
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 51,
+            "text": "There were still reasonable numbers of thylacines in existence when a piece of legislation protecting the species during their breeding season was passed.",
+            "question_type": "tfng",
+            "correct_answer": "FALSE",
+            "options": [
+              {
+                "key": "TRUE",
+                "text": "TRUE"
+              },
+              {
+                "key": "FALSE",
+                "text": "FALSE"
+              },
+              {
+                "key": "NOT GIVEN",
+                "text": "NOT GIVEN"
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 52,
+            "text": "From 1930 to 1936, the only known living thylacines were all in captivity.",
+            "question_type": "tfng",
+            "correct_answer": "TRUE",
+            "options": [
+              {
+                "key": "TRUE",
+                "text": "TRUE"
+              },
+              {
+                "key": "FALSE",
+                "text": "FALSE"
+              },
+              {
+                "key": "NOT GIVEN",
+                "text": "NOT GIVEN"
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 53,
+            "text": "Attempts to find living thylacines are now rarely made.",
+            "question_type": "tfng",
+            "correct_answer": "NOT GIVEN",
+            "options": [
+              {
+                "key": "TRUE",
+                "text": "TRUE"
+              },
+              {
+                "key": "FALSE",
+                "text": "FALSE"
+              },
+              {
+                "key": "NOT GIVEN",
+                "text": "NOT GIVEN"
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 54,
+            "text": "[Palm oil] Reading Passage 2 has eight sections, A-H. Which section contains the following information?\nexamples of a range of potential environmental advantages of oil palm tree cultivation",
+            "question_type": "matching",
+            "correct_answer": "F",
+            "options": [
+              {
+                "key": "A",
+                "text": "Paragraph A"
+              },
+              {
+                "key": "B",
+                "text": "Paragraph B"
+              },
+              {
+                "key": "C",
+                "text": "Paragraph C"
+              },
+              {
+                "key": "D",
+                "text": "Paragraph D"
+              },
+              {
+                "key": "E",
+                "text": "Paragraph E"
+              },
+              {
+                "key": "F",
+                "text": "Paragraph F"
+              },
+              {
+                "key": "G",
+                "text": "Paragraph G"
+              },
+              {
+                "key": "H",
+                "text": "Paragraph H"
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 55,
+            "text": "description of an organisation which controls the environmental impact of palm oil production",
+            "question_type": "matching",
+            "correct_answer": "G",
+            "options": [
+              {
+                "key": "A",
+                "text": "Paragraph A"
+              },
+              {
+                "key": "B",
+                "text": "Paragraph B"
+              },
+              {
+                "key": "C",
+                "text": "Paragraph C"
+              },
+              {
+                "key": "D",
+                "text": "Paragraph D"
+              },
+              {
+                "key": "E",
+                "text": "Paragraph E"
+              },
+              {
+                "key": "F",
+                "text": "Paragraph F"
+              },
+              {
+                "key": "G",
+                "text": "Paragraph G"
+              },
+              {
+                "key": "H",
+                "text": "Paragraph H"
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 56,
+            "text": "examples of the widespread global use of palm oil",
+            "question_type": "matching",
+            "correct_answer": "A",
+            "options": [
+              {
+                "key": "A",
+                "text": "Paragraph A"
+              },
+              {
+                "key": "B",
+                "text": "Paragraph B"
+              },
+              {
+                "key": "C",
+                "text": "Paragraph C"
+              },
+              {
+                "key": "D",
+                "text": "Paragraph D"
+              },
+              {
+                "key": "E",
+                "text": "Paragraph E"
+              },
+              {
+                "key": "F",
+                "text": "Paragraph F"
+              },
+              {
+                "key": "G",
+                "text": "Paragraph G"
+              },
+              {
+                "key": "H",
+                "text": "Paragraph H"
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 57,
+            "text": "reference to a particular species which could benefit the ecosystem of oil palm plantations",
+            "question_type": "matching",
+            "correct_answer": "H",
+            "options": [
+              {
+                "key": "A",
+                "text": "Paragraph A"
+              },
+              {
+                "key": "B",
+                "text": "Paragraph B"
+              },
+              {
+                "key": "C",
+                "text": "Paragraph C"
+              },
+              {
+                "key": "D",
+                "text": "Paragraph D"
+              },
+              {
+                "key": "E",
+                "text": "Paragraph E"
+              },
+              {
+                "key": "F",
+                "text": "Paragraph F"
+              },
+              {
+                "key": "G",
+                "text": "Paragraph G"
+              },
+              {
+                "key": "H",
+                "text": "Paragraph H"
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 58,
+            "text": "figures illustrating the rapid expansion of the palm oil industry",
+            "question_type": "matching",
+            "correct_answer": "B",
+            "options": [
+              {
+                "key": "A",
+                "text": "Paragraph A"
+              },
+              {
+                "key": "B",
+                "text": "Paragraph B"
+              },
+              {
+                "key": "C",
+                "text": "Paragraph C"
+              },
+              {
+                "key": "D",
+                "text": "Paragraph D"
+              },
+              {
+                "key": "E",
+                "text": "Paragraph E"
+              },
+              {
+                "key": "F",
+                "text": "Paragraph F"
+              },
+              {
+                "key": "G",
+                "text": "Paragraph G"
+              },
+              {
+                "key": "H",
+                "text": "Paragraph H"
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 59,
+            "text": "an economic justification for not opposing the palm oil industry",
+            "question_type": "matching",
+            "correct_answer": "E",
+            "options": [
+              {
+                "key": "A",
+                "text": "Paragraph A"
+              },
+              {
+                "key": "B",
+                "text": "Paragraph B"
+              },
+              {
+                "key": "C",
+                "text": "Paragraph C"
+              },
+              {
+                "key": "D",
+                "text": "Paragraph D"
+              },
+              {
+                "key": "E",
+                "text": "Paragraph E"
+              },
+              {
+                "key": "F",
+                "text": "Paragraph F"
+              },
+              {
+                "key": "G",
+                "text": "Paragraph G"
+              },
+              {
+                "key": "H",
+                "text": "Paragraph H"
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 60,
+            "text": "examples of creatures badly affected by the establishment of oil palm plantations",
+            "question_type": "matching",
+            "correct_answer": "C",
+            "options": [
+              {
+                "key": "A",
+                "text": "Paragraph A"
+              },
+              {
+                "key": "B",
+                "text": "Paragraph B"
+              },
+              {
+                "key": "C",
+                "text": "Paragraph C"
+              },
+              {
+                "key": "D",
+                "text": "Paragraph D"
+              },
+              {
+                "key": "E",
+                "text": "Paragraph E"
+              },
+              {
+                "key": "F",
+                "text": "Paragraph F"
+              },
+              {
+                "key": "G",
+                "text": "Paragraph G"
+              },
+              {
+                "key": "H",
+                "text": "Paragraph H"
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 61,
+            "text": "[Questions 21 and 22] Choose TWO letters, A-E.\nWhich TWO statements are made about the Roundtable on Sustainable Palm Oil (RSPO)?",
+            "question_type": "mcq",
+            "correct_answer": "B",
+            "options": [
+              {
+                "key": "A",
+                "text": "Its membership has grown steadily over the course of the last decade."
+              },
+              {
+                "key": "B",
+                "text": "It demands that certified producers be open and honest about their practices."
+              },
+              {
+                "key": "C",
+                "text": "It took several years to establish its set of criteria for sustainable palm oil certification."
+              },
+              {
+                "key": "D",
+                "text": "Its regulations regarding sustainability are stricter than those governing other industries."
+              },
+              {
+                "key": "E",
+                "text": "It was formed at the request of environmentalists concerned about the loss of virgin forests."
+              }
+            ],
+            "explanation": "Either order accepted together with Q22: B & C.",
+            "word_limit": 0
+          },
+          {
+            "order": 62,
+            "text": "Which TWO statements are made about the Roundtable on Sustainable Palm Oil (RSPO)? (second answer)",
+            "question_type": "mcq",
+            "correct_answer": "C",
+            "options": [
+              {
+                "key": "A",
+                "text": "Its membership has grown steadily over the course of the last decade."
+              },
+              {
+                "key": "B",
+                "text": "It demands that certified producers be open and honest about their practices."
+              },
+              {
+                "key": "C",
+                "text": "It took several years to establish its set of criteria for sustainable palm oil certification."
+              },
+              {
+                "key": "D",
+                "text": "Its regulations regarding sustainability are stricter than those governing other industries."
+              },
+              {
+                "key": "E",
+                "text": "It was formed at the request of environmentalists concerned about the loss of virgin forests."
+              }
+            ],
+            "explanation": "Either order accepted together with Q21: B & C.",
+            "word_limit": 0
+          },
+          {
+            "order": 63,
+            "text": "Complete the sentences below. Choose NO MORE THAN TWO WORDS from the passage for each answer.\nOne advantage of palm oil for manufacturers is that it stays ___ even when not refrigerated.",
+            "question_type": "gap_fill",
+            "correct_answer": "solid",
+            "options": [],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 64,
+            "text": "The ___ is the best known of the animals suffering habitat loss as a result of the spread of oil palm plantations.",
+            "question_type": "gap_fill",
+            "correct_answer": "Sumatran orangutan",
+            "options": [],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 65,
+            "text": "As one of its criteria for the certification of sustainable palm oil, the RSPO insists that growers check ___ on a routine basis.",
+            "question_type": "gap_fill",
+            "correct_answer": "carbon stocks",
+            "options": [],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 66,
+            "text": "Ellwood and his researchers are looking into whether the bird's nest fern could restore ___ in areas where oil palm trees are grown.",
+            "question_type": "gap_fill",
+            "correct_answer": "biodiversity",
+            "options": [],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 67,
+            "text": "[Building the Skyline: The Birth and Growth of Manhattan's Skyscrapers] Choose the correct letter, A, B, C or D.\nWhat point does Shester make about Barr's book in the first paragraph?",
+            "question_type": "mcq",
+            "correct_answer": "D",
+            "options": [
+              {
+                "key": "A",
+                "text": "It gives a highly original explanation for urban development."
+              },
+              {
+                "key": "B",
+                "text": "Elements of Barr's research papers are incorporated throughout the book."
+              },
+              {
+                "key": "C",
+                "text": "Other books that are available on the subject have taken a different approach."
+              },
+              {
+                "key": "D",
+                "text": "It covers a range of factors that affected the development of New York."
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 68,
+            "text": "How does Shester respond to the information in the book about tenements?",
+            "question_type": "mcq",
+            "correct_answer": "B",
+            "options": [
+              {
+                "key": "A",
+                "text": "She describes the reasons for Barr's interest."
+              },
+              {
+                "key": "B",
+                "text": "She indicates a potential problem with Barr's analysis."
+              },
+              {
+                "key": "C",
+                "text": "She compares Barr's conclusion with that of other writers."
+              },
+              {
+                "key": "D",
+                "text": "She provides details about the sources Barr used for his research."
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 69,
+            "text": "What does Shester say about chapter six of the book?",
+            "question_type": "mcq",
+            "correct_answer": "C",
+            "options": [
+              {
+                "key": "A",
+                "text": "It contains conflicting data."
+              },
+              {
+                "key": "B",
+                "text": "It focuses too much on possible trends."
+              },
+              {
+                "key": "C",
+                "text": "It is too specialised for most readers."
+              },
+              {
+                "key": "D",
+                "text": "It draws on research that is out of date."
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 70,
+            "text": "What does Shester suggest about the chapters focusing on the 1920s building boom?",
+            "question_type": "mcq",
+            "correct_answer": "D",
+            "options": [
+              {
+                "key": "A",
+                "text": "The information should have been organised differently."
+              },
+              {
+                "key": "B",
+                "text": "More facts are needed about the way construction was financed."
+              },
+              {
+                "key": "C",
+                "text": "The explanation that is given for the building boom is unlikely."
+              },
+              {
+                "key": "D",
+                "text": "Some parts will have limited appeal to certain people."
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 71,
+            "text": "What impresses Shester the most about the chapter on land values?",
+            "question_type": "mcq",
+            "correct_answer": "C",
+            "options": [
+              {
+                "key": "A",
+                "text": "the broad time period that is covered"
+              },
+              {
+                "key": "B",
+                "text": "the interesting questions that Barr asks"
+              },
+              {
+                "key": "C",
+                "text": "the nature of the research into the topic"
+              },
+              {
+                "key": "D",
+                "text": "the recommendations Barr makes for the future"
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 72,
+            "text": "The description in the first chapter of how New York probably looked from the air in the early 1600s lacks interest.",
+            "question_type": "tfng",
+            "correct_answer": "NO",
+            "options": [
+              {
+                "key": "YES",
+                "text": "YES"
+              },
+              {
+                "key": "NO",
+                "text": "NO"
+              },
+              {
+                "key": "NOT GIVEN",
+                "text": "NOT GIVEN"
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 73,
+            "text": "Chapters two and three prepare the reader well for material yet to come.",
+            "question_type": "tfng",
+            "correct_answer": "YES",
+            "options": [
+              {
+                "key": "YES",
+                "text": "YES"
+              },
+              {
+                "key": "NO",
+                "text": "NO"
+              },
+              {
+                "key": "NOT GIVEN",
+                "text": "NOT GIVEN"
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 74,
+            "text": "The biggest problem for many nineteenth-century New York immigrant neighbourhoods was a lack of amenities.",
+            "question_type": "tfng",
+            "correct_answer": "NOT GIVEN",
+            "options": [
+              {
+                "key": "YES",
+                "text": "YES"
+              },
+              {
+                "key": "NO",
+                "text": "NO"
+              },
+              {
+                "key": "NOT GIVEN",
+                "text": "NOT GIVEN"
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 75,
+            "text": "In the nineteenth century, New York's immigrant neighbourhoods tended to concentrate around the harbour.",
+            "question_type": "tfng",
+            "correct_answer": "NO",
+            "options": [
+              {
+                "key": "YES",
+                "text": "YES"
+              },
+              {
+                "key": "NO",
+                "text": "NO"
+              },
+              {
+                "key": "NOT GIVEN",
+                "text": "NOT GIVEN"
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 76,
+            "text": "[The bedrock myth] Complete the summary using the list of phrases, A-J, below.\nIn chapter seven, Barr indicates how the lack of bedrock close to the surface does not explain why skyscrapers are absent from ___.",
+            "question_type": "matching",
+            "correct_answer": "H",
+            "options": [
+              {
+                "key": "A",
+                "text": "development plans"
+              },
+              {
+                "key": "B",
+                "text": "deep excavations"
+              },
+              {
+                "key": "C",
+                "text": "great distance"
+              },
+              {
+                "key": "D",
+                "text": "excessive expense"
+              },
+              {
+                "key": "E",
+                "text": "impossible tasks"
+              },
+              {
+                "key": "F",
+                "text": "associated risks"
+              },
+              {
+                "key": "G",
+                "text": "water level"
+              },
+              {
+                "key": "H",
+                "text": "specific areas"
+              },
+              {
+                "key": "I",
+                "text": "total expenditure"
+              },
+              {
+                "key": "J",
+                "text": "construction guidelines"
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 77,
+            "text": "He points out that although the cost of foundations increases when bedrock is deep below the surface, this cannot be regarded as ___,",
+            "question_type": "matching",
+            "correct_answer": "D",
+            "options": [
+              {
+                "key": "A",
+                "text": "development plans"
+              },
+              {
+                "key": "B",
+                "text": "deep excavations"
+              },
+              {
+                "key": "C",
+                "text": "great distance"
+              },
+              {
+                "key": "D",
+                "text": "excessive expense"
+              },
+              {
+                "key": "E",
+                "text": "impossible tasks"
+              },
+              {
+                "key": "F",
+                "text": "associated risks"
+              },
+              {
+                "key": "G",
+                "text": "water level"
+              },
+              {
+                "key": "H",
+                "text": "specific areas"
+              },
+              {
+                "key": "I",
+                "text": "total expenditure"
+              },
+              {
+                "key": "J",
+                "text": "construction guidelines"
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 78,
+            "text": "especially when compared to ___.",
+            "question_type": "matching",
+            "correct_answer": "I",
+            "options": [
+              {
+                "key": "A",
+                "text": "development plans"
+              },
+              {
+                "key": "B",
+                "text": "deep excavations"
+              },
+              {
+                "key": "C",
+                "text": "great distance"
+              },
+              {
+                "key": "D",
+                "text": "excessive expense"
+              },
+              {
+                "key": "E",
+                "text": "impossible tasks"
+              },
+              {
+                "key": "F",
+                "text": "associated risks"
+              },
+              {
+                "key": "G",
+                "text": "water level"
+              },
+              {
+                "key": "H",
+                "text": "specific areas"
+              },
+              {
+                "key": "I",
+                "text": "total expenditure"
+              },
+              {
+                "key": "J",
+                "text": "construction guidelines"
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 79,
+            "text": "A particularly enjoyable part of the chapter was Barr's account of how foundations are built. He describes not only how ___ are made possible by the use of caissons,",
+            "question_type": "matching",
+            "correct_answer": "B",
+            "options": [
+              {
+                "key": "A",
+                "text": "development plans"
+              },
+              {
+                "key": "B",
+                "text": "deep excavations"
+              },
+              {
+                "key": "C",
+                "text": "great distance"
+              },
+              {
+                "key": "D",
+                "text": "excessive expense"
+              },
+              {
+                "key": "E",
+                "text": "impossible tasks"
+              },
+              {
+                "key": "F",
+                "text": "associated risks"
+              },
+              {
+                "key": "G",
+                "text": "water level"
+              },
+              {
+                "key": "H",
+                "text": "specific areas"
+              },
+              {
+                "key": "I",
+                "text": "total expenditure"
+              },
+              {
+                "key": "J",
+                "text": "construction guidelines"
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          },
+          {
+            "order": 80,
+            "text": "but he also discusses their ___.",
+            "question_type": "matching",
+            "correct_answer": "F",
+            "options": [
+              {
+                "key": "A",
+                "text": "development plans"
+              },
+              {
+                "key": "B",
+                "text": "deep excavations"
+              },
+              {
+                "key": "C",
+                "text": "great distance"
+              },
+              {
+                "key": "D",
+                "text": "excessive expense"
+              },
+              {
+                "key": "E",
+                "text": "impossible tasks"
+              },
+              {
+                "key": "F",
+                "text": "associated risks"
+              },
+              {
+                "key": "G",
+                "text": "water level"
+              },
+              {
+                "key": "H",
+                "text": "specific areas"
+              },
+              {
+                "key": "I",
+                "text": "total expenditure"
+              },
+              {
+                "key": "J",
+                "text": "construction guidelines"
+              }
+            ],
+            "explanation": "",
+            "word_limit": 0
+          }
+        ]
+      },
+      {
+        "title": "Writing",
+        "section_type": "writing",
+        "order": 3,
+        "duration_minutes": 60,
+        "content": "<div style='line-height:1.8'>\n<h3>Writing Task 1</h3>\n<p>You should spend about <strong>20 minutes</strong> on this task.</p>\n<p>The chart below gives information about how families in one country spent their weekly income in 1968 and in 2018.</p>\n<p>Summarise the information by selecting and reporting the main features, and make comparisons where relevant.</p>\n<p>Write at least <strong>150 words</strong>.</p>\n<h3>Writing Task 2</h3>\n<p>You should spend about <strong>40 minutes</strong> on this task.</p>\n<p><em>Some people believe that professionals, such as doctors and engineers, should be required to work in the country where they did their training. Others believe they should be free to work in another country if they wish.<br>Discuss both these views and give your own opinion.</em></p>\n<p>Give reasons for your answer and include any relevant examples from your own knowledge or experience.</p>\n<p>Write at least <strong>250 words</strong>.</p>\n</div>",
+        "questions": [
+          {
+            "order": 81,
+            "text": "The chart below gives information about how families in one country spent their weekly income in 1968 and in 2018. Summarise the information by selecting and reporting the main features, and make comparisons where relevant. Write at least 150 words.",
+            "question_type": "writing_task",
+            "correct_answer": "",
+            "options": [],
+            "explanation": "",
+            "word_limit": 150
+          },
+          {
+            "order": 82,
+            "text": "Some people believe that professionals, such as doctors and engineers, should be required to work in the country where they did their training. Others believe they should be free to work in another country if they wish. Discuss both these views and give your own opinion. Give reasons for your answer and include any relevant examples from your own knowledge or experience. Write at least 250 words.",
+            "question_type": "writing_task",
+            "correct_answer": "",
+            "options": [],
+            "explanation": "",
+            "word_limit": 250
+          }
+        ]
+      }
+    ]
+  }
+]
