@@ -202,6 +202,13 @@ LOGGING = {
     },
 }
 
+# ── Speaking section toggle ─────────────────────────────────────────────
+# Temporarily off site-wide: the study center currently conducts the
+# Speaking part in person themselves. Flip back to True to re-enable it
+# in the online exam flow — no data is deleted, existing Speaking
+# sections/questions just stop being shown and scored.
+SPEAKING_ENABLED = False
+
 # ── Error tracking (Sentry) — no-op unless SENTRY_DSN is set in .env ───────
 SENTRY_DSN = os.getenv('SENTRY_DSN', '')
 if SENTRY_DSN:

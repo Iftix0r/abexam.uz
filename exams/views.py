@@ -1,5 +1,6 @@
 from itertools import groupby
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.cache import cache
@@ -92,7 +93,10 @@ def calc_writing_band(text):
 def present_section_types(exam):
     """Section types the exam actually has, so a legitimate 0.0 band isn't
     mistaken for a section that doesn't exist in the exam."""
-    return set(exam.sections.values_list('section_type', flat=True))
+    types = set(exam.sections.values_list('section_type', flat=True))
+    if not settings.SPEAKING_ENABLED:
+        types.discard('speaking')
+    return types
 
 
 def compute_overall_band(band_by_type, present_types):
@@ -178,6 +182,8 @@ class TakeExamView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         sections = list(self.object.sections.prefetch_related('questions').all())
+        if not settings.SPEAKING_ENABLED:
+            sections = [s for s in sections if s.section_type != 'speaking']
         for section in sections:
             questions = list(section.questions.all())
             section.render_blocks = _build_render_blocks(questions)
@@ -302,6 +308,8 @@ class SubmitExamView(LoginRequiredMixin, View):
 
         # Fetch sections once and reuse
         sections = list(exam.sections.prefetch_related('questions').order_by('order'))
+        if not settings.SPEAKING_ENABLED:
+            sections = [s for s in sections if s.section_type != 'speaking']
 
         # (question, user_answer, is_correct) captured here so the second
         # pass building UserAnswer rows can reuse it instead of recomputing
