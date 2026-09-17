@@ -112,17 +112,10 @@
             line-height: 1.8;
             font-size: 0.93rem;
         }
-        /* Listening has no passage text to read, just the audio player —
-           a side-by-side 50/50 split left most of this column empty below
-           the small audio box. Stack it as a compact bar on top instead,
-           full width, so the questions panel gets the rest of the screen. */
-        .section-content[data-section-type="listening"] {
-            flex-direction: column;
-        }
-        .section-content[data-section-type="listening"] .passage-panel {
-            width: 100%;
-            flex: 0 0 auto;
-        }
+        /* Listening's audio player lives in the header now (see
+           .header-audio) — this panel has nothing left to show, so it's
+           dropped entirely and the questions panel takes the full width. */
+        .section-content[data-section-type="listening"] .passage-panel,
         .section-content[data-section-type="listening"] .panel-resizer {
             display: none;
         }
@@ -371,44 +364,36 @@
         }
         .submit-btn:hover { background: var(--primary-dark); }
 
-        /* ─── LISTENING AUDIO PLAYER ────────────────────── */
-        .listening-panel {
-            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
-            border: 1.5px solid #1565c0;
-            border-radius: 10px;
-            padding: 1.25rem 1.5rem;
-            margin-bottom: 1.5rem;
+        /* Listening's audio player now lives in the header — see
+           .header-audio and friends further down. */
+
+        /* ─── COMPACT HEADER AUDIO (Listening) ───────────── */
+        .header-audio {
+            display: none;
+            align-items: center;
+            gap: 7px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 20px;
+            padding: 5px 12px;
+            height: 36px;
         }
-        .listening-panel h4 { color: #0d47a1; font-size: 13px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 7px; }
-        .custom-audio-player { display: flex; flex-direction: column; gap: 10px; }
-        .audio-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-        .audio-play-btn {
-            display: flex; align-items: center; gap: 7px;
-            background: #1565c0; color: #fff;
-            border: none; border-radius: 6px; padding: 9px 18px;
-            font-weight: 700; font-size: 13px; cursor: pointer; transition: 0.2s;
+        .header-audio.active { display: flex; }
+        .header-audio-btn {
+            background: #1565c0; color: #fff; border: none; border-radius: 50%;
+            width: 24px; height: 24px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
         }
-        .audio-play-btn:hover { background: #0d47a1; }
-        .audio-play-btn:disabled { background: #90a4ae; cursor: not-allowed; }
-        .plays-left-badge {
-            background: #fff;
-            border: 1.5px solid #1565c0;
-            color: #1565c0;
-            border-radius: 12px;
-            padding: 3px 10px;
-            font-size: 11px;
-            font-weight: 700;
+        .header-audio-btn:hover { background: #0d47a1; }
+        .header-audio-btn:disabled { background: #546e7a; cursor: not-allowed; }
+        .header-audio-progress {
+            width: 90px; height: 4px; background: rgba(255,255,255,0.2);
+            border-radius: 3px; cursor: pointer; position: relative;
         }
-        .plays-left-badge.used { border-color: #b0bec5; color: #78909c; }
-        .audio-progress-wrap {
-            display: flex; align-items: center; gap: 8px; margin-top: 4px;
-        }
-        .audio-progress {
-            flex: 1; height: 6px; background: #b0bec5; border-radius: 3px; overflow: hidden; cursor: pointer;
-        }
-        .audio-progress-bar { height: 100%; background: #1565c0; border-radius: 3px; width: 0%; transition: width 0.5s linear; }
-        .audio-time { font-size: 11px; color: #455a64; font-weight: 600; min-width: 80px; }
-        .listening-note { font-size: 11px; color: #546e7a; margin-top: 6px; font-style: italic; }
+        .header-audio-progress-bar { height: 100%; background: #64b5f6; border-radius: 3px; width: 0%; transition: width 0.5s linear; }
+        .header-audio-time { font-size: 10px; color: #cfd8dc; min-width: 62px; }
+        .header-audio-badge { font-size: 9px; color: #90a4ae; background: rgba(255,255,255,0.08); padding: 2px 7px; border-radius: 8px; white-space: nowrap; }
+        .header-audio-badge.used { color: #607d8b; }
+        .header-audio-label { font-size: 10px; color: #90a4ae; white-space: nowrap; max-width: 120px; overflow: hidden; text-overflow: ellipsis; }
 
         /* ─── WRITING TASK ──────────────────────────────── */
         .writing-task-bar {
@@ -817,6 +802,30 @@
         <span id="countdown">00:00:00</span>
     </div>
 
+    {% for section in sections %}{% if section.section_type == 'listening' %}
+    <div class="header-audio" id="header-audio-{{ section.id }}">
+        {% if section.audio_file %}
+        <audio id="audio-el-{{ section.id }}" src="{{ section.audio_file.url }}" preload="auto"></audio>
+        <button class="header-audio-btn" id="play-btn-{{ section.id }}" onclick="playListeningAudio('{{ section.id }}')" title="Audio">
+            <i data-lucide="headphones" style="width:13px;"></i>
+        </button>
+        <div class="header-audio-progress" id="progress-wrap-{{ section.id }}" onclick="seekAudio('{{ section.id }}', event)">
+            <div class="header-audio-progress-bar" id="progress-{{ section.id }}"></div>
+        </div>
+        <span class="header-audio-time" id="audio-time-{{ section.id }}">0:00/0:00</span>
+        <span class="header-audio-badge" id="plays-left-{{ section.id }}">1x</span>
+        <span class="header-audio-label" id="play-label-{{ section.id }}"></span>
+        {% else %}
+        <button class="header-audio-btn" id="play-btn-{{ section.id }}" onclick="speakTranscript('{{ section.id }}')" title="AI ovoz (beta)">
+            <i data-lucide="headphones" style="width:13px;"></i>
+        </button>
+        <span class="header-audio-badge" id="plays-left-{{ section.id }}">1x (AI)</span>
+        <span class="header-audio-label" id="play-label-{{ section.id }}"></span>
+        <div style="display:none;" id="transcript-{{ section.id }}">{{ section.content|safe }}</div>
+        {% endif %}
+    </div>
+    {% endif %}{% endfor %}
+
     {% if request.user.is_superuser %}
     <button id="demoFillBtn" onclick="demoFillAndSubmit()" title="Superadmin QA: to'g'ri javoblarni avtomatik to'ldiradi (yubormaydi) — 'Yakunlash'ni o'zingiz bosasiz" class="header-demo-btn" style="background:#6a1b9a; color:#fff; border:none; border-radius:6px; padding:0 14px; height:38px; font-size:12px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:6px;">
         🧪 Demo to'ldirish
@@ -911,54 +920,7 @@
             </div>
 
             {% if section.section_type == 'listening' %}
-            <!-- LISTENING: Custom one-play audio player -->
-            <div class="listening-panel">
-                <h4><i data-lucide="headphones" style="width:15px;"></i> AUDIO RECORDING</h4>
-                {% if section.audio_file %}
-                <div class="custom-audio-player">
-                    <audio id="audio-el-{{ section.id }}" src="{{ section.audio_file.url }}" preload="auto"></audio>
-                    <div class="audio-controls">
-                        <button class="audio-play-btn" id="play-btn-{{ section.id }}"
-                                onclick="playListeningAudio('{{ section.id }}')">
-                            <i data-lucide="play" style="width:15px;"></i>
-                            <span id="play-label-{{ section.id }}">Eshitishni boshlash</span>
-                        </button>
-                        <span class="plays-left-badge" id="plays-left-{{ section.id }}">1 marta tinglash mumkin</span>
-                    </div>
-                    <div class="audio-progress-wrap">
-                        <div class="audio-progress" id="progress-wrap-{{ section.id }}"
-                             onclick="seekAudio('{{ section.id }}', event)">
-                            <div class="audio-progress-bar" id="progress-{{ section.id }}"></div>
-                        </div>
-                        <span class="audio-time" id="audio-time-{{ section.id }}">0:00 / 0:00</span>
-                    </div>
-                    <p class="listening-note">
-                        ⚠️ Haqiqiy IELTS da audio faqat <strong>bir marta</strong> o'ynaladi. Diqqat bilan tinglang.
-                    </p>
-                </div>
-                {% else %}
-                <!-- TTS fallback -->
-                <div class="audio-controls">
-                    <button class="audio-play-btn" id="play-btn-{{ section.id }}"
-                            onclick="speakTranscript('{{ section.id }}')">
-                        <i data-lucide="play" style="width:15px;"></i>
-                        <span id="play-label-{{ section.id }}">Eshitishni boshlash</span>
-                    </button>
-                    <button onclick="stopSpeaking()"
-                            style="background:#eceff1;color:#37474f;border:none;border-radius:6px;padding:9px 16px;font-weight:700;cursor:pointer;">
-                        To'xtatish
-                    </button>
-                    <span class="plays-left-badge" id="plays-left-{{ section.id }}">1 marta tinglash mumkin</span>
-                </div>
-                <p class="listening-note" style="margin-top:8px;">
-                    * AI ovoz (beta). Real imtihonda haqiqiy audio bo'ladi.
-                </p>
-                {% endif %}
-            </div>
-            <!-- Transcript (hidden, for TTS) -->
-            {% if not section.audio_file %}
-            <div style="display:none;" id="transcript-{{ section.id }}">{{ section.content|safe }}</div>
-            {% endif %}
+            <!-- LISTENING: audio player lives in the header now, this panel stays empty/hidden -->
 
             {% elif section.section_type == 'writing' %}
             <!-- WRITING: Task info + image + content -->
@@ -1306,6 +1268,7 @@ document.addEventListener('DOMContentLoaded', () => {
     sectionOrder.forEach((type, i) => {
         if (i > 0) document.getElementById('tab-type-' + type)?.classList.add('tab-locked');
     });
+    document.querySelectorAll('.header-audio').forEach(h => h.classList.toggle('active', sectionOrder[0] === 'listening'));
 
     // Load draft
     try {
@@ -1492,6 +1455,10 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.section-content').forEach(s => s.style.display = 'none');
         document.querySelectorAll('.section-tab').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.group-pills').forEach(p => p.style.display = 'none');
+        // The compact audio control lives permanently in the header now,
+        // so it has to be shown/hidden by hand as sections change instead
+        // of just following whichever .section-content is visible.
+        document.querySelectorAll('.header-audio').forEach(h => h.classList.toggle('active', type === 'listening'));
         const ids = sectionIdsOfType(type);
         const pills = document.getElementById('pills-' + type);
         if (pills) pills.style.display = 'flex';
@@ -1646,7 +1613,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         audioPlayCounts[sectionId] = (audioPlayCounts[sectionId] || 0) + 1;
         playsLeft.innerText = '0 marta qoldi';
-        playsLeft.className = 'plays-left-badge used';
+        playsLeft.className = 'header-audio-badge used';
         label.innerText = 'Tinglanyapti...';
         btn.disabled = true;
 
@@ -1657,7 +1624,7 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.disabled = false;
             audioPlayCounts[sectionId] = 0;
             playsLeft.innerText = '1 marta tinglash mumkin';
-            playsLeft.className = 'plays-left-badge';
+            playsLeft.className = 'header-audio-badge';
         });
 
         // Progress bar
@@ -1706,7 +1673,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!content) { alert('Matn topilmadi.'); return; }
         ttsPlayed[sectionId] = true;
         const playsLeft = document.getElementById('plays-left-' + sectionId);
-        if (playsLeft) { playsLeft.innerText = '0 marta qoldi'; playsLeft.className = 'plays-left-badge used'; }
+        if (playsLeft) { playsLeft.innerText = '0 marta qoldi'; playsLeft.className = 'header-audio-badge used'; }
         const btn = document.getElementById('play-btn-' + sectionId);
         const label = document.getElementById('play-label-' + sectionId);
         if (btn) btn.disabled = true;
