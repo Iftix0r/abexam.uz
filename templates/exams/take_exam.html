@@ -1312,7 +1312,13 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    lucide.createIcons();
+    // Icons only — never let a failed/blocked unpkg.com load (ad-blocker,
+    // network filtering, CDN outage) take the entire exam down with it.
+    // This used to be the very first line with nothing guarding it, so a
+    // ReferenceError here silently aborted every line after it: no
+    // answers, no timers, no working START button — exactly what several
+    // users reported with no obvious pattern to when it happened.
+    if (window.lucide) lucide.createIcons();
 
     // ─── STATE ──────────────────────────────────────────
     let examSubmitted = false;
@@ -1401,15 +1407,15 @@ document.addEventListener('DOMContentLoaded', () => {
             .map(el => el.id.slice('section-'.length));
     }
 
-    // Build tracker + answered counts after restore
-    buildTracker();
-    updateAllTabCounts();
-    updateAnsweredCount();
-
     // Listening is always 4 parts of 10 questions on every real IELTS
     // test, so it's safe to hardcode pagination by that fixed rule.
     // Reading's passage split varies per test and isn't known generically
     // here, so it stays a plain unpaginated strip showing every question.
+    // Declared here — before buildTracker() is called below — for the
+    // same reason as `reviews` above: buildTracker() reads
+    // LISTENING_PART_SIZE, and as a `const` it's a "Cannot access before
+    // initialization" abort (not just a wrong value) if that call happens
+    // first.
     const LISTENING_PART_SIZE = 10;
     let currentListeningPart = 0;
 
@@ -1417,6 +1423,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const ids = new Set(sectionIdsOfType('listening'));
         return allQuestions.filter(q => ids.has(q.sectionId));
     }
+
+    // Build tracker + answered counts after restore
+    buildTracker();
+    updateAllTabCounts();
+    updateAnsweredCount();
 
     function buildTracker(activeType) {
         const tracker = document.getElementById('answerTracker');
@@ -1936,7 +1947,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (btn) {
                     btn.className = 'rec-btn done';
                     btn.innerHTML = '<i data-lucide="rotate-ccw" style="width:14px;"></i><span id="rec-label-' + qid + '">Qayta yozish</span>';
-                    lucide.createIcons();
+                    if (window.lucide) lucide.createIcons();
                 }
                 document.getElementById('rec-timer-' + qid).style.display = 'none';
                 document.getElementById('rec-status-' + qid).style.display = 'inline';
@@ -1953,7 +1964,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (btn) {
                 btn.className = 'rec-btn active';
                 btn.innerHTML = '<i data-lucide="square" style="width:14px;"></i><span id="rec-label-' + qid + '">To\'xtatish</span>';
-                lucide.createIcons();
+                if (window.lucide) lucide.createIcons();
             }
             document.getElementById('rec-status-' + qid).style.display = 'none';
             const timerEl = document.getElementById('rec-timer-' + qid);
@@ -2243,7 +2254,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             localStorage.removeItem(DRAFT_KEY);
             document.getElementById('resultModal').classList.add('active');
-            lucide.createIcons();
+            if (window.lucide) lucide.createIcons();
 
             if (demoSpeakingQids && demoSpeakingQids.length) {
                 // The submit response's speaking band is a 0.0 placeholder — the
