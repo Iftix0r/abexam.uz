@@ -299,7 +299,7 @@
            empty gap next to the section tabs, which stayed one row high. */
         .answer-tracker {
             display: flex; flex-wrap: nowrap; gap: 3px;
-            flex: 1 1 auto; min-width: 0; max-width: 420px;
+            flex: 1 1 auto; min-width: 0;
             overflow-x: auto; padding: 2px 1px;
             scrollbar-width: thin;
         }
@@ -335,7 +335,12 @@
             flex-shrink: 0;
         }
         .footer-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-        .section-tabs { display: flex; gap: 4px; }
+        /* Navigation between Listening/Reading/Writing is already strictly
+           sequential (locked forward-only, auto-advances on finish), so
+           these buttons never do anything a student can actually use —
+           hidden rather than removed since JS still reads their
+           data-type/tab-locked state to drive that sequencing. */
+        .section-tabs { display: none; }
         .section-tab {
             padding: 6px 14px;
             background: #fff;
