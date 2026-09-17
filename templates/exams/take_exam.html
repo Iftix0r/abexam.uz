@@ -113,10 +113,18 @@
             font-size: 0.93rem;
         }
         /* Listening has no passage text to read, just the audio player —
-           the 50/50 split leaves most of this panel empty, at the
-           questions panel's expense. Give it a fixed narrow width instead. */
+           a side-by-side 50/50 split left most of this column empty below
+           the small audio box. Stack it as a compact bar on top instead,
+           full width, so the questions panel gets the rest of the screen. */
+        .section-content[data-section-type="listening"] {
+            flex-direction: column;
+        }
         .section-content[data-section-type="listening"] .passage-panel {
-            width: 300px;
+            width: 100%;
+            flex: 0 0 auto;
+        }
+        .section-content[data-section-type="listening"] .panel-resizer {
+            display: none;
         }
         .questions-panel {
             overflow-y: auto;
