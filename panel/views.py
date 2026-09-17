@@ -437,7 +437,7 @@ def _save_section_from_post(request, exam, section=None):
 
     audio_file = request.FILES.get('audio_file')
     if audio_file:
-        error = validate_audio_upload(audio_file, 25, _AUDIO_TYPES)
+        error = validate_audio_upload(audio_file, 40, _AUDIO_TYPES)
         if error:
             return error
 
