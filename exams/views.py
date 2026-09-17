@@ -180,8 +180,6 @@ class TakeExamView(LoginRequiredMixin, DetailView):
         sections = list(self.object.sections.prefetch_related('questions').all())
         for section in sections:
             questions = list(section.questions.all())
-            for i, q in enumerate(questions, start=1):
-                q.display_number = i
             section.render_blocks = _build_render_blocks(questions)
             section.q_count = len(questions)
 
@@ -190,10 +188,16 @@ class TakeExamView(LoginRequiredMixin, DetailView):
         # exam-wide footer tab. Bundling them here — instead of letting the
         # template key everything off "the first section in the group" —
         # is what lets every part actually be reachable and counted, not
-        # just the first one.
+        # just the first one. Question numbering also has to run across the
+        # whole group (1..N), not restart at 1 in every passage/part.
         tab_groups = []
         for stype, group_iter in groupby(sections, key=lambda s: s.section_type):
             group = list(group_iter)
+            counter = 0
+            for section in group:
+                for q in section.questions.all():
+                    counter += 1
+                    q.display_number = counter
             tab_groups.append({
                 'type': stype,
                 'label': group[0].get_section_type_display(),
