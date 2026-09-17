@@ -5,7 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ exam.title }} - AbExam</title>
     <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- defer: a plain blocking <script src> here means our own inline
+         script (which defines closeInstructionAndStart, saveAnswer, all
+         of it) can't even start parsing until this third-party CDN file
+         finishes loading — on a slow connection or one that blocks
+         unpkg.com outright, that's not a delay, it's forever. Deferred
+         scripts still finish before DOMContentLoaded, so lucide.createIcons()
+         calls inside our (also DOMContentLoaded-gated) script are unaffected. -->
+    <script src="https://unpkg.com/lucide@latest" defer></script>
     <style>
         :root {
             --bg: #f0f2f5;
