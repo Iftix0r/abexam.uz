@@ -879,8 +879,8 @@
                     </label>
                 </div>
 
-                {# ── MCQ ─────────────────────────────────── #}
-                {% if question.question_type == 'mcq' and question.options %}
+                {# ── MCQ / MATCHING (letter-choice) ────────── #}
+                {% if question.options and question.question_type == 'mcq' or question.options and question.question_type == 'matching' %}
                 <div>
                     {% for opt in question.options %}
                     <label class="mcq-option" onclick="selectMCQ(this, '{{ question.id }}', '{{ opt.key|escapejs }}')">
@@ -894,9 +894,15 @@
                 {# ── TFNG ────────────────────────────────── #}
                 {% elif question.question_type == 'tfng' %}
                 <div class="tfng-options">
-                    <button type="button" class="tfng-btn" onclick="selectTFNG(this, '{{ question.id }}', 'True')">True</button>
-                    <button type="button" class="tfng-btn" onclick="selectTFNG(this, '{{ question.id }}', 'False')">False</button>
-                    <button type="button" class="tfng-btn" onclick="selectTFNG(this, '{{ question.id }}', 'Not Given')">Not Given</button>
+                    {% if question.options %}
+                        {% for opt in question.options %}
+                        <button type="button" class="tfng-btn" onclick="selectTFNG(this, '{{ question.id }}', '{{ opt.key|escapejs }}')">{{ opt.text }}</button>
+                        {% endfor %}
+                    {% else %}
+                        <button type="button" class="tfng-btn" onclick="selectTFNG(this, '{{ question.id }}', 'True')">True</button>
+                        <button type="button" class="tfng-btn" onclick="selectTFNG(this, '{{ question.id }}', 'False')">False</button>
+                        <button type="button" class="tfng-btn" onclick="selectTFNG(this, '{{ question.id }}', 'Not Given')">Not Given</button>
+                    {% endif %}
                 </div>
 
                 {# ── WRITING TASK ─────────────────────────── #}
@@ -1230,7 +1236,10 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.closest('.tfng-options').querySelectorAll('.tfng-btn').forEach(b => {
             b.className = 'tfng-btn';
         });
-        const cls = value === 'True' ? 'selected-true' : value === 'False' ? 'selected-false' : 'selected-ng';
+        const v = value.toUpperCase();
+        const cls = (v === 'TRUE' || v === 'YES') ? 'selected-true'
+                  : (v === 'FALSE' || v === 'NO') ? 'selected-false'
+                  : 'selected-ng';
         btn.classList.add(cls);
         saveAnswer(qid, value);
     };
