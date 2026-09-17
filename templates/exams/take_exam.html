@@ -304,6 +304,16 @@
             scrollbar-width: thin;
         }
         .answer-tracker::-webkit-scrollbar { height: 4px; }
+        .tracker-group {
+            display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
+            flex-shrink: 0; padding-right: 8px; margin-right: 5px; border-right: 1px solid #d5dbe0;
+        }
+        .tracker-group:last-child { border-right: none; margin-right: 0; padding-right: 0; }
+        .tracker-group-label {
+            font-size: 8.5px; font-weight: 700; color: #90a4ae;
+            text-transform: uppercase; letter-spacing: 0.3px; padding-left: 1px;
+        }
+        .tracker-group-dots { display: flex; gap: 3px; }
         .tracker-dot {
             width: 20px; height: 20px; flex-shrink: 0;
             border-radius: 3px;
@@ -1352,7 +1362,27 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         const ids = new Set(sectionIdsOfType(activeType));
         const filtered = allQuestions.filter(q => ids.has(q.sectionId));
+
+        // Listening is always 4 parts of 10 questions on every real IELTS
+        // test, so it's safe to label groups by that fixed rule. Reading's
+        // passage split varies per test and isn't known generically here,
+        // so it stays a plain unlabeled strip.
+        const groupSize = activeType === 'listening' ? 10 : 0;
+        let dotHost = tracker;
+
         filtered.forEach((q, index) => {
+            if (groupSize && index % groupSize === 0) {
+                const group = document.createElement('div');
+                group.className = 'tracker-group';
+                const label = document.createElement('span');
+                label.className = 'tracker-group-label';
+                label.innerText = 'Part ' + (Math.floor(index / groupSize) + 1);
+                group.appendChild(label);
+                dotHost = document.createElement('div');
+                dotHost.className = 'tracker-group-dots';
+                group.appendChild(dotHost);
+                tracker.appendChild(group);
+            }
             const dot = document.createElement('div');
             dot.className = 'tracker-dot' + (answers[q.id] && answers[q.id] !== '' ? ' answered' : '');
             if (reviews.has(q.id)) dot.classList.add('review');
@@ -1362,7 +1392,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 showGroupSection(q.sectionId, sectionTypeOf(q.sectionId));
                 document.getElementById('qitem-' + q.id)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
             };
-            tracker.appendChild(dot);
+            dotHost.appendChild(dot);
         });
     }
 
