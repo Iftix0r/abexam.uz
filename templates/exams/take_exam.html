@@ -294,9 +294,18 @@
         .tfng-btn.selected-ng   { background: #fffde7; border-color: #f9a825; color: #e65100; }
 
         /* ─── ANSWER TRACKER ────────────────────────────── */
-        .answer-tracker { display: flex; flex-wrap: wrap; gap: 3px; max-width: 300px; }
+        /* A single scrollable row instead of wrapping into a multi-row
+           grid — wrapping made the footer several dots tall with a big
+           empty gap next to the section tabs, which stayed one row high. */
+        .answer-tracker {
+            display: flex; flex-wrap: nowrap; gap: 3px;
+            flex: 1 1 auto; min-width: 0; max-width: 420px;
+            overflow-x: auto; padding: 2px 1px;
+            scrollbar-width: thin;
+        }
+        .answer-tracker::-webkit-scrollbar { height: 4px; }
         .tracker-dot {
-            width: 22px; height: 22px;
+            width: 20px; height: 20px; flex-shrink: 0;
             border-radius: 3px;
             background: #fff;
             border: 1.5px solid #bbb;
