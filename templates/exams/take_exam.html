@@ -2115,10 +2115,15 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!textEl || !inputEl) return;
             const qid = inputEl.dataset.qid;
             const raw = textEl.textContent || '';
-            if (!raw.includes('___')) return;
-
             // Split on ___ and insert inline input
             const parts = raw.split('___');
+            // A single blank is one whole question (our normal case: every
+            // IELTS gap has its own Question row) — the full-width box
+            // below the question already handles that fine. Only a
+            // genuinely multi-blank shared passage needs inline inputs;
+            // converting a single blank just swaps a clear answer box for
+            // a cramped 100px one showing a bare "1" placeholder.
+            if (parts.length < 3) return;
             let html = '';
             parts.forEach((part, i) => {
                 html += part.replace(/</g, '&lt;').replace(/>/g, '&gt;');
