@@ -174,6 +174,35 @@
         }
         .mcq-option.selected .mcq-key { background: var(--primary); color: #fff; }
 
+        /* ─── MATCHING GRID (shared-options table) ───────── */
+        .matching-group-legend {
+            background: #f8f9fb;
+            border: 1px solid var(--q-border);
+            border-radius: 6px;
+            padding: 10px 14px;
+            margin-bottom: 14px;
+            font-size: 12.5px;
+            line-height: 2.1;
+            color: #37474f;
+        }
+        .matching-group-legend .opt-key {
+            display: inline-block; min-width: 18px; height: 18px; background: #e8eaf6;
+            border-radius: 50%; text-align: center; font-weight: 700; font-size: 11px;
+            color: #3949ab; margin-right: 5px; line-height: 18px;
+        }
+        .matching-grid { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+        .matching-grid th, .matching-grid td {
+            border: 1px solid var(--q-border); padding: 8px 10px;
+        }
+        .matching-grid th {
+            background: #f5f6f8; font-weight: 800; color: #3949ab; text-align: center;
+            font-size: 12px;
+        }
+        .matching-grid td:first-child { text-align: left; font-weight: 500; line-height: 1.5; }
+        .matching-grid td.grid-cell { text-align: center; width: 40px; }
+        .matching-grid tbody tr:hover { background: #fafafa; }
+        .matching-grid input[type="radio"] { width: 16px; height: 16px; accent-color: var(--primary); cursor: pointer; }
+
         /* ─── TFNG / YNTG ───────────────────────────────── */
         .tfng-options { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
         .tfng-btn {
@@ -864,7 +893,7 @@
                 </span>
             </div>
 
-            {% for question in section.questions.all %}
+            {% for block in section.render_blocks %}
 
             {# ── Speaking Part headers ──────────────────── #}
             {% if section.section_type == 'speaking' %}
@@ -886,10 +915,52 @@
                 {% endif %}
             {% endif %}
 
+            {% if block.kind == 'group' %}
+            {# ── SHARED-OPTIONS MATCHING TABLE ─────────── #}
+            {# Several consecutive questions pointing at the same small   #}
+            {# option set (e.g. "match each item to a person", paragraph #}
+            {# matching) — one legend + one grid instead of repeating    #}
+            {# the full option list under every question.                #}
+            <div class="question-item matching-group-item">
+                <div class="matching-group-legend">
+                    {% for opt in block.options %}
+                    <span class="opt-key">{{ opt.key }}</span>{{ opt.text }}{% if not forloop.last %} &nbsp;·&nbsp; {% endif %}
+                    {% endfor %}
+                </div>
+                <table class="matching-grid">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            {% for opt in block.options %}<th>{{ opt.key }}</th>{% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for question in block.questions %}
+                        <tr id="qitem-{{ question.id }}" data-qid="{{ question.id }}" data-qtype="matching">
+                            <td>
+                                <span class="question-num">{{ question.display_number }}</span>
+                                <span class="question-text">{{ question.text|safe }}</span>
+                                <label style="display:inline-flex;align-items:center;gap:4px;font-size:10.5px;color:#f59e0b;cursor:pointer;user-select:none;white-space:nowrap;margin-left:8px;">
+                                    <input type="checkbox" onchange="toggleReview('{{ question.id }}', this.checked)" style="accent-color:#f9a825;"> Review
+                                </label>
+                            </td>
+                            {% for opt in block.options %}
+                            <td class="grid-cell">
+                                <input type="radio" name="q_{{ question.id }}" value="{{ opt.key }}"
+                                       onclick="saveAnswer('{{ question.id }}', '{{ opt.key|escapejs }}')">
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            {% with question=block.questions.0 %}
             <div class="question-item" id="qitem-{{ question.id }}" data-qtype="{{ question.question_type }}">
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; gap:8px;">
                     <span class="question-text">
-                        <span class="question-num">{{ forloop.counter }}</span>
+                        <span class="question-num">{{ question.display_number }}</span>
                         {{ question.text|safe }}
                     </span>
                     <label style="display:flex;align-items:center;gap:4px;font-size:11px;color:#f59e0b;cursor:pointer;user-select:none;white-space:nowrap;background:#fffde7;padding:3px 8px;border-radius:4px;border:1px solid #ffe082;flex-shrink:0;">
@@ -998,6 +1069,8 @@
                        oninput="saveAnswer('{{ question.id }}', this.value)">
                 {% endif %}
             </div>
+            {% endwith %}
+            {% endif %}
             {% endfor %}
         </div>
     </div>
@@ -1083,7 +1156,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const inp = document.querySelector(`input[data-qid="${q.id}"]`);
             if (inp) { inp.value = val; return; }
             const radio = document.querySelector(`input[name="q_${q.id}"][value="${CSS.escape(val)}"]`);
-            if (radio) { radio.closest('.mcq-option').click(); return; }
+            if (radio) {
+                const wrapper = radio.closest('.mcq-option');
+                if (wrapper) wrapper.click();
+                else radio.checked = true;
+                return;
+            }
             const tfng = document.querySelector(`.tfng-btn[onclick*="'${q.id}'"][onclick*="'${val}'"]`);
             if (tfng) tfng.click();
         });

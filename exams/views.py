@@ -173,8 +173,40 @@ class TakeExamView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['sections'] = self.object.sections.prefetch_related('questions').all()
+        sections = list(self.object.sections.prefetch_related('questions').all())
+        for section in sections:
+            questions = list(section.questions.all())
+            for i, q in enumerate(questions, start=1):
+                q.display_number = i
+            section.render_blocks = _build_render_blocks(questions)
+        context['sections'] = sections
         return context
+
+
+def _build_render_blocks(questions):
+    """Groups consecutive 'matching'-type questions that share an identical
+    options list into one shared-table block instead of repeating the same
+    options under every question — mirrors the real IELTS computer-delivered
+    layout (e.g. "match each statement to a person" or paragraph-matching,
+    where several questions point at the same small set of choices)."""
+    blocks = []
+    i, n = 0, len(questions)
+    while i < n:
+        q = questions[i]
+        if q.question_type == 'matching' and q.options:
+            j = i + 1
+            while j < n and questions[j].question_type == 'matching' and questions[j].options == q.options:
+                j += 1
+            group = questions[i:j]
+            if len(group) >= 2:
+                blocks.append({'kind': 'group', 'questions': group, 'options': q.options})
+            else:
+                blocks.append({'kind': 'single', 'questions': [q]})
+            i = j
+        else:
+            blocks.append({'kind': 'single', 'questions': [q]})
+            i += 1
+    return blocks
 
 
 class DemoAnswersView(LoginRequiredMixin, View):
