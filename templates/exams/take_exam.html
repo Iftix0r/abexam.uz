@@ -868,7 +868,7 @@
                 {% endif %}
             {% endif %}
 
-            <div class="question-item" id="qitem-{{ question.id }}">
+            <div class="question-item" id="qitem-{{ question.id }}" data-qtype="{{ question.question_type }}">
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; gap:8px;">
                     <span class="question-text">
                         <span class="question-num">{{ forloop.counter }}</span>
