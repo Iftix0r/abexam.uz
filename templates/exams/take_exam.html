@@ -1565,6 +1565,47 @@ document.addEventListener('DOMContentLoaded', () => {
             container.scrollTop = 0;
         }
 
+        // Reading's 3 passages sit concatenated in one content blob, split
+        // only by <h3>READING PASSAGE N</h3> markers — group the nodes
+        // between them so the passage text panel can follow the same
+        // active-passage-only view as the questions beside it.
+        if (type === 'reading') {
+            const passagePanel = document.querySelector('.section-content[data-section-type="reading"] .passage-panel');
+            if (passagePanel) {
+                if (!passagePanel.dataset.passagesSplit) {
+                    passagePanel.dataset.passagesSplit = '1';
+                    // The section content is server-rendered as one HTML
+                    // blob inside its own wrapper div (not passagePanel's
+                    // direct children), so split that wrapper's children,
+                    // found via the first heading actually in it.
+                    const firstHeading = Array.from(passagePanel.querySelectorAll('h3')).find(
+                        h => !h.className && /^READING PASSAGE\s+\d+/i.test(h.textContent.trim())
+                    );
+                    const contentWrapper = firstHeading ? firstHeading.parentElement : null;
+                    if (contentWrapper) {
+                        let currentGroup = null;
+                        const groups = [];
+                        Array.from(contentWrapper.childNodes).forEach(node => {
+                            const isPassageHeading = node.nodeType === 1 && node.tagName === 'H3'
+                                && !node.className && /^READING PASSAGE\s+\d+/i.test(node.textContent.trim());
+                            if (isPassageHeading) {
+                                currentGroup = document.createElement('div');
+                                currentGroup.className = 'reading-passage-block';
+                                currentGroup.dataset.passageIndex = groups.length;
+                                groups.push(currentGroup);
+                            }
+                            if (currentGroup) currentGroup.appendChild(node);
+                        });
+                        groups.forEach(g => contentWrapper.appendChild(g));
+                    }
+                }
+                passagePanel.querySelectorAll('.reading-passage-block').forEach(block => {
+                    block.style.display = (Number(block.dataset.passageIndex) === partIndex) ? '' : 'none';
+                });
+                passagePanel.scrollTop = 0;
+            }
+        }
+
         const nav = document.getElementById(type + 'PartNav');
         if (nav) nav.style.display = totalParts > 1 ? 'flex' : 'none';
         const prevBtn = document.getElementById(type + 'PrevBtn');
