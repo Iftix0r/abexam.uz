@@ -2,6 +2,7 @@ import csv
 import json
 import logging
 from datetime import timedelta
+from itertools import groupby
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -282,7 +283,17 @@ def exams_list(request):
 @panel_required
 def exam_detail(request, pk):
     exam = get_object_or_404(Exam, pk=pk)
-    sections = exam.sections.prefetch_related('questions').all()
+    sections = list(exam.sections.prefetch_related('questions').all())
+    # Numbers questions continuously per skill (Listening 1..N, Reading
+    # 1..N, ...) instead of Question.order's raw exam-wide value — the
+    # latter made e.g. Reading passage 3 display as "34-40", which looked
+    # like Reading had 40 questions instead of the 20 it actually has.
+    for _stype, group_iter in groupby(sections, key=lambda s: s.section_type):
+        counter = 0
+        for section in group_iter:
+            for q in section.questions.all():
+                counter += 1
+                q.display_number = counter
     results = UserResult.objects.filter(exam=exam).select_related('user').order_by('-completed_at')[:20]
     stats = UserResult.objects.filter(exam=exam).aggregate(avg=Avg('score'), total=Count('id'))
     return render(request, 'panel/exam_detail.html', {

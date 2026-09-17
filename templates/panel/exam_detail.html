@@ -110,7 +110,7 @@
         <tbody>
           {% for q in section.questions.all %}
           <tr id="qrow-{{ q.pk }}">
-            <td style="padding:8px 0;border-bottom:1px solid var(--border);color:var(--muted);font-size:12px">{{ q.order }}</td>
+            <td style="padding:8px 0;border-bottom:1px solid var(--border);color:var(--muted);font-size:12px">{{ q.display_number }}</td>
             <td style="padding:8px 12px 8px 0;border-bottom:1px solid var(--border);font-size:13px" id="qtext-{{ q.pk }}">{{ q.text|truncatechars:80 }}</td>
             <td style="padding:8px 0;border-bottom:1px solid var(--border)"><span class="badge badge-gray" style="font-size:10px">{{ q.get_question_type_display }}</span></td>
             <td style="padding:8px 0;border-bottom:1px solid var(--border);font-size:12px;font-weight:600" id="qans-{{ q.pk }}">
