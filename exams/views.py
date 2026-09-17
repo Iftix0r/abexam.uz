@@ -273,6 +273,19 @@ class DemoAnswersView(LoginRequiredMixin, View):
 
 class SubmitExamView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
+        try:
+            return self._post(request, *args, **kwargs)
+        except Exception as e:
+            # TEMP DEBUG (2026-09-17): surface the real traceback to
+            # superusers only, since this host's passenger.log is shared
+            # across unrelated apps and doesn't carry this app's errors.
+            # Remove once the "Xatolik yuz berdi" submit failure is diagnosed.
+            if request.user.is_superuser:
+                import traceback
+                return JsonResponse({'error': traceback.format_exc()}, status=500)
+            return JsonResponse({'error': "Xatolik yuz berdi. Qayta urinib ko'ring."}, status=500)
+
+    def _post(self, request, *args, **kwargs):
         exam = get_object_or_404(Exam, pk=kwargs['pk'])
         if exam.price > 0 and not exam_is_paid(request.user.pk, exam.pk):
             return JsonResponse({'error': "Bu imtihon uchun to'lov amalga oshirilmagan"}, status=402)
