@@ -576,15 +576,52 @@
         .btn-back { background: #eceff1; color: #37474f; border: none; padding: 9px 20px; border-radius: 6px; font-weight: 700; cursor: pointer; }
         .btn-confirm { background: var(--ielts-red); color: #fff; border: none; padding: 9px 22px; border-radius: 6px; font-weight: 700; cursor: pointer; }
 
-        /* ─── HIGHLIGHTER ───────────────────────────────── */
-        #highlighter-btn {
+        /* ─── HIGHLIGHTER / NOTE TOOLBAR ─────────────────── */
+        #selection-toolbar {
             position: absolute; z-index: 9999;
+            display: none; align-items: center; gap: 4px;
+        }
+        .sel-tool-btn {
             background: #f9a825; color: #000;
             padding: 6px 14px; border-radius: 6px;
             font-size: 12px; font-weight: 700;
             cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            display: none; align-items: center; gap: 6px; border: none;
+            display: flex; align-items: center; gap: 6px; border: none;
         }
+        .sel-tool-btn.note-variant { background: #1565c0; color: #fff; }
+
+        .note-mark {
+            background: #e3f2fd;
+            border-bottom: 2px dotted #1565c0;
+            padding: 0 1px;
+            border-radius: 2px;
+            cursor: pointer;
+        }
+        .note-mark::after {
+            content: '📝'; font-size: 10px; vertical-align: super;
+            margin-left: 1px; line-height: 0;
+        }
+
+        #note-popup {
+            position: absolute; z-index: 10000; display: none;
+            background: #fff; border: 1.5px solid #1565c0; border-radius: 8px;
+            box-shadow: 0 10px 28px rgba(0,0,0,0.28);
+            padding: 10px; width: 240px;
+        }
+        #note-popup textarea {
+            width: 100%; min-height: 70px; border: 1px solid var(--border); border-radius: 6px;
+            padding: 6px 8px; font-size: 12.5px; resize: vertical; font-family: inherit;
+        }
+        #note-popup textarea:focus { outline: none; border-color: #1565c0; }
+        .note-popup-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; gap: 6px; }
+        .note-popup-actions .note-btn-group { display: flex; gap: 6px; margin-left: auto; }
+        .note-popup-actions button {
+            border: none; border-radius: 5px; padding: 6px 10px;
+            font-size: 11px; font-weight: 700; cursor: pointer;
+        }
+        #note-delete-btn { background: #ffebee; color: #c62828; }
+        #note-cancel-btn { background: #eceff1; color: #37474f; }
+        #note-save-btn { background: #1565c0; color: #fff; }
 
         /* ─── SCROLLBAR ─────────────────────────────────── */
         ::-webkit-scrollbar { width: 6px; }
@@ -694,8 +731,24 @@
 </head>
 <body oncopy="alert('Imtihon paytida nusxa ko\'chirish taqiqlangan!'); return false" oncontextmenu="return false">
 
-<div id="highlighter-btn" onclick="applyHighlight()">
-    <i data-lucide="highlighter" style="width:13px;"></i> Highlight
+<div id="selection-toolbar">
+    <button type="button" class="sel-tool-btn" onclick="applyHighlight()">
+        <i data-lucide="highlighter" style="width:13px;"></i> Highlight
+    </button>
+    <button type="button" class="sel-tool-btn note-variant" onclick="openNoteComposer()">
+        <i data-lucide="sticky-note" style="width:13px;"></i> Note
+    </button>
+</div>
+
+<div id="note-popup">
+    <textarea id="note-popup-text" placeholder="Izohingizni shu yerga yozing..."></textarea>
+    <div class="note-popup-actions">
+        <button type="button" id="note-delete-btn" onclick="deleteActiveNote()" style="display:none;">O'chirish</button>
+        <div class="note-btn-group">
+            <button type="button" id="note-cancel-btn" onclick="closeNotePopup()">Bekor</button>
+            <button type="button" id="note-save-btn" onclick="saveActiveNote()">Saqlash</button>
+        </div>
+    </div>
 </div>
 
 <!-- ─── HEADER ─────────────────────────────────────────── -->
@@ -1596,30 +1649,94 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // ─── HIGHLIGHTING ─────────────────────────────────────
+    // ─── HIGHLIGHTING + NOTES ─────────────────────────────
+    let lastSelectionRange = null;
+    let activeNoteSpan = null;
+
     document.addEventListener('mouseup', e => {
+        // Don't let clicking our own toolbar/popup/an existing note re-evaluate
+        // the (now stale) selection and hide what the user just opened.
+        if (e.target.closest('#selection-toolbar') || e.target.closest('#note-popup') || e.target.closest('.note-mark')) return;
         const selection = window.getSelection();
         const text = selection?.toString().trim();
-        const btn = document.getElementById('highlighter-btn');
-        if (!btn) return;
+        const toolbar = document.getElementById('selection-toolbar');
+        if (!toolbar) return;
         if (text && text.length > 2) {
-            btn.style.left = e.pageX + 'px';
-            btn.style.top = (e.pageY - 44) + 'px';
-            btn.style.display = 'flex';
+            lastSelectionRange = selection.getRangeAt(0).cloneRange();
+            toolbar.style.left = e.pageX + 'px';
+            toolbar.style.top = (e.pageY - 44) + 'px';
+            toolbar.style.display = 'flex';
         } else {
-            btn.style.display = 'none';
+            toolbar.style.display = 'none';
         }
     });
 
     window.applyHighlight = function() {
-        const selection = window.getSelection();
-        if (!selection?.rangeCount) return;
-        const range = selection.getRangeAt(0);
+        if (!lastSelectionRange) return;
         const span = document.createElement('span');
         span.style.cssText = 'background:#fff176; color:#000; border-radius:2px; padding:0 1px;';
-        try { range.surroundContents(span); } catch(e) {}
+        try { lastSelectionRange.surroundContents(span); } catch(e) {}
         window.getSelection().removeAllRanges();
-        document.getElementById('highlighter-btn').style.display = 'none';
+        document.getElementById('selection-toolbar').style.display = 'none';
+    };
+
+    function unwrapNoteSpan(span) {
+        const parent = span.parentNode;
+        if (!parent) return;
+        while (span.firstChild) parent.insertBefore(span.firstChild, span);
+        parent.removeChild(span);
+    }
+
+    function openNotePopupFor(span, isNew) {
+        activeNoteSpan = span;
+        const popup = document.getElementById('note-popup');
+        const textarea = document.getElementById('note-popup-text');
+        textarea.value = span.dataset.note || '';
+        document.getElementById('note-delete-btn').style.display = isNew ? 'none' : 'inline-block';
+        const rect = span.getBoundingClientRect();
+        popup.style.left = Math.min(rect.left + window.scrollX, window.innerWidth - 260) + 'px';
+        popup.style.top = (rect.bottom + window.scrollY + 6) + 'px';
+        popup.style.display = 'block';
+        textarea.focus();
+    }
+
+    window.openNoteComposer = function() {
+        if (!lastSelectionRange) return;
+        const span = document.createElement('span');
+        span.className = 'note-mark';
+        try {
+            lastSelectionRange.surroundContents(span);
+        } catch (e) {
+            alert("Bu qismni belgilab bo'lmadi (bir nechta paragrafni birdan tanlagan bo'lishingiz mumkin). Kichikroq matnni tanlab ko'ring.");
+            return;
+        }
+        span.addEventListener('click', ev => { ev.stopPropagation(); openNotePopupFor(span, !span.dataset.note); });
+        window.getSelection().removeAllRanges();
+        document.getElementById('selection-toolbar').style.display = 'none';
+        openNotePopupFor(span, true);
+    };
+
+    window.closeNotePopup = function() {
+        document.getElementById('note-popup').style.display = 'none';
+        if (activeNoteSpan && !activeNoteSpan.dataset.note) unwrapNoteSpan(activeNoteSpan);
+        activeNoteSpan = null;
+    };
+
+    window.saveActiveNote = function() {
+        if (!activeNoteSpan) return;
+        const text = document.getElementById('note-popup-text').value.trim();
+        document.getElementById('note-popup').style.display = 'none';
+        if (!text) { unwrapNoteSpan(activeNoteSpan); activeNoteSpan = null; return; }
+        activeNoteSpan.dataset.note = text;
+        activeNoteSpan.title = text;
+        activeNoteSpan = null;
+    };
+
+    window.deleteActiveNote = function() {
+        if (!activeNoteSpan) return;
+        unwrapNoteSpan(activeNoteSpan);
+        document.getElementById('note-popup').style.display = 'none';
+        activeNoteSpan = null;
     };
 
     // ─── TIMER ───────────────────────────────────────────
