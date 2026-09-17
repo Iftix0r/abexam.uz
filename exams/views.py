@@ -204,6 +204,14 @@ class TakeExamView(LoginRequiredMixin, DetailView):
                 'title': group[0].title if len(group) == 1 else group[0].get_section_type_display(),
                 'question_count': sum(s.q_count for s in group),
                 'duration_minutes': sum(s.duration_minutes for s in group) or self._DEFAULT_DURATION.get(stype, 60),
+                # Sub-navigation pills for a skill split across several
+                # Section rows (e.g. 3 Reading passages) — without these,
+                # switching to passage 2/3 only worked by scrolling past
+                # passage 1, and nothing on screen showed there was more
+                # content below the fold.
+                'sub_sections': [
+                    {'id': s.id, 'label': f'{i}-qism'} for i, s in enumerate(group, start=1)
+                ] if len(group) > 1 else [],
             })
 
         context['sections'] = sections

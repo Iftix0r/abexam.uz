@@ -82,6 +82,27 @@
            rather than being squeezed side by side. */
         main { flex-grow: 1; display: flex; flex-direction: column; overflow-y: auto; overflow-x: hidden; position: relative; }
         .reading-layout { display: flex; width: 100%; height: 100%; flex-shrink: 0; margin-bottom: 8px; }
+        .group-pills {
+            flex: 0 0 auto;
+            display: flex;
+            gap: 6px;
+            padding: 8px 1.5rem;
+            background: var(--panel-bg);
+            border-bottom: 1.5px solid var(--border);
+        }
+        .group-pill {
+            border: 1.5px solid var(--border);
+            background: var(--bg);
+            color: var(--text);
+            font-size: 12px;
+            font-weight: 700;
+            padding: 5px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .group-pill:hover { border-color: var(--primary); }
+        .group-pill.active { background: var(--primary); border-color: var(--primary); color: #fff; }
         .passage-panel {
             overflow-y: auto;
             padding: 1.5rem 2rem;
@@ -838,6 +859,18 @@
 
 <!-- ─── MAIN ───────────────────────────────────────────── -->
 <main>
+    {% for tab in tab_groups %}
+    {% if tab.sub_sections %}
+    <div class="group-pills" id="pills-{{ tab.type }}" data-type="{{ tab.type }}" style="display:none;">
+        {% for sub in tab.sub_sections %}
+        <button type="button" class="group-pill{% if forloop.first %} active{% endif %}"
+                data-section-id="{{ sub.id }}"
+                onclick="showGroupSection('{{ sub.id }}', '{{ tab.type }}')">{{ sub.label }}</button>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endfor %}
+
     {% for section in sections %}
     <div class="reading-layout section-content" id="section-{{ section.id }}"
          data-section-type="{{ section.section_type }}"
@@ -1320,7 +1353,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (reviews.has(q.id)) dot.classList.add('review');
             dot.id = 'dot-' + q.id;
             dot.innerText = index + 1;
-            dot.onclick = () => document.getElementById('qitem-' + q.id)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            dot.onclick = () => {
+                showGroupSection(q.sectionId, sectionTypeOf(q.sectionId));
+                document.getElementById('qitem-' + q.id)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            };
             tracker.appendChild(dot);
         });
     }
@@ -1408,15 +1444,32 @@ document.addEventListener('DOMContentLoaded', () => {
     function _doShowSection(type, el) {
         document.querySelectorAll('.section-content').forEach(s => s.style.display = 'none');
         document.querySelectorAll('.section-tab').forEach(t => t.classList.remove('active'));
-        sectionIdsOfType(type).forEach(id => {
-            const target = document.getElementById('section-' + id);
-            if (target) target.style.display = 'flex';
-        });
+        document.querySelectorAll('.group-pills').forEach(p => p.style.display = 'none');
+        const ids = sectionIdsOfType(type);
+        const pills = document.getElementById('pills-' + type);
+        if (pills) pills.style.display = 'flex';
+        // A skill split across several sections (e.g. 3 Reading passages)
+        // shows only the first one here — switching between the rest goes
+        // through the pills above, not a silent scroll past the first one.
+        if (ids.length) showGroupSection(ids[0], type);
         if (el) el.classList.add('active');
         stopSpeaking();
+    }
+
+    window.showGroupSection = function(sectionId, type) {
+        sectionIdsOfType(type).forEach(id => {
+            const target = document.getElementById('section-' + id);
+            if (target) target.style.display = (id === sectionId) ? 'flex' : 'none';
+        });
+        const pills = document.getElementById('pills-' + type);
+        if (pills) {
+            pills.querySelectorAll('.group-pill').forEach(p => {
+                p.classList.toggle('active', p.dataset.sectionId === String(sectionId));
+            });
+        }
         buildTracker(type);
         updateAnsweredCount(type);
-    }
+    };
 
     window.showSection = function(type, el) {
         // Tab data attributes already hold the aggregated title/question
