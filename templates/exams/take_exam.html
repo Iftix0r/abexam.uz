@@ -1996,9 +1996,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
             Object.entries(demoAnswers).forEach(([qid, value]) => {
                 if (!value) return;
-                document.querySelectorAll(`[data-qid="${qid}"]`).forEach(el => { el.value = value; });
-                if (typeByQid[qid] === 'writing_task') saveWriting(qid, value);
-                else saveAnswer(qid, value);
+                const type = typeByQid[qid];
+                if (type === 'mcq' || type === 'matching') {
+                    // Radio inputs carry no data-qid (only the wrapping
+                    // #qitem-<id> does), so they need selectMCQ to both
+                    // check the input and apply the "selected" style —
+                    // setting .value on them, like the text-input path
+                    // below, doesn't select anything.
+                    const radio = document.querySelector(`#qitem-${qid} input[type="radio"][value="${CSS.escape(value)}"]`);
+                    if (radio) {
+                        const label = radio.closest('label.mcq-option');
+                        if (label) selectMCQ(label, qid, value);
+                        else { radio.checked = true; saveAnswer(qid, value); }
+                    }
+                } else if (type === 'tfng') {
+                    const btn = Array.from(document.querySelectorAll(`#qitem-${qid} .tfng-btn`))
+                        .find(b => b.textContent.trim().toUpperCase() === value.trim().toUpperCase());
+                    if (btn) selectTFNG(btn, qid, value);
+                } else {
+                    document.querySelectorAll(`[data-qid="${qid}"]`).forEach(el => { el.value = value; });
+                    if (type === 'writing_task') saveWriting(qid, value);
+                    else saveAnswer(qid, value);
+                }
             });
         } finally {
             if (btn) { btn.disabled = false; btn.innerText = "🧪 Demo to'ldirish"; }
