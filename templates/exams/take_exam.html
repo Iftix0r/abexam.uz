@@ -320,6 +320,26 @@
             text-transform: uppercase; letter-spacing: 0.3px; padding-left: 1px;
         }
         .tracker-group-dots { display: flex; gap: 3px; }
+        .tracker-part-btn {
+            font-family: inherit; background: none; border: none; cursor: pointer;
+            padding: 0 1px;
+        }
+        .tracker-part-btn.active { color: var(--primary); font-weight: 800; }
+
+        /* ─── LISTENING PART NAV (prev/next between the 4 parts) ── */
+        .listening-part-nav {
+            position: fixed; right: 20px; bottom: 74px; z-index: 400;
+            gap: 8px;
+        }
+        .listening-part-nav button {
+            width: 38px; height: 38px; border-radius: 50%;
+            background: #1a1a2e; color: #fff; border: none;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+            transition: background 0.15s;
+        }
+        .listening-part-nav button:hover:not(:disabled) { background: #30304a; }
+        .listening-part-nav button:disabled { background: #b0bec5; cursor: not-allowed; }
         .tracker-dot {
             width: 22px; height: 22px; flex-shrink: 0;
             border-radius: 50%;
@@ -1223,6 +1243,16 @@
     {% endfor %}
 </main>
 
+<!-- Listening Part navigation (only 1 part's questions show at a time) -->
+<div class="listening-part-nav" id="listeningPartNav" style="display:none;">
+    <button type="button" id="listeningPrevBtn" onclick="listeningPrevPart()" title="Oldingi Part">
+        <i data-lucide="chevron-left" style="width:18px;"></i>
+    </button>
+    <button type="button" id="listeningNextBtn" onclick="listeningNextPart()" title="Keyingi Part">
+        <i data-lucide="chevron-right" style="width:18px;"></i>
+    </button>
+</div>
+
 <!-- ─── FOOTER ─────────────────────────────────────────── -->
 <footer>
     <div class="footer-row">
@@ -1364,6 +1394,18 @@ document.addEventListener('DOMContentLoaded', () => {
     updateAllTabCounts();
     updateAnsweredCount();
 
+    // Listening is always 4 parts of 10 questions on every real IELTS
+    // test, so it's safe to hardcode pagination by that fixed rule.
+    // Reading's passage split varies per test and isn't known generically
+    // here, so it stays a plain unpaginated strip showing every question.
+    const LISTENING_PART_SIZE = 10;
+    let currentListeningPart = 0;
+
+    function listeningFilteredQuestions() {
+        const ids = new Set(sectionIdsOfType('listening'));
+        return allQuestions.filter(q => ids.has(q.sectionId));
+    }
+
     function buildTracker(activeType) {
         const tracker = document.getElementById('answerTracker');
         if (!tracker) return;
@@ -1371,29 +1413,52 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!activeType && allQuestions.length > 0) {
             activeType = sectionTypeOf(allQuestions[0].sectionId);
         }
-        const ids = new Set(sectionIdsOfType(activeType));
-        const filtered = allQuestions.filter(q => ids.has(q.sectionId));
 
-        // Listening is always 4 parts of 10 questions on every real IELTS
-        // test, so it's safe to label groups by that fixed rule. Reading's
-        // passage split varies per test and isn't known generically here,
-        // so it stays a plain unlabeled strip.
-        const groupSize = activeType === 'listening' ? 10 : 0;
-        let dotHost = tracker;
-
-        filtered.forEach((q, index) => {
-            if (groupSize && index % groupSize === 0) {
+        if (activeType === 'listening') {
+            const filtered = listeningFilteredQuestions();
+            const totalParts = Math.max(1, Math.ceil(filtered.length / LISTENING_PART_SIZE));
+            for (let p = 0; p < totalParts; p++) {
+                const partQs = filtered.slice(p * LISTENING_PART_SIZE, (p + 1) * LISTENING_PART_SIZE);
+                const isActive = p === currentListeningPart;
                 const group = document.createElement('div');
                 group.className = 'tracker-group';
-                const label = document.createElement('span');
-                label.className = 'tracker-group-label';
-                label.innerText = 'Part ' + (Math.floor(index / groupSize) + 1);
+
+                const label = document.createElement('button');
+                label.type = 'button';
+                label.className = 'tracker-group-label tracker-part-btn' + (isActive ? ' active' : '');
+                label.onclick = () => showListeningPart(p);
+                if (isActive) {
+                    label.innerText = 'Part ' + (p + 1);
+                } else {
+                    const answeredCount = partQs.filter(q => answers[q.id] && answers[q.id] !== '').length;
+                    label.innerText = 'Part ' + (p + 1) + '  ' + answeredCount + ' of ' + partQs.length;
+                }
                 group.appendChild(label);
-                dotHost = document.createElement('div');
-                dotHost.className = 'tracker-group-dots';
-                group.appendChild(dotHost);
+
+                if (isActive) {
+                    const dotsHost = document.createElement('div');
+                    dotsHost.className = 'tracker-group-dots';
+                    partQs.forEach((q, i) => {
+                        const dot = document.createElement('div');
+                        dot.className = 'tracker-dot' + (answers[q.id] && answers[q.id] !== '' ? ' answered' : '');
+                        if (reviews.has(q.id)) dot.classList.add('review');
+                        dot.id = 'dot-' + q.id;
+                        dot.innerText = p * LISTENING_PART_SIZE + i + 1;
+                        dot.onclick = () => {
+                            document.getElementById('qitem-' + q.id)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        };
+                        dotsHost.appendChild(dot);
+                    });
+                    group.appendChild(dotsHost);
+                }
                 tracker.appendChild(group);
             }
+            return;
+        }
+
+        const ids = new Set(sectionIdsOfType(activeType));
+        const filtered = allQuestions.filter(q => ids.has(q.sectionId));
+        filtered.forEach((q, index) => {
             const dot = document.createElement('div');
             dot.className = 'tracker-dot' + (answers[q.id] && answers[q.id] !== '' ? ' answered' : '');
             if (reviews.has(q.id)) dot.classList.add('review');
@@ -1403,9 +1468,55 @@ document.addEventListener('DOMContentLoaded', () => {
                 showGroupSection(q.sectionId, sectionTypeOf(q.sectionId));
                 document.getElementById('qitem-' + q.id)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
             };
-            dotHost.appendChild(dot);
+            tracker.appendChild(dot);
         });
     }
+
+    // Shows only the current Part's 10 questions in the Listening panel —
+    // standalone items are hidden/shown whole, grouped matching tables
+    // (which can hold several questions in one shared block) hide/show
+    // their individual rows instead, since a group could in principle
+    // straddle a part boundary.
+    window.showListeningPart = function(partIndex) {
+        const filtered = listeningFilteredQuestions();
+        const totalParts = Math.max(1, Math.ceil(filtered.length / LISTENING_PART_SIZE));
+        partIndex = Math.max(0, Math.min(partIndex, totalParts - 1));
+        currentListeningPart = partIndex;
+
+        const partOf = {};
+        filtered.forEach((q, i) => { partOf[q.id] = Math.floor(i / LISTENING_PART_SIZE); });
+
+        const container = document.querySelector('.section-content[data-section-type="listening"] .questions-panel');
+        if (container) {
+            container.querySelectorAll('.question-item:not(.matching-group-item)').forEach(el => {
+                const qid = el.id.replace('qitem-', '');
+                el.style.display = (partOf[qid] === partIndex) ? '' : 'none';
+            });
+            container.querySelectorAll('.matching-group-item').forEach(block => {
+                let anyVisible = false;
+                block.querySelectorAll('tbody tr[id^="qitem-"]').forEach(row => {
+                    const qid = row.id.replace('qitem-', '');
+                    const show = partOf[qid] === partIndex;
+                    row.style.display = show ? '' : 'none';
+                    if (show) anyVisible = true;
+                });
+                block.style.display = anyVisible ? '' : 'none';
+            });
+            container.scrollTop = 0;
+        }
+
+        const nav = document.getElementById('listeningPartNav');
+        if (nav) nav.style.display = totalParts > 1 ? 'flex' : 'none';
+        const prevBtn = document.getElementById('listeningPrevBtn');
+        const nextBtn = document.getElementById('listeningNextBtn');
+        if (prevBtn) prevBtn.disabled = partIndex === 0;
+        if (nextBtn) nextBtn.disabled = partIndex >= totalParts - 1;
+
+        buildTracker('listening');
+    };
+
+    window.listeningPrevPart = function() { showListeningPart(currentListeningPart - 1); };
+    window.listeningNextPart = function() { showListeningPart(currentListeningPart + 1); };
 
     function updateAnsweredCount(activeType) {
         if (!activeType && allQuestions.length > 0) {
@@ -1516,6 +1627,12 @@ document.addEventListener('DOMContentLoaded', () => {
         // shows only the first one here — switching between the rest goes
         // through the pills above, not a silent scroll past the first one.
         if (ids.length) showGroupSection(ids[0], type);
+        if (type === 'listening') {
+            showListeningPart(0);
+        } else {
+            const nav = document.getElementById('listeningPartNav');
+            if (nav) nav.style.display = 'none';
+        }
         if (el) el.classList.add('active');
         stopSpeaking();
         pauseAllListeningAudio();
