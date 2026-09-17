@@ -112,6 +112,12 @@
             line-height: 1.8;
             font-size: 0.93rem;
         }
+        /* Listening has no passage text to read, just the audio player —
+           the 50/50 split leaves most of this panel empty, at the
+           questions panel's expense. Give it a fixed narrow width instead. */
+        .section-content[data-section-type="listening"] .passage-panel {
+            width: 300px;
+        }
         .questions-panel {
             overflow-y: auto;
             padding: 1.5rem 2rem;
@@ -1463,6 +1469,14 @@ document.addEventListener('DOMContentLoaded', () => {
             _doShowSection(pendingSectionId, pendingTabEl);
             startSectionTimer(pendingDurationMinutes, pendingSectionId);
             updateFooterActionButton();
+            // Real IELTS starts the Listening audio the moment the section
+            // opens, not on a separate manual click — this is still inside
+            // the START button's click handler, so the browser's autoplay
+            // gesture requirement is satisfied.
+            if (pendingSectionId === 'listening') {
+                const realId = sectionIdsOfType('listening')[0];
+                if (realId) playListeningAudio(realId);
+            }
         }
     };
 
@@ -2177,7 +2191,11 @@ document.addEventListener('DOMContentLoaded', () => {
         let dragLayout = null, dragHandle = null;
 
         function applySplit(pct) {
-            document.querySelectorAll('.passage-panel').forEach(p => { p.style.width = pct + '%'; });
+            // Listening keeps its fixed narrow width (just an audio player,
+            // no passage text) — a saved split from resizing Reading/Writing
+            // shouldn't stretch it back out to that percentage too.
+            document.querySelectorAll('.section-content:not([data-section-type="listening"]) .passage-panel')
+                .forEach(p => { p.style.width = pct + '%'; });
         }
 
         let savedPct = null;
