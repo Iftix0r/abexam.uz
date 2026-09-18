@@ -1450,6 +1450,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentPartByType = {};
 
     function partBoundsFor(type) {
+        // A skill split across several real Section rows (AI-generated or
+        // admin-authored exams, per panel/section_form.html's "3 ta
+        // passage" guidance) already has its true per-part boundaries in
+        // sectionQuestions — one physical section IS one part, no need to
+        // guess. The hardcoded PART_SIZES guess only applies to the other
+        // model: a single Section whose content concatenates every
+        // part/passage in one blob (how import_clone_tests.py builds
+        // exams cloned from real Cambridge tests).
+        const ids = sectionIdsOfType(type);
+        if (ids.length > 1) {
+            const bounds = [];
+            let start = 0;
+            ids.forEach(id => {
+                const size = (sectionQuestions[id] || []).length;
+                bounds.push([start, start + size]);
+                start += size;
+            });
+            return bounds;
+        }
         const sizes = PART_SIZES[type];
         if (!sizes) return null;
         const bounds = [];
@@ -1547,83 +1566,95 @@ document.addEventListener('DOMContentLoaded', () => {
     window.showTypePart = function(type, partIndex) {
         const bounds = partBoundsFor(type);
         if (!bounds) return;
-        const filtered = filteredQuestionsOfType(type);
         const totalParts = bounds.length;
         partIndex = Math.max(0, Math.min(partIndex, totalParts - 1));
         currentPartByType[type] = partIndex;
 
-        const partOf = {};
-        bounds.forEach(([start, end], p) => {
-            filtered.slice(start, end).forEach(q => { partOf[q.id] = p; });
-        });
-
-        const container = document.querySelector('.section-content[data-section-type="' + type + '"] .questions-panel');
-        if (container) {
-            container.querySelectorAll('.question-item:not(.matching-group-item)').forEach(el => {
-                const qid = el.id.replace('qitem-', '');
-                el.style.display = (partOf[qid] === partIndex) ? '' : 'none';
+        const realIds = sectionIdsOfType(type);
+        if (realIds.length > 1) {
+            // One physical Section per part (AI-generated / admin-authored
+            // exams) — the pills mechanism already shows/hides the right
+            // section's own passage-panel + questions-panel, so just
+            // delegate to it instead of guessing at a shared container.
+            showGroupSection(realIds[partIndex], type);
+        } else {
+            const filtered = filteredQuestionsOfType(type);
+            const partOf = {};
+            bounds.forEach(([start, end], p) => {
+                filtered.slice(start, end).forEach(q => { partOf[q.id] = p; });
             });
-            container.querySelectorAll('.matching-group-item').forEach(block => {
-                let anyVisible = false;
-                block.querySelectorAll('tbody tr[id^="qitem-"]').forEach(row => {
-                    const qid = row.id.replace('qitem-', '');
-                    const show = partOf[qid] === partIndex;
-                    row.style.display = show ? '' : 'none';
-                    if (show) anyVisible = true;
+
+            const container = document.querySelector('.section-content[data-section-type="' + type + '"] .questions-panel');
+            if (container) {
+                container.querySelectorAll('.question-item:not(.matching-group-item)').forEach(el => {
+                    const qid = el.id.replace('qitem-', '');
+                    el.style.display = (partOf[qid] === partIndex) ? '' : 'none';
                 });
-                block.style.display = anyVisible ? '' : 'none';
-            });
-            container.scrollTop = 0;
-        }
+                container.querySelectorAll('.matching-group-item').forEach(block => {
+                    let anyVisible = false;
+                    block.querySelectorAll('tbody tr[id^="qitem-"]').forEach(row => {
+                        const qid = row.id.replace('qitem-', '');
+                        const show = partOf[qid] === partIndex;
+                        row.style.display = show ? '' : 'none';
+                        if (show) anyVisible = true;
+                    });
+                    block.style.display = anyVisible ? '' : 'none';
+                });
+                container.scrollTop = 0;
+            }
 
-        // Reading's 3 passages and Writing's 2 tasks each sit concatenated
-        // in one content blob per section, split only by their own <h3>
-        // heading markers — group the nodes between them so the left
-        // panel's text follows the same active-part-only view as the
-        // questions beside it.
-        const CONTENT_HEADING = {
-            reading: /^READING PASSAGE\s+\d+/i,
-            writing: /^Writing Task\s+\d/i,
-        };
-        if (CONTENT_HEADING[type]) {
-            const panel = document.querySelector('.section-content[data-section-type="' + type + '"] .passage-panel');
-            if (panel) {
-                const headingRe = CONTENT_HEADING[type];
-                const isHeading = h => h.nodeType === 1 && h.tagName === 'H3' && !h.className && headingRe.test(h.textContent.trim());
-                if (!panel.dataset.contentSplit) {
-                    panel.dataset.contentSplit = '1';
-                    // The section content is server-rendered as one HTML
-                    // blob inside its own wrapper div (not panel's direct
-                    // children), so split that wrapper's children, found
-                    // via the first heading actually in it.
-                    const firstHeading = Array.from(panel.querySelectorAll('h3')).find(isHeading);
-                    const contentWrapper = firstHeading ? firstHeading.parentElement : null;
-                    if (contentWrapper) {
-                        let currentGroup = null;
-                        const groups = [];
-                        Array.from(contentWrapper.childNodes).forEach(node => {
-                            if (isHeading(node)) {
-                                currentGroup = document.createElement('div');
-                                currentGroup.className = 'content-part-block';
-                                currentGroup.dataset.partIndex = groups.length;
-                                groups.push(currentGroup);
-                            }
-                            if (currentGroup) currentGroup.appendChild(node);
-                        });
-                        groups.forEach(g => contentWrapper.appendChild(g));
+            // Reading's 3 passages and Writing's 2 tasks each sit concatenated
+            // in one content blob per section, split only by their own heading
+            // markers — group the nodes between them so the left panel's text
+            // follows the same active-part-only view as the questions beside
+            // it. import_clone_tests.py (the real Cambridge test importer)
+            // renders these as <h3 class="passage-title"> for Reading and
+            // plain <h4> for Writing, so the match can't require an H3 with no
+            // class or nothing here ever splits.
+            const CONTENT_HEADING = {
+                reading: /^READING PASSAGE\s+\d+/i,
+                writing: /^Writing Task\s+\d/i,
+            };
+            if (CONTENT_HEADING[type]) {
+                const panel = document.querySelector('.section-content[data-section-type="' + type + '"] .passage-panel');
+                if (panel) {
+                    const headingRe = CONTENT_HEADING[type];
+                    const isHeading = h => h.nodeType === 1 && (h.tagName === 'H3' || h.tagName === 'H4') && headingRe.test(h.textContent.trim());
+                    if (!panel.dataset.contentSplit) {
+                        panel.dataset.contentSplit = '1';
+                        // The section content is server-rendered as one HTML
+                        // blob inside its own wrapper div (not panel's direct
+                        // children), so split that wrapper's children, found
+                        // via the first heading actually in it.
+                        const firstHeading = Array.from(panel.querySelectorAll('h3, h4')).find(isHeading);
+                        const contentWrapper = firstHeading ? firstHeading.parentElement : null;
+                        if (contentWrapper) {
+                            let currentGroup = null;
+                            const groups = [];
+                            Array.from(contentWrapper.childNodes).forEach(node => {
+                                if (isHeading(node)) {
+                                    currentGroup = document.createElement('div');
+                                    currentGroup.className = 'content-part-block';
+                                    currentGroup.dataset.partIndex = groups.length;
+                                    groups.push(currentGroup);
+                                }
+                                if (currentGroup) currentGroup.appendChild(node);
+                            });
+                            groups.forEach(g => contentWrapper.appendChild(g));
+                        }
                     }
+                    panel.querySelectorAll('.content-part-block').forEach(block => {
+                        block.style.display = (Number(block.dataset.partIndex) === partIndex) ? '' : 'none';
+                    });
+                    // Writing also has task-bar/chart/tips pieces that aren't
+                    // part of that content blob (rendered directly by the
+                    // template instead, since — unlike the passage/task text —
+                    // their per-task boundary is already known there).
+                    panel.querySelectorAll('[data-task-index]').forEach(el => {
+                        el.style.display = (Number(el.dataset.taskIndex) === partIndex) ? '' : 'none';
+                    });
+                    panel.scrollTop = 0;
                 }
-                panel.querySelectorAll('.content-part-block').forEach(block => {
-                    block.style.display = (Number(block.dataset.partIndex) === partIndex) ? '' : 'none';
-                });
-                // Writing also has task-bar/chart/tips pieces that aren't
-                // part of that content blob (rendered directly by the
-                // template instead, since — unlike the passage/task text —
-                // their per-task boundary is already known there).
-                panel.querySelectorAll('[data-task-index]').forEach(el => {
-                    el.style.display = (Number(el.dataset.taskIndex) === partIndex) ? '' : 'none';
-                });
-                panel.scrollTop = 0;
             }
         }
 
