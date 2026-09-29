@@ -10,6 +10,7 @@ from pathlib import Path
 from urllib.parse import unquote, urlparse
 
 import requests
+from django.conf import settings
 from django.core.files import File
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
@@ -31,9 +32,10 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        base_dir = Path(__file__).resolve().parents[4] / 'abexam.uz'
-        if not base_dir.exists():
-            base_dir = Path(__file__).resolve().parents[4]
+        # The project root itself — not a guess from the parent folder's
+        # name: on the server the repo lives in ~/examab while an unrelated
+        # ~/abexam.uz also exists, which the old guess resolved to instead.
+        base_dir = Path(settings.BASE_DIR)
         data_dir = base_dir / 'data' / 'cambridge'
 
         if options['file']:
