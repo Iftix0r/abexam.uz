@@ -1,0 +1,2439 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS CDI Listening Practice</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffffff;
+            line-height: 1.4;
+            font-size: 16px;
+            padding-bottom: 90px;
+        }
+
+        body::after {
+            content: "@MINDLESS_WRITER";
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%) rotate(-20deg);
+            font-size: 72px;
+            font-weight: 800;
+            color: #000000;
+            opacity: 0.02;
+            pointer-events: none;
+            z-index: 0;
+            white-space: nowrap;
+        }
+
+        .header {
+            background-color: #ffffff;
+            padding: 12px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            height: 60px;
+        }
+
+        .telegram-link {
+            color: #3e3e3e;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            border: 2px solid #3e3e3e;
+            border-radius: 9999px;
+            background-color: #ffffff;
+            line-height: 1;
+        }
+
+        .telegram-link:hover {
+            background-color: #f6f6f6;
+        }
+
+        .telegram-link::before {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background-color: currentColor;
+            -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23l7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3L3.64 12c-.88-.25-.89-1.37.2-1.64l16.56-6.4c.75-.29 1.4.22 1.2.94l-2.67 12.61c-.22.95-1.13 1.18-1.78.73l-4.5-3.32l-2.23 2.15c-.47.44-1.29.21-1.48-.37z"/></svg>');
+            mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23l7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3L3.64 12c-.88-.25-.89-1.37.2-1.64l16.56-6.4c.75-.29 1.4.22 1.2.94l-2.67 12.61c-.22.95-1.13 1.18-1.78.73l-4.5-3.32l-2.23 2.15c-.47.44-1.29.21-1.48-.37z"/></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        .audio-player-container {
+            position: fixed;
+            top: 65px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 500px;
+            max-width: 90%;
+            height: 40px;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            z-index: 99;
+            gap: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .player-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .player-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: #333;
+        }
+
+        .progress-container {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #progress-bar {
+            flex-grow: 1;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 4px;
+            background: #ddd;
+            outline: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        #progress-bar::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #4a90e2;
+            cursor: pointer;
+        }
+
+        #current-time,
+        #total-duration {
+            font-size: 12px;
+            color: #555;
+            min-width: 35px;
+            text-align: center;
+        }
+
+        .controls-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #new-volume-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 60px;
+            height: 3px;
+            background: #ccc;
+            outline: none;
+            border-radius: 2px;
+            cursor: pointer;
+            margin-left: 8px;
+        }
+
+        #new-volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #333;
+        }
+
+        #speed-btn {
+            font-size: 12px;
+            font-weight: 600;
+            color: #333;
+            background-color: #e9ecef;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            padding: 4px 8px;
+            cursor: pointer;
+        }
+
+        #speed-options {
+            position: absolute;
+            top: calc(100% + 5px);
+            right: 0;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+
+        #speed-options div {
+            padding: 8px 15px;
+            cursor: pointer;
+        }
+
+        #speed-options div:hover {
+            background-color: #f0f0f0;
+        }
+
+        .speed-container {
+            position: relative;
+        }
+
+        .main-container {
+            margin-top: 115px;
+            display: flex;
+            background: #ffffff;
+            padding-bottom: 100px;
+        }
+
+        .main-container.results-mode .left-panel {
+            width: 75%;
+            overflow-y: auto;
+            height: calc(100vh - 195px);
+        }
+
+        .main-container.results-mode .right-panel {
+            display: block;
+            width: 25%;
+            border-left: 1px solid #e0e0e0;
+            height: calc(100vh - 195px);
+            overflow-y: auto;
+        }
+
+        .left-panel {
+            width: 100%;
+            padding: 20px;
+        }
+
+        .questions-container {
+            max-width: 50%;
+        }
+
+        /* Natijalar rejimida chap panel torayadi — savollar bo'sh joyni to'liq egallasin */
+        .main-container.results-mode .questions-container {
+            max-width: 100%;
+        }
+
+        .right-panel {
+            display: none;
+            padding: 20px;
+            border-left: 1px solid #e0e0e0;
+        }
+
+        #transcription-text {
+            white-space: normal;
+            font-family: inherit;
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+        #transcription-text p {
+            margin-bottom: 12px;
+        }
+
+        .t-hl {
+            background: #fff3a0;
+            border-radius: 3px;
+            padding: 0 2px;
+            scroll-margin-top: 80px;
+        }
+
+        .t-hl.active {
+            background: #ffd34d;
+            box-shadow: 0 0 0 2px #f0a500;
+        }
+
+        .t-hl[data-time] {
+            cursor: pointer;
+        }
+
+        .t-hl[data-time]:hover {
+            background: #ffe066;
+            box-shadow: 0 0 0 1px #e0a800;
+        }
+
+        .t-qmark {
+            font-size: 10px;
+            font-weight: 700;
+            color: #fff;
+            background: #4a90e2;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            min-width: 16px;
+            vertical-align: super;
+            margin-right: 2px;
+            line-height: 1;
+        }
+
+        .t-note {
+            font-style: italic;
+            font-weight: 700;
+            color: #0b6b3a;
+            font-size: 13px;
+            margin-left: 3px;
+        }
+
+        .part-header {
+            background-color: #f1f2ec;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .question {
+            margin-bottom: 40px;
+        }
+
+        .question p {
+            margin-bottom: 10px;
+        }
+
+        .question-prompt {
+            margin-bottom: 20px;
+        }
+
+        .centered-title {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .answer-input {
+            border: 1px solid #9aa3ad;
+            border-radius: 4px;
+            background-color: #fff;
+            padding: 4px 8px;
+            font-size: 16px;
+            width: 140px;
+            height: 28px;
+            line-height: 1.2;
+            vertical-align: middle;
+            transition: border-color 0.15s ease;
+            position: relative;
+            z-index: 10;
+        }
+
+        .answer-input::placeholder {
+            color: #444;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .notes-block p {
+            margin-bottom: 16px;
+        }
+
+        .notes-heading {
+            font-weight: 700;
+            margin: 24px 0 12px;
+        }
+
+        .notes-subheading {
+            font-weight: 700;
+            margin: 14px 0 8px 18px;
+        }
+
+        .notes-block ul {
+            list-style: disc;
+            padding-left: 28px;
+            margin-bottom: 8px;
+        }
+
+        .notes-block li {
+            margin-bottom: 16px;
+        }
+
+        .answer-input:focus {
+            outline: none;
+            border-color: #2c6bed;
+            border-width: 2px;
+        }
+
+        .answer-input.correct {
+            border-color: #28a745;
+            background-color: #e9f7ef;
+        }
+
+        .answer-input.incorrect {
+            border-color: #dc3545;
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .correct-inline {
+            color: #28a745;
+            font-weight: 700;
+            margin-left: 10px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .correct-inline::before {
+            content: "\2192  ";
+        }
+
+        .multi-choice-option {
+            display: block;
+            width: 100%;
+            padding: 10px 14px;
+            background-color: #fff;
+            border: 1px solid transparent;
+            transition: background-color 0.2s;
+        }
+
+        .multi-choice-option:hover {
+            background-color: #f1f7ff;
+            border-color: #c6dcfb;
+        }
+
+        .multi-choice-option:has(input[type="radio"]:checked) {
+            background-color: #cfe3f9;
+        }
+
+        .multi-choice-option:has(input[type="checkbox"]:checked) {
+            background-color: #cfe3f9;
+        }
+
+        .multi-choice-option.correct {
+            background-color: #d4edda !important;
+        }
+
+        .multi-choice-option.incorrect {
+            background-color: #f8d7da !important;
+        }
+
+        .multi-choice-option label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        .multi-choice-option input[type="radio"] {
+            transform: scale(1.2);
+        }
+
+        .multi-choice-option input[type="checkbox"] {
+            transform: scale(1.2);
+            accent-color: #2563eb;
+        }
+
+        .choose-many-header {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            margin-bottom: 14px;
+            font-weight: 600;
+        }
+
+        .q-num-badge {
+            border: 2px solid transparent;
+            border-radius: 5px;
+            padding: 2px 8px;
+            font-weight: 700;
+            flex-shrink: 0;
+            transition: border-color 0.3s;
+        }
+
+        .question.active-question .q-num-badge {
+            border-color: #4a90e2;
+        }
+
+        .matching-options-box {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 15px;
+            background: #f9f9f9;
+            margin-bottom: 20px;
+            display: inline-block;
+            min-width: 300px;
+        }
+
+        .matching-options-box p {
+            margin-bottom: 5px;
+        }
+
+        .matching-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .matching-item span {
+            min-width: 240px;
+            font-size: 16px;
+        }
+
+        .notes-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .notes-table th,
+        .notes-table td {
+            border: 1px solid #888;
+            padding: 10px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .notes-table th {
+            background: #f1f2ec;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .nav-arrows {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            display: flex;
+            gap: 5px;
+            z-index: 101;
+        }
+
+        .nav-arrow {
+            width: 50px;
+            height: 50px;
+            background: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .nav-arrow:hover {
+            background: #555;
+        }
+
+        .nav-arrow:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .nav-row {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            height: 80px;
+            z-index: 100;
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+        }
+
+        .footer__questionWrapper___1tZ46 {
+            display: flex;
+            align-items: center;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+
+        .footer__questionNo___3WNct {
+            background: none;
+            border: none;
+            padding: 10px 15px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .footer__questionNo___3WNct:hover {
+            background-color: #f8f9fa;
+        }
+
+        .attemptedCount {
+            font-size: 14px;
+            color: #666;
+            margin-left: 5px;
+            font-weight: 400;
+        }
+
+        .footer__subquestionWrapper___9GgoP {
+            display: none;
+            gap: 2px;
+            margin-left: 10px;
+        }
+
+        .footer__questionWrapper___1tZ46.selected .footer__subquestionWrapper___9GgoP {
+            display: flex;
+        }
+
+        .footer__questionWrapper___1tZ46.selected .attemptedCount {
+            display: none;
+        }
+
+        .subQuestion {
+            width: 32px;
+            height: 32px;
+            border: 1px solid #ccc;
+            background: white;
+            color: #333;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            border-radius: 2px;
+        }
+
+        .subQuestion.answered {
+            background-color: #e9ecef;
+            border-color: #ddd;
+        }
+
+        .subQuestion.correct {
+            background-color: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+
+        .subQuestion.incorrect {
+            background-color: #dc3545;
+            color: white;
+            border-color: #dc3545;
+        }
+
+        .subQuestion:hover {
+            background-color: #f0f0f0;
+            border-color: #999;
+        }
+
+        .subQuestion.active {
+            background-color: #4a90e2;
+            color: white;
+            border-color: #4a90e2;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        .footer__deliverButton___3FM07 {
+            margin-left: auto;
+            margin-right: 20px;
+            background-color: #f0f0f0;
+            color: #333;
+            border: 1px solid #ccc;
+            padding: 12px 20px;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 170px;
+            justify-content: center;
+        }
+
+        .footer__deliverButton___3FM07:hover {
+            background-color: #e0e0e0;
+            border-color: #bbb;
+        }
+
+        .footer__deliverButton___3FM07.success {
+            background-color: #28a745;
+            color: #fff;
+            border-color: #28a745;
+        }
+
+        .highlight {
+            background-color: #ffff00;
+        }
+
+        .comment-highlight {
+            background-color: #90EE90;
+            position: relative;
+            cursor: help;
+        }
+
+        .comment-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            white-space: nowrap;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .comment-highlight:hover .comment-tooltip {
+            opacity: 1;
+        }
+
+        .context-menu {
+            position: absolute;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            display: none;
+            min-width: 140px;
+        }
+
+        .context-menu-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            font-size: 16px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .context-menu-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .context-menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .selection-toolbar {
+            position: absolute;
+            display: none;
+            align-items: stretch;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+            z-index: 1500;
+            padding: 6px 4px;
+            gap: 2px;
+        }
+
+        .selection-toolbar::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 7px solid transparent;
+            border-right: 7px solid transparent;
+            border-top: 7px solid #ffffff;
+        }
+
+        .selection-toolbar button {
+            background: none;
+            border: none;
+            color: #111827;
+            padding: 4px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 6px;
+            white-space: nowrap;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .selection-toolbar button svg {
+            width: 16px;
+            height: 16px;
+            fill: #111827;
+        }
+
+        .selection-toolbar button:hover {
+            background: #f3f4f6;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            font-size: 24px;
+            color: #333;
+        }
+
+        .modal-close-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #888;
+        }
+
+        .modal-close-btn:hover {
+            color: #333;
+        }
+
+        .confirm-modal-content {
+            background: white;
+            padding: 32px 36px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 440px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .confirm-modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .confirm-modal-icon {
+            color: #f0a500;
+            font-size: 22px;
+        }
+
+        .confirm-modal-text {
+            font-size: 15px;
+            color: #4b5563;
+            line-height: 1.5;
+            margin-bottom: 26px;
+        }
+
+        .confirm-modal-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .confirm-modal-btn {
+            padding: 10px 26px;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+
+        .confirm-modal-btn-cancel {
+            background: #ffffff;
+            border-color: #d1d5db;
+            color: #111827;
+        }
+
+        .confirm-modal-btn-cancel:hover {
+            background: #f3f4f6;
+        }
+
+        .confirm-modal-btn-submit {
+            background: #111827;
+            color: #ffffff;
+        }
+
+        .confirm-modal-btn-submit:hover {
+            background: #262f3d;
+        }
+
+        #score-summary {
+            font-size: 16px;
+            font-weight: 600;
+            color: #111827;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            padding: 10px 12px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        #result-details table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        #result-details th,
+        #result-details td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        #result-details th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+
+        .result-correct {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .result-incorrect {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .timer-container {
+            display: none;
+        }
+
+        @keyframes flash {
+            0% {
+                background-color: #e6f4ff;
+            }
+
+            100% {
+                background-color: transparent;
+            }
+        }
+
+        .question.flash {
+            animation: flash 1s ease-out;
+        }
+
+        /* ═══ Yuqori o'ng burchakdagi tugmalar ═══ */
+        .header-tools {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .header-tool-btn {
+            width: 44px;
+            height: 36px;
+            border: 1px solid #d5d9e0;
+            border-radius: 8px;
+            background: #ffffff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+
+        .header-tool-btn:hover {
+            background: #f3f4f6;
+        }
+
+        .header-tool-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: #1f2937;
+        }
+
+        /* ═══ Exam Settings oynasi ═══ */
+        .settings-modal-content {
+            background: #ffffff;
+            border-radius: 14px;
+            width: 100%;
+            max-width: 470px;
+            max-height: 88vh;
+            overflow-y: auto;
+            padding: 22px 24px 24px;
+            box-shadow: 0 10px 34px rgba(0, 0, 0, 0.28);
+        }
+
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .settings-title {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            font-size: 19px;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .settings-title svg {
+            width: 20px;
+            height: 20px;
+            fill: #111827;
+        }
+
+        .settings-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            line-height: 1;
+            cursor: pointer;
+            color: #6b7280;
+            padding: 0 4px;
+        }
+
+        .settings-close:hover {
+            color: #111827;
+        }
+
+        .settings-section-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+            font-weight: 700;
+            color: #111827;
+            margin: 20px 0 10px;
+        }
+
+        .settings-section-title svg {
+            width: 17px;
+            height: 17px;
+            fill: #111827;
+        }
+
+        .settings-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            text-align: left;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 9px;
+            padding: 13px 15px;
+            margin-bottom: 9px;
+            font-size: 15px;
+            font-family: inherit;
+            color: #4b5563;
+            cursor: pointer;
+        }
+
+        .settings-option:hover {
+            background: #f7f8fa;
+        }
+
+        .settings-option svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+            flex-shrink: 0;
+        }
+
+        .settings-option.selected {
+            background: #eef2f7;
+            color: #111827;
+            font-weight: 600;
+        }
+
+        .settings-reset {
+            display: block;
+            width: 100%;
+            text-align: left;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 9px;
+            padding: 14px 16px;
+            margin-top: 22px;
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        .settings-reset:hover {
+            background: #f7f8fa;
+        }
+
+        .settings-reset-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 5px;
+        }
+
+        .settings-reset-title svg {
+            width: 18px;
+            height: 18px;
+            fill: #111827;
+        }
+
+        .settings-reset-sub {
+            font-size: 13.5px;
+            color: #6b7280;
+            padding-left: 28px;
+        }
+
+        /* ═══ Matn o'lchami ═══ */
+        body.text-large .left-panel,
+        body.text-large .left-panel p,
+        body.text-large .left-panel li,
+        body.text-large .left-panel td,
+        body.text-large .left-panel th,
+        body.text-large .multi-choice-option label,
+        body.text-large .choose-many-header,
+        body.text-large .answer-input {
+            font-size: 18.5px;
+        }
+
+        body.text-xlarge .left-panel,
+        body.text-xlarge .left-panel p,
+        body.text-xlarge .left-panel li,
+        body.text-xlarge .left-panel td,
+        body.text-xlarge .left-panel th,
+        body.text-xlarge .multi-choice-option label,
+        body.text-xlarge .choose-many-header,
+        body.text-xlarge .answer-input {
+            font-size: 21.5px;
+        }
+
+        body.text-large .centered-title,
+        body.text-xlarge .centered-title {
+            font-size: 22px;
+        }
+
+        /* ═══ Qorong'i rejim ═══ */
+        body.theme-dark {
+            background-color: #1c1d21;
+            color: #e5e7eb;
+        }
+
+        body.theme-dark::after {
+            color: #ffffff;
+            opacity: 0.03;
+        }
+
+        body.theme-dark .t-hl {
+            color: #111827;
+        }
+
+        body.theme-dark .header,
+        body.theme-dark .nav-row,
+        body.theme-dark .audio-player-container {
+            background-color: #26282d;
+            border-color: #3a3d43;
+        }
+
+        body.theme-dark .main-container,
+        body.theme-dark .left-panel,
+        body.theme-dark .right-panel {
+            background: #1c1d21;
+            border-color: #3a3d43;
+        }
+
+        body.theme-dark .telegram-link {
+            background-color: #26282d;
+            color: #e5e7eb;
+            border-color: #6b7280;
+        }
+
+        body.theme-dark .header-tool-btn {
+            background: #26282d;
+            border-color: #4b5057;
+        }
+
+        body.theme-dark .header-tool-btn:hover {
+            background: #33363b;
+        }
+
+        body.theme-dark .header-tool-btn svg {
+            fill: #e5e7eb;
+        }
+
+        body.theme-dark .part-header {
+            background-color: #26282d;
+            border-color: #3a3d43;
+        }
+
+        body.theme-dark .notes-table th {
+            background: #26282d;
+        }
+
+        body.theme-dark .notes-table th,
+        body.theme-dark .notes-table td {
+            border-color: #4b5057;
+        }
+
+        body.theme-dark .answer-input {
+            background-color: #26282d;
+            border-color: #4b5057;
+            color: #e5e7eb;
+        }
+
+        body.theme-dark .answer-input::placeholder {
+            color: #9ca3af;
+        }
+
+        body.theme-dark .answer-input.correct {
+            background-color: #14532d;
+            border-color: #22c55e;
+            color: #e5e7eb;
+        }
+
+        body.theme-dark .answer-input.incorrect {
+            background-color: #4c1d24;
+            border-color: #ef4444;
+            color: #fecaca;
+        }
+
+        body.theme-dark .multi-choice-option {
+            background-color: transparent;
+        }
+
+        body.theme-dark .multi-choice-option:hover {
+            background-color: #2f3239;
+            border-color: #4b5057;
+        }
+
+        body.theme-dark .multi-choice-option:has(input:checked) {
+            background-color: #1e3a5f;
+        }
+
+        body.theme-dark .multi-choice-option.correct {
+            background-color: #14532d !important;
+        }
+
+        body.theme-dark .multi-choice-option.incorrect {
+            background-color: #4c1d24 !important;
+        }
+
+        body.theme-dark .subQuestion {
+            background: #26282d;
+            border-color: #4b5057;
+            color: #e5e7eb;
+        }
+
+        body.theme-dark .subQuestion:hover {
+            background-color: #33363b;
+        }
+
+        body.theme-dark .subQuestion.answered {
+            background-color: #3a3d43;
+        }
+
+        body.theme-dark .footer__questionNo___3WNct {
+            color: #e5e7eb;
+        }
+
+        body.theme-dark .footer__questionNo___3WNct:hover {
+            background-color: #33363b;
+        }
+
+        body.theme-dark .footer__deliverButton___3FM07 {
+            background-color: #33363b;
+            color: #e5e7eb;
+            border-color: #4b5057;
+        }
+
+        body.theme-dark .settings-modal-content,
+        body.theme-dark .modal-content,
+        body.theme-dark .confirm-modal-content {
+            background: #26282d;
+            color: #e5e7eb;
+        }
+
+        body.theme-dark .settings-title,
+        body.theme-dark .settings-section-title,
+        body.theme-dark .settings-reset-title,
+        body.theme-dark .modal-header h2 {
+            color: #f3f4f6;
+        }
+
+        body.theme-dark .settings-title svg,
+        body.theme-dark .settings-section-title svg,
+        body.theme-dark .settings-reset-title svg {
+            fill: #f3f4f6;
+        }
+
+        body.theme-dark .settings-option,
+        body.theme-dark .settings-reset {
+            background: #26282d;
+            border-color: #3f434a;
+            color: #b7bcc4;
+        }
+
+        body.theme-dark .settings-option:hover,
+        body.theme-dark .settings-reset:hover {
+            background: #31343a;
+        }
+
+        body.theme-dark .settings-option.selected {
+            background: #363a42;
+            color: #ffffff;
+        }
+
+        body.theme-dark #score-summary {
+            background: #31343a;
+            border-color: #4b5057;
+            color: #f3f4f6;
+        }
+
+        body.theme-dark #result-details th {
+            background-color: #31343a;
+        }
+
+        body.theme-dark #result-details th,
+        body.theme-dark #result-details td {
+            border-color: #4b5057;
+        }
+
+        body.theme-dark .confirm-modal-text {
+            color: #b7bcc4;
+        }
+
+        body.theme-dark .confirm-modal-btn-cancel {
+            background: #31343a;
+            border-color: #4b5057;
+            color: #e5e7eb;
+        }
+
+        body.theme-dark .confirm-modal-btn-submit {
+            background: #e5e7eb;
+            color: #111827;
+        }
+
+        @media (max-width: 1024px) {
+            .main-container {
+                flex-direction: column;
+            }
+
+            .right-panel,
+            .main-container.results-mode .right-panel {
+                display: none;
+            }
+
+            .left-panel,
+            .main-container.results-mode .left-panel {
+                width: 100%;
+                padding: 20px 10px;
+                height: auto;
+            }
+
+            .questions-container {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <div class="timer-container"><span class="timer-display">60:00</span></div>
+        <a href="https://t.me/+SoPpY9nBi3U0NTE1" target="_blank" class="telegram-link">MINDLESS WRITER</a>
+        <div class="header-tools">
+            <button type="button" id="fullscreen-btn" class="header-tool-btn" title="Fullscreen">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 11V3h-8l3.29 3.29-10 10L3 13v8h8l-3.29-3.29 10-10z"/></svg>
+            </button>
+            <button type="button" id="settings-btn" class="header-tool-btn" title="Settings">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <div class="audio-player-container">
+        <button id="play-pause-btn" class="player-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z" />
+            </svg>
+        </button>
+        <div class="progress-container">
+            <span id="current-time">0:00</span>
+            <input type="range" id="progress-bar" value="0" step="1" style="width:100%;">
+            <span id="total-duration">0:00</span>
+        </div>
+        <div class="controls-container">
+            <div style="display:flex;align-items:center;">
+                <button id="volume-btn" class="player-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                    </svg>
+                </button>
+                <input type="range" id="new-volume-slider" min="0" max="1" step="0.01" value="1">
+            </div>
+            <div class="speed-container">
+                <button id="speed-btn" class="player-btn">1x</button>
+                <div id="speed-options" class="hidden">
+                    <div data-speed="0.5">0.5x</div>
+                    <div data-speed="0.75">0.75x</div>
+                    <div data-speed="1">1x</div>
+                    <div data-speed="1.25">1.25x</div>
+                    <div data-speed="1.5">1.5x</div>
+                    <div data-speed="2">2x</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="left-panel">
+
+            <!-- ═══════════════════════ PART 1 ═══════════════════════ -->
+            <div id="part-1" class="question-part">
+                <div class="part-header">
+                    <p><strong>Part 1</strong></p>
+                    <p>Listen and answer questions 1–10.</p>
+                </div>
+                <div class="questions-container">
+                    <div class="question">
+                        <div class="question-prompt">
+                            <p><strong>Questions 1–5</strong></p>
+                            <p>Complete the notes below.</p>
+                            <p>Write <strong>ONE WORD ONLY</strong> for each answer.</p>
+                            <p class="centered-title" style="margin-top:10px;">Poppy Reserve in Sandcastle</p>
+                        </div>
+                        <div class="notes-block">
+                            <ul>
+                                <li>Almond Valley Poppy Reserve is a nature reserve</li>
+                                <li>The poppies will be at their best at the end of the <input type="text" id="q1" class="answer-input" placeholder="1" style="width:200px;"></li>
+                                <li>The poppies on the hills are <input type="text" id="q2" class="answer-input" placeholder="2" style="width:200px;"> in colour.</li>
+                                <li>The reserve is located to the <input type="text" id="q3" class="answer-input" placeholder="3" style="width:200px;"> of Lakeside.</li>
+                                <li>The best time for photography is mid-afternoon.</li>
+                                <li>Wear <input type="text" id="q4" class="answer-input" placeholder="4" style="width:200px;"> because of rattlesnakes.</li>
+                                <li>The reserve is a <input type="text" id="q5" class="answer-input" placeholder="5" style="width:200px;"> park.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="question" style="margin-top:40px;">
+                        <div class="question-prompt">
+                            <p><strong>Questions 6–10</strong></p>
+                            <p>Complete the table below.</p>
+                            <p>Write <strong>ONE WORD AND/OR A NUMBER</strong> for each answer.</p>
+                        </div>
+                        <table class="notes-table">
+                            <thead>
+                                <tr><th>Tour</th><th>Start time</th><th>Duration</th><th>Highlights</th><th>Photography</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>The <input type="text" id="q6" class="answer-input" placeholder="6" style="width:130px;"> tour</td><td>every hour from 7:30 a.m.</td><td>30 minutes</td><td>viewpoints, film and the <input type="text" id="q7" class="answer-input" placeholder="7" style="width:130px;"></td><td>panoramic pictures</td></tr>
+                                <tr><td>The Wildflower tour</td><td>every two hours from 8:00 a.m.</td><td><input type="text" id="q8" class="answer-input" placeholder="8" style="width:130px;"></td><td>poppy, cream cup, and sage</td><td>close-up tips</td></tr>
+                                <tr><td>The Wildlife tour</td><td><input type="text" id="q9" class="answer-input" placeholder="9" style="width:110px;"> a.m. or 7:00 p.m.</td><td>1.5 hours</td><td>coyote, quail, roadrunners</td><td>bring tripod and a <input type="text" id="q10" class="answer-input" placeholder="10" style="width:130px;"> lens</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════ PART 2 ═══════════════════════ -->
+            <div id="part-2" class="question-part hidden">
+                <div class="part-header">
+                    <p><strong>Part 2</strong></p>
+                    <p>Listen and answer questions 11–20.</p>
+                </div>
+                <div class="questions-container">
+                    <div class="question">
+                        <div class="question-prompt">
+                            <p><strong>Questions 11–15</strong></p>
+                            <p>Choose the correct letter, <strong>A</strong>, <strong>B</strong> or <strong>C</strong>.</p>
+                            <p class="centered-title" style="margin-top:10px;">Re-creating life in an Iron Age village</p>
+                        </div>
+                        <div style="margin-bottom:18px;">
+                            <p style="margin-bottom:10px;"><strong>11</strong> &nbsp; Jim says that in the Iron Age village</p>
+                            <div class="multi-choice-option"><label><input type="radio" name="q11" value="A"> A &nbsp; he is sometimes cold at night.</label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q11" value="B"> B &nbsp; he always gets up early.</label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q11" value="C"> C &nbsp; he has time to himself.</label></div>
+                        </div>
+                        <div style="margin-bottom:18px;">
+                            <p style="margin-bottom:10px;"><strong>12</strong> &nbsp; What does Jim say about the food they eat in the village?</p>
+                            <div class="multi-choice-option"><label><input type="radio" name="q12" value="A"> A &nbsp; It takes time to prepare.</label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q12" value="B"> B &nbsp; It is difficult to get used to.</label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q12" value="C"> C &nbsp; It has to be eaten quickly.</label></div>
+                        </div>
+                        <div style="margin-bottom:18px;">
+                            <p style="margin-bottom:10px;"><strong>13</strong> &nbsp; Jim says that at the evening meal</p>
+                            <div class="multi-choice-option"><label><input type="radio" name="q13" value="A"> A &nbsp; they are sometimes too tired to eat.</label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q13" value="B"> B &nbsp; they mainly have fruit and berries.</label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q13" value="C"> C &nbsp; they talk about what they've done.</label></div>
+                        </div>
+                        <div style="margin-bottom:18px;">
+                            <p style="margin-bottom:10px;"><strong>14</strong> &nbsp; The most important job for the blacksmiths is</p>
+                            <div class="multi-choice-option"><label><input type="radio" name="q14" value="A"> A &nbsp; to mend broken tools and implements.</label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q14" value="B"> B &nbsp; to maintain a good source of heat.</label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q14" value="C"> C &nbsp; to collect sufficient firewood.</label></div>
+                        </div>
+                        <div style="margin-bottom:18px;">
+                            <p style="margin-bottom:10px;"><strong>15</strong> &nbsp; Jim likes the fact that in the village, people</p>
+                            <div class="multi-choice-option"><label><input type="radio" name="q15" value="A"> A &nbsp; do varied activities.</label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q15" value="B"> B &nbsp; share their knowledge.</label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q15" value="C"> C &nbsp; get a lot of exercise.</label></div>
+                        </div>
+                    </div>
+                    <div class="question" style="margin-top:40px;">
+                        <div class="question-prompt">
+                            <p><strong>Questions 16–20</strong></p>
+                            <p>Complete the flow-chart below.</p>
+                            <p>Choose <strong>FIVE</strong> answers from the box and write the correct letter, <strong>A–I</strong>.</p>
+                        </div>
+                        <div class="matching-options-box">
+                            <p style="margin-bottom:5px;"><strong>Answer options</strong></p>
+                            <p style="margin-bottom:5px;"><strong>A</strong> &nbsp; bone</p>
+                            <p style="margin-bottom:5px;"><strong>B</strong> &nbsp; different</p>
+                            <p style="margin-bottom:5px;"><strong>C</strong> &nbsp; equal</p>
+                            <p style="margin-bottom:5px;"><strong>D</strong> &nbsp; elm</p>
+                            <p style="margin-bottom:5px;"><strong>E</strong> &nbsp; hazel</p>
+                            <p style="margin-bottom:5px;"><strong>F</strong> &nbsp; iron</p>
+                            <p style="margin-bottom:5px;"><strong>G</strong> &nbsp; peg</p>
+                            <p style="margin-bottom:5px;"><strong>H</strong> &nbsp; roof</p>
+                            <p style="margin-bottom:5px;"><strong>I</strong> &nbsp; scaffold</p>
+                        </div>
+                        <p class="centered-title" style="margin-top:16px;">Making an Iron Age Roundhouse</p>
+                        <div class="notes-block">
+                            <p>Mark centre of planned house with a <input type="text" id="q16" class="answer-input" placeholder="16" style="width:80px;"></p>
+                            <p style="text-align:center;margin:6px 0;">↓</p>
+                            <p>Mark out circle for outer boundary</p>
+                            <p style="text-align:center;margin:6px 0;">↓</p>
+                            <p>Dig ground using tools made from <input type="text" id="q17" class="answer-input" placeholder="17" style="width:80px;"></p>
+                            <p style="text-align:center;margin:6px 0;">↓</p>
+                            <p>Insert wall posts (Iron Age builders preferred wood from oak trees)</p>
+                            <p style="text-align:center;margin:6px 0;">↓</p>
+                            <p>Slot more stakes into upright posts</p>
+                            <p style="text-align:center;margin:6px 0;">↓</p>
+                            <p>Insert centre post and build a wooden <input type="text" id="q18" class="answer-input" placeholder="18" style="width:80px;"> around it</p>
+                            <p style="text-align:center;margin:6px 0;">↓</p>
+                            <p>Add main supporting beams and ring beams</p>
+                            <p style="text-align:center;margin:6px 0;">↓</p>
+                            <p>Complete roof framework using <input type="text" id="q19" class="answer-input" placeholder="19" style="width:80px;"> wood rods</p>
+                            <p style="text-align:center;margin:6px 0;">↓</p>
+                            <p>Cover roof with reed bundles of <input type="text" id="q20" class="answer-input" placeholder="20" style="width:80px;"> lengths</p>
+                            <p style="text-align:center;margin:6px 0;">↓</p>
+                            <p>Daub with mixture of clay, dung and straw</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════ PART 3 ═══════════════════════ -->
+            <div id="part-3" class="question-part hidden">
+                <div class="part-header">
+                    <p><strong>Part 3</strong></p>
+                    <p>Listen and answer questions 21–30.</p>
+                </div>
+                <div class="questions-container">
+                    <div class="question">
+                        <div class="question-prompt">
+                            <p><strong>Questions 21–26</strong></p>
+                            <p>Choose the correct letter, <strong>A</strong>, <strong>B</strong> or <strong>C</strong>.</p>
+                            <p class="centered-title" style="margin-top:10px;">Organising a debate</p>
+                        </div>
+                        <div style="margin-bottom:18px;">
+                            <p style="margin-bottom:10px;"><strong>21</strong> &nbsp; Why is Fiona keen to organise a debate?</p>
+                            <div class="multi-choice-option"><label><input type="radio" name="q21" value="A"> A &nbsp; She has attended debates in other departments.</label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q21" value="B"> B &nbsp; She organised debates while at secondary school.</label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q21" value="C"> C &nbsp; She has talked about debating with a friend.</label></div>
+                        </div>
+                        <div style="margin-bottom:18px;">
+                            <p style="margin-bottom:10px;"><strong>22</strong> &nbsp; Fiona says that an advantage of debating is that it can</p>
+                            <div class="multi-choice-option"><label><input type="radio" name="q22" value="A"> A &nbsp; help students to form opinions.</label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q22" value="B"> B &nbsp; improve students' listening skills.</label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q22" value="C"> C &nbsp; develop students' self-confidence.</label></div>
+                        </div>
+                        <div style="margin-bottom:18px;">
+                            <p style="margin-bottom:10px;"><strong>23</strong> &nbsp; How will the debate topic be selected?</p>
+                            <div class="multi-choice-option"><label><input type="radio" name="q23" value="A"> A &nbsp; Daniel and Fiona will ask the lecturer to choose one from a list.</label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q23" value="B"> B &nbsp; The other students will select one of Daniel and Fiona's suggestions.</label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q23" value="C"> C &nbsp; Daniel and Fiona will collect suggestions from the other students.</label></div>
+                        </div>
+                        <div style="margin-bottom:18px;">
+                            <p style="margin-bottom:10px;"><strong>24</strong> &nbsp; Daniel and Fiona think one key to a successful debate is for students to</p>
+                            <div class="multi-choice-option"><label><input type="radio" name="q24" value="A"> A &nbsp; have a topic that really involves them.</label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q24" value="B"> B &nbsp; plan their speech carefully.</label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q24" value="C"> C &nbsp; be given positions to defend.</label></div>
+                        </div>
+                        <div style="margin-bottom:18px;">
+                            <p style="margin-bottom:10px;"><strong>25</strong> &nbsp; Daniel thinks it would be good for the students to be in two teams because it would</p>
+                            <div class="multi-choice-option"><label><input type="radio" name="q25" value="A"> A &nbsp; give everyone a chance to speak.</label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q25" value="B"> B &nbsp; help students with less confidence.</label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q25" value="C"> C &nbsp; share out the preparation required.</label></div>
+                        </div>
+                        <div style="margin-bottom:18px;">
+                            <p style="margin-bottom:10px;"><strong>26</strong> &nbsp; What does the lecturer agree to do after the debate?</p>
+                            <div class="multi-choice-option"><label><input type="radio" name="q26" value="A"> A &nbsp; make comments on students' written work.</label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q26" value="B"> B &nbsp; help Daniel and Fiona to write a report.</label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q26" value="C"> C &nbsp; set the students an essay on a different topic.</label></div>
+                        </div>
+                    </div>
+                    <div class="question" style="margin-top:40px;">
+                        <div class="question-prompt">
+                            <p><strong>Questions 27–30</strong></p>
+                            <p><em>What will Daniel and Fiona do at the meeting to help students with debate?</em></p>
+                            <p>Choose <strong>FOUR</strong> answers from the box and write the correct letter, <strong>A–F</strong>.</p>
+                        </div>
+                        <div class="matching-options-box">
+                            <p style="margin-bottom:5px;"><strong>Actions at the meeting</strong></p>
+                            <p style="margin-bottom:5px;"><strong>A</strong> &nbsp; ask for suggestions</p>
+                            <p style="margin-bottom:5px;"><strong>B</strong> &nbsp; give a handout of key points</p>
+                            <p style="margin-bottom:5px;"><strong>C</strong> &nbsp; write on the board</p>
+                            <p style="margin-bottom:5px;"><strong>D</strong> &nbsp; provide a photocopy of an article</p>
+                            <p style="margin-bottom:5px;"><strong>E</strong> &nbsp; recommend a textbook</p>
+                            <p style="margin-bottom:5px;"><strong>F</strong> &nbsp; give a demonstration</p>
+                        </div>
+                        <p class="notes-heading" style="margin-top:16px;">Aspects of a debate</p>
+                        <ul style="list-style:none;padding-left:0;">
+                            <li class="matching-item"><span><strong>27</strong> &nbsp; understanding debating procedures</span>
+                                <input type="text" id="q27" class="answer-input" placeholder="27" style="width:80px;"></li>
+                            <li class="matching-item"><span><strong>28</strong> &nbsp; using body language</span>
+                                <input type="text" id="q28" class="answer-input" placeholder="28" style="width:80px;"></li>
+                            <li class="matching-item"><span><strong>29</strong> &nbsp; accessing resources</span>
+                                <input type="text" id="q29" class="answer-input" placeholder="29" style="width:80px;"></li>
+                            <li class="matching-item"><span><strong>30</strong> &nbsp; asking and answering questions</span>
+                                <input type="text" id="q30" class="answer-input" placeholder="30" style="width:80px;"></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════ PART 4 ═══════════════════════ -->
+            <div id="part-4" class="question-part hidden">
+                <div class="part-header">
+                    <p><strong>Part 4</strong></p>
+                    <p>Listen and answer questions 31–40.</p>
+                </div>
+                <div class="questions-container">
+                    <div class="question">
+                        <div class="question-prompt">
+                            <p><strong>Questions 31–40</strong></p>
+                            <p>Complete the notes below.</p>
+                            <p>Write <strong>ONE WORD ONLY</strong> for each answer.</p>
+                            <p class="centered-title" style="margin-top:10px;">Office Design</p>
+                        </div>
+                        <div class="notes-block">
+                            <p class="notes-heading" style="margin-top:0;">Early 20th Century</p>
+                            <ul>
+                                <li>workers employed to do <input type="text" id="q31" class="answer-input" placeholder="31" style="width:200px;"> were arranged in rows</li>
+                            </ul>
+                            <p class="notes-heading">1960s to present</p>
+                            <p class="notes-subheading">Variations in design of open-plan offices:</p>
+                            <ul>
+                                <li>first, workers had individual <input type="text" id="q32" class="answer-input" placeholder="32" style="width:200px;"></li>
+                                <li>later, they had cubicles with high or low <input type="text" id="q33" class="answer-input" placeholder="33" style="width:200px;"></li>
+                                <li>nowadays, workers may have to <input type="text" id="q34" class="answer-input" placeholder="34" style="width:200px;"> a work area</li>
+                            </ul>
+                            <p class="notes-heading">Survey results</p>
+                            <p class="notes-subheading">Attitudes of employees to open-plan designs:</p>
+                            <ul>
+                                <li>there is a lack of <input type="text" id="q35" class="answer-input" placeholder="35" style="width:200px;"> and <input type="text" id="q36" class="answer-input" placeholder="36" style="width:200px;"></li>
+                                <li>they pose a risk to our <input type="text" id="q37" class="answer-input" placeholder="37" style="width:200px;"> (staff records support this)</li>
+                            </ul>
+                            <p class="notes-subheading">Attitudes of employers to open-plan designs:</p>
+                            <ul>
+                                <li>they significantly reduce rent and <input type="text" id="q38" class="answer-input" placeholder="38" style="width:200px;"> costs</li>
+                                <li>they improve teamwork and communication</li>
+                                <li>they can make <input type="text" id="q39" class="answer-input" placeholder="39" style="width:200px;"> staff easier</li>
+                            </ul>
+                            <p>In reality, employees are unhappy and they are often distracted by the <input type="text" id="q40" class="answer-input" placeholder="40" style="width:200px;"> in the office.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- end left-panel -->
+
+        <div class="right-panel">
+            <div id="transcription-container">
+                <h2 style="font-size:18px;font-weight:bold;margin-bottom:10px;">Transcription</h2>
+                <div id="transcription-text"></div>
+            </div>
+        </div>
+    </div><!-- end main-container -->
+
+    <!-- ═══ TRANSKRIPT — HALI YUBORILMAGAN (audio bilan birga kutilmoqda) ═══ -->
+    <div id="transcription-data" style="display:none;">
+        <div data-part="1">You will hear a number of different recordings, and you will have to answer questions on what you hear. There will be time for you to read the instructions and questions, and you will have a chance to check your work. All the recordings will be played once only. The test is in four parts. Write all your answers in the listening question booklet. At the end of the test, you will be given ten minutes to transfer your answers to an answer sheet. Now turn to part one on page two of your question booklet. Part One. You will hear a telephone conversation between a woman and a park ranger. First you have some time to look at questions one to five. Now listen carefully and answer questions one to five.</p><p>Almond Valley Poppy Reserve, may I help you? Is the Nature Reserve open now? Yes, we are actually open all year, although this is the best time of year to see the wildflowers. Are the poppies blooming yet? Absolutely. They started to bloom last week and are already beautiful, but <span class="t-hl" data-q="1" data-time="105"><span class="t-qmark">1</span>they should peak and be in full bloom at the end of the month<span class="t-note">(1: month)</span></span>. Oh, I was planning on coming at the end of this week. Is that too early? No, not at all. <span class="t-hl" data-q="2" data-time="115"><span class="t-qmark">2</span>The hills are already covered with orange poppies.<span class="t-note">(2: orange)</span></span> I thought poppies were red. Not in California. I've never seen a red poppy here. <em>(red — tuzoq)</em> The poppy reserve is in Ocean County, right? Right. <span class="t-hl" data-q="3" data-time="128"><span class="t-qmark">3</span>From Lakeside you'll need to drive about an hour east.<span class="t-note">(3: east)</span></span></p><p>What time does the reserve open? The reserve is open from sunrise to sunset. It's best to come early in the morning to beat the crowds, but for the best photography you might want to consider a mid-afternoon visit on a weekday. I heard that there are a lot of rattlesnakes in the desert. Is it dangerous to walk about? Most wildlife is quite safe. There are very few people bitten by rattlesnakes, so <span class="t-hl" data-q="4" data-time="160"><span class="t-qmark">4</span>we do recommend wearing trousers just to be on the safe side<span class="t-note">(4: trousers)</span></span>. All right. I was hoping that I might have the chance to see some wildlife, too. Oh, how much is the admission to the reserve? It's five dollars. Can I use my National Park Pass to enter the reserve? Unfortunately not, <span class="t-hl" data-q="5" data-time="175"><span class="t-qmark">5</span>since it is a state park, not a national park<span class="t-note">(5: state — 'national' emas)</span></span>. All right. I heard from a friend that there is a nature tour available. Can you tell me about it? Certainly, but can you excuse me just a sec? I'll be right back.</p><p>Before you hear the rest of the conversation, you have some time to look at questions six to ten. Now listen and answer questions six to ten.</p><p>Hello? Yes, I'm still here. Now, you are interested in the nature tours, right? Oh, there's more than one? Yes. <span class="t-hl" data-q="6" data-time="242"><span class="t-qmark">6</span>We have the general tour, which is the one your friend may have taken<span class="t-note">(6: General tour)</span></span>, but we also have two more specialized tours. Starting at 7.30 a.m. is our general tour. That's early for some people, I know. It's offered every hour, too. But it's a great time, and it only lasts 30 minutes. Is that the tour that takes you to the vista points? Yes, that is one of the highlights, <span class="t-hl" data-q="7" data-time="266"><span class="t-qmark">7</span>along with a film introducing the park and the museum<span class="t-note">(7: museum)</span></span>. You're welcome to tour the museum at your leisure. It's a great tour for those who just want to take panoramic pictures with automatic cameras. Well, if I come all that way, I'd like to have a more detailed tour. Then you are in luck, because we have a wonderful wildflower tour every two hours from 8 a.m. <span class="t-hl" data-q="8" data-time="287"><span class="t-qmark">8</span>It lasts one hour<span class="t-note">(8: 1 hour — Wildflower tour)</span></span>, and the volunteer will give you information about many of the flowers on the reserve. Besides the poppies, will cream cups be in bloom? Yes, and you will see lots of sage, too. We have a volunteer who is really good at giving tips on close-up photography. You mentioned another tour. Yes, the last one is the wildlife tour, but it is offered at very limited times. Is that because most of the wildlife is nocturnal? Yes, so <span class="t-hl" data-q="9" data-time="320"><span class="t-qmark">9</span>we offer this tour only two times, 5.30 a.m. or 7.00 p.m.<span class="t-note">(9: 5:30 a.m.)</span></span> Wow, that early? But don't the snakes and lizards like the sun? Right. First, let me say it takes about an hour and a half, but you will have the opportunity to see other animals, like coyotes, quail, and roadrunners. You have to get here before the crowds arrive or after most of them leave. Well, that makes sense. Does it require a lot of walking? More like a lot of standing, but most of the time you will be at one or two locations, so <span class="t-hl" data-q="10" data-time="352"><span class="t-qmark">10</span>we recommend bringing a tripod and zoom lens if you want to take pictures<span class="t-note">(10: zoom)</span></span>. Well, thank you very much. You've been extremely helpful and informative. You're welcome. Glad I could be of service. Goodbye. Goodbye. That is the end of Part 1.</div>
+        <div data-part="2">Part 2. You will hear a talk by a volunteer who has been taking part in a project to find out what everyday life was like 2,500 years ago in Britain during the time known as the Iron Age. First you have some time to look at questions 11 to 15. Now listen carefully and answer questions 11 to 15.</p><p>Jim Stevens has been taking part in an experiment to find out what everyday life was like in Britain over 2,500 years ago in the period of history we call the Iron Age. He is one of a group of volunteers who have been living for the last six months in the sort of village that people inhabited in those days and following the sort of daily routine that ordinary people followed then. So Jim, tell us what you do on a typical day.</p><p><span class="t-hl" data-q="11" data-time="538"><span class="t-qmark">11</span>A typical day in the Iron Age village begins with rising at first light. I occasionally did that when I was at home because I loved having time to myself before the family got up. But here I do it every day because it's so light.<span class="t-note">(11: B — har kuni erta turadi; 'o'ziga vaqt' uyda edi, tuzoq)</span></span> Others also get up early because they find the straw beds rather cold. <em>(A tuzoq — sovuq boshqalarga tegishli)</em> We start work immediately, usually tending to our fires which have died down in the night. I feed the cattle before starting to get breakfast ready, usually porridge that's been soaked the night before. It sounds horrid, doesn't it? But it's not so bad. <span class="t-hl" data-q="12" data-time="567"><span class="t-qmark">12</span>As it takes such a long time to cook anything, we end up eating only twice a day.<span class="t-note">(12: A — tayyorlash uzoq vaqt oladi)</span></span> We have a late breakfast after a morning's work and then in the evening we gather together as a community. <span class="t-hl" data-q="13" data-time="584"><span class="t-qmark">13</span>Although the evening meal provides a chance for us to chat about the day<span class="t-note">(13: C — kun haqida gaplashadi)</span></span>, it can be quite chilly so we go to bed pretty early. I think we're always hungry because we use much more energy than usual. It's all the physical exertion. A lot of time is spent just trying to get enough to eat, looking for berries and fruit and things like that. <em>(B tuzoq — mevalar kun bo'yi qidiriladi, kechki ovqat emas)</em> There are lots of other jobs to be done, like cooking, finding wood and keeping the fires going. <span class="t-hl" data-q="14" data-time="612"><span class="t-qmark">14</span>The biggest priority for the blacksmiths working the forge is to tend the fire and to get it nice and hot so they can carry out their tasks.<span class="t-note">(14: B — olovni issiq saqlash)</span></span> They've got various things to make, tools, cooking implements and so on. <em>(A tuzoq — asboblar yasaydi, lekin asosiy vazifa emas)</em> So life here is about looking after the animals and looking after ourselves. Everybody's always doing something round the fire as well. It's not as if we're just sitting there chatting. Just living, surviving takes up most of our time. And actually, it's quite difficult to fit in other things around it. For example, you might be breaking hazelnuts, spinning some wool or just doing things like straining milk. <span class="t-hl" data-q="15" data-time="657"><span class="t-qmark">15</span>Here you're finding out how to do different things every day, which keeps you on your toes and keeps you interested.<span class="t-note">(15: A — har kuni turli ishlar)</span></span></p><p>Before you hear the rest of the talk, you have some time to look at questions 16 to 20. Now listen and answer questions 16 to 20.</p><p>And I understand that you even built your own houses to live in. Round houses built in just the same way that archaeologists think that Iron Age people constructed them. So tell us exactly how you build an Iron Age roundhouse. It's a bit like putting up a tent at first, but without the benefit of ready-made metal poles. <span class="t-hl" data-q="16" data-time="724"><span class="t-qmark">16</span>You mark the centre of your house with a wooden peg.<span class="t-note">(16: G — peg)</span></span> What you do then is loop a length of rope around it and mark out the circle to give you the outer boundary of your building. Once you've got this, you then have to dig out the ground ready for the wall. And in Iron Age times, people didn't have shovels or diggers like we do today, but <span class="t-hl" data-q="17" data-time="746"><span class="t-qmark">17</span>used tools which they fashioned from animal bone<span class="t-note">(17: A — bone)</span></span>. It must have been quite hard work. Next, you have to start on the wall. Although there were several native trees around, like the ash and the elm, the ancients preferred oak for the wall posts, which they knocked into the circle they had dug. <em>(D elm — tuzoq, devor uchun eman ishlatilgan)</em> Don't forget to leave room for the entrance, otherwise you won't be able to get into the house. Now you can begin to see the wall of the house developing. To create the framework for the final wall, the stakes were not nailed or glued onto each other as they might be today. Instead, ones with holes cut into each end are slotted over the upright posts, making what to us looks like a fence. This procedure creates a very firm structure. To support the large roof, first you need to put up a good-sized centre post, which is secured with ropes and pegs. But it's not only this which is relied upon to hold up the roof, so the next thing you have to do is <span class="t-hl" data-q="18" data-time="813"><span class="t-qmark">18</span>build around the post a timber scaffold tower, similar to the metal ones used in Britain today<span class="t-note">(18: I — scaffold)</span></span>. This temporary structure of wooden poles enables you to put up the main supporting beams, which are then tied together with rope and fixed to the wall plate at the bottom of the fence. The top part of this tent-like construction is strengthened with two ring beams. Now the framework for the roof has to be completed. Rather like weaving a basket using rods from the willow tree, <span class="t-hl" data-q="19" data-time="848"><span class="t-qmark">19</span>hazelwood rods are linked to the beams in parallel hoops<span class="t-note">(19: E — hazel)</span></span>. Now you can see the house in skeletal form. The tricky bit is thatching the roof because it requires great skill. I find this very difficult. First you take reed bundles and <span class="t-hl" data-q="20" data-time="867"><span class="t-qmark">20</span>cut them so that each is of equal length<span class="t-note">(20: C — equal)</span></span>. Then you must fix them firmly so they won't blow away in heavy winds. The final part of the process is the daubing, which in effect is like modern day plastering. Whereas today we use plaster and paint or wallpaper, the Iron Age people had a mixture of clay, cow dung and straw, which they daubed all over the inside and outside to give the house a smooth finish. That is the end of part 2.</div>
+        <div data-part="3">Part 3. Now listen carefully and answer questions 21 to 26.</p><p>Right, now you wanted to organise a formal discussion of some sort in the class, is that right Daniel? Yes, we thought it would be really good to end our psychology course with a formal debate. You know, where there's a statement and people argue for or against it. Good idea. Where did the enthusiasm come from? Have either of you organised debates before? Fiona? No, but <span class="t-hl" data-q="21" data-time="982"><span class="t-qmark">21</span>one of my friends did in his last year at secondary school and he says he got a lot out of doing it<span class="t-note">(21: C — do'sti bilan gaplashgan; o'zi maktabda tashkil qilmagan)</span></span>. And I know they have debates in lots of other departments here at the university. <em>(A tuzoq — boshqa fakultetlarda debat borligini biladi, lekin qatnashmagan; B tuzoq — 'No' deb javob beradi)</em> I see. So what do you think the students, you and the others, would get out of this? Well, a debate will encourage people to study all sides of the subject matter and <span class="t-hl" data-q="22" data-time="1005"><span class="t-qmark">22</span>I also think listening to other people's ideas can have a focusing effect on your own. Sometimes you kind of don't know what you truly believe until you hear something you disagree with.<span class="t-note">(22: A — o'z fikrini shakllantirishga yordam beradi)</span></span></p><p>OK, what about the topic for the debate? We've got three to choose from. We'll show you in a minute to check they're OK. At first we thought we'd ask the other students to suggest something but we were afraid we'd get 30 different topics. <em>(C tuzoq — bu fikrdan voz kechishdi)</em> So instead we brainstormed some, just the two of us, then made a shortlist and <span class="t-hl" data-q="23" data-time="1037"><span class="t-qmark">23</span>we'll get them to vote for the one they like best<span class="t-note">(23: B — talabalar taklif qilingan mavzulardan birini tanlaydi)</span></span>. Right. But the thing is, if people don't know how debates work, they could feel at a disadvantage. I mean, it wouldn't affect their grades or anything, but it could put them off. So we thought we should have a meeting beforehand to make sure everyone's clear about what's involved in a debate and how to prepare for it. I think that's a good idea. And we thought we could establish some key points of a successful debate there, like that debates are effective methods for considering an issue and that you need to understand both sides of an argument in order to support one side effectively. <span class="t-hl" data-q="24" data-time="1080"><span class="t-qmark">24</span>We think it'll be best if we can use an issue that the students already have strong opinions about. Then some people will be happy to speak in support of it and others to oppose it.<span class="t-note">(24: A — talabalarni qiziqtiradigan mavzu)</span></span></p><p>Right. What else do you want to do at the meeting? Well, we've got to think about how people will do the background research for the debate. <span class="t-hl" data-q="25" data-time="1100"><span class="t-qmark">25</span>We could organise everyone into two teams. That should save time for the main speakers. They won't have to do it on their own.<span class="t-note">(25: C — tayyorgarlikni bo'lishadi)</span></span> And we'll need to decide on some rules, like how long each person speaks for, and to select a chair for the debate, someone who's really confident. <em>(B tuzoq — ishonchli odam rais qilib tanlanadi, jamoa emas)</em> Fine. Now, I think you should have some sort of follow-up to the debate. After it's over, I'd like you to get everyone to write a short essay, focusing on what they gained from participating in it. And in turn, that can feed into the work we've been doing on learning and motivation. But <span class="t-hl" data-q="26" data-time="1132"><span class="t-qmark">26</span>would you be willing to read them and report back? I mean, give some feedback on them? I wouldn't have made the suggestion if I wasn't.<span class="t-note">(26: A — yozma ishlarga fikr bildiradi)</span></span> Thanks.</p><p>Before you hear the rest of the discussion, you have some time to look at questions 27 to 30. Now listen and answer questions 27 to 30.</p><p>OK, now let's think a bit more about the meeting. You need to decide exactly how you'll introduce the students to different features of a debate. Well, first of all we need to inform everyone about what actually happens at a debate, the procedures and so on. We could talk about that and write the main information on the board. Or instead of that, <span class="t-hl" data-q="27" data-time="1199"><span class="t-qmark">27</span>we could make a summary of the main stages and hand that out. Then talk it through. Yes, OK, that's better.<span class="t-note">(27: B — asosiy fikrlar yozilgan varaq tarqatish)</span></span> OK, but we do need to talk about body language as well. Yes, that's a very important tool. <span class="t-hl" data-q="28" data-time="1215"><span class="t-qmark">28</span>I've got an interesting article on that with some good diagrams of techniques for things like eye contact. I'll make some copies for you to give out.<span class="t-note">(28: D — maqolaning nusxasi)</span></span> Great. Then we need to think about where people will find the information on the debate topic. So they'll need to know where to look for the information. We could compile a list of sources, textbooks and articles and so on. We could, but <span class="t-hl" data-q="29" data-time="1237"><span class="t-qmark">29</span>couldn't people offer their own suggestions and advice on that at the meeting instead? Yes, get everyone involved.<span class="t-note">(29: A — takliflar so'raladi; E tuzoq — darslik tavsiyasidan voz kechishdi)</span></span> Right. What about preparation for asking and answering questions? We could try to demonstrate that, but I'm not sure how. <em>(F tuzoq — namoyish qilishdan voz kechishdi)</em> Maybe we could <span class="t-hl" data-q="30" data-time="1252"><span class="t-qmark">30</span>put up a list of points on the board, then discuss them. Yes, that sounds better.<span class="t-note">(30: C — doskaga yozish)</span></span> Thanks. OK, well, let's meet up again. That is the end of Part 3.</div>
+        <div data-part="4">Part 4. You will hear part of a talk about recent research into the design of workplaces. First you have some time to look at questions 31 to 40. Now listen carefully and answer questions 31 to 40.</p><p>Hello everyone. I recently completed some important research into the way office space is designed and its impact on employees. The open plan office had been the norm for offices around the world. I'm sure you can picture one. A big room with maybe 50 or 100 workers sitting at their workstations. You might think open plan designs are a recent phenomenon, but they actually came about in the early 20th century, when <span class="t-hl" data-q="31" data-time="1467"><span class="t-qmark">31</span>businesses needed large numbers of people to do typing<span class="t-note">(31: typing)</span></span>. These employees, usually women, used to have to sit in rows working away at their typewriters under the watchful eye of their supervisor.</p><p>Over the years, designers have come up with several variations on the open theme. In particular, this has been achieved through furnishings. <span class="t-hl" data-q="32" data-time="1493"><span class="t-qmark">32</span>The early designs featured separate desks.<span class="t-note">(32: desks)</span></span> A subsequent design introduced the concept of the cubicle. These can have either <span class="t-hl" data-q="33" data-time="1502"><span class="t-qmark">33</span>high screens that workers can't see over or a screen just low enough to keep a lookout for the manager<span class="t-note">(33: screens)</span></span>. Nowadays, with the increase in large call centres, a phenomenon known as hot desking is common. In this system, employees working on different shifts are asked to <span class="t-hl" data-q="34" data-time="1520"><span class="t-qmark">34</span>share the same workstation<span class="t-note">(34: share)</span></span>. As you can imagine, this is not very popular with staff as there is little opportunity to personalise your workspace.</p><p>In fact, my research shows that employees in general dislike the open plan design. As a part of my research, I conducted a survey of the staff in several large companies with open plan offices. The employees all voiced similar concerns about the design. Firstly, they felt that <span class="t-hl" data-q="35" data-time="1558"><span class="t-qmark">35</span>the open plan took away their privacy<span class="t-note">(35: privacy)</span></span>, but many also felt the need to carry their valuables with them at all times. So, to some extent, they also felt there was <span class="t-hl" data-q="36" data-time="1568"><span class="t-qmark">36</span>less security with these designs<span class="t-note">(36: security)</span></span>. Another common complaint may be something for employers to consider when choosing this type of design, and this was that these types of office space are <span class="t-hl" data-q="37" data-time="1578"><span class="t-qmark">37</span>bad for the health<span class="t-note">(37: health)</span></span>. I was intrigued by this possibility, but looking at staff records, it does seem to be borne out.</p><p>So, if this design is so unpopular, why is it so commonplace? Well, the answer to that is in the benefits that the employers feel this type of design has. Of course, there is the obvious benefit that this design significantly reduces costs, both in terms of <span class="t-hl" data-q="38" data-time="1608"><span class="t-qmark">38</span>rent and even in terms of energy use<span class="t-note">(38: energy)</span></span>. Employers also argue that an open plan design leads to better teamwork and communication. They also feel that new staff can learn from observing other workers, so this design can actually <span class="t-hl" data-q="39" data-time="1625"><span class="t-qmark">39</span>help in training staff<span class="t-note">(39: training)</span></span>. However, the complaints voiced by employees seem to suggest that the disadvantages far outweigh the advantages. The reality is that unhappy workers are unlikely to work well together, and there is plenty of evidence to suggest workers are frequently <span class="t-hl" data-q="40" data-time="1646"><span class="t-qmark">40</span>distracted from their work by the noise that is all around them<span class="t-note">(40: noise)</span></span>. What is clear is that, as designers, we need to think carefully about the impact that our design has both on the staff involved and the work that they do. That is the end of Part 4.</div>
+    </div>
+
+    <audio id="global-audio-player" class="hidden"></audio>
+
+    <!-- Nav Arrows -->
+    <div class="nav-arrows">
+        <button class="nav-arrow" onclick="previousPart()" id="prevBtn">&#8249;</button>
+        <button class="nav-arrow" onclick="nextPart()" id="nextBtn">&#8250;</button>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="nav-row" aria-label="Questions">
+        <div class="footer__questionWrapper___1tZ46 selected multiple" role="tablist">
+            <button role="tab" class="footer__questionNo___3WNct" onclick="switchToPart(1)">
+                <span><span class="section-prefix">Part </span><span class="sectionNr">1</span><span
+                        class="attemptedCount">0 of 10</span></span>
+            </button>
+            <div class="footer__subquestionWrapper___9GgoP">
+                <button class="subQuestion" onclick="goToQuestion(1)"><span class="sr-only">Q1</span><span>1</span></button>
+                <button class="subQuestion" onclick="goToQuestion(2)"><span class="sr-only">Q2</span><span>2</span></button>
+                <button class="subQuestion" onclick="goToQuestion(3)"><span class="sr-only">Q3</span><span>3</span></button>
+                <button class="subQuestion" onclick="goToQuestion(4)"><span class="sr-only">Q4</span><span>4</span></button>
+                <button class="subQuestion" onclick="goToQuestion(5)"><span class="sr-only">Q5</span><span>5</span></button>
+                <button class="subQuestion" onclick="goToQuestion(6)"><span class="sr-only">Q6</span><span>6</span></button>
+                <button class="subQuestion" onclick="goToQuestion(7)"><span class="sr-only">Q7</span><span>7</span></button>
+                <button class="subQuestion" onclick="goToQuestion(8)"><span class="sr-only">Q8</span><span>8</span></button>
+                <button class="subQuestion" onclick="goToQuestion(9)"><span class="sr-only">Q9</span><span>9</span></button>
+                <button class="subQuestion" onclick="goToQuestion(10)"><span class="sr-only">Q10</span><span>10</span></button>
+            </div>
+        </div>
+        <div class="footer__questionWrapper___1tZ46 multiple" role="tablist">
+            <button role="tab" class="footer__questionNo___3WNct" onclick="switchToPart(2)">
+                <span><span class="section-prefix">Part </span><span class="sectionNr">2</span><span
+                        class="attemptedCount">0 of 10</span></span>
+            </button>
+            <div class="footer__subquestionWrapper___9GgoP">
+                <button class="subQuestion" onclick="goToQuestion(11)"><span>11</span></button>
+                <button class="subQuestion" onclick="goToQuestion(12)"><span>12</span></button>
+                <button class="subQuestion" onclick="goToQuestion(13)"><span>13</span></button>
+                <button class="subQuestion" onclick="goToQuestion(14)"><span>14</span></button>
+                <button class="subQuestion" onclick="goToQuestion(15)"><span>15</span></button>
+                <button class="subQuestion" onclick="goToQuestion(16)"><span>16</span></button>
+                <button class="subQuestion" onclick="goToQuestion(17)"><span>17</span></button>
+                <button class="subQuestion" onclick="goToQuestion(18)"><span>18</span></button>
+                <button class="subQuestion" onclick="goToQuestion(19)"><span>19</span></button>
+                <button class="subQuestion" onclick="goToQuestion(20)"><span>20</span></button>
+            </div>
+        </div>
+        <div class="footer__questionWrapper___1tZ46 multiple" role="tablist">
+            <button role="tab" class="footer__questionNo___3WNct" onclick="switchToPart(3)">
+                <span><span class="section-prefix">Part </span><span class="sectionNr">3</span><span
+                        class="attemptedCount">0 of 10</span></span>
+            </button>
+            <div class="footer__subquestionWrapper___9GgoP">
+                <button class="subQuestion" onclick="goToQuestion(21)"><span>21</span></button>
+                <button class="subQuestion" onclick="goToQuestion(22)"><span>22</span></button>
+                <button class="subQuestion" onclick="goToQuestion(23)"><span>23</span></button>
+                <button class="subQuestion" onclick="goToQuestion(24)"><span>24</span></button>
+                <button class="subQuestion" onclick="goToQuestion(25)"><span>25</span></button>
+                <button class="subQuestion" onclick="goToQuestion(26)"><span>26</span></button>
+                <button class="subQuestion" onclick="goToQuestion(27)"><span>27</span></button>
+                <button class="subQuestion" onclick="goToQuestion(28)"><span>28</span></button>
+                <button class="subQuestion" onclick="goToQuestion(29)"><span>29</span></button>
+                <button class="subQuestion" onclick="goToQuestion(30)"><span>30</span></button>
+            </div>
+        </div>
+        <div class="footer__questionWrapper___1tZ46 multiple" role="tablist">
+            <button role="tab" class="footer__questionNo___3WNct" onclick="switchToPart(4)">
+                <span><span class="section-prefix">Part </span><span class="sectionNr">4</span><span
+                        class="attemptedCount">0 of 10</span></span>
+            </button>
+            <div class="footer__subquestionWrapper___9GgoP">
+                <button class="subQuestion" onclick="goToQuestion(31)"><span>31</span></button>
+                <button class="subQuestion" onclick="goToQuestion(32)"><span>32</span></button>
+                <button class="subQuestion" onclick="goToQuestion(33)"><span>33</span></button>
+                <button class="subQuestion" onclick="goToQuestion(34)"><span>34</span></button>
+                <button class="subQuestion" onclick="goToQuestion(35)"><span>35</span></button>
+                <button class="subQuestion" onclick="goToQuestion(36)"><span>36</span></button>
+                <button class="subQuestion" onclick="goToQuestion(37)"><span>37</span></button>
+                <button class="subQuestion" onclick="goToQuestion(38)"><span>38</span></button>
+                <button class="subQuestion" onclick="goToQuestion(39)"><span>39</span></button>
+                <button class="subQuestion" onclick="goToQuestion(40)"><span>40</span></button>
+            </div>
+        </div>
+        <button id="deliver-button" class="footer__deliverButton___3FM07"><span>Check Answers</span></button>
+    </nav>
+
+    <!-- Context Menu -->
+    <div id="contextMenu" class="context-menu">
+        <div class="context-menu-item" id="clear-item" onclick="clearHighlight()" style="display:none;">Clear</div>
+        <div class="context-menu-item" onclick="clearAllHighlights()">Clear All</div>
+    </div>
+
+    <!-- Matn belgilanganda avtomatik chiqadigan asboblar paneli -->
+    <div id="selectionToolbar" class="selection-toolbar" style="display:none;">
+        <button type="button" onclick="addComment()">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM9 11H7V9h2v2zm4 0h-2V9h2v2zm4 0h-2V9h2v2z"/></svg>
+            <span>Note</span>
+        </button>
+        <button type="button" onclick="highlightText()">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17.75 7L14 3.25l-10 10V17h3.75l10-10zm2.96-2.96c.39-.39.39-1.02 0-1.41L18.37.29c-.39-.39-1.02-.39-1.41 0L15 2.25 18.75 6l1.96-1.96z"/><path d="M2 20h20v3H2z"/></svg>
+            <span>Highlight</span>
+        </button>
+    </div>
+
+    <!-- Result Modal -->
+    <div id="result-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Your Results</h2>
+                <button id="modal-close-button" class="modal-close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="score-summary"></p>
+                <div id="result-details"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Exam Settings oynasi -->
+    <div id="settings-modal" class="modal-overlay" style="display:none;">
+        <div class="settings-modal-content">
+            <div class="settings-header">
+                <span class="settings-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+                    Exam Settings
+                </span>
+                <button type="button" id="settings-close" class="settings-close">&times;</button>
+            </div>
+
+            <p class="settings-section-title">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 0 0-1.41 0 .996.996 0 0 0 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 0 0-1.41 0 .996.996 0 0 0 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 0 0 0-1.41l-1.06-1.06zm1.06-10.96a.996.996 0 0 0 0-1.41.996.996 0 0 0-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36a.996.996 0 0 0 0-1.41.996.996 0 0 0-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>
+                Theme
+            </p>
+            <button type="button" class="settings-option" data-theme="light">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 0 0-1.41 0 .996.996 0 0 0 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 0 0-1.41 0 .996.996 0 0 0 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 0 0 0-1.41l-1.06-1.06zm1.06-10.96a.996.996 0 0 0 0-1.41.996.996 0 0 0-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36a.996.996 0 0 0 0-1.41.996.996 0 0 0-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>
+                Light
+            </button>
+            <button type="button" class="settings-option" data-theme="dark">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
+                Dark
+            </button>
+            <button type="button" class="settings-option" data-theme="system">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 2H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h7v2H8v2h8v-2h-2v-2h7c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H3V4h18v12z"/></svg>
+                System
+            </button>
+
+            <p class="settings-section-title">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5 4v3h5.5v12h3V7H19V4z"/></svg>
+                Text Size
+            </p>
+            <button type="button" class="settings-option" data-textsize="default">Default</button>
+            <button type="button" class="settings-option" data-textsize="large" style="font-size:18.5px;">Large</button>
+            <button type="button" class="settings-option" data-textsize="xlarge" style="font-size:21.5px;">Extra Large</button>
+
+            <button type="button" id="reset-settings-btn" class="settings-reset">
+                <span class="settings-reset-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-8 8s3.58 8 8 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+                    Reset Settings
+                </span>
+                <span class="settings-reset-sub">Restore the default theme and text size. Your answers are kept.</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Submit Test tasdiqlash oynasi -->
+    <div id="confirm-submit-modal" class="modal-overlay" style="display:none;">
+        <div class="confirm-modal-content">
+            <p class="confirm-modal-title"><span class="confirm-modal-icon">&#9888;</span> Submit Test</p>
+            <p class="confirm-modal-text">Are you sure you want to submit your test? You cannot change your answers after submission.</p>
+            <div class="confirm-modal-actions">
+                <button id="confirm-submit-cancel" class="confirm-modal-btn confirm-modal-btn-cancel">Cancel</button>
+                <button id="confirm-submit-ok" class="confirm-modal-btn confirm-modal-btn-submit">Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const correctAnswers = {
+            'q1': ['month'], 'q2': ['orange'], 'q3': ['east'], 'q4': ['trousers'], 'q5': ['state'],
+            'q6': ['General'], 'q7': ['museum'], 'q8': ['1 hour', 'one hour'], 'q9': ['5:30', '5.30', '05:30', '05.30'],
+            'q10': ['zoom'],
+            'q11': 'B', 'q12': 'A', 'q13': 'C', 'q14': 'B', 'q15': 'A',
+            'q16': ['G'], 'q17': ['A'], 'q18': ['I'], 'q19': ['E'], 'q20': ['C'],
+            'q21': 'C', 'q22': 'A', 'q23': 'B', 'q24': 'A', 'q25': 'C', 'q26': 'A',
+            'q27': ['B'], 'q28': ['D'], 'q29': ['A'], 'q30': ['C'],
+            'q31': ['typing'], 'q32': ['desks'], 'q33': ['screens'], 'q34': ['share'], 'q35': ['privacy'],
+            'q36': ['security'], 'q37': ['health'], 'q38': ['energy'], 'q39': ['training'], 'q40': ['noise']
+
+        };
+
+        const questionTypes = {
+            'q1': 'text',
+            'q2': 'text',
+            'q3': 'text',
+            'q4': 'text',
+            'q5': 'text',
+            'q6': 'text',
+            'q7': 'text',
+            'q8': 'text',
+            'q9': 'text',
+            'q10': 'text',
+            'q11': 'mcq',
+            'q12': 'mcq',
+            'q13': 'mcq',
+            'q14': 'mcq',
+            'q15': 'mcq',
+            'q16': 'text',
+            'q17': 'text',
+            'q18': 'text',
+            'q19': 'text',
+            'q20': 'text',
+            'q21': 'mcq',
+            'q22': 'mcq',
+            'q23': 'mcq',
+            'q24': 'mcq',
+            'q25': 'mcq',
+            'q26': 'mcq',
+            'q27': 'text',
+            'q28': 'text',
+            'q29': 'text',
+            'q30': 'text',
+            'q31': 'text',
+            'q32': 'text',
+            'q33': 'text',
+            'q34': 'text',
+            'q35': 'text',
+            'q36': 'text',
+            'q37': 'text',
+            'q38': 'text',
+            'q39': 'text',
+            'q40': 'text'
+
+        };
+
+        let currentPart = 1;
+        let currentQuestion = 1;
+        let selectedRange = null;
+        let contextElement = null;
+
+        const audioSource = 'https://ia600101.us.archive.org/25/items/mix-29m-42s-audio-joiner.com/mix_29m42s%20%28audio-joiner.com%29.mp3';
+        const audioPlayer = document.getElementById('global-audio-player');
+        const playPauseBtn = document.getElementById('play-pause-btn');
+        const progressBar = document.getElementById('progress-bar');
+        const currentTimeEl = document.getElementById('current-time');
+        const totalDurationEl = document.getElementById('total-duration');
+        const speedBtn = document.getElementById('speed-btn');
+        const speedOptions = document.getElementById('speed-options');
+        const volumeSlider = document.getElementById('new-volume-slider');
+
+        if (audioSource) audioPlayer.src = audioSource;
+
+        function formatTime(s) {
+            const m = Math.floor(s / 60), sec = Math.floor(s % 60);
+            return m + ':' + (sec < 10 ? '0' : '') + sec;
+        }
+
+        playPauseBtn.addEventListener('click', () => {
+            if (!audioSource) { alert('Audio URL qo\'shilmagan.'); return; }
+            if (audioPlayer.paused) audioPlayer.play(); else audioPlayer.pause();
+        });
+        audioPlayer.addEventListener('play', () => { playPauseBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>'; });
+        audioPlayer.addEventListener('pause', () => { playPauseBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>'; });
+        audioPlayer.addEventListener('loadedmetadata', () => { progressBar.max = audioPlayer.duration; totalDurationEl.textContent = formatTime(audioPlayer.duration); });
+        audioPlayer.addEventListener('timeupdate', () => { progressBar.value = audioPlayer.currentTime; currentTimeEl.textContent = formatTime(audioPlayer.currentTime); });
+        progressBar.addEventListener('input', () => { audioPlayer.currentTime = progressBar.value; });
+        volumeSlider.addEventListener('input', (e) => { audioPlayer.volume = e.target.value; });
+        speedBtn.addEventListener('click', (e) => { e.stopPropagation(); speedOptions.classList.toggle('hidden'); });
+        speedOptions.addEventListener('click', (e) => {
+            if (e.target.dataset.speed) { audioPlayer.playbackRate = parseFloat(e.target.dataset.speed); speedBtn.textContent = e.target.dataset.speed + 'x'; speedOptions.classList.add('hidden'); }
+        });
+        document.addEventListener('click', () => speedOptions.classList.add('hidden'));
+
+        function switchToPart(partNumber) {
+            currentPart = partNumber;
+            document.querySelectorAll('.question-part').forEach(p => p.classList.add('hidden'));
+            const part = document.getElementById('part-' + partNumber);
+            if (part) part.classList.remove('hidden');
+            document.querySelectorAll('.footer__questionWrapper___1tZ46').forEach((w, i) => w.classList.toggle('selected', i + 1 === partNumber));
+            const partStart = (partNumber - 1) * 10 + 1;
+            const partEnd = partNumber * 10;
+            if (currentQuestion < partStart || currentQuestion > partEnd) {
+                currentQuestion = partStart;
+                document.querySelectorAll('.subQuestion').forEach(b => b.classList.remove('active'));
+                const activeBtn = document.querySelector('.subQuestion[onclick="goToQuestion(' + partStart + ')"]');
+                if (activeBtn) activeBtn.classList.add('active');
+            }
+            if (document.querySelector('.main-container.results-mode')) {
+                const src = document.querySelector('#transcription-data [data-part="' + partNumber + '"]');
+                const tgt = document.getElementById('transcription-text');
+                if (src && tgt) tgt.innerHTML = src.innerHTML;
+            }
+            updateAttemptedCount(partNumber);
+            document.getElementById('prevBtn').disabled = currentQuestion <= 1;
+            document.getElementById('nextBtn').disabled = currentQuestion >= 40;
+        }
+
+        function goToQuestion(qNum) {
+            currentQuestion = qNum;
+            let part = 1;
+            if (qNum > 10 && qNum <= 20) part = 2;
+            else if (qNum > 20 && qNum <= 30) part = 3;
+            else if (qNum > 30) part = 4;
+            if (currentPart !== part) switchToPart(part);
+            document.querySelectorAll('.subQuestion').forEach(b => b.classList.remove('active'));
+            const btn = document.querySelector(`.subQuestion[onclick="goToQuestion(${qNum})"]`);
+            if (btn) btn.classList.add('active');
+            const pairName = pairNameForQ(qNum);
+            let el = document.getElementById('q' + qNum) || document.querySelector('input[name="q' + qNum + '"]')
+                || (pairName ? document.querySelector('input[name="' + pairName + '"]') : null);
+            document.querySelectorAll('.question.active-question').forEach(q => q.classList.remove('active-question'));
+            if (el) {
+                const container = el.closest('.question');
+                if (container) {
+                    container.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    container.classList.add('flash');
+                    setTimeout(() => container.classList.remove('flash'), 1000);
+                    container.classList.add('active-question');
+                }
+            }
+            if (document.querySelector('.main-container.results-mode')) {
+                const hl = document.querySelector('#transcription-text .t-hl[data-q="' + qNum + '"]');
+                if (hl) {
+                    document.querySelectorAll('#transcription-text .t-hl.active').forEach(x => x.classList.remove('active'));
+                    hl.classList.add('active');
+                    hl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+            document.getElementById('prevBtn').disabled = qNum <= 1;
+            document.getElementById('nextBtn').disabled = qNum >= 40;
+        }
+
+        function nextPart() { if (currentQuestion < 40) goToQuestion(currentQuestion + 1); }
+        function previousPart() { if (currentQuestion > 1) goToQuestion(currentQuestion - 1); }
+
+        const pairGroups = {};   // bu testda 'Choose TWO' guruhi yo'q
+
+        function pairNameForQ(qNum) {
+            return Object.keys(pairGroups).find(name => pairGroups[name].includes(qNum)) || null;
+        }
+
+        function updateAttemptedCount(partNumber) {
+            const start = (partNumber - 1) * 10 + 1;
+            const end = partNumber * 10;
+            let count = 0;
+            const countedPairs = {};
+            for (let i = start; i <= end; i++) {
+                const pairName = pairNameForQ(i);
+                if (pairName) {
+                    if (!countedPairs[pairName]) {
+                        count += document.querySelectorAll('input[name="' + pairName + '"]:checked').length;
+                        countedPairs[pairName] = true;
+                    }
+                    continue;
+                }
+                const txt = document.getElementById('q' + i);
+                const rad = document.querySelector('input[name="q' + i + '"]:checked');
+                if ((txt && txt.value.trim()) || rad) count++;
+            }
+            const wrapper = document.querySelectorAll('.footer__questionWrapper___1tZ46')[partNumber - 1];
+            if (wrapper) {
+                const span = wrapper.querySelector('.attemptedCount');
+                if (span) span.textContent = count + ' of 10';
+            }
+        }
+
+        function updateAnsweredIndicators() {
+            for (let qNum = 1; qNum <= 40; qNum++) {
+                const btn = document.querySelector(`.subQuestion[onclick="goToQuestion(${qNum})"]`);
+                if (!btn || btn.classList.contains('correct') || btn.classList.contains('incorrect')) continue;
+                let answered;
+                const pairName = pairNameForQ(qNum);
+                if (pairName) {
+                    const idx = pairGroups[pairName].indexOf(qNum);
+                    const checkedCount = document.querySelectorAll('input[name="' + pairName + '"]:checked').length;
+                    answered = checkedCount >= (idx + 1);
+                } else {
+                    const txt = document.getElementById('q' + qNum);
+                    const rad = document.querySelector('input[name="q' + qNum + '"]:checked');
+                    answered = (txt && txt.value.trim() !== '') || !!rad;
+                }
+                btn.classList.toggle('answered', answered);
+            }
+            [1, 2, 3, 4].forEach(p => updateAttemptedCount(p));
+        }
+
+        document.querySelectorAll('.answer-input, input[type="radio"], input[type="checkbox"]').forEach(inp => {
+            inp.addEventListener('input', updateAnsweredIndicators);
+            inp.addEventListener('change', updateAnsweredIndicators);
+        });
+
+        function setupCheckboxLimits() {
+            Object.keys(pairGroups).forEach(name => {
+                const boxes = Array.from(document.querySelectorAll('input[type="checkbox"][name="' + name + '"]'));
+                if (!boxes.length) return;
+                boxes.forEach(b => b.addEventListener('change', () => {
+                    const checkedCount = boxes.filter(x => x.checked).length;
+                    boxes.forEach(x => { if (!x.checked) x.disabled = checkedCount >= pairGroups[name].length; });
+                }));
+            });
+        }
+
+        function makeReviewMark(isCorrect) {
+            const span = document.createElement('span');
+            span.className = 'review-mark ' + (isCorrect ? 'review-mark-correct' : 'review-mark-wrong');
+            span.textContent = isCorrect ? '✓' : '✗';
+            return span;
+        }
+
+        function checkAnswers() {
+            let score = 0;
+            const resultsData = [];
+
+            document.querySelectorAll('.correct-inline').forEach(el => el.remove());
+            document.querySelectorAll('.answer-input').forEach(el => el.classList.remove('correct', 'incorrect'));
+            document.querySelectorAll('.multi-choice-option').forEach(el => el.classList.remove('correct', 'incorrect'));
+
+            Object.keys(correctAnswers).forEach(key => {
+                const correct = correctAnswers[key];
+                const type = questionTypes[key];
+
+                if (type === 'checkbox') {
+                    const [startQ, endQ] = key.split('-').map(s => parseInt(s.replace('q', '')));
+                    const checked = document.querySelectorAll('input[name="' + key + '"]:checked');
+                    const userVals = Array.from(checked).map(c => c.value).sort();
+                    const correctSorted = [...correct].sort();
+                    const correctSel = userVals.filter(v => correctSorted.includes(v));
+                    score += correctSel.length;
+                    const isCorrect = correctSel.length === correctSorted.length && userVals.length === correctSorted.length;
+                    checked.forEach(cb => { const w = cb.closest('.multi-choice-option'); if (w) w.classList.add(correctSorted.includes(cb.value) ? 'correct' : 'incorrect'); });
+                    correctSorted.forEach(v => { const cb = document.querySelector('input[name="' + key + '"][value="' + v + '"]'); if (cb && !cb.checked) { const w = cb.closest('.multi-choice-option'); if (w) w.classList.add('correct'); } });
+                    for (let q = startQ; q <= endQ; q++) { const b = document.querySelector(`.subQuestion[onclick="goToQuestion(${q})"]`); if (b) { b.classList.remove('answered'); b.classList.add(isCorrect ? 'correct' : 'incorrect'); } }
+                    resultsData.push({ question: startQ + '-' + endQ, userAnswer: userVals.join(', ') || 'No Answer', correctAnswer: correctSorted.join(', '), isCorrect });
+                    return;
+                }
+
+                const qNum = parseInt(key.replace('q', ''));
+                let userAnswer = '', isCorrect = false;
+
+                if (type === 'text') {
+                    const el = document.getElementById(key);
+                    userAnswer = el ? el.value.trim() : '';
+                    const accepted = Array.isArray(correct) ? correct : [correct];
+                    if (accepted[0] === '???') {
+                        isCorrect = false;
+                    } else {
+                        isCorrect = accepted.some(a => a.toLowerCase() === userAnswer.toLowerCase());
+                    }
+                    if (el) {
+                        el.classList.add(isCorrect ? 'correct' : 'incorrect');
+                        if (!isCorrect && accepted[0] !== '???') {
+                            const sp = document.createElement('span');
+                            sp.className = 'correct-inline';
+                            sp.textContent = accepted[0];
+                            el.insertAdjacentElement('afterend', sp);
+                        }
+                    }
+                } else if (type === 'mcq') {
+                    const checked = document.querySelector('input[name="' + key + '"]:checked');
+                    userAnswer = checked ? checked.value : 'No Answer';
+                    isCorrect = correct !== '???' && userAnswer === correct;
+                    document.querySelectorAll('input[name="' + key + '"]').forEach(r => {
+                        const wrapper = r.closest('.multi-choice-option');
+                        if (!wrapper) return;
+                        if (correct !== '???' && r.value === correct) wrapper.classList.add('correct');
+                        else if (r.checked) wrapper.classList.add('incorrect');
+                    });
+                }
+
+                if (isCorrect) score++;
+                const navBtn = document.querySelector(`.subQuestion[onclick="goToQuestion(${qNum})"]`);
+                if (navBtn) { navBtn.classList.remove('answered'); navBtn.classList.add(isCorrect ? 'correct' : 'incorrect'); }
+                resultsData.push({ question: qNum, userAnswer: userAnswer || 'No Answer', correctAnswer: Array.isArray(correct) ? correct[0] : correct, isCorrect });
+            });
+
+            document.querySelectorAll('.answer-input, input[type="radio"], input[type="checkbox"]').forEach(el => el.disabled = true);
+
+            const band = (function (r) {
+                if (r >= 39) return 9; if (r >= 37) return 8.5; if (r >= 35) return 8; if (r >= 32) return 7.5;
+                if (r >= 30) return 7; if (r >= 26) return 6.5; if (r >= 23) return 6; if (r >= 18) return 5.5;
+                if (r >= 16) return 5; if (r >= 13) return 4.5; if (r >= 10) return 4; if (r >= 8) return 3.5;
+                if (r >= 6) return 3; if (r >= 4) return 2.5; if (r >= 2) return 2; if (r === 1) return 1.5; return 0;
+            })(score);
+
+            document.querySelector('.main-container').classList.add('results-mode');
+            switchToPart(currentPart);
+
+            document.getElementById('score-summary').textContent = 'You scored ' + score + ' out of 40 (Band ' + band + ').';
+
+            const resultDetails = document.getElementById('result-details');
+            let html = '<table><thead><tr><th>Question</th><th>Your Answer</th><th>Correct Answer</th><th>Result</th></tr></thead><tbody>';
+            resultsData.forEach(r => {
+                html += '<tr><td>' + r.question + '</td><td>' + r.userAnswer + '</td><td>' + r.correctAnswer + '</td><td class="' + (r.isCorrect ? 'result-correct' : 'result-incorrect') + '">' + (r.isCorrect ? '&#10003; Correct' : '&#10007; Incorrect') + '</td></tr>';
+            });
+            html += '</tbody></table>';
+            resultDetails.innerHTML = html;
+
+            const deliverButton = document.getElementById('deliver-button');
+            deliverButton.classList.add('success');
+            deliverButton.innerHTML = '<span>My Results</span>';
+            const newBtn = deliverButton.cloneNode(true);
+            deliverButton.parentNode.replaceChild(newBtn, deliverButton);
+            newBtn.addEventListener('click', () => { document.getElementById('result-modal').style.display = 'flex'; });
+            document.getElementById('result-modal').style.display = 'flex';
+        }
+
+        document.getElementById('deliver-button').addEventListener('click', () => {
+            document.getElementById('confirm-submit-modal').style.display = 'flex';
+        });
+        document.getElementById('confirm-submit-cancel').addEventListener('click', () => {
+            document.getElementById('confirm-submit-modal').style.display = 'none';
+        });
+        document.getElementById('confirm-submit-ok').addEventListener('click', () => {
+            document.getElementById('confirm-submit-modal').style.display = 'none';
+            checkAnswers();
+        });
+        document.getElementById('modal-close-button').addEventListener('click', () => { document.getElementById('result-modal').style.display = 'none'; });
+
+        document.addEventListener('selectionchange', () => {
+            const sel = window.getSelection();
+            if (sel && sel.rangeCount > 0 && !sel.isCollapsed) selectedRange = sel.getRangeAt(0);
+        });
+
+        document.addEventListener('mouseup', (e) => {
+            if (e.target.closest('.selection-toolbar') || e.target.closest('.context-menu')) return;
+            setTimeout(() => {
+                const sel = window.getSelection();
+                if (sel && sel.rangeCount > 0 && !sel.isCollapsed && sel.toString().trim()) {
+                    selectedRange = sel.getRangeAt(0);
+                    showSelectionToolbar(selectedRange);
+                } else {
+                    hideSelectionToolbar();
+                }
+            }, 0);
+        });
+
+        function showSelectionToolbar(range) {
+            const rect = range.getBoundingClientRect();
+            const toolbar = document.getElementById('selectionToolbar');
+            toolbar.style.display = 'flex';
+            const top = rect.top + window.scrollY - toolbar.offsetHeight - 8;
+            let left = rect.left + window.scrollX + rect.width / 2 - toolbar.offsetWidth / 2;
+            left = Math.max(8, Math.min(left, window.scrollX + document.documentElement.clientWidth - toolbar.offsetWidth - 8));
+            toolbar.style.top = Math.max(8, top) + 'px';
+            toolbar.style.left = left + 'px';
+        }
+        function hideSelectionToolbar() {
+            document.getElementById('selectionToolbar').style.display = 'none';
+        }
+
+        document.body.addEventListener('contextmenu', function (e) {
+            const existingHl = e.target.closest('.highlight, .comment-highlight');
+            if (!existingHl) return;
+            e.preventDefault();
+            hideSelectionToolbar();
+            const menu = document.getElementById('contextMenu');
+            menu.style.left = e.pageX + 'px';
+            menu.style.top = e.pageY + 'px';
+            menu.style.display = 'block';
+            contextElement = existingHl;
+            document.getElementById('clear-item').style.display = 'block';
+        });
+        document.body.addEventListener('click', function (e) {
+            if (!e.target.closest('.context-menu')) document.getElementById('contextMenu').style.display = 'none';
+        });
+        function highlightText() {
+            if (!selectedRange || selectedRange.collapsed) return;
+            try {
+                const span = document.createElement('span');
+                span.className = 'highlight';
+                span.appendChild(selectedRange.extractContents());
+                selectedRange.insertNode(span);
+            } catch (e) { }
+            window.getSelection().removeAllRanges();
+            hideSelectionToolbar();
+            document.getElementById('contextMenu').style.display = 'none';
+        }
+        function addComment() {
+            const t = prompt('Enter your comment:');
+            if (!t || !selectedRange) { hideSelectionToolbar(); return; }
+            try {
+                const span = document.createElement('span'); span.className = 'comment-highlight';
+                span.appendChild(selectedRange.extractContents());
+                const tip = document.createElement('span'); tip.className = 'comment-tooltip'; tip.textContent = t;
+                span.appendChild(tip);
+                selectedRange.insertNode(span);
+            } catch (e) { }
+            window.getSelection().removeAllRanges();
+            hideSelectionToolbar();
+            document.getElementById('contextMenu').style.display = 'none';
+        }
+        function clearHighlight() {
+            if (contextElement) {
+                const parent = contextElement.parentNode;
+                while (contextElement.firstChild) parent.insertBefore(contextElement.firstChild, contextElement);
+                parent.removeChild(contextElement); parent.normalize();
+            }
+            document.getElementById('contextMenu').style.display = 'none';
+        }
+        function clearAllHighlights() {
+            document.querySelectorAll('.highlight, .comment-highlight').forEach(el => {
+                const parent = el.parentNode;
+                while (el.firstChild) parent.insertBefore(el.firstChild, el);
+                parent.removeChild(el); parent.normalize();
+            });
+            document.getElementById('contextMenu').style.display = 'none';
+        }
+
+        document.getElementById('transcription-text').addEventListener('click', (e) => {
+            const hl = e.target.closest('.t-hl[data-time]');
+            if (!hl || !audioSource) return;
+            const tSec = parseFloat(hl.getAttribute('data-time'));
+            if (isNaN(tSec)) return;
+            audioPlayer.currentTime = Math.max(0, tSec - 2);
+            audioPlayer.play();
+        });
+
+        // ═══ Exam Settings: tema, matn o'lchami, fullscreen ═══
+        const settingsModal = document.getElementById('settings-modal');
+        const darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+        function readSetting(key, fallback) {
+            try { return localStorage.getItem(key) || fallback; } catch (e) { return fallback; }
+        }
+        function saveSetting(key, value) {
+            try { localStorage.setItem(key, value); } catch (e) { }
+        }
+
+        function applyTheme(theme) {
+            const dark = theme === 'dark' || (theme === 'system' && darkQuery.matches);
+            document.body.classList.toggle('theme-dark', dark);
+            document.querySelectorAll('.settings-option[data-theme]').forEach(b => {
+                b.classList.toggle('selected', b.dataset.theme === theme);
+            });
+        }
+
+        function applyTextSize(size) {
+            document.body.classList.remove('text-large', 'text-xlarge');
+            if (size === 'large') document.body.classList.add('text-large');
+            else if (size === 'xlarge') document.body.classList.add('text-xlarge');
+            document.querySelectorAll('.settings-option[data-textsize]').forEach(b => {
+                b.classList.toggle('selected', b.dataset.textsize === size);
+            });
+        }
+
+        document.querySelectorAll('.settings-option[data-theme]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                saveSetting('cdi-theme', btn.dataset.theme);
+                applyTheme(btn.dataset.theme);
+            });
+        });
+
+        document.querySelectorAll('.settings-option[data-textsize]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                saveSetting('cdi-textsize', btn.dataset.textsize);
+                applyTextSize(btn.dataset.textsize);
+            });
+        });
+
+        darkQuery.addEventListener('change', () => {
+            if (readSetting('cdi-theme', 'light') === 'system') applyTheme('system');
+        });
+
+        document.getElementById('settings-btn').addEventListener('click', () => {
+            settingsModal.style.display = 'flex';
+        });
+        document.getElementById('settings-close').addEventListener('click', () => {
+            settingsModal.style.display = 'none';
+        });
+        settingsModal.addEventListener('click', (e) => {
+            if (e.target === settingsModal) settingsModal.style.display = 'none';
+        });
+
+        document.getElementById('reset-settings-btn').addEventListener('click', () => {
+            saveSetting('cdi-theme', 'light');
+            saveSetting('cdi-textsize', 'default');
+            applyTheme('light');
+            applyTextSize('default');
+        });
+
+        document.getElementById('fullscreen-btn').addEventListener('click', () => {
+            if (document.fullscreenElement) document.exitFullscreen();
+            else document.documentElement.requestFullscreen();
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            switchToPart(1);
+            goToQuestion(1);
+            setupCheckboxLimits();
+            applyTheme(readSetting('cdi-theme', 'light'));
+            applyTextSize(readSetting('cdi-textsize', 'default'));
+        });
+    </script>
+</body>
+
+</html>

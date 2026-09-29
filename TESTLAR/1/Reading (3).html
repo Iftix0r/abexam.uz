@@ -1,0 +1,2685 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS CDI Reading Practice</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffffff;
+            line-height: 1.4;
+            font-size: 16px;
+            overflow: hidden;
+        }
+
+        body::after {
+            content: "@MINDLESS_WRITER";
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 90px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: #000000;
+            opacity: 0.035;
+            pointer-events: none;
+            user-select: none;
+            z-index: 50;
+            white-space: nowrap;
+        }
+
+        .header {
+            background-color: #ffffff;
+            padding: 12px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            height: 60px;
+        }
+
+        .telegram-link {
+            color: #3e3e3e;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            border: 2px solid #3e3e3e;
+            border-radius: 9999px;
+            background-color: #ffffff;
+            line-height: 1;
+        }
+
+        .telegram-link:hover {
+            background-color: #f6f6f6;
+        }
+
+        .telegram-link::before {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background-color: currentColor;
+            -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23l7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3L3.64 12c-.88-.25-.89-1.37.2-1.64l16.56-6.4c.75-.29 1.4.22 1.2.94l-2.67 12.61c-.22.95-1.13 1.18-1.78.73l-4.5-3.32l-2.23 2.15c-.47.44-1.29.21-1.48-.37z"/></svg>');
+            mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23l7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3L3.64 12c-.88-.25-.89-1.37.2-1.64l16.56-6.4c.75-.29 1.4.22 1.2.94l-2.67 12.61c-.22.95-1.13 1.18-1.78.73l-4.5-3.32l-2.23 2.15c-.47.44-1.29.21-1.48-.37z"/></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        .part-indicator {
+            font-size: 15px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .main-container {
+            position: fixed;
+            top: 60px;
+            bottom: 80px;
+            left: 0;
+            right: 0;
+            display: flex;
+            background: #ffffff;
+        }
+
+        .passage-panel {
+            flex: 0 0 50%;
+            min-width: 200px;
+            overflow-y: auto;
+            padding: 20px 24px 40px;
+        }
+
+        .resizer {
+            width: 10px;
+            cursor: col-resize;
+            background-color: #f0f0f0;
+            border-left: 1px solid #d0d0d0;
+            border-right: 1px solid #d0d0d0;
+            background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="30" viewBox="0 0 10 30"><path d="M4 11h2v2H4zM4 15h2v2H4zM4 19h2v2H4z" fill="%23888"/></svg>');
+            background-repeat: no-repeat;
+            background-position: center;
+            flex-shrink: 0;
+            flex-grow: 0;
+        }
+
+        .resizer:hover {
+            background-color: #e2e6ea;
+        }
+
+        body.resizing {
+            cursor: col-resize;
+            user-select: none;
+        }
+
+        .questions-panel {
+            flex: 1;
+            min-width: 200px;
+            overflow-y: auto;
+            padding: 20px 24px 60px;
+        }
+
+        .passage-set,
+        .question-set {
+            display: none;
+        }
+
+        .passage-set.active,
+        .question-set.active {
+            display: block;
+        }
+
+        .passage-intro {
+            background-color: #f1f2ec;
+            padding: 12px 15px;
+            border-radius: 5px;
+            margin-bottom: 18px;
+            border: 1px solid #e0e0e0;
+            font-size: 15px;
+        }
+
+        .passage-title {
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .passage-subtitle {
+            text-align: center;
+            font-size: 15px;
+            font-style: italic;
+            color: #444;
+            margin-bottom: 18px;
+        }
+
+        .passage-text p {
+            margin-bottom: 14px;
+            text-align: justify;
+            line-height: 1.65;
+        }
+
+        .para-label {
+            font-weight: 700;
+            margin-right: 6px;
+        }
+
+        .q-group {
+            margin-bottom: 34px;
+        }
+
+        .q-group-header {
+            font-weight: 700;
+            font-size: 17px;
+            margin-bottom: 6px;
+        }
+
+        .q-instruction {
+            margin-bottom: 14px;
+            font-size: 15px;
+        }
+
+        .q-instruction p {
+            margin-bottom: 4px;
+        }
+
+        .q-item {
+            margin-bottom: 16px;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .q-num {
+            font-weight: 700;
+            min-width: 24px;
+            padding-top: 4px;
+        }
+
+        .q-body {
+            flex: 1;
+        }
+
+        .answer-input {
+            border: 1px solid #9aa3ad;
+            border-radius: 4px;
+            background-color: #fff;
+            padding: 4px 8px;
+            font-size: 16px;
+            width: 150px;
+            height: 30px;
+            line-height: 1.2;
+            vertical-align: middle;
+            transition: border-color 0.15s ease;
+        }
+
+        .answer-input::placeholder {
+            color: #999;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .answer-input:focus {
+            outline: none;
+            border-color: #2c6bed;
+            border-width: 2px;
+        }
+
+        .answer-input.correct {
+            border-color: #28a745;
+            background-color: #e9f7ef;
+        }
+
+        .answer-input.incorrect {
+            border-color: #dc3545;
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .correct-inline {
+            color: #28a745;
+            font-weight: 700;
+            margin-left: 10px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .correct-inline::before {
+            content: "\2192  ";
+        }
+
+        .review-mark {
+            display: inline-block;
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .multi-choice-option label .review-mark,
+        .tf-option .review-mark {
+            margin-left: auto;
+        }
+
+        .review-mark-correct {
+            color: #1a7f37;
+        }
+
+        .review-mark-wrong {
+            color: #cf222e;
+        }
+
+        .multi-choice-option {
+            display: block;
+            width: 100%;
+            padding: 8px 12px;
+            background-color: #fff;
+            border: 1px solid transparent;
+            transition: background-color 0.2s;
+        }
+
+        .multi-choice-option:hover {
+            background-color: #f1f7ff;
+            border-color: #c6dcfb;
+        }
+
+        .multi-choice-option:has(input[type="radio"]:checked),
+        .multi-choice-option:has(input[type="checkbox"]:checked) {
+            background-color: #cfe3f9;
+        }
+
+        .multi-choice-option.correct {
+            background-color: #d4edda !important;
+        }
+
+        .multi-choice-option.incorrect {
+            background-color: #f8d7da !important;
+        }
+
+        .multi-choice-option label {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        .multi-choice-option input {
+            transform: scale(1.15);
+            margin-top: 3px;
+        }
+
+        .info-box {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 12px 15px;
+            background: #f9f9f9;
+            margin-bottom: 16px;
+            font-size: 15px;
+        }
+
+        .info-box p {
+            margin-bottom: 4px;
+        }
+
+        .option-list {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 12px 15px;
+            background: #f9f9f9;
+            display: inline-block;
+            min-width: 240px;
+            margin-bottom: 16px;
+        }
+
+        .option-list p {
+            margin-bottom: 4px;
+        }
+
+        .summary-box {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 15px;
+            background: #fafafa;
+            margin-bottom: 16px;
+        }
+
+        .summary-box p {
+            margin-bottom: 12px;
+            line-height: 1.8;
+        }
+
+        .summary-title {
+            text-align: center;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .matching-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 18px 0;
+            font-size: 15px;
+        }
+
+        .matching-table th {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            border: 1px solid #ddd;
+        }
+
+        .matching-table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            vertical-align: middle;
+        }
+
+        .matching-table .statement {
+            text-align: left;
+            width: 46%;
+        }
+
+        .matching-table td:not(.statement) {
+            text-align: center;
+            min-width: 34px;
+        }
+
+        .matching-table th:not(:first-child) {
+            min-width: 34px;
+        }
+
+        .matching-table .table-radio {
+            margin: 0;
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+
+        .matching-table td:not(.statement):has(input:checked) {
+            background-color: #e3f2fd;
+        }
+
+        .matching-table input[type="radio"]:checked {
+            accent-color: #007bff;
+        }
+
+        .matching-table td.correct {
+            background-color: #d4edda !important;
+            border-color: #c3e6cb;
+        }
+
+        .matching-table td.incorrect {
+            background-color: #f8d7da !important;
+            border-color: #f5c6cb;
+        }
+
+        .match-list-table {
+            border-collapse: collapse;
+            margin-bottom: 18px;
+            border: 1px solid #333;
+        }
+
+        .match-list-table th {
+            border-bottom: 1px solid #333;
+            padding: 8px 16px;
+            font-weight: 700;
+            text-align: left;
+            font-size: 15px;
+        }
+
+        .match-list-table td {
+            border-bottom: 1px solid #ccc;
+            border-right: 1px solid #333;
+            padding: 8px 16px;
+            font-size: 15px;
+        }
+
+        .match-list-table td:first-child {
+            font-weight: 700;
+            text-align: center;
+            width: 30px;
+        }
+
+        .match-list-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .tf-question {
+            margin-bottom: 22px;
+        }
+
+        .tf-question-line {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            padding: 5px 0;
+        }
+
+        .tf-question-number {
+            border: 2px solid #ccc;
+            padding: 2px 8px;
+            margin-right: 10px;
+            border-radius: 3px;
+            font-weight: bold;
+            transition: border-color 0.3s;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+
+        .tf-question.active-question .tf-question-number {
+            border-color: #4a90e2;
+        }
+
+        .tf-options {
+            padding-left: 5px;
+        }
+
+        .tf-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 9px 12px;
+            background-color: #fff;
+            border: 1px solid transparent;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+
+        .tf-option:hover {
+            background-color: #f1f7ff;
+            border-color: #c6dcfb;
+        }
+
+        .tf-option:has(input[type="radio"]:checked) {
+            background-color: #cfe3f9;
+        }
+
+        .tf-option.correct {
+            background-color: #d4edda !important;
+        }
+
+        .tf-option.incorrect {
+            background-color: #f8d7da !important;
+        }
+
+        .tf-option input[type="radio"] {
+            transform: scale(1.15);
+        }
+
+        .t-qmark,
+        .t-note {
+            display: none;
+        }
+
+        .main-container.results-mode .t-hl {
+            background: #fff3a0;
+            border-radius: 3px;
+            padding: 0 2px;
+            scroll-margin-top: 24px;
+        }
+
+        .main-container.results-mode .t-hl.active {
+            background: #ffd34d;
+            box-shadow: 0 0 0 2px #f0a500;
+        }
+
+        .main-container.results-mode .t-qmark {
+            display: inline-flex;
+            font-size: 10px;
+            font-weight: 700;
+            color: #fff;
+            background: #4a90e2;
+            border-radius: 50%;
+            align-items: center;
+            justify-content: center;
+            width: 17px;
+            height: 17px;
+            min-width: 17px;
+            vertical-align: super;
+            margin-right: 2px;
+            line-height: 1;
+        }
+
+        .main-container.results-mode .t-note {
+            display: inline;
+            font-style: italic;
+            font-weight: 700;
+            color: #0b6b3a;
+            font-size: 13px;
+            margin-left: 3px;
+        }
+
+        .nav-row {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            height: 80px;
+            z-index: 100;
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+        }
+
+        .footer__questionWrapper___1tZ46 {
+            display: flex;
+            align-items: center;
+            margin-right: 16px;
+            flex-shrink: 0;
+        }
+
+        .footer__questionNo___3WNct {
+            background: none;
+            border: none;
+            padding: 10px 12px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .footer__questionNo___3WNct:hover {
+            background-color: #f8f9fa;
+        }
+
+        .attemptedCount {
+            font-size: 13px;
+            color: #666;
+            margin-left: 5px;
+            font-weight: 400;
+        }
+
+        .footer__subquestionWrapper___9GgoP {
+            display: none;
+            gap: 2px;
+            margin-left: 8px;
+        }
+
+        .footer__questionWrapper___1tZ46.selected .footer__subquestionWrapper___9GgoP {
+            display: flex;
+        }
+
+        .footer__questionWrapper___1tZ46.selected .attemptedCount {
+            display: none;
+        }
+
+        .subQuestion {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #ccc;
+            background: white;
+            color: #333;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .subQuestion.answered {
+            background-color: #e9ecef;
+            border-color: #ddd;
+        }
+
+        .subQuestion.correct {
+            background-color: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+
+        .subQuestion.incorrect {
+            background-color: #dc3545;
+            color: white;
+            border-color: #dc3545;
+        }
+
+        .subQuestion:hover {
+            background-color: #f0f0f0;
+            border-color: #999;
+        }
+
+        .subQuestion.active {
+            background-color: #4a90e2;
+            color: white;
+            border-color: #4a90e2;
+        }
+
+        .footer__deliverButton___3FM07 {
+            margin-left: auto;
+            margin-right: 20px;
+            background-color: #f0f0f0;
+            color: #333;
+            border: 1px solid #ccc;
+            padding: 12px 20px;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 170px;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .footer__deliverButton___3FM07:hover {
+            background-color: #e0e0e0;
+            border-color: #bbb;
+        }
+
+        .footer__deliverButton___3FM07.success {
+            background-color: #28a745;
+            color: #fff;
+            border-color: #28a745;
+        }
+
+        .highlight {
+            background-color: #ffff00;
+        }
+
+        .comment-highlight {
+            background-color: #90EE90;
+            position: relative;
+            cursor: help;
+        }
+
+        .comment-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            white-space: nowrap;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .comment-highlight:hover .comment-tooltip {
+            opacity: 1;
+        }
+
+        .context-menu {
+            position: absolute;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            display: none;
+            min-width: 140px;
+        }
+
+        .context-menu-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            font-size: 16px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .context-menu-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .context-menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .selection-toolbar {
+            position: absolute;
+            display: none;
+            align-items: stretch;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+            z-index: 1500;
+            padding: 6px 4px;
+            gap: 2px;
+        }
+
+        .selection-toolbar::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 7px solid transparent;
+            border-right: 7px solid transparent;
+            border-top: 7px solid #ffffff;
+        }
+
+        .selection-toolbar button {
+            background: none;
+            border: none;
+            color: #111827;
+            padding: 4px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 6px;
+            white-space: nowrap;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .selection-toolbar button svg {
+            width: 16px;
+            height: 16px;
+            fill: #111827;
+        }
+
+        .selection-toolbar button:hover {
+            background: #f3f4f6;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            font-size: 24px;
+            color: #333;
+        }
+
+        .modal-close-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #888;
+        }
+
+        .modal-close-btn:hover {
+            color: #333;
+        }
+
+        #score-summary {
+            font-size: 16px;
+            font-weight: 600;
+            color: #111827;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            padding: 10px 12px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        #result-details table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        #result-details th,
+        #result-details td {
+            border: 1px solid #ddd;
+            padding: 8px 10px;
+            text-align: left;
+        }
+
+        #result-details th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+
+        .result-correct {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .result-incorrect {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .confirm-modal-content {
+            background: white;
+            padding: 32px 36px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 440px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .confirm-modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .confirm-modal-icon {
+            color: #f0a500;
+            font-size: 22px;
+        }
+
+        .confirm-modal-text {
+            font-size: 15px;
+            color: #4b5563;
+            line-height: 1.5;
+            margin-bottom: 26px;
+        }
+
+        .confirm-modal-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .confirm-modal-btn {
+            padding: 10px 26px;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+
+        .confirm-modal-btn-cancel {
+            background: #ffffff;
+            border-color: #d1d5db;
+            color: #111827;
+        }
+
+        .confirm-modal-btn-cancel:hover {
+            background: #f3f4f6;
+        }
+
+        .confirm-modal-btn-submit {
+            background: #111827;
+            color: #ffffff;
+        }
+
+        .confirm-modal-btn-submit:hover {
+            background: #262f3d;
+        }
+
+        @keyframes flash {
+            0% {
+                background-color: #e6f4ff;
+            }
+
+            100% {
+                background-color: transparent;
+            }
+        }
+
+        .q-item.flash,
+        .tf-question.flash,
+        .matching-table tr.flash td,
+        .q-group.flash {
+            animation: flash 1s ease-out;
+        }
+
+        /* ═══ Yuqori o'ng burchakdagi tugmalar ═══ */
+        .header-tools {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .header-tool-btn {
+            width: 44px;
+            height: 36px;
+            border: 1px solid #d5d9e0;
+            border-radius: 8px;
+            background: #ffffff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+
+        .header-tool-btn:hover {
+            background: #f3f4f6;
+        }
+
+        .header-tool-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: #1f2937;
+        }
+
+        /* ═══ Exam Settings oynasi ═══ */
+        .settings-modal-content {
+            background: #ffffff;
+            border-radius: 14px;
+            width: 100%;
+            max-width: 470px;
+            max-height: 88vh;
+            overflow-y: auto;
+            padding: 22px 24px 24px;
+            box-shadow: 0 10px 34px rgba(0, 0, 0, 0.28);
+        }
+
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .settings-title {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            font-size: 19px;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .settings-title svg {
+            width: 20px;
+            height: 20px;
+            fill: #111827;
+        }
+
+        .settings-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            line-height: 1;
+            cursor: pointer;
+            color: #6b7280;
+            padding: 0 4px;
+        }
+
+        .settings-close:hover {
+            color: #111827;
+        }
+
+        .settings-section-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+            font-weight: 700;
+            color: #111827;
+            margin: 20px 0 10px;
+        }
+
+        .settings-section-title svg {
+            width: 17px;
+            height: 17px;
+            fill: #111827;
+        }
+
+        .settings-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            text-align: left;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 9px;
+            padding: 13px 15px;
+            margin-bottom: 9px;
+            font-size: 15px;
+            font-family: inherit;
+            color: #4b5563;
+            cursor: pointer;
+        }
+
+        .settings-option:hover {
+            background: #f7f8fa;
+        }
+
+        .settings-option svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+            flex-shrink: 0;
+        }
+
+        .settings-option.selected {
+            background: #eef2f7;
+            color: #111827;
+            font-weight: 600;
+        }
+
+        .settings-reset {
+            display: block;
+            width: 100%;
+            text-align: left;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 9px;
+            padding: 14px 16px;
+            margin-top: 22px;
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        .settings-reset:hover {
+            background: #f7f8fa;
+        }
+
+        .settings-reset-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 5px;
+        }
+
+        .settings-reset-title svg {
+            width: 18px;
+            height: 18px;
+            fill: #111827;
+        }
+
+        .settings-reset-sub {
+            font-size: 13.5px;
+            color: #6b7280;
+            padding-left: 28px;
+        }
+
+        /* ═══ Matn o'lchami ═══ */
+        body.text-large .passage-panel,
+        body.text-large .questions-panel,
+        body.text-large .passage-text p,
+        body.text-large .questions-panel p,
+        body.text-large .questions-panel li,
+        body.text-large .matching-table td,
+        body.text-large .match-list-table td,
+        body.text-large .multi-choice-option label,
+        body.text-large .tf-option,
+        body.text-large .answer-input {
+            font-size: 18.5px;
+        }
+
+        body.text-xlarge .passage-panel,
+        body.text-xlarge .questions-panel,
+        body.text-xlarge .passage-text p,
+        body.text-xlarge .questions-panel p,
+        body.text-xlarge .questions-panel li,
+        body.text-xlarge .matching-table td,
+        body.text-xlarge .match-list-table td,
+        body.text-xlarge .multi-choice-option label,
+        body.text-xlarge .tf-option,
+        body.text-xlarge .answer-input {
+            font-size: 21.5px;
+        }
+
+        body.text-large .passage-title,
+        body.text-xlarge .passage-title {
+            font-size: 24px;
+        }
+
+        /* ═══ Qorong'i rejim ═══ */
+        body.theme-dark {
+            background-color: #1c1d21;
+            color: #e5e7eb;
+        }
+
+        body.theme-dark::after {
+            color: #ffffff;
+            opacity: 0.03;
+        }
+
+        body.theme-dark .t-hl {
+            color: #111827;
+        }
+
+        body.theme-dark .header,
+        body.theme-dark .nav-row {
+            background-color: #26282d;
+            border-color: #3a3d43;
+        }
+
+        body.theme-dark .main-container,
+        body.theme-dark .passage-panel,
+        body.theme-dark .questions-panel {
+            background: #1c1d21;
+            border-color: #3a3d43;
+        }
+
+        body.theme-dark .resizer {
+            background-color: #31343a;
+            border-color: #4b5057;
+        }
+
+        body.theme-dark .part-indicator {
+            color: #e5e7eb;
+        }
+
+        body.theme-dark .passage-intro,
+        body.theme-dark .info-box,
+        body.theme-dark .option-list,
+        body.theme-dark .summary-box {
+            background: #26282d;
+            border-color: #3a3d43;
+        }
+
+        body.theme-dark .tf-option {
+            background-color: transparent;
+        }
+
+        body.theme-dark .tf-option:hover {
+            background-color: #2f3239;
+            border-color: #4b5057;
+        }
+
+        body.theme-dark .tf-option:has(input:checked) {
+            background-color: #1e3a5f;
+        }
+
+        body.theme-dark .tf-option.correct {
+            background-color: #14532d !important;
+        }
+
+        body.theme-dark .tf-option.incorrect {
+            background-color: #4c1d24 !important;
+        }
+
+        body.theme-dark .tf-question-number {
+            border-color: #4b5057;
+        }
+
+        body.theme-dark .matching-table td,
+        body.theme-dark .match-list-table td,
+        body.theme-dark .match-list-table th {
+            border-color: #4b5057;
+        }
+
+        body.theme-dark .matching-table td:not(.statement):has(input:checked) {
+            background-color: #1e3a5f;
+        }
+
+        body.theme-dark .matching-table td.correct {
+            background-color: #14532d !important;
+        }
+
+        body.theme-dark .matching-table td.incorrect {
+            background-color: #4c1d24 !important;
+        }
+
+        body.theme-dark .telegram-link {
+            background-color: #26282d;
+            color: #e5e7eb;
+            border-color: #6b7280;
+        }
+
+        body.theme-dark .header-tool-btn {
+            background: #26282d;
+            border-color: #4b5057;
+        }
+
+        body.theme-dark .header-tool-btn:hover {
+            background: #33363b;
+        }
+
+        body.theme-dark .header-tool-btn svg {
+            fill: #e5e7eb;
+        }
+
+        body.theme-dark .answer-input {
+            background-color: #26282d;
+            border-color: #4b5057;
+            color: #e5e7eb;
+        }
+
+        body.theme-dark .answer-input::placeholder {
+            color: #9ca3af;
+        }
+
+        body.theme-dark .answer-input.correct {
+            background-color: #14532d;
+            border-color: #22c55e;
+            color: #e5e7eb;
+        }
+
+        body.theme-dark .answer-input.incorrect {
+            background-color: #4c1d24;
+            border-color: #ef4444;
+            color: #fecaca;
+        }
+
+        body.theme-dark .multi-choice-option {
+            background-color: transparent;
+        }
+
+        body.theme-dark .multi-choice-option:hover {
+            background-color: #2f3239;
+            border-color: #4b5057;
+        }
+
+        body.theme-dark .multi-choice-option:has(input:checked) {
+            background-color: #1e3a5f;
+        }
+
+        body.theme-dark .multi-choice-option.correct {
+            background-color: #14532d !important;
+        }
+
+        body.theme-dark .multi-choice-option.incorrect {
+            background-color: #4c1d24 !important;
+        }
+
+        body.theme-dark .subQuestion {
+            background: #26282d;
+            border-color: #4b5057;
+            color: #e5e7eb;
+        }
+
+        body.theme-dark .subQuestion:hover {
+            background-color: #33363b;
+        }
+
+        body.theme-dark .subQuestion.answered {
+            background-color: #3a3d43;
+        }
+
+        body.theme-dark .footer__questionNo___3WNct {
+            color: #e5e7eb;
+        }
+
+        body.theme-dark .footer__questionNo___3WNct:hover {
+            background-color: #33363b;
+        }
+
+        body.theme-dark .footer__deliverButton___3FM07 {
+            background-color: #33363b;
+            color: #e5e7eb;
+            border-color: #4b5057;
+        }
+
+        body.theme-dark .settings-modal-content,
+        body.theme-dark .modal-content,
+        body.theme-dark .confirm-modal-content {
+            background: #26282d;
+            color: #e5e7eb;
+        }
+
+        body.theme-dark .settings-title,
+        body.theme-dark .settings-section-title,
+        body.theme-dark .settings-reset-title,
+        body.theme-dark .modal-header h2 {
+            color: #f3f4f6;
+        }
+
+        body.theme-dark .settings-title svg,
+        body.theme-dark .settings-section-title svg,
+        body.theme-dark .settings-reset-title svg {
+            fill: #f3f4f6;
+        }
+
+        body.theme-dark .settings-option,
+        body.theme-dark .settings-reset {
+            background: #26282d;
+            border-color: #3f434a;
+            color: #b7bcc4;
+        }
+
+        body.theme-dark .settings-option:hover,
+        body.theme-dark .settings-reset:hover {
+            background: #31343a;
+        }
+
+        body.theme-dark .settings-option.selected {
+            background: #363a42;
+            color: #ffffff;
+        }
+
+        body.theme-dark #score-summary {
+            background: #31343a;
+            border-color: #4b5057;
+            color: #f3f4f6;
+        }
+
+        body.theme-dark #result-details th {
+            background-color: #31343a;
+        }
+
+        body.theme-dark #result-details th,
+        body.theme-dark #result-details td {
+            border-color: #4b5057;
+        }
+
+        body.theme-dark .confirm-modal-text {
+            color: #b7bcc4;
+        }
+
+        body.theme-dark .confirm-modal-btn-cancel {
+            background: #31343a;
+            border-color: #4b5057;
+            color: #e5e7eb;
+        }
+
+        body.theme-dark .confirm-modal-btn-submit {
+            background: #e5e7eb;
+            color: #111827;
+        }
+
+        @media (max-width: 1024px) {
+            body {
+                overflow: auto;
+            }
+
+            .main-container {
+                position: static;
+                flex-direction: column;
+                margin-top: 60px;
+                padding-bottom: 90px;
+            }
+
+            .passage-panel,
+            .questions-panel {
+                flex: 1 1 auto !important;
+                width: 100%;
+                min-width: 0;
+                overflow-y: visible;
+            }
+
+            .passage-panel {
+                border-bottom: 2px solid #d0d0d0;
+            }
+
+            .resizer {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <div class="part-indicator" id="part-indicator">Reading Passage 1</div>
+        <a href="https://t.me/+SoPpY9nBi3U0NTE1" target="_blank" class="telegram-link">MINDLESS WRITER</a>
+        <div class="header-tools">
+            <button type="button" id="fullscreen-btn" class="header-tool-btn" title="Fullscreen">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 11V3h-8l3.29 3.29-10 10L3 13v8h8l-3.29-3.29 10-10z"/></svg>
+            </button>
+            <button type="button" id="settings-btn" class="header-tool-btn" title="Settings">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <div class="main-container">
+
+        <!-- ============== PASSAGE PANEL ============== -->
+        <div class="passage-panel" id="passage-panel">
+            <!-- ═══ PASSAGE 1 ═══ -->
+            <div class="passage-set active" id="passage-1">
+                <div class="passage-intro">
+                    <strong>PASSAGE 1</strong><br>
+                    Read the text and answer <strong>Questions 1–13</strong>.
+                </div>
+                <p class="passage-title">Wood: a valuable resource in New Zealand's economy</p>
+                <div class="passage-text">
+                    <p>During the settlement of New Zealand by European immigrants, natural timbers played a major role. Wood was easily accessible and relatively cheap. A tradition of wooden houses arose, <span class="t-hl" data-q="1"><span class="t-qmark">1</span>supported by the recognition that they were less likely to collapse suddenly during earthquakes<span class="t-note">(FALSE — yog'och uylar xavfsizroq deb hisoblangan)</span></span>, a not infrequent event in this part of the world. But in addition to demand from the domestic market, there was also a demand for forest products from overseas.</p>
+                    <p>Early explorers recognised the suitability of the tall, straight trunks of the kauri for constructing sailing vessels. The kauri is a species of coniferous tree found only in small areas of the southern hemisphere. <span class="t-hl" data-q="2"><span class="t-qmark">2</span>So from the early 1800s, huge amounts of this type of wood were sold to Australia and the UK for that purpose.<span class="t-note">(TRUE — kema qurish uchun eksport qilingan)</span></span> For a period, the forestry industry was the country's major export earner, but the rate of harvest was unsustainable and, by the beginning of the 20th century, indigenous timber exports were rapidly declining.</p>
+                    <p>From the 1940s, newly established plantations of an imported species of tree called radiata pine supplied timber and other wood products in increasing quantities. <span class="t-hl" data-q="3"><span class="t-qmark">3</span>By the 1960s, plantation-grown timber was providing most of the country's sawn timber needs, especially for construction.<span class="t-note">(NOT GIVEN — qaysi biri sifatliroq ekani solishtirilmagan)</span></span> Today, less than two percent of timber is cut from indigenous forests, and almost all of that is used for higher-value end uses, such as furniture and fittings. As the pine industry developed, it became apparent that this type of wood was also well suited for many uses. It makes excellent pulp*, and is frequently used for posts, poles, furnishings and mouldings, particleboard, fibreboard, and for plywood and 'engineered' wood products. Pine by-products are used in the chemical and pharmaceutical industries and residues are consumed for fuel. <span class="t-hl" data-q="4"><span class="t-qmark">4</span>This amazing versatility has encouraged the development of an integrated forest-products industry which is almost unique in the world.<span class="t-note">(FALSE — qarag'ay juda ko'p sohada ishlatiladi)</span></span></p>
+                    <p>Exporters of wood products have largely targeted the rapidly growing markets of South and East Asia and Australia. 80 percent of exports by value go to only five markets: Japan, Korea, China, the United States and Australia. The product mix remains heavily based on raw materials, with logs, sawn wood, pulp and paper comprising 75 percent of export value. However, finished wood products such as panels and furniture components are exported to more than 50 countries.</p>
+                    <p>In New Zealand itself, the construction industry is the principal user of solid wood products, <span class="t-hl" data-q="5"><span class="t-qmark">5</span>servicing around 20,000 new house starts annually<span class="t-note">(NOT GIVEN — uy-joyga talab kelajakda kamayishi aytilmagan)</span></span>. However, the small size of New Zealand's population (just over four million), plus its small manufacturing and remanufacturing base, limit the forestry industry's domestic opportunities. For the last few years local wood consumption has been around only four million cubic metres. Accordingly, <span class="t-hl" data-q="6"><span class="t-qmark">6</span>the development of the export market is the key to the industry's growth and contribution to the national economy in decades to come<span class="t-note">(TRUE — o'sish eksportga bog'liq)</span></span>.</p>
+                    <p>In 2004, forestry export receipts were about 11 percent of the country's total export income, their value having increased steadily for ten years, <span class="t-hl" data-q="7"><span class="t-qmark">7</span>until affected by the exchange fluctuations and shipping costs of recent years<span class="t-note">(7: shipping costs)</span></span>. <span class="t-hl" data-q="8"><span class="t-qmark">8</span>The forestry industry is New Zealand's third largest export sector<span class="t-note">(8: export sector)</span></span>, generating around $3.3 billion annually from logs and processed wood products. But it is generally agreed that it is operating well below its capacity and, with the domestic market already at its peak, almost all of the extra wood produced in future will have to be marketed overseas. That presents a major marketing challenge for the industry.</p>
+                    <p>Although the export of logs will continue to provide valuable earnings for forest owners, there is broad acceptance that the industry must be based on value-added products in future. So the industry is investigating various processing, infrastructure and investment strategies with a view to increasing the level of local manufacturing before export. The keys to future success will depend on a variety of factors: better international marketing, product innovation, internationally competitive processing, better infrastructure and a suitable political, regulatory and investment environment. The industry claims that, given the right conditions, by 2025 the forestry sector could be the country's biggest export earner, generating $20 billion a year and <span class="t-hl" data-q="9"><span class="t-qmark">9</span>employing 60,000 people<span class="t-note">(9: 60,000)</span></span>.</p>
+                    <p>One competitive advantage that New Zealand has is <span class="t-hl" data-q="10"><span class="t-qmark">10</span>its ability to source large quantities of softwood from renewable forests<span class="t-note">(10: softwood)</span></span>. <span class="t-hl" data-q="11"><span class="t-qmark">11</span>Consumers in several key wood markets are becoming more worried about sustainability<span class="t-note">(11: sustainability)</span></span>, and the industry is supporting the development of national standards as well as the recognition of these internationally. However, New Zealand is not the only country with a plantation-style forestry industry. Chile, Brazil, Argentina, South Africa and Australia all have extensive plantings of fast-growing species (hardwood and softwood), and in the northern hemisphere, <span class="t-hl" data-q="12"><span class="t-qmark">12</span>Scandinavian countries have all expanded their forests or controlled their use in the interests of future production<span class="t-note">(12: Scandinavian countries)</span></span>.</p>
+                    <p>Finally, in addition to competition from other wood producers, <span class="t-hl" data-q="13"><span class="t-qmark">13</span>New Zealand faces competition from goods such as wood substitutes<span class="t-note">(13: wood substitutes)</span></span>. These include steel framing for houses. This further underlines the necessity for globally competitive production and marketing strategies.</p>
+                    <p><em>pulp*: wood which is crushed until soft enough to form the basis of paper.</em></p>
+                </div>
+            </div>
+
+            <!-- ═══ PASSAGE 2 ═══ -->
+            <div class="passage-set" id="passage-2">
+                <div class="passage-intro">
+                    <strong>PASSAGE 2</strong><br>
+                    Read the text and answer <strong>Questions 14–26</strong>.
+                </div>
+                <p class="passage-title">Intelligent behaviour in birds</p>
+                <p class="passage-subtitle">Many people are aware of the intelligence of chimpanzees and other mammals. However, birds also demonstrate intelligent behaviour.</p>
+                <div class="passage-text">
+                    <p><span class="para-label">A</span>For centuries, many scholars maintained that humans were the only intelligent organism on Earth. Many traits were considered to be exclusively human examples of acumen — for example, language, tool use, deception, awareness of self and others. <span class="t-hl" data-q="14"><span class="t-qmark">14</span>However, exciting new research on a number of animals, particularly birds, has called into question the uniqueness of these traits, forcing us to reconsider this opinion.<span class="t-note">(iv — uzoq vaqt saqlangan qarashlarni qayta ko'rib chiqish)</span></span> In 1964, people were amazed when naturalist Jane Goodall first discovered chimpanzees making and using tools. But ornithologists, people who study birds, were not overly surprised. Almost 20 years earlier, a renowned ornithologist had shown that tool use was commonplace in populations of woodpecker finches residing on the Galápagos Islands. These tiny birds routinely used twigs to extract grubs from under bark.</p>
+                    <p><span class="para-label">B</span><span class="t-hl" data-q="15"><span class="t-qmark">15</span>Since then, the catalogue of tool-using animals has grown.<span class="t-note">(viii — asbob ishlatadigan qushlarga misollar)</span></span> At least three Australian bird species make tools similar to those of the woodpecker finch, and <span class="t-hl" data-q="23"><span class="t-qmark">23</span>when white-winged choughs come across shellfish they have been known to use rocks as hammers to crack open the recalcitrant shells<span class="t-note">(23: A — qattiq qobiqni ochish)</span></span>. Other birds show a more sophisticated level of insight. For example, <span class="t-hl" data-q="24"><span class="t-qmark">24</span>black kites have been reported dropping bait into lakes to bring fish to the surface of the water, thereby making them easier to catch<span class="t-note">(24: B — o'ljani yem bilan jalb qilish)</span></span>. <span class="t-hl" data-q="22"><span class="t-qmark">22</span>A kite may also pick up a smouldering stick from an area recently burned by a bushfire and drop the stick on a patch of unburned grass. The bird then feasts on the small animals that flee from the subsequent fire.<span class="t-note">(22: B — o'ljani qo'rqitib chiqarish)</span></span></p>
+                    <p><span class="para-label">C</span>Most tool-using behaviours are a means of extracting food, which may provide a clue as to how the mental abilities needed for tool use evolved. The predominant explanation is based on the proverb that 'necessity is the mother of invention'. Essentially, brain tissue is energetically expensive, so animals should have evolved only the necessary intellectual capabilities required to overcome the challenges they face in their environment. Consider a hypothetical duck grazing on a seemingly endless supply of grass. Being particularly intelligent will not help the duck eat more grass. In contrast, other species, such as birds of prey, live in a more challenging environment, where food may be distributed erratically, hidden from view or highly mobile. The food itself may be quite intelligent. <span class="t-hl" data-q="16"><span class="t-qmark">16</span>So, if there are not enough resources to feed all individuals, then only the smartest in each generation will live and reproduce.<span class="t-note">(i — asbob ishlatish qobiliyati va omon qolish o'rtasidagi bog'liqlik)</span></span></p>
+                    <p><span class="para-label">D</span><span class="t-hl" data-q="17"><span class="t-qmark">17</span>New Caledonian crows boast many different tools in their tool kit.<span class="t-note">(ix — bitta turning ko'p xil asbob ishlatishi)</span></span> They use a hooked tool made by removing all but one of the side branches from a twig. They fashion serrated rakes (using their beaks as scissors) from stiff, leathery pandanus leaves. They also make probes by modifying their own moulted feathers. Each tool is used in slightly different ways to pull grubs from deep within tree trunks. <span class="t-hl" data-q="21"><span class="t-qmark">21</span>The crows carry their favourite tool from one foraging site to the next. They also store their tools for later re-use in a secure place on their perch.<span class="t-note">(21: C — yoqtirgan asbobini saqlab olib yuradi)</span></span> Problem-solving abilities have traditionally been thought to be beyond the reach of animals. Nevertheless, birds are coming up with innovative solutions all the time. Recently, <span class="t-hl" data-q="25"><span class="t-qmark">25</span>New Caledonian crows were observed moulding a piece of wire, something they had never seen before, into a hook and then using it to retrieve food<span class="t-note">(25: C — notanish materialdan asbob yasash)</span></span>.</p>
+                    <p><span class="para-label">E</span>Literally hundreds of such reports have accumulated in back copies of scientific journals. Recently, a team of biologists from McGill University in Canada collated them and <span class="t-hl" data-q="18"><span class="t-qmark">18</span>compared the frequency and size of innovations with the size of the birds' forebrain (the brain-area responsible for higher-order information processing) relative to the hindbrain<span class="t-note">(vii — qushlar aqliga fiziologik dalil)</span></span>. The team uncovered a clear relationship: birds with relatively large forebrains are able to invent fresh solutions to ecological challenges, and to exploit the discoveries and inventions of others, more often than birds with relatively small forebrains.</p>
+                    <p><span class="para-label">F</span><span class="t-hl" data-q="19"><span class="t-qmark">19</span>Intelligence in birds may also arise as a result of selection to overcome the dynamic challenges of communal living.<span class="t-note">(iii — aqliy qobiliyat va jamoada yashash)</span></span> Since this involves competition between group members, to be successful, a social animal may need to be able to reflect on its own intentions, as well as those of others. The consequence of being part of a community may be the evolution of a distinctly 'political' brain.</p>
+                    <p><span class="para-label">G</span>What better way to exercise a political brain than to be deceitful! <span class="t-hl" data-q="20"><span class="t-qmark">20</span>Perhaps the best example of deception among birds comes from the white-winged choughs.<span class="t-note">(vi — qushlar bir-birini qanday aldaydi)</span></span> Choughs are cooperative breeders — that is, they form a communal group consisting of one breeding pair and up to 15 non-breeding 'helpers'. However, because young choughs have so little enthusiasm for foraging, or gathering food, they are often too hungry to help. And because it is socially unacceptable to be part of a group and provide little help, young choughs often act deceptively. For example, when an adult is watching, a young chough will place some food in the mouth of a hungry chick — but it does not release the food. Instead, it waits until the adult departs and then eats it. A chough can also help the group by preening* the chicks. Interestingly, <span class="t-hl" data-q="26"><span class="t-qmark">26</span>it is more likely to preen the chicks if another bird can see it do so<span class="t-note">(26: A — kuzatuvchilar uchun ish qilish)</span></span>. A chough that has been sitting totally still on the nest while the rest of the group is foraging out of sight will comically spring up and frantically start to preen the chicks as soon as some of its group members come into view. It is likely that these young choughs are only motivated to help when others are watching because they are concerned about their social status. Choughs need other choughs to like them as they cannot breed without them.</p>
+                    <p><em>preening*: cleaning and arranging feathers on birds</em></p>
+                </div>
+            </div>
+
+            <!-- ═══ PASSAGE 3 ═══ -->
+            <div class="passage-set" id="passage-3">
+                <div class="passage-intro">
+                    <strong>PASSAGE 3</strong><br>
+                    Read the text and answer <strong>Questions 27–40</strong>.
+                </div>
+                <p class="passage-title">Jean Piaget 1896–1980</p>
+                <p class="passage-subtitle">Seymour Papert looks at the work of the pioneering Swiss philosopher and psychologist</p>
+                <div class="passage-text">
+                    <p>Jean Piaget spent much of his professional life listening to children, watching children and poring over reports of researchers around the world who were doing the same. He found, to put it most succinctly, that children don't think like grown-ups. After thousands of interactions with young people often barely old enough to talk, Piaget began to suspect that <span class="t-hl" data-q="32"><span class="t-qmark">32</span>behind their cute and seemingly irrational utterances were thought processes that had their own kind of order and their own special logic<span class="t-note">(32: G — logical)</span></span>. Einstein called it a discovery 'so simple that only a genius could have thought of it.'</p>
+                    <p>Although not an educational reformer, Piaget championed a way of thinking about children that provided the foundation for today's education-reform movements. <span class="t-hl" data-q="27"><span class="t-qmark">27</span>It was a shift comparable to the way modern anthropology displaced stories of primitive tribes being 'noble savages' and 'cannibals'.<span class="t-note">(27: C — ta'limga yondashuvdagi burilish nuqtasi)</span></span> <span class="t-hl" data-q="31"><span class="t-qmark">31</span>One might say that Piaget was the first to take children's thinking seriously.<span class="t-note">(31: C — Piagetning 20-asr psixologiyasidagi o'rni)</span></span></p>
+                    <p>He has been revered by generations of teachers inspired by the belief that children are not empty vessels to be filled with knowledge (as traditional pedagogical theory had it) but active builders of knowledge — <span class="t-hl" data-q="33"><span class="t-qmark">33</span>little scientists who are constantly creating and testing their own hypotheses about the world<span class="t-note">(33: B — theories)</span></span>. And though he may not be as famous as Sigmund Freud or even B F Skinner, <span class="t-hl" data-q="34"><span class="t-qmark">34</span>his influence on psychology may be longer lasting<span class="t-note">(34: F — psychology)</span></span>. <span class="t-hl" data-q="37"><span class="t-qmark">37</span>In 1920, while doing research in a child-psychology laboratory in Paris, Piaget noticed that children of the same age made similar errors on intelligence tests.<span class="t-note">(37: NOT GIVEN — yangicha tadqiqot usullari haqida gap yo'q)</span></span> Fascinated by their reasoning processes, he began to suspect that the key to human knowledge might be discovered by observing how the child's mind develops. On his return to Switzerland he began watching children play, scrupulously recording their words and actions as their minds raced to find reasons for why things are the way they are. In one of his most famous experiments, Piaget asked children, 'What makes the wind?'. A typical dialogue would be:</p>
+                    <p><strong>Piaget:</strong> What makes the wind?<br><strong>Julia:</strong> The trees.<br><strong>Piaget:</strong> How do you know?<br><strong>Julia:</strong> I saw them waving their arms.<br><strong>Piaget:</strong> How does that make the wind?<br><strong>Julia:</strong> (waving her hand in front of his face): Like this. Only they are bigger. And there are lots of trees.</p>
+                    <p>Piaget recognized that five-year-old Julia's beliefs, while not correct by any adult criterion, are not 'incorrect' either. They are entirely sensible and coherent within the framework of the child's way of knowing. <span class="t-hl" data-q="28"><span class="t-qmark">28</span>Classifying them as 'true' or 'false' misses the point and shows a lack of respect for the child.<span class="t-note">(28: A — faktik aniqlik muhim emas)</span></span> What Piaget was after was a theory that the wind dialogue demonstrated coherence, ingenuity and the practice of a kind of explanatory principle (in this case by referring to body actions) that stands young children in very good stead when they don't know enough or don't have enough skill to handle the kind of explanation that grown-ups prefer.</p>
+                    <p><span class="t-hl" data-q="38"><span class="t-qmark">38</span>Piaget was not an educator and never laid down rules about how to intervene in such situations.<span class="t-note">(38: NO — aniq ko'rsatmalar bermagan)</span></span> But his work strongly suggests that automatic reaction of putting the child right may well be counter-productive. <span class="t-hl" data-q="29"><span class="t-qmark">29</span>If their theories are always greeted by 'Nice try, but this is how it really is...' they might give up after a while on making theories.<span class="t-note">(29: D — bolaning o'z fikriga ishonchini saqlash)</span></span> As Piaget put it, 'children have real understanding only of that which they invent themselves, and each time that we try to teach them something too quickly, we keep them from inventing it themselves.'</p>
+                    <p><span class="t-hl" data-q="30"><span class="t-qmark">30</span>Disciples of Piaget have tolerance for — indeed a fascination with — children's primitive laws of physics: that things disappear when they are out of sight; that the moon and the sun follow you around; that big things float and small things sink.<span class="t-note">(30: C — mantiqsiz ko'ringan fikrlar ham qiziqishga arziydi)</span></span> Einstein was intrigued by Piaget's finding, especially by the idea that seven-year-olds insist that going faster can take more time — perhaps because this, like Einstein's own theories of relativity, runs so contrary to common sense.</p>
+                    <p><span class="t-hl" data-q="36"><span class="t-qmark">36</span>Although every teacher in training still memorises Piaget's successive stages of childhood development<span class="t-note">(36: E — teachers)</span></span>, the greater part of Piaget's work is less well known, perhaps because schools of education regard it as 'too deep' for teachers. Piaget never thought of himself as a child psychologist. <span class="t-hl" data-q="39"><span class="t-qmark">39</span>His real interest was epistemology — the theory of knowledge — which, like physics, was considered a branch of philosophy until Piaget came along and made it a science.<span class="t-note">(39: YES — epistemologiyaga katta hissa)</span></span></p>
+                    <p>Through epistemology, Piaget explored multiple ways of knowing. He acknowledged them and examined them non-judgementally, yet with a philosopher's analytic rigour. Since Piaget, the territory has been widely colonised by those who write about women's ways of knowing, Afrocentric ways of knowing, even the computer's ways of knowing. Indeed, artificial intelligence and the information-processing model of the mind owe more to Piaget than its proponents may realise.</p>
+                    <p>The core of Piaget is his belief that looking carefully at how knowledge develops in children will elucidate the nature of knowledge in general. Whether this has in fact led to deeper understanding remains, like everything about Piaget, controversial. In the past decade, <span class="t-hl" data-q="35"><span class="t-qmark">35</span>Piaget has been vigorously challenged by the current fashion of viewing knowledge as an intrinsic property of the brain<span class="t-note">(35: C — brain)</span></span>. Ingenious experiments have demonstrated that newborn infants already have some of the knowledge that Piaget believed children constructed. But for those, like me, who still see Piaget as the giant in the field of cognitive theory, the difference between what the baby brings and what the adult has is so immense that <span class="t-hl" data-q="40"><span class="t-qmark">40</span>the new discoveries do not significantly reduce the gap, but only increase the mystery<span class="t-note">(40: YES — bilim tabiati hali to'liq o'rganilmagan)</span></span>.</p>
+                </div>
+            </div>
+
+        
+        </div>
+
+        <!-- ═══ O'RTADAGI SURILADIGAN AJRATUVCHI ═══ -->
+        <div class="resizer" id="resizer" title="Panellar kengligini o'zgartirish uchun surib torting"></div>
+
+        <div class="questions-panel" id="questions-panel">
+            <!-- ═══ PASSAGE 1 SAVOLLARI (1–13) ═══ -->
+            <div class="question-set active" id="questions-1">
+                <div class="q-group" id="group-q1">
+                    <p class="q-group-header">Questions 1–6</p>
+                    <div class="q-instruction">
+                        <p>Do the following statements agree with the information given in the text?</p>
+                        <p>Choose <strong>TRUE</strong>, <strong>FALSE</strong> or <strong>NOT GIVEN</strong>.</p>
+                    </div>
+                    <div class="info-box"><p><strong>TRUE</strong> — agrees with the information</p><p><strong>FALSE</strong> — contradicts the information</p><p style="margin-bottom:0;"><strong>NOT GIVEN</strong> — no information on this</p></div>
+                    <div class="tf-question" id="item-q1">
+                        <div class="tf-question-line"><span class="tf-question-number">1</span><span class="tf-question-text">Settlers realised that wooden houses were more dangerous than other types of structure.</span></div>
+                        <div class="tf-options">
+                            <label class="tf-option"><input type="radio" name="q1" value="TRUE"> TRUE</label>
+                            <label class="tf-option"><input type="radio" name="q1" value="FALSE"> FALSE</label>
+                            <label class="tf-option"><input type="radio" name="q1" value="NOT GIVEN"> NOT GIVEN</label>
+                        </div>
+                    </div>
+                    <div class="tf-question" id="item-q2">
+                        <div class="tf-question-line"><span class="tf-question-number">2</span><span class="tf-question-text">During the 1800s, New Zealand exported wood for use in boat-building.</span></div>
+                        <div class="tf-options">
+                            <label class="tf-option"><input type="radio" name="q2" value="TRUE"> TRUE</label>
+                            <label class="tf-option"><input type="radio" name="q2" value="FALSE"> FALSE</label>
+                            <label class="tf-option"><input type="radio" name="q2" value="NOT GIVEN"> NOT GIVEN</label>
+                        </div>
+                    </div>
+                    <div class="tf-question" id="item-q3">
+                        <div class="tf-question-line"><span class="tf-question-number">3</span><span class="tf-question-text">Plantation-grown wood is generally better for construction than native forest wood.</span></div>
+                        <div class="tf-options">
+                            <label class="tf-option"><input type="radio" name="q3" value="TRUE"> TRUE</label>
+                            <label class="tf-option"><input type="radio" name="q3" value="FALSE"> FALSE</label>
+                            <label class="tf-option"><input type="radio" name="q3" value="NOT GIVEN"> NOT GIVEN</label>
+                        </div>
+                    </div>
+                    <div class="tf-question" id="item-q4">
+                        <div class="tf-question-line"><span class="tf-question-number">4</span><span class="tf-question-text">Compared to other types of wood, pine has a narrow range of uses.</span></div>
+                        <div class="tf-options">
+                            <label class="tf-option"><input type="radio" name="q4" value="TRUE"> TRUE</label>
+                            <label class="tf-option"><input type="radio" name="q4" value="FALSE"> FALSE</label>
+                            <label class="tf-option"><input type="radio" name="q4" value="NOT GIVEN"> NOT GIVEN</label>
+                        </div>
+                    </div>
+                    <div class="tf-question" id="item-q5">
+                        <div class="tf-question-line"><span class="tf-question-number">5</span><span class="tf-question-text">Demand for housing in New Zealand is predicted to fall in the next few years.</span></div>
+                        <div class="tf-options">
+                            <label class="tf-option"><input type="radio" name="q5" value="TRUE"> TRUE</label>
+                            <label class="tf-option"><input type="radio" name="q5" value="FALSE"> FALSE</label>
+                            <label class="tf-option"><input type="radio" name="q5" value="NOT GIVEN"> NOT GIVEN</label>
+                        </div>
+                    </div>
+                    <div class="tf-question" id="item-q6">
+                        <div class="tf-question-line"><span class="tf-question-number">6</span><span class="tf-question-text">In future, the expansion of New Zealand's wood industry will depend on its exports.</span></div>
+                        <div class="tf-options">
+                            <label class="tf-option"><input type="radio" name="q6" value="TRUE"> TRUE</label>
+                            <label class="tf-option"><input type="radio" name="q6" value="FALSE"> FALSE</label>
+                            <label class="tf-option"><input type="radio" name="q6" value="NOT GIVEN"> NOT GIVEN</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="q-group" id="group-q7">
+                    <p class="q-group-header">Questions 7–13</p>
+                    <div class="q-instruction">
+                        <p>Answer the questions below.</p>
+                        <p>Write <strong>NO MORE THAN TWO WORDS AND/OR A NUMBER</strong> from the passage for each answer.</p>
+                    </div>
+                    <div class="q-item" id="item-q7">
+                        <span class="q-num">7</span>
+                        <div class="q-body">Apart from exchange rates, which factor has had a negative impact on New Zealand's forestry exports?<br><input type="text" id="q7" class="answer-input" placeholder="7" style="width:220px;margin-top:6px;"></div>
+                    </div>
+                    <div class="q-item" id="item-q8">
+                        <span class="q-num">8</span>
+                        <div class="q-body">Which part of New Zealand's economy does the forestry industry rank third in?<br><input type="text" id="q8" class="answer-input" placeholder="8" style="width:220px;margin-top:6px;"></div>
+                    </div>
+                    <div class="q-item" id="item-q9">
+                        <span class="q-num">9</span>
+                        <div class="q-body">According to the New Zealand forestry industry, what could be the size of its workforce by 2025?<br><input type="text" id="q9" class="answer-input" placeholder="9" style="width:220px;margin-top:6px;"></div>
+                    </div>
+                    <div class="q-item" id="item-q10">
+                        <span class="q-num">10</span>
+                        <div class="q-body">What kind of timber product is available in large amounts from renewable forests in New Zealand?<br><input type="text" id="q10" class="answer-input" placeholder="10" style="width:220px;margin-top:6px;"></div>
+                    </div>
+                    <div class="q-item" id="item-q11">
+                        <span class="q-num">11</span>
+                        <div class="q-body">Which aspect of timber production are New Zealand's main customers increasingly concerned about?<br><input type="text" id="q11" class="answer-input" placeholder="11" style="width:220px;margin-top:6px;"></div>
+                    </div>
+                    <div class="q-item" id="item-q12">
+                        <span class="q-num">12</span>
+                        <div class="q-body">Outside the southern hemisphere, who are New Zealand forestry's main competitors?<br><input type="text" id="q12" class="answer-input" placeholder="12" style="width:220px;margin-top:6px;"></div>
+                    </div>
+                    <div class="q-item" id="item-q13">
+                        <span class="q-num">13</span>
+                        <div class="q-body">Which group of products is New Zealand's forestry industry now having to compete with?<br><input type="text" id="q13" class="answer-input" placeholder="13" style="width:220px;margin-top:6px;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ PASSAGE 2 SAVOLLARI (14–26) ═══ -->
+            <div class="question-set" id="questions-2">
+                <div class="q-group" id="group-q14">
+                    <p class="q-group-header">Questions 14–20</p>
+                    <div class="q-instruction">
+                        <p>Reading Passage 2 has seven paragraphs, <strong>A–G</strong>.</p>
+                        <p>Choose the correct heading for each paragraph from the list of headings below.</p>
+                    </div>
+                    <table class="match-list-table">
+                        <thead><tr><th colspan="2">List of Headings</th></tr></thead>
+                        <tbody>
+                            <tr><td>i</td><td>The theory linking capacity for tool use in birds and survival</td></tr>
+                            <tr><td>ii</td><td>The influence of humans on tool use</td></tr>
+                            <tr><td>iii</td><td>The theory linking cognitive ability and living in a society</td></tr>
+                            <tr><td>iv</td><td>Reviewing long-held beliefs</td></tr>
+                            <tr><td>v</td><td>Intelligence helps birds to remember</td></tr>
+                            <tr><td>vi</td><td>How some birds trick each other</td></tr>
+                            <tr><td>vii</td><td>Physiological evidence of birds' intelligence</td></tr>
+                            <tr><td>viii</td><td>Several examples of birds who use tools</td></tr>
+                            <tr><td>ix</td><td>One species' multiple tool-using techniques</td></tr>
+                        </tbody>
+                    </table>
+                    <table class="matching-table">
+                        <thead>
+                            <tr><th class="statement">Paragraph</th><th>i</th><th>ii</th><th>iii</th><th>iv</th><th>v</th><th>vi</th><th>vii</th><th>viii</th><th>ix</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr id="item-q14">
+                                <td class="statement"><strong>14</strong> &nbsp;Paragraph A</td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q14" value="i" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q14" value="ii" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q14" value="iii" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q14" value="iv" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q14" value="v" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q14" value="vi" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q14" value="vii" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q14" value="viii" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q14" value="ix" class="table-radio"></label></td>
+                            </tr>
+                            <tr id="item-q15">
+                                <td class="statement"><strong>15</strong> &nbsp;Paragraph B</td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q15" value="i" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q15" value="ii" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q15" value="iii" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q15" value="iv" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q15" value="v" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q15" value="vi" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q15" value="vii" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q15" value="viii" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q15" value="ix" class="table-radio"></label></td>
+                            </tr>
+                            <tr id="item-q16">
+                                <td class="statement"><strong>16</strong> &nbsp;Paragraph C</td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q16" value="i" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q16" value="ii" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q16" value="iii" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q16" value="iv" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q16" value="v" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q16" value="vi" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q16" value="vii" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q16" value="viii" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q16" value="ix" class="table-radio"></label></td>
+                            </tr>
+                            <tr id="item-q17">
+                                <td class="statement"><strong>17</strong> &nbsp;Paragraph D</td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q17" value="i" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q17" value="ii" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q17" value="iii" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q17" value="iv" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q17" value="v" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q17" value="vi" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q17" value="vii" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q17" value="viii" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q17" value="ix" class="table-radio"></label></td>
+                            </tr>
+                            <tr id="item-q18">
+                                <td class="statement"><strong>18</strong> &nbsp;Paragraph E</td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q18" value="i" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q18" value="ii" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q18" value="iii" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q18" value="iv" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q18" value="v" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q18" value="vi" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q18" value="vii" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q18" value="viii" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q18" value="ix" class="table-radio"></label></td>
+                            </tr>
+                            <tr id="item-q19">
+                                <td class="statement"><strong>19</strong> &nbsp;Paragraph F</td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q19" value="i" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q19" value="ii" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q19" value="iii" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q19" value="iv" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q19" value="v" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q19" value="vi" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q19" value="vii" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q19" value="viii" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q19" value="ix" class="table-radio"></label></td>
+                            </tr>
+                            <tr id="item-q20">
+                                <td class="statement"><strong>20</strong> &nbsp;Paragraph G</td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q20" value="i" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q20" value="ii" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q20" value="iii" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q20" value="iv" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q20" value="v" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q20" value="vi" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q20" value="vii" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q20" value="viii" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q20" value="ix" class="table-radio"></label></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="q-group" id="group-q21">
+                    <p class="q-group-header">Questions 21–26</p>
+                    <div class="q-instruction">
+                        <p>Look at the following characteristics and the list of birds below.</p>
+                        <p>Match each characteristic with the correct bird, <strong>A</strong>, <strong>B</strong> or <strong>C</strong>.</p>
+                        <p><em>NB You may use any letter more than once.</em></p>
+                    </div>
+                    <table class="match-list-table">
+                        <thead><tr><th colspan="2">List of Birds</th></tr></thead>
+                        <tbody>
+                            <tr><td>A</td><td>White-winged choughs</td></tr>
+                            <tr><td>B</td><td>Black kites</td></tr>
+                            <tr><td>C</td><td>New Caledonian crows</td></tr>
+                        </tbody>
+                    </table>
+                    <table class="matching-table">
+                        <thead>
+                            <tr><th class="statement">Characteristic</th><th>A</th><th>B</th><th>C</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr id="item-q21">
+                                <td class="statement"><strong>21</strong> &nbsp;keeping tools that they like to use</td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q21" value="A" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q21" value="B" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q21" value="C" class="table-radio"></label></td>
+                            </tr>
+                            <tr id="item-q22">
+                                <td class="statement"><strong>22</strong> &nbsp;drawing out their prey by frightening it</td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q22" value="A" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q22" value="B" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q22" value="C" class="table-radio"></label></td>
+                            </tr>
+                            <tr id="item-q23">
+                                <td class="statement"><strong>23</strong> &nbsp;the use of tools to remove the outer covering from food</td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q23" value="A" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q23" value="B" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q23" value="C" class="table-radio"></label></td>
+                            </tr>
+                            <tr id="item-q24">
+                                <td class="statement"><strong>24</strong> &nbsp;using food to attract their prey</td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q24" value="A" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q24" value="B" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q24" value="C" class="table-radio"></label></td>
+                            </tr>
+                            <tr id="item-q25">
+                                <td class="statement"><strong>25</strong> &nbsp;the use of unfamiliar materials to make tools</td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q25" value="A" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q25" value="B" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q25" value="C" class="table-radio"></label></td>
+                            </tr>
+                            <tr id="item-q26">
+                                <td class="statement"><strong>26</strong> &nbsp;engaging in certain activities for the benefit of observers</td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q26" value="A" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q26" value="B" class="table-radio"></label></td>
+                                <td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q26" value="C" class="table-radio"></label></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ═══ PASSAGE 3 SAVOLLARI (27–40) ═══ -->
+            <div class="question-set" id="questions-3">
+                <div class="q-group" id="group-q27">
+                    <p class="q-group-header">Questions 27–31</p>
+                    <div class="q-instruction">
+                        <p>Choose the correct letter, <strong>A</strong>, <strong>B</strong>, <strong>C</strong> or <strong>D</strong>.</p>
+                    </div>
+                    <div class="q-item" id="item-q27">
+                        <span class="q-num">27</span>
+                        <div class="q-body">
+                            <p style="margin-bottom:8px;">In the second paragraph the writer mentions the example of modern anthropology to illustrate</p>
+                            <div class="multi-choice-option"><label><input type="radio" name="q27" value="A"> <span><strong>A</strong> &nbsp; the universality of Piaget's insights into the workings of the mind.</span></label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q27" value="B"> <span><strong>B</strong> &nbsp; the similarity between children's thought processing in different cultures.</span></label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q27" value="C"> <span><strong>C</strong> &nbsp; how Piaget's work represents a crucial turning-point in our approach to education.</span></label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q27" value="D"> <span><strong>D</strong> &nbsp; how Piaget's work has aided our understanding of man's evolution from primitive origins.</span></label></div>
+                        </div>
+                    </div>
+                    <div class="q-item" id="item-q28">
+                        <span class="q-num">28</span>
+                        <div class="q-body">
+                            <p style="margin-bottom:8px;">According to the writer, what point is illustrated by the dialogue about the wind?</p>
+                            <div class="multi-choice-option"><label><input type="radio" name="q28" value="A"> <span><strong>A</strong> &nbsp; The factual accuracy of what children say is of minor significance.</span></label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q28" value="B"> <span><strong>B</strong> &nbsp; Children want to learn about scientific principles.</span></label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q28" value="C"> <span><strong>C</strong> &nbsp; Children's reasoning processes can be amusing to adults.</span></label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q28" value="D"> <span><strong>D</strong> &nbsp; Children often pretend that they know the answers to questions.</span></label></div>
+                        </div>
+                    </div>
+                    <div class="q-item" id="item-q29">
+                        <span class="q-num">29</span>
+                        <div class="q-body">
+                            <p style="margin-bottom:8px;">Piaget believed in the importance of</p>
+                            <div class="multi-choice-option"><label><input type="radio" name="q29" value="A"> <span><strong>A</strong> &nbsp; preventing children from making false assumptions.</span></label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q29" value="B"> <span><strong>B</strong> &nbsp; giving children honest feedback on their hypotheses.</span></label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q29" value="C"> <span><strong>C</strong> &nbsp; showing children how to formulate their own ideas about the world.</span></label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q29" value="D"> <span><strong>D</strong> &nbsp; maintaining children's confidence in their ability to interpret the world.</span></label></div>
+                        </div>
+                    </div>
+                    <div class="q-item" id="item-q30">
+                        <span class="q-num">30</span>
+                        <div class="q-body">
+                            <p style="margin-bottom:8px;">What does the writer suggest about children's primitive laws of physics?</p>
+                            <div class="multi-choice-option"><label><input type="radio" name="q30" value="A"> <span><strong>A</strong> &nbsp; Children's sense of their surroundings changes as they get older.</span></label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q30" value="B"> <span><strong>B</strong> &nbsp; Children are able to grasp certain complex ideas as well as adults are.</span></label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q30" value="C"> <span><strong>C</strong> &nbsp; Even apparently irrational ideas can be worthy of interest.</span></label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q30" value="D"> <span><strong>D</strong> &nbsp; Sometimes the simplest explanations are the best.</span></label></div>
+                        </div>
+                    </div>
+                    <div class="q-item" id="item-q31">
+                        <span class="q-num">31</span>
+                        <div class="q-body">
+                            <p style="margin-bottom:8px;">The writer's main purpose is to</p>
+                            <div class="multi-choice-option"><label><input type="radio" name="q31" value="A"> <span><strong>A</strong> &nbsp; outline Piaget's contribution to a range of scientific fields.</span></label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q31" value="B"> <span><strong>B</strong> &nbsp; summarise how education has benefited from Piaget's findings.</span></label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q31" value="C"> <span><strong>C</strong> &nbsp; discuss Piaget's role in the development of 20th-century psychology.</span></label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q31" value="D"> <span><strong>D</strong> &nbsp; express doubts about a number of Piaget's theories.</span></label></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="q-group" id="group-q32">
+                    <p class="q-group-header">Questions 32–36</p>
+                    <div class="q-instruction">
+                        <p>Complete the summary using the list of words, <strong>A–I</strong>, below.</p>
+                    </div>
+                    <div class="summary-box">
+                        <p class="summary-title">Piaget's Theories on Children's Cognitive Development</p>
+                        <p>Piaget maintained that children's mental processes were far more <input type="text" id="q32" class="answer-input" placeholder="32" style="width:70px;"> than they might appear. He encouraged the view that a child was not a 'blank slate' waiting to be filled with information, but rather a systematic builder of knowledge who regularly tries out his or her own <input type="text" id="q33" class="answer-input" placeholder="33" style="width:70px;"> about the world. Piaget's impact on the area of <input type="text" id="q34" class="answer-input" placeholder="34" style="width:70px;"> could well outlast that of more celebrated pioneers of this discipline. Despite doubts cast over his ideas by the current view associating knowledge exclusively with the <input type="text" id="q35" class="answer-input" placeholder="35" style="width:70px;">, the effects of his work are still strong today. His principles are still widely used in the professional development of <input type="text" id="q36" class="answer-input" placeholder="36" style="width:70px;">.</p>
+                    </div>
+                    <table class="match-list-table">
+                        <thead><tr><th colspan="2">List of Words</th></tr></thead>
+                        <tbody>
+                            <tr><td>A</td><td>correct</td></tr>
+                            <tr><td>B</td><td>theories</td></tr>
+                            <tr><td>C</td><td>brain</td></tr>
+                            <tr><td>D</td><td>simple</td></tr>
+                            <tr><td>E</td><td>teachers</td></tr>
+                            <tr><td>F</td><td>psychology</td></tr>
+                            <tr><td>G</td><td>logical</td></tr>
+                            <tr><td>H</td><td>thought</td></tr>
+                            <tr><td>I</td><td>philosophers</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="q-group" id="group-q37">
+                    <p class="q-group-header">Questions 37–40</p>
+                    <div class="q-instruction">
+                        <p>Do the following statements agree with the claims of the writer in Reading Passage 3?</p>
+                        <p>Choose <strong>YES</strong>, <strong>NO</strong> or <strong>NOT GIVEN</strong>.</p>
+                    </div>
+                    <div class="info-box"><p><strong>YES</strong> — agrees with the claims of the writer</p><p><strong>NO</strong> — contradicts the claims of the writer</p><p style="margin-bottom:0;"><strong>NOT GIVEN</strong> — impossible to say what the writer thinks about this</p></div>
+                    <div class="tf-question" id="item-q37">
+                        <div class="tf-question-line"><span class="tf-question-number">37</span><span class="tf-question-text">Piaget's early work in Paris involved innovative research techniques.</span></div>
+                        <div class="tf-options">
+                            <label class="tf-option"><input type="radio" name="q37" value="YES"> YES</label>
+                            <label class="tf-option"><input type="radio" name="q37" value="NO"> NO</label>
+                            <label class="tf-option"><input type="radio" name="q37" value="NOT GIVEN"> NOT GIVEN</label>
+                        </div>
+                    </div>
+                    <div class="tf-question" id="item-q38">
+                        <div class="tf-question-line"><span class="tf-question-number">38</span><span class="tf-question-text">Piaget gave clear guidelines as to how adults should give information to children.</span></div>
+                        <div class="tf-options">
+                            <label class="tf-option"><input type="radio" name="q38" value="YES"> YES</label>
+                            <label class="tf-option"><input type="radio" name="q38" value="NO"> NO</label>
+                            <label class="tf-option"><input type="radio" name="q38" value="NOT GIVEN"> NOT GIVEN</label>
+                        </div>
+                    </div>
+                    <div class="tf-question" id="item-q39">
+                        <div class="tf-question-line"><span class="tf-question-number">39</span><span class="tf-question-text">Piaget made a significant contribution to the field of epistemology.</span></div>
+                        <div class="tf-options">
+                            <label class="tf-option"><input type="radio" name="q39" value="YES"> YES</label>
+                            <label class="tf-option"><input type="radio" name="q39" value="NO"> NO</label>
+                            <label class="tf-option"><input type="radio" name="q39" value="NOT GIVEN"> NOT GIVEN</label>
+                        </div>
+                    </div>
+                    <div class="tf-question" id="item-q40">
+                        <div class="tf-question-line"><span class="tf-question-number">40</span><span class="tf-question-text">We still have much to learn about the nature of knowledge.</span></div>
+                        <div class="tf-options">
+                            <label class="tf-option"><input type="radio" name="q40" value="YES"> YES</label>
+                            <label class="tf-option"><input type="radio" name="q40" value="NO"> NO</label>
+                            <label class="tf-option"><input type="radio" name="q40" value="NOT GIVEN"> NOT GIVEN</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="nav-row" aria-label="Questions">
+        <div class="footer__questionWrapper___1tZ46 selected" role="tablist">
+            <button role="tab" class="footer__questionNo___3WNct" onclick="switchToPassage(1)">
+                <span>Passage <span class="sectionNr">1</span><span class="attemptedCount">0 of 13</span></span>
+            </button>
+            <div class="footer__subquestionWrapper___9GgoP">
+                <button class="subQuestion" onclick="goToQuestion(1)"><span>1</span></button>
+                <button class="subQuestion" onclick="goToQuestion(2)"><span>2</span></button>
+                <button class="subQuestion" onclick="goToQuestion(3)"><span>3</span></button>
+                <button class="subQuestion" onclick="goToQuestion(4)"><span>4</span></button>
+                <button class="subQuestion" onclick="goToQuestion(5)"><span>5</span></button>
+                <button class="subQuestion" onclick="goToQuestion(6)"><span>6</span></button>
+                <button class="subQuestion" onclick="goToQuestion(7)"><span>7</span></button>
+                <button class="subQuestion" onclick="goToQuestion(8)"><span>8</span></button>
+                <button class="subQuestion" onclick="goToQuestion(9)"><span>9</span></button>
+                <button class="subQuestion" onclick="goToQuestion(10)"><span>10</span></button>
+                <button class="subQuestion" onclick="goToQuestion(11)"><span>11</span></button>
+                <button class="subQuestion" onclick="goToQuestion(12)"><span>12</span></button>
+                <button class="subQuestion" onclick="goToQuestion(13)"><span>13</span></button>
+            </div>
+        </div>
+        <div class="footer__questionWrapper___1tZ46" role="tablist">
+            <button role="tab" class="footer__questionNo___3WNct" onclick="switchToPassage(2)">
+                <span>Passage <span class="sectionNr">2</span><span class="attemptedCount">0 of 13</span></span>
+            </button>
+            <div class="footer__subquestionWrapper___9GgoP">
+                <button class="subQuestion" onclick="goToQuestion(14)"><span>14</span></button>
+                <button class="subQuestion" onclick="goToQuestion(15)"><span>15</span></button>
+                <button class="subQuestion" onclick="goToQuestion(16)"><span>16</span></button>
+                <button class="subQuestion" onclick="goToQuestion(17)"><span>17</span></button>
+                <button class="subQuestion" onclick="goToQuestion(18)"><span>18</span></button>
+                <button class="subQuestion" onclick="goToQuestion(19)"><span>19</span></button>
+                <button class="subQuestion" onclick="goToQuestion(20)"><span>20</span></button>
+                <button class="subQuestion" onclick="goToQuestion(21)"><span>21</span></button>
+                <button class="subQuestion" onclick="goToQuestion(22)"><span>22</span></button>
+                <button class="subQuestion" onclick="goToQuestion(23)"><span>23</span></button>
+                <button class="subQuestion" onclick="goToQuestion(24)"><span>24</span></button>
+                <button class="subQuestion" onclick="goToQuestion(25)"><span>25</span></button>
+                <button class="subQuestion" onclick="goToQuestion(26)"><span>26</span></button>
+            </div>
+        </div>
+        <div class="footer__questionWrapper___1tZ46" role="tablist">
+            <button role="tab" class="footer__questionNo___3WNct" onclick="switchToPassage(3)">
+                <span>Passage <span class="sectionNr">3</span><span class="attemptedCount">0 of 14</span></span>
+            </button>
+            <div class="footer__subquestionWrapper___9GgoP">
+                <button class="subQuestion" onclick="goToQuestion(27)"><span>27</span></button>
+                <button class="subQuestion" onclick="goToQuestion(28)"><span>28</span></button>
+                <button class="subQuestion" onclick="goToQuestion(29)"><span>29</span></button>
+                <button class="subQuestion" onclick="goToQuestion(30)"><span>30</span></button>
+                <button class="subQuestion" onclick="goToQuestion(31)"><span>31</span></button>
+                <button class="subQuestion" onclick="goToQuestion(32)"><span>32</span></button>
+                <button class="subQuestion" onclick="goToQuestion(33)"><span>33</span></button>
+                <button class="subQuestion" onclick="goToQuestion(34)"><span>34</span></button>
+                <button class="subQuestion" onclick="goToQuestion(35)"><span>35</span></button>
+                <button class="subQuestion" onclick="goToQuestion(36)"><span>36</span></button>
+                <button class="subQuestion" onclick="goToQuestion(37)"><span>37</span></button>
+                <button class="subQuestion" onclick="goToQuestion(38)"><span>38</span></button>
+                <button class="subQuestion" onclick="goToQuestion(39)"><span>39</span></button>
+                <button class="subQuestion" onclick="goToQuestion(40)"><span>40</span></button>
+            </div>
+        </div>
+        <button id="deliver-button" class="footer__deliverButton___3FM07"><span>Check Answers</span></button>
+    </nav>
+
+    <!-- Context Menu -->
+    <div id="contextMenu" class="context-menu">
+        <div class="context-menu-item" id="clear-item" onclick="clearHighlight()" style="display:none;">Clear</div>
+        <div class="context-menu-item" onclick="clearAllHighlights()">Clear All</div>
+    </div>
+
+    <!-- Matn belgilanganda avtomatik chiqadigan asboblar paneli -->
+    <div id="selectionToolbar" class="selection-toolbar" style="display:none;">
+        <button type="button" onclick="addComment()">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM9 11H7V9h2v2zm4 0h-2V9h2v2zm4 0h-2V9h2v2z"/></svg>
+            <span>Note</span>
+        </button>
+        <button type="button" onclick="highlightText()">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17.75 7L14 3.25l-10 10V17h3.75l10-10zm2.96-2.96c.39-.39.39-1.02 0-1.41L18.37.29c-.39-.39-1.02-.39-1.41 0L15 2.25 18.75 6l1.96-1.96z"/><path d="M2 20h20v3H2z"/></svg>
+            <span>Highlight</span>
+        </button>
+    </div>
+
+    <!-- Result Modal -->
+    <div id="result-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Your Results</h2>
+                <button id="modal-close-button" class="modal-close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="score-summary"></p>
+                <div id="result-details"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Exam Settings oynasi -->
+    <div id="settings-modal" class="modal-overlay" style="display:none;">
+        <div class="settings-modal-content">
+            <div class="settings-header">
+                <span class="settings-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+                    Exam Settings
+                </span>
+                <button type="button" id="settings-close" class="settings-close">&times;</button>
+            </div>
+
+            <p class="settings-section-title">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 0 0-1.41 0 .996.996 0 0 0 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 0 0-1.41 0 .996.996 0 0 0 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 0 0 0-1.41l-1.06-1.06zm1.06-10.96a.996.996 0 0 0 0-1.41.996.996 0 0 0-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36a.996.996 0 0 0 0-1.41.996.996 0 0 0-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>
+                Theme
+            </p>
+            <button type="button" class="settings-option" data-theme="light">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 0 0-1.41 0 .996.996 0 0 0 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 0 0-1.41 0 .996.996 0 0 0 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 0 0 0-1.41l-1.06-1.06zm1.06-10.96a.996.996 0 0 0 0-1.41.996.996 0 0 0-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36a.996.996 0 0 0 0-1.41.996.996 0 0 0-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>
+                Light
+            </button>
+            <button type="button" class="settings-option" data-theme="dark">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
+                Dark
+            </button>
+            <button type="button" class="settings-option" data-theme="system">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 2H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h7v2H8v2h8v-2h-2v-2h7c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H3V4h18v12z"/></svg>
+                System
+            </button>
+
+            <p class="settings-section-title">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5 4v3h5.5v12h3V7H19V4z"/></svg>
+                Text Size
+            </p>
+            <button type="button" class="settings-option" data-textsize="default">Default</button>
+            <button type="button" class="settings-option" data-textsize="large" style="font-size:18.5px;">Large</button>
+            <button type="button" class="settings-option" data-textsize="xlarge" style="font-size:21.5px;">Extra Large</button>
+
+            <button type="button" id="reset-settings-btn" class="settings-reset">
+                <span class="settings-reset-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-8 8s3.58 8 8 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+                    Reset Settings
+                </span>
+                <span class="settings-reset-sub">Restore the default theme and text size. Your answers are kept.</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Submit Test tasdiqlash oynasi -->
+    <div id="confirm-submit-modal" class="modal-overlay" style="display:none;">
+        <div class="confirm-modal-content">
+            <p class="confirm-modal-title"><span class="confirm-modal-icon">&#9888;</span> Submit Test</p>
+            <p class="confirm-modal-text">Are you sure you want to submit your test? You cannot change your answers after submission.</p>
+            <div class="confirm-modal-actions">
+                <button id="confirm-submit-cancel" class="confirm-modal-btn confirm-modal-btn-cancel">Cancel</button>
+                <button id="confirm-submit-ok" class="confirm-modal-btn confirm-modal-btn-submit">Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const correctAnswers = {
+            'q1': 'FALSE', 'q2': 'TRUE', 'q3': 'NOT GIVEN', 'q4': 'FALSE', 'q5': 'NOT GIVEN', 'q6': 'TRUE',
+            'q7': ['shipping costs'], 'q8': ['export sector', 'the export sector'], 'q9': ['60,000', '60000'],
+            'q10': ['softwood'], 'q11': ['sustainability'], 'q12': ['Scandinavian countries', 'Scandinavia'],
+            'q13': ['wood substitutes'],
+            'q14': 'iv', 'q15': 'viii', 'q16': 'i', 'q17': 'ix', 'q18': 'vii', 'q19': 'iii', 'q20': 'vi',
+            'q21': 'C', 'q22': 'B', 'q23': 'A', 'q24': 'B', 'q25': 'C', 'q26': 'A',
+            'q27': 'C', 'q28': 'A', 'q29': 'D', 'q30': 'C', 'q31': 'C',
+            'q32': ['G'], 'q33': ['B'], 'q34': ['F'], 'q35': ['C'], 'q36': ['E'],
+            'q37': 'NOT GIVEN', 'q38': 'NO', 'q39': 'YES', 'q40': 'YES'
+
+        };
+
+        const questionTypes = {
+            'q1': 'tf',
+            'q2': 'tf',
+            'q3': 'tf',
+            'q4': 'tf',
+            'q5': 'tf',
+            'q6': 'tf',
+            'q7': 'text',
+            'q8': 'text',
+            'q9': 'text',
+            'q10': 'text',
+            'q11': 'text',
+            'q12': 'text',
+            'q13': 'text',
+            'q14': 'table',
+            'q15': 'table',
+            'q16': 'table',
+            'q17': 'table',
+            'q18': 'table',
+            'q19': 'table',
+            'q20': 'table',
+            'q21': 'table',
+            'q22': 'table',
+            'q23': 'table',
+            'q24': 'table',
+            'q25': 'table',
+            'q26': 'table',
+            'q27': 'mcq',
+            'q28': 'mcq',
+            'q29': 'mcq',
+            'q30': 'mcq',
+            'q31': 'mcq',
+            'q32': 'text',
+            'q33': 'text',
+            'q34': 'text',
+            'q35': 'text',
+            'q36': 'text',
+            'q37': 'tf',
+            'q38': 'tf',
+            'q39': 'tf',
+            'q40': 'tf'
+
+        };
+
+        const pairGroups = {};   // bu testda 'Choose TWO' guruhi yo'q
+
+        function pairNameForQ(qNum) {
+            return Object.keys(pairGroups).find(name => pairGroups[name].includes(qNum)) || null;
+        }
+
+        function passageForQ(qNum) {
+            if (qNum <= 13) return 1;
+            if (qNum <= 26) return 2;
+            return 3;
+        }
+
+        const passageRanges = { 1: [1, 13], 2: [14, 26], 3: [27, 40] };
+
+        let currentPassage = 1;
+        let currentQuestion = 1;
+        let selectedRange = null;
+        let contextElement = null;
+
+        function switchToPassage(n) {
+            currentPassage = n;
+            document.querySelectorAll('.passage-set').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.question-set').forEach(p => p.classList.remove('active'));
+            document.getElementById('passage-' + n).classList.add('active');
+            document.getElementById('questions-' + n).classList.add('active');
+            document.querySelectorAll('.footer__questionWrapper___1tZ46').forEach((w, i) => w.classList.toggle('selected', i + 1 === n));
+            document.getElementById('part-indicator').textContent = 'Reading Passage ' + n;
+            document.getElementById('passage-panel').scrollTop = 0;
+            document.getElementById('questions-panel').scrollTop = 0;
+            const [start, end] = passageRanges[n];
+            if (currentQuestion < start || currentQuestion > end) {
+                currentQuestion = start;
+                document.querySelectorAll('.subQuestion').forEach(b => b.classList.remove('active'));
+                const btn = document.querySelector('.subQuestion[onclick="goToQuestion(' + start + ')"]');
+                if (btn) btn.classList.add('active');
+            }
+            [1, 2, 3].forEach(p => updateAttemptedCount(p));
+        }
+
+        function goToQuestion(qNum) {
+            const p = passageForQ(qNum);
+            if (currentPassage !== p) switchToPassage(p);
+            currentQuestion = qNum;
+            document.querySelectorAll('.subQuestion').forEach(b => b.classList.remove('active'));
+            const btn = document.querySelector('.subQuestion[onclick="goToQuestion(' + qNum + ')"]');
+            if (btn) btn.classList.add('active');
+            const pairName = pairNameForQ(qNum);
+            let el = document.getElementById('q' + qNum)
+                || document.querySelector('input[name="q' + qNum + '"]')
+                || (pairName ? document.querySelector('input[name="' + pairName + '"]') : null);
+            document.querySelectorAll('.tf-question').forEach(q => q.classList.remove('active-question'));
+            if (el) {
+                const target = el.closest('.q-item') || el.closest('.tf-question') || el.closest('tr') || el.closest('.q-group');
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    target.classList.add('flash');
+                    setTimeout(() => target.classList.remove('flash'), 1000);
+                    if (target.classList.contains('tf-question')) target.classList.add('active-question');
+                }
+            }
+            if (document.querySelector('.main-container.results-mode')) {
+                const hl = document.querySelector('.passage-set.active .t-hl[data-q="' + qNum + '"]');
+                if (hl) {
+                    document.querySelectorAll('.t-hl.active').forEach(x => x.classList.remove('active'));
+                    hl.classList.add('active');
+                    hl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        }
+
+        function isAnswered(qNum) {
+            const pairName = pairNameForQ(qNum);
+            if (pairName) {
+                const idx = pairGroups[pairName].indexOf(qNum);
+                return document.querySelectorAll('input[name="' + pairName + '"]:checked').length >= (idx + 1);
+            }
+            const key = 'q' + qNum;
+            const type = questionTypes[key];
+            if (type === 'text' || type === 'select') {
+                const el = document.getElementById(key);
+                return !!(el && el.value.trim() !== '');
+            }
+            if (type === 'mcq' || type === 'tf' || type === 'table') {
+                return !!document.querySelector('input[name="' + key + '"]:checked');
+            }
+            if (type === 'dragdrop') {
+                const zone = document.getElementById(key);
+                return !!(zone && zone.querySelector('.drag-item'));
+            }
+            return false;
+        }
+
+        function updateAttemptedCount(p) {
+            const [start, end] = passageRanges[p];
+            let count = 0;
+            for (let i = start; i <= end; i++) if (isAnswered(i)) count++;
+            const wrapper = document.querySelectorAll('.footer__questionWrapper___1tZ46')[p - 1];
+            if (wrapper) {
+                const span = wrapper.querySelector('.attemptedCount');
+                if (span) span.textContent = count + ' of ' + (end - start + 1);
+            }
+        }
+
+        function updateAnsweredIndicators() {
+            for (let qNum = 1; qNum <= 40; qNum++) {
+                const btn = document.querySelector('.subQuestion[onclick="goToQuestion(' + qNum + ')"]');
+                if (!btn || btn.classList.contains('correct') || btn.classList.contains('incorrect')) continue;
+                btn.classList.toggle('answered', isAnswered(qNum));
+            }
+            [1, 2, 3].forEach(p => updateAttemptedCount(p));
+        }
+
+        document.querySelectorAll('.answer-input, input[type="radio"], input[type="checkbox"]').forEach(inp => {
+            inp.addEventListener('input', updateAnsweredIndicators);
+            inp.addEventListener('change', updateAnsweredIndicators);
+        });
+
+        function setupCheckboxLimits() {
+            Object.keys(pairGroups).forEach(name => {
+                const boxes = Array.from(document.querySelectorAll('input[type="checkbox"][name="' + name + '"]'));
+                if (!boxes.length) return;
+                boxes.forEach(b => b.addEventListener('change', () => {
+                    const checkedCount = boxes.filter(x => x.checked).length;
+                    boxes.forEach(x => { if (!x.checked) x.disabled = checkedCount >= pairGroups[name].length; });
+                }));
+            });
+        }
+
+        function makeReviewMark(isCorrect) {
+            const span = document.createElement('span');
+            span.className = 'review-mark ' + (isCorrect ? 'review-mark-correct' : 'review-mark-wrong');
+            span.textContent = isCorrect ? '✓' : '✗';
+            return span;
+        }
+
+        function appendReviewMarkToOption(wrapper, isCorrect) {
+            const label = wrapper.tagName === 'LABEL' ? wrapper : wrapper.querySelector('label');
+            if (label) label.appendChild(makeReviewMark(isCorrect));
+        }
+
+        function checkAnswers() {
+            let score = 0;
+            const resultsData = [];
+
+            document.querySelectorAll('.correct-inline').forEach(el => el.remove());
+            document.querySelectorAll('.answer-input').forEach(el => el.classList.remove('correct', 'incorrect'));
+            document.querySelectorAll('.multi-choice-option, .tf-option, .matching-table td, .drop-zone').forEach(el => el.classList.remove('correct', 'incorrect'));
+
+            Object.keys(correctAnswers).forEach(key => {
+                const correct = correctAnswers[key];
+                const type = questionTypes[key];
+
+                if (type === 'checkbox') {
+                    const [startQ, endQ] = key.split('-').map(s => parseInt(s.replace('q', '')));
+                    const checked = document.querySelectorAll('input[name="' + key + '"]:checked');
+                    const userVals = Array.from(checked).map(c => c.value).sort();
+                    const correctSorted = [...correct].sort();
+                    const correctSel = userVals.filter(v => correctSorted.includes(v));
+                    score += correctSel.length;
+                    const isCorrect = correctSel.length === correctSorted.length && userVals.length === correctSorted.length;
+                    checked.forEach(cb => {
+                        const w = cb.closest('.multi-choice-option');
+                        if (!w) return;
+                        const wasCorrect = correctSorted.includes(cb.value);
+                        w.classList.add(wasCorrect ? 'correct' : 'incorrect');
+                        appendReviewMarkToOption(w, wasCorrect);
+                    });
+                    correctSorted.forEach(v => {
+                        const cb = document.querySelector('input[name="' + key + '"][value="' + v + '"]');
+                        if (cb && !cb.checked) {
+                            const w = cb.closest('.multi-choice-option');
+                            if (w) { w.classList.add('correct'); appendReviewMarkToOption(w, true); }
+                        }
+                    });
+                    for (let q = startQ; q <= endQ; q++) { const b = document.querySelector('.subQuestion[onclick="goToQuestion(' + q + ')"]'); if (b) { b.classList.remove('answered'); b.classList.add(isCorrect ? 'correct' : 'incorrect'); } }
+                    resultsData.push({ question: startQ + '–' + endQ, userAnswer: userVals.join(', ') || 'No Answer', correctAnswer: correctSorted.join(', '), isCorrect });
+                    return;
+                }
+
+                const qNum = parseInt(key.replace('q', ''));
+                let userAnswer = '', isCorrect = false;
+
+                if (type === 'text') {
+                    const el = document.getElementById(key);
+                    userAnswer = el ? el.value.trim() : '';
+                    const accepted = Array.isArray(correct) ? correct : [correct];
+                    isCorrect = accepted.some(a => a.toLowerCase() === userAnswer.toLowerCase());
+                    if (el) {
+                        el.classList.add(isCorrect ? 'correct' : 'incorrect');
+                        const nodes = [makeReviewMark(isCorrect)];
+                        if (!isCorrect) {
+                            const sp = document.createElement('span');
+                            sp.className = 'correct-inline';
+                            sp.textContent = accepted[0];
+                            nodes.push(sp);
+                        }
+                        el.after(...nodes);
+                    }
+                } else if (type === 'select') {
+                    const el = document.getElementById(key);
+                    userAnswer = el ? el.value : '';
+                    isCorrect = userAnswer === correct;
+                    if (el) {
+                        el.classList.add(isCorrect ? 'correct' : 'incorrect');
+                        const nodes = [makeReviewMark(isCorrect)];
+                        if (!isCorrect) {
+                            const sp = document.createElement('span');
+                            sp.className = 'correct-inline';
+                            sp.textContent = correct;
+                            nodes.push(sp);
+                        }
+                        el.after(...nodes);
+                    }
+                } else if (type === 'mcq' || type === 'tf') {
+                    const checked = document.querySelector('input[name="' + key + '"]:checked');
+                    userAnswer = checked ? checked.value : 'No Answer';
+                    isCorrect = correct !== '???' && userAnswer === correct;
+                    const wrapSel = (type === 'tf') ? '.tf-option' : '.multi-choice-option';
+                    const radios = document.querySelectorAll('input[name="' + key + '"]');
+                    radios.forEach(r => {
+                        const wrapper = r.closest(wrapSel);
+                        if (!wrapper) return;
+                        if (correct !== '???' && r.value === correct) {
+                            wrapper.classList.add('correct');
+                            appendReviewMarkToOption(wrapper, true);
+                        } else if (r.checked) {
+                            wrapper.classList.add('incorrect');
+                            appendReviewMarkToOption(wrapper, false);
+                        }
+                    });
+                } else if (type === 'dragdrop') {
+                    const zone = document.getElementById(key);
+                    const item = zone ? zone.querySelector('.drag-item') : null;
+                    userAnswer = item ? item.dataset.value : 'No Answer';
+                    isCorrect = userAnswer === correct;
+                    if (zone) {
+                        zone.classList.add(isCorrect ? 'correct' : 'incorrect');
+                        zone.classList.add('disabled');
+                        const nodes = [makeReviewMark(isCorrect)];
+                        if (!isCorrect) {
+                            const sp = document.createElement('span');
+                            sp.className = 'correct-inline';
+                            sp.textContent = correct;
+                            nodes.push(sp);
+                        }
+                        zone.after(...nodes);
+                    }
+                } else if (type === 'table') {
+                    const checked = document.querySelector('input[name="' + key + '"]:checked');
+                    userAnswer = checked ? checked.value : 'No Answer';
+                    isCorrect = correct !== '???' && userAnswer === correct;
+                    const radios = document.querySelectorAll('input[name="' + key + '"]');
+                    radios.forEach(r => {
+                        const cell = r.closest('td');
+                        if (!cell) return;
+                        if (correct !== '???' && r.value === correct) {
+                            cell.classList.add('correct');
+                            cell.appendChild(makeReviewMark(true));
+                        } else if (r.checked) {
+                            cell.classList.add('incorrect');
+                            cell.appendChild(makeReviewMark(false));
+                        }
+                    });
+                }
+
+                if (isCorrect) score++;
+                const navBtn = document.querySelector('.subQuestion[onclick="goToQuestion(' + qNum + ')"]');
+                if (navBtn) { navBtn.classList.remove('answered'); navBtn.classList.add(isCorrect ? 'correct' : 'incorrect'); }
+                resultsData.push({ question: qNum, userAnswer: userAnswer || 'No Answer', correctAnswer: Array.isArray(correct) ? correct[0] : correct, isCorrect });
+            });
+
+            document.querySelectorAll('.answer-input, input[type="radio"], input[type="checkbox"]').forEach(el => el.disabled = true);
+            document.querySelectorAll('.drag-item').forEach(item => {
+                item.setAttribute('draggable', 'false');
+                item.style.cursor = 'not-allowed';
+            });
+            document.querySelectorAll('.drop-zone, .drag-options-container').forEach(z => z.classList.add('disabled'));
+
+            const band = (function (r) {
+                if (r >= 39) return 9; if (r >= 37) return 8.5; if (r >= 35) return 8; if (r >= 33) return 7.5;
+                if (r >= 30) return 7; if (r >= 27) return 6.5; if (r >= 23) return 6; if (r >= 19) return 5.5;
+                if (r >= 15) return 5; if (r >= 13) return 4.5; if (r >= 10) return 4; if (r >= 8) return 3.5;
+                if (r >= 6) return 3; if (r >= 4) return 2.5; if (r >= 2) return 2; if (r === 1) return 1.5; return 0;
+            })(score);
+
+            document.querySelector('.main-container').classList.add('results-mode');
+
+            document.getElementById('score-summary').textContent = 'You scored ' + score + ' out of 40 (Band ' + band + ').';
+
+            const resultDetails = document.getElementById('result-details');
+            let html = '<table><thead><tr><th>Question</th><th>Your Answer</th><th>Correct Answer</th><th>Result</th></tr></thead><tbody>';
+            resultsData.forEach(r => {
+                html += '<tr><td>' + r.question + '</td><td>' + r.userAnswer + '</td><td>' + r.correctAnswer + '</td><td class="' + (r.isCorrect ? 'result-correct' : 'result-incorrect') + '">' + (r.isCorrect ? '&#10003; Correct' : '&#10007; Incorrect') + '</td></tr>';
+            });
+            html += '</tbody></table>';
+            resultDetails.innerHTML = html;
+
+            const deliverButton = document.getElementById('deliver-button');
+            deliverButton.classList.add('success');
+            deliverButton.innerHTML = '<span>My Results</span>';
+            const newBtn = deliverButton.cloneNode(true);
+            deliverButton.parentNode.replaceChild(newBtn, deliverButton);
+            newBtn.addEventListener('click', () => { document.getElementById('result-modal').style.display = 'flex'; });
+            document.getElementById('result-modal').style.display = 'flex';
+        }
+
+        document.getElementById('deliver-button').addEventListener('click', () => {
+            document.getElementById('confirm-submit-modal').style.display = 'flex';
+        });
+        document.getElementById('confirm-submit-cancel').addEventListener('click', () => {
+            document.getElementById('confirm-submit-modal').style.display = 'none';
+        });
+        document.getElementById('confirm-submit-ok').addEventListener('click', () => {
+            document.getElementById('confirm-submit-modal').style.display = 'none';
+            checkAnswers();
+        });
+        document.getElementById('modal-close-button').addEventListener('click', () => { document.getElementById('result-modal').style.display = 'none'; });
+
+        document.addEventListener('selectionchange', () => {
+            const sel = window.getSelection();
+            if (sel && sel.rangeCount > 0 && !sel.isCollapsed) selectedRange = sel.getRangeAt(0);
+        });
+
+        // Matn belgilansa — asboblar paneli o'sha joyda avtomatik chiqadi
+        document.addEventListener('mouseup', (e) => {
+            if (e.target.closest('.selection-toolbar') || e.target.closest('.context-menu')) return;
+            setTimeout(() => {
+                const sel = window.getSelection();
+                if (sel && sel.rangeCount > 0 && !sel.isCollapsed && sel.toString().trim()) {
+                    selectedRange = sel.getRangeAt(0);
+                    showSelectionToolbar(selectedRange);
+                } else {
+                    hideSelectionToolbar();
+                }
+            }, 0);
+        });
+
+        function showSelectionToolbar(range) {
+            const rect = range.getBoundingClientRect();
+            const toolbar = document.getElementById('selectionToolbar');
+            toolbar.style.display = 'flex';
+            const top = rect.top + window.scrollY - toolbar.offsetHeight - 8;
+            let left = rect.left + window.scrollX + rect.width / 2 - toolbar.offsetWidth / 2;
+            left = Math.max(8, Math.min(left, window.scrollX + document.documentElement.clientWidth - toolbar.offsetWidth - 8));
+            toolbar.style.top = Math.max(8, top) + 'px';
+            toolbar.style.left = left + 'px';
+        }
+        function hideSelectionToolbar() {
+            document.getElementById('selectionToolbar').style.display = 'none';
+        }
+
+        document.body.addEventListener('contextmenu', function (e) {
+            const existingHl = e.target.closest('.highlight, .comment-highlight');
+            if (!existingHl) return;
+            e.preventDefault();
+            hideSelectionToolbar();
+            const menu = document.getElementById('contextMenu');
+            menu.style.left = e.pageX + 'px';
+            menu.style.top = e.pageY + 'px';
+            menu.style.display = 'block';
+            contextElement = existingHl;
+            document.getElementById('clear-item').style.display = 'block';
+        });
+        document.body.addEventListener('click', function (e) {
+            if (!e.target.closest('.context-menu')) document.getElementById('contextMenu').style.display = 'none';
+        });
+        function highlightText() {
+            if (!selectedRange || selectedRange.collapsed) return;
+            try {
+                const span = document.createElement('span');
+                span.className = 'highlight';
+                span.appendChild(selectedRange.extractContents());
+                selectedRange.insertNode(span);
+            } catch (e) { }
+            window.getSelection().removeAllRanges();
+            hideSelectionToolbar();
+            document.getElementById('contextMenu').style.display = 'none';
+        }
+        function addComment() {
+            const t = prompt('Enter your comment:');
+            if (!t || !selectedRange) { hideSelectionToolbar(); return; }
+            try {
+                const span = document.createElement('span'); span.className = 'comment-highlight';
+                span.appendChild(selectedRange.extractContents());
+                const tip = document.createElement('span'); tip.className = 'comment-tooltip'; tip.textContent = t;
+                span.appendChild(tip);
+                selectedRange.insertNode(span);
+            } catch (e) { }
+            window.getSelection().removeAllRanges();
+            hideSelectionToolbar();
+            document.getElementById('contextMenu').style.display = 'none';
+        }
+        function clearHighlight() {
+            if (contextElement) {
+                const parent = contextElement.parentNode;
+                while (contextElement.firstChild) parent.insertBefore(contextElement.firstChild, contextElement);
+                parent.removeChild(contextElement); parent.normalize();
+            }
+            document.getElementById('contextMenu').style.display = 'none';
+        }
+        function clearAllHighlights() {
+            document.querySelectorAll('.highlight, .comment-highlight').forEach(el => {
+                const parent = el.parentNode;
+                while (el.firstChild) parent.insertBefore(el.firstChild, el);
+                parent.removeChild(el); parent.normalize();
+            });
+            document.getElementById('contextMenu').style.display = 'none';
+        }
+
+        const resizer = document.getElementById('resizer');
+        const passagePanel = document.getElementById('passage-panel');
+
+        function initResize(e) {
+            e.preventDefault();
+            const startX = e.clientX;
+            const startWidth = passagePanel.offsetWidth;
+            document.body.classList.add('resizing');
+
+            const doDrag = (ev) => {
+                const newWidth = startWidth + ev.clientX - startX;
+                if (newWidth > 200 && (document.body.clientWidth - newWidth - resizer.offsetWidth) > 200) {
+                    passagePanel.style.flex = '0 0 ' + newWidth + 'px';
+                }
+            };
+            const stopDrag = () => {
+                document.body.classList.remove('resizing');
+                window.removeEventListener('mousemove', doDrag, false);
+                window.removeEventListener('mouseup', stopDrag, false);
+            };
+
+            window.addEventListener('mousemove', doDrag, false);
+            window.addEventListener('mouseup', stopDrag, false);
+        }
+
+        resizer.addEventListener('mousedown', initResize, false);
+        resizer.addEventListener('dblclick', () => { passagePanel.style.flex = '0 0 50%'; });
+
+        document.getElementById('passage-panel').addEventListener('click', (e) => {
+            const hl = e.target.closest('.t-hl');
+            if (!hl || !document.querySelector('.main-container.results-mode')) return;
+            const q = parseInt(hl.getAttribute('data-q'));
+            if (!isNaN(q)) goToQuestion(q);
+        });
+
+        // ═══ Exam Settings: tema, matn o'lchami, fullscreen ═══
+        const settingsModal = document.getElementById('settings-modal');
+        const darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+        function readSetting(key, fallback) {
+            try { return localStorage.getItem(key) || fallback; } catch (e) { return fallback; }
+        }
+        function saveSetting(key, value) {
+            try { localStorage.setItem(key, value); } catch (e) { }
+        }
+
+        function applyTheme(theme) {
+            const dark = theme === 'dark' || (theme === 'system' && darkQuery.matches);
+            document.body.classList.toggle('theme-dark', dark);
+            document.querySelectorAll('.settings-option[data-theme]').forEach(b => {
+                b.classList.toggle('selected', b.dataset.theme === theme);
+            });
+        }
+
+        function applyTextSize(size) {
+            document.body.classList.remove('text-large', 'text-xlarge');
+            if (size === 'large') document.body.classList.add('text-large');
+            else if (size === 'xlarge') document.body.classList.add('text-xlarge');
+            document.querySelectorAll('.settings-option[data-textsize]').forEach(b => {
+                b.classList.toggle('selected', b.dataset.textsize === size);
+            });
+        }
+
+        document.querySelectorAll('.settings-option[data-theme]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                saveSetting('cdi-theme', btn.dataset.theme);
+                applyTheme(btn.dataset.theme);
+            });
+        });
+
+        document.querySelectorAll('.settings-option[data-textsize]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                saveSetting('cdi-textsize', btn.dataset.textsize);
+                applyTextSize(btn.dataset.textsize);
+            });
+        });
+
+        darkQuery.addEventListener('change', () => {
+            if (readSetting('cdi-theme', 'light') === 'system') applyTheme('system');
+        });
+
+        document.getElementById('settings-btn').addEventListener('click', () => {
+            settingsModal.style.display = 'flex';
+        });
+        document.getElementById('settings-close').addEventListener('click', () => {
+            settingsModal.style.display = 'none';
+        });
+        settingsModal.addEventListener('click', (e) => {
+            if (e.target === settingsModal) settingsModal.style.display = 'none';
+        });
+
+        document.getElementById('reset-settings-btn').addEventListener('click', () => {
+            saveSetting('cdi-theme', 'light');
+            saveSetting('cdi-textsize', 'default');
+            applyTheme('light');
+            applyTextSize('default');
+        });
+
+        document.getElementById('fullscreen-btn').addEventListener('click', () => {
+            if (document.fullscreenElement) document.exitFullscreen();
+            else document.documentElement.requestFullscreen();
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            switchToPassage(1);
+            goToQuestion(1);
+            setupCheckboxLimits();
+            applyTheme(readSetting('cdi-theme', 'light'));
+            applyTextSize(readSetting('cdi-textsize', 'default'));
+        });
+    </script>
+</body>
+
+</html>

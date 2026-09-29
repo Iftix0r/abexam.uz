@@ -5,8 +5,12 @@ Usage:
     python manage.py seed_cambridge --clear                # mavjud cambridge examlarni o'chirib qayta yuklaydi
 """
 import json
+import tempfile
 from pathlib import Path
+from urllib.parse import unquote, urlparse
 
+import requests
+from django.core.files import File
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
@@ -95,21 +99,27 @@ class Command(BaseCommand):
                     },
                 )
                 existing_section_ids.append(section.pk)
+                self._attach_media(section, sec_data, path.parent)
 
                 # Questions
                 existing_q_ids = []
                 for q_data in sec_data.get('questions', []):
+                    defaults = {
+                        'text': q_data['text'],
+                        'question_type': q_data.get('question_type', 'gap_fill'),
+                        'correct_answer': q_data.get('correct_answer', ''),
+                        'options': q_data.get('options', []),
+                        'explanation': q_data.get('explanation', ''),
+                        'word_limit': q_data.get('word_limit', 0),
+                    }
+                    # Only when the JSON carries one — never blank out a
+                    # model answer added later through the panel.
+                    if q_data.get('model_answer'):
+                        defaults['model_answer'] = q_data['model_answer']
                     q, _ = Question.objects.update_or_create(
                         section=section,
                         order=q_data.get('order', 1),
-                        defaults={
-                            'text': q_data['text'],
-                            'question_type': q_data.get('question_type', 'gap_fill'),
-                            'correct_answer': q_data.get('correct_answer', ''),
-                            'options': q_data.get('options', []),
-                            'explanation': q_data.get('explanation', ''),
-                            'word_limit': q_data.get('word_limit', 0),
-                        },
+                        defaults=defaults,
                     )
                     existing_q_ids.append(q.pk)
 
@@ -127,3 +137,38 @@ class Command(BaseCommand):
             count += 1
 
         return count
+
+    def _attach_media(self, section, sec_data, json_dir: Path):
+        """Optional per-section media:
+        - "image": path relative to the JSON file (e.g. a Writing Task 1 chart)
+        - "audio_url": Listening audio, downloaded once — skipped on re-runs
+          while the section already holds audio from that same URL."""
+        image = sec_data.get('image')
+        if image:
+            src = json_dir / image
+            if not src.exists():
+                raise CommandError(f"Rasm topilmadi: {src}")
+            # Re-runs keep the already-uploaded copy instead of piling up
+            # renamed duplicates (name_AbC123.png) in media/.
+            already = section.image and Path(section.image.name).name.startswith(src.stem)
+            if not already:
+                with open(src, 'rb') as fh:
+                    section.image.save(src.name, File(fh), save=True)
+
+        audio_url = sec_data.get('audio_url')
+        if not audio_url:
+            return
+        extra = section.extra_data or {}
+        if section.audio_file and extra.get('audio_url') == audio_url:
+            return
+        self.stdout.write(f"  ↓ Audio yuklanmoqda: {audio_url}")
+        name = Path(unquote(urlparse(audio_url).path)).name or 'listening.mp3'
+        with requests.get(audio_url, stream=True, timeout=60) as resp:
+            resp.raise_for_status()
+            with tempfile.TemporaryFile() as tmp:
+                for chunk in resp.iter_content(chunk_size=1 << 20):
+                    tmp.write(chunk)
+                tmp.seek(0)
+                section.audio_file.save(name, File(tmp), save=False)
+        section.extra_data = {**extra, 'audio_url': audio_url}
+        section.save(update_fields=['audio_file', 'extra_data'])
