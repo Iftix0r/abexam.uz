@@ -444,7 +444,7 @@
         .header-audio-btn:disabled { background: #546e7a; cursor: not-allowed; }
         .header-audio-progress {
             width: 90px; height: 4px; background: rgba(255,255,255,0.2);
-            border-radius: 3px; cursor: pointer; position: relative;
+            border-radius: 3px; position: relative;
         }
         .header-audio-progress-bar { height: 100%; background: #64b5f6; border-radius: 3px; width: 0%; transition: width 0.5s linear; }
         .header-audio-time { font-size: 10px; color: #cfd8dc; min-width: 62px; }
@@ -866,7 +866,7 @@
         <button class="header-audio-btn" id="play-btn-{{ section.id }}" onclick="playListeningAudio('{{ section.id }}')" title="Audio">
             <i data-lucide="headphones" style="width:13px;"></i>
         </button>
-        <div class="header-audio-progress" id="progress-wrap-{{ section.id }}" onclick="seekAudio('{{ section.id }}', event)">
+        <div class="header-audio-progress" id="progress-wrap-{{ section.id }}">
             <div class="header-audio-progress-bar" id="progress-{{ section.id }}"></div>
         </div>
         <span class="header-audio-time" id="audio-time-{{ section.id }}">0:00/0:00</span>
@@ -1956,7 +1956,21 @@ document.addEventListener('DOMContentLoaded', () => {
         // Progress bar
         const progressBar = document.getElementById('progress-' + sectionId);
         const timeEl = document.getElementById('audio-time-' + sectionId);
+        // Real IELTS plays the recording straight through once — no
+        // rewinding or skipping ahead. The progress bar is display-only, and
+        // any seek from elsewhere (keyboard, the browser's/OS media
+        // controls) is snapped straight back to where playback really was.
+        let lastTime = audio.currentTime;
+        audio.onseeking = () => {
+            if (Math.abs(audio.currentTime - lastTime) > 0.5) audio.currentTime = lastTime;
+        };
+        if ('mediaSession' in navigator) {
+            ['seekbackward', 'seekforward', 'seekto', 'previoustrack', 'nexttrack'].forEach(action => {
+                try { navigator.mediaSession.setActionHandler(action, () => {}); } catch (e) {}
+            });
+        }
         audio.ontimeupdate = () => {
+            if (!audio.seeking) lastTime = audio.currentTime;
             if (audio.duration) {
                 progressBar && (progressBar.style.width = (audio.currentTime / audio.duration * 100) + '%');
                 timeEl && (timeEl.innerText = formatTime(audio.currentTime) + ' / ' + formatTime(audio.duration));
@@ -1966,16 +1980,6 @@ document.addEventListener('DOMContentLoaded', () => {
             label.innerText = '✓ Audio tugadi';
             btn.style.background = '#546e7a';
         };
-    };
-
-    window.seekAudio = function(sectionId, event) {
-        const audio = document.getElementById('audio-el-' + sectionId);
-        const wrap = document.getElementById('progress-wrap-' + sectionId);
-        if (!audio || !wrap || !audio.duration) return;
-        if (!audioPlayCounts[sectionId]) return; // don't allow seek before first play
-        const rect = wrap.getBoundingClientRect();
-        const pct = (event.clientX - rect.left) / rect.width;
-        audio.currentTime = pct * audio.duration;
     };
 
     function formatTime(sec) {
