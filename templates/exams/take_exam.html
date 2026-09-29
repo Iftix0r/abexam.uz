@@ -126,6 +126,10 @@
            A/B/C/D paragraphs together — give each one a small gap. */
         .passage-panel p { margin-bottom: 0.85rem; }
         .passage-panel p:last-child { margin-bottom: 0; }
+        /* Imported passages carry their own inline font-size (14px) on a
+           wrapper div, which pins the text small whatever .passage-panel
+           sets — let the panel's size win. */
+        .passage-content [style*="font-size"] { font-size: inherit !important; }
         .section-content[data-section-type="listening"] .passage-panel,
         .section-content[data-section-type="listening"] .panel-resizer {
             display: none;
@@ -1024,7 +1028,7 @@
                 <p style="font-size: 11px; color: #777; margin-top: 6px;">Figure: Data for Task 1</p>
             </div>
             {% endif %}
-            {{ section.content|safe }}
+            <div class="passage-content">{{ section.content|safe }}</div>
 
             <div class="writing-tips">
                 <h5><i data-lucide="lightbulb" style="width:13px;"></i> Examiner maslahati</h5>
@@ -1068,7 +1072,7 @@
 
             {% else %}
             <!-- READING: Passage content -->
-            {{ section.content|safe }}
+            <div class="passage-content">{{ section.content|safe }}</div>
             {% endif %}
         </div>
 
