@@ -685,6 +685,7 @@
             display: flex; align-items: center; gap: 6px; border: none;
         }
         .sel-tool-btn.note-variant { background: #1565c0; color: #fff; }
+        .sel-tool-btn.copy-variant { background: #37474f; color: #fff; }
 
         .note-mark {
             background: #e3f2fd;
@@ -834,6 +835,9 @@
     </button>
     <button type="button" class="sel-tool-btn note-variant" onclick="openNoteComposer()">
         <i data-lucide="sticky-note" style="width:13px;"></i> Note
+    </button>
+    <button type="button" class="sel-tool-btn copy-variant" onclick="copySelection(this)">
+        <i data-lucide="copy" style="width:13px;"></i> <span>Copy</span>
     </button>
 </div>
 
@@ -2169,6 +2173,32 @@ document.addEventListener('DOMContentLoaded', () => {
         try { lastSelectionRange.surroundContents(span); } catch(e) {}
         window.getSelection().removeAllRanges();
         document.getElementById('selection-toolbar').style.display = 'none';
+    };
+
+    window.copySelection = function(btn) {
+        if (!lastSelectionRange) return;
+        const text = lastSelectionRange.toString();
+        const label = btn.querySelector('span');
+        const done = () => {
+            label.textContent = 'Nusxalandi';
+            setTimeout(() => {
+                label.textContent = 'Copy';
+                document.getElementById('selection-toolbar').style.display = 'none';
+            }, 800);
+        };
+        // navigator.clipboard only exists on https/localhost — fall back to
+        // execCommand on a temporary textarea everywhere else.
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(text).then(done, () => {});
+        } else {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.cssText = 'position:fixed; opacity:0;';
+            document.body.appendChild(ta);
+            ta.select();
+            try { document.execCommand('copy'); done(); } catch (e) {}
+            ta.remove();
+        }
     };
 
     function unwrapNoteSpan(span) {
