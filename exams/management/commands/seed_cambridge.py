@@ -19,6 +19,16 @@ from django.db import transaction
 from exams.models import Exam, Section, Question
 
 
+def _same_file(field_file, src: Path) -> bool:
+    if not field_file:
+        return False
+    try:
+        with field_file.open('rb') as fh:
+            return fh.read() == src.read_bytes()
+    except FileNotFoundError:
+        return False
+
+
 class Command(BaseCommand):
     help = "Cambridge IELTS JSON fayllarini bazaga yuklaydi (seed data)"
 
@@ -151,10 +161,12 @@ class Command(BaseCommand):
             src = json_dir / image
             if not src.exists():
                 raise CommandError(f"Rasm topilmadi: {src}")
-            # Re-runs keep the already-uploaded copy instead of piling up
-            # renamed duplicates (name_AbC123.png) in media/.
-            already = section.image and Path(section.image.name).name.startswith(src.stem)
-            if not already:
+            # Re-runs keep an identical uploaded copy instead of piling up
+            # renamed duplicates (name_AbC123.png) in media/, but still pick
+            # up an edited image.
+            if not _same_file(section.image, src):
+                if section.image:
+                    section.image.delete(save=False)
                 with open(src, 'rb') as fh:
                     section.image.save(src.name, File(fh), save=True)
 
@@ -168,6 +180,8 @@ class Command(BaseCommand):
                 if not src.exists():
                     raise CommandError(f"Rasm topilmadi: {src}")
                 name = f'exams/images/{src.name}'
+                if default_storage.exists(name) and src.read_bytes() != default_storage.open(name).read():
+                    default_storage.delete(name)
                 if not default_storage.exists(name):
                     with open(src, 'rb') as fh:
                         name = default_storage.save(name, File(fh))
