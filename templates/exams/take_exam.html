@@ -258,6 +258,8 @@
         .mcq-option.selected .mcq-key { background: var(--primary); color: #fff; }
 
         /* ─── MATCHING GRID (shared-options table) ───────── */
+        .question-image { text-align: center; margin-bottom: 14px; }
+        .question-image img { max-width: 100%; max-height: 520px; height: auto; border: 1px solid var(--border); border-radius: 6px; background: #fff; }
         .matching-group-legend {
             background: #f8f9fb;
             border: 1px solid var(--q-border);
@@ -1102,11 +1104,17 @@
             {# matching) — one legend + one grid instead of repeating    #}
             {# the full option list under every question.                #}
             <div class="question-item matching-group-item">
+                {% if block.image_url %}
+                <div class="question-image"><img src="{{ block.image_url }}" alt="Diagram for these questions"></div>
+                {% endif %}
+                {# Plain letter labels (A–H on a map) have nothing to explain #}
+                {% if block.options.0.text %}
                 <div class="matching-group-legend">
                     {% for opt in block.options %}
                     <span class="opt-key">{{ opt.key }}</span>{{ opt.text }}{% if not forloop.last %} &nbsp;·&nbsp; {% endif %}
                     {% endfor %}
                 </div>
+                {% endif %}
                 <table class="matching-grid">
                     <thead>
                         <tr>
@@ -1138,6 +1146,9 @@
             {% else %}
             {% with question=block.questions.0 %}
             <div class="question-item" id="qitem-{{ question.id }}" data-qtype="{{ question.question_type }}">
+                {% if block.image_url %}
+                <div class="question-image"><img src="{{ block.image_url }}" alt="Diagram for this question"></div>
+                {% endif %}
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; gap:8px;">
                     <span class="question-text">
                         <span class="question-num">{{ question.display_number }}</span>

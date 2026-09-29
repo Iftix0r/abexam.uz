@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.cache import cache
+from django.core.files.storage import default_storage
 from django.db import transaction
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
@@ -188,6 +189,15 @@ class TakeExamView(LoginRequiredMixin, DetailView):
             questions = list(section.questions.all())
             section.render_blocks = _build_render_blocks(questions)
             section.q_count = len(questions)
+            # A map/plan/diagram that a run of questions refers to (e.g.
+            # Listening "Label the plan", Q16-20) is shown right above the
+            # block that starts at that question, so it follows the same
+            # one-Part-at-a-time paging as the questions themselves.
+            question_images = (section.extra_data or {}).get('question_images') or {}
+            for block in section.render_blocks:
+                image = question_images.get(str(block['questions'][0].order))
+                if image:
+                    block['image_url'] = default_storage.url(image)
 
         # A skill (listening/reading/writing/speaking) can be modelled as
         # several Section rows (one per part/passage) sharing the same

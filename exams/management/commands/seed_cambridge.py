@@ -12,6 +12,7 @@ from urllib.parse import unquote, urlparse
 import requests
 from django.conf import settings
 from django.core.files import File
+from django.core.files.storage import default_storage
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
@@ -156,6 +157,23 @@ class Command(BaseCommand):
             if not already:
                 with open(src, 'rb') as fh:
                     section.image.save(src.name, File(fh), save=True)
+
+        # "question_images": {"16": "images/plan.png"} — a map/plan shown
+        # above the questions starting at that number (see TakeExamView).
+        question_images = sec_data.get('question_images')
+        if question_images:
+            stored = {}
+            for order, rel_path in question_images.items():
+                src = json_dir / rel_path
+                if not src.exists():
+                    raise CommandError(f"Rasm topilmadi: {src}")
+                name = f'exams/images/{src.name}'
+                if not default_storage.exists(name):
+                    with open(src, 'rb') as fh:
+                        name = default_storage.save(name, File(fh))
+                stored[str(order)] = name
+            section.extra_data = {**(section.extra_data or {}), 'question_images': stored}
+            section.save(update_fields=['extra_data'])
 
         audio_url = sec_data.get('audio_url')
         if not audio_url:
