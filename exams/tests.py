@@ -50,11 +50,19 @@ class ManualWritingGradingTests(TestCase):
         self.assertContains(listing, reverse('panel:result_grade', args=[result.pk]))
         form = self.client.get(reverse('panel:result_grade', args=[result.pk]))
         self.assertContains(form, 'essay two')
-        post = {'next': ''}
-        for n, scores in ((1, (6, 6, 6, 6)), (2, (7, 7, 7, 7))):
-            for key, val in zip(('task_achievement', 'coherence_cohesion', 'lexical_resource', 'grammatical_accuracy'), scores):
-                post[f'task{n}_{key}'] = str(val)
-            post[f'task{n}_feedback'] = f'feedback {n}'
+        self.assertContains(form, '1/1 to')  # reading correct-count shown to the grader
+
+        # Missing a task band → error, nothing released
+        resp = self.client.post(reverse('panel:result_grade', args=[result.pk]), {'task1_band': '6.0'})
+        self.assertEqual(resp.status_code, 200)
+        result.refresh_from_db()
+        self.assertTrue(result.is_pending)
+
+        post = {
+            'task1_band': '6.0', 'task1_feedback': 'feedback 1',
+            'task2_band': '7.0', 'task2_lexical_resource': '7.5', 'task2_feedback': 'feedback 2',
+            'speaking_band': '',
+        }
         resp = self.client.post(reverse('panel:result_grade', args=[result.pk]), post)
         self.assertEqual(resp.status_code, 302)
 
@@ -70,6 +78,28 @@ class ManualWritingGradingTests(TestCase):
         self.assertContains(page, 'feedback 2')
         # Correct answers stay hidden from students even after grading
         self.assertNotContains(page, 'SECRETANSWER')
+
+    def test_in_person_speaking_counts_toward_overall(self):
+        data = self._submit({str(self.q_read.id): 'SECRETANSWER', str(self.w1.id): 'a', str(self.w2.id): 'b'})
+        self.client.force_login(self.admin)
+        url = reverse('panel:result_grade', args=[data['result_id']])
+        self.client.post(url, {'task1_band': '6.0', 'task2_band': '6.0', 'speaking_band': '7.0',
+                               'speaking_pronunciation': '7.0', 'speaking_feedback': 'good fluency'})
+        result = UserResult.objects.get(pk=data['result_id'])
+        self.assertEqual(result.speaking_score, 7.0)
+        # reading 9.0 (1/1), writing 6.0, speaking 7.0 → 22/3 = 7.33 → 7.5
+        self.assertEqual(result.score, 7.5)
+
+        self.client.force_login(self.student)
+        page = self.client.get(reverse('exams:result_detail', args=[result.pk]))
+        self.assertContains(page, 'good fluency')
+
+        # Clearing speaking later removes it from the overall band
+        self.client.force_login(self.admin)
+        self.client.post(url, {'task1_band': '6.0', 'task2_band': '6.0', 'speaking_band': ''})
+        result.refresh_from_db()
+        self.assertEqual(result.speaking_score, 0.0)
+        self.assertEqual(result.score, 7.5)  # (9 + 6) / 2
 
     def test_exam_without_writing_is_graded_immediately(self):
         Question.objects.filter(question_type='writing_task').delete()

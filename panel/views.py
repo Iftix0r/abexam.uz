@@ -709,105 +709,182 @@ def results_list(request):
 
 
 _WRITING_CRITERIA = (
-    ('task_achievement', 'Task Achievement / Response'),
+    ('task_achievement', 'Task Achievement'),
     ('coherence_cohesion', 'Coherence & Cohesion'),
     ('lexical_resource', 'Lexical Resource'),
-    ('grammatical_accuracy', 'Grammatical Range & Accuracy'),
+    ('grammatical_accuracy', 'Grammar'),
 )
-_BAND_CHOICES = [x / 2 for x in range(0, 19)]  # 0.0 … 9.0
+_SPEAKING_CRITERIA = (
+    ('fluency_coherence', 'Fluency & Coherence'),
+    ('lexical_resource', 'Lexical Resource'),
+    ('grammatical_range', 'Grammar'),
+    ('pronunciation', 'Pronunciation'),
+)
+_BAND_CHOICES = [x / 2 for x in range(2, 19)]  # 1.0 … 9.0
 
 
-def _writing_answers(result):
-    return list(
-        result.answers.select_related('question__section')
-        .filter(question__question_type='writing_task')
-        .order_by('question__section__order', 'question__order')
-    )
+def _parse_band(raw, required):
+    """'' → None (unless required); otherwise a 0.5-step band in 0…9."""
+    raw = (raw or '').strip()
+    if not raw:
+        if required:
+            raise ValueError
+        return None
+    val = float(raw)
+    if not 0 <= val <= 9 or (val * 2) % 1:
+        raise ValueError
+    return val
+
+
+def _safe_band(raw):
+    try:
+        return _parse_band(raw, False)
+    except ValueError:
+        return None
+
+
+def _parse_scored_block(post, prefix, criteria, required):
+    """One graded block (a writing task, or speaking): an overall band plus
+    optional per-criterion bands and a comment. Returns None when the
+    block was left empty and isn't required."""
+    band = _parse_band(post.get(f'{prefix}_band'), required)
+    if band is None:
+        return None
+    block = {'band': band, 'feedback': post.get(f'{prefix}_feedback', '').strip()}
+    for key, _ in criteria:
+        val = _parse_band(post.get(f'{prefix}_{key}'), False)
+        if val is not None:
+            block[key] = val
+    return block
+
+
+def _objective_stats(result):
+    """Per-skill correct/total for the auto-checked (listening/reading)
+    questions, plus a ✓/✗ strip so the grader sees the whole picture."""
+    stats = {}
+    answers = (result.answers.select_related('question__section')
+               .exclude(question__isnull=True)
+               .exclude(question__question_type__in=('writing_task', 'short_answer'))
+               .order_by('question__section__order', 'question__order'))
+    for ua in answers:
+        stype = ua.question.section.section_type
+        entry = stats.setdefault(stype, {'correct': 0, 'total': 0, 'marks': []})
+        entry['total'] += 1
+        entry['correct'] += ua.is_correct
+        entry['marks'].append(ua.is_correct)
+    band_field = {'listening': result.listening_score, 'reading': result.reading_score}
+    return [
+        {'type': t, 'label': t.capitalize(), 'band': band_field.get(t, 0), **stats[t]}
+        for t in ('listening', 'reading') if t in stats
+    ]
 
 
 @panel_required
 def result_grade(request, pk):
-    """Manual Writing grading. Staff score each task on the 4 IELTS
-    criteria; saving releases the (until then hidden) result to the student."""
-    from exams.views import calc_writing_band, compute_overall_band, present_section_types, round_band
+    """Manual grading of Writing (hand-checked essays) and Speaking (held
+    in person at the study center). Saving releases a pending result."""
+    from exams.views import calc_writing_band, compute_overall_band, present_section_types
 
     result = get_object_or_404(UserResult.objects.select_related('user', 'exam'), pk=pk)
-    answers = _writing_answers(result)
-    prev_tasks = (result.writing_feedback or {}).get('tasks') or []
+    writing_answers = list(
+        result.answers.select_related('question__section')
+        .filter(question__question_type='writing_task')
+        .order_by('question__section__order', 'question__order')
+    )
+    prev_w = result.writing_feedback or {}
+    prev_tasks = (prev_w.get('tasks') or []) if prev_w.get('manual') else []
+    prev_s = result.speaking_feedback if isinstance(result.speaking_feedback, dict) else {}
 
     tasks = []
-    for i, ua in enumerate(answers, start=1):
+    for i, ua in enumerate(writing_answers, start=1):
         prev = prev_tasks[i - 1] if i - 1 < len(prev_tasks) else {}
         tasks.append({
             'num': i,
+            'prefix': f'task{i}',
             'answer': ua,
             'question': ua.question,
             'word_count': len(ua.user_answer.split()),
+            'band': prev.get('band'),
             'criteria': [(key, label, prev.get(key)) for key, label in _WRITING_CRITERIA],
             'feedback': prev.get('feedback', ''),
         })
+    speaking = {
+        'band': prev_s.get('band'),
+        'criteria': [(key, label, prev_s.get(key)) for key, label in _SPEAKING_CRITERIA],
+        'feedback': prev_s.get('feedback', ''),
+    }
 
     error = ''
     if request.method == 'POST':
         try:
             task_feedbacks = []
             for t in tasks:
-                scores = {}
-                for key, _ in _WRITING_CRITERIA:
-                    val = float(request.POST[f'task{t["num"]}_{key}'])
-                    if not 0 <= val <= 9 or (val * 2) % 1:
-                        raise ValueError
-                    scores[key] = val
-                band = round_band(sum(scores.values()) / len(scores))
-                task_feedbacks.append({
-                    'task_num': t['num'],
-                    'section_title': t['question'].section.title,
-                    'band': band,
-                    **scores,
-                    'feedback': request.POST.get(f'task{t["num"]}_feedback', '').strip(),
-                })
-        except (KeyError, ValueError):
-            error = "Har bir mezon uchun 0 dan 9 gacha (0.5 qadam bilan) ball tanlang."
+                block = _parse_scored_block(request.POST, t['prefix'], _WRITING_CRITERIA, required=True)
+                block.update(task_num=t['num'], section_title=t['question'].section.title)
+                task_feedbacks.append(block)
+            speaking_block = _parse_scored_block(request.POST, 'speaking', _SPEAKING_CRITERIA, required=False)
+        except ValueError:
+            error = "Har bir Writing task uchun ball tanlang (1.0 – 9.0)."
+            # Keep what the grader already picked instead of wiping the form.
+            for t in tasks:
+                t['band'] = _safe_band(request.POST.get(f"{t['prefix']}_band"))
+                t['criteria'] = [(k, l, _safe_band(request.POST.get(f"{t['prefix']}_{k}"))) for k, l in _WRITING_CRITERIA]
+                t['feedback'] = request.POST.get(f"{t['prefix']}_feedback", '')
+            speaking['band'] = _safe_band(request.POST.get('speaking_band'))
+            speaking['criteria'] = [(k, l, _safe_band(request.POST.get(f'speaking_{k}'))) for k, l in _SPEAKING_CRITERIA]
+            speaking['feedback'] = request.POST.get('speaking_feedback', '')
         else:
-            n = len(task_feedbacks) or 1
-            w_band = calc_writing_band([fb['band'] for fb in task_feedbacks])
-            result.writing_feedback = {
-                'manual': True,
-                'band': w_band,
-                'tasks': task_feedbacks,
-                **{key: round(sum(fb[key] for fb in task_feedbacks) / n, 1) for key, _ in _WRITING_CRITERIA},
-                'graded_by': request.user.username,
-            }
-            result.writing_score = w_band
-            band_by_type = {
+            fields = ['score', 'status', 'graded_by', 'graded_at']
+            if task_feedbacks:
+                w_band = calc_writing_band([fb['band'] for fb in task_feedbacks])
+                result.writing_feedback = {'manual': True, 'band': w_band, 'tasks': task_feedbacks,
+                                           'graded_by': request.user.username}
+                result.writing_score = w_band
+                fields += ['writing_feedback', 'writing_score']
+            if speaking_block:
+                result.speaking_feedback = {'manual': True, **speaking_block, 'graded_by': request.user.username}
+                result.speaking_score = speaking_block['band']
+                fields += ['speaking_feedback', 'speaking_score']
+            elif prev_s.get('manual'):
+                # Grader cleared a previously entered speaking band.
+                result.speaking_feedback = None
+                result.speaking_score = 0.0
+                fields += ['speaking_feedback', 'speaking_score']
+
+            present = present_section_types(result.exam)
+            if result.speaking_score:
+                # Speaking held in person counts toward the overall band
+                # even though the exam itself has no online speaking part.
+                present.add('speaking')
+            result.score = compute_overall_band({
                 'listening': result.listening_score, 'reading': result.reading_score,
-                'writing': w_band, 'speaking': result.speaking_score,
-            }
-            result.score = compute_overall_band(band_by_type, present_section_types(result.exam))
+                'writing': result.writing_score, 'speaking': result.speaking_score,
+            }, present)
             was_pending = result.is_pending
             result.status = UserResult.STATUS_GRADED
             result.graded_by = request.user
             result.graded_at = timezone.now()
-            result.save(update_fields=[
-                'writing_feedback', 'writing_score', 'score', 'status', 'graded_by', 'graded_at',
-            ])
+            result.save(update_fields=fields)
             if was_pending:
                 Notification.objects.create(
                     user=result.user,
                     title="Natijangiz tayyor",
-                    message=f"«{result.exam.title}» imtihoni natijasi chiqdi: umumiy ball {result.score:.1f}. "
-                            f"Writing mutaxassis tomonidan baholandi ({w_band:.1f}).",
+                    message=f"«{result.exam.title}» imtihoni natijasi chiqdi: umumiy ball {result.score:.1f}.",
                     type='success',
                 )
-            messages.success(request, f"Writing baholandi ({w_band:.1f}). Natija o'quvchiga ochildi.")
+            messages.success(request, f"Saqlandi. Umumiy ball: {result.score:.1f}")
             nxt = UserResult.objects.pending().order_by('completed_at').first()
             if request.POST.get('next') == '1' and nxt:
                 return redirect('panel:result_grade', pk=nxt.pk)
             return redirect(f"{reverse('panel:results')}?status=pending")
 
     return render(request, 'panel/result_grade.html', {
-        'result': result, 'tasks': tasks, 'band_choices': _BAND_CHOICES, 'error': error,
-        'pending_count': UserResult.objects.pending().count(),
+        'result': result, 'tasks': tasks, 'speaking': speaking,
+        'objective': _objective_stats(result), 'band_choices': _BAND_CHOICES, 'error': error,
+        # For the live overall-band preview on the page.
+        'present_types': sorted(present_section_types(result.exam)),
+        'fixed_bands': {'listening': result.listening_score, 'reading': result.reading_score},
+        'pending_count': UserResult.objects.pending().exclude(pk=result.pk).count(),
     })
 
 

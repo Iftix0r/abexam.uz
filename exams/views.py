@@ -534,7 +534,9 @@ class SpeakingEvalView(LoginRequiredMixin, View):
         # Merge with existing speaking_feedback — replace by question_id if re-submitted
         existing = result.speaking_feedback or []
         if isinstance(existing, dict):
-            existing = list(existing.values())
+            # A teacher-entered (panel) speaking grade is a single dict, not
+            # per-question entries — the online recording replaces it.
+            existing = [] if existing.get('manual') else list(existing.values())
         existing = [e for e in existing if str(e.get('question_id', '')) != str(question_id)]
         existing.append({
             'question_id': question_id,

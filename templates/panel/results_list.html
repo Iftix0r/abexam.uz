@@ -46,8 +46,8 @@
           <td style="white-space:nowrap">
             {% if r.is_pending %}
             <a href="{% url 'panel:result_grade' r.pk %}" class="btn btn-primary btn-sm">Baholash</a>
-            {% elif r.writing_feedback %}
-            <a href="{% url 'panel:result_grade' r.pk %}" class="btn btn-ghost btn-sm" title="Writing bahosini tahrirlash">✎</a>
+            {% else %}
+            <a href="{% url 'panel:result_grade' r.pk %}" class="btn btn-ghost btn-sm" title="Bahoni tahrirlash / Speaking qo'shish">✎ Baho</a>
             {% endif %}
             <a href="{% url 'exams:result_detail' r.pk %}" target="_blank" class="btn btn-ghost btn-sm">Batafsil</a>
             <button onclick="deleteResult({{ r.pk }}, this)" class="btn btn-danger btn-sm">O'chir</button>
