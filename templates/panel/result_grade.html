@@ -222,7 +222,7 @@ const roundHalfEven = x => { const f = Math.floor(x), d = x - f; return d > 0.5 
 const presentTypes = JSON.parse(document.getElementById('presentTypes').textContent);
 const fixedBands = JSON.parse(document.getElementById('fixedBands').textContent);
 const form = document.getElementById('gradeForm');
-const fmt = v => v == null ? '—' : v.toFixed(1);
+const fmt = v => v == null ? '—' : v.toFixed(1).replace('.', ',');  // match the server's 'uz' formatting
 
 function pickedBand(prefix){
   const el = form.querySelector(`input[name="${prefix}_band"]:checked`);
