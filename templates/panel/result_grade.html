@@ -62,7 +62,6 @@
         {% if result.is_pending %}<span class="badge badge-yellow">⏳ Tekshirilmoqda</span>
         {% else %}<span class="badge badge-green">✓ Baholangan{% if result.graded_by %} · {{ result.graded_by.username }}{% endif %}</span>{% endif %}
         {% if pending_count %}<span class="badge" style="background:var(--bg);color:var(--muted)">Navbatda yana {{ pending_count }} ta</span>{% endif %}
-        <a href="{% url 'exams:result_detail' result.pk %}?answers=1" target="_blank" class="btn btn-ghost btn-sm">Barcha javoblar ↗</a>
       </div>
     </div>
 

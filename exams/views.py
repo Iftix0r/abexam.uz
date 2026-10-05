@@ -450,8 +450,6 @@ class ResultDetailView(LoginRequiredMixin, DetailView):
                     'text': q.text,
                     'question_type': q.question_type,
                     'user_answer': user_ans,
-                    'correct_answer': q.correct_answer,
-                    'explanation': q.explanation,
                     'is_correct': is_correct,
                     'word_limit': q.word_limit,
                 })
@@ -464,12 +462,6 @@ class ResultDetailView(LoginRequiredMixin, DetailView):
         context['prev_results'] = UserResult.objects.graded().filter(
             user=result.user, exam=result.exam
         ).order_by('completed_at')
-        # Students only see per-section totals, never the questions'
-        # correct answers — otherwise one student's result page becomes the
-        # answer key for everyone else taking the same test.
-        # Staff get them too, but only on explicit request (?answers=1), so
-        # a screen shared/screenshotted by a staff member doesn't leak them.
-        context['show_answers'] = self.request.user.is_staff and self.request.GET.get('answers') == '1'
         context['hide_result'] = result.is_pending and not self.request.user.is_staff
         return context
 

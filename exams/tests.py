@@ -114,15 +114,15 @@ class ManualWritingGradingTests(TestCase):
         self.assertContains(page, '1/1 to')
         self.assertNotContains(page, 'SECRETANSWER')
 
-    def test_staff_still_sees_answers(self):
+    def test_answers_hidden_from_everyone(self):
+        # Result pages never carry the answer key — not even for staff, and
+        # no query param unlocks it.
         data = self._submit({str(self.q_read.id): 'wrong', str(self.w1.id): 'a', str(self.w2.id): 'b'})
-        self.client.force_login(self.admin)
         url = reverse('exams:result_detail', args=[data['result_id']])
-        self.assertNotContains(self.client.get(url), 'SECRETANSWER')
-        self.assertContains(self.client.get(url + '?answers=1'), 'SECRETANSWER')
-        # A student can't unlock them with the same query param
-        self.client.force_login(self.student)
-        self.assertNotContains(self.client.get(url + '?answers=1'), 'SECRETANSWER')
+        for user in (self.admin, self.student):
+            self.client.force_login(user)
+            self.assertNotContains(self.client.get(url), 'SECRETANSWER')
+            self.assertNotContains(self.client.get(url + '?answers=1'), 'SECRETANSWER')
 
     def test_band_rounding(self):
         self.assertEqual(round_band(6.25), 6.5)
