@@ -1,16 +1,8 @@
 <!DOCTYPE html>
-<html lang="uz" data-theme="dark">
+<html lang="uz" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script>
-        (function(){
-            try{
-                var t = localStorage.getItem('theme');
-                if(t === 'light') document.documentElement.setAttribute('data-theme','light');
-            }catch(e){}
-        })();
-    </script>
     <title>{% block title %}AbExam - IELTS Mock Platform{% endblock %}</title>
     <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -442,9 +434,6 @@
                     <span style="position: absolute; top: 2px; right: 2px; background: var(--danger-color); color: #fff; font-size: 0.6rem; font-weight: 700; min-width: 15px; height: 15px; border-radius: 50%; display: flex; align-items: center; justify-content: center; padding: 0 3px;">{{ unread_notifications_count }}</span>
                     {% endif %}
                 </a>
-                <button id="theme-toggle" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; padding: 0.5rem; border-radius: 8px;" onmouseover="this.style.background='var(--border-color)'" onmouseout="this.style.background='transparent'">
-                    <i data-lucide="sun" id="theme-icon" style="width: 20px;"></i>
-                </button>
             </div>
         </header>
 
@@ -473,16 +462,6 @@
 
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('sidebarOverlay');
-        const themeToggleBtn = document.getElementById('theme-toggle');
-        const themeIcon = document.getElementById('theme-icon');
-        const htmlElement = document.documentElement;
-
-        const savedTheme = localStorage.getItem('theme') || 'dark';
-        htmlElement.setAttribute('data-theme', savedTheme);
-        if (savedTheme === 'light') {
-            themeIcon.setAttribute('data-lucide', 'moon');
-            lucide.createIcons();
-        }
 
         // Sidebar is always expanded on desktop; on mobile it's an
         // off-canvas drawer opened/closed with this toggle.
@@ -498,15 +477,6 @@
 
         document.getElementById('toggle-sidebar-top').addEventListener('click', toggleSidebar);
 
-        themeToggleBtn.addEventListener('click', () => {
-            const current = htmlElement.getAttribute('data-theme');
-            const next = current === 'light' ? 'dark' : 'light';
-            htmlElement.setAttribute('data-theme', next);
-            localStorage.setItem('theme', next);
-            themeIcon.setAttribute('data-lucide', next === 'light' ? 'moon' : 'sun');
-            lucide.createIcons();
-            window.dispatchEvent(new Event('sitethemechange'));
-        });
 
         // Theme-aware colors for Chart.js — pages with charts call this instead of
         // hardcoding hex values (canvas can't resolve CSS var() strings itself),
