@@ -114,7 +114,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
-        results = UserResult.objects.filter(user=user).order_by('-completed_at')
+        results = UserResult.objects.graded().filter(user=user).order_by('-completed_at')
 
         context['recent_results'] = results[:3]
         context['stats'] = results.aggregate(avg_score=Avg('score'), total_tests=Count('id'))
@@ -156,11 +156,15 @@ class ResultsListView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         results = UserResult.objects.filter(user=self.request.user).order_by('-completed_at')
         context['results'] = results
-        full_stats = results.aggregate(
+        # Pending (writing not graded yet) results are listed but have no
+        # score yet, so they stay out of averages and the progress chart.
+        context['graded_results'] = [r for r in results if not r.is_pending]
+        full_stats = results.graded().aggregate(
             avg_score=Avg('score'), total_tests=Count('id'),
             avg_listening=Avg('listening_score'), avg_reading=Avg('reading_score'),
             avg_writing=Avg('writing_score'), avg_speaking=Avg('speaking_score'),
         )
+        full_stats['total_tests'] = len(results)
         full_stats['avg_score_percentage'] = (
             round(float(full_stats['avg_score']) / 9 * 100, 1) if full_stats['avg_score'] else 0
         )
@@ -217,7 +221,7 @@ class AnalyticsView(LoginRequiredMixin, TemplateView):
         from django.db.models import Max, Min
         context = super().get_context_data(**kwargs)
         user = self.request.user
-        results = UserResult.objects.filter(user=user).select_related('exam').order_by('completed_at')
+        results = UserResult.objects.graded().filter(user=user).select_related('exam').order_by('completed_at')
 
         stats = results.aggregate(
             total=Count('id'), avg=Avg('score'),
@@ -271,7 +275,7 @@ class AnalyticsView(LoginRequiredMixin, TemplateView):
 
 class ProfileView(LoginRequiredMixin, View):
     def get(self, request):
-        results = UserResult.objects.filter(user=request.user).order_by('-completed_at')
+        results = UserResult.objects.graded().filter(user=request.user).order_by('-completed_at')
         stats = results.aggregate(avg_score=Avg('score'), total_tests=Count('id'))
         return render(request, 'users/profile.html', {
             'recent_results': results[:5],

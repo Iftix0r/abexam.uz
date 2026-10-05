@@ -83,7 +83,21 @@ class Question(models.Model):
         verbose_name = 'Savol'
         verbose_name_plural = 'Savollar'
 
+class UserResultQuerySet(models.QuerySet):
+    def graded(self):
+        return self.filter(status=UserResult.STATUS_GRADED)
+
+    def pending(self):
+        return self.filter(status=UserResult.STATUS_PENDING)
+
+
 class UserResult(models.Model):
+    STATUS_PENDING = 'pending'
+    STATUS_GRADED = 'graded'
+    STATUS_CHOICES = (
+        (STATUS_PENDING, 'Tekshirilmoqda'),
+        (STATUS_GRADED, 'Baholangan'),
+    )
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     exam = models.ForeignKey(Exam, on_delete=models.CASCADE)
     score = models.FloatField(default=0.0)
@@ -93,10 +107,22 @@ class UserResult(models.Model):
     speaking_score = models.FloatField(default=0.0)
     writing_feedback = models.JSONField(null=True, blank=True)
     speaking_feedback = models.JSONField(null=True, blank=True)
+    # Writing is graded by staff by hand: until then the whole result is
+    # held back from the student (status=pending), not just the writing band.
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=STATUS_GRADED, db_index=True)
+    graded_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+                                  null=True, blank=True, related_name='graded_results')
+    graded_at = models.DateTimeField(null=True, blank=True)
     completed_at = models.DateTimeField(auto_now_add=True)
+
+    objects = UserResultQuerySet.as_manager()
 
     def __str__(self):
         return f"{self.user.username} - {self.exam.title} ({self.score})"
+
+    @property
+    def is_pending(self):
+        return self.status == self.STATUS_PENDING
 
     @staticmethod
     def _band_pct(band):

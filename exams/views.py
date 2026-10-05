@@ -1,3 +1,4 @@
+import math
 from itertools import groupby
 
 from django.conf import settings
@@ -79,16 +80,19 @@ def calc_band(correct, total):
     return 0.0
 
 
-def calc_writing_band(text):
-    """Minimal writing band based on word count (Task 2 baseline)."""
-    words = len(text.split()) if text else 0
-    if words >= 350: return 7.0
-    if words >= 300: return 6.5
-    if words >= 250: return 6.0
-    if words >= 200: return 5.5
-    if words >= 150: return 5.0
-    if words >= 100: return 4.5
-    return 4.0
+def round_band(value):
+    """IELTS rounding to the nearest half band (.25 → .5, .75 → next whole)."""
+    return math.floor(value * 2 + 0.5) / 2.0
+
+
+def calc_writing_band(task_bands):
+    """Overall Writing band from per-task bands. With the standard two
+    tasks, Task 2 carries twice the weight of Task 1 (as in real IELTS)."""
+    if not task_bands:
+        return 0.0
+    if len(task_bands) == 2:
+        return round_band((task_bands[0] + 2 * task_bands[1]) / 3)
+    return round_band(sum(task_bands) / len(task_bands))
 
 
 def present_section_types(exam):
@@ -131,6 +135,9 @@ class ExamDetailView(LoginRequiredMixin, DetailView):
         context['user_results'] = UserResult.objects.filter(
             user=self.request.user, exam=exam
         ).order_by('-completed_at')[:3]
+        context['last_graded'] = UserResult.objects.graded().filter(
+            user=self.request.user, exam=exam
+        ).order_by('-completed_at').first()
         return context
 
 
@@ -350,46 +357,23 @@ class SubmitExamView(LoginRequiredMixin, View):
             prev_c, prev_t = section_stats.get(section.section_type, (0, 0))
             section_stats[section.section_type] = (prev_c + s_correct, prev_t + s_total)
 
-        # AI Writing evaluation — Task 1 and Task 2 separately
-        writing_feedback = None
-        if writing_tasks:
-            from core.ai_utils import evaluate_writing
-            task_feedbacks = []
-            for task in writing_tasks:
-                task_num = len(task_feedbacks) + 1
-                fb = evaluate_writing(task['text'], task_num=task_num)
-                fb['task_num'] = task_num
-                fb['section_title'] = task['section_title']
-                task_feedbacks.append(fb)
-            if task_feedbacks:
-                avg_band = sum(fb['band'] for fb in task_feedbacks) / len(task_feedbacks)
-                writing_feedback = {
-                    'band': round(avg_band * 2) / 2.0,
-                    'tasks': task_feedbacks,
-                    # top-level averages for backward compat
-                    'task_achievement': sum(fb.get('task_achievement', fb['band']) for fb in task_feedbacks) / len(task_feedbacks),
-                    'coherence_cohesion': sum(fb.get('coherence_cohesion', fb['band']) for fb in task_feedbacks) / len(task_feedbacks),
-                    'lexical_resource': sum(fb.get('lexical_resource', fb['band']) for fb in task_feedbacks) / len(task_feedbacks),
-                    'grammatical_accuracy': sum(fb.get('grammatical_accuracy', fb['band']) for fb in task_feedbacks) / len(task_feedbacks),
-                    'ai_graded': any(fb.get('ai_graded') for fb in task_feedbacks),
-                }
-
         def get_band(stype):
-            if stype == 'writing':
-                if writing_feedback:
-                    return writing_feedback['band']
-                if writing_tasks:
-                    return calc_writing_band(' '.join(t['text'] for t in writing_tasks))
             c, t = section_stats.get(stype, (0, 0))
             return calc_band(c, t)
 
         l_band = get_band('listening')
         r_band = get_band('reading')
-        w_band = get_band('writing')
         s_band = get_band('speaking')
 
-        band_by_type = {'listening': l_band, 'reading': r_band, 'writing': w_band, 'speaking': s_band}
-        overall = compute_overall_band(band_by_type, present_section_types(exam))
+        # Writing is graded by staff by hand (panel → Natijalar → Baholash),
+        # so the overall band can't exist yet: the result is held back as
+        # "pending" and only released once the writing band is filled in.
+        pending = bool(writing_tasks)
+        if pending:
+            overall = 0.0
+        else:
+            band_by_type = {'listening': l_band, 'reading': r_band, 'writing': 0.0, 'speaking': s_band}
+            overall = compute_overall_band(band_by_type, present_section_types(exam))
 
         clear_exam_paid(request.user.pk, exam.pk)
 
@@ -399,9 +383,9 @@ class SubmitExamView(LoginRequiredMixin, View):
             score=overall,
             listening_score=l_band,
             reading_score=r_band,
-            writing_score=w_band,
+            writing_score=0.0,
             speaking_score=s_band,
-            writing_feedback=writing_feedback,
+            status=UserResult.STATUS_PENDING if pending else UserResult.STATUS_GRADED,
         )
 
         answer_objs = [
@@ -409,6 +393,11 @@ class SubmitExamView(LoginRequiredMixin, View):
             for question, user_ans, is_correct in answer_records
         ]
         UserAnswer.objects.bulk_create(answer_objs, ignore_conflicts=True)
+
+        if pending:
+            # No bands in the response — they'd leak the partial result
+            # before the writing is graded.
+            return JsonResponse({'status': 'success', 'result_id': result.id, 'pending': True})
 
         return JsonResponse({
             'status': 'success',
@@ -472,9 +461,14 @@ class ResultDetailView(LoginRequiredMixin, DetailView):
 
         context['sections_data'] = sections_data
         context['band_label'] = band_label(result.score)
-        context['prev_results'] = UserResult.objects.filter(
-            user=self.request.user, exam=result.exam
+        context['prev_results'] = UserResult.objects.graded().filter(
+            user=result.user, exam=result.exam
         ).order_by('completed_at')
+        # Students only see per-section totals, never the questions'
+        # correct answers — otherwise one student's result page becomes the
+        # answer key for everyone else taking the same test.
+        context['show_answers'] = self.request.user.is_staff
+        context['hide_result'] = result.is_pending and not self.request.user.is_staff
         return context
 
 

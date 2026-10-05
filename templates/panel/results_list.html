@@ -5,7 +5,12 @@
 
 {% block content %}
 <div class="section-header">
-  <form method="get" style="display:flex;gap:10px;max-width:100%">
+  <form method="get" style="display:flex;gap:10px;max-width:100%;flex-wrap:wrap;align-items:center">
+    <a href="?{% if exam_id %}exam={{ exam_id }}{% endif %}" class="btn btn-sm {% if status != 'pending' %}btn-primary{% else %}btn-ghost{% endif %}">Barchasi</a>
+    <a href="?status=pending{% if exam_id %}&exam={{ exam_id }}{% endif %}" class="btn btn-sm {% if status == 'pending' %}btn-primary{% else %}btn-ghost{% endif %}">
+      Tekshirilishi kerak{% if pending_count %} <span class="nav-badge" style="margin-left:4px">{{ pending_count }}</span>{% endif %}
+    </a>
+    {% if status %}<input type="hidden" name="status" value="{{ status }}">{% endif %}
     <select name="exam" class="form-input" style="width:auto;max-width:100%" onchange="this.form.submit()">
       <option value="">Barcha imtihonlar</option>
       {% for e in exams %}
@@ -32,19 +37,24 @@
           <td><input type="checkbox" class="result-checkbox" value="{{ r.pk }}" onchange="updateBulkDeleteBtn()"></td>
           <td><a href="{% url 'panel:user_detail' r.user.pk %}" style="color:var(--primary);font-weight:500">{{ r.user.username }}</a></td>
           <td><a href="{% url 'panel:exam_detail' r.exam.pk %}" style="color:var(--muted)">{{ r.exam.title|truncatechars:26 }}</a></td>
-          <td>{% if r.score >= 7.5 %}<span class="badge badge-green">{{ r.score }}</span>{% elif r.score >= 6.0 %}<span class="badge badge-yellow">{{ r.score }}</span>{% else %}<span class="badge badge-red">{{ r.score }}</span>{% endif %}</td>
+          <td>{% if r.is_pending %}<span class="badge badge-yellow">⏳ Tekshirilmoqda</span>{% elif r.score >= 7.5 %}<span class="badge badge-green">{{ r.score }}</span>{% elif r.score >= 6.0 %}<span class="badge badge-yellow">{{ r.score }}</span>{% else %}<span class="badge badge-red">{{ r.score }}</span>{% endif %}</td>
           <td style="color:var(--muted)">{{ r.listening_score }}</td>
           <td style="color:var(--muted)">{{ r.reading_score }}</td>
-          <td style="color:var(--muted)">{{ r.writing_score }}</td>
+          <td style="color:var(--muted)">{% if r.is_pending %}—{% else %}{{ r.writing_score }}{% endif %}</td>
           <td style="color:var(--muted)">{{ r.speaking_score }}</td>
           <td style="color:var(--muted);font-size:12px">{{ r.completed_at|date:"d M Y, H:i" }}</td>
           <td style="white-space:nowrap">
+            {% if r.is_pending %}
+            <a href="{% url 'panel:result_grade' r.pk %}" class="btn btn-primary btn-sm">Baholash</a>
+            {% elif r.writing_feedback %}
+            <a href="{% url 'panel:result_grade' r.pk %}" class="btn btn-ghost btn-sm" title="Writing bahosini tahrirlash">✎</a>
+            {% endif %}
             <a href="{% url 'exams:result_detail' r.pk %}" target="_blank" class="btn btn-ghost btn-sm">Batafsil</a>
             <button onclick="deleteResult({{ r.pk }}, this)" class="btn btn-danger btn-sm">O'chir</button>
           </td>
         </tr>
         {% empty %}
-        <tr><td colspan="10" style="text-align:center;padding:32px;color:var(--muted)">Natija yo'q</td></tr>
+        <tr><td colspan="10" style="text-align:center;padding:32px;color:var(--muted)">{% if status == 'pending' %}Tekshirilishi kerak bo'lgan natija yo'q 🎉{% else %}Natija yo'q{% endif %}</td></tr>
         {% endfor %}
       </tbody>
     </table>

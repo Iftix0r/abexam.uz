@@ -10,6 +10,7 @@ from django.db import IntegrityError, transaction as db_transaction
 from django.db.models import Avg, Count, F, Max, Sum
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
@@ -51,7 +52,7 @@ def dashboard(request):
         'total_revenue': Transaction.objects.filter(status='success').aggregate(t=Sum('amount'))['t'] or 0,
         'month_revenue': Transaction.objects.filter(status='success', created_at__gte=month_ago).aggregate(t=Sum('amount'))['t'] or 0,
         'pending_tx': Transaction.objects.filter(status='pending').count(),
-        'avg_score': UserResult.objects.aggregate(a=Avg('score'))['a'] or 0,
+        'avg_score': UserResult.objects.graded().aggregate(a=Avg('score'))['a'] or 0,
     }
     recent_results = UserResult.objects.select_related('user', 'exam').order_by('-completed_at')[:8]
     recent_users = User.objects.order_by('-date_joined')[:6]
@@ -101,7 +102,7 @@ def user_detail(request, pk):
     user = get_object_or_404(User, pk=pk)
     results = UserResult.objects.filter(user=user).select_related('exam').order_by('-completed_at')
     transactions = Transaction.objects.filter(user=user).order_by('-created_at')[:10]
-    stats = results.aggregate(avg=Avg('score'), total=Count('id'))
+    stats = results.graded().aggregate(avg=Avg('score'), total=Count('id'))
     return render(request, 'panel/user_detail.html', {
         'obj': user, 'results': results, 'transactions': transactions, 'stats': stats
     })
@@ -295,7 +296,7 @@ def exam_detail(request, pk):
                 counter += 1
                 q.display_number = counter
     results = UserResult.objects.filter(exam=exam).select_related('user').order_by('-completed_at')[:20]
-    stats = UserResult.objects.filter(exam=exam).aggregate(avg=Avg('score'), total=Count('id'))
+    stats = UserResult.objects.graded().filter(exam=exam).aggregate(avg=Avg('score'), total=Count('id'))
     return render(request, 'panel/exam_detail.html', {
         'exam': exam, 'sections': sections, 'results': results, 'stats': stats
     })
@@ -567,9 +568,9 @@ def results_export_csv(request):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="results.csv"'
     w = csv.writer(response)
-    w.writerow(['ID', 'Foydalanuvchi', 'Imtihon', 'Ball', 'Listening', 'Reading', 'Writing', 'Speaking', 'Sana'])
+    w.writerow(['ID', 'Foydalanuvchi', 'Imtihon', 'Holat', 'Ball', 'Listening', 'Reading', 'Writing', 'Speaking', 'Sana'])
     for r in UserResult.objects.select_related('user', 'exam').order_by('-completed_at'):
-        w.writerow([r.pk, r.user.username, r.exam.title, r.score, r.listening_score, r.reading_score, r.writing_score, r.speaking_score, r.completed_at.strftime('%Y-%m-%d %H:%M')])
+        w.writerow([r.pk, r.user.username, r.exam.title, r.get_status_display(), r.score, r.listening_score, r.reading_score, r.writing_score, r.speaking_score, r.completed_at.strftime('%Y-%m-%d %H:%M')])
     return response
 
 
@@ -660,11 +661,11 @@ def analytics(request):
         'total_users': User.objects.count(),
         'total_results': UserResult.objects.count(),
         'total_revenue': Transaction.objects.filter(status='success').aggregate(t=Sum('amount'))['t'] or 0,
-        'avg_score': UserResult.objects.aggregate(a=Avg('score'))['a'] or 0,
-        'avg_l': UserResult.objects.aggregate(a=Avg('listening_score'))['a'] or 0,
-        'avg_r': UserResult.objects.aggregate(a=Avg('reading_score'))['a'] or 0,
-        'avg_w': UserResult.objects.aggregate(a=Avg('writing_score'))['a'] or 0,
-        'avg_s': UserResult.objects.aggregate(a=Avg('speaking_score'))['a'] or 0,
+        'avg_score': UserResult.objects.graded().aggregate(a=Avg('score'))['a'] or 0,
+        'avg_l': UserResult.objects.graded().aggregate(a=Avg('listening_score'))['a'] or 0,
+        'avg_r': UserResult.objects.graded().aggregate(a=Avg('reading_score'))['a'] or 0,
+        'avg_w': UserResult.objects.graded().aggregate(a=Avg('writing_score'))['a'] or 0,
+        'avg_s': UserResult.objects.graded().aggregate(a=Avg('speaking_score'))['a'] or 0,
         'active_exams': Exam.objects.filter(is_active=True).count(),
         'pending_tx': Transaction.objects.filter(status='pending').count(),
     }
@@ -693,12 +694,120 @@ from itertools import chain
 @panel_required
 def results_list(request):
     exam_id = request.GET.get('exam', '')
+    status = request.GET.get('status', '')
     results = UserResult.objects.select_related('user', 'exam').order_by('-completed_at')
     if exam_id:
         results = results.filter(exam_id=exam_id)
+    if status == UserResult.STATUS_PENDING:
+        # Oldest first — whoever has been waiting longest gets graded first.
+        results = results.pending().order_by('completed_at')
     exams = Exam.objects.all()
     return render(request, 'panel/results_list.html', {
-        'results': results[:100], 'exams': exams, 'exam_id': exam_id
+        'results': results[:100], 'exams': exams, 'exam_id': exam_id, 'status': status,
+        'pending_count': UserResult.objects.pending().count(),
+    })
+
+
+_WRITING_CRITERIA = (
+    ('task_achievement', 'Task Achievement / Response'),
+    ('coherence_cohesion', 'Coherence & Cohesion'),
+    ('lexical_resource', 'Lexical Resource'),
+    ('grammatical_accuracy', 'Grammatical Range & Accuracy'),
+)
+_BAND_CHOICES = [x / 2 for x in range(0, 19)]  # 0.0 … 9.0
+
+
+def _writing_answers(result):
+    return list(
+        result.answers.select_related('question__section')
+        .filter(question__question_type='writing_task')
+        .order_by('question__section__order', 'question__order')
+    )
+
+
+@panel_required
+def result_grade(request, pk):
+    """Manual Writing grading. Staff score each task on the 4 IELTS
+    criteria; saving releases the (until then hidden) result to the student."""
+    from exams.views import calc_writing_band, compute_overall_band, present_section_types, round_band
+
+    result = get_object_or_404(UserResult.objects.select_related('user', 'exam'), pk=pk)
+    answers = _writing_answers(result)
+    prev_tasks = (result.writing_feedback or {}).get('tasks') or []
+
+    tasks = []
+    for i, ua in enumerate(answers, start=1):
+        prev = prev_tasks[i - 1] if i - 1 < len(prev_tasks) else {}
+        tasks.append({
+            'num': i,
+            'answer': ua,
+            'question': ua.question,
+            'word_count': len(ua.user_answer.split()),
+            'criteria': [(key, label, prev.get(key)) for key, label in _WRITING_CRITERIA],
+            'feedback': prev.get('feedback', ''),
+        })
+
+    error = ''
+    if request.method == 'POST':
+        try:
+            task_feedbacks = []
+            for t in tasks:
+                scores = {}
+                for key, _ in _WRITING_CRITERIA:
+                    val = float(request.POST[f'task{t["num"]}_{key}'])
+                    if not 0 <= val <= 9 or (val * 2) % 1:
+                        raise ValueError
+                    scores[key] = val
+                band = round_band(sum(scores.values()) / len(scores))
+                task_feedbacks.append({
+                    'task_num': t['num'],
+                    'section_title': t['question'].section.title,
+                    'band': band,
+                    **scores,
+                    'feedback': request.POST.get(f'task{t["num"]}_feedback', '').strip(),
+                })
+        except (KeyError, ValueError):
+            error = "Har bir mezon uchun 0 dan 9 gacha (0.5 qadam bilan) ball tanlang."
+        else:
+            n = len(task_feedbacks) or 1
+            w_band = calc_writing_band([fb['band'] for fb in task_feedbacks])
+            result.writing_feedback = {
+                'manual': True,
+                'band': w_band,
+                'tasks': task_feedbacks,
+                **{key: round(sum(fb[key] for fb in task_feedbacks) / n, 1) for key, _ in _WRITING_CRITERIA},
+                'graded_by': request.user.username,
+            }
+            result.writing_score = w_band
+            band_by_type = {
+                'listening': result.listening_score, 'reading': result.reading_score,
+                'writing': w_band, 'speaking': result.speaking_score,
+            }
+            result.score = compute_overall_band(band_by_type, present_section_types(result.exam))
+            was_pending = result.is_pending
+            result.status = UserResult.STATUS_GRADED
+            result.graded_by = request.user
+            result.graded_at = timezone.now()
+            result.save(update_fields=[
+                'writing_feedback', 'writing_score', 'score', 'status', 'graded_by', 'graded_at',
+            ])
+            if was_pending:
+                Notification.objects.create(
+                    user=result.user,
+                    title="Natijangiz tayyor",
+                    message=f"«{result.exam.title}» imtihoni natijasi chiqdi: umumiy ball {result.score:.1f}. "
+                            f"Writing mutaxassis tomonidan baholandi ({w_band:.1f}).",
+                    type='success',
+                )
+            messages.success(request, f"Writing baholandi ({w_band:.1f}). Natija o'quvchiga ochildi.")
+            nxt = UserResult.objects.pending().order_by('completed_at').first()
+            if request.POST.get('next') == '1' and nxt:
+                return redirect('panel:result_grade', pk=nxt.pk)
+            return redirect(f"{reverse('panel:results')}?status=pending")
+
+    return render(request, 'panel/result_grade.html', {
+        'result': result, 'tasks': tasks, 'band_choices': _BAND_CHOICES, 'error': error,
+        'pending_count': UserResult.objects.pending().count(),
     })
 
 

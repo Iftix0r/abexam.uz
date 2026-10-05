@@ -50,7 +50,7 @@
 </div>
 
 <!-- Chart -->
-{% if results %}
+{% if graded_results %}
 <div class="chart-wrap">
   <div style="font-size:14px;font-weight:600;margin-bottom:14px">O'sish dinamikasi</div>
   <div style="height:200px"><canvas id="progressChart"></canvas></div>
@@ -62,17 +62,25 @@
 <div style="font-size:14px;font-weight:600;margin-bottom:12px">Barcha natijalar ({{ results|length }})</div>
 {% for r in results %}
 <div class="result-row">
-  <div class="score-circle {% if r.score >= 7.5 %}{% elif r.score >= 6.0 %}{% endif %}"
+  {% if r.is_pending %}
+  <div class="score-circle" style="background:#eab30818;color:#eab308" title="Writing tekshirilmoqda">
+    <i data-lucide="hourglass" style="width:20px"></i>
+  </div>
+  {% else %}
+  <div class="score-circle"
     style="background:{% if r.score >= 7.5 %}#22c55e18{% elif r.score >= 6.0 %}#eab30818{% else %}#ef444418{% endif %};color:{% if r.score >= 7.5 %}#22c55e{% elif r.score >= 6.0 %}#eab308{% else %}#ef4444{% endif %}">
     {{ r.score|floatformat:1 }}
   </div>
+  {% endif %}
   <div style="flex:1;min-width:0">
     <div style="font-weight:600;font-size:14px;margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.exam.title }}</div>
     <div class="section-scores">
+      {% if r.is_pending %}<span style="color:#eab308">Natija hisoblanmoqda — Writing tekshirilmoqda</span>{% else %}
       {% if r.listening_score %}<span>L: {{ r.listening_score|floatformat:1 }}</span>{% endif %}
       {% if r.reading_score %}<span>R: {{ r.reading_score|floatformat:1 }}</span>{% endif %}
       {% if r.writing_score %}<span>W: {{ r.writing_score|floatformat:1 }}</span>{% endif %}
       {% if r.speaking_score %}<span>S: {{ r.speaking_score|floatformat:1 }}</span>{% endif %}
+      {% endif %}
     </div>
   </div>
   <div style="text-align:right;flex-shrink:0">
@@ -95,7 +103,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 <script>
 lucide.createIcons();
-{% if results %}
+{% if graded_results %}
 function resultsChartOptions(){
   const C = siteChartColors();
   return {
@@ -111,10 +119,10 @@ const ctx=document.getElementById('progressChart').getContext('2d');
 const resultsChart=new Chart(ctx,{
   type:'line',
   data:{
-    labels:[{% for r in results reversed %}"{{ r.completed_at|date:'d M' }}"{% if not forloop.last %},{% endif %}{% endfor %}],
+    labels:[{% for r in graded_results reversed %}"{{ r.completed_at|date:'d M' }}"{% if not forloop.last %},{% endif %}{% endfor %}],
     datasets:[{
       label:'Ball',
-      data:[{% for r in results reversed %}{{ r.score }}{% if not forloop.last %},{% endif %}{% endfor %}],
+      data:[{% for r in graded_results reversed %}{{ r.score }}{% if not forloop.last %},{% endif %}{% endfor %}],
       borderColor:'#d32f2f',backgroundColor:'rgba(211,47,47,.1)',tension:.4,fill:true,pointBackgroundColor:'#d32f2f',pointRadius:4
     }]
   },

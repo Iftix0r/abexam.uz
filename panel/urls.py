@@ -45,6 +45,7 @@ urlpatterns = [
     path('results/export/', views.results_export_csv, name='results_export'),
     path('results/bulk-delete/', views.results_bulk_delete, name='results_bulk_delete'),
     path('results/<int:pk>/delete/', views.result_delete, name='result_delete'),
+    path('results/<int:pk>/grade/', views.result_grade, name='result_grade'),
     path('create-admin/', views.create_admin, name='create_admin'),
     path('security/', views.security_logs, name='security'),
     path('analytics/', views.analytics, name='analytics'),

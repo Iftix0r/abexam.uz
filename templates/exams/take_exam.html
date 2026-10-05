@@ -2437,6 +2437,24 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('resultModal').classList.add('active');
             if (window.lucide) lucide.createIcons();
 
+            if (data.pending) {
+                // Writing is graded by hand — no score exists yet, so the
+                // modal just says the result is being calculated.
+                document.getElementById('resultScore').innerText = '⏳';
+                const bl = document.getElementById('bandLabel');
+                if (bl) bl.innerText = "Natija hisoblanmoqda. Writing qismi mutaxassis tomonidan tekshirilgach natijangiz chiqadi va sizga xabar yuboriladi.";
+                document.getElementById('sectionScores').innerHTML = '';
+                const link = document.getElementById('resultDetailLink');
+                link.href = `/exams/result/${data.result_id}/`;
+                link.innerText = "Natija holatini ko'rish";
+                if (demoSpeakingQids && demoSpeakingQids.length) {
+                    demoFillSpeaking(data.result_id, demoSpeakingQids);
+                } else {
+                    uploadSpeakingAudios(data.result_id);
+                }
+                return;
+            }
+
             if (demoSpeakingQids && demoSpeakingQids.length) {
                 // The submit response's speaking band is a 0.0 placeholder — the
                 // real score only exists once the demo transcript grading below

@@ -57,8 +57,8 @@ class QuestionAdmin(admin.ModelAdmin):
 
 @admin.register(UserResult)
 class UserResultAdmin(admin.ModelAdmin):
-    list_display = ('user', 'exam', 'score', 'listening_score', 'reading_score', 'writing_score', 'speaking_score', 'completed_at')
-    list_filter = ('exam',)
+    list_display = ('user', 'exam', 'status', 'score', 'listening_score', 'reading_score', 'writing_score', 'speaking_score', 'completed_at')
+    list_filter = ('status', 'exam')
     search_fields = ('user__username',)
     readonly_fields = ('user', 'exam', 'score', 'listening_score', 'reading_score', 'writing_score', 'speaking_score', 'completed_at')
 

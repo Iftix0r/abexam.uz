@@ -182,7 +182,7 @@
       {% for r in results %}
       <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
         <a href="{% url 'panel:user_detail' r.user.pk %}" style="font-size:13px;color:var(--primary)">{{ r.user.username }}</a>
-        {% if r.score >= 7.5 %}<span class="badge badge-green">{{ r.score }}</span>{% elif r.score >= 6.0 %}<span class="badge badge-yellow">{{ r.score }}</span>{% else %}<span class="badge badge-red">{{ r.score }}</span>{% endif %}
+        {% if r.is_pending %}<a href="{% url 'panel:result_grade' r.pk %}" class="badge badge-yellow">⏳ Baholash</a>{% elif r.score >= 7.5 %}<span class="badge badge-green">{{ r.score }}</span>{% elif r.score >= 6.0 %}<span class="badge badge-yellow">{{ r.score }}</span>{% else %}<span class="badge badge-red">{{ r.score }}</span>{% endif %}
       </div>
       {% empty %}<div style="color:var(--muted);font-size:13px;padding:12px 0">Natija yo'q</div>{% endfor %}
     </div>

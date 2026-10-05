@@ -105,7 +105,7 @@
             {% for r in results %}
             <tr>
               <td><a href="{% url 'panel:exam_detail' r.exam.pk %}" style="color:var(--text)">{{ r.exam.title|truncatechars:28 }}</a></td>
-              <td>{% if r.score >= 7.5 %}<span class="badge badge-green">{{ r.score }}</span>{% elif r.score >= 6.0 %}<span class="badge badge-yellow">{{ r.score }}</span>{% else %}<span class="badge badge-red">{{ r.score }}</span>{% endif %}</td>
+              <td>{% if r.is_pending %}<a href="{% url 'panel:result_grade' r.pk %}" class="badge badge-yellow">⏳ Baholash</a>{% elif r.score >= 7.5 %}<span class="badge badge-green">{{ r.score }}</span>{% elif r.score >= 6.0 %}<span class="badge badge-yellow">{{ r.score }}</span>{% else %}<span class="badge badge-red">{{ r.score }}</span>{% endif %}</td>
               <td style="color:var(--muted);font-size:12px">{{ r.listening_score }}</td>
               <td style="color:var(--muted);font-size:12px">{{ r.reading_score }}</td>
               <td style="color:var(--muted);font-size:12px">{{ r.writing_score }}</td>

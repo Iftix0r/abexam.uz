@@ -39,8 +39,8 @@ class SlowQueryLogMiddleware:
 
 
 class PanelBadgeMiddleware:
-    """Annotates request.pending_tx_count for staff, used by the panel
-    sidebar's transaction badge (templates/panel/base.html)."""
+    """Annotates request.pending_tx_count / pending_results_count for
+    staff, used by the panel sidebar badges (templates/panel/base.html)."""
 
     def __init__(self, get_response):
         self.get_response = get_response
@@ -49,6 +49,8 @@ class PanelBadgeMiddleware:
         if request.path.startswith('/panel/') and request.user.is_authenticated and request.user.is_staff:
             from payments.models import Transaction
             request.pending_tx_count = Transaction.objects.filter(status='pending').count()
+            from exams.models import UserResult
+            request.pending_results_count = UserResult.objects.pending().count()
         return self.get_response(request)
 
 
