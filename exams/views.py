@@ -467,7 +467,9 @@ class ResultDetailView(LoginRequiredMixin, DetailView):
         # Students only see per-section totals, never the questions'
         # correct answers — otherwise one student's result page becomes the
         # answer key for everyone else taking the same test.
-        context['show_answers'] = self.request.user.is_staff
+        # Staff get them too, but only on explicit request (?answers=1), so
+        # a screen shared/screenshotted by a staff member doesn't leak them.
+        context['show_answers'] = self.request.user.is_staff and self.request.GET.get('answers') == '1'
         context['hide_result'] = result.is_pending and not self.request.user.is_staff
         return context
 

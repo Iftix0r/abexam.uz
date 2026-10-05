@@ -66,6 +66,11 @@
       <a href="{% url 'panel:result_grade' result.pk %}" class="action-btn">
         <i data-lucide="pen-line" style="width:14px"></i> {% if result.is_pending %}Writingni baholash{% else %}Bahoni tahrirlash{% endif %}
       </a>
+      {% if show_answers %}
+      <a href="?" class="action-btn"><i data-lucide="eye-off" style="width:14px"></i> Javoblarni yashirish</a>
+      {% else %}
+      <a href="?answers=1" class="action-btn"><i data-lucide="eye" style="width:14px"></i> Javoblarni ko'rsatish</a>
+      {% endif %}
       {% endif %}
       {% if not hide_result %}
       <button onclick="window.print()" class="action-btn">
