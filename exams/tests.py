@@ -51,6 +51,9 @@ class ManualWritingGradingTests(TestCase):
         form = self.client.get(reverse('panel:result_grade', args=[result.pk]))
         self.assertContains(form, 'essay two')
         self.assertContains(form, '1/1 to')  # reading correct-count shown to the grader
+        # Band values must be posted in a parseable form regardless of the
+        # site locale ('uz' renders floats as "6,0").
+        self.assertContains(form, 'name="task1_band" id="task1_b11" value="6.0"')
 
         # Missing a task band → error, nothing released
         resp = self.client.post(reverse('panel:result_grade', args=[result.pk]), {'task1_band': '6.0'})

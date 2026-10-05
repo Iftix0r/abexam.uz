@@ -1,4 +1,5 @@
 {% extends 'panel/base.html' %}
+{% load l10n %}
 {% block title %}Baholash — {{ result.user.username }}{% endblock %}
 {% block page_title %}Baholash{% endblock %}
 {% block nav_results %}active{% endblock %}
@@ -131,7 +132,7 @@
           <span class="small-label">Ball *</span>
           <div class="pills">
             {% for b in band_choices %}
-            <input type="radio" name="{{ t.prefix }}_band" id="{{ t.prefix }}_b{{ forloop.counter }}" value="{{ b }}" {% if t.band == b %}checked{% endif %}>
+            <input type="radio" name="{{ t.prefix }}_band" id="{{ t.prefix }}_b{{ forloop.counter }}" value="{{ b|unlocalize }}" {% if t.band == b %}checked{% endif %}>
             <label for="{{ t.prefix }}_b{{ forloop.counter }}">{{ b|floatformat:1 }}</label>
             {% endfor %}
           </div>
@@ -143,7 +144,7 @@
                 <label>{{ label }}</label>
                 <select class="form-input crit" name="{{ t.prefix }}_{{ key }}">
                   <option value="">—</option>
-                  {% for b in band_choices %}<option value="{{ b }}" {% if val == b %}selected{% endif %}>{{ b|floatformat:1 }}</option>{% endfor %}
+                  {% for b in band_choices %}<option value="{{ b|unlocalize }}" {% if val == b %}selected{% endif %}>{{ b|floatformat:1 }}</option>{% endfor %}
                 </select>
               </div>
               {% endfor %}
@@ -168,7 +169,7 @@
           <input type="radio" name="speaking_band" id="speaking_none" value="" {% if speaking.band == None %}checked{% endif %}>
           <label for="speaking_none" style="min-width:90px">Baholanmagan</label>
           {% for b in band_choices %}
-          <input type="radio" name="speaking_band" id="speaking_b{{ forloop.counter }}" value="{{ b }}" {% if speaking.band == b %}checked{% endif %}>
+          <input type="radio" name="speaking_band" id="speaking_b{{ forloop.counter }}" value="{{ b|unlocalize }}" {% if speaking.band == b %}checked{% endif %}>
           <label for="speaking_b{{ forloop.counter }}">{{ b|floatformat:1 }}</label>
           {% endfor %}
         </div>
@@ -185,7 +186,7 @@
                 <label>{{ label }}</label>
                 <select class="form-input crit" name="speaking_{{ key }}">
                   <option value="">—</option>
-                  {% for b in band_choices %}<option value="{{ b }}" {% if val == b %}selected{% endif %}>{{ b|floatformat:1 }}</option>{% endfor %}
+                  {% for b in band_choices %}<option value="{{ b|unlocalize }}" {% if val == b %}selected{% endif %}>{{ b|floatformat:1 }}</option>{% endfor %}
                 </select>
               </div>
               {% endfor %}
@@ -235,7 +236,7 @@ form.querySelectorAll('.score-block').forEach(block => {
     const vals = [...block.querySelectorAll('select.crit')].map(s => s.value);
     if (vals.some(v => v === '')) return;
     const b = roundBand(vals.reduce((a, v) => a + parseFloat(v), 0) / vals.length);
-    const radio = form.querySelector(`input[name="${prefix}_band"][value="${b}"]`);
+    const radio = form.querySelector(`input[name="${prefix}_band"][value="${b.toFixed(1)}"]`);
     if (radio) { radio.checked = true; recalc(); }
   }));
 });
