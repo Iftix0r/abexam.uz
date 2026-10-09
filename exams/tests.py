@@ -1,3 +1,4 @@
+import io
 import json
 
 from django.test import TestCase, override_settings
@@ -185,3 +186,40 @@ class TestlarFilesTests(TestCase):
         self.assertEqual(b''.join(resp.streaming_content), bytes(range(10, 20)))
         resp = self.client.get(self._url('listening1.mp3'), HTTP_RANGE='bytes=200-')
         self.assertEqual(resp.status_code, 416)
+
+
+@override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
+class SeedTestlar7Tests(TestCase):
+    """TESTLAR/7 dan yasalgan Full Mock Test 6/7 seed fayllari to'g'ri yuklanishi."""
+
+    def setUp(self):
+        import tempfile
+        self.media = tempfile.TemporaryDirectory()
+        self.override = override_settings(MEDIA_ROOT=self.media.name)
+        self.override.enable()
+
+    def tearDown(self):
+        self.override.disable()
+        self.media.cleanup()
+
+    def test_seed_and_open(self):
+        from django.core.management import call_command
+        for n in (6, 7):
+            call_command('seed_cambridge', file=f'data/cambridge/ielts_full_mock_test_{n}.json', stdout=io.StringIO())
+            exam = Exam.objects.get(title=f'IELTS Full Mock Test {n}')
+            listening, reading, writing = exam.sections.order_by('order')
+            self.assertEqual(listening.questions.count(), 40)
+            self.assertEqual(reading.questions.count(), 40)
+            self.assertEqual(writing.questions.count(), 2)
+            self.assertTrue(listening.audio_file.name.startswith('exams/audio/listening'))
+            self.assertTrue(writing.image)
+
+        # qayta yuklash audio/rasmni ko'paytirmaydi
+        call_command('seed_cambridge', file='data/cambridge/ielts_full_mock_test_7.json', stdout=io.StringIO())
+        exam = Exam.objects.get(title='IELTS Full Mock Test 7')
+        self.assertEqual(exam.sections.get(order=1).audio_file.name, 'exams/audio/listening2.mp3')
+
+        user = User.objects.create_user('student', password='pw')
+        self.client.force_login(user)
+        resp = self.client.get(reverse('exams:take_exam', args=[exam.pk]))
+        self.assertContains(resp, 'Rethinking the Past')

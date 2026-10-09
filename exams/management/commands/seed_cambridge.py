@@ -189,6 +189,20 @@ class Command(BaseCommand):
             section.extra_data = {**(section.extra_data or {}), 'question_images': stored}
             section.save(update_fields=['extra_data'])
 
+        # "audio_file": Listening audio already in the repo (path relative to
+        # the JSON file, e.g. "../../TESTLAR/7/listening1.mp3") — for tests
+        # whose audio isn't hosted anywhere to download from.
+        audio_file = sec_data.get('audio_file')
+        if audio_file:
+            src = json_dir / audio_file
+            if not src.exists():
+                raise CommandError(f"Audio topilmadi: {src}")
+            if not _same_file(section.audio_file, src):
+                if section.audio_file:
+                    section.audio_file.delete(save=False)
+                with open(src, 'rb') as fh:
+                    section.audio_file.save(src.name, File(fh), save=True)
+
         audio_url = sec_data.get('audio_url')
         if not audio_url:
             return
