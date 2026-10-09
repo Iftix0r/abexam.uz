@@ -355,6 +355,10 @@
                 <i data-lucide="book-open" style="width: 20px;"></i>
                 <span class="nav-toggle-text">Imtihonlar</span>
             </a>
+            <a href="{% url 'testlar' %}" class="nav-link {% if request.resolver_match.url_name == 'testlar' %}active{% endif %}">
+                <i data-lucide="file-text" style="width: 20px;"></i>
+                <span class="nav-toggle-text">Testlar</span>
+            </a>
 
             <div style="margin-top: 1.5rem; padding: 0 0.8rem; margin-bottom: 0.5rem;" class="sidebar-label">
                 <span style="font-size: 0.75rem; font-weight: 500; color: #888; text-transform: uppercase;">Bo'limlar</span>

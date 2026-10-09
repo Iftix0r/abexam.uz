@@ -5,6 +5,7 @@ from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
 from core.admin_site import AbExamAdminSite
 from core import system_views
+from exams.testlar import TestlarListView, testlar_file
 from users.views import (
     HomeView, DashboardView, CustomLoginView, RegisterView,
     ExamsListView, ResultsListView, VocabularyView, FinanceView,
@@ -41,6 +42,8 @@ urlpatterns = [
     path('profile/', ProfileView.as_view(), name='profile'),
     path('exams-list/', ExamsListView.as_view(), name='exams_list'),
     path('results-list/', ResultsListView.as_view(), name='results_list'),
+    path('testlar/', TestlarListView.as_view(), name='testlar'),
+    path('testlar/<int:folder>/<str:filename>', testlar_file, name='testlar_file'),
     path('vocabulary/', VocabularyView.as_view(), name='vocabulary'),
     path('finance/', FinanceView.as_view(), name='finance'),
     path('notifications/', NotificationsView.as_view(), name='notifications'),

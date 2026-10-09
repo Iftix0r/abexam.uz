@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}Testlar — AbExam{% endblock %}
+{% block page_title %}Testlar{% endblock %}
+
+{% block extra_css %}
+<style>
+.test-group{margin-bottom:32px}
+.test-group-title{font-size:16px;font-weight:600;color:var(--text-color);margin-bottom:14px}
+.test-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+.test-card{background:var(--card-bg);border:1px solid var(--border-color);border-radius:16px;padding:20px;display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--text-color);transition:.2s}
+.test-card:hover{border-color:var(--primary-color);transform:translateY(-3px)}
+.test-icon{width:40px;height:40px;border-radius:12px;background:var(--tint-a);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.test-name{font-size:15px;font-weight:600}
+.test-kind{font-size:12px;color:var(--text-muted);margin-top:2px}
+</style>
+{% endblock %}
+
+{% block content %}
+<p style="color:var(--text-muted);font-size:15px;margin-bottom:28px">Tayyor IELTS testlari — har biri yangi oynada ochiladi, javoblarni oxirida "Check Answers" bilan tekshirasiz.</p>
+
+{% for group in groups %}
+<div class="test-group">
+  <div class="test-group-title">Test to'plami {{ group.number }}</div>
+  <div class="test-grid">
+    {% for f in group.files %}
+    <a class="test-card" href="{% url 'testlar_file' group.number f.name %}" target="_blank" rel="noopener">
+      <div class="test-icon">
+        <i data-lucide="{% if f.kind == 'Listening' %}headphones{% elif f.kind == 'Reading' %}book-open{% elif f.kind == 'Writing' %}pen-line{% elif f.kind == 'Speaking' %}mic{% else %}file-text{% endif %}" style="width:18px;color:var(--text-muted)"></i>
+      </div>
+      <div>
+        <div class="test-name">{{ f.title }}</div>
+        <div class="test-kind">{{ f.kind }}</div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</div>
+{% empty %}
+<p style="color:var(--text-muted)">Hozircha testlar yo'q.</p>
+{% endfor %}
+{% endblock %}

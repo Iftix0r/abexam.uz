@@ -45,3 +45,13 @@ staticfiles/
 # OS
 .DS_Store
 Thumbs.db
+
+# TESTLAR: xom materiallar (PDF, zip, asl audio va rasmlar) git'ga kirmaydi —
+# faqat tayyor HTML testlar va ularning siqilgan listening*.mp3 audiosi.
+TESTLAR/**/*.pdf
+TESTLAR/**/*.zip
+TESTLAR/**/*.jpg
+TESTLAR/**/*.jpeg
+TESTLAR/**/*.png
+TESTLAR/**/*.mp3
+!TESTLAR/**/listening*.mp3

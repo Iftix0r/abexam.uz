@@ -130,3 +130,58 @@ class ManualWritingGradingTests(TestCase):
         self.assertEqual(round_band(6.1), 6.0)
         self.assertEqual(calc_writing_band([6.0, 7.0]), 6.5)
         self.assertEqual(calc_writing_band([6.5]), 6.5)
+
+
+class TestlarFilesTests(TestCase):
+    def setUp(self):
+        import tempfile
+        from pathlib import Path
+        self.tmp = tempfile.TemporaryDirectory()
+        root = Path(self.tmp.name)
+        (root / '7').mkdir()
+        (root / '7' / 'Listening 1.html').write_text('<html>L1</html>')
+        (root / '7' / 'listening1.mp3').write_bytes(bytes(range(100)))
+        (root / '7' / 'secret.pdf').write_bytes(b'pdf')
+        (root / 'notes.html').write_text('top-level')
+        self.override = override_settings(TESTLAR_DIR=root)
+        self.override.enable()
+        self.user = User.objects.create_user('student', password='pw')
+
+    def tearDown(self):
+        self.override.disable()
+        self.tmp.cleanup()
+
+    def _url(self, name):
+        return reverse('testlar_file', args=[7, name])
+
+    def test_requires_login(self):
+        self.assertEqual(self.client.get(reverse('testlar')).status_code, 302)
+        self.assertEqual(self.client.get(self._url('Listening 1.html')).status_code, 302)
+
+    @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
+    def test_list_shows_html_tests(self):
+        self.client.force_login(self.user)
+        resp = self.client.get(reverse('testlar'))
+        self.assertContains(resp, 'Listening 1')
+        self.assertNotContains(resp, 'secret')
+
+    def test_serves_test_page(self):
+        self.client.force_login(self.user)
+        resp = self.client.get(self._url('Listening 1.html'))
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(b''.join(resp.streaming_content), b'<html>L1</html>')
+
+    def test_blocks_raw_files_and_traversal(self):
+        self.client.force_login(self.user)
+        self.assertEqual(self.client.get(self._url('secret.pdf')).status_code, 404)
+        self.assertEqual(self.client.get(self._url('..')).status_code, 404)
+        self.assertEqual(self.client.get(self._url('missing.html')).status_code, 404)
+
+    def test_audio_range_request(self):
+        self.client.force_login(self.user)
+        resp = self.client.get(self._url('listening1.mp3'), HTTP_RANGE='bytes=10-19')
+        self.assertEqual(resp.status_code, 206)
+        self.assertEqual(resp['Content-Range'], 'bytes 10-19/100')
+        self.assertEqual(b''.join(resp.streaming_content), bytes(range(10, 20)))
+        resp = self.client.get(self._url('listening1.mp3'), HTTP_RANGE='bytes=200-')
+        self.assertEqual(resp.status_code, 416)
