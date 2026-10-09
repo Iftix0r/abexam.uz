@@ -60,6 +60,47 @@ def _fuzzy_match(user_ans: str, correct: str) -> bool:
     return False
 
 
+def _choose_many_groups(questions):
+    """"Choose TWO letters" is stored as consecutive mcq rows sharing the same
+    options and the same slash-separated answer ("C/E"), each accepting
+    either letter. Maps every such question's id to one shared set of the
+    still-unclaimed correct letters, so picking the same right letter in
+    both rows only earns the mark once."""
+    groups = {}
+    i, n = 0, len(questions)
+    while i < n:
+        q = questions[i]
+        j = i + 1
+        if q.question_type == 'mcq' and '/' in q.correct_answer:
+            while (j < n and questions[j].question_type == 'mcq'
+                   and questions[j].correct_answer == q.correct_answer
+                   and questions[j].options == q.options):
+                j += 1
+            if j - i >= 2:
+                remaining = {a.strip().lower() for a in q.correct_answer.split('/')}
+                for member in questions[i:j]:
+                    groups[member.id] = remaining
+        i = j
+    return groups
+
+
+def grade_answers(questions, answer_for):
+    """{question.id: is_correct} for one section's questions (in order).
+    answer_for(question) returns the user's raw answer."""
+    groups = _choose_many_groups(questions)
+    verdicts = {}
+    for q in questions:
+        user_ans = str(answer_for(q)).strip()
+        remaining = groups.get(q.id)
+        if remaining is None:
+            verdicts[q.id] = _fuzzy_match(user_ans, q.correct_answer)
+        else:
+            key = user_ans.lower()
+            verdicts[q.id] = key in remaining
+            remaining.discard(key)
+    return verdicts
+
+
 # IELTS Listening/Reading band table (scaled to 40 questions)
 _IELTS_TABLE = [
     (39, 9.0), (37, 8.5), (35, 8.0), (32, 7.5), (30, 7.0),
@@ -336,7 +377,9 @@ class SubmitExamView(LoginRequiredMixin, View):
         for section in sections:
             s_correct = 0
             s_total = 0
-            for question in section.questions.all():
+            questions = list(section.questions.all())
+            verdicts = grade_answers(questions, lambda q: answers.get(str(q.id), ''))
+            for question in questions:
                 user_ans = str(answers.get(str(question.id), '')).strip()
                 if question.question_type == 'writing_task':
                     writing_tasks.append({
@@ -348,8 +391,7 @@ class SubmitExamView(LoginRequiredMixin, View):
                     continue
                 s_total += 1
                 total_questions += 1
-                correct = str(question.correct_answer).strip().lower()
-                is_correct = _fuzzy_match(user_ans, correct)
+                is_correct = verdicts[question.id]
                 answer_records.append((question, user_ans, is_correct))
                 if is_correct:
                     s_correct += 1
@@ -437,12 +479,14 @@ class ResultDetailView(LoginRequiredMixin, DetailView):
         for section in result.exam.sections.prefetch_related('questions').all():
             questions_data = []
             correct_count = 0
-            for q in section.questions.all():
+            questions = list(section.questions.all())
+            verdicts = grade_answers(questions, lambda q: db_answers.get(str(q.id), ''))
+            for q in questions:
                 user_ans = str(db_answers.get(str(q.id), '')).strip()
                 if q.question_type in ('writing_task', 'short_answer'):
                     is_correct = None
                 else:
-                    is_correct = _fuzzy_match(user_ans, q.correct_answer)
+                    is_correct = verdicts[q.id]
                     if is_correct:
                         correct_count += 1
                 questions_data.append({

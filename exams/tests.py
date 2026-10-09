@@ -223,3 +223,38 @@ class SeedTestlar7Tests(TestCase):
         self.client.force_login(user)
         resp = self.client.get(reverse('exams:take_exam', args=[exam.pk]))
         self.assertContains(resp, 'Rethinking the Past')
+        # audio bor Listening'da transkript (javoblar) sahifaga chiqmaydi
+        self.assertNotContains(resp, 'The idea is hugely popular with local chefs')
+
+
+class ChooseTwoGradingTests(TestCase):
+    """"Choose TWO letters" juftligida bir xil to'g'ri harf ikki marta ball bermaydi."""
+
+    def setUp(self):
+        self.user = User.objects.create_user('student', password='pw')
+        self.exam = Exam.objects.create(title='Pair test', price=0)
+        section = Section.objects.create(exam=self.exam, title='Reading', section_type='reading', order=1)
+        options = [{'key': k, 'text': k} for k in 'ABCDE']
+        self.q1 = Question.objects.create(section=section, text='first answer', question_type='mcq',
+                                          options=options, correct_answer='C/E', order=1)
+        self.q2 = Question.objects.create(section=section, text='second answer', question_type='mcq',
+                                          options=options, correct_answer='C/E', order=2)
+
+    def _correct_count(self, a1, a2):
+        self.client.force_login(self.user)
+        resp = self.client.post(
+            reverse('exams:submit_exam', args=[self.exam.pk]),
+            data=json.dumps({'answers': {str(self.q1.id): a1, str(self.q2.id): a2}}),
+            content_type='application/json',
+        )
+        result = UserResult.objects.get(pk=resp.json()['result_id'])
+        return result.answers.filter(is_correct=True).count()
+
+    def test_both_letters_score_two(self):
+        self.assertEqual(self._correct_count('E', 'C'), 2)
+
+    def test_same_letter_twice_scores_once(self):
+        self.assertEqual(self._correct_count('C', 'C'), 1)
+
+    def test_one_wrong_letter(self):
+        self.assertEqual(self._correct_count('A', 'e'), 1)
