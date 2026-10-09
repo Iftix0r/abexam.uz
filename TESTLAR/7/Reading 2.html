@@ -1,0 +1,2000 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS CDI Reading Practice</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffffff;
+            line-height: 1.4;
+            font-size: 16px;
+            overflow: hidden;
+        }
+
+        body::after {
+            content: "@MINDLESS_WRITER";
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 90px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: #000000;
+            opacity: 0.035;
+            pointer-events: none;
+            user-select: none;
+            z-index: 50;
+            white-space: nowrap;
+        }
+
+        .header {
+            background-color: #ffffff;
+            padding: 12px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            height: 60px;
+        }
+
+        .telegram-link {
+            color: #3e3e3e;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            border: 2px solid #3e3e3e;
+            border-radius: 9999px;
+            background-color: #ffffff;
+            line-height: 1;
+        }
+
+        .telegram-link:hover {
+            background-color: #f6f6f6;
+        }
+
+        .telegram-link::before {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background-color: currentColor;
+            -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23l7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3L3.64 12c-.88-.25-.89-1.37.2-1.64l16.56-6.4c.75-.29 1.4.22 1.2.94l-2.67 12.61c-.22.95-1.13 1.18-1.78.73l-4.5-3.32l-2.23 2.15c-.47.44-1.29.21-1.48-.37z"/></svg>');
+            mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23l7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3L3.64 12c-.88-.25-.89-1.37.2-1.64l16.56-6.4c.75-.29 1.4.22 1.2.94l-2.67 12.61c-.22.95-1.13 1.18-1.78.73l-4.5-3.32l-2.23 2.15c-.47.44-1.29.21-1.48-.37z"/></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        .part-indicator {
+            font-size: 15px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .main-container {
+            position: fixed;
+            top: 60px;
+            bottom: 80px;
+            left: 0;
+            right: 0;
+            display: flex;
+            background: #ffffff;
+        }
+
+        .passage-panel {
+            flex: 0 0 50%;
+            min-width: 200px;
+            overflow-y: auto;
+            padding: 20px 24px 40px;
+        }
+
+        .resizer {
+            width: 10px;
+            cursor: col-resize;
+            background-color: #f0f0f0;
+            border-left: 1px solid #d0d0d0;
+            border-right: 1px solid #d0d0d0;
+            background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="30" viewBox="0 0 10 30"><path d="M4 11h2v2H4zM4 15h2v2H4zM4 19h2v2H4z" fill="%23888"/></svg>');
+            background-repeat: no-repeat;
+            background-position: center;
+            flex-shrink: 0;
+            flex-grow: 0;
+        }
+
+        .resizer:hover {
+            background-color: #e2e6ea;
+        }
+
+        body.resizing {
+            cursor: col-resize;
+            user-select: none;
+        }
+
+        .questions-panel {
+            flex: 1;
+            min-width: 200px;
+            overflow-y: auto;
+            padding: 20px 24px 60px;
+        }
+
+        .passage-set,
+        .question-set {
+            display: none;
+        }
+
+        .passage-set.active,
+        .question-set.active {
+            display: block;
+        }
+
+        .passage-intro {
+            background-color: #f1f2ec;
+            padding: 12px 15px;
+            border-radius: 5px;
+            margin-bottom: 18px;
+            border: 1px solid #e0e0e0;
+            font-size: 15px;
+        }
+
+        .passage-title {
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 18px;
+        }
+
+        .passage-text p {
+            margin-bottom: 14px;
+            text-align: justify;
+            line-height: 1.65;
+        }
+
+        .para-label {
+            font-weight: 700;
+            margin-right: 6px;
+        }
+
+        .q-group {
+            margin-bottom: 34px;
+        }
+
+        .q-group-header {
+            font-weight: 700;
+            font-size: 17px;
+            margin-bottom: 6px;
+        }
+
+        .q-instruction {
+            margin-bottom: 14px;
+            font-size: 15px;
+        }
+
+        .q-instruction p {
+            margin-bottom: 4px;
+        }
+
+        .q-item {
+            margin-bottom: 16px;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .q-num {
+            font-weight: 700;
+            min-width: 24px;
+            padding-top: 4px;
+        }
+
+        .q-body {
+            flex: 1;
+        }
+
+        .answer-input {
+            border: 1px solid #9aa3ad;
+            border-radius: 4px;
+            background-color: #fff;
+            padding: 4px 8px;
+            font-size: 16px;
+            width: 150px;
+            height: 30px;
+            line-height: 1.2;
+            vertical-align: middle;
+            transition: border-color 0.15s ease;
+        }
+
+        .answer-input::placeholder {
+            color: #999;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .answer-input:focus,
+        .answer-select:focus {
+            outline: none;
+            border-color: #2c6bed;
+            border-width: 2px;
+        }
+
+        .answer-select {
+            border: 1px solid #9aa3ad;
+            border-radius: 4px;
+            background-color: #fff;
+            padding: 4px 6px;
+            font-size: 15px;
+            height: 30px;
+            min-width: 140px;
+            cursor: pointer;
+        }
+
+        .answer-input.correct,
+        .answer-select.correct {
+            border-color: #28a745;
+            background-color: #e9f7ef;
+        }
+
+        .answer-input.incorrect,
+        .answer-select.incorrect {
+            border-color: #dc3545;
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .correct-inline {
+            color: #28a745;
+            font-weight: 700;
+            margin-left: 10px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .correct-inline::before {
+            content: "\2192  ";
+        }
+
+        .multi-choice-option {
+            display: block;
+            width: 100%;
+            padding: 8px 12px;
+            background-color: #fff;
+            border: 1px solid transparent;
+            transition: background-color 0.2s;
+        }
+
+        .multi-choice-option:hover {
+            background-color: #f1f7ff;
+            border-color: #c6dcfb;
+        }
+
+        .multi-choice-option:has(input[type="radio"]:checked),
+        .multi-choice-option:has(input[type="checkbox"]:checked) {
+            background-color: #cfe3f9;
+        }
+
+        .multi-choice-option.correct {
+            background-color: #d4edda !important;
+        }
+
+        .multi-choice-option.incorrect {
+            background-color: #f8d7da !important;
+        }
+
+        .multi-choice-option label {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        .multi-choice-option input {
+            transform: scale(1.15);
+            margin-top: 3px;
+        }
+
+        .info-box {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 12px 15px;
+            background: #f9f9f9;
+            margin-bottom: 16px;
+            font-size: 15px;
+        }
+
+        .info-box p {
+            margin-bottom: 4px;
+        }
+
+        .notes-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 15px;
+            margin-bottom: 10px;
+        }
+
+        .notes-table th,
+        .notes-table td {
+            border: 1px solid #888;
+            padding: 8px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .notes-table th {
+            background: #f1f2ec;
+            font-weight: 700;
+        }
+
+        .summary-box {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 15px;
+            background: #fafafa;
+            margin-bottom: 16px;
+        }
+
+        .summary-box p {
+            margin-bottom: 12px;
+            line-height: 1.8;
+        }
+
+        .summary-title {
+            text-align: center;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .option-list {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 12px 15px;
+            background: #f9f9f9;
+            display: inline-block;
+            min-width: 240px;
+        }
+
+        .option-list p {
+            margin-bottom: 4px;
+        }
+
+        /* --- TRUE/FALSE/NOT GIVEN va YES/NO/NOT GIVEN (radio ro'yxat) --- */
+        .tf-question {
+            margin-bottom: 22px;
+        }
+
+        .tf-question-line {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            padding: 5px 0;
+        }
+
+        .tf-question-number {
+            border: 2px solid #ccc;
+            padding: 2px 8px;
+            margin-right: 10px;
+            border-radius: 3px;
+            font-weight: bold;
+            transition: border-color 0.3s;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+
+        .tf-question.active-question .tf-question-number {
+            border-color: #4a90e2;
+        }
+
+        .tf-options {
+            padding-left: 5px;
+        }
+
+        .tf-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 9px 12px;
+            background-color: #fff;
+            border: 1px solid transparent;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+
+        .tf-option:hover {
+            background-color: #f1f7ff;
+            border-color: #c6dcfb;
+        }
+
+        .tf-option:has(input[type="radio"]:checked) {
+            background-color: #cfe3f9;
+        }
+
+        .tf-option.correct {
+            background-color: #d4edda !important;
+        }
+
+        .tf-option.incorrect {
+            background-color: #f8d7da !important;
+        }
+
+        .tf-option input[type="radio"] {
+            transform: scale(1.15);
+        }
+
+        /* --- "Which paragraph contains..." matching jadvali --- */
+        .matching-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 18px 0;
+            font-size: 15px;
+        }
+
+        .matching-table th {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            border: 1px solid #ddd;
+        }
+
+        .matching-table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            vertical-align: middle;
+        }
+
+        .matching-table .statement {
+            text-align: left;
+            width: 58%;
+        }
+
+        .matching-table td:not(.statement) {
+            text-align: center;
+            min-width: 44px;
+        }
+
+        .matching-table th:not(:first-child) {
+            min-width: 44px;
+        }
+
+        .matching-table .table-radio {
+            margin: 0;
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+
+        .matching-table td:not(.statement):has(input:checked) {
+            background-color: #e3f2fd;
+        }
+
+        .matching-table input[type="radio"]:checked {
+            accent-color: #007bff;
+        }
+
+        .matching-table td.correct {
+            background-color: #d4edda !important;
+            border-color: #c3e6cb;
+        }
+
+        .matching-table td.incorrect {
+            background-color: #f8d7da !important;
+            border-color: #f5c6cb;
+        }
+
+        /* --- Drag & drop (summary / headings turi) --- */
+        .drag-item {
+            background: white;
+            border: 1px solid #9c9c9c;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: move;
+            font-size: 15px;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .drag-item:hover {
+            background: #e9ecef;
+        }
+
+        .drag-item.dragging {
+            opacity: 0.5;
+        }
+
+        .drag-item.selected {
+            border-color: #4a90e2;
+            box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.5);
+        }
+
+        .drop-zone {
+            border: 2px dashed #aaa;
+            border-radius: 4px;
+            transition: background-color 0.2s, border-color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 150px;
+            min-height: 30px;
+            padding: 2px 6px;
+            vertical-align: middle;
+            font-weight: 700;
+            color: #666;
+            background: #fff;
+        }
+
+        .drop-zone.filled {
+            border-style: solid;
+            border-color: #9c9c9c;
+            color: inherit;
+            font-weight: 400;
+            padding: 1px;
+        }
+
+        .drop-zone.drag-over {
+            background-color: #e6f4ff;
+            border-color: #4a90e2;
+        }
+
+        .drop-zone.correct {
+            background-color: #e9f7ef;
+            border-color: #28a745;
+            border-style: solid;
+        }
+
+        .drop-zone.incorrect {
+            background-color: #f8d7da;
+            border-color: #dc3545;
+            border-style: solid;
+        }
+
+        .drop-zone.disabled {
+            pointer-events: none;
+        }
+
+        .drop-zone .drag-item {
+            border: none;
+            background: transparent;
+            font-size: 15px;
+            padding: 0 4px;
+            cursor: move;
+            width: 100%;
+            text-align: center;
+        }
+
+        .drag-options-container {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 12px 15px;
+            background: #f9f9f9;
+            /* panel kengligiga qarab bir qatorga 2 (yoki undan ko'p) ibora joylashadi */
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 8px;
+            min-height: 60px;
+        }
+
+        .drag-options-container .drag-item {
+            text-align: left;
+        }
+
+        .drag-options-container.drag-over {
+            background-color: #e6f4ff;
+            border-color: #4a90e2;
+        }
+
+        .drag-bank-title {
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        /* --- Javob dalillari (tekshirgandan keyin ochiladi) --- */
+        .t-qmark,
+        .t-note {
+            display: none;
+        }
+
+        .main-container.results-mode .t-hl {
+            background: #fff3a0;
+            border-radius: 3px;
+            padding: 0 2px;
+            scroll-margin-top: 24px;
+        }
+
+        .main-container.results-mode .t-hl.active {
+            background: #ffd34d;
+            box-shadow: 0 0 0 2px #f0a500;
+        }
+
+        .main-container.results-mode .t-qmark {
+            display: inline-flex;
+            font-size: 10px;
+            font-weight: 700;
+            color: #fff;
+            background: #4a90e2;
+            border-radius: 50%;
+            align-items: center;
+            justify-content: center;
+            width: 17px;
+            height: 17px;
+            min-width: 17px;
+            vertical-align: super;
+            margin-right: 2px;
+            line-height: 1;
+        }
+
+        .main-container.results-mode .t-note {
+            display: inline;
+            font-style: italic;
+            font-weight: 700;
+            color: #0b6b3a;
+            font-size: 13px;
+            margin-left: 3px;
+        }
+
+        .nav-row {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            height: 80px;
+            z-index: 100;
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+        }
+
+        .footer__questionWrapper___1tZ46 {
+            display: flex;
+            align-items: center;
+            margin-right: 16px;
+            flex-shrink: 0;
+        }
+
+        .footer__questionNo___3WNct {
+            background: none;
+            border: none;
+            padding: 10px 12px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .footer__questionNo___3WNct:hover {
+            background-color: #f8f9fa;
+        }
+
+        .attemptedCount {
+            font-size: 13px;
+            color: #666;
+            margin-left: 5px;
+            font-weight: 400;
+        }
+
+        .footer__subquestionWrapper___9GgoP {
+            display: none;
+            gap: 2px;
+            margin-left: 8px;
+        }
+
+        .footer__questionWrapper___1tZ46.selected .footer__subquestionWrapper___9GgoP {
+            display: flex;
+        }
+
+        .footer__questionWrapper___1tZ46.selected .attemptedCount {
+            display: none;
+        }
+
+        .subQuestion {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #ccc;
+            background: white;
+            color: #333;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .subQuestion.answered {
+            background-color: #e9ecef;
+            border-color: #ddd;
+        }
+
+        .subQuestion.correct {
+            background-color: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+
+        .subQuestion.incorrect {
+            background-color: #dc3545;
+            color: white;
+            border-color: #dc3545;
+        }
+
+        .subQuestion:hover {
+            background-color: #f0f0f0;
+            border-color: #999;
+        }
+
+        .subQuestion.active {
+            background-color: #4a90e2;
+            color: white;
+            border-color: #4a90e2;
+        }
+
+        .footer__deliverButton___3FM07 {
+            margin-left: auto;
+            margin-right: 20px;
+            background-color: #f0f0f0;
+            color: #333;
+            border: 1px solid #ccc;
+            padding: 12px 20px;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 170px;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .footer__deliverButton___3FM07:hover {
+            background-color: #e0e0e0;
+            border-color: #bbb;
+        }
+
+        .footer__deliverButton___3FM07.success {
+            background-color: #28a745;
+            color: #fff;
+            border-color: #28a745;
+        }
+
+        .highlight {
+            background-color: #ffff00;
+        }
+
+        .comment-highlight {
+            background-color: #90EE90;
+            position: relative;
+            cursor: help;
+        }
+
+        .comment-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            white-space: nowrap;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .comment-highlight:hover .comment-tooltip {
+            opacity: 1;
+        }
+
+        .context-menu {
+            position: absolute;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            display: none;
+            min-width: 140px;
+        }
+
+        .context-menu-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            font-size: 16px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .context-menu-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .context-menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            font-size: 24px;
+            color: #333;
+        }
+
+        .modal-close-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #888;
+        }
+
+        .modal-close-btn:hover {
+            color: #333;
+        }
+
+        #score-summary {
+            font-size: 16px;
+            font-weight: 600;
+            color: #111827;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            padding: 10px 12px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        #result-details table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        #result-details th,
+        #result-details td {
+            border: 1px solid #ddd;
+            padding: 8px 10px;
+            text-align: left;
+        }
+
+        #result-details th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+
+        .result-correct {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .result-incorrect {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        @keyframes flash {
+            0% {
+                background-color: #e6f4ff;
+            }
+
+            100% {
+                background-color: transparent;
+            }
+        }
+
+        .q-item.flash,
+        .tf-question.flash,
+        .matching-table tr.flash td,
+        .q-group.flash {
+            animation: flash 1s ease-out;
+        }
+
+        @media (max-width: 1024px) {
+            body {
+                overflow: auto;
+            }
+
+            .main-container {
+                position: static;
+                flex-direction: column;
+                margin-top: 60px;
+                padding-bottom: 90px;
+            }
+
+            .passage-panel,
+            .questions-panel {
+                flex: 1 1 auto !important;
+                width: 100%;
+                min-width: 0;
+                overflow-y: visible;
+            }
+
+            .passage-panel {
+                border-bottom: 2px solid #d0d0d0;
+            }
+
+            .resizer {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <div class="part-indicator" id="part-indicator">Reading Passage 1</div>
+        <a href="https://t.me/+SoPpY9nBi3U0NTE1" target="_blank" class="telegram-link">MINDLESS WRITER</a>
+    </div>
+
+    <div class="main-container">
+
+        <!-- ============== PASSAGE PANEL ============== -->
+        <div class="passage-panel" id="passage-panel">
+
+            <div class="passage-set active" id="passage-1">
+                <div class="passage-intro">
+                    <strong>READING PASSAGE 1</strong><br>
+                    You should spend about 20 minutes on <strong>Questions 1–13</strong>, which are based on Reading
+                    Passage 1 below.
+                </div>
+                <p class="passage-title">Thomas Cole: American Nature Painter</p>
+                <div class="passage-text">
+                    <p><strong>Thomas Cole (1801–1848)</strong> was America’s first major landscape artist. Though he was born in England and spent his formative time in Europe, his identity was as an <em>American nature painter</em>. He was also an advocate and protector of untouched American land threatened by industrial development.</p>
+                    <p>Cole’s father, a small-time businessman, moved his family from place to place in northwestern England. In the process, Cole worked as a print shop apprentice, designing styles of cloth and later <span class="t-hl" data-q="1"><span class="t-qmark">1</span>making <em>reproductions of well-known paintings</em><span class="t-note">(TRUE — mashhur rasmlar nusxasi)</span></span>. In 1818, the family sailed to the United States, settling at first in the east coast city of <em>Philadelphia</em>. <span class="t-hl" data-q="2"><span class="t-qmark">2</span>The teenage Cole stayed behind on the east coast as his parents traveled westward<span class="t-note">(FALSE — g'arbga ota-onasi ketdi, Cole qoldi)</span></span>. From this point, his career as a largely self-taught artist began.</p>
+                    <p><span class="t-hl" data-q="3"><span class="t-qmark">3</span>Cole began to travel and wherever he went — including, briefly, to the <em>Caribbean</em> — he sketched what he saw<span class="t-note">(NOT GIVEN — Karib orollarida sotgani aytilmagan)</span></span>. He had little patience with cities and distanced himself from them when he could. At the <em>Pennsylvania Academy of the Fine Arts</em>, he became familiar with new American and European work. But within a few years, he felt ready to head to <em>New York City</em>, where he <span class="t-hl" data-q="4"><span class="t-qmark">4</span>made lasting contacts in the still small art world<span class="t-note">(TRUE — lasting contacts = uzoq muddatli aloqalar)</span></span>, and <span class="t-hl" data-q="5"><span class="t-qmark">5</span>was able to sell some paintings<span class="t-note">(NOT GIVEN — nimani tasvirlagani aytilmagan)</span></span>. And on an 1825 trip up the <em>Hudson River</em>, he found the subject that he would make his own: <em>the American landscape</em>, which he approached as both a mirror of reality and an object of fantasy.</p>
+                    <p>Encouraged, Cole resolved to leave for <em>Europe</em>, a move that would let him see firsthand the art he had known mostly in reproduction. In terms of sales, <em>London</em>, the first stop, was a failure. No one noticed him, but he noticed a lot. He saw England suffering from chaos, with old social structures breaking down as a new industrial elite threatened a traditional wealthy rural class. And he saw artists responding to that. <span class="t-hl" data-q="6"><span class="t-qmark">6</span>From England he went on to <em>Italy</em>, a more pleasant stay<span class="t-note">(NOT GIVEN — qayerda uzoqroq qolgani aytilmagan)</span></span>, though it was also suffering its own social issues. Outside <em>Rome</em>, he saw and painted countryside bathed in the hazy sunset light that he had seen and loved in 17th-century landscapes.</p>
+                    <p>When Cole returned to America in 1832 he found it confusing and depressing. Though he had worked hard to leave his poor childhood behind through identification with a cultural elite, Cole found a new America: competitive, commercial, and uncivil — a land of uncontrolled and destructive greed. He was committed to the USA — he became a citizen in 1834 — but <span class="t-hl" data-q="7"><span class="t-qmark">7</span>left <em>New York City</em> with his wife and children for the countryside<span class="t-note">(FALSE — oilasi ham qishloqqa ko'chgan)</span></span>.</p>
+                    <p>What most disturbed him was the government’s <em>seizure and destruction of natural forest lands</em>. From his house he could see forests being rapidly cut down. Increasingly, he used painting to <em>protest</em> against these developments. Cole chose <em>wilderness</em>, and used the rest of his life to paint it.</p>
+                    <p>One of Cole’s earliest pieces illustrating his dedication to the preservation of nature is <em>The Tree</em>, dated 1823. Done while he was living in the <em>Caribbean</em>, it’s an ink drawing of a single tree. But it is no ordinary tree: although realistically drawn, it looks <em>bizarre</em>, <span class="t-hl" data-q="8"><span class="t-qmark">8</span>almost resembling some kind of <em>animal</em><span class="t-note">(animal)</span></span>, swinging its arm-like branches and walking on its roots.</p>
+                    <p>Cole’s paintings from his <em>Italian trip</em> feature a different kind of countryside. These landscapes focused not on pure and untouched nature, but on the <span class="t-hl" data-q="9"><span class="t-qmark">9</span><em>ruins of a long-dead culture</em><span class="t-note">(ruins)</span></span>. One of his most famous works is a series called <em>The Course of Empire</em> (1834–36). In five separate paintings, it narrates the <span class="t-hl" data-q="10"><span class="t-qmark">10</span><em>stages that an unnamed fictional civilization passes through</em><span class="t-note">(stages)</span></span>: from forest origins, to rural innocence, to proud flourishing high society, to destruction, to vanishing.</p>
+                    <p>Returning to America, Cole settled on producing and selling <em>landscape paintings</em>. An early landscape, <em>View of the Round-Top (1827)</em>, depicts thin clouds in the cool fresh air, <span class="t-hl" data-q="11"><span class="t-qmark">11</span>a <em>forested mountain</em><span class="t-note">(mountain)</span></span>, and a river winding in the distance. Paintings such as these were popular and sold quickly for high prices to New York’s new wealthy elite.</p>
+                    <p>A similar image that was far more effective is the single, large 1836 painting titled <em>View From Mount Holyoke (The Oxbow)</em>. From a bird’s-eye height we look down at the spot where the <em>Connecticut River</em>, flowing around an island-like mass, creates a question-mark shape known as the <em>Oxbow</em>. The painting divides vertically into two distinct halves. To the left is a wild cluster of old trees and dense vegetation, which looks messy and threatening, but full of life; to the right, flat, treeless, <span class="t-hl" data-q="12"><span class="t-qmark">12</span>square-cut fields which are cultivated and fertile<span class="t-note">(fields)</span></span>, but feel bare and bland. In the foreground is a tiny <em>self-portrait</em> of Cole at work. <span class="t-hl" data-q="13"><span class="t-qmark">13</span>He turns away from his canvas<span class="t-note">(canvas)</span></span> and looks right at us, as if to say: <em>Here are the alternatives that you will face; you choose.</em></p>
+                    <p>When he died suddenly at 47, in 1848, he was widely mourned. After Cole’s death, respect for his life and work was shown by fellow artists in the form of paintings done in a similar style for just a few years. The most famous was <em>Asher Brown Durand’s</em> 1849 <em>Kindred Spirits</em>, which illustrates Cole and the nature-poet <em>William Bryant</em> engaged in deep discussion in a rugged paradise of <em>New York State forest</em>. Yet, within a few years, Cole was all but forgotten, and it took more than a century before he was rediscovered.</p>
+                </div>
+            </div>
+
+            <div class="passage-set" id="passage-2">
+                <div class="passage-intro">
+                    <strong>READING PASSAGE 2</strong><br>
+                    You should spend about 20 minutes on <strong>Questions 14–26</strong>, which are based on Reading
+                    Passage 2 below.
+                </div>
+                <p class="passage-title">Growing more for less</p>
+                <p style="text-align:center;font-style:italic;margin:-6px 0 14px;">Satellite technology is helping farmers boost crop yields</p>
+                <div class="passage-text">
+                    <p><span class="para-label">A</span>For farmers, working out the optimal amount of seed, fertiliser, pesticide and water to scatter on a field can make, or break, the subsequent harvest. Regular laboratory analyses of soil and plant samples from various parts of the field can help but such expertise is costly, and often unavailable. However, a new and cheaper method of doing this analysis is now on offer. Precise prescriptions for growing crops can be obtained quickly, and less expensively, <span class="t-hl" data-q="23"><span class="t-qmark">23</span>by calculating the amount of electromagnetic radiation reflected from agricultural land. The data is collected by orbiting satellites<span class="t-note">(electromagnetic radiation)</span></span>.</p>
+                    <p><span class="para-label">B</span>Examining the wavelength of the radiation that is reflected can reveal, with surprising precision, the properties of the soil, the quantity of crop being grown, and the levels in those crops of chlorophyll*, various minerals, moisture and other indicators of their quality. If recent and forecast weather data is added to the mix, detailed maps can be produced indicating exactly how, where and when crops should be grown. <span class="t-hl" data-q="20"><span class="t-qmark">20</span>The service usually costs less than US $15 per hectare for a handful of readings a year, and can increase yields by as much as 10%<span class="t-note">(B — arzon va samarali)</span></span>.</p>
+                    <p><span class="para-label">C</span>Such precision farming using satellite-based intelligence is a relatively new technique. Even so, it is catching on quickly. <span class="t-hl" data-q="14"><span class="t-qmark">14</span>Five times a year, for example, a French cereal-growers’ co-operative called Sevépi purchases satellite data and makes it available to its members in the form of maps of their fields<span class="t-note">(C — Fransiya fermerlari)</span></span>, divided into three or four colour-coded zones per hectare. For each zone, one of about 50 fertiliser formulas is recommended. On top of this, if the wheat in the field has already grown quite high early in the season, and heavy showers are expected, an appropriate dose of growth regulator is recommended for each zone. (Long, fragile stems break more easily in downpours.) Then, farm vehicles equipped with global-positioning system locators automatically mix and apply the prescribed dose to each area.</p>
+                    <p><span class="para-label">D</span><span class="t-hl" data-q="18"><span class="t-qmark">18</span>France is the pioneer in this sort of surveillance<span class="t-note">(D — yetakchi mamlakat)</span></span>. More farmland is analysed by satellite there than in any other country, according to <span class="t-hl" data-q="21"><span class="t-qmark">21</span>Infoterra (a subsidiary of EADS Astrium), the firm that is France’s largest provider of such information<span class="t-note">(B — Infoterra ma'lumotni sun'iy yo'ldoshdan oladi)</span></span>, supplying data to companies such as Sevépi. Moreover, <span class="t-hl" data-q="24"><span class="t-qmark">24</span>Henri Douche, head of Infoterra’s agriculture sales in Toulouse, reckons<span class="t-note">(Henri Douche)</span></span> <span class="t-hl" data-q="15"><span class="t-qmark">15</span>the amount of monitored farmland will increase as weather patterns change and farmers can no longer rely on the past as a guide to the future<span class="t-note">(D — ob-havo o'zgarishi)</span></span>. When confounded by the yield variations that these new weather patterns will bring, even farmers who are afraid of new technology will sign up, he says.</p>
+                    <p><span class="para-label">E</span>Inexpensive data on the productivity of land is advantageous to governments, too. Areas where fertilisers and pesticides are being applied excessively can be pinpointed, studied and regulated by environmental and land-use agencies. Guy Lafond, an agronomist with Agriculture and Agri-Food Canada, a government agency, says the satellite data it purchases is proving useful for the study of fields with declining productivity in the province of Saskatchewan. <span class="t-hl" data-q="16"><span class="t-qmark">16</span>Overkill with nitrate fertilisers (which are also a source of greenhouse gases) appears partly responsible<span class="t-note">(E — ortiqcha o'g'it)</span></span>. And according to RapidEye, a German satellite operator, insurance companies are also studying satellite data with a view to <span class="t-hl" data-q="25"><span class="t-qmark">25</span>selling insurance policies to governments of famine-prone countries that might be threatened by crop failure<span class="t-note">(crop failure)</span></span>.</p>
+                    <p><span class="para-label">F</span>In March, <span class="t-hl" data-q="22"><span class="t-qmark">22</span>RapidEye began selling data that helps forecast harvests<span class="t-note">(D — RapidEye o'z sun'iy yo'ldoshlariga ega)</span></span>. ‘Too often, farmers limit productivity by managing fields uniformly,’ says Fredrick Jung-Rothenhausler, head of product development at the firm’s headquarters in Brandenburg an der Havel. ‘Our satellites are the first commercial satellites to include the Red-Edge band of the light spectrum, which is sensitive to changes in chlorophyll content. <span class="t-hl" data-q="19"><span class="t-qmark">19</span>More research will be necessary to realise the full potential of the Red-Edge band<span class="t-note">(F — qo'shimcha tadqiqot kerak)</span></span>. However, this band can assist in monitoring vegetation health, improving species separation and also help in measuring protein and nitrogen content in biomass. The company’s data, which comes from both Europe and the Americas, breaks field productivity down into patches just five metres square.</p>
+                    <p><span class="para-label">G</span>The advantages that satellite technology provides in terms of precision farming do not have to be restricted to rich countries. In Africa, <span class="t-hl" data-q="26"><span class="t-qmark">26</span>where many soils have become badly depleted of nutrients<span class="t-note">(nutrients)</span></span>, better fertiliser management would greatly improve the situation. As a consequence, the charitable trust World Agroforestry Centre, in the city of Nairobi, in Kenya, has begun to build up a catalogue of the radiation patterns derived from around 100,000 samples of African soils. The information is the key to understanding the potential of these soils to be more agriculturally productive. <span class="t-hl" data-q="17"><span class="t-qmark">17</span>Once passed on to the International Centre for Tropical Agriculture, based in Colombia, South America, it is intended that the information be used to build a database called the ‘Digital Soil Map’<span class="t-note">(G — mamlakatlar o'rtasida ulashiladi)</span></span>. When ready, this will provide farmers with free forecasts, developed with regularly updated satellite imagery, across farmland in a number of countries in Africa. This is information which will almost certainly assist in improving crop yields. For a hunger-ravaged continent, that is good news indeed.</p>
+                    <p><em style="font-size:0.9em;">* chlorophyll: the green substance in plants that allows them to absorb sunlight</em></p>
+                </div>
+            </div>
+
+            <div class="passage-set" id="passage-3">
+                <div class="passage-intro">
+                    <strong>READING PASSAGE 3</strong><br>
+                    You should spend about 20 minutes on <strong>Questions 27–40</strong>, which are based on Reading
+                    Passage 3 below.
+                </div>
+                <p class="passage-title">Rethinking the Past</p>
+                <div class="passage-text">
+                    <p>It is by now a truism that the story of human evolution is being rethought. Discoveries have come thick and fast over the last decade or so, and these have forced us to rethink many crucial points, such as how old our species is - about 300,000 years old as opposed to 200,000 - and what extinct hominins, such as our cousins the Neanderthals, were really like. But because there are so many species and eras involved, it's hard to discern the common threads linking them.</p>
+                    <p>However, I do think it's possible to draw out some overall messages from the blizzard of archaeological finds in recent years. <span class="t-hl" data-q="27"><span class="t-qmark">27</span>Two things stand out to me. One is the growing evidence that many supposedly 'advanced' behaviours, such as architecture and art, can be traced much further back in time than we thought<span class="t-note">(A — tushunchamizdagi asosiy o'zgarishlar)</span></span>, often to hominin species that existed before modern humans. And the other is that we have badly misunderstood gender roles in prehistoric societies, imposing patriarchal values onto cultures that had very different ideas about how women should behave.</p>
+                    <p>Let's start with architecture. At Kalambo Falls in Zambia, researchers found buried logs that had been shaped with stone tools so that they interlocked. They seem to have once been part of a larger structure, perhaps a building. <span class="t-hl" data-q="31"><span class="t-qmark">31</span>This would be unsurprising if they weren't 476,000 years old. That's almost 200,000 years before our species, Homo sapiens, evolved<span class="t-note">(E — boshqa tur ham murakkab ish qila olgan)</span></span>. Extinct hominins also managed to settle in extreme places. For instance, <span class="t-hl" data-q="32"><span class="t-qmark">32</span>we now know that extinct hominins such as the Denisovans lived on the frozen heights of high-altitude regions 200,000 years ago<span class="t-note">(F — og'ir sharoitda yashagan)</span></span> - upending the old notion that such environments were only settled by modern humans around 3,600 years ago.</p>
+                    <p>Art also seems to have been invented by older hominins. We have had evidence for a long time now that Neanderthals painted on cave walls. <span class="t-hl" data-q="35"><span class="t-qmark">35</span>Even earlier species, such as Homo erectus, may also have made art<span class="t-note">(NO — neandertallar birinchi emas)</span></span>, for example by <span class="t-hl" data-q="36"><span class="t-qmark">36</span>engraving patterns on shells<span class="t-note">(NOT GIVEN — qanchalik kam uchrashi aytilmagan)</span></span>. By far the most contentious claim in this area is that Homo naledi made art. H. naledi lived around 250,000 years ago, making it a contemporary of our species. However, it had quite a small brain, typical of older hominins - and was therefore, according to palaeoanthropological dogma, incapable of complex behaviours. Nevertheless, in the Rising Star cave system in South Africa where the H. naledi remains were found, <span class="t-hl" data-q="37"><span class="t-qmark">37</span>researchers have found what seem to be etchings<span class="t-note">(NOT GIVEN — tadqiqot usullari haqida gap yo'q)</span></span> - resembling rudimentary artwork - on the cave walls, <span class="t-hl" data-q="38"><span class="t-qmark">38</span>though these have yet to be firmly dated<span class="t-note">(YES — yoshi aniq emas)</span></span>.</p>
+                    <p>To say these claims about H. naledi are controversial is to understate the situation. Many experts say the evidence presented so far is completely inadequate to support them. <span class="t-hl" data-q="39"><span class="t-qmark">39</span>The dispute has only been heightened by the way the results were released, in a non-traditional journal that publishes peer reviews publicly alongside the paper<span class="t-note">(YES — e'lon qilish usuli bahsni kuchaytirdi)</span></span>. My views on the H. naledi controversy are complicated. I do think more evidence is needed: in particular with regard to the dating of the etchings. At the same time, <span class="t-hl" data-q="40"><span class="t-qmark">40</span>I think the species' small brains are a distraction<span class="t-note">(NO — miya hajmi asosiy omil emas)</span></span>. Palaeoanthropologists got fixated on brain size because it was what they could see: if what you have is skeletons, then all you know about brains are their shapes and sizes. But other properties, such as the brain's internal wiring, are surely equally important and may explain how a species like H. naledi might have been capable of complex behaviours, despite their small brains.</p>
+                    <p>In a sense, we shouldn't be surprised that so many of these behaviours had their origins in older, extinct hominins. <span class="t-hl" data-q="28"><span class="t-qmark">28</span>Evolution usually works by incremental steps and so does technology. The first birds weren't great at flying, and the first mobile phones weren't great at, well, anything really<span class="t-note">(A — rivojlanish asta-sekin)</span></span>. The idea that there was a sudden explosion of intelligence and creativity at some point in our evolution isn't inherently ridiculous: sometimes a system hits a tipping point and undergoes runaway change. But there was never that much evidence that human evolution worked this way. Instead, it seems the Neanderthals and many others all walked so we could run.</p>
+                    <p>One way or another, the H. naledi story is going to be an example of letting our preconceptions get in the way of the evidence. The same is true for our ideas about gender in prehistory. <span class="t-hl" data-q="29"><span class="t-qmark">29</span>Archaeology was invented by individuals with now unfashionably patriarchal views about gender, and those notions fed into their research. Today's researchers are trying to unpick this stuff<span class="t-note">(D — eskirgan qarashlar ta'siridagi tadqiqotlarni qayta baholash)</span></span>, and there have been some significant steps in recent years.</p>
+                    <p>Perhaps the most dramatic was the demolition of 'Man the Hunter'. This was the idea, promoted for decades, that in most prehistoric societies the men went out to hunt and the women looked after the home. However, <span class="t-hl" data-q="33"><span class="t-qmark">33</span>a meta-analysis published in June 2023 compiled data on several dozen foraging societies and found women hunted in 80 per cent of them<span class="t-note">(D — ovni kim qilgani haqida xato)</span></span>. In line with this, it emerged that an ancient spear-throwing tool called an atlatl enables women to launch projectiles at the same speed as men. We have also seen growing evidence of women occupying positions of authority in ancient societies. The Viking queen Thyra may have helped unify Denmark in the 900s. Going further back, <span class="t-hl" data-q="34"><span class="t-qmark">34</span>an Iberian leader from around 4000 years ago turned out to be female, not male as many had assumed<span class="t-note">(B — hokimiyat kimda bo'lgani haqida xato)</span></span>, when proteins in her teeth were analysed.</p>
+                    <p>It seems that the more we find out about past societies, the more our preconceptions about the ways society 'has to be' turn out to be wrong. Inequality, authoritarianism and patriarchy aren't inevitable. <span class="t-hl" data-q="30"><span class="t-qmark">30</span>They're choices, and prehistory shows us that we can choose differently<span class="t-note">(A — adolatliroq jamiyat qurish mumkin)</span></span>.</p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ============== O'RTADAGI SURILADIGAN AJRATUVCHI ============== -->
+        <div class="resizer" id="resizer" title="Panellar kengligini o'zgartirish uchun surib torting"></div>
+
+        <!-- ============== QUESTIONS PANEL ============== -->
+        <div class="questions-panel" id="questions-panel">
+
+            <div class="question-set active" id="questions-1">
+
+                <div class="q-group" id="group-q1">
+                    <p class="q-group-header">Questions 1–7</p>
+                    <div class="q-instruction">
+                        <p>Do the following statements agree with the information given in Reading Passage 1?</p>
+                        <p>Choose <strong>TRUE</strong>, <strong>FALSE</strong> or <strong>NOT GIVEN</strong>.</p>
+                    </div>
+                    <div class="info-box">
+                        <p><strong>TRUE</strong> — if the statement agrees with the information</p>
+                        <p><strong>FALSE</strong> — if the statement contradicts the information</p>
+                        <p style="margin-bottom:0;"><strong>NOT GIVEN</strong> — if there is no information on this</p>
+                    </div>
+                    <div class="tf-question" id="item-q1">
+                        <div class="tf-question-line"><span class="tf-question-number">1</span><span class="tf-question-text">Thomas Cole’s early work experience included creating copies of famous artwork.</span></div>
+                        <div class="tf-options">
+                            <label class="tf-option"><input type="radio" name="q1" value="TRUE"> TRUE</label>
+                            <label class="tf-option"><input type="radio" name="q1" value="FALSE"> FALSE</label>
+                            <label class="tf-option"><input type="radio" name="q1" value="NOT GIVEN"> NOT GIVEN</label>
+                        </div>
+                    </div>
+                    <div class="tf-question" id="item-q2">
+                        <div class="tf-question-line"><span class="tf-question-number">2</span><span class="tf-question-text">Cole moved to the west of the USA while still a teenager.</span></div>
+                        <div class="tf-options">
+                            <label class="tf-option"><input type="radio" name="q2" value="TRUE"> TRUE</label>
+                            <label class="tf-option"><input type="radio" name="q2" value="FALSE"> FALSE</label>
+                            <label class="tf-option"><input type="radio" name="q2" value="NOT GIVEN"> NOT GIVEN</label>
+                        </div>
+                    </div>
+                    <div class="tf-question" id="item-q3">
+                        <div class="tf-question-line"><span class="tf-question-number">3</span><span class="tf-question-text">Cole sold paintings in the Caribbean.</span></div>
+                        <div class="tf-options">
+                            <label class="tf-option"><input type="radio" name="q3" value="TRUE"> TRUE</label>
+                            <label class="tf-option"><input type="radio" name="q3" value="FALSE"> FALSE</label>
+                            <label class="tf-option"><input type="radio" name="q3" value="NOT GIVEN"> NOT GIVEN</label>
+                        </div>
+                    </div>
+                    <div class="tf-question" id="item-q4">
+                        <div class="tf-question-line"><span class="tf-question-number">4</span><span class="tf-question-text">Cole remained in touch with other New York-based painters for a long time.</span></div>
+                        <div class="tf-options">
+                            <label class="tf-option"><input type="radio" name="q4" value="TRUE"> TRUE</label>
+                            <label class="tf-option"><input type="radio" name="q4" value="FALSE"> FALSE</label>
+                            <label class="tf-option"><input type="radio" name="q4" value="NOT GIVEN"> NOT GIVEN</label>
+                        </div>
+                    </div>
+                    <div class="tf-question" id="item-q5">
+                        <div class="tf-question-line"><span class="tf-question-number">5</span><span class="tf-question-text">The first paintings that Cole sold in New York showed the Hudson River.</span></div>
+                        <div class="tf-options">
+                            <label class="tf-option"><input type="radio" name="q5" value="TRUE"> TRUE</label>
+                            <label class="tf-option"><input type="radio" name="q5" value="FALSE"> FALSE</label>
+                            <label class="tf-option"><input type="radio" name="q5" value="NOT GIVEN"> NOT GIVEN</label>
+                        </div>
+                    </div>
+                    <div class="tf-question" id="item-q6">
+                        <div class="tf-question-line"><span class="tf-question-number">6</span><span class="tf-question-text">On Cole’s trip to Europe, he stayed longer in Italy than in England.</span></div>
+                        <div class="tf-options">
+                            <label class="tf-option"><input type="radio" name="q6" value="TRUE"> TRUE</label>
+                            <label class="tf-option"><input type="radio" name="q6" value="FALSE"> FALSE</label>
+                            <label class="tf-option"><input type="radio" name="q6" value="NOT GIVEN"> NOT GIVEN</label>
+                        </div>
+                    </div>
+                    <div class="tf-question" id="item-q7">
+                        <div class="tf-question-line"><span class="tf-question-number">7</span><span class="tf-question-text">Although Cole painted in the countryside, his family lived in New York City.</span></div>
+                        <div class="tf-options">
+                            <label class="tf-option"><input type="radio" name="q7" value="TRUE"> TRUE</label>
+                            <label class="tf-option"><input type="radio" name="q7" value="FALSE"> FALSE</label>
+                            <label class="tf-option"><input type="radio" name="q7" value="NOT GIVEN"> NOT GIVEN</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="q-group" id="group-q8">
+                    <p class="q-group-header">Questions 8–13</p>
+                    <div class="q-instruction">
+                        <p>Complete the notes below.</p>
+                        <p>Choose <strong>ONE WORD ONLY</strong> from the passage for each answer.</p>
+                    </div>
+                    <div class="summary-box">
+                        <p class="summary-title">Cole’s Work</p>
+                        <p style="font-weight:700;margin:12px 0 6px;">Early work</p>
+                        <ul style="padding-left:22px;margin:0;">
+                            <li style="margin-bottom:10px;line-height:2;"><em>The Tree</em>: a drawing that looks like a strange <input type="text" id="q8" class="answer-input" placeholder="8" style="width:130px;"></li>
+                        </ul>
+                        <p style="font-weight:700;margin:12px 0 6px;">Italian landscapes</p>
+                        <ul style="padding-left:22px;margin:0;">
+                            <li style="margin-bottom:10px;line-height:2;">Cole’s paintings show <input type="text" id="q9" class="answer-input" placeholder="9" style="width:130px;"> from a past society instead of natural beauty.</li>
+                            <li style="margin-bottom:10px;line-height:2;"><em>The Course of Empire</em> shows <input type="text" id="q10" class="answer-input" placeholder="10" style="width:130px;"> of an imaginary society.</li>
+                        </ul>
+                        <p style="font-weight:700;margin:12px 0 6px;">American landscapes</p>
+                        <ul style="padding-left:22px;margin:0;">
+                            <li style="margin-bottom:10px;line-height:2;"><em>View of the Round-Top</em> shows a <input type="text" id="q11" class="answer-input" placeholder="11" style="width:130px;"> covered in trees.</li>
+                            <li style="margin-bottom:10px;line-height:2;"><em>The Oxbow</em> shows wild vegetation on one side, and organised farmers’ <input type="text" id="q12" class="answer-input" placeholder="12" style="width:130px;"> on the other.</li>
+                            <li style="margin-bottom:10px;line-height:2;">Cole put himself in the picture, next to a <input type="text" id="q13" class="answer-input" placeholder="13" style="width:130px;"></li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="question-set" id="questions-2">
+
+                <div class="q-group" id="group-q14">
+                    <p class="q-group-header">Questions 14–20</p>
+                    <div class="q-instruction">
+                        <p>Reading Passage 2 has seven paragraphs, <strong>A–G</strong>.</p>
+                        <p>Which paragraph contains the following information?</p>
+                        <p><em><strong>NB</strong> You may use any letter more than once.</em></p>
+                    </div>
+                    <table class="matching-table">
+                        <thead><tr><th class="statement">Information</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th></tr></thead>
+                        <tbody>
+                            <tr id="item-q14"><td class="statement"><strong>14</strong> &nbsp;an example of how farmers in one country are now using satellite data to determine fertiliser use</td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q14" value="A" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q14" value="B" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q14" value="C" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q14" value="D" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q14" value="E" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q14" value="F" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q14" value="G" class="table-radio"></label></td></tr>
+                            <tr id="item-q15"><td class="statement"><strong>15</strong> &nbsp;a reference to climate change and its effects</td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q15" value="A" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q15" value="B" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q15" value="C" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q15" value="D" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q15" value="E" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q15" value="F" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q15" value="G" class="table-radio"></label></td></tr>
+                            <tr id="item-q16"><td class="statement"><strong>16</strong> &nbsp;a reference to the effect on the soil of using too much fertiliser</td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q16" value="A" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q16" value="B" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q16" value="C" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q16" value="D" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q16" value="E" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q16" value="F" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q16" value="G" class="table-radio"></label></td></tr>
+                            <tr id="item-q17"><td class="statement"><strong>17</strong> &nbsp;an example of information that will be shared between different countries</td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q17" value="A" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q17" value="B" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q17" value="C" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q17" value="D" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q17" value="E" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q17" value="F" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q17" value="G" class="table-radio"></label></td></tr>
+                            <tr id="item-q18"><td class="statement"><strong>18</strong> &nbsp;a mention of the country which is the leader in agricultural technology</td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q18" value="A" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q18" value="B" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q18" value="C" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q18" value="D" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q18" value="E" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q18" value="F" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q18" value="G" class="table-radio"></label></td></tr>
+                            <tr id="item-q19"><td class="statement"><strong>19</strong> &nbsp;a description of an innovation in satellite imaging which requires further study</td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q19" value="A" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q19" value="B" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q19" value="C" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q19" value="D" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q19" value="E" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q19" value="F" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q19" value="G" class="table-radio"></label></td></tr>
+                            <tr id="item-q20"><td class="statement"><strong>20</strong> &nbsp;evidence of the cost effectiveness of using satellite technology in agriculture</td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q20" value="A" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q20" value="B" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q20" value="C" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q20" value="D" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q20" value="E" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q20" value="F" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q20" value="G" class="table-radio"></label></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="q-group" id="group-q21">
+                    <p class="q-group-header">Questions 21 and 22</p>
+                    <div class="q-instruction">
+                        <p>Choose <strong>TWO</strong> letters, <strong>A–E</strong>.</p>
+                        <p>Which <strong>TWO</strong> companies obtain information directly from satellites?</p>
+                    </div>
+                    <div class="multi-choice-option"><label><input type="checkbox" name="q21-22" value="A"> <span><strong>A</strong> &nbsp; Sevépi</span></label></div>
+                    <div class="multi-choice-option"><label><input type="checkbox" name="q21-22" value="B"> <span><strong>B</strong> &nbsp; Infoterra</span></label></div>
+                    <div class="multi-choice-option"><label><input type="checkbox" name="q21-22" value="C"> <span><strong>C</strong> &nbsp; Agriculture and AgriFood Canada</span></label></div>
+                    <div class="multi-choice-option"><label><input type="checkbox" name="q21-22" value="D"> <span><strong>D</strong> &nbsp; RapidEye</span></label></div>
+                    <div class="multi-choice-option"><label><input type="checkbox" name="q21-22" value="E"> <span><strong>E</strong> &nbsp; World Agroforestry Centre</span></label></div>
+                </div>
+
+                <div class="q-group" id="group-q23">
+                    <p class="q-group-header">Questions 23–26</p>
+                    <div class="q-instruction">
+                        <p>Complete the sentences below.</p>
+                        <p>Choose <strong>NO MORE THAN TWO WORDS</strong> from the passage for each answer.</p>
+                    </div>
+                    <div class="q-item" id="item-q23">
+                        <span class="q-num">23</span>
+                        <div class="q-body">Initially, orbiting satellites are used to measure <input type="text" id="q23" class="answer-input" placeholder="23" style="width:190px;"> coming from farmland.</div>
+                    </div>
+                    <div class="q-item" id="item-q24">
+                        <span class="q-num">24</span>
+                        <div class="q-body"><input type="text" id="q24" class="answer-input" placeholder="24" style="width:190px;"> believes that confusion about irregular weather will cause more farmers to use satellite technology.</div>
+                    </div>
+                    <div class="q-item" id="item-q25">
+                        <span class="q-num">25</span>
+                        <div class="q-body">As a result of satellite technology, it may become possible to insure against the risk of <input type="text" id="q25" class="answer-input" placeholder="25" style="width:190px;">.</div>
+                    </div>
+                    <div class="q-item" id="item-q26">
+                        <span class="q-num">26</span>
+                        <div class="q-body">In Africa, much of the soil suffers from the loss of <input type="text" id="q26" class="answer-input" placeholder="26" style="width:190px;">.</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="question-set" id="questions-3">
+
+                <div class="q-group" id="group-q27">
+                    <p class="q-group-header">Questions 27–30</p>
+                    <div class="q-instruction">
+                        <p>Choose the correct letter, <strong>A</strong>, <strong>B</strong>, <strong>C</strong> or <strong>D</strong>.</p>
+                    </div>
+                    <div class="q-item" id="item-q27">
+                        <span class="q-num">27</span>
+                        <div class="q-body">
+                            <p style="font-weight:600;margin-bottom:8px;">What is the writer doing in the second paragraph?</p>
+                            <div class="multi-choice-option"><label><input type="radio" name="q27" value="A"> <span><strong>A</strong> &nbsp; pinpointing some key changes in our understanding of prehistory</span></label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q27" value="B"> <span><strong>B</strong> &nbsp; outlining some aspects of prehistory which are still poorly understood</span></label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q27" value="C"> <span><strong>C</strong> &nbsp; summarising some attitudes towards recent archaeological revelations</span></label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q27" value="D"> <span><strong>D</strong> &nbsp; giving an overview of some current disagreements among archaeologists</span></label></div>
+                        </div>
+                    </div>
+                    <div class="q-item" id="item-q28">
+                        <span class="q-num">28</span>
+                        <div class="q-body">
+                            <p style="font-weight:600;margin-bottom:8px;">In the sixth paragraph, the writer mentions mobile phones to make the point that</p>
+                            <div class="multi-choice-option"><label><input type="radio" name="q28" value="A"> <span><strong>A</strong> &nbsp; most developments happen in a gradual way.</span></label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q28" value="B"> <span><strong>B</strong> &nbsp; innovation can come from a variety of sources.</span></label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q28" value="C"> <span><strong>C</strong> &nbsp; not all technological advancements are positive.</span></label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q28" value="D"> <span><strong>D</strong> &nbsp; the path of evolution can often be unpredictable.</span></label></div>
+                        </div>
+                    </div>
+                    <div class="q-item" id="item-q29">
+                        <span class="q-num">29</span>
+                        <div class="q-body">
+                            <p style="font-weight:600;margin-bottom:8px;">In the seventh paragraph, the phrase 'unpick this stuff' refers to the task of</p>
+                            <div class="multi-choice-option"><label><input type="radio" name="q29" value="A"> <span><strong>A</strong> &nbsp; assessing the impact of certain recent research findings.</span></label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q29" value="B"> <span><strong>B</strong> &nbsp; questioning the authenticity of evidence used in earlier research.</span></label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q29" value="C"> <span><strong>C</strong> &nbsp; conducting research into how prehistoric societies were organised.</span></label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q29" value="D"> <span><strong>D</strong> &nbsp; reevaluating research influenced by outdated beliefs about society.</span></label></div>
+                        </div>
+                    </div>
+                    <div class="q-item" id="item-q30">
+                        <span class="q-num">30</span>
+                        <div class="q-body">
+                            <p style="font-weight:600;margin-bottom:8px;">What does the writer suggest in the final paragraph?</p>
+                            <div class="multi-choice-option"><label><input type="radio" name="q30" value="A"> <span><strong>A</strong> &nbsp; Studying past societies could help us create a fairer society today.</span></label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q30" value="B"> <span><strong>B</strong> &nbsp; We should not judge past societies by the standards of modern society.</span></label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q30" value="C"> <span><strong>C</strong> &nbsp; We still have much to learn about how societies have evolved over history.</span></label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q30" value="D"> <span><strong>D</strong> &nbsp; There is more than one way to interpret evidence about societies in prehistoric times.</span></label></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="q-group" id="group-q31">
+                    <p class="q-group-header">Questions 31–34</p>
+                    <div class="q-instruction">
+                        <p>Complete each sentence with the correct ending, <strong>A–F</strong>, below.</p>
+                    </div>
+                    <div class="info-box option-list">
+                        
+                        <p><strong>A</strong> &nbsp; Homo sapiens emerged at an earlier point in time than experts previously believed.</p>
+                        <p><strong>B</strong> &nbsp; previous assumptions about who had power in the prehistoric world were inaccurate.</p>
+                        <p><strong>C</strong> &nbsp; gender roles in extinct hominin species were different from those in Homo sapiens societies.</p>
+                        <p><strong>D</strong> &nbsp; experts may have been mistaken about who looked for food in early human communities.</p>
+                        <p><strong>E</strong> &nbsp; Homo sapiens was probably not the only species capable of sophisticated workmanship.</p>
+                        <p><strong>F</strong> &nbsp; other species managed to survive in harsh environments before the arrival of Homo sapiens.</p>
+                    </div>
+                    <table class="matching-table">
+                        <thead><tr><th class="statement">Sentence beginning</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th></tr></thead>
+                        <tbody>
+                            <tr id="item-q31"><td class="statement"><strong>31</strong> &nbsp;The findings at Kalambo Falls revealed that</td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q31" value="A" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q31" value="B" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q31" value="C" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q31" value="D" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q31" value="E" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q31" value="F" class="table-radio"></label></td></tr>
+                            <tr id="item-q32"><td class="statement"><strong>32</strong> &nbsp;Evidence from high-altitude regions suggests that</td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q32" value="A" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q32" value="B" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q32" value="C" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q32" value="D" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q32" value="E" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q32" value="F" class="table-radio"></label></td></tr>
+                            <tr id="item-q33"><td class="statement"><strong>33</strong> &nbsp;An academic publication from June 2023 shows that</td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q33" value="A" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q33" value="B" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q33" value="C" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q33" value="D" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q33" value="E" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q33" value="F" class="table-radio"></label></td></tr>
+                            <tr id="item-q34"><td class="statement"><strong>34</strong> &nbsp;Analysis of a 4000-year-old Iberian leader indicates that</td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q34" value="A" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q34" value="B" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q34" value="C" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q34" value="D" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q34" value="E" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q34" value="F" class="table-radio"></label></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="q-group" id="group-q35">
+                    <p class="q-group-header">Questions 35–40</p>
+                    <div class="q-instruction">
+                        <p>Do the following statements agree with the views of the writer in Reading Passage 3?</p>
+                        <p>Choose <strong>YES</strong>, <strong>NO</strong> or <strong>NOT GIVEN</strong>.</p>
+                    </div>
+                    <div class="info-box">
+                        <p><strong>YES</strong> — if the statement agrees with the views of the writer</p>
+                        <p><strong>NO</strong> — if the statement contradicts the views of the writer</p>
+                        <p style="margin-bottom:0;"><strong>NOT GIVEN</strong> — if it is impossible to say what the writer thinks about this</p>
+                    </div>
+                    <div class="tf-question" id="item-q35">
+                        <div class="tf-question-line"><span class="tf-question-number">35</span><span class="tf-question-text">It seems likely that the Neanderthals' cave paintings were the first examples of artwork ever created.</span></div>
+                        <div class="tf-options">
+                            <label class="tf-option"><input type="radio" name="q35" value="YES"> YES</label>
+                            <label class="tf-option"><input type="radio" name="q35" value="NO"> NO</label>
+                            <label class="tf-option"><input type="radio" name="q35" value="NOT GIVEN"> NOT GIVEN</label>
+                        </div>
+                    </div>
+                    <div class="tf-question" id="item-q36">
+                        <div class="tf-question-line"><span class="tf-question-number">36</span><span class="tf-question-text">It is very rare to find prehistoric artwork carved onto shells.</span></div>
+                        <div class="tf-options">
+                            <label class="tf-option"><input type="radio" name="q36" value="YES"> YES</label>
+                            <label class="tf-option"><input type="radio" name="q36" value="NO"> NO</label>
+                            <label class="tf-option"><input type="radio" name="q36" value="NOT GIVEN"> NOT GIVEN</label>
+                        </div>
+                    </div>
+                    <div class="tf-question" id="item-q37">
+                        <div class="tf-question-line"><span class="tf-question-number">37</span><span class="tf-question-text">The methods which the researchers used to examine the Rising Star cave system were rather unconventional.</span></div>
+                        <div class="tf-options">
+                            <label class="tf-option"><input type="radio" name="q37" value="YES"> YES</label>
+                            <label class="tf-option"><input type="radio" name="q37" value="NO"> NO</label>
+                            <label class="tf-option"><input type="radio" name="q37" value="NOT GIVEN"> NOT GIVEN</label>
+                        </div>
+                    </div>
+                    <div class="tf-question" id="item-q38">
+                        <div class="tf-question-line"><span class="tf-question-number">38</span><span class="tf-question-text">It is unclear how old the etchings in the Rising Star cave system are.</span></div>
+                        <div class="tf-options">
+                            <label class="tf-option"><input type="radio" name="q38" value="YES"> YES</label>
+                            <label class="tf-option"><input type="radio" name="q38" value="NO"> NO</label>
+                            <label class="tf-option"><input type="radio" name="q38" value="NOT GIVEN"> NOT GIVEN</label>
+                        </div>
+                    </div>
+                    <div class="tf-question" id="item-q39">
+                        <div class="tf-question-line"><span class="tf-question-number">39</span><span class="tf-question-text">The means used to publicise the findings from the Rising Star cave system added to the controversy that surrounds them.</span></div>
+                        <div class="tf-options">
+                            <label class="tf-option"><input type="radio" name="q39" value="YES"> YES</label>
+                            <label class="tf-option"><input type="radio" name="q39" value="NO"> NO</label>
+                            <label class="tf-option"><input type="radio" name="q39" value="NOT GIVEN"> NOT GIVEN</label>
+                        </div>
+                    </div>
+                    <div class="tf-question" id="item-q40">
+                        <div class="tf-question-line"><span class="tf-question-number">40</span><span class="tf-question-text">The size of H. naledi brains is a key factor in the question of whether these hominins were able to produce art.</span></div>
+                        <div class="tf-options">
+                            <label class="tf-option"><input type="radio" name="q40" value="YES"> YES</label>
+                            <label class="tf-option"><input type="radio" name="q40" value="NO"> NO</label>
+                            <label class="tf-option"><input type="radio" name="q40" value="NOT GIVEN"> NOT GIVEN</label>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="nav-row" aria-label="Questions">
+        <div class="footer__questionWrapper___1tZ46 selected" role="tablist">
+            <button role="tab" class="footer__questionNo___3WNct" onclick="switchToPassage(1)">
+                <span>Passage <span class="sectionNr">1</span><span class="attemptedCount">0 of 13</span></span>
+            </button>
+            <div class="footer__subquestionWrapper___9GgoP">
+                <button class="subQuestion" onclick="goToQuestion(1)"><span>1</span></button>
+                <button class="subQuestion" onclick="goToQuestion(2)"><span>2</span></button>
+                <button class="subQuestion" onclick="goToQuestion(3)"><span>3</span></button>
+                <button class="subQuestion" onclick="goToQuestion(4)"><span>4</span></button>
+                <button class="subQuestion" onclick="goToQuestion(5)"><span>5</span></button>
+                <button class="subQuestion" onclick="goToQuestion(6)"><span>6</span></button>
+                <button class="subQuestion" onclick="goToQuestion(7)"><span>7</span></button>
+                <button class="subQuestion" onclick="goToQuestion(8)"><span>8</span></button>
+                <button class="subQuestion" onclick="goToQuestion(9)"><span>9</span></button>
+                <button class="subQuestion" onclick="goToQuestion(10)"><span>10</span></button>
+                <button class="subQuestion" onclick="goToQuestion(11)"><span>11</span></button>
+                <button class="subQuestion" onclick="goToQuestion(12)"><span>12</span></button>
+                <button class="subQuestion" onclick="goToQuestion(13)"><span>13</span></button>
+            </div>
+        </div>
+        <div class="footer__questionWrapper___1tZ46" role="tablist">
+            <button role="tab" class="footer__questionNo___3WNct" onclick="switchToPassage(2)">
+                <span>Passage <span class="sectionNr">2</span><span class="attemptedCount">0 of 13</span></span>
+            </button>
+            <div class="footer__subquestionWrapper___9GgoP">
+                <button class="subQuestion" onclick="goToQuestion(14)"><span>14</span></button>
+                <button class="subQuestion" onclick="goToQuestion(15)"><span>15</span></button>
+                <button class="subQuestion" onclick="goToQuestion(16)"><span>16</span></button>
+                <button class="subQuestion" onclick="goToQuestion(17)"><span>17</span></button>
+                <button class="subQuestion" onclick="goToQuestion(18)"><span>18</span></button>
+                <button class="subQuestion" onclick="goToQuestion(19)"><span>19</span></button>
+                <button class="subQuestion" onclick="goToQuestion(20)"><span>20</span></button>
+                <button class="subQuestion" onclick="goToQuestion(21)"><span>21</span></button>
+                <button class="subQuestion" onclick="goToQuestion(22)"><span>22</span></button>
+                <button class="subQuestion" onclick="goToQuestion(23)"><span>23</span></button>
+                <button class="subQuestion" onclick="goToQuestion(24)"><span>24</span></button>
+                <button class="subQuestion" onclick="goToQuestion(25)"><span>25</span></button>
+                <button class="subQuestion" onclick="goToQuestion(26)"><span>26</span></button>
+            </div>
+        </div>
+        <div class="footer__questionWrapper___1tZ46" role="tablist">
+            <button role="tab" class="footer__questionNo___3WNct" onclick="switchToPassage(3)">
+                <span>Passage <span class="sectionNr">3</span><span class="attemptedCount">0 of 14</span></span>
+            </button>
+            <div class="footer__subquestionWrapper___9GgoP">
+                <button class="subQuestion" onclick="goToQuestion(27)"><span>27</span></button>
+                <button class="subQuestion" onclick="goToQuestion(28)"><span>28</span></button>
+                <button class="subQuestion" onclick="goToQuestion(29)"><span>29</span></button>
+                <button class="subQuestion" onclick="goToQuestion(30)"><span>30</span></button>
+                <button class="subQuestion" onclick="goToQuestion(31)"><span>31</span></button>
+                <button class="subQuestion" onclick="goToQuestion(32)"><span>32</span></button>
+                <button class="subQuestion" onclick="goToQuestion(33)"><span>33</span></button>
+                <button class="subQuestion" onclick="goToQuestion(34)"><span>34</span></button>
+                <button class="subQuestion" onclick="goToQuestion(35)"><span>35</span></button>
+                <button class="subQuestion" onclick="goToQuestion(36)"><span>36</span></button>
+                <button class="subQuestion" onclick="goToQuestion(37)"><span>37</span></button>
+                <button class="subQuestion" onclick="goToQuestion(38)"><span>38</span></button>
+                <button class="subQuestion" onclick="goToQuestion(39)"><span>39</span></button>
+                <button class="subQuestion" onclick="goToQuestion(40)"><span>40</span></button>
+            </div>
+        </div>
+        <button id="deliver-button" class="footer__deliverButton___3FM07"><span>Check Answers</span></button>
+    </nav>
+
+    <!-- Context Menu -->
+    <div id="contextMenu" class="context-menu">
+        <div class="context-menu-item" onclick="highlightText()">Highlight</div>
+        <div class="context-menu-item" onclick="addComment()">Comment</div>
+        <div class="context-menu-item" id="clear-item" onclick="clearHighlight()" style="display:none;">Clear</div>
+        <div class="context-menu-item" onclick="clearAllHighlights()">Clear All</div>
+    </div>
+
+    <!-- Result Modal -->
+    <div id="result-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Your Results</h2>
+                <button id="modal-close-button" class="modal-close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="score-summary"></p>
+                <div id="result-details"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const correctAnswers = {
+            'q1': 'TRUE',
+            'q2': 'FALSE',
+            'q3': 'NOT GIVEN',
+            'q4': 'TRUE',
+            'q5': 'NOT GIVEN',
+            'q6': 'NOT GIVEN',
+            'q7': 'FALSE',
+            'q8': ['animal'],
+            'q9': ['ruins'],
+            'q10': ['stages'],
+            'q11': ['mountain'],
+            'q12': ['fields'],
+            'q13': ['canvas'],
+            'q14': 'C',
+            'q15': 'D',
+            'q16': 'E',
+            'q17': 'G',
+            'q18': 'D',
+            'q19': 'F',
+            'q20': 'B',
+            'q21-22': ['B', 'D'],
+            'q23': ['electromagnetic radiation', 'radiation'],
+            'q24': ['Henri Douche', 'Douche'],
+            'q25': ['crop failure'],
+            'q26': ['nutrients'],
+            'q27': 'A',
+            'q28': 'A',
+            'q29': 'D',
+            'q30': 'A',
+            'q31': 'E',
+            'q32': 'F',
+            'q33': 'D',
+            'q34': 'B',
+            'q35': 'NO',
+            'q36': 'NOT GIVEN',
+            'q37': 'NOT GIVEN',
+            'q38': 'YES',
+            'q39': 'YES',
+            'q40': 'NO'
+        };
+
+        const questionTypes = {
+            'q1': 'tf',
+            'q2': 'tf',
+            'q3': 'tf',
+            'q4': 'tf',
+            'q5': 'tf',
+            'q6': 'tf',
+            'q7': 'tf',
+            'q8': 'text',
+            'q9': 'text',
+            'q10': 'text',
+            'q11': 'text',
+            'q12': 'text',
+            'q13': 'text',
+            'q14': 'table',
+            'q15': 'table',
+            'q16': 'table',
+            'q17': 'table',
+            'q18': 'table',
+            'q19': 'table',
+            'q20': 'table',
+            'q21-22': 'checkbox',
+            'q23': 'text',
+            'q24': 'text',
+            'q25': 'text',
+            'q26': 'text',
+            'q27': 'mcq',
+            'q28': 'mcq',
+            'q29': 'mcq',
+            'q30': 'mcq',
+            'q31': 'table',
+            'q32': 'table',
+            'q33': 'table',
+            'q34': 'table',
+            'q35': 'tf',
+            'q36': 'tf',
+            'q37': 'tf',
+            'q38': 'tf',
+            'q39': 'tf',
+            'q40': 'tf'
+        };
+
+        // "Choose TWO letters" guruhi: qaysi savol raqamlari shu guruhga tegishli
+        const pairGroups = { 'q21-22': [21, 22] };
+
+        function pairNameForQ(qNum) {
+            return Object.keys(pairGroups).find(name => pairGroups[name].includes(qNum)) || null;
+        }
+
+        // qaysi savol qaysi passage-da
+        function passageForQ(qNum) {
+            if (qNum <= 13) return 1;
+            if (qNum <= 26) return 2;
+            return 3;
+        }
+
+        const passageRanges = { 1: [1, 13], 2: [14, 26], 3: [27, 40] };
+
+        let currentPassage = 1;
+        let currentQuestion = 1;
+        let selectedRange = null;
+        let contextElement = null;
+
+        function switchToPassage(n) {
+            currentPassage = n;
+            document.querySelectorAll('.passage-set').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.question-set').forEach(p => p.classList.remove('active'));
+            document.getElementById('passage-' + n).classList.add('active');
+            document.getElementById('questions-' + n).classList.add('active');
+            document.querySelectorAll('.footer__questionWrapper___1tZ46').forEach((w, i) => w.classList.toggle('selected', i + 1 === n));
+            document.getElementById('part-indicator').textContent = 'Reading Passage ' + n;
+            document.getElementById('passage-panel').scrollTop = 0;
+            document.getElementById('questions-panel').scrollTop = 0;
+            const [start, end] = passageRanges[n];
+            if (currentQuestion < start || currentQuestion > end) {
+                currentQuestion = start;
+                document.querySelectorAll('.subQuestion').forEach(b => b.classList.remove('active'));
+                const btn = document.querySelector('.subQuestion[onclick="goToQuestion(' + start + ')"]');
+                if (btn) btn.classList.add('active');
+            }
+            [1, 2, 3].forEach(p => updateAttemptedCount(p));
+        }
+
+        function goToQuestion(qNum) {
+            const p = passageForQ(qNum);
+            if (currentPassage !== p) switchToPassage(p);
+            currentQuestion = qNum;
+            document.querySelectorAll('.subQuestion').forEach(b => b.classList.remove('active'));
+            const btn = document.querySelector('.subQuestion[onclick="goToQuestion(' + qNum + ')"]');
+            if (btn) btn.classList.add('active');
+            const pairName = pairNameForQ(qNum);
+            let el = document.getElementById('q' + qNum)
+                || document.querySelector('input[name="q' + qNum + '"]')
+                || (pairName ? document.querySelector('input[name="' + pairName + '"]') : null);
+            document.querySelectorAll('.tf-question').forEach(q => q.classList.remove('active-question'));
+            if (el) {
+                const target = el.closest('.q-item') || el.closest('.tf-question') || el.closest('tr') || el.closest('.q-group');
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    target.classList.add('flash');
+                    setTimeout(() => target.classList.remove('flash'), 1000);
+                    if (target.classList.contains('tf-question')) target.classList.add('active-question');
+                }
+            }
+            // natijalar rejimida matndagi dalil joyiga ham o'tamiz
+            if (document.querySelector('.main-container.results-mode')) {
+                const hl = document.querySelector('.passage-set.active .t-hl[data-q="' + qNum + '"]');
+                if (hl) {
+                    document.querySelectorAll('.t-hl.active').forEach(x => x.classList.remove('active'));
+                    hl.classList.add('active');
+                    hl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        }
+
+        function isAnswered(qNum) {
+            const pairName = pairNameForQ(qNum);
+            if (pairName) {
+                const idx = pairGroups[pairName].indexOf(qNum);
+                return document.querySelectorAll('input[name="' + pairName + '"]:checked').length >= (idx + 1);
+            }
+            const key = 'q' + qNum;
+            const type = questionTypes[key];
+            if (type === 'text' || type === 'select') {
+                const el = document.getElementById(key);
+                return !!(el && el.value.trim() !== '');
+            }
+            if (type === 'mcq' || type === 'tf' || type === 'table') {
+                return !!document.querySelector('input[name="' + key + '"]:checked');
+            }
+            if (type === 'dragdrop') {
+                const zone = document.getElementById(key);
+                return !!(zone && zone.querySelector('.drag-item'));
+            }
+            return false;
+        }
+
+        function updateAttemptedCount(p) {
+            const [start, end] = passageRanges[p];
+            let count = 0;
+            for (let i = start; i <= end; i++) if (isAnswered(i)) count++;
+            const wrapper = document.querySelectorAll('.footer__questionWrapper___1tZ46')[p - 1];
+            if (wrapper) {
+                const span = wrapper.querySelector('.attemptedCount');
+                if (span) span.textContent = count + ' of ' + (end - start + 1);
+            }
+        }
+
+        function updateAnsweredIndicators() {
+            for (let qNum = 1; qNum <= 40; qNum++) {
+                const btn = document.querySelector('.subQuestion[onclick="goToQuestion(' + qNum + ')"]');
+                if (!btn || btn.classList.contains('correct') || btn.classList.contains('incorrect')) continue;
+                btn.classList.toggle('answered', isAnswered(qNum));
+            }
+            [1, 2, 3].forEach(p => updateAttemptedCount(p));
+        }
+
+        document.querySelectorAll('.answer-input, .answer-select, input[type="radio"], input[type="checkbox"]').forEach(inp => {
+            inp.addEventListener('input', updateAnsweredIndicators);
+            inp.addEventListener('change', updateAnsweredIndicators);
+        });
+
+        function setupCheckboxLimits() {
+            Object.keys(pairGroups).forEach(name => {
+                const boxes = Array.from(document.querySelectorAll('input[type="checkbox"][name="' + name + '"]'));
+                if (!boxes.length) return;
+                boxes.forEach(b => b.addEventListener('change', () => {
+                    const checkedCount = boxes.filter(x => x.checked).length;
+                    boxes.forEach(x => { if (!x.checked) x.disabled = checkedCount >= pairGroups[name].length; });
+                }));
+            });
+        }
+
+        function checkAnswers() {
+            let score = 0;
+            const resultsData = [];
+
+            document.querySelectorAll('.correct-inline').forEach(el => el.remove());
+            document.querySelectorAll('.answer-input, .answer-select').forEach(el => el.classList.remove('correct', 'incorrect'));
+            document.querySelectorAll('.multi-choice-option, .tf-option, .matching-table td, .drop-zone').forEach(el => el.classList.remove('correct', 'incorrect'));
+
+            Object.keys(correctAnswers).forEach(key => {
+                const correct = correctAnswers[key];
+                const type = questionTypes[key];
+
+                if (type === 'checkbox') {
+                    const [startQ, endQ] = key.split('-').map(s => parseInt(s.replace('q', '')));
+                    const checked = document.querySelectorAll('input[name="' + key + '"]:checked');
+                    const userVals = Array.from(checked).map(c => c.value).sort();
+                    const correctSorted = [...correct].sort();
+                    const correctSel = userVals.filter(v => correctSorted.includes(v));
+                    score += correctSel.length;
+                    const isCorrect = correctSel.length === correctSorted.length && userVals.length === correctSorted.length;
+                    checked.forEach(cb => { const w = cb.closest('.multi-choice-option'); if (w) w.classList.add(correctSorted.includes(cb.value) ? 'correct' : 'incorrect'); });
+                    correctSorted.forEach(v => { const cb = document.querySelector('input[name="' + key + '"][value="' + v + '"]'); if (cb && !cb.checked) { const w = cb.closest('.multi-choice-option'); if (w) w.classList.add('correct'); } });
+                    for (let q = startQ; q <= endQ; q++) { const b = document.querySelector('.subQuestion[onclick="goToQuestion(' + q + ')"]'); if (b) { b.classList.remove('answered'); b.classList.add(isCorrect ? 'correct' : 'incorrect'); } }
+                    resultsData.push({ question: startQ + '–' + endQ, userAnswer: userVals.join(', ') || 'No Answer', correctAnswer: correctSorted.join(', '), isCorrect });
+                    return;
+                }
+
+                const qNum = parseInt(key.replace('q', ''));
+                let userAnswer = '', isCorrect = false;
+
+                if (type === 'text') {
+                    const el = document.getElementById(key);
+                    userAnswer = el ? el.value.trim() : '';
+                    const accepted = Array.isArray(correct) ? correct : [correct];
+                    isCorrect = accepted.some(a => a.toLowerCase() === userAnswer.toLowerCase());
+                    if (el) {
+                        el.classList.add(isCorrect ? 'correct' : 'incorrect');
+                        if (!isCorrect) {
+                            const sp = document.createElement('span');
+                            sp.className = 'correct-inline';
+                            sp.textContent = accepted[0];
+                            el.insertAdjacentElement('afterend', sp);
+                        }
+                    }
+                } else if (type === 'select') {
+                    const el = document.getElementById(key);
+                    userAnswer = el ? el.value : '';
+                    isCorrect = userAnswer === correct;
+                    if (el) {
+                        el.classList.add(isCorrect ? 'correct' : 'incorrect');
+                        if (!isCorrect) {
+                            const sp = document.createElement('span');
+                            sp.className = 'correct-inline';
+                            sp.textContent = correct;
+                            el.insertAdjacentElement('afterend', sp);
+                        }
+                    }
+                } else if (type === 'mcq' || type === 'tf') {
+                    const checked = document.querySelector('input[name="' + key + '"]:checked');
+                    userAnswer = checked ? checked.value : 'No Answer';
+                    isCorrect = userAnswer === correct;
+                    const wrapSel = (type === 'tf') ? '.tf-option' : '.multi-choice-option';
+                    document.querySelectorAll('input[name="' + key + '"]').forEach(r => {
+                        const wrapper = r.closest(wrapSel);
+                        if (!wrapper) return;
+                        if (r.value === correct) wrapper.classList.add('correct');
+                        else if (r.checked) wrapper.classList.add('incorrect');
+                    });
+                } else if (type === 'dragdrop') {
+                    const zone = document.getElementById(key);
+                    const item = zone ? zone.querySelector('.drag-item') : null;
+                    userAnswer = item ? item.dataset.value : 'No Answer';
+                    isCorrect = userAnswer === correct;
+                    if (zone) {
+                        zone.classList.add(isCorrect ? 'correct' : 'incorrect');
+                        zone.classList.add('disabled');
+                        if (!isCorrect) {
+                            const sp = document.createElement('span');
+                            sp.className = 'correct-inline';
+                            sp.textContent = correct;
+                            zone.insertAdjacentElement('afterend', sp);
+                        }
+                    }
+                } else if (type === 'table') {
+                    const checked = document.querySelector('input[name="' + key + '"]:checked');
+                    userAnswer = checked ? checked.value : 'No Answer';
+                    isCorrect = userAnswer === correct;
+                    document.querySelectorAll('input[name="' + key + '"]').forEach(r => {
+                        const cell = r.closest('td');
+                        if (!cell) return;
+                        if (r.value === correct) cell.classList.add('correct');
+                        else if (r.checked) cell.classList.add('incorrect');
+                    });
+                }
+
+                if (isCorrect) score++;
+                const navBtn = document.querySelector('.subQuestion[onclick="goToQuestion(' + qNum + ')"]');
+                if (navBtn) { navBtn.classList.remove('answered'); navBtn.classList.add(isCorrect ? 'correct' : 'incorrect'); }
+                resultsData.push({ question: qNum, userAnswer: userAnswer || 'No Answer', correctAnswer: Array.isArray(correct) ? correct[0] : correct, isCorrect });
+            });
+
+            document.querySelectorAll('.answer-input, .answer-select, input[type="radio"], input[type="checkbox"]').forEach(el => el.disabled = true);
+            document.querySelectorAll('.drag-item').forEach(item => {
+                item.setAttribute('draggable', 'false');
+                item.style.cursor = 'not-allowed';
+            });
+            document.querySelectorAll('.drop-zone, .drag-options-container').forEach(z => z.classList.add('disabled'));
+
+            const band = (function (r) {
+                if (r >= 39) return 9; if (r >= 37) return 8.5; if (r >= 35) return 8; if (r >= 33) return 7.5;
+                if (r >= 30) return 7; if (r >= 27) return 6.5; if (r >= 23) return 6; if (r >= 19) return 5.5;
+                if (r >= 15) return 5; if (r >= 13) return 4.5; if (r >= 10) return 4; if (r >= 8) return 3.5;
+                if (r >= 6) return 3; if (r >= 4) return 2.5; if (r >= 2) return 2; if (r === 1) return 1.5; return 0;
+            })(score);
+
+            // matndagi javob dalillarini ochamiz
+            document.querySelector('.main-container').classList.add('results-mode');
+
+            document.getElementById('score-summary').textContent = 'You scored ' + score + ' out of 40 (Band ' + band + ').';
+
+            const resultDetails = document.getElementById('result-details');
+            let html = '<table><thead><tr><th>Question</th><th>Your Answer</th><th>Correct Answer</th><th>Result</th></tr></thead><tbody>';
+            resultsData.forEach(r => {
+                html += '<tr><td>' + r.question + '</td><td>' + r.userAnswer + '</td><td>' + r.correctAnswer + '</td><td class="' + (r.isCorrect ? 'result-correct' : 'result-incorrect') + '">' + (r.isCorrect ? '&#10003; Correct' : '&#10007; Incorrect') + '</td></tr>';
+            });
+            html += '</tbody></table>';
+            resultDetails.innerHTML = html;
+
+            const deliverButton = document.getElementById('deliver-button');
+            deliverButton.classList.add('success');
+            deliverButton.innerHTML = '<span>My Results</span>';
+            const newBtn = deliverButton.cloneNode(true);
+            deliverButton.parentNode.replaceChild(newBtn, deliverButton);
+            newBtn.addEventListener('click', () => { document.getElementById('result-modal').style.display = 'flex'; });
+            document.getElementById('result-modal').style.display = 'flex';
+        }
+
+        document.getElementById('deliver-button').addEventListener('click', checkAnswers);
+        document.getElementById('modal-close-button').addEventListener('click', () => { document.getElementById('result-modal').style.display = 'none'; });
+
+        document.addEventListener('selectionchange', () => {
+            const sel = window.getSelection();
+            if (sel && sel.rangeCount > 0 && !sel.isCollapsed) selectedRange = sel.getRangeAt(0);
+        });
+        document.body.addEventListener('contextmenu', function (e) {
+            const text = window.getSelection().toString();
+            if (!text) return;
+            e.preventDefault();
+            const menu = document.getElementById('contextMenu');
+            menu.style.left = e.pageX + 'px';
+            menu.style.top = e.pageY + 'px';
+            menu.style.display = 'block';
+            contextElement = e.target.closest('.highlight, .comment-highlight');
+            document.getElementById('clear-item').style.display = contextElement ? 'block' : 'none';
+        });
+        document.body.addEventListener('click', function (e) {
+            if (!e.target.closest('.context-menu')) document.getElementById('contextMenu').style.display = 'none';
+        });
+        function highlightText() {
+            if (!selectedRange || selectedRange.collapsed) return;
+            try { const span = document.createElement('span'); span.className = 'highlight'; selectedRange.surroundContents(span); } catch (e) { }
+            window.getSelection().removeAllRanges();
+            document.getElementById('contextMenu').style.display = 'none';
+        }
+        function addComment() {
+            const t = prompt('Enter your comment:');
+            if (!t || !selectedRange) return;
+            try {
+                const span = document.createElement('span'); span.className = 'comment-highlight';
+                const tip = document.createElement('span'); tip.className = 'comment-tooltip'; tip.textContent = t;
+                span.appendChild(tip); selectedRange.surroundContents(span);
+            } catch (e) { }
+            window.getSelection().removeAllRanges();
+            document.getElementById('contextMenu').style.display = 'none';
+        }
+        function clearHighlight() {
+            if (contextElement) {
+                const parent = contextElement.parentNode;
+                while (contextElement.firstChild) parent.insertBefore(contextElement.firstChild, contextElement);
+                parent.removeChild(contextElement); parent.normalize();
+            }
+            document.getElementById('contextMenu').style.display = 'none';
+        }
+        function clearAllHighlights() {
+            document.querySelectorAll('.highlight, .comment-highlight').forEach(el => {
+                const parent = el.parentNode;
+                while (el.firstChild) parent.insertBefore(el.firstChild, el);
+                parent.removeChild(el); parent.normalize();
+            });
+            document.getElementById('contextMenu').style.display = 'none';
+        }
+
+        // --- panellar orasidagi ajratuvchini surib kenglikni o'zgartirish ---
+        const resizer = document.getElementById('resizer');
+        const passagePanel = document.getElementById('passage-panel');
+
+        function initResize(e) {
+            e.preventDefault();
+            const startX = e.clientX;
+            const startWidth = passagePanel.offsetWidth;
+            document.body.classList.add('resizing');
+
+            const doDrag = (ev) => {
+                const newWidth = startWidth + ev.clientX - startX;
+                if (newWidth > 200 && (document.body.clientWidth - newWidth - resizer.offsetWidth) > 200) {
+                    passagePanel.style.flex = '0 0 ' + newWidth + 'px';
+                }
+            };
+            const stopDrag = () => {
+                document.body.classList.remove('resizing');
+                window.removeEventListener('mousemove', doDrag, false);
+                window.removeEventListener('mouseup', stopDrag, false);
+            };
+
+            window.addEventListener('mousemove', doDrag, false);
+            window.addEventListener('mouseup', stopDrag, false);
+        }
+
+        resizer.addEventListener('mousedown', initResize, false);
+        // ikki marta bosilsa 50/50 holatiga qaytadi
+        resizer.addEventListener('dblclick', () => { passagePanel.style.flex = '0 0 50%'; });
+
+        // --- drag & drop (36–40 summary) — eski Reading fayllaridagi mantiq ---
+        let draggedItem = null;
+        let selectedDragItem = null;
+
+        function setupDragAndDrop() {
+            document.querySelectorAll('.drag-item').forEach(item => {
+                item.addEventListener('dragstart', handleDragStart);
+                item.addEventListener('dragend', handleDragEnd);
+                item.addEventListener('click', () => selectDragItem(item));
+            });
+            document.querySelectorAll('.drop-zone, .drag-options-container').forEach(zone => {
+                zone.addEventListener('dragover', handleDragOver);
+                zone.addEventListener('dragleave', handleDragLeave);
+                zone.addEventListener('drop', handleDrop);
+                // klik bilan qo'yish: avval iborani tanlab, keyin bo'sh joyni bosish
+                zone.addEventListener('click', () => {
+                    if (selectedDragItem && zone.dataset.dndGroup === selectedDragItem.dataset.dndGroup) {
+                        placeItem(selectedDragItem, zone);
+                        selectDragItem(null);
+                    }
+                });
+            });
+        }
+
+        function selectDragItem(item) {
+            if (selectedDragItem) selectedDragItem.classList.remove('selected');
+            selectedDragItem = item;
+            if (selectedDragItem) selectedDragItem.classList.add('selected');
+        }
+
+        function handleDragStart(e) {
+            draggedItem = e.target;
+            setTimeout(() => e.target.classList.add('dragging'), 0);
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+            draggedItem = null;
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            const zone = e.currentTarget;
+            if (draggedItem && draggedItem.dataset.dndGroup === zone.dataset.dndGroup) {
+                zone.classList.add('drag-over');
+            }
+        }
+
+        function handleDragLeave(e) {
+            e.currentTarget.classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            const zone = e.currentTarget;
+            zone.classList.remove('drag-over');
+            if (!draggedItem || draggedItem.dataset.dndGroup !== zone.dataset.dndGroup) return;
+            placeItem(draggedItem, zone);
+        }
+
+        function placeItem(item, targetZone) {
+            const sourceZone = item.parentElement;
+            if (sourceZone === targetZone) return;
+
+            const isDropZone = targetZone.classList.contains('drop-zone');
+            const existing = isDropZone ? targetZone.querySelector('.drag-item') : null;
+
+            if (isDropZone) {
+                // savol raqamini (matnni) tozalash
+                Array.from(targetZone.childNodes).forEach(node => {
+                    if (node.nodeType === Node.TEXT_NODE) node.remove();
+                });
+            }
+
+            // joyi band bo'lsa, eski iborani manba joyiga qaytaramiz
+            if (existing) sourceZone.appendChild(existing);
+
+            targetZone.appendChild(item);
+            if (isDropZone) targetZone.classList.add('filled');
+
+            // manba drop-zone bo'shab qolsa, raqamini qaytaramiz
+            if (sourceZone.classList.contains('drop-zone') && !sourceZone.querySelector('.drag-item')) {
+                sourceZone.classList.remove('filled');
+                sourceZone.textContent = sourceZone.dataset.qStart;
+            }
+            updateAnsweredIndicators();
+        }
+
+        // matndagi sariq belgini bosganda tegishli savolga o'tadi
+        document.getElementById('passage-panel').addEventListener('click', (e) => {
+            const hl = e.target.closest('.t-hl');
+            if (!hl || !document.querySelector('.main-container.results-mode')) return;
+            const q = parseInt(hl.getAttribute('data-q'));
+            if (!isNaN(q)) goToQuestion(q);
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            switchToPassage(1);
+            goToQuestion(1);
+            setupCheckboxLimits();
+            setupDragAndDrop();
+        });
+    </script>
+</body>
+
+</html>

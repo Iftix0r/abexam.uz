@@ -1,0 +1,2516 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS CDI Listening Practice</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffffff;
+            line-height: 1.4;
+            font-size: 16px;
+            padding-bottom: 90px;
+        }
+
+        body::after {
+            content: "@MINDLESS_WRITER";
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%) rotate(-20deg);
+            font-size: 72px;
+            font-weight: 800;
+            color: #000000;
+            opacity: 0.02;
+            pointer-events: none;
+            z-index: 0;
+            white-space: nowrap;
+        }
+
+        .header {
+            background-color: #ffffff;
+            padding: 12px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            height: 60px;
+        }
+
+        .telegram-link {
+            color: #3e3e3e;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            border: 2px solid #3e3e3e;
+            border-radius: 9999px;
+            background-color: #ffffff;
+            line-height: 1;
+        }
+
+        .telegram-link:hover {
+            background-color: #f6f6f6;
+        }
+
+        .telegram-link::before {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background-color: currentColor;
+            -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23l7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3L3.64 12c-.88-.25-.89-1.37.2-1.64l16.56-6.4c.75-.29 1.4.22 1.2.94l-2.67 12.61c-.22.95-1.13 1.18-1.78.73l-4.5-3.32l-2.23 2.15c-.47.44-1.29.21-1.48-.37z"/></svg>');
+            mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23l7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3L3.64 12c-.88-.25-.89-1.37.2-1.64l16.56-6.4c.75-.29 1.4.22 1.2.94l-2.67 12.61c-.22.95-1.13 1.18-1.78.73l-4.5-3.32l-2.23 2.15c-.47.44-1.29.21-1.48-.37z"/></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        .audio-player-container {
+            position: fixed;
+            top: 65px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 500px;
+            max-width: 90%;
+            height: 40px;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            z-index: 99;
+            gap: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .player-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .player-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: #333;
+        }
+
+        .progress-container {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #progress-bar {
+            flex-grow: 1;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 4px;
+            background: #ddd;
+            outline: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        #progress-bar::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #4a90e2;
+            cursor: pointer;
+        }
+
+        #current-time,
+        #total-duration {
+            font-size: 12px;
+            color: #555;
+            min-width: 35px;
+            text-align: center;
+        }
+
+        .controls-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #new-volume-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 60px;
+            height: 3px;
+            background: #ccc;
+            outline: none;
+            border-radius: 2px;
+            cursor: pointer;
+            margin-left: 8px;
+        }
+
+        #new-volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #333;
+        }
+
+        #speed-btn {
+            font-size: 12px;
+            font-weight: 600;
+            color: #333;
+            background-color: #e9ecef;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            padding: 4px 8px;
+            cursor: pointer;
+        }
+
+        #speed-options {
+            position: absolute;
+            top: calc(100% + 5px);
+            right: 0;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+
+        #speed-options div {
+            padding: 8px 15px;
+            cursor: pointer;
+        }
+
+        #speed-options div:hover {
+            background-color: #f0f0f0;
+        }
+
+        .speed-container {
+            position: relative;
+        }
+
+        .main-container {
+            margin-top: 115px;
+            display: flex;
+            background: #ffffff;
+            padding-bottom: 100px;
+        }
+
+        .main-container.results-mode .left-panel {
+            width: 75%;
+            overflow-y: auto;
+            height: calc(100vh - 195px);
+        }
+
+        .main-container.results-mode .right-panel {
+            display: block;
+            width: 25%;
+            border-left: 1px solid #e0e0e0;
+            height: calc(100vh - 195px);
+            overflow-y: auto;
+        }
+
+        .left-panel {
+            width: 100%;
+            padding: 20px;
+        }
+
+        .questions-container {
+            max-width: 50%;
+        }
+
+        /* Natijalar rejimida chap panel torayadi — savollar bo'sh joyni to'liq egallasin */
+        .main-container.results-mode .questions-container {
+            max-width: 100%;
+        }
+
+        .right-panel {
+            display: none;
+            padding: 20px;
+            border-left: 1px solid #e0e0e0;
+        }
+
+        #transcription-text {
+            white-space: normal;
+            font-family: inherit;
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+        #transcription-text p {
+            margin-bottom: 12px;
+        }
+
+        .t-hl {
+            background: #fff3a0;
+            border-radius: 3px;
+            padding: 0 2px;
+            scroll-margin-top: 80px;
+        }
+
+        .t-hl.active {
+            background: #ffd34d;
+            box-shadow: 0 0 0 2px #f0a500;
+        }
+
+        .t-hl[data-time] {
+            cursor: pointer;
+        }
+
+        .t-hl[data-time]:hover {
+            background: #ffe066;
+            box-shadow: 0 0 0 1px #e0a800;
+        }
+
+        .t-qmark {
+            font-size: 10px;
+            font-weight: 700;
+            color: #fff;
+            background: #4a90e2;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            min-width: 16px;
+            vertical-align: super;
+            margin-right: 2px;
+            line-height: 1;
+        }
+
+        .t-note {
+            font-style: italic;
+            font-weight: 700;
+            color: #0b6b3a;
+            font-size: 13px;
+            margin-left: 3px;
+        }
+
+        .part-header {
+            background-color: #f1f2ec;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .question {
+            margin-bottom: 40px;
+        }
+
+        .question p {
+            margin-bottom: 10px;
+        }
+
+        .question-prompt {
+            margin-bottom: 20px;
+        }
+
+        .centered-title {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .answer-input {
+            border: 1px solid #9aa3ad;
+            border-radius: 4px;
+            background-color: #fff;
+            padding: 4px 8px;
+            font-size: 16px;
+            width: 140px;
+            height: 28px;
+            line-height: 1.2;
+            vertical-align: middle;
+            transition: border-color 0.15s ease;
+            position: relative;
+            z-index: 10;
+        }
+
+        .answer-input::placeholder {
+            color: #444;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .notes-block p {
+            margin-bottom: 16px;
+        }
+
+        .notes-heading {
+            font-weight: 700;
+            margin: 24px 0 12px;
+        }
+
+        .notes-subheading {
+            font-weight: 700;
+            margin: 14px 0 8px 18px;
+        }
+
+        .notes-block ul {
+            list-style: disc;
+            padding-left: 28px;
+            margin-bottom: 8px;
+        }
+
+        .notes-block li {
+            margin-bottom: 16px;
+        }
+
+        .answer-input:focus {
+            outline: none;
+            border-color: #2c6bed;
+            border-width: 2px;
+        }
+
+        .answer-input.correct {
+            border-color: #28a745;
+            background-color: #e9f7ef;
+        }
+
+        .answer-input.incorrect {
+            border-color: #dc3545;
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .correct-inline {
+            color: #28a745;
+            font-weight: 700;
+            margin-left: 10px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .correct-inline::before {
+            content: "\2192  ";
+        }
+
+        .multi-choice-option {
+            display: block;
+            width: 100%;
+            padding: 10px 14px;
+            background-color: #fff;
+            border: 1px solid transparent;
+            transition: background-color 0.2s;
+        }
+
+        .multi-choice-option:hover {
+            background-color: #f1f7ff;
+            border-color: #c6dcfb;
+        }
+
+        .multi-choice-option:has(input[type="radio"]:checked) {
+            background-color: #cfe3f9;
+        }
+
+        .multi-choice-option:has(input[type="checkbox"]:checked) {
+            background-color: #cfe3f9;
+        }
+
+        .multi-choice-option.correct {
+            background-color: #d4edda !important;
+        }
+
+        .multi-choice-option.incorrect {
+            background-color: #f8d7da !important;
+        }
+
+        .multi-choice-option label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        .multi-choice-option input[type="radio"] {
+            transform: scale(1.2);
+        }
+
+        .multi-choice-option input[type="checkbox"] {
+            transform: scale(1.2);
+            accent-color: #2563eb;
+        }
+
+        .choose-many-header {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            margin-bottom: 14px;
+            font-weight: 600;
+        }
+
+        .q-num-badge {
+            border: 2px solid transparent;
+            border-radius: 5px;
+            padding: 2px 8px;
+            font-weight: 700;
+            flex-shrink: 0;
+            transition: border-color 0.3s;
+        }
+
+        .question.active-question .q-num-badge {
+            border-color: #4a90e2;
+        }
+
+        .matching-options-box {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 15px;
+            background: #f9f9f9;
+            margin-bottom: 20px;
+            display: inline-block;
+            min-width: 300px;
+        }
+
+        .matching-options-box p {
+            margin-bottom: 5px;
+        }
+
+        .matching-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .matching-item span {
+            min-width: 240px;
+            font-size: 16px;
+        }
+
+        .notes-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .notes-table th,
+        .notes-table td {
+            border: 1px solid #888;
+            padding: 10px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .notes-table th {
+            background: #f1f2ec;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .nav-arrows {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            display: flex;
+            gap: 5px;
+            z-index: 101;
+        }
+
+        .nav-arrow {
+            width: 50px;
+            height: 50px;
+            background: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .nav-arrow:hover {
+            background: #555;
+        }
+
+        .nav-arrow:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .nav-row {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            height: 80px;
+            z-index: 100;
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+        }
+
+        .footer__questionWrapper___1tZ46 {
+            display: flex;
+            align-items: center;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+
+        .footer__questionNo___3WNct {
+            background: none;
+            border: none;
+            padding: 10px 15px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .footer__questionNo___3WNct:hover {
+            background-color: #f8f9fa;
+        }
+
+        .attemptedCount {
+            font-size: 14px;
+            color: #666;
+            margin-left: 5px;
+            font-weight: 400;
+        }
+
+        .footer__subquestionWrapper___9GgoP {
+            display: none;
+            gap: 2px;
+            margin-left: 10px;
+        }
+
+        .footer__questionWrapper___1tZ46.selected .footer__subquestionWrapper___9GgoP {
+            display: flex;
+        }
+
+        .footer__questionWrapper___1tZ46.selected .attemptedCount {
+            display: none;
+        }
+
+        .subQuestion {
+            width: 32px;
+            height: 32px;
+            border: 1px solid #ccc;
+            background: white;
+            color: #333;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            border-radius: 2px;
+        }
+
+        .subQuestion.answered {
+            background-color: #e9ecef;
+            border-color: #ddd;
+        }
+
+        .subQuestion.correct {
+            background-color: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+
+        .subQuestion.incorrect {
+            background-color: #dc3545;
+            color: white;
+            border-color: #dc3545;
+        }
+
+        .subQuestion:hover {
+            background-color: #f0f0f0;
+            border-color: #999;
+        }
+
+        .subQuestion.active {
+            background-color: #4a90e2;
+            color: white;
+            border-color: #4a90e2;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        .footer__deliverButton___3FM07 {
+            margin-left: auto;
+            margin-right: 20px;
+            background-color: #f0f0f0;
+            color: #333;
+            border: 1px solid #ccc;
+            padding: 12px 20px;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 170px;
+            justify-content: center;
+        }
+
+        .footer__deliverButton___3FM07:hover {
+            background-color: #e0e0e0;
+            border-color: #bbb;
+        }
+
+        .footer__deliverButton___3FM07.success {
+            background-color: #28a745;
+            color: #fff;
+            border-color: #28a745;
+        }
+
+        .highlight {
+            background-color: #ffff00;
+        }
+
+        .comment-highlight {
+            background-color: #90EE90;
+            position: relative;
+            cursor: help;
+        }
+
+        .comment-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            white-space: nowrap;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .comment-highlight:hover .comment-tooltip {
+            opacity: 1;
+        }
+
+        .context-menu {
+            position: absolute;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            display: none;
+            min-width: 140px;
+        }
+
+        .context-menu-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            font-size: 16px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .context-menu-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .context-menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .selection-toolbar {
+            position: absolute;
+            display: none;
+            align-items: stretch;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+            z-index: 1500;
+            padding: 6px 4px;
+            gap: 2px;
+        }
+
+        .selection-toolbar::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 7px solid transparent;
+            border-right: 7px solid transparent;
+            border-top: 7px solid #ffffff;
+        }
+
+        .selection-toolbar button {
+            background: none;
+            border: none;
+            color: #111827;
+            padding: 4px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 6px;
+            white-space: nowrap;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .selection-toolbar button svg {
+            width: 16px;
+            height: 16px;
+            fill: #111827;
+        }
+
+        .selection-toolbar button:hover {
+            background: #f3f4f6;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            font-size: 24px;
+            color: #333;
+        }
+
+        .modal-close-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #888;
+        }
+
+        .modal-close-btn:hover {
+            color: #333;
+        }
+
+        .confirm-modal-content {
+            background: white;
+            padding: 32px 36px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 440px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .confirm-modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .confirm-modal-icon {
+            color: #f0a500;
+            font-size: 22px;
+        }
+
+        .confirm-modal-text {
+            font-size: 15px;
+            color: #4b5563;
+            line-height: 1.5;
+            margin-bottom: 26px;
+        }
+
+        .confirm-modal-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .confirm-modal-btn {
+            padding: 10px 26px;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+
+        .confirm-modal-btn-cancel {
+            background: #ffffff;
+            border-color: #d1d5db;
+            color: #111827;
+        }
+
+        .confirm-modal-btn-cancel:hover {
+            background: #f3f4f6;
+        }
+
+        .confirm-modal-btn-submit {
+            background: #111827;
+            color: #ffffff;
+        }
+
+        .confirm-modal-btn-submit:hover {
+            background: #262f3d;
+        }
+
+        #score-summary {
+            font-size: 16px;
+            font-weight: 600;
+            color: #111827;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            padding: 10px 12px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        #result-details table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        #result-details th,
+        #result-details td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        #result-details th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+
+        .result-correct {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .result-incorrect {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .timer-container {
+            display: none;
+        }
+
+        @keyframes flash {
+            0% {
+                background-color: #e6f4ff;
+            }
+
+            100% {
+                background-color: transparent;
+            }
+        }
+
+        .question.flash {
+            animation: flash 1s ease-out;
+        }
+
+        /* ═══ Yuqori o'ng burchakdagi tugmalar ═══ */
+        .header-tools {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .header-tool-btn {
+            width: 44px;
+            height: 36px;
+            border: 1px solid #d5d9e0;
+            border-radius: 8px;
+            background: #ffffff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+
+        .header-tool-btn:hover {
+            background: #f3f4f6;
+        }
+
+        .header-tool-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: #1f2937;
+        }
+
+        /* ═══ Exam Settings oynasi ═══ */
+        .settings-modal-content {
+            background: #ffffff;
+            border-radius: 14px;
+            width: 100%;
+            max-width: 470px;
+            max-height: 88vh;
+            overflow-y: auto;
+            padding: 22px 24px 24px;
+            box-shadow: 0 10px 34px rgba(0, 0, 0, 0.28);
+        }
+
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .settings-title {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            font-size: 19px;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .settings-title svg {
+            width: 20px;
+            height: 20px;
+            fill: #111827;
+        }
+
+        .settings-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            line-height: 1;
+            cursor: pointer;
+            color: #6b7280;
+            padding: 0 4px;
+        }
+
+        .settings-close:hover {
+            color: #111827;
+        }
+
+        .settings-section-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+            font-weight: 700;
+            color: #111827;
+            margin: 20px 0 10px;
+        }
+
+        .settings-section-title svg {
+            width: 17px;
+            height: 17px;
+            fill: #111827;
+        }
+
+        .settings-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            text-align: left;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 9px;
+            padding: 13px 15px;
+            margin-bottom: 9px;
+            font-size: 15px;
+            font-family: inherit;
+            color: #4b5563;
+            cursor: pointer;
+        }
+
+        .settings-option:hover {
+            background: #f7f8fa;
+        }
+
+        .settings-option svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+            flex-shrink: 0;
+        }
+
+        .settings-option.selected {
+            background: #eef2f7;
+            color: #111827;
+            font-weight: 600;
+        }
+
+        .settings-reset {
+            display: block;
+            width: 100%;
+            text-align: left;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 9px;
+            padding: 14px 16px;
+            margin-top: 22px;
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        .settings-reset:hover {
+            background: #f7f8fa;
+        }
+
+        .settings-reset-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 5px;
+        }
+
+        .settings-reset-title svg {
+            width: 18px;
+            height: 18px;
+            fill: #111827;
+        }
+
+        .settings-reset-sub {
+            font-size: 13.5px;
+            color: #6b7280;
+            padding-left: 28px;
+        }
+
+        /* ═══ Matn o'lchami ═══ */
+        body.text-large .left-panel,
+        body.text-large .left-panel p,
+        body.text-large .left-panel li,
+        body.text-large .left-panel td,
+        body.text-large .left-panel th,
+        body.text-large .multi-choice-option label,
+        body.text-large .choose-many-header,
+        body.text-large .answer-input {
+            font-size: 18.5px;
+        }
+
+        body.text-xlarge .left-panel,
+        body.text-xlarge .left-panel p,
+        body.text-xlarge .left-panel li,
+        body.text-xlarge .left-panel td,
+        body.text-xlarge .left-panel th,
+        body.text-xlarge .multi-choice-option label,
+        body.text-xlarge .choose-many-header,
+        body.text-xlarge .answer-input {
+            font-size: 21.5px;
+        }
+
+        body.text-large .centered-title,
+        body.text-xlarge .centered-title {
+            font-size: 22px;
+        }
+
+        /* ═══ Qorong'i rejim ═══ */
+        body.theme-dark {
+            background-color: #1c1d21;
+            color: #e5e7eb;
+        }
+
+        body.theme-dark::after {
+            color: #ffffff;
+            opacity: 0.03;
+        }
+
+        body.theme-dark .t-hl {
+            color: #111827;
+        }
+
+        body.theme-dark .header,
+        body.theme-dark .nav-row,
+        body.theme-dark .audio-player-container {
+            background-color: #26282d;
+            border-color: #3a3d43;
+        }
+
+        body.theme-dark .main-container,
+        body.theme-dark .left-panel,
+        body.theme-dark .right-panel {
+            background: #1c1d21;
+            border-color: #3a3d43;
+        }
+
+        body.theme-dark .telegram-link {
+            background-color: #26282d;
+            color: #e5e7eb;
+            border-color: #6b7280;
+        }
+
+        body.theme-dark .header-tool-btn {
+            background: #26282d;
+            border-color: #4b5057;
+        }
+
+        body.theme-dark .header-tool-btn:hover {
+            background: #33363b;
+        }
+
+        body.theme-dark .header-tool-btn svg {
+            fill: #e5e7eb;
+        }
+
+        body.theme-dark .part-header {
+            background-color: #26282d;
+            border-color: #3a3d43;
+        }
+
+        body.theme-dark .notes-table th {
+            background: #26282d;
+        }
+
+        body.theme-dark .notes-table th,
+        body.theme-dark .notes-table td {
+            border-color: #4b5057;
+        }
+
+        body.theme-dark .answer-input {
+            background-color: #26282d;
+            border-color: #4b5057;
+            color: #e5e7eb;
+        }
+
+        body.theme-dark .answer-input::placeholder {
+            color: #9ca3af;
+        }
+
+        body.theme-dark .answer-input.correct {
+            background-color: #14532d;
+            border-color: #22c55e;
+            color: #e5e7eb;
+        }
+
+        body.theme-dark .answer-input.incorrect {
+            background-color: #4c1d24;
+            border-color: #ef4444;
+            color: #fecaca;
+        }
+
+        body.theme-dark .multi-choice-option {
+            background-color: transparent;
+        }
+
+        body.theme-dark .multi-choice-option:hover {
+            background-color: #2f3239;
+            border-color: #4b5057;
+        }
+
+        body.theme-dark .multi-choice-option:has(input:checked) {
+            background-color: #1e3a5f;
+        }
+
+        body.theme-dark .multi-choice-option.correct {
+            background-color: #14532d !important;
+        }
+
+        body.theme-dark .multi-choice-option.incorrect {
+            background-color: #4c1d24 !important;
+        }
+
+        body.theme-dark .subQuestion {
+            background: #26282d;
+            border-color: #4b5057;
+            color: #e5e7eb;
+        }
+
+        body.theme-dark .subQuestion:hover {
+            background-color: #33363b;
+        }
+
+        body.theme-dark .subQuestion.answered {
+            background-color: #3a3d43;
+        }
+
+        body.theme-dark .footer__questionNo___3WNct {
+            color: #e5e7eb;
+        }
+
+        body.theme-dark .footer__questionNo___3WNct:hover {
+            background-color: #33363b;
+        }
+
+        body.theme-dark .footer__deliverButton___3FM07 {
+            background-color: #33363b;
+            color: #e5e7eb;
+            border-color: #4b5057;
+        }
+
+        body.theme-dark .settings-modal-content,
+        body.theme-dark .modal-content,
+        body.theme-dark .confirm-modal-content {
+            background: #26282d;
+            color: #e5e7eb;
+        }
+
+        body.theme-dark .settings-title,
+        body.theme-dark .settings-section-title,
+        body.theme-dark .settings-reset-title,
+        body.theme-dark .modal-header h2 {
+            color: #f3f4f6;
+        }
+
+        body.theme-dark .settings-title svg,
+        body.theme-dark .settings-section-title svg,
+        body.theme-dark .settings-reset-title svg {
+            fill: #f3f4f6;
+        }
+
+        body.theme-dark .settings-option,
+        body.theme-dark .settings-reset {
+            background: #26282d;
+            border-color: #3f434a;
+            color: #b7bcc4;
+        }
+
+        body.theme-dark .settings-option:hover,
+        body.theme-dark .settings-reset:hover {
+            background: #31343a;
+        }
+
+        body.theme-dark .settings-option.selected {
+            background: #363a42;
+            color: #ffffff;
+        }
+
+        body.theme-dark #score-summary {
+            background: #31343a;
+            border-color: #4b5057;
+            color: #f3f4f6;
+        }
+
+        body.theme-dark #result-details th {
+            background-color: #31343a;
+        }
+
+        body.theme-dark #result-details th,
+        body.theme-dark #result-details td {
+            border-color: #4b5057;
+        }
+
+        body.theme-dark .confirm-modal-text {
+            color: #b7bcc4;
+        }
+
+        body.theme-dark .confirm-modal-btn-cancel {
+            background: #31343a;
+            border-color: #4b5057;
+            color: #e5e7eb;
+        }
+
+        body.theme-dark .confirm-modal-btn-submit {
+            background: #e5e7eb;
+            color: #111827;
+        }
+
+        @media (max-width: 1024px) {
+            .main-container {
+                flex-direction: column;
+            }
+
+            .right-panel,
+            .main-container.results-mode .right-panel {
+                display: none;
+            }
+
+            .left-panel,
+            .main-container.results-mode .left-panel {
+                width: 100%;
+                padding: 20px 10px;
+                height: auto;
+            }
+
+            .questions-container {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <div class="timer-container"><span class="timer-display">60:00</span></div>
+        <a href="https://t.me/+SoPpY9nBi3U0NTE1" target="_blank" class="telegram-link">MINDLESS WRITER</a>
+        <div class="header-tools">
+            <button type="button" id="fullscreen-btn" class="header-tool-btn" title="Fullscreen">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 11V3h-8l3.29 3.29-10 10L3 13v8h8l-3.29-3.29 10-10z"/></svg>
+            </button>
+            <button type="button" id="settings-btn" class="header-tool-btn" title="Settings">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <div class="audio-player-container">
+        <button id="play-pause-btn" class="player-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z" />
+            </svg>
+        </button>
+        <div class="progress-container">
+            <span id="current-time">0:00</span>
+            <input type="range" id="progress-bar" value="0" step="1" style="width:100%;">
+            <span id="total-duration">0:00</span>
+        </div>
+        <div class="controls-container">
+            <div style="display:flex;align-items:center;">
+                <button id="volume-btn" class="player-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                    </svg>
+                </button>
+                <input type="range" id="new-volume-slider" min="0" max="1" step="0.01" value="1">
+            </div>
+            <div class="speed-container">
+                <button id="speed-btn" class="player-btn">1x</button>
+                <div id="speed-options" class="hidden">
+                    <div data-speed="0.5">0.5x</div>
+                    <div data-speed="0.75">0.75x</div>
+                    <div data-speed="1">1x</div>
+                    <div data-speed="1.25">1.25x</div>
+                    <div data-speed="1.5">1.5x</div>
+                    <div data-speed="2">2x</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="left-panel">
+
+            <!-- ═══════════════════════ PART 1 ═══════════════════════ -->
+            <div id="part-1" class="question-part">
+                <div class="part-header">
+                    <p><strong>Part 1</strong></p>
+                    <p>Listen and answer questions 1–10.</p>
+                </div>
+                <div class="questions-container">
+                    <div class="question">
+                        <div class="question-prompt">
+                            <p><strong>Questions 1–10</strong></p>
+                            <p>Complete the notes below.</p>
+                            <p>Write <strong>ONE WORD ONLY</strong> for each answer.</p>
+                            <p class="centered-title" style="margin-top:10px;">Watertown Community Centre Programmes</p>
+                        </div>
+                        <div class="notes-block" style="border:1px solid #ccc;border-radius:5px;padding:20px;background:#fafafa;">
+                            <p style="margin-bottom:12px;"><em>Example:</em> Name of staff member: &nbsp;<strong>Maria</strong></p>
+                            <p style="font-weight:700;margin:6px 0 10px;">Yoga</p>
+                            <ul style="padding-left:24px;margin-bottom:14px;">
+                                <li style="margin-bottom:12px;">‘Modern Yoga’ is good for losing <input type="text" id="q1" class="answer-input" placeholder="1" style="width:150px;">.</li>
+                                <li style="margin-bottom:12px;">‘Yoga and More’ is beneficial for those with aches in their <input type="text" id="q2" class="answer-input" placeholder="2" style="width:150px;">.</li>
+                                <li style="margin-bottom:12px;">‘Original Yoga’ is great for <input type="text" id="q3" class="answer-input" placeholder="3" style="width:150px;">.</li>
+                                <li style="margin-bottom:12px;">Classes last for 55 minutes.</li>
+                                <li style="margin-bottom:12px;">Participants should bring a <input type="text" id="q4" class="answer-input" placeholder="4" style="width:150px;">.</li>
+                            </ul>
+                            <p style="font-weight:700;margin:6px 0 10px;">Ballet</p>
+                            <ul style="padding-left:24px;margin-bottom:14px;">
+                                <li style="margin-bottom:12px;">The Wednesday class focuses on difficult routines and <input type="text" id="q5" class="answer-input" placeholder="5" style="width:150px;">.</li>
+                                <li style="margin-bottom:12px;">The Thursday class is preparing for a <input type="text" id="q6" class="answer-input" placeholder="6" style="width:150px;">.</li>
+                            </ul>
+                            <p style="font-weight:700;margin:6px 0 10px;">Soccer</p>
+                            <ul style="padding-left:24px;margin-bottom:14px;">
+                                <li style="margin-bottom:12px;">In the Rookies team, the children learn the main skills of soccer.</li>
+                                <li style="margin-bottom:12px;">Parents bring a <input type="text" id="q7" class="answer-input" placeholder="7" style="width:150px;"> to be shared.</li>
+                            </ul>
+                            <p style="font-weight:700;margin:6px 0 10px;">Aerobics</p>
+                            <ul style="padding-left:24px;margin-bottom:14px;">
+                                <li style="margin-bottom:12px;">Classes are held 16 times a week.</li>
+                                <li style="margin-bottom:12px;">It’s best to go before <input type="text" id="q8" class="answer-input" placeholder="8" style="width:150px;"> instead of later.</li>
+                                <li style="margin-bottom:12px;">High-impact aerobics helps maintain a strong <input type="text" id="q9" class="answer-input" placeholder="9" style="width:150px;">.</li>
+                            </ul>
+                            <p style="font-weight:700;margin:6px 0 10px;">Registration procedures</p>
+                            <ul style="padding-left:24px;margin-bottom:14px;">
+                                <li style="margin-bottom:12px;">Can pay online or at <input type="text" id="q10" class="answer-input" placeholder="10" style="width:150px;"> in the centre.</li>
+                                <li style="margin-bottom:12px;">$360 for 12 weeks</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════ PART 2 ═══════════════════════ -->
+            <div id="part-2" class="question-part hidden">
+                <div class="part-header">
+                    <p><strong>Part 2</strong></p>
+                    <p>Listen and answer questions 11–20.</p>
+                </div>
+                <div class="questions-container">
+                    <div class="question">
+                        <div class="question-prompt">
+                            <p><strong>Questions 11 and 12</strong></p>
+                            <p>Choose <strong>TWO</strong> letters, <strong>A–E</strong>.</p>
+                        </div>
+                        <div class="choose-many-header">
+                            <span class="q-num-badge">11-12</span>
+                            <span>Which <strong>TWO</strong> facts are given about the lake in the Royal Nature Park?</span>
+                        </div>
+                        <div class="multi-choice-option"><label><input type="checkbox" name="q11-12" value="A"> <strong>A</strong> &nbsp; Aquatic life feeds on plants floating on the lake.</label></div>
+                        <div class="multi-choice-option"><label><input type="checkbox" name="q11-12" value="B"> <strong>B</strong> &nbsp; Visitors can swim in any part of the lake.</label></div>
+                        <div class="multi-choice-option"><label><input type="checkbox" name="q11-12" value="C"> <strong>C</strong> &nbsp; There is little life in the deepest parts of the lake.</label></div>
+                        <div class="multi-choice-option"><label><input type="checkbox" name="q11-12" value="D"> <strong>D</strong> &nbsp; The lake has very low water levels.</label></div>
+                        <div class="multi-choice-option"><label><input type="checkbox" name="q11-12" value="E"> <strong>E</strong> &nbsp; There is evidence that corn was grown nearby.</label></div>
+                    </div>
+                    <div class="question" style="margin-top:40px;">
+                        <div class="question-prompt">
+                            <p><strong>Questions 13 and 14</strong></p>
+                            <p>Choose <strong>TWO</strong> letters, <strong>A–E</strong>.</p>
+                        </div>
+                        <div class="choose-many-header">
+                            <span class="q-num-badge">13-14</span>
+                            <span>Which <strong>TWO</strong> facts are given about the First Nations longhouses in the park?</span>
+                        </div>
+                        <div class="multi-choice-option"><label><input type="checkbox" name="q13-14" value="A"> <strong>A</strong> &nbsp; They are built on two levels.</label></div>
+                        <div class="multi-choice-option"><label><input type="checkbox" name="q13-14" value="B"> <strong>B</strong> &nbsp; Several families might live in one house.</label></div>
+                        <div class="multi-choice-option"><label><input type="checkbox" name="q13-14" value="C"> <strong>C</strong> &nbsp; Animals were kept inside.</label></div>
+                        <div class="multi-choice-option"><label><input type="checkbox" name="q13-14" value="D"> <strong>D</strong> &nbsp; Children helped to build them.</label></div>
+                        <div class="multi-choice-option"><label><input type="checkbox" name="q13-14" value="E"> <strong>E</strong> &nbsp; They were later destroyed by fire.</label></div>
+                    </div>
+                    <div class="question" style="margin-top:40px;">
+                        <div class="question-prompt">
+                            <p><strong>Questions 15–20</strong></p>
+                            <p>Which activity will people do at each of the following events?</p>
+                            <p>Choose <strong>SIX</strong> answers from the box and write the correct letter, <strong>A–I</strong>, next to questions 15–20.</p>
+                        </div>
+                        <div class="matching-options-box">
+                            <p><strong>Activities</strong></p>
+                            <p style="margin-bottom:5px;"><strong>A</strong> &nbsp; enter a competition</p>
+                            <p style="margin-bottom:5px;"><strong>B</strong> &nbsp; pick produce</p>
+                            <p style="margin-bottom:5px;"><strong>C</strong> &nbsp; paint pictures of leaves</p>
+                            <p style="margin-bottom:5px;"><strong>D</strong> &nbsp; take a walk at night</p>
+                            <p style="margin-bottom:5px;"><strong>E</strong> &nbsp; follow winter trails</p>
+                            <p style="margin-bottom:5px;"><strong>F</strong> &nbsp; find carvings of endangered species</p>
+                            <p style="margin-bottom:5px;"><strong>G</strong> &nbsp; learn about production of a traditional food</p>
+                            <p style="margin-bottom:5px;"><strong>H</strong> &nbsp; participate in an animal show</p>
+                            <p style="margin-bottom:5px;"><strong>I</strong> &nbsp; feed the animals</p>
+                        </div>
+                        <p style="font-weight:600;margin-bottom:12px;">Events</p>
+                        <ul style="list-style:none;padding-left:0;">
+                            <li class="matching-item"><span><strong>15</strong> &nbsp; Sweet Water Season</span>
+                                <input type="text" id="q15" class="answer-input" placeholder="15" style="width:80px;"></li>
+                            <li class="matching-item"><span><strong>16</strong> &nbsp; Season of the Harvest</span>
+                                <input type="text" id="q16" class="answer-input" placeholder="16" style="width:80px;"></li>
+                            <li class="matching-item"><span><strong>17</strong> &nbsp; Fall into Nature</span>
+                                <input type="text" id="q17" class="answer-input" placeholder="17" style="width:80px;"></li>
+                            <li class="matching-item"><span><strong>18</strong> &nbsp; Moccasin Time</span>
+                                <input type="text" id="q18" class="answer-input" placeholder="18" style="width:80px;"></li>
+                            <li class="matching-item"><span><strong>19</strong> &nbsp; Hide and Seek Trail</span>
+                                <input type="text" id="q19" class="answer-input" placeholder="19" style="width:80px;"></li>
+                            <li class="matching-item"><span><strong>20</strong> &nbsp; Pine Ridge Way</span>
+                                <input type="text" id="q20" class="answer-input" placeholder="20" style="width:80px;"></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════ PART 3 ═══════════════════════ -->
+            <div id="part-3" class="question-part hidden">
+                <div class="part-header">
+                    <p><strong>Part 3</strong></p>
+                    <p>Listen and answer questions 21–30.</p>
+                </div>
+                <div class="questions-container">
+                    <div class="question">
+                        <div class="question-prompt">
+                            <p><strong>Questions 21–25</strong></p>
+                            <p>Complete the flow-chart below.</p>
+                            <p>Choose <strong>FIVE</strong> answers from the box and write the correct letter, <strong>A–G</strong>, next to questions 21–25.</p>
+                            <p class="centered-title" style="margin-top:10px;">How the Varroa mite attacks</p>
+                        </div>
+                        <div class="matching-options-box">
+                            <p><strong></strong></p>
+                            <p style="margin-bottom:5px;"><strong>A</strong> &nbsp; the blood</p>
+                            <p style="margin-bottom:5px;"><strong>B</strong> &nbsp; a flower</p>
+                            <p style="margin-bottom:5px;"><strong>C</strong> &nbsp; the hive</p>
+                            <p style="margin-bottom:5px;"><strong>D</strong> &nbsp; the honey</p>
+                            <p style="margin-bottom:5px;"><strong>E</strong> &nbsp; a honeycomb cell</p>
+                            <p style="margin-bottom:5px;"><strong>F</strong> &nbsp; the queen bee</p>
+                            <p style="margin-bottom:5px;"><strong>G</strong> &nbsp; a virus</p>
+                        </div>
+                        <div style="max-width:620px;margin:0 auto 10px;">
+                            <div style="border:1px solid #999;border-radius:4px;padding:10px 14px;background:#fff;text-align:center;">The mite moves from the bee to <input type="text" id="q21" class="answer-input" placeholder="21" style="width:80px;">.</div>
+                            <div style="text-align:center;font-size:20px;line-height:1;color:#666;margin:4px 0;">&#8595;</div>
+                            <div style="border:1px solid #999;border-radius:4px;padding:10px 14px;background:#fff;text-align:center;">The mite travels to <input type="text" id="q22" class="answer-input" placeholder="22" style="width:80px;"> on a new host.</div>
+                            <div style="text-align:center;font-size:20px;line-height:1;color:#666;margin:4px 0;">&#8595;</div>
+                            <div style="border:1px solid #999;border-radius:4px;padding:10px 14px;background:#fff;text-align:center;">Inside, the mite enters the honeycomb cell.</div>
+                            <div style="text-align:center;font-size:20px;line-height:1;color:#666;margin:4px 0;">&#8595;</div>
+                            <div style="border:1px solid #999;border-radius:4px;padding:10px 14px;background:#fff;text-align:center;">The mite uses <input type="text" id="q23" class="answer-input" placeholder="23" style="width:80px;"> to hide its smell.</div>
+                            <div style="text-align:center;font-size:20px;line-height:1;color:#666;margin:4px 0;">&#8595;</div>
+                            <div style="border:1px solid #999;border-radius:4px;padding:10px 14px;background:#fff;text-align:center;">The mite feeds on <input type="text" id="q24" class="answer-input" placeholder="24" style="width:80px;"> of the bee larva.</div>
+                            <div style="text-align:center;font-size:20px;line-height:1;color:#666;margin:4px 0;">&#8595;</div>
+                            <div style="border:1px solid #999;border-radius:4px;padding:10px 14px;background:#fff;text-align:center;">The mite reproduces and moves on.</div>
+                            <div style="text-align:center;font-size:20px;line-height:1;color:#666;margin:4px 0;">&#8595;</div>
+                            <div style="border:1px solid #999;border-radius:4px;padding:10px 14px;background:#fff;text-align:center;">The bee is left weakened and with <input type="text" id="q25" class="answer-input" placeholder="25" style="width:80px;">.</div>
+                        </div>
+                    </div>
+                    <div class="question" style="margin-top:40px;">
+                        <div class="question-prompt">
+                            <p><strong>Questions 26–30</strong></p>
+                            <p>What problem do the speakers identify with each of the following types of bee?</p>
+                            <p>Choose <strong>FIVE</strong> answers from the box and write the correct letter, <strong>A–G</strong>, next to questions 26–30.</p>
+                        </div>
+                        <div class="matching-options-box">
+                            <p><strong>Problems</strong></p>
+                            <p style="margin-bottom:5px;"><strong>A</strong> &nbsp; could introduce pests</p>
+                            <p style="margin-bottom:5px;"><strong>B</strong> &nbsp; needs a warm climate</p>
+                            <p style="margin-bottom:5px;"><strong>C</strong> &nbsp; not much is known about it</p>
+                            <p style="margin-bottom:5px;"><strong>D</strong> &nbsp; numbers are too few to help farmers</p>
+                            <p style="margin-bottom:5px;"><strong>E</strong> &nbsp; spreads weeds</p>
+                            <p style="margin-bottom:5px;"><strong>F</strong> &nbsp; too aggressive</p>
+                            <p style="margin-bottom:5px;"><strong>G</strong> &nbsp; unable to produce honey</p>
+                        </div>
+                        <p style="font-weight:600;margin-bottom:12px;">Types of bee</p>
+                        <ul style="list-style:none;padding-left:0;">
+                            <li class="matching-item"><span><strong>26</strong> &nbsp; European Bumblebee</span>
+                                <input type="text" id="q26" class="answer-input" placeholder="26" style="width:80px;"></li>
+                            <li class="matching-item"><span><strong>27</strong> &nbsp; Blue Banded Bee</span>
+                                <input type="text" id="q27" class="answer-input" placeholder="27" style="width:80px;"></li>
+                            <li class="matching-item"><span><strong>28</strong> &nbsp; Africanised Bee</span>
+                                <input type="text" id="q28" class="answer-input" placeholder="28" style="width:80px;"></li>
+                            <li class="matching-item"><span><strong>29</strong> &nbsp; Australian Stingless Bee</span>
+                                <input type="text" id="q29" class="answer-input" placeholder="29" style="width:80px;"></li>
+                            <li class="matching-item"><span><strong>30</strong> &nbsp; Canadian Leafcutter Bee</span>
+                                <input type="text" id="q30" class="answer-input" placeholder="30" style="width:80px;"></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════ PART 4 ═══════════════════════ -->
+            <div id="part-4" class="question-part hidden">
+                <div class="part-header">
+                    <p><strong>Part 4</strong></p>
+                    <p>Listen and answer questions 31–40.</p>
+                </div>
+                <div class="questions-container">
+                    <div class="question">
+                        <div class="question-prompt">
+                            <p><strong>Questions 31–40</strong></p>
+                            <p>Complete the notes below.</p>
+                            <p>Write <strong>ONE WORD ONLY</strong> for each answer.</p>
+                            <p class="centered-title" style="margin-top:10px;">After Action Review Process</p>
+                        </div>
+                        <div class="notes-block" style="border:1px solid #ccc;border-radius:5px;padding:20px;background:#fafafa;">
+                            <p style="font-weight:700;margin:6px 0 10px;">Background</p>
+                            <p style="margin-bottom:12px;">A way of evaluating during a project in order to make improvements</p>
+                            <p style="margin-bottom:12px;">Developed by the <input type="text" id="q31" class="answer-input" placeholder="31" style="width:150px;">.</p>
+                            <p style="font-weight:700;margin:6px 0 10px;">Benefits</p>
+                            <p style="margin-bottom:12px;">Not just for large projects — can also be used after:</p>
+                            <ul style="padding-left:24px;margin-bottom:14px;">
+                                <li style="margin-bottom:12px;">a staff meeting</li>
+                                <li style="margin-bottom:12px;">a <input type="text" id="q32" class="answer-input" placeholder="32" style="width:150px;"> incident</li>
+                            </ul>
+                            <p style="margin-bottom:12px;">Develops better team communication because of the emphasis on <input type="text" id="q33" class="answer-input" placeholder="33" style="width:150px;">.</p>
+                            <p style="font-weight:700;margin:6px 0 10px;">What is an After Action Review?</p>
+                            <p style="margin-bottom:12px;">It’s a meeting that:</p>
+                            <ul style="padding-left:24px;margin-bottom:14px;">
+                                <li style="margin-bottom:12px;">concentrates on results and the <input type="text" id="q34" class="answer-input" placeholder="34" style="width:150px;"> for them</li>
+                                <li style="margin-bottom:12px;">encourages participation</li>
+                                <li style="margin-bottom:12px;">stresses the need to <input type="text" id="q35" class="answer-input" placeholder="35" style="width:150px;"> each other</li>
+                            </ul>
+                            <p style="font-weight:700;margin:6px 0 10px;">Things to remember when conducting an After Action Review</p>
+                            <ul style="padding-left:24px;margin-bottom:14px;">
+                                <li style="margin-bottom:12px;">Use an external facilitator (so stronger team members cannot dominate).</li>
+                                <li style="margin-bottom:12px;">To encourage participation, get the group’s thoughts in <input type="text" id="q36" class="answer-input" placeholder="36" style="width:150px;">.</li>
+                                <li style="margin-bottom:12px;">Remember to use <input type="text" id="q37" class="answer-input" placeholder="37" style="width:150px;"> questions.</li>
+                                <li style="margin-bottom:12px;">Give any recommendations to other team <input type="text" id="q38" class="answer-input" placeholder="38" style="width:150px;">.</li>
+                                <li style="margin-bottom:12px;">Make sure you follow up on ideas and provide <input type="text" id="q39" class="answer-input" placeholder="39" style="width:150px;"> for employees.</li>
+                                <li style="margin-bottom:12px;">Remember to check the <input type="text" id="q40" class="answer-input" placeholder="40" style="width:150px;"> often.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- end left-panel -->
+
+        <div class="right-panel">
+            <div id="transcription-container">
+                <h2 style="font-size:18px;font-weight:bold;margin-bottom:10px;">Transcription</h2>
+                <div id="transcription-text"></div>
+            </div>
+        </div>
+    </div><!-- end main-container -->
+
+    <!-- ═══ TRANSKRIPT (natijalar rejimida o'ng panelda ko'rinadi) ═══ -->
+    <div id="transcription-data" style="display:none;">
+        <div data-part="1">
+            <p>IELTS Listening You will hear a number of different recordings, and you will have to answer questions on what you hear. There will be time for you to read the instructions and questions, and you will have a chance to check your work. All the recordings will be played once only. The test is in four sections.</p>
+            <p>Write all your answers in the listening question booklet. At the end of the test, you will be given 10 minutes to transfer your answers to an answer sheet.</p>
+            <p>Now turn to section 1 on page 2 of your question booklet.</p>
+            <p>Section 1 You will hear a man phoning a community center to find out about the programs they run.</p>
+            <p>First, you have some time to look at questions 1 to 6 on page 2. You will see that there is an example that has been done for you. On this occasion only, the conversation relating to this will be played first. Good afternoon. Watertown Community Center registration desk. Maria speaking. Oh, good afternoon. I'm calling about registering my family in some of your programs.</p>
+            <p>The name of the person on the registration desk is Maria. So, Maria has been written in the space. Now we shall begin. You should answer the questions as you listen, because you will not hear the recording a second time. Listen carefully and answer questions 1 to 6.</p>
+            <p>Good afternoon. Watertown Community Center registration desk. Maria speaking. Oh, good afternoon. I'm calling about registering my family in some of your programs. Certainly. Which ones? Well, let's start with me. I want to take a yoga class. Can you tell me about the different classes you offer? Well, our modern yoga class is great if you're looking for a real workout or if you want to <span class="t-hl" data-q="1" data-time="166"><span class="t-qmark">1</span>get rid of some excess weight<span class="t-note">(weight)</span></span>.</p>
+            <p>You'll definitely sweat in this class. Sounds good. Our Yoga and More class combines the best of yoga and Pilates to help strengthen a person's core muscles. <span class="t-hl" data-q="2" data-time="188"><span class="t-qmark">2</span>Would it help me with my sore back?<span class="t-note">(back)</span></span> Yes. A lot of people find it helps.</p>
+            <p>We also have our original yoga class. If you're more advanced, I wouldn't recommend it, but <span class="t-hl" data-q="3" data-time="197"><span class="t-qmark">3</span>it's a good choice for beginners<span class="t-note">(beginners — “advanced” tuzoq)</span></span>. Thanks. How long are the classes? Uh, the classes used to be 45 minutes long, but we've added 10 minutes of relaxation at the end this year, so the classes are 55 minutes long. Is there anything I need to bring?</p>
+            <p>We provide towels if you want to have a shower afterwards, but for the class <span class="t-hl" data-q="4" data-time="219"><span class="t-qmark">4</span>you'll need to bring your own mat<span class="t-note">(mat — towel markaz beradi, tuzoq)</span></span>. Okay, sounds good. Can I help you with anything else? Yes. What about ballet classes? My daughter loves ballet, and she's done it for six years.</p>
+            <p>Well, then we've got some advanced classes. We offer a class on Wednesdays. <span class="t-hl" data-q="5" data-time="245"><span class="t-qmark">5</span>It concentrates on complicated routines and jumps<span class="t-note">(jumps)</span></span>. We also have a class on Thursdays, which your daughter could possibly do as well. She would have to try out for it because <span class="t-hl" data-q="6" data-time="254"><span class="t-qmark">6</span>they're getting ready for a competition<span class="t-note">(competition)</span></span>.</p>
+            <p>Okay, I'll let her know.</p>
+            <p>Before you hear the rest of the conversation, you have some time to look at questions seven to ten on page two.</p>
+            <p>Now listen and answer questions seven to ten. Now, anything else? Yes. My son wants to play soccer. He's never done it before. Our rookies team would be a perfect fit for him. We don't focus on rules. We just try to help children develop the basic skills in a fun way.</p>
+            <p>Okay, what day is that? Uh, they play on Thursdays at five. Does that work for you? Yes, that's perfect. Do I need to provide anything? Does he need his own ball? No, that's all taken care of. Oh, we do request the parents take turns <span class="t-hl" data-q="7" data-time="332"><span class="t-qmark">7</span>providing a snack for the team to share<span class="t-note">(snack — ball kerak emas, tuzoq)</span></span> at halftime.</p>
+            <p>You'll be given a schedule for when it's your turn. Okay. Great. Are you interested in anything else? Actually, yes. My wife wanted me to ask you about your aerobics classes. Yes, we have them 16 times a week at various times. The evening classes are really popular,</p>
+            <p><span class="t-hl" data-q="8" data-time="360"><span class="t-qmark">8</span>so I'd recommend she come before she starts work<span class="t-note">(work — kechki darslar gavjum)</span></span> if she can. Are all the aerobics classes the same? We have many different classes. For example, some emphasize using weights to improve muscle tone. In other classes, they really work on high-impact aerobics <span class="t-hl" data-q="9" data-time="374"><span class="t-qmark">9</span>to keep the heart strong<span class="t-note">(heart — muscle tone boshqa sinf)</span></span>. Okay. Can I register my family? My name's Bob Hanson.</p>
+            <p>Okay, I've signed your family up, so your registration will be held for 24 hours, okay? Yes. How do I pay? I can't take payment over the phone. You can pay for this online by credit or debit card, <span class="t-hl" data-q="10" data-time="402"><span class="t-qmark">10</span>or you can pay at reception<span class="t-note">(reception — telefonda to'lab bo'lmaydi)</span></span>. Okay. I'd like to pay in person. Can I get a tour of the facilities while I'm there?</p>
+            <p>Yes. Come by during business hours. The cost will be $360 for your entire family for 12 weeks. You've been most helpful. Thanks. You're welcome. Bye.</p>
+            <p>That is the end of section one. You now have half a minute to check your answers.</p>
+        </div>
+        <div data-part="2">
+            <p>Now turn to section two on page three. Section two. You will hear a podcast about a famous park in Canada. First, you have some time to look at questions 11 to 14 on page three.</p>
+            <p>Now listen carefully and answer questions 11 to 14. Good afternoon, and welcome to this podcast about Royal Nature Park. It's a historical park in Canada that was home to the First Nations people and early settlers many years ago. First Nations groups settled in this area around a lake over 600 years ago, and <span class="t-hl" data-q="12" data-time="523"><span class="t-qmark">12</span>the discovery of corn residue<span class="t-note">(E — makkajo'xori)</span></span> at the lowest level of the lake led scientists to believe that corn was once cultivated in the</p>
+            <p>area by the First Nations people. This lake, now in the center of the park, has varying depths and temperatures. Parts of the lake are <span class="t-hl" data-q="11" data-time="543"><span class="t-qmark">11</span>so deep that there is virtually no oxygen and sunlight<span class="t-note">(C — chuqur joyda hayot kam)</span></span>. This means that plants and fish have trouble surviving there. The only natural residents of the lake are large turtles that lie on rocks or at the lake edge. Visitors are asked not to swim in the lake so as not to disturb them, but it's fine to take photos of them.</p>
+            <p>The park has a replica of a First Nations village from long ago. This includes three reconstructed longhouses where families live together. We built them based on pictures and findings to resemble the ones from over 600 years ago. They're called longhouses mainly for their shape. They're long but not tall and have benches on both sides of the house that are used as beds. The people used furs from animals to keep warm at night, and they built fire pits inside for</p>
+            <p>warmth and cooking, especially during the winter. <span class="t-hl" data-q="13" data-time="599"><span class="t-qmark">13</span>The houses often were home for a number of<span class="t-note">(B — bir nechta oila)</span></span> families. <span class="t-hl" data-q="14" data-time="606"><span class="t-qmark">14</span>All members of the families helped to build the house<span class="t-note">(D — bolalar ham qurgan)</span></span> and contributed to the daily work, including children. Before you hear the rest of the podcast, you have some time to look at questions 15 to 20 on page 4. Now listen and answer questions 15 to 20. There are many things to do and see during the year at Royal Nature Park. During the spring,</p>
+            <p>treat your taste buds to an event called Sweet Water Season, the sweetest festival here at the park. Find out how the early settlers <span class="t-hl" data-q="15" data-time="674"><span class="t-qmark">15</span>removed the liquid called sap from the maple trees<span class="t-note">(G — sharbat/sirop tayyorlash)</span></span>. They boiled it into a thick syrup that they used to sweeten food. Samples are available for those who wish to taste it. A favourite event is our Season of the Harvest programme.</p>
+            <p><span class="t-hl" data-q="16" data-time="693"><span class="t-qmark">16</span>Gather apples from the trees<span class="t-note">(B — hosil terish)</span></span> and join us in the fields as we harvest pumpkins, beans and potatoes. Early settlers relied on these crops for the winter. You can even purchase some of the fresh fruit and vegetables in the gift shop. Join the Fall Into Nature Festival for a special live viewing of hawks and other birds of prey. During the display, watch our trained staff work with these creatures in their natural habitat.</p>
+            <p><span class="t-hl" data-q="17" data-time="723"><span class="t-qmark">17</span>Visitors can have the thrill of a wild bird landing on their arm<span class="t-note">(H — hayvonlar ko'rgazmasi)</span></span>. Our Moccasin Time event is held every four weeks at the time of the full moon. <span class="t-hl" data-q="18" data-time="733"><span class="t-qmark">18</span>It starts at 11pm<span class="t-note">(D — tungi sayr)</span></span> and it takes an hour to cover the park on foot, so you'll need to bring a flashlight. If you listen carefully, you may be able to hear the owls calling to each other as they hunt for food in the dark. In September, try the Hide and Seek Trail.</p>
+            <p>Take it towards the lake and you'll see some sculptures cut into old trees and logs with a knife. These represent the wildlife of the area, including bears, birds and reptiles, <span class="t-hl" data-q="19" data-time="765"><span class="t-qmark">19</span>which are rapidly disappearing<span class="t-note">(F — yo'qolib borayotgan hayvonlar o'ymakorligi)</span></span>. See if you can identify the animal in each sculpture. In the snowy season, join a group and <span class="t-hl" data-q="20" data-time="772"><span class="t-qmark">20</span>try cross-country skiing on Pine Ridge Way<span class="t-note">(E — qishki yo'llar)</span></span>. You'll head through frosted pine trees and over snow-covered hills. There are many paths for you</p>
+            <p>to choose from. Look out for the arrows on trees to get back to the visitor's center and get warm.</p>
+            <p>That is the end of section 2. You now have half a minute to check your answers.</p>
+        </div>
+        <div data-part="3">
+            <p>Now turn to section 3 on page 5. Section 3. You will hear two researchers comparing their research on different types of bees. First, you have some time to look at questions 21 to 25 on page 5. Now listen carefully and answer questions 21 to 25. Have you had a chance to look at our research on Australian native bees? Yes, it's very relevant to my research on European bees.</p>
+            <p>What aspect do you think is most relevant? Well, as you know, my main research interest is the European honey bee and the problems facing it. Yes, I've heard about the varroa mite, but I don't know much about it. Well, it almost wiped out the European honey bee population in North America back in the 1980s. Thankfully, we don't have it here in Australia yet. It sounds like a nasty little creature.</p>
+            <p>It certainly is. It's like a little hitchhiker, really. It hops onto a bee, then <span class="t-hl" data-q="21" data-time="921"><span class="t-qmark">21</span>when the bee lands on a flower<span class="t-note">(B — a flower)</span></span>, the mite gets off and waits for another bee to come along. And from there, I guess the mite climbs onto another bee. Right. The mite then <span class="t-hl" data-q="22" data-time="929"><span class="t-qmark">22</span>hitches a ride back to the hive<span class="t-note">(C — the hive)</span></span> where the bee lives with the rest of the colony. So the mite actually sneaks inside the hive on top of the bee's back.</p>
+            <p>That's right. And once it's there, it dives into a honeycomb cell and heads straight for the bottom. That's where the queen bee's eggs are. And the honey. Yes. And the mite buries itself deep inside it. Ah, I see. The mite doesn't eat the honey, though, does it?</p>
+            <p>Well, no. That's the interesting part. <span class="t-hl" data-q="23" data-time="955"><span class="t-qmark">23</span>It uses the honey to cover its scent<span class="t-note">(D — the honey)</span></span>, so it won't be detected. And presumably, <span class="t-hl" data-q="24" data-time="962"><span class="t-qmark">24</span>it lives off the blood of the bees<span class="t-note">(A — the blood)</span></span>. That's right. It feeds on the bee larva that hatches out from the egg. The mite's reproductive cycle takes place there, too, while it's living in the cell.</p>
+            <p>When that's finished, it leaves. It sounds like a clever enemy. But why does it have such a devastating effect on bee populations? Well, it leaves them debilitated, and it also <span class="t-hl" data-q="25" data-time="983"><span class="t-qmark">25</span>infects them with a virus<span class="t-note">(G — a virus)</span></span> that spreads amongst the colony. If the population dies out here in Australia, it will have a devastating effect on Australian</p>
+            <p>agriculture. The worrying thing is that we do need to find a way of increasing our bee population.</p>
+            <p>Before you hear the rest of the discussion, you have some time to look at questions 26 to 30 on page 6. Now listen and answer questions 26 to 30. Well, perhaps we can combine my research on European bees and yours on Australian native bees to put together a research proposal and find a way of safely increasing the Australian bee population.</p>
+            <p>That would be great. Let's compare notes. Okay, then. Let's start with the European bumblebee. There's been a lot of talk recently about bringing them into this country. Yes, but the problem is that the bumblebee has a tendency to <span class="t-hl" data-q="26" data-time="1065"><span class="t-qmark">26</span>carry weeds to nearby farmland<span class="t-note">(E — begona o't tarqatadi)</span></span>. They would also compete for nectar with your existing bees.</p>
+            <p>You know, there's an Australian native bee, the blue banded bee, which is good at pollinating without carrying weeds. It could be useful to farmers. The blue banded bee? I've never heard of that one. That's one of the challenges we face because <span class="t-hl" data-q="27" data-time="1086"><span class="t-qmark">27</span>there hasn't been a lot of research on it<span class="t-note">(C — kam o'rganilgan)</span></span> as yet.</p>
+            <p>Well, it's better to use native bees because importing them can be disastrous. The Africanised bees are case in point. It was introduced into South America because it was a good honey producer, but what they didn't realise was that <span class="t-hl" data-q="28" data-time="1099"><span class="t-qmark">28</span>it attacks anything that moves<span class="t-note">(F — o'ta tajovuzkor)</span></span>. Speaking of honey producers, the Australian stingless bee is a good alternative source of honey.</p>
+            <p>Oh, I didn't know they produced honey. Yes, although they don't produce as much as other bees do. The main drawback with the stingless bees is that <span class="t-hl" data-q="29" data-time="1118"><span class="t-qmark">29</span>they're quite sensitive to temperature<span class="t-note">(B — iliq iqlim kerak)</span></span>. They just won't fly if it gets below 18 degrees, so they aren't really suited to southern parts of Australia.</p>
+            <p>I know how you feel about foreign bees, but I think my favourite bee is a Canadian leafcutter bee. It has such a gentle personality, but it's really hard working too and it's got a lot of potential for farmers. Why is that? Well, I've been asked to help import them to this country to pollinate the lucerne or alfalfa</p>
+            <p>crops. At the moment, Australian production is about a third of that in North America, where they have these leafcutter bees. That's quite a difference, but is it safe to import these bees? Well, our research shows that it is, so they've been importing them in very limited numbers. They have to be thoroughly checked first before they're released to make sure that</p>
+            <p>they don't have any mites or diseases. Well, that's good. Yes. Of course, the only drawback is that <span class="t-hl" data-q="30" data-time="1172"><span class="t-qmark">30</span>we can't bring in very many at a time<span class="t-note">(D — soni kam)</span></span>, so we still don't have enough of them here to really make much difference to our crop yields. Yes, it takes time to build up a bee population.</p>
+            <p>That is the end of section 3. You now have half a minute to check your answers.</p>
+        </div>
+        <div data-part="4">
+            <p>Now turn to section 4 on page 7.</p>
+            <p>Section 4. You will hear an expert giving a lecture to business students about how to review a project.</p>
+            <p>First, you have some time to look at questions 31 to 40 on page 7.</p>
+            <p>Now listen carefully and answer questions 31 to 40. In the last lecture, we looked at managing a project to completion. Today, we're going to be looking at a way of judging just how successful your project has been. It's called the after-action review process. A typical project review is completed long after the project is finished,</p>
+            <p>and so it's too late to change the outcome. Wouldn't it be better to evaluate it along the way so you can learn from your mistakes at each stage and improve on them? It was for this reason that <span class="t-hl" data-q="31" data-time="1335"><span class="t-qmark">31</span>the Army devised the after-action review process<span class="t-note">(army)</span></span> as a way for everyone to learn quickly from experiences in the field.</p>
+            <p>Okay, so what are the benefits of using an after-action review? Firstly, it's not just limited to very large or very formal projects, but is useful for all sorts of things. For example, you may want to use it to debrief following a staff meeting or any other regular operational function.</p>
+            <p>In the same manner, it's an extremely effective tool to use <span class="t-hl" data-q="32" data-time="1366"><span class="t-qmark">32</span>following a safety incident<span class="t-note">(safety)</span></span> and can reveal important lessons so that accidents can be avoided in the future. So you can see that this would definitely be a positive step for any business. An added benefit of the review is that <span class="t-hl" data-q="33" data-time="1383"><span class="t-qmark">33</span>because the focus is on learning<span class="t-note">(learning)</span></span>, it really improves communication within working groups.</p>
+            <p>So let's have a look at what an after-action review is. It's a structured session or meeting that does the following. It focuses on the resulting outcomes and <span class="t-hl" data-q="34" data-time="1401"><span class="t-qmark">34</span>the reasons for these<span class="t-note">(reasons)</span></span>. It encourages active participation among the team and, very importantly, emphasises how vital it is <span class="t-hl" data-q="35" data-time="1411"><span class="t-qmark">35</span>for the team to trust one another<span class="t-note">(trust)</span></span>.</p>
+            <p>Here are some of the key elements to remember for when you're conducting an after-action review. Where possible, it's really good to have an external person to facilitate the process. This helps to direct the discussion and can also prevent a stronger member of the review from dominating the others. Make sure that you encourage active involvement.</p>
+            <p>Often, shy members won't say anything, so one way to encourage them to get involved is to ask people to <span class="t-hl" data-q="36" data-time="1448"><span class="t-qmark">36</span>put their comments in writing<span class="t-note">(writing)</span></span>. If they aren't given the opportunity to do this, they may be intimidated by other members of the group. Another key element is to be aware of the type of questions you ask.</p>
+            <p>In order to make sure that participants don't search for what they think is the perfect answer, <span class="t-hl" data-q="37" data-time="1470"><span class="t-qmark">37</span>always ask open questions<span class="t-note">(open)</span></span>. For example, what would you do differently next time? Ensure that every member of the team has the chance to speak. It's also important to make sure you write down the specific recommendations made by everyone.</p>
+            <p>But don't forget to pass this information on to <span class="t-hl" data-q="38" data-time="1489"><span class="t-qmark">38</span>non-participating team leaders<span class="t-note">(leaders)</span></span> so that they too can learn from the experience. This is how after-action reviews contribute to organisation-wide learning and improvement. However, if no one follows up on these recommendations, then the process is wasted. You should also ensure that the ideas from the after-action review</p>
+            <p>are incorporated into your business by <span class="t-hl" data-q="39" data-time="1516"><span class="t-qmark">39</span>organising staff training around them<span class="t-note">(training)</span></span>. Finally, the last thing you want is to find that you don't get through everything because you've been talking too much, so make sure you <span class="t-hl" data-q="40" data-time="1527"><span class="t-qmark">40</span>keep a constant eye on the time<span class="t-note">(time)</span></span>. An after-action review is not something that you should ever plan on conducting in two sessions. Now, before we go on to look at the next type of project review,</p>
+            <p>the PIP, post-implementation review, are there any questions?</p>
+            <p>That is the end of section 4. You now have half a minute to check your answers.</p>
+            <p>That is the end of the listening test.</p>
+        </div>
+    </div>
+
+    <audio id="global-audio-player" class="hidden"></audio>
+
+    <!-- Nav Arrows -->
+    <div class="nav-arrows">
+        <button class="nav-arrow" onclick="previousPart()" id="prevBtn">&#8249;</button>
+        <button class="nav-arrow" onclick="nextPart()" id="nextBtn">&#8250;</button>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="nav-row" aria-label="Questions">
+        <div class="footer__questionWrapper___1tZ46 selected multiple" role="tablist">
+            <button role="tab" class="footer__questionNo___3WNct" onclick="switchToPart(1)">
+                <span><span class="section-prefix">Part </span><span class="sectionNr">1</span><span
+                        class="attemptedCount">0 of 10</span></span>
+            </button>
+            <div class="footer__subquestionWrapper___9GgoP">
+                <button class="subQuestion" onclick="goToQuestion(1)"><span class="sr-only">Q1</span><span>1</span></button>
+                <button class="subQuestion" onclick="goToQuestion(2)"><span class="sr-only">Q2</span><span>2</span></button>
+                <button class="subQuestion" onclick="goToQuestion(3)"><span class="sr-only">Q3</span><span>3</span></button>
+                <button class="subQuestion" onclick="goToQuestion(4)"><span class="sr-only">Q4</span><span>4</span></button>
+                <button class="subQuestion" onclick="goToQuestion(5)"><span class="sr-only">Q5</span><span>5</span></button>
+                <button class="subQuestion" onclick="goToQuestion(6)"><span class="sr-only">Q6</span><span>6</span></button>
+                <button class="subQuestion" onclick="goToQuestion(7)"><span class="sr-only">Q7</span><span>7</span></button>
+                <button class="subQuestion" onclick="goToQuestion(8)"><span class="sr-only">Q8</span><span>8</span></button>
+                <button class="subQuestion" onclick="goToQuestion(9)"><span class="sr-only">Q9</span><span>9</span></button>
+                <button class="subQuestion" onclick="goToQuestion(10)"><span class="sr-only">Q10</span><span>10</span></button>
+            </div>
+        </div>
+        <div class="footer__questionWrapper___1tZ46 multiple" role="tablist">
+            <button role="tab" class="footer__questionNo___3WNct" onclick="switchToPart(2)">
+                <span><span class="section-prefix">Part </span><span class="sectionNr">2</span><span
+                        class="attemptedCount">0 of 10</span></span>
+            </button>
+            <div class="footer__subquestionWrapper___9GgoP">
+                <button class="subQuestion" onclick="goToQuestion(11)"><span>11</span></button>
+                <button class="subQuestion" onclick="goToQuestion(12)"><span>12</span></button>
+                <button class="subQuestion" onclick="goToQuestion(13)"><span>13</span></button>
+                <button class="subQuestion" onclick="goToQuestion(14)"><span>14</span></button>
+                <button class="subQuestion" onclick="goToQuestion(15)"><span>15</span></button>
+                <button class="subQuestion" onclick="goToQuestion(16)"><span>16</span></button>
+                <button class="subQuestion" onclick="goToQuestion(17)"><span>17</span></button>
+                <button class="subQuestion" onclick="goToQuestion(18)"><span>18</span></button>
+                <button class="subQuestion" onclick="goToQuestion(19)"><span>19</span></button>
+                <button class="subQuestion" onclick="goToQuestion(20)"><span>20</span></button>
+            </div>
+        </div>
+        <div class="footer__questionWrapper___1tZ46 multiple" role="tablist">
+            <button role="tab" class="footer__questionNo___3WNct" onclick="switchToPart(3)">
+                <span><span class="section-prefix">Part </span><span class="sectionNr">3</span><span
+                        class="attemptedCount">0 of 10</span></span>
+            </button>
+            <div class="footer__subquestionWrapper___9GgoP">
+                <button class="subQuestion" onclick="goToQuestion(21)"><span>21</span></button>
+                <button class="subQuestion" onclick="goToQuestion(22)"><span>22</span></button>
+                <button class="subQuestion" onclick="goToQuestion(23)"><span>23</span></button>
+                <button class="subQuestion" onclick="goToQuestion(24)"><span>24</span></button>
+                <button class="subQuestion" onclick="goToQuestion(25)"><span>25</span></button>
+                <button class="subQuestion" onclick="goToQuestion(26)"><span>26</span></button>
+                <button class="subQuestion" onclick="goToQuestion(27)"><span>27</span></button>
+                <button class="subQuestion" onclick="goToQuestion(28)"><span>28</span></button>
+                <button class="subQuestion" onclick="goToQuestion(29)"><span>29</span></button>
+                <button class="subQuestion" onclick="goToQuestion(30)"><span>30</span></button>
+            </div>
+        </div>
+        <div class="footer__questionWrapper___1tZ46 multiple" role="tablist">
+            <button role="tab" class="footer__questionNo___3WNct" onclick="switchToPart(4)">
+                <span><span class="section-prefix">Part </span><span class="sectionNr">4</span><span
+                        class="attemptedCount">0 of 10</span></span>
+            </button>
+            <div class="footer__subquestionWrapper___9GgoP">
+                <button class="subQuestion" onclick="goToQuestion(31)"><span>31</span></button>
+                <button class="subQuestion" onclick="goToQuestion(32)"><span>32</span></button>
+                <button class="subQuestion" onclick="goToQuestion(33)"><span>33</span></button>
+                <button class="subQuestion" onclick="goToQuestion(34)"><span>34</span></button>
+                <button class="subQuestion" onclick="goToQuestion(35)"><span>35</span></button>
+                <button class="subQuestion" onclick="goToQuestion(36)"><span>36</span></button>
+                <button class="subQuestion" onclick="goToQuestion(37)"><span>37</span></button>
+                <button class="subQuestion" onclick="goToQuestion(38)"><span>38</span></button>
+                <button class="subQuestion" onclick="goToQuestion(39)"><span>39</span></button>
+                <button class="subQuestion" onclick="goToQuestion(40)"><span>40</span></button>
+            </div>
+        </div>
+        <button id="deliver-button" class="footer__deliverButton___3FM07"><span>Check Answers</span></button>
+    </nav>
+
+    <!-- Context Menu -->
+    <div id="contextMenu" class="context-menu">
+        <div class="context-menu-item" id="clear-item" onclick="clearHighlight()" style="display:none;">Clear</div>
+        <div class="context-menu-item" onclick="clearAllHighlights()">Clear All</div>
+    </div>
+
+    <!-- Matn belgilanganda avtomatik chiqadigan asboblar paneli -->
+    <div id="selectionToolbar" class="selection-toolbar" style="display:none;">
+        <button type="button" onclick="addComment()">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM9 11H7V9h2v2zm4 0h-2V9h2v2zm4 0h-2V9h2v2z"/></svg>
+            <span>Note</span>
+        </button>
+        <button type="button" onclick="highlightText()">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17.75 7L14 3.25l-10 10V17h3.75l10-10zm2.96-2.96c.39-.39.39-1.02 0-1.41L18.37.29c-.39-.39-1.02-.39-1.41 0L15 2.25 18.75 6l1.96-1.96z"/><path d="M2 20h20v3H2z"/></svg>
+            <span>Highlight</span>
+        </button>
+    </div>
+
+    <!-- Result Modal -->
+    <div id="result-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Your Results</h2>
+                <button id="modal-close-button" class="modal-close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="score-summary"></p>
+                <div id="result-details"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Exam Settings oynasi -->
+    <div id="settings-modal" class="modal-overlay" style="display:none;">
+        <div class="settings-modal-content">
+            <div class="settings-header">
+                <span class="settings-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+                    Exam Settings
+                </span>
+                <button type="button" id="settings-close" class="settings-close">&times;</button>
+            </div>
+
+            <p class="settings-section-title">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 0 0-1.41 0 .996.996 0 0 0 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 0 0-1.41 0 .996.996 0 0 0 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 0 0 0-1.41l-1.06-1.06zm1.06-10.96a.996.996 0 0 0 0-1.41.996.996 0 0 0-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36a.996.996 0 0 0 0-1.41.996.996 0 0 0-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>
+                Theme
+            </p>
+            <button type="button" class="settings-option" data-theme="light">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 0 0-1.41 0 .996.996 0 0 0 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 0 0-1.41 0 .996.996 0 0 0 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 0 0 0-1.41l-1.06-1.06zm1.06-10.96a.996.996 0 0 0 0-1.41.996.996 0 0 0-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36a.996.996 0 0 0 0-1.41.996.996 0 0 0-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>
+                Light
+            </button>
+            <button type="button" class="settings-option" data-theme="dark">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
+                Dark
+            </button>
+            <button type="button" class="settings-option" data-theme="system">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 2H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h7v2H8v2h8v-2h-2v-2h7c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H3V4h18v12z"/></svg>
+                System
+            </button>
+
+            <p class="settings-section-title">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5 4v3h5.5v12h3V7H19V4z"/></svg>
+                Text Size
+            </p>
+            <button type="button" class="settings-option" data-textsize="default">Default</button>
+            <button type="button" class="settings-option" data-textsize="large" style="font-size:18.5px;">Large</button>
+            <button type="button" class="settings-option" data-textsize="xlarge" style="font-size:21.5px;">Extra Large</button>
+
+            <button type="button" id="reset-settings-btn" class="settings-reset">
+                <span class="settings-reset-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-8 8s3.58 8 8 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+                    Reset Settings
+                </span>
+                <span class="settings-reset-sub">Restore the default theme and text size. Your answers are kept.</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Submit Test tasdiqlash oynasi -->
+    <div id="confirm-submit-modal" class="modal-overlay" style="display:none;">
+        <div class="confirm-modal-content">
+            <p class="confirm-modal-title"><span class="confirm-modal-icon">&#9888;</span> Submit Test</p>
+            <p class="confirm-modal-text">Are you sure you want to submit your test? You cannot change your answers after submission.</p>
+            <div class="confirm-modal-actions">
+                <button id="confirm-submit-cancel" class="confirm-modal-btn confirm-modal-btn-cancel">Cancel</button>
+                <button id="confirm-submit-ok" class="confirm-modal-btn confirm-modal-btn-submit">Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const correctAnswers = {
+            'q1': ['weight'],
+            'q2': ['back'],
+            'q3': ['beginners'],
+            'q4': ['mat'],
+            'q5': ['jumps'],
+            'q6': ['competition'],
+            'q7': ['snack'],
+            'q8': ['work'],
+            'q9': ['heart'],
+            'q10': ['reception'],
+            'q11-12': ['C', 'E'],
+            'q13-14': ['B', 'D'],
+            'q15': ['G'],
+            'q16': ['B'],
+            'q17': ['H'],
+            'q18': ['D'],
+            'q19': ['F'],
+            'q20': ['E'],
+            'q21': ['B'],
+            'q22': ['C'],
+            'q23': ['D'],
+            'q24': ['A'],
+            'q25': ['G'],
+            'q26': ['E'],
+            'q27': ['C'],
+            'q28': ['F'],
+            'q29': ['B'],
+            'q30': ['D'],
+            'q31': ['army'],
+            'q32': ['safety'],
+            'q33': ['learning'],
+            'q34': ['reasons'],
+            'q35': ['trust'],
+            'q36': ['writing'],
+            'q37': ['open'],
+            'q38': ['leaders'],
+            'q39': ['training'],
+            'q40': ['time']
+        };
+
+        const questionTypes = {
+            'q1': 'text',
+            'q2': 'text',
+            'q3': 'text',
+            'q4': 'text',
+            'q5': 'text',
+            'q6': 'text',
+            'q7': 'text',
+            'q8': 'text',
+            'q9': 'text',
+            'q10': 'text',
+            'q11-12': 'checkbox',
+            'q13-14': 'checkbox',
+            'q15': 'text',
+            'q16': 'text',
+            'q17': 'text',
+            'q18': 'text',
+            'q19': 'text',
+            'q20': 'text',
+            'q21': 'text',
+            'q22': 'text',
+            'q23': 'text',
+            'q24': 'text',
+            'q25': 'text',
+            'q26': 'text',
+            'q27': 'text',
+            'q28': 'text',
+            'q29': 'text',
+            'q30': 'text',
+            'q31': 'text',
+            'q32': 'text',
+            'q33': 'text',
+            'q34': 'text',
+            'q35': 'text',
+            'q36': 'text',
+            'q37': 'text',
+            'q38': 'text',
+            'q39': 'text',
+            'q40': 'text'
+        };
+
+        let currentPart = 1;
+        let currentQuestion = 1;
+        let selectedRange = null;
+        let contextElement = null;
+
+        const audioSource = 'listening1.mp3';
+        const audioPlayer = document.getElementById('global-audio-player');
+        const playPauseBtn = document.getElementById('play-pause-btn');
+        const progressBar = document.getElementById('progress-bar');
+        const currentTimeEl = document.getElementById('current-time');
+        const totalDurationEl = document.getElementById('total-duration');
+        const speedBtn = document.getElementById('speed-btn');
+        const speedOptions = document.getElementById('speed-options');
+        const volumeSlider = document.getElementById('new-volume-slider');
+
+        if (audioSource) audioPlayer.src = audioSource;
+
+        function formatTime(s) {
+            const m = Math.floor(s / 60), sec = Math.floor(s % 60);
+            return m + ':' + (sec < 10 ? '0' : '') + sec;
+        }
+
+        playPauseBtn.addEventListener('click', () => {
+            if (!audioSource) { alert('Audio URL qo\'shilmagan.'); return; }
+            if (audioPlayer.paused) audioPlayer.play(); else audioPlayer.pause();
+        });
+        audioPlayer.addEventListener('play', () => { playPauseBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>'; });
+        audioPlayer.addEventListener('pause', () => { playPauseBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>'; });
+        audioPlayer.addEventListener('loadedmetadata', () => { progressBar.max = audioPlayer.duration; totalDurationEl.textContent = formatTime(audioPlayer.duration); });
+        audioPlayer.addEventListener('timeupdate', () => { progressBar.value = audioPlayer.currentTime; currentTimeEl.textContent = formatTime(audioPlayer.currentTime); });
+        progressBar.addEventListener('input', () => { audioPlayer.currentTime = progressBar.value; });
+        volumeSlider.addEventListener('input', (e) => { audioPlayer.volume = e.target.value; });
+        speedBtn.addEventListener('click', (e) => { e.stopPropagation(); speedOptions.classList.toggle('hidden'); });
+        speedOptions.addEventListener('click', (e) => {
+            if (e.target.dataset.speed) { audioPlayer.playbackRate = parseFloat(e.target.dataset.speed); speedBtn.textContent = e.target.dataset.speed + 'x'; speedOptions.classList.add('hidden'); }
+        });
+        document.addEventListener('click', () => speedOptions.classList.add('hidden'));
+
+        function switchToPart(partNumber) {
+            currentPart = partNumber;
+            document.querySelectorAll('.question-part').forEach(p => p.classList.add('hidden'));
+            const part = document.getElementById('part-' + partNumber);
+            if (part) part.classList.remove('hidden');
+            document.querySelectorAll('.footer__questionWrapper___1tZ46').forEach((w, i) => w.classList.toggle('selected', i + 1 === partNumber));
+            const partStart = (partNumber - 1) * 10 + 1;
+            const partEnd = partNumber * 10;
+            if (currentQuestion < partStart || currentQuestion > partEnd) {
+                currentQuestion = partStart;
+                document.querySelectorAll('.subQuestion').forEach(b => b.classList.remove('active'));
+                const activeBtn = document.querySelector('.subQuestion[onclick="goToQuestion(' + partStart + ')"]');
+                if (activeBtn) activeBtn.classList.add('active');
+            }
+            if (document.querySelector('.main-container.results-mode')) {
+                const src = document.querySelector('#transcription-data [data-part="' + partNumber + '"]');
+                const tgt = document.getElementById('transcription-text');
+                if (src && tgt) tgt.innerHTML = src.innerHTML;
+            }
+            updateAttemptedCount(partNumber);
+            document.getElementById('prevBtn').disabled = currentQuestion <= 1;
+            document.getElementById('nextBtn').disabled = currentQuestion >= 40;
+        }
+
+        function goToQuestion(qNum) {
+            currentQuestion = qNum;
+            let part = 1;
+            if (qNum > 10 && qNum <= 20) part = 2;
+            else if (qNum > 20 && qNum <= 30) part = 3;
+            else if (qNum > 30) part = 4;
+            if (currentPart !== part) switchToPart(part);
+            document.querySelectorAll('.subQuestion').forEach(b => b.classList.remove('active'));
+            const btn = document.querySelector(`.subQuestion[onclick="goToQuestion(${qNum})"]`);
+            if (btn) btn.classList.add('active');
+            const pairName = pairNameForQ(qNum);
+            let el = document.getElementById('q' + qNum) || document.querySelector('input[name="q' + qNum + '"]')
+                || (pairName ? document.querySelector('input[name="' + pairName + '"]') : null);
+            document.querySelectorAll('.question.active-question').forEach(q => q.classList.remove('active-question'));
+            if (el) {
+                const container = el.closest('.question');
+                if (container) {
+                    container.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    container.classList.add('flash');
+                    setTimeout(() => container.classList.remove('flash'), 1000);
+                    container.classList.add('active-question');
+                }
+            }
+            if (document.querySelector('.main-container.results-mode')) {
+                const hl = document.querySelector('#transcription-text .t-hl[data-q="' + qNum + '"]');
+                if (hl) {
+                    document.querySelectorAll('#transcription-text .t-hl.active').forEach(x => x.classList.remove('active'));
+                    hl.classList.add('active');
+                    hl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+            document.getElementById('prevBtn').disabled = qNum <= 1;
+            document.getElementById('nextBtn').disabled = qNum >= 40;
+        }
+
+        function nextPart() { if (currentQuestion < 40) goToQuestion(currentQuestion + 1); }
+        function previousPart() { if (currentQuestion > 1) goToQuestion(currentQuestion - 1); }
+
+        const pairGroups = { 'q11-12': [11, 12], 'q13-14': [13, 14] };
+
+        function pairNameForQ(qNum) {
+            return Object.keys(pairGroups).find(name => pairGroups[name].includes(qNum)) || null;
+        }
+
+        function updateAttemptedCount(partNumber) {
+            const start = (partNumber - 1) * 10 + 1;
+            const end = partNumber * 10;
+            let count = 0;
+            const countedPairs = {};
+            for (let i = start; i <= end; i++) {
+                const pairName = pairNameForQ(i);
+                if (pairName) {
+                    if (!countedPairs[pairName]) {
+                        count += document.querySelectorAll('input[name="' + pairName + '"]:checked').length;
+                        countedPairs[pairName] = true;
+                    }
+                    continue;
+                }
+                const txt = document.getElementById('q' + i);
+                const rad = document.querySelector('input[name="q' + i + '"]:checked');
+                if ((txt && txt.value.trim()) || rad) count++;
+            }
+            const wrapper = document.querySelectorAll('.footer__questionWrapper___1tZ46')[partNumber - 1];
+            if (wrapper) {
+                const span = wrapper.querySelector('.attemptedCount');
+                if (span) span.textContent = count + ' of 10';
+            }
+        }
+
+        function updateAnsweredIndicators() {
+            for (let qNum = 1; qNum <= 40; qNum++) {
+                const btn = document.querySelector(`.subQuestion[onclick="goToQuestion(${qNum})"]`);
+                if (!btn || btn.classList.contains('correct') || btn.classList.contains('incorrect')) continue;
+                let answered;
+                const pairName = pairNameForQ(qNum);
+                if (pairName) {
+                    const idx = pairGroups[pairName].indexOf(qNum);
+                    const checkedCount = document.querySelectorAll('input[name="' + pairName + '"]:checked').length;
+                    answered = checkedCount >= (idx + 1);
+                } else {
+                    const txt = document.getElementById('q' + qNum);
+                    const rad = document.querySelector('input[name="q' + qNum + '"]:checked');
+                    answered = (txt && txt.value.trim() !== '') || !!rad;
+                }
+                btn.classList.toggle('answered', answered);
+            }
+            [1, 2, 3, 4].forEach(p => updateAttemptedCount(p));
+        }
+
+        document.querySelectorAll('.answer-input, input[type="radio"], input[type="checkbox"]').forEach(inp => {
+            inp.addEventListener('input', updateAnsweredIndicators);
+            inp.addEventListener('change', updateAnsweredIndicators);
+        });
+
+        function setupCheckboxLimits() {
+            Object.keys(pairGroups).forEach(name => {
+                const boxes = Array.from(document.querySelectorAll('input[type="checkbox"][name="' + name + '"]'));
+                if (!boxes.length) return;
+                boxes.forEach(b => b.addEventListener('change', () => {
+                    const checkedCount = boxes.filter(x => x.checked).length;
+                    boxes.forEach(x => { if (!x.checked) x.disabled = checkedCount >= pairGroups[name].length; });
+                }));
+            });
+        }
+
+        function makeReviewMark(isCorrect) {
+            const span = document.createElement('span');
+            span.className = 'review-mark ' + (isCorrect ? 'review-mark-correct' : 'review-mark-wrong');
+            span.textContent = isCorrect ? '✓' : '✗';
+            return span;
+        }
+
+        function checkAnswers() {
+            let score = 0;
+            const resultsData = [];
+
+            document.querySelectorAll('.correct-inline').forEach(el => el.remove());
+            document.querySelectorAll('.answer-input').forEach(el => el.classList.remove('correct', 'incorrect'));
+            document.querySelectorAll('.multi-choice-option').forEach(el => el.classList.remove('correct', 'incorrect'));
+
+            Object.keys(correctAnswers).forEach(key => {
+                const correct = correctAnswers[key];
+                const type = questionTypes[key];
+
+                if (type === 'checkbox') {
+                    const [startQ, endQ] = key.split('-').map(s => parseInt(s.replace('q', '')));
+                    const checked = document.querySelectorAll('input[name="' + key + '"]:checked');
+                    const userVals = Array.from(checked).map(c => c.value).sort();
+                    const correctSorted = [...correct].sort();
+                    const correctSel = userVals.filter(v => correctSorted.includes(v));
+                    score += correctSel.length;
+                    const isCorrect = correctSel.length === correctSorted.length && userVals.length === correctSorted.length;
+                    checked.forEach(cb => { const w = cb.closest('.multi-choice-option'); if (w) w.classList.add(correctSorted.includes(cb.value) ? 'correct' : 'incorrect'); });
+                    correctSorted.forEach(v => { const cb = document.querySelector('input[name="' + key + '"][value="' + v + '"]'); if (cb && !cb.checked) { const w = cb.closest('.multi-choice-option'); if (w) w.classList.add('correct'); } });
+                    for (let q = startQ; q <= endQ; q++) { const b = document.querySelector(`.subQuestion[onclick="goToQuestion(${q})"]`); if (b) { b.classList.remove('answered'); b.classList.add(isCorrect ? 'correct' : 'incorrect'); } }
+                    resultsData.push({ question: startQ + '-' + endQ, userAnswer: userVals.join(', ') || 'No Answer', correctAnswer: correctSorted.join(', '), isCorrect });
+                    return;
+                }
+
+                const qNum = parseInt(key.replace('q', ''));
+                let userAnswer = '', isCorrect = false;
+
+                if (type === 'text') {
+                    const el = document.getElementById(key);
+                    userAnswer = el ? el.value.trim() : '';
+                    const accepted = Array.isArray(correct) ? correct : [correct];
+                    if (accepted[0] === '???') {
+                        isCorrect = false;
+                    } else {
+                        isCorrect = accepted.some(a => a.toLowerCase() === userAnswer.toLowerCase());
+                    }
+                    if (el) {
+                        el.classList.add(isCorrect ? 'correct' : 'incorrect');
+                        if (!isCorrect && accepted[0] !== '???') {
+                            const sp = document.createElement('span');
+                            sp.className = 'correct-inline';
+                            sp.textContent = accepted[0];
+                            el.insertAdjacentElement('afterend', sp);
+                        }
+                    }
+                } else if (type === 'mcq') {
+                    const checked = document.querySelector('input[name="' + key + '"]:checked');
+                    userAnswer = checked ? checked.value : 'No Answer';
+                    isCorrect = correct !== '???' && userAnswer === correct;
+                    document.querySelectorAll('input[name="' + key + '"]').forEach(r => {
+                        const wrapper = r.closest('.multi-choice-option');
+                        if (!wrapper) return;
+                        if (correct !== '???' && r.value === correct) wrapper.classList.add('correct');
+                        else if (r.checked) wrapper.classList.add('incorrect');
+                    });
+                }
+
+                if (isCorrect) score++;
+                const navBtn = document.querySelector(`.subQuestion[onclick="goToQuestion(${qNum})"]`);
+                if (navBtn) { navBtn.classList.remove('answered'); navBtn.classList.add(isCorrect ? 'correct' : 'incorrect'); }
+                resultsData.push({ question: qNum, userAnswer: userAnswer || 'No Answer', correctAnswer: Array.isArray(correct) ? correct[0] : correct, isCorrect });
+            });
+
+            document.querySelectorAll('.answer-input, input[type="radio"], input[type="checkbox"]').forEach(el => el.disabled = true);
+
+            const band = (function (r) {
+                if (r >= 39) return 9; if (r >= 37) return 8.5; if (r >= 35) return 8; if (r >= 32) return 7.5;
+                if (r >= 30) return 7; if (r >= 26) return 6.5; if (r >= 23) return 6; if (r >= 18) return 5.5;
+                if (r >= 16) return 5; if (r >= 13) return 4.5; if (r >= 10) return 4; if (r >= 8) return 3.5;
+                if (r >= 6) return 3; if (r >= 4) return 2.5; if (r >= 2) return 2; if (r === 1) return 1.5; return 0;
+            })(score);
+
+            document.querySelector('.main-container').classList.add('results-mode');
+            switchToPart(currentPart);
+
+            document.getElementById('score-summary').textContent = 'You scored ' + score + ' out of 40 (Band ' + band + ').';
+
+            const resultDetails = document.getElementById('result-details');
+            let html = '<table><thead><tr><th>Question</th><th>Your Answer</th><th>Correct Answer</th><th>Result</th></tr></thead><tbody>';
+            resultsData.forEach(r => {
+                html += '<tr><td>' + r.question + '</td><td>' + r.userAnswer + '</td><td>' + r.correctAnswer + '</td><td class="' + (r.isCorrect ? 'result-correct' : 'result-incorrect') + '">' + (r.isCorrect ? '&#10003; Correct' : '&#10007; Incorrect') + '</td></tr>';
+            });
+            html += '</tbody></table>';
+            resultDetails.innerHTML = html;
+
+            const deliverButton = document.getElementById('deliver-button');
+            deliverButton.classList.add('success');
+            deliverButton.innerHTML = '<span>My Results</span>';
+            const newBtn = deliverButton.cloneNode(true);
+            deliverButton.parentNode.replaceChild(newBtn, deliverButton);
+            newBtn.addEventListener('click', () => { document.getElementById('result-modal').style.display = 'flex'; });
+            document.getElementById('result-modal').style.display = 'flex';
+        }
+
+        document.getElementById('deliver-button').addEventListener('click', () => {
+            document.getElementById('confirm-submit-modal').style.display = 'flex';
+        });
+        document.getElementById('confirm-submit-cancel').addEventListener('click', () => {
+            document.getElementById('confirm-submit-modal').style.display = 'none';
+        });
+        document.getElementById('confirm-submit-ok').addEventListener('click', () => {
+            document.getElementById('confirm-submit-modal').style.display = 'none';
+            checkAnswers();
+        });
+        document.getElementById('modal-close-button').addEventListener('click', () => { document.getElementById('result-modal').style.display = 'none'; });
+
+        document.addEventListener('selectionchange', () => {
+            const sel = window.getSelection();
+            if (sel && sel.rangeCount > 0 && !sel.isCollapsed) selectedRange = sel.getRangeAt(0);
+        });
+
+        document.addEventListener('mouseup', (e) => {
+            if (e.target.closest('.selection-toolbar') || e.target.closest('.context-menu')) return;
+            setTimeout(() => {
+                const sel = window.getSelection();
+                if (sel && sel.rangeCount > 0 && !sel.isCollapsed && sel.toString().trim()) {
+                    selectedRange = sel.getRangeAt(0);
+                    showSelectionToolbar(selectedRange);
+                } else {
+                    hideSelectionToolbar();
+                }
+            }, 0);
+        });
+
+        function showSelectionToolbar(range) {
+            const rect = range.getBoundingClientRect();
+            const toolbar = document.getElementById('selectionToolbar');
+            toolbar.style.display = 'flex';
+            const top = rect.top + window.scrollY - toolbar.offsetHeight - 8;
+            let left = rect.left + window.scrollX + rect.width / 2 - toolbar.offsetWidth / 2;
+            left = Math.max(8, Math.min(left, window.scrollX + document.documentElement.clientWidth - toolbar.offsetWidth - 8));
+            toolbar.style.top = Math.max(8, top) + 'px';
+            toolbar.style.left = left + 'px';
+        }
+        function hideSelectionToolbar() {
+            document.getElementById('selectionToolbar').style.display = 'none';
+        }
+
+        document.body.addEventListener('contextmenu', function (e) {
+            const existingHl = e.target.closest('.highlight, .comment-highlight');
+            if (!existingHl) return;
+            e.preventDefault();
+            hideSelectionToolbar();
+            const menu = document.getElementById('contextMenu');
+            menu.style.left = e.pageX + 'px';
+            menu.style.top = e.pageY + 'px';
+            menu.style.display = 'block';
+            contextElement = existingHl;
+            document.getElementById('clear-item').style.display = 'block';
+        });
+        document.body.addEventListener('click', function (e) {
+            if (!e.target.closest('.context-menu')) document.getElementById('contextMenu').style.display = 'none';
+        });
+        function highlightText() {
+            if (!selectedRange || selectedRange.collapsed) return;
+            try {
+                const span = document.createElement('span');
+                span.className = 'highlight';
+                span.appendChild(selectedRange.extractContents());
+                selectedRange.insertNode(span);
+            } catch (e) { }
+            window.getSelection().removeAllRanges();
+            hideSelectionToolbar();
+            document.getElementById('contextMenu').style.display = 'none';
+        }
+        function addComment() {
+            const t = prompt('Enter your comment:');
+            if (!t || !selectedRange) { hideSelectionToolbar(); return; }
+            try {
+                const span = document.createElement('span'); span.className = 'comment-highlight';
+                span.appendChild(selectedRange.extractContents());
+                const tip = document.createElement('span'); tip.className = 'comment-tooltip'; tip.textContent = t;
+                span.appendChild(tip);
+                selectedRange.insertNode(span);
+            } catch (e) { }
+            window.getSelection().removeAllRanges();
+            hideSelectionToolbar();
+            document.getElementById('contextMenu').style.display = 'none';
+        }
+        function clearHighlight() {
+            if (contextElement) {
+                const parent = contextElement.parentNode;
+                while (contextElement.firstChild) parent.insertBefore(contextElement.firstChild, contextElement);
+                parent.removeChild(contextElement); parent.normalize();
+            }
+            document.getElementById('contextMenu').style.display = 'none';
+        }
+        function clearAllHighlights() {
+            document.querySelectorAll('.highlight, .comment-highlight').forEach(el => {
+                const parent = el.parentNode;
+                while (el.firstChild) parent.insertBefore(el.firstChild, el);
+                parent.removeChild(el); parent.normalize();
+            });
+            document.getElementById('contextMenu').style.display = 'none';
+        }
+
+        document.getElementById('transcription-text').addEventListener('click', (e) => {
+            const hl = e.target.closest('.t-hl[data-time]');
+            if (!hl || !audioSource) return;
+            const tSec = parseFloat(hl.getAttribute('data-time'));
+            if (isNaN(tSec)) return;
+            audioPlayer.currentTime = Math.max(0, tSec - 2);
+            audioPlayer.play();
+        });
+
+        // ═══ Exam Settings: tema, matn o'lchami, fullscreen ═══
+        const settingsModal = document.getElementById('settings-modal');
+        const darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+        function readSetting(key, fallback) {
+            try { return localStorage.getItem(key) || fallback; } catch (e) { return fallback; }
+        }
+        function saveSetting(key, value) {
+            try { localStorage.setItem(key, value); } catch (e) { }
+        }
+
+        function applyTheme(theme) {
+            const dark = theme === 'dark' || (theme === 'system' && darkQuery.matches);
+            document.body.classList.toggle('theme-dark', dark);
+            document.querySelectorAll('.settings-option[data-theme]').forEach(b => {
+                b.classList.toggle('selected', b.dataset.theme === theme);
+            });
+        }
+
+        function applyTextSize(size) {
+            document.body.classList.remove('text-large', 'text-xlarge');
+            if (size === 'large') document.body.classList.add('text-large');
+            else if (size === 'xlarge') document.body.classList.add('text-xlarge');
+            document.querySelectorAll('.settings-option[data-textsize]').forEach(b => {
+                b.classList.toggle('selected', b.dataset.textsize === size);
+            });
+        }
+
+        document.querySelectorAll('.settings-option[data-theme]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                saveSetting('cdi-theme', btn.dataset.theme);
+                applyTheme(btn.dataset.theme);
+            });
+        });
+
+        document.querySelectorAll('.settings-option[data-textsize]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                saveSetting('cdi-textsize', btn.dataset.textsize);
+                applyTextSize(btn.dataset.textsize);
+            });
+        });
+
+        darkQuery.addEventListener('change', () => {
+            if (readSetting('cdi-theme', 'light') === 'system') applyTheme('system');
+        });
+
+        document.getElementById('settings-btn').addEventListener('click', () => {
+            settingsModal.style.display = 'flex';
+        });
+        document.getElementById('settings-close').addEventListener('click', () => {
+            settingsModal.style.display = 'none';
+        });
+        settingsModal.addEventListener('click', (e) => {
+            if (e.target === settingsModal) settingsModal.style.display = 'none';
+        });
+
+        document.getElementById('reset-settings-btn').addEventListener('click', () => {
+            saveSetting('cdi-theme', 'light');
+            saveSetting('cdi-textsize', 'default');
+            applyTheme('light');
+            applyTextSize('default');
+        });
+
+        document.getElementById('fullscreen-btn').addEventListener('click', () => {
+            if (document.fullscreenElement) document.exitFullscreen();
+            else document.documentElement.requestFullscreen();
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            switchToPart(1);
+            goToQuestion(1);
+            setupCheckboxLimits();
+            applyTheme(readSetting('cdi-theme', 'light'));
+            applyTextSize(readSetting('cdi-textsize', 'default'));
+        });
+    </script>
+</body>
+
+</html>

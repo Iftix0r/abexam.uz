@@ -1,0 +1,2517 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS CDI Listening Practice</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffffff;
+            line-height: 1.4;
+            font-size: 16px;
+            padding-bottom: 90px;
+        }
+
+        body::after {
+            content: "@MINDLESS_WRITER";
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%) rotate(-20deg);
+            font-size: 72px;
+            font-weight: 800;
+            color: #000000;
+            opacity: 0.02;
+            pointer-events: none;
+            z-index: 0;
+            white-space: nowrap;
+        }
+
+        .header {
+            background-color: #ffffff;
+            padding: 12px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            height: 60px;
+        }
+
+        .telegram-link {
+            color: #3e3e3e;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            border: 2px solid #3e3e3e;
+            border-radius: 9999px;
+            background-color: #ffffff;
+            line-height: 1;
+        }
+
+        .telegram-link:hover {
+            background-color: #f6f6f6;
+        }
+
+        .telegram-link::before {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background-color: currentColor;
+            -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23l7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3L3.64 12c-.88-.25-.89-1.37.2-1.64l16.56-6.4c.75-.29 1.4.22 1.2.94l-2.67 12.61c-.22.95-1.13 1.18-1.78.73l-4.5-3.32l-2.23 2.15c-.47.44-1.29.21-1.48-.37z"/></svg>');
+            mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23l7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3L3.64 12c-.88-.25-.89-1.37.2-1.64l16.56-6.4c.75-.29 1.4.22 1.2.94l-2.67 12.61c-.22.95-1.13 1.18-1.78.73l-4.5-3.32l-2.23 2.15c-.47.44-1.29.21-1.48-.37z"/></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        .audio-player-container {
+            position: fixed;
+            top: 65px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 500px;
+            max-width: 90%;
+            height: 40px;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            z-index: 99;
+            gap: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .player-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .player-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: #333;
+        }
+
+        .progress-container {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #progress-bar {
+            flex-grow: 1;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 4px;
+            background: #ddd;
+            outline: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        #progress-bar::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #4a90e2;
+            cursor: pointer;
+        }
+
+        #current-time,
+        #total-duration {
+            font-size: 12px;
+            color: #555;
+            min-width: 35px;
+            text-align: center;
+        }
+
+        .controls-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #new-volume-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 60px;
+            height: 3px;
+            background: #ccc;
+            outline: none;
+            border-radius: 2px;
+            cursor: pointer;
+            margin-left: 8px;
+        }
+
+        #new-volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #333;
+        }
+
+        #speed-btn {
+            font-size: 12px;
+            font-weight: 600;
+            color: #333;
+            background-color: #e9ecef;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            padding: 4px 8px;
+            cursor: pointer;
+        }
+
+        #speed-options {
+            position: absolute;
+            top: calc(100% + 5px);
+            right: 0;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+
+        #speed-options div {
+            padding: 8px 15px;
+            cursor: pointer;
+        }
+
+        #speed-options div:hover {
+            background-color: #f0f0f0;
+        }
+
+        .speed-container {
+            position: relative;
+        }
+
+        .main-container {
+            margin-top: 115px;
+            display: flex;
+            background: #ffffff;
+            padding-bottom: 100px;
+        }
+
+        .main-container.results-mode .left-panel {
+            width: 75%;
+            overflow-y: auto;
+            height: calc(100vh - 195px);
+        }
+
+        .main-container.results-mode .right-panel {
+            display: block;
+            width: 25%;
+            border-left: 1px solid #e0e0e0;
+            height: calc(100vh - 195px);
+            overflow-y: auto;
+        }
+
+        .left-panel {
+            width: 100%;
+            padding: 20px;
+        }
+
+        .questions-container {
+            max-width: 50%;
+        }
+
+        /* Natijalar rejimida chap panel torayadi — savollar bo'sh joyni to'liq egallasin */
+        .main-container.results-mode .questions-container {
+            max-width: 100%;
+        }
+
+        .right-panel {
+            display: none;
+            padding: 20px;
+            border-left: 1px solid #e0e0e0;
+        }
+
+        #transcription-text {
+            white-space: normal;
+            font-family: inherit;
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+        #transcription-text p {
+            margin-bottom: 12px;
+        }
+
+        .t-hl {
+            background: #fff3a0;
+            border-radius: 3px;
+            padding: 0 2px;
+            scroll-margin-top: 80px;
+        }
+
+        .t-hl.active {
+            background: #ffd34d;
+            box-shadow: 0 0 0 2px #f0a500;
+        }
+
+        .t-hl[data-time] {
+            cursor: pointer;
+        }
+
+        .t-hl[data-time]:hover {
+            background: #ffe066;
+            box-shadow: 0 0 0 1px #e0a800;
+        }
+
+        .t-qmark {
+            font-size: 10px;
+            font-weight: 700;
+            color: #fff;
+            background: #4a90e2;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            min-width: 16px;
+            vertical-align: super;
+            margin-right: 2px;
+            line-height: 1;
+        }
+
+        .t-note {
+            font-style: italic;
+            font-weight: 700;
+            color: #0b6b3a;
+            font-size: 13px;
+            margin-left: 3px;
+        }
+
+        .part-header {
+            background-color: #f1f2ec;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .question {
+            margin-bottom: 40px;
+        }
+
+        .question p {
+            margin-bottom: 10px;
+        }
+
+        .question-prompt {
+            margin-bottom: 20px;
+        }
+
+        .centered-title {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .answer-input {
+            border: 1px solid #9aa3ad;
+            border-radius: 4px;
+            background-color: #fff;
+            padding: 4px 8px;
+            font-size: 16px;
+            width: 140px;
+            height: 28px;
+            line-height: 1.2;
+            vertical-align: middle;
+            transition: border-color 0.15s ease;
+            position: relative;
+            z-index: 10;
+        }
+
+        .answer-input::placeholder {
+            color: #444;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .notes-block p {
+            margin-bottom: 16px;
+        }
+
+        .notes-heading {
+            font-weight: 700;
+            margin: 24px 0 12px;
+        }
+
+        .notes-subheading {
+            font-weight: 700;
+            margin: 14px 0 8px 18px;
+        }
+
+        .notes-block ul {
+            list-style: disc;
+            padding-left: 28px;
+            margin-bottom: 8px;
+        }
+
+        .notes-block li {
+            margin-bottom: 16px;
+        }
+
+        .answer-input:focus {
+            outline: none;
+            border-color: #2c6bed;
+            border-width: 2px;
+        }
+
+        .answer-input.correct {
+            border-color: #28a745;
+            background-color: #e9f7ef;
+        }
+
+        .answer-input.incorrect {
+            border-color: #dc3545;
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .correct-inline {
+            color: #28a745;
+            font-weight: 700;
+            margin-left: 10px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .correct-inline::before {
+            content: "\2192  ";
+        }
+
+        .multi-choice-option {
+            display: block;
+            width: 100%;
+            padding: 10px 14px;
+            background-color: #fff;
+            border: 1px solid transparent;
+            transition: background-color 0.2s;
+        }
+
+        .multi-choice-option:hover {
+            background-color: #f1f7ff;
+            border-color: #c6dcfb;
+        }
+
+        .multi-choice-option:has(input[type="radio"]:checked) {
+            background-color: #cfe3f9;
+        }
+
+        .multi-choice-option:has(input[type="checkbox"]:checked) {
+            background-color: #cfe3f9;
+        }
+
+        .multi-choice-option.correct {
+            background-color: #d4edda !important;
+        }
+
+        .multi-choice-option.incorrect {
+            background-color: #f8d7da !important;
+        }
+
+        .multi-choice-option label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        .multi-choice-option input[type="radio"] {
+            transform: scale(1.2);
+        }
+
+        .multi-choice-option input[type="checkbox"] {
+            transform: scale(1.2);
+            accent-color: #2563eb;
+        }
+
+        .choose-many-header {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            margin-bottom: 14px;
+            font-weight: 600;
+        }
+
+        .q-num-badge {
+            border: 2px solid transparent;
+            border-radius: 5px;
+            padding: 2px 8px;
+            font-weight: 700;
+            flex-shrink: 0;
+            transition: border-color 0.3s;
+        }
+
+        .question.active-question .q-num-badge {
+            border-color: #4a90e2;
+        }
+
+        .matching-options-box {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 15px;
+            background: #f9f9f9;
+            margin-bottom: 20px;
+            display: inline-block;
+            min-width: 300px;
+        }
+
+        .matching-options-box p {
+            margin-bottom: 5px;
+        }
+
+        .matching-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .matching-item span {
+            min-width: 240px;
+            font-size: 16px;
+        }
+
+        .notes-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .notes-table th,
+        .notes-table td {
+            border: 1px solid #888;
+            padding: 10px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .notes-table th {
+            background: #f1f2ec;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .nav-arrows {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            display: flex;
+            gap: 5px;
+            z-index: 101;
+        }
+
+        .nav-arrow {
+            width: 50px;
+            height: 50px;
+            background: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .nav-arrow:hover {
+            background: #555;
+        }
+
+        .nav-arrow:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .nav-row {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            height: 80px;
+            z-index: 100;
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+        }
+
+        .footer__questionWrapper___1tZ46 {
+            display: flex;
+            align-items: center;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+
+        .footer__questionNo___3WNct {
+            background: none;
+            border: none;
+            padding: 10px 15px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .footer__questionNo___3WNct:hover {
+            background-color: #f8f9fa;
+        }
+
+        .attemptedCount {
+            font-size: 14px;
+            color: #666;
+            margin-left: 5px;
+            font-weight: 400;
+        }
+
+        .footer__subquestionWrapper___9GgoP {
+            display: none;
+            gap: 2px;
+            margin-left: 10px;
+        }
+
+        .footer__questionWrapper___1tZ46.selected .footer__subquestionWrapper___9GgoP {
+            display: flex;
+        }
+
+        .footer__questionWrapper___1tZ46.selected .attemptedCount {
+            display: none;
+        }
+
+        .subQuestion {
+            width: 32px;
+            height: 32px;
+            border: 1px solid #ccc;
+            background: white;
+            color: #333;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            border-radius: 2px;
+        }
+
+        .subQuestion.answered {
+            background-color: #e9ecef;
+            border-color: #ddd;
+        }
+
+        .subQuestion.correct {
+            background-color: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+
+        .subQuestion.incorrect {
+            background-color: #dc3545;
+            color: white;
+            border-color: #dc3545;
+        }
+
+        .subQuestion:hover {
+            background-color: #f0f0f0;
+            border-color: #999;
+        }
+
+        .subQuestion.active {
+            background-color: #4a90e2;
+            color: white;
+            border-color: #4a90e2;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        .footer__deliverButton___3FM07 {
+            margin-left: auto;
+            margin-right: 20px;
+            background-color: #f0f0f0;
+            color: #333;
+            border: 1px solid #ccc;
+            padding: 12px 20px;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 170px;
+            justify-content: center;
+        }
+
+        .footer__deliverButton___3FM07:hover {
+            background-color: #e0e0e0;
+            border-color: #bbb;
+        }
+
+        .footer__deliverButton___3FM07.success {
+            background-color: #28a745;
+            color: #fff;
+            border-color: #28a745;
+        }
+
+        .highlight {
+            background-color: #ffff00;
+        }
+
+        .comment-highlight {
+            background-color: #90EE90;
+            position: relative;
+            cursor: help;
+        }
+
+        .comment-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            white-space: nowrap;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .comment-highlight:hover .comment-tooltip {
+            opacity: 1;
+        }
+
+        .context-menu {
+            position: absolute;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            display: none;
+            min-width: 140px;
+        }
+
+        .context-menu-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            font-size: 16px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .context-menu-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .context-menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .selection-toolbar {
+            position: absolute;
+            display: none;
+            align-items: stretch;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+            z-index: 1500;
+            padding: 6px 4px;
+            gap: 2px;
+        }
+
+        .selection-toolbar::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 7px solid transparent;
+            border-right: 7px solid transparent;
+            border-top: 7px solid #ffffff;
+        }
+
+        .selection-toolbar button {
+            background: none;
+            border: none;
+            color: #111827;
+            padding: 4px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 6px;
+            white-space: nowrap;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .selection-toolbar button svg {
+            width: 16px;
+            height: 16px;
+            fill: #111827;
+        }
+
+        .selection-toolbar button:hover {
+            background: #f3f4f6;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            font-size: 24px;
+            color: #333;
+        }
+
+        .modal-close-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #888;
+        }
+
+        .modal-close-btn:hover {
+            color: #333;
+        }
+
+        .confirm-modal-content {
+            background: white;
+            padding: 32px 36px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 440px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .confirm-modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .confirm-modal-icon {
+            color: #f0a500;
+            font-size: 22px;
+        }
+
+        .confirm-modal-text {
+            font-size: 15px;
+            color: #4b5563;
+            line-height: 1.5;
+            margin-bottom: 26px;
+        }
+
+        .confirm-modal-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .confirm-modal-btn {
+            padding: 10px 26px;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+
+        .confirm-modal-btn-cancel {
+            background: #ffffff;
+            border-color: #d1d5db;
+            color: #111827;
+        }
+
+        .confirm-modal-btn-cancel:hover {
+            background: #f3f4f6;
+        }
+
+        .confirm-modal-btn-submit {
+            background: #111827;
+            color: #ffffff;
+        }
+
+        .confirm-modal-btn-submit:hover {
+            background: #262f3d;
+        }
+
+        #score-summary {
+            font-size: 16px;
+            font-weight: 600;
+            color: #111827;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            padding: 10px 12px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        #result-details table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        #result-details th,
+        #result-details td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        #result-details th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+
+        .result-correct {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .result-incorrect {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .timer-container {
+            display: none;
+        }
+
+        @keyframes flash {
+            0% {
+                background-color: #e6f4ff;
+            }
+
+            100% {
+                background-color: transparent;
+            }
+        }
+
+        .question.flash {
+            animation: flash 1s ease-out;
+        }
+
+        /* ═══ Yuqori o'ng burchakdagi tugmalar ═══ */
+        .header-tools {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .header-tool-btn {
+            width: 44px;
+            height: 36px;
+            border: 1px solid #d5d9e0;
+            border-radius: 8px;
+            background: #ffffff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+
+        .header-tool-btn:hover {
+            background: #f3f4f6;
+        }
+
+        .header-tool-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: #1f2937;
+        }
+
+        /* ═══ Exam Settings oynasi ═══ */
+        .settings-modal-content {
+            background: #ffffff;
+            border-radius: 14px;
+            width: 100%;
+            max-width: 470px;
+            max-height: 88vh;
+            overflow-y: auto;
+            padding: 22px 24px 24px;
+            box-shadow: 0 10px 34px rgba(0, 0, 0, 0.28);
+        }
+
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .settings-title {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            font-size: 19px;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .settings-title svg {
+            width: 20px;
+            height: 20px;
+            fill: #111827;
+        }
+
+        .settings-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            line-height: 1;
+            cursor: pointer;
+            color: #6b7280;
+            padding: 0 4px;
+        }
+
+        .settings-close:hover {
+            color: #111827;
+        }
+
+        .settings-section-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+            font-weight: 700;
+            color: #111827;
+            margin: 20px 0 10px;
+        }
+
+        .settings-section-title svg {
+            width: 17px;
+            height: 17px;
+            fill: #111827;
+        }
+
+        .settings-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            text-align: left;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 9px;
+            padding: 13px 15px;
+            margin-bottom: 9px;
+            font-size: 15px;
+            font-family: inherit;
+            color: #4b5563;
+            cursor: pointer;
+        }
+
+        .settings-option:hover {
+            background: #f7f8fa;
+        }
+
+        .settings-option svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+            flex-shrink: 0;
+        }
+
+        .settings-option.selected {
+            background: #eef2f7;
+            color: #111827;
+            font-weight: 600;
+        }
+
+        .settings-reset {
+            display: block;
+            width: 100%;
+            text-align: left;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 9px;
+            padding: 14px 16px;
+            margin-top: 22px;
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        .settings-reset:hover {
+            background: #f7f8fa;
+        }
+
+        .settings-reset-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 5px;
+        }
+
+        .settings-reset-title svg {
+            width: 18px;
+            height: 18px;
+            fill: #111827;
+        }
+
+        .settings-reset-sub {
+            font-size: 13.5px;
+            color: #6b7280;
+            padding-left: 28px;
+        }
+
+        /* ═══ Matn o'lchami ═══ */
+        body.text-large .left-panel,
+        body.text-large .left-panel p,
+        body.text-large .left-panel li,
+        body.text-large .left-panel td,
+        body.text-large .left-panel th,
+        body.text-large .multi-choice-option label,
+        body.text-large .choose-many-header,
+        body.text-large .answer-input {
+            font-size: 18.5px;
+        }
+
+        body.text-xlarge .left-panel,
+        body.text-xlarge .left-panel p,
+        body.text-xlarge .left-panel li,
+        body.text-xlarge .left-panel td,
+        body.text-xlarge .left-panel th,
+        body.text-xlarge .multi-choice-option label,
+        body.text-xlarge .choose-many-header,
+        body.text-xlarge .answer-input {
+            font-size: 21.5px;
+        }
+
+        body.text-large .centered-title,
+        body.text-xlarge .centered-title {
+            font-size: 22px;
+        }
+
+        /* ═══ Qorong'i rejim ═══ */
+        body.theme-dark {
+            background-color: #1c1d21;
+            color: #e5e7eb;
+        }
+
+        body.theme-dark::after {
+            color: #ffffff;
+            opacity: 0.03;
+        }
+
+        body.theme-dark .t-hl {
+            color: #111827;
+        }
+
+        body.theme-dark .header,
+        body.theme-dark .nav-row,
+        body.theme-dark .audio-player-container {
+            background-color: #26282d;
+            border-color: #3a3d43;
+        }
+
+        body.theme-dark .main-container,
+        body.theme-dark .left-panel,
+        body.theme-dark .right-panel {
+            background: #1c1d21;
+            border-color: #3a3d43;
+        }
+
+        body.theme-dark .telegram-link {
+            background-color: #26282d;
+            color: #e5e7eb;
+            border-color: #6b7280;
+        }
+
+        body.theme-dark .header-tool-btn {
+            background: #26282d;
+            border-color: #4b5057;
+        }
+
+        body.theme-dark .header-tool-btn:hover {
+            background: #33363b;
+        }
+
+        body.theme-dark .header-tool-btn svg {
+            fill: #e5e7eb;
+        }
+
+        body.theme-dark .part-header {
+            background-color: #26282d;
+            border-color: #3a3d43;
+        }
+
+        body.theme-dark .notes-table th {
+            background: #26282d;
+        }
+
+        body.theme-dark .notes-table th,
+        body.theme-dark .notes-table td {
+            border-color: #4b5057;
+        }
+
+        body.theme-dark .answer-input {
+            background-color: #26282d;
+            border-color: #4b5057;
+            color: #e5e7eb;
+        }
+
+        body.theme-dark .answer-input::placeholder {
+            color: #9ca3af;
+        }
+
+        body.theme-dark .answer-input.correct {
+            background-color: #14532d;
+            border-color: #22c55e;
+            color: #e5e7eb;
+        }
+
+        body.theme-dark .answer-input.incorrect {
+            background-color: #4c1d24;
+            border-color: #ef4444;
+            color: #fecaca;
+        }
+
+        body.theme-dark .multi-choice-option {
+            background-color: transparent;
+        }
+
+        body.theme-dark .multi-choice-option:hover {
+            background-color: #2f3239;
+            border-color: #4b5057;
+        }
+
+        body.theme-dark .multi-choice-option:has(input:checked) {
+            background-color: #1e3a5f;
+        }
+
+        body.theme-dark .multi-choice-option.correct {
+            background-color: #14532d !important;
+        }
+
+        body.theme-dark .multi-choice-option.incorrect {
+            background-color: #4c1d24 !important;
+        }
+
+        body.theme-dark .subQuestion {
+            background: #26282d;
+            border-color: #4b5057;
+            color: #e5e7eb;
+        }
+
+        body.theme-dark .subQuestion:hover {
+            background-color: #33363b;
+        }
+
+        body.theme-dark .subQuestion.answered {
+            background-color: #3a3d43;
+        }
+
+        body.theme-dark .footer__questionNo___3WNct {
+            color: #e5e7eb;
+        }
+
+        body.theme-dark .footer__questionNo___3WNct:hover {
+            background-color: #33363b;
+        }
+
+        body.theme-dark .footer__deliverButton___3FM07 {
+            background-color: #33363b;
+            color: #e5e7eb;
+            border-color: #4b5057;
+        }
+
+        body.theme-dark .settings-modal-content,
+        body.theme-dark .modal-content,
+        body.theme-dark .confirm-modal-content {
+            background: #26282d;
+            color: #e5e7eb;
+        }
+
+        body.theme-dark .settings-title,
+        body.theme-dark .settings-section-title,
+        body.theme-dark .settings-reset-title,
+        body.theme-dark .modal-header h2 {
+            color: #f3f4f6;
+        }
+
+        body.theme-dark .settings-title svg,
+        body.theme-dark .settings-section-title svg,
+        body.theme-dark .settings-reset-title svg {
+            fill: #f3f4f6;
+        }
+
+        body.theme-dark .settings-option,
+        body.theme-dark .settings-reset {
+            background: #26282d;
+            border-color: #3f434a;
+            color: #b7bcc4;
+        }
+
+        body.theme-dark .settings-option:hover,
+        body.theme-dark .settings-reset:hover {
+            background: #31343a;
+        }
+
+        body.theme-dark .settings-option.selected {
+            background: #363a42;
+            color: #ffffff;
+        }
+
+        body.theme-dark #score-summary {
+            background: #31343a;
+            border-color: #4b5057;
+            color: #f3f4f6;
+        }
+
+        body.theme-dark #result-details th {
+            background-color: #31343a;
+        }
+
+        body.theme-dark #result-details th,
+        body.theme-dark #result-details td {
+            border-color: #4b5057;
+        }
+
+        body.theme-dark .confirm-modal-text {
+            color: #b7bcc4;
+        }
+
+        body.theme-dark .confirm-modal-btn-cancel {
+            background: #31343a;
+            border-color: #4b5057;
+            color: #e5e7eb;
+        }
+
+        body.theme-dark .confirm-modal-btn-submit {
+            background: #e5e7eb;
+            color: #111827;
+        }
+
+        @media (max-width: 1024px) {
+            .main-container {
+                flex-direction: column;
+            }
+
+            .right-panel,
+            .main-container.results-mode .right-panel {
+                display: none;
+            }
+
+            .left-panel,
+            .main-container.results-mode .left-panel {
+                width: 100%;
+                padding: 20px 10px;
+                height: auto;
+            }
+
+            .questions-container {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <div class="timer-container"><span class="timer-display">60:00</span></div>
+        <a href="https://t.me/+SoPpY9nBi3U0NTE1" target="_blank" class="telegram-link">MINDLESS WRITER</a>
+        <div class="header-tools">
+            <button type="button" id="fullscreen-btn" class="header-tool-btn" title="Fullscreen">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 11V3h-8l3.29 3.29-10 10L3 13v8h8l-3.29-3.29 10-10z"/></svg>
+            </button>
+            <button type="button" id="settings-btn" class="header-tool-btn" title="Settings">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <div class="audio-player-container">
+        <button id="play-pause-btn" class="player-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z" />
+            </svg>
+        </button>
+        <div class="progress-container">
+            <span id="current-time">0:00</span>
+            <input type="range" id="progress-bar" value="0" step="1" style="width:100%;">
+            <span id="total-duration">0:00</span>
+        </div>
+        <div class="controls-container">
+            <div style="display:flex;align-items:center;">
+                <button id="volume-btn" class="player-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                    </svg>
+                </button>
+                <input type="range" id="new-volume-slider" min="0" max="1" step="0.01" value="1">
+            </div>
+            <div class="speed-container">
+                <button id="speed-btn" class="player-btn">1x</button>
+                <div id="speed-options" class="hidden">
+                    <div data-speed="0.5">0.5x</div>
+                    <div data-speed="0.75">0.75x</div>
+                    <div data-speed="1">1x</div>
+                    <div data-speed="1.25">1.25x</div>
+                    <div data-speed="1.5">1.5x</div>
+                    <div data-speed="2">2x</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="left-panel">
+
+            <!-- ═══════════════════════ PART 1 ═══════════════════════ -->
+            <div id="part-1" class="question-part">
+                <div class="part-header">
+                    <p><strong>Part 1</strong></p>
+                    <p>Listen and answer questions 1–10.</p>
+                </div>
+                <div class="questions-container">
+                    <div class="question">
+                        <div class="question-prompt">
+                            <p><strong>Questions 1–10</strong></p>
+                            <p>Complete the table below.</p>
+                            <p>Write <strong>ONE WORD AND/OR A NUMBER</strong> for each answer.</p>
+                        </div>
+                        <table style="width:100%;border-collapse:collapse;line-height:2.1;">
+                            <tr><th colspan="3" style="border:1px solid #999;padding:10px;text-align:center;">Asia-Pacific Tours<br>Activity Holidays</th></tr>
+                            <tr><th style="border:1px solid #999;padding:10px;text-align:left;background:#f0f0f0;width:22%;">Tour</th><th style="border:1px solid #999;padding:10px;text-align:left;background:#f0f0f0;">Details</th><th style="border:1px solid #999;padding:10px;text-align:left;background:#f0f0f0;width:20%;">Cost</th></tr>
+                            <tr><td style="border:1px solid #999;padding:10px;vertical-align:top;"><em>Example</em><br><strong>Vietnam</strong></td>
+                                <td style="border:1px solid #999;padding:10px;vertical-align:top;">• a cookery course at a 5-star hotel<br>• either <input type="text" id="q1" class="answer-input" placeholder="1" style="width:120px;"> lessons<br>&nbsp;&nbsp; or a one-day trek in the <input type="text" id="q2" class="answer-input" placeholder="2" style="width:120px;"><br>• attend a <input type="text" id="q3" class="answer-input" placeholder="3" style="width:120px;"> performance</td>
+                                <td style="border:1px solid #999;padding:10px;vertical-align:top;"><br><br><br>£<input type="text" id="q4" class="answer-input" placeholder="4" style="width:100px;"></td></tr>
+                            <tr><td style="border:1px solid #999;padding:10px;vertical-align:top;"><strong>Hong Kong</strong></td>
+                                <td style="border:1px solid #999;padding:10px;vertical-align:top;">• go to the hills to look at <input type="text" id="q5" class="answer-input" placeholder="5" style="width:120px;"> in a country park, followed by <input type="text" id="q6" class="answer-input" placeholder="6" style="width:120px;"> in a monastery<br>• visit an <input type="text" id="q7" class="answer-input" placeholder="7" style="width:120px;"> factory with the chance to shop</td>
+                                <td style="border:1px solid #999;padding:10px;vertical-align:top;">£1,320</td></tr>
+                            <tr><td style="border:1px solid #999;padding:10px;vertical-align:top;"><input type="text" id="q8" class="answer-input" placeholder="8" style="width:120px;"></td>
+                                <td style="border:1px solid #999;padding:10px;vertical-align:top;">• visit a museum of traditional <input type="text" id="q9" class="answer-input" placeholder="9" style="width:120px;"><br>• tour of a big <input type="text" id="q10" class="answer-input" placeholder="10" style="width:120px;"> market</td>
+                                <td style="border:1px solid #999;padding:10px;vertical-align:top;">£1,800</td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════ PART 2 ═══════════════════════ -->
+            <div id="part-2" class="question-part hidden">
+                <div class="part-header">
+                    <p><strong>Part 2</strong></p>
+                    <p>Listen and answer questions 11–20.</p>
+                </div>
+                <div class="questions-container">
+                    <div class="question">
+                        <div class="question-prompt">
+                            <p><strong>Questions 11 and 12</strong></p>
+                            <p>Choose <strong>TWO</strong> letters, <strong>A–E</strong>.</p>
+                        </div>
+                        <div class="choose-many-header">
+                            <span class="q-num-badge">11-12</span>
+                            <span>Which <strong>TWO</strong> items will participants on the dancing course receive when they check in?</span>
+                        </div>
+                        <div class="multi-choice-option"><label><input type="checkbox" name="q11-12" value="A"> <strong>A</strong> &nbsp; a class list</label></div>
+                        <div class="multi-choice-option"><label><input type="checkbox" name="q11-12" value="B"> <strong>B</strong> &nbsp; a face towel</label></div>
+                        <div class="multi-choice-option"><label><input type="checkbox" name="q11-12" value="C"> <strong>C</strong> &nbsp; a name tag</label></div>
+                        <div class="multi-choice-option"><label><input type="checkbox" name="q11-12" value="D"> <strong>D</strong> &nbsp; a shoe bag</label></div>
+                        <div class="multi-choice-option"><label><input type="checkbox" name="q11-12" value="E"> <strong>E</strong> &nbsp; a water bottle</label></div>
+                    </div>
+                    <div class="question" style="margin-top:40px;">
+                        <div class="question-prompt">
+                            <p><strong>Questions 13 and 14</strong></p>
+                            <p>Choose <strong>TWO</strong> letters, <strong>A–E</strong>.</p>
+                        </div>
+                        <div class="choose-many-header">
+                            <span class="q-num-badge">13-14</span>
+                            <span>Which <strong>TWO</strong> activities will take place on the first afternoon and evening?</span>
+                        </div>
+                        <div class="multi-choice-option"><label><input type="checkbox" name="q13-14" value="A"> <strong>A</strong> &nbsp; costume making</label></div>
+                        <div class="multi-choice-option"><label><input type="checkbox" name="q13-14" value="B"> <strong>B</strong> &nbsp; a musical show</label></div>
+                        <div class="multi-choice-option"><label><input type="checkbox" name="q13-14" value="C"> <strong>C</strong> &nbsp; an informal dance</label></div>
+                        <div class="multi-choice-option"><label><input type="checkbox" name="q13-14" value="D"> <strong>D</strong> &nbsp; a talk on dance history</label></div>
+                        <div class="multi-choice-option"><label><input type="checkbox" name="q13-14" value="E"> <strong>E</strong> &nbsp; dancing tests</label></div>
+                    </div>
+                    <div class="question" style="margin-top:40px;">
+                        <div class="question-prompt">
+                            <p><strong>Questions 15–20</strong></p>
+                            <p>Label the plan below.</p>
+                            <p>Write the correct letter, <strong>A–I</strong>, next to questions 15–20.</p>
+                            <p class="centered-title" style="margin-top:10px;">The community centre</p>
+                        </div>
+                        <div class="map-wrap" style="height:auto;border:none;margin-bottom:16px;">
+                            <img src="data:image/jpeg;base64,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5H7mdZRJz2bNVdV+H2onUbfUdF1KK1ukhED+YCwZa9GooA8r034UzwaRqlte36zTX0iyGQZ+XDZrodJ8D/2d4kh1cXW7ZbtDt+tdnRQB5T4r8KWujaDqtzcvJPFNM0w8s7Wjya5fRlOseOdFltdQbUUhiO6Qk7YfbmvepYIp4ykiBlPUEVXttLsrMf6PbRx/QUDMbxp4WXxbop09pvL5zVPVPA8WpT6LK8//ACDFx/vfLiuwooA8ul+Ft3BdTrpl9bQWM5yySRlnH0NdDp/gtrLXrHUPteRbWqwbMeldhRQB5vrPgDVZddur7SL6zt4rnHmRzxlvyrsPDOinQdGisWZXZByy962aKAG0U6igBtLS0UAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFAGZcaJZ3OqQ6iyf6TD91qqS+E9Jm1qPVntwbxP+WlX9Uv103T5bl+iDtVfw5qy65oNnqKJtFzH5lAGvRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQSFFFFABRRRQMKKKKACiiigAooooAKKKKACiiigQUUUUAFFFFABRRRQAUUUUAFFFFABRRRQMKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigA60UUUAFFFFABRRRQAUUUUDCiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKQ+lAHM+OGP8Awjd1Cv8ArHQ4rn/gzqRvvBEFu3WzAirofFEwMEkQ52QSE/lXm3wA1eOSLVNNP3xL5goA9vooooAKKKKACiiigAooooAKKKKACiiigAooooJCiiigAooooGFFFFABRRRQAUUUUAFFFFABRRRQIKKKKACiiigAooooAKKKKACiiigAooooGFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUDCiiigAooooAKKKKACiiigAooooAKKKKACiiigApDS0h6UARR3MMpYJIrFfvYPSiKeKVCyOrKPQ5rwmy1+bw9P4s065upPNyPIyeeSelHg3xHfaZ4V8RaZqtzMNS5MJkPOMdqAPelcHp0pwOelcx4FSdPCtkbhmMrxrIdx9RV+68TaNZOyXGoQxMvB3GgRrmkIrKtvEmk3gzb6hDL9KsNqKH7vI9qAJr6J57KWGGUwyMpCyD+E1wfhzxhfWer3Gia9E2+D/V3P8AeX1Ndh/a7Ffls5nPtiuM8aJq2pwCTTNDufty/dkkUbaBmjeyrePrVwsvmwm32rt6dK8c+At2sfjm6hOf3kb16j4XtJ9M8A3VjqC7dQEcpljbrzmvAvCA12HVvP0KylmukP8AD/doA+u7rULWwjMl1cRxoPU1n6L4k0/XmnWxMjLCcF2XAP0rzmys7/xAY38QWN3ZbP8AWef90/Su50rWfDOnotjZ3lvFt/gBoA6ejFRRzJPGJIWDIecipQc0AGOaO+KTvTZH2Rs3oKAH80V5tJ8ZNBSeaLypf3TlCcjqK7Dw54jtPEunm6tM+XnHNAG1RRRQAUUUUAFFFFBIUUUUAFFFFAwooooAKKKKACiiigAooooAKKKKBBRRRQAUUUUAFFFFABRRRQAUUUUAFFFFAwooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigYUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFB6UUUAePeMfhze6r8QINVtkH2Zyvm/hVXx74Cv73xrplzpsX+iuP3/zY717VzRigCraWwtLGC3UfcQJ+QrD1fwJoWt7jdwOS3J2viumooEeZ3HwX0cnNhdXNr9JSazbj4Oant/0TxPNDj2J/rXr2PakxQB4LcfDTx9aE/Z9YE/vnFcz4gvviB4M2Pc3f7v1AzXvHi7xDeaPbiDT7Ka5upuE2jgVh2HgzUNesZD4nZHE4yYVORQM4G18NeL9f0KbVNS1cQweUSPLX2/2a4Dw/441vw3YyLYtEqKcZaMZr36KZrb4dXsCfeg8yMD/Z6CvAvAOif8JJrUdk6B48+aYz3oA6/S/iX4/1O1M0Nus0I4/1A5rRh8ReOblto0aPzD/sgf0ruvC+uafoeppoAg+zRNxFxjn/ACK9GIB5FAHi0Fp4/uFyLJYyf+mq1cs7D4nrNgXMMcX+0A1eu5o5oA4rSYfGcd3ENQuIpIc/NtAFdXqDbNOmJ67Kt1Dc24ubeSFujDFAHgvgax1qa1vm08WXki5l/dzhN3+sPrXtHh2Ce30mNblYVmx8/lBdufwrgP8AhScMUsz23ibUrZJHZ/LjVdozXc+GPDh8N6d9kbUJ73/bmxmgDfooooAKKKKBBRRRQIKKKKACiiigYUUUUAFFFFABRRRQAUUUUAFFFFAgooooAKKKKACiiigAooooAKKKKACiiigYUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQMKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigBMUYoooIPOfEo8nTfEsCj935YIFeX/ALPtl53iq7u2XhIiBXo/i0zQv4l3L+7eKPZ78Vg/s8afs0fUr4/xygD8qCken654V0/Xdksq7JlOVmj4YfjW1BH5MCR5+6MVIOlLQMKKKKACiiigAoxRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUEhRRRQAUUUUAFFFFABRRRQAUUUUAFFFFAwooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigYUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFADaOtFFBJwvxKXydAupU4d0wTVH4KaabLwHby/8/IElJ8ZLhrbwugX+OQL+Zrp/AdkLDwVpduP4YBmgZ0dFFFAxaKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKCQooooAKKKKACiiigAooooAKKKKACiiigYUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQMKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigApDS0UCOB+LNt9o8KoPLLkXEXT/AHhXY6XD5GmW0Y/hXFQ6ndaYq+TfyRdchXq9C6Swq0ZGwjjFAElFFFAxaKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKCQooooAKKKKACiiigAooooAKKKKACiiigYUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQMKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAo7UUh6UCPn3xZp80PjHUJtehvJbGQDypLeR/l/AV6H8MFgXR5/smpyXlvuG1X6p7c1kXGmeNdF1O+MIj1Oxud3lpcH7n5Vq/DbwnfeHYr+5v0VJr2bzPKjPypxQB6DRRRQMWiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigkKKKKACiiigAooooAKKKKACiiigAooooGFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUDCiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooA//Z" alt="The community centre plan, A–I" style="width:100%;max-width:720px;display:block;border:1px solid #ddd;border-radius:4px;">
+                        </div>
+                        <ul style="list-style:none;padding-left:0;">
+                            <li class="matching-item"><span><strong>15</strong> &nbsp; the bathrooms</span>
+                                <input type="text" id="q15" class="answer-input" placeholder="15" style="width:80px;"></li>
+                            <li class="matching-item"><span><strong>16</strong> &nbsp; the bunkrooms</span>
+                                <input type="text" id="q16" class="answer-input" placeholder="16" style="width:80px;"></li>
+                            <li class="matching-item"><span><strong>17</strong> &nbsp; the games room</span>
+                                <input type="text" id="q17" class="answer-input" placeholder="17" style="width:80px;"></li>
+                            <li class="matching-item"><span><strong>18</strong> &nbsp; the hall</span>
+                                <input type="text" id="q18" class="answer-input" placeholder="18" style="width:80px;"></li>
+                            <li class="matching-item"><span><strong>19</strong> &nbsp; the medical room</span>
+                                <input type="text" id="q19" class="answer-input" placeholder="19" style="width:80px;"></li>
+                            <li class="matching-item"><span><strong>20</strong> &nbsp; the reception office</span>
+                                <input type="text" id="q20" class="answer-input" placeholder="20" style="width:80px;"></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════ PART 3 ═══════════════════════ -->
+            <div id="part-3" class="question-part hidden">
+                <div class="part-header">
+                    <p><strong>Part 3</strong></p>
+                    <p>Listen and answer questions 21–30.</p>
+                </div>
+                <div class="questions-container">
+                    <div class="question">
+                        <div class="question-prompt">
+                            <p><strong>Questions 21–25</strong></p>
+                            <p>Choose the correct letter, <strong>A</strong>, <strong>B</strong> or <strong>C</strong>.</p>
+                            <p class="centered-title" style="margin-top:10px;">Innovative Environmental Solutions</p>
+                        </div>
+                        <div style="margin-bottom:18px;">
+                            <p style="font-weight:600;margin-bottom:10px;">21 &nbsp; According to Dominic, what is surprising about the supermarket garden project?</p>
+                            <div class="multi-choice-option"><label><input type="radio" name="q21" value="A"> A &nbsp; At first, it was unpopular with customers.</label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q21" value="B"> B &nbsp; It has gained a lot of interest from chefs.</label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q21" value="C"> C &nbsp; Many shops are using the idea now.</label></div>
+                        </div>
+                        <div style="margin-bottom:18px;">
+                            <p style="font-weight:600;margin-bottom:10px;">22 &nbsp; What do the speakers identify as a possible problem with the solar carpark idea?</p>
+                            <div class="multi-choice-option"><label><input type="radio" name="q22" value="A"> A &nbsp; The technology might not be well developed.</label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q22" value="B"> B &nbsp; The cost could be too high.</label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q22" value="C"> C &nbsp; There may not be enough room.</label></div>
+                        </div>
+                        <div style="margin-bottom:18px;">
+                            <p style="font-weight:600;margin-bottom:10px;">23 &nbsp; According to the speakers, the unexpected benefit of wildlife crossings is that</p>
+                            <div class="multi-choice-option"><label><input type="radio" name="q23" value="A"> A &nbsp; they are much cheaper to build than was predicted.</label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q23" value="B"> B &nbsp; animal populations become more genetically diverse.</label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q23" value="C"> C &nbsp; they greatly reduce the number of car accidents.</label></div>
+                        </div>
+                        <div style="margin-bottom:18px;">
+                            <p style="font-weight:600;margin-bottom:10px;">24 &nbsp; What is impressive about the 100% renewable energy campaign?</p>
+                            <div class="multi-choice-option"><label><input type="radio" name="q24" value="A"> A &nbsp; how many countries the movement has spread to</label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q24" value="B"> B &nbsp; how fast cities can convert to 100% renewable energy</label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q24" value="C"> C &nbsp; how much help is given to participating communities</label></div>
+                        </div>
+                        <div style="margin-bottom:18px;">
+                            <p style="font-weight:600;margin-bottom:10px;">25 &nbsp; What positive point about “carrot-mobbing” does Ella describe?</p>
+                            <div class="multi-choice-option"><label><input type="radio" name="q25" value="A"> A &nbsp; It helps businesses undertake eco-friendly projects.</label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q25" value="B"> B &nbsp; It encourages people to buy sustainable products.</label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q25" value="C"> C &nbsp; It creates a sense of community in the people who participate.</label></div>
+                        </div>
+                    </div>
+                    <div class="question" style="margin-top:40px;">
+                        <div class="question-prompt">
+                            <p><strong>Questions 26–30</strong></p>
+                            <p>Complete the flow-chart below.</p>
+                            <p>Choose <strong>FIVE</strong> answers from the box and write the correct letter, <strong>A–H</strong>, next to questions 26–30.</p>
+                            <p class="centered-title" style="margin-top:10px;">Aerial Reforestation Process</p>
+                        </div>
+                        <div class="matching-options-box">
+                            <p><strong></strong></p>
+                            <p style="margin-bottom:5px;"><strong>A</strong> &nbsp; land</p>
+                            <p style="margin-bottom:5px;"><strong>B</strong> &nbsp; plants</p>
+                            <p style="margin-bottom:5px;"><strong>C</strong> &nbsp; seeds</p>
+                            <p style="margin-bottom:5px;"><strong>D</strong> &nbsp; nutrients</p>
+                            <p style="margin-bottom:5px;"><strong>E</strong> &nbsp; compost</p>
+                            <p style="margin-bottom:5px;"><strong>F</strong> &nbsp; insecticide</p>
+                            <p style="margin-bottom:5px;"><strong>G</strong> &nbsp; clay</p>
+                            <p style="margin-bottom:5px;"><strong>H</strong> &nbsp; light</p>
+                        </div>
+                        <div style="max-width:620px;margin:0 auto 10px;">
+                            <div style="border:1px solid #999;border-radius:4px;padding:10px 14px;background:#fff;text-align:center;">Choose a reforestation area with plenty of <input type="text" id="q26" class="answer-input" placeholder="26" style="width:80px;">.</div>
+                            <div style="text-align:center;font-size:20px;line-height:1;color:#666;margin:4px 0;">&#8595;</div>
+                            <div style="border:1px solid #999;border-radius:4px;padding:10px 14px;background:#fff;text-align:center;">Take a lot of suitable <input type="text" id="q27" class="answer-input" placeholder="27" style="width:80px;">, appropriate to your purposes.</div>
+                            <div style="text-align:center;font-size:20px;line-height:1;color:#666;margin:4px 0;">&#8595;</div>
+                            <div style="border:1px solid #999;border-radius:4px;padding:10px 14px;background:#fff;text-align:center;">Mix with long-lasting <input type="text" id="q28" class="answer-input" placeholder="28" style="width:80px;">.</div>
+                            <div style="text-align:center;font-size:20px;line-height:1;color:#666;margin:4px 0;">&#8595;</div>
+                            <div style="border:1px solid #999;border-radius:4px;padding:10px 14px;background:#fff;text-align:center;">Press into lumps of <input type="text" id="q29" class="answer-input" placeholder="29" style="width:80px;">.</div>
+                            <div style="text-align:center;font-size:20px;line-height:1;color:#666;margin:4px 0;">&#8595;</div>
+                            <div style="border:1px solid #999;border-radius:4px;padding:10px 14px;background:#fff;text-align:center;">Apply an outer coating, e.g. paper, to provide appropriate levels of <input type="text" id="q30" class="answer-input" placeholder="30" style="width:80px;"> and protection.</div>
+                            <div style="text-align:center;font-size:20px;line-height:1;color:#666;margin:4px 0;">&#8595;</div>
+                            <div style="border:1px solid #999;border-radius:4px;padding:10px 14px;background:#fff;text-align:center;">Just before dropping it from the plane, make sure it has enough water.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════ PART 4 ═══════════════════════ -->
+            <div id="part-4" class="question-part hidden">
+                <div class="part-header">
+                    <p><strong>Part 4</strong></p>
+                    <p>Listen and answer questions 31–40.</p>
+                </div>
+                <div class="questions-container">
+                    <div class="question">
+                        <div class="question-prompt">
+                            <p><strong>Questions 31–40</strong></p>
+                            <p>Complete the notes below.</p>
+                            <p>Write <strong>ONE WORD ONLY</strong> for each answer.</p>
+                            <p class="centered-title" style="margin-top:10px;">Canadian maple syrup</p>
+                        </div>
+                        <div class="notes-block" style="border:1px solid #ccc;border-radius:5px;padding:20px;background:#fafafa;">
+                            <p style="font-weight:700;margin:6px 0 10px;">Description</p>
+                            <ul style="padding-left:24px;margin-bottom:14px;">
+                                <li style="margin-bottom:12px;">It is a sweet liquid poured over pancakes etc.</li>
+                                <li style="margin-bottom:12px;">The production of sap needs a climate where night and day temperatures are very <input type="text" id="q31" class="answer-input" placeholder="31" style="width:150px;">.</li>
+                            </ul>
+                            <p style="font-weight:700;margin:6px 0 10px;">History</p>
+                            <ul style="padding-left:24px;margin-bottom:14px;">
+                                <li style="margin-bottom:12px;">Folk stories claim that maple syrup was first used to cook <input type="text" id="q32" class="answer-input" placeholder="32" style="width:150px;">.</li>
+                                <li style="margin-bottom:12px;">Sap collection in spring developed into a First Nations <input type="text" id="q33" class="answer-input" placeholder="33" style="width:150px;">.</li>
+                                <li style="margin-bottom:12px;">The sap was collected in buckets.</li>
+                                <li style="margin-bottom:12px;">The sap was concentrated into syrup by<br>– using hot stones to produce <input type="text" id="q34" class="answer-input" placeholder="34" style="width:150px;"><br>– leaving it outside at night and then removing the layer of <input type="text" id="q35" class="answer-input" placeholder="35" style="width:150px;"> on top.</li>
+                            </ul>
+                            <p style="font-weight:700;margin:6px 0 10px;">Uses</p>
+                            <ul style="padding-left:24px;margin-bottom:14px;">
+                                <li style="margin-bottom:12px;">First Nations people drank the fresh sap to give them energy.</li>
+                                <li style="margin-bottom:12px;">European settlers put the syrup in various types of <input type="text" id="q36" class="answer-input" placeholder="36" style="width:150px;">.</li>
+                                <li style="margin-bottom:12px;">They also used it for drinks and for candy.</li>
+                                <li style="margin-bottom:12px;">Its use for making sugar declined after 1880, when the <input type="text" id="q37" class="answer-input" placeholder="37" style="width:150px;"> on Caribbean sugar was removed.</li>
+                            </ul>
+                            <p style="font-weight:700;margin:6px 0 10px;">Threats</p>
+                            <ul style="padding-left:24px;margin-bottom:14px;">
+                                <li style="margin-bottom:12px;"><strong>Natural</strong><br>– Harvests may be affected by storms and destructive <input type="text" id="q38" class="answer-input" placeholder="38" style="width:150px;">.<br>– Climate change may also affect sap production.</li>
+                                <li style="margin-bottom:12px;"><strong>Social</strong><br>– Maple syrup is expensive and faces considerable <input type="text" id="q39" class="answer-input" placeholder="39" style="width:150px;">.<br>– The obesity issue is affecting sales.</li>
+                            </ul>
+                            <p style="font-weight:700;margin:6px 0 10px;">Reasons for optimism</p>
+                            <ul style="padding-left:24px;margin-bottom:14px;">
+                                <li style="margin-bottom:12px;">Maple syrup is an important export.</li>
+                                <li style="margin-bottom:12px;">It is quite <input type="text" id="q40" class="answer-input" placeholder="40" style="width:150px;"> compared with other sweeteners.</li>
+                                <li style="margin-bottom:12px;">Its taste is the main reason for its popularity.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- end left-panel -->
+
+        <div class="right-panel">
+            <div id="transcription-container">
+                <h2 style="font-size:18px;font-weight:bold;margin-bottom:10px;">Transcription</h2>
+                <div id="transcription-text"></div>
+            </div>
+        </div>
+    </div><!-- end main-container -->
+
+    <!-- ═══ TRANSKRIPT (natijalar rejimida o'ng panelda ko'rinadi) ═══ -->
+    <div id="transcription-data" style="display:none;">
+        <div data-part="1">
+            <p>IELTS Listening. You will hear a number of different recordings, and you will have to answer questions on what you hear. There will be time for you to read the instructions and questions, and you will have a chance to check your work.</p>
+            <p>All the recordings will be played once only. The test is in four sections. Write all your answers in the Listening Question Booklet. At the end of the test, you will be given ten minutes to transfer your answers to an answer sheet.</p>
+            <p>Now turn to section one on page two of your question booklet.</p>
+            <p>Section one. You will hear a telephone conversation between a woman who is looking for information about holidays and an agent for a tour company.</p>
+            <p>First, you have some time to look at questions one to seven on page two. You will see that there is an example that has been done for you. On this occasion only, the conversation relating to this will be played first. Asia Pacific Tours, can I help you? Yes, I've been looking at your website,</p>
+            <p>and I'd like some more information about your activity holidays. Certainly. You know, of course, the prices of the tours include stays in three-star hotels, and they include airfares. Great! What about your tour of Vietnam? My sister went there last year and loved it.</p>
+            <p>The first tour the caller asks about is Vietnam. So, Vietnam has been written in the space. Now we shall begin. You should answer the questions as you listen, because you will not hear the recording a second time.</p>
+            <p>Listen carefully and answer questions one to seven. Asia Pacific Tours, can I help you? Yes, I've been looking at your website, and I'd like some more information about your activity holidays. Certainly. You know, of course, the prices of the tours include</p>
+            <p>stays in three-star hotels, and they include airfares. Great! What about your tour of Vietnam? My sister went there last year and loved it. Yes, it's a really beautiful place, and probably our fastest-growing destination.</p>
+            <p>Now, that package includes several opportunities to take courses. Don't you have a cookery course of some kind? We certainly do. If you love eating out in Vietnam, like most people do, and want to know how to prepare a meal,</p>
+            <p>you can learn how from a master in a five-star hotel. On another day, you have a choice of two activities. <span class="t-hl" data-q="1" data-time="214"><span class="t-qmark">1</span>The first is instruction in diving<span class="t-note">(diving)</span></span> in the South China Sea. Not a certificate course, but just an introduction. Most people think it's wonderful.</p>
+            <p>Or, if you want to stay dry but still want some exercise, you can spend the day on <span class="t-hl" data-q="2" data-time="226"><span class="t-qmark">2</span>a trek through the jungle<span class="t-note">(jungle)</span></span> near the beach. It's not difficult, and everyone seems to enjoy it. Anything cultural on offer? We used to take people to a Vietnamese opera,</p>
+            <p>but that didn't prove so popular. <span class="t-hl" data-q="3" data-time="240"><span class="t-qmark">3</span>So now we include a dance show<span class="t-note">(dance — opera endi yo'q, tuzoq)</span></span>, and our clients all rave about that. They say the colours are just magnificent. What's the cost? I've just noticed it's now a special price.</p>
+            <p>The holiday used to be £1,600, but <span class="t-hl" data-q="4" data-time="255"><span class="t-qmark">4</span>it's just been reduced to £1,450<span class="t-note">(1,450 — £1,600 eski narx, tuzoq)</span></span>. So you do save quite a bit, and as I said, it seems to be our up-and-coming tour. Well, let's see.</p>
+            <p>Perhaps you could tell me a little about the Hong Kong tour. I noticed it includes a walk in the hills of one of their country parks, <span class="t-hl" data-q="5" data-time="273"><span class="t-qmark">5</span>where you have the chance to see birds of all sorts<span class="t-note">(birds)</span></span>. Yes, that's a very popular activity. People don't realise that Hong Kong isn't just a crowded city.</p>
+            <p>That's a half-day activity, and you go with a trained escort, and <span class="t-hl" data-q="6" data-time="286"><span class="t-qmark">6</span>it includes dinner in a monastery<span class="t-note">(dinner)</span></span> where you end your day. And then we wouldn't want you to miss out altogether on shopping, so there's another day when <span class="t-hl" data-q="7" data-time="293"><span class="t-qmark">7</span>we take you round an electronics factory<span class="t-note">(electronics — ceramics tuzoq)</span></span>. Now, that might sound like an odd thing to do,</p>
+            <p>but it's actually really fascinating, and not like your usual ceramics factory. And you can buy their products there quite cheaply. Now, the whole Hong Kong package is just £1,320 per person. Sounds interesting.</p>
+            <p>But let me find out about one more place. I've always wanted to go to Korea, but not on this trip. And I've been to Thailand, which I loved. <span class="t-hl" data-q="8" data-time="356"><span class="t-qmark">8</span>But what about your Japan package?<span class="t-note">(Japan — Korea/Thailand tuzoq)</span></span> Good choice.</p>
+            <p>Well, that tour includes a terrific trip to <span class="t-hl" data-q="9" data-time="361"><span class="t-qmark">9</span>a museum of traditional costume<span class="t-note">(costume)</span></span>. The exhibits are gorgeous. They've got an absolutely priceless collection. And I think the website says you take your clients to a market, don't you? A crafts market, I think.</p>
+            <p>Well, we do go to a market, but <span class="t-hl" data-q="10" data-time="377"><span class="t-qmark">10</span>it's one that sells fish<span class="t-note">(fish — crafts market emas)</span></span>, and it's one of the largest in the world. And you have the chance to sample the wares in a little restaurant nearby. We also give you plenty of free time to wander around the city with our guides if you want. And what's the cost of all that?</p>
+            <p>£1,800. Well, you've been ever so helpful. I've noted all the details down, and I'll get back to you when I've made up my mind. If we can give you any more help, do ring back.</p>
+            <p>Thanks. I will.</p>
+        </div>
+        <div data-part="2">
+            <p>Now listen carefully and answer questions 11 to 14. Hello, everyone, and welcome to this weekend dancing course. Nice that you're here safely. Since you've all just arrived, I'd like to tell you firstly a bit about today's programme</p>
+            <p>and secondly how to get around this community centre. Firstly, straight after this talk, you'll go off to the office where you should check in at the registration desk. Make sure you're wearing the name tags that we posted you out in the mail last week. <span class="t-hl" data-q="12" data-time="529"><span class="t-qmark">12</span>The staff there will give you each a cloth bag<span class="t-note">(D — oyoq kiyim uchun sumka; name tag oldin pochtada yuborilgan)</span></span> as a little present from us</p>
+            <p>to keep your dancing shoes in for the weekend. Other things useful to take to class each day will be a bottle of water – hopefully you've all brought one with you – and a towel for your face if it's hot and you feel you need one. Also at registration, <span class="t-hl" data-q="11" data-time="551"><span class="t-qmark">11</span>you can pick up a list for the level class<span class="t-note">(A — class list)</span></span> that you're in</p>
+            <p>so you can start learning people's names. After checking in, this first afternoon is free for everyone. You could use this time to start thinking about your costumes for the final show, but we won't be making them until tomorrow. For those of you who are interested, <span class="t-hl" data-q="14" data-time="572"><span class="t-qmark">14</span>there's a lecture this afternoon<span class="t-note">(D — raqs tarixi; kostyum ertaga, testlar oxirgi kun)</span></span></p>
+            <p>in the main hall on the history of dance, or you could practice for Sunday's concert in the music room. <span class="t-hl" data-q="13" data-time="583"><span class="t-qmark">13</span>There is also an informal gathering planned for tonight<span class="t-note">(C — norasmiy raqs kechasi)</span></span> consisting of mainly easy dances where you can get to know each other. The tests of different levels won't be held until the final afternoon</p>
+            <p>so there's no need to worry about those yet.</p>
+            <p>Before you hear the rest of the talk, you have some time to look at questions 15 to 20 on page 4.</p>
+            <p>Now listen and answer questions 15 to 20. Now, I said I would tell you how to find your way around the community centre. Well, we're standing at the south end of the site. I'll tell you where the bathrooms are first. That's the most important thing.</p>
+            <p>Walk straight ahead from here past this first big block on your left and <span class="t-hl" data-q="15" data-time="666"><span class="t-qmark">15</span>you'll find the bathrooms on your left just after it<span class="t-note">(C)</span></span>. Now, equally important, of course, is where you'll sleep. <span class="t-hl" data-q="16" data-time="674"><span class="t-qmark">16</span>So the bunk rooms are just here on our left<span class="t-note">(E)</span></span>. You can see them beside where we're standing now.</p>
+            <p>Now, we also have a games room where you can entertain yourself during your free time. Well, you'll get there if you go straight ahead from where we're standing now, take the first turning right and carry on to the second building. <span class="t-hl" data-q="17" data-time="697"><span class="t-qmark">17</span>It's on your right just before the bike racks<span class="t-note">(I)</span></span>.</p>
+            <p>Games and books are in the cupboard there and there's a ping pong table, air hockey, things like that. Good for a rainy day. Okay, what else? The hall is where we'll be for class photos.</p>
+            <p>You can find that in the middle of the site <span class="t-hl" data-q="18" data-time="716"><span class="t-qmark">18</span>just south of the music room<span class="t-note">(F)</span></span>. The medical room, in case any of you get injured while you're dancing, can be found in the centre of the site also. Go straight on from here past two pathways and <span class="t-hl" data-q="19" data-time="732"><span class="t-qmark">19</span>it's on your right beside the music room<span class="t-note">(D)</span></span>.</p>
+            <p>The nurse there is very good with sports injuries so don't hesitate to visit her if you need to. Any questions? Oh yes, the reception office, of course. You'll need to go over there after this talk to register.</p>
+            <p>That's quite a long walk away from here. Go straight ahead and take the third turning on your right, then you will find that <span class="t-hl" data-q="20" data-time="758"><span class="t-qmark">20</span>the office is the second building on your left<span class="t-note">(B)</span></span>. The staff there are very friendly and if you have any problems during the weekend,</p>
+            <p>go to see them and they'll help you out.</p>
+            <p>That is the end of section two. You now have half a minute to check your answers.</p>
+        </div>
+        <div data-part="3">
+            <p>Now turn to section three on page five.</p>
+            <p>Section three. Following instructions from their tutor, you will hear two environmental science students called Dominic and Ella discussing some ways of solving environmental problems. First you have some time to look at questions 21 to 25</p>
+            <p>on page five.</p>
+            <p>Now listen carefully and answer questions 21 to 25. Okay, everyone, get into pairs and look at the innovative environmental solutions we've been reading about this week. Discuss some of the pros and cons of each one.</p>
+            <p>You want to work together, Ella? Sure, Dominic. Which solution do you want to look at first? I think the supermarket garden project's interesting. That's where the supermarket grows fruit and vegetables in the store</p>
+            <p>and sells them. Yes. Understandably, only a few shops have decided to adopt this idea. It's hard to set up. What's the reaction from customers?</p>
+            <p>Well, of course, they love the idea. One thing I didn't expect though... What was that? <span class="t-hl" data-q="21" data-time="918"><span class="t-qmark">21</span>The idea is hugely popular with local chefs<span class="t-note">(B — oshpazlar qiziqishi)</span></span> and many of them are finding new ways</p>
+            <p>to use the plants in all their different stages of growth. I see. I found the solar car park idea to be really practical. I know what you mean. Putting solar panels on the roofs of car parks to generate electricity</p>
+            <p>might be a cost-effective way to power a whole shopping centre. <span class="t-hl" data-q="22" data-time="940"><span class="t-qmark">22</span>The difficulty could be finding space to put all the panels<span class="t-note">(C — joy yetmasligi)</span></span>. Some smaller shopping centres probably don't have covered car parks. That's right. It's a shame because the technology seems to be all there and ready to go</p>
+            <p>if the conditions are right. What do you think of the wildlife crossing solution? You know, when a bridge or a tunnel is built over or under a major roadway so that animals can cross. That idea has become very popular and has so many benefits.</p>
+            <p>A lot of research has been done, hasn't it? Yes. It's not surprising that the data reveals a huge drop in the number of road accidents in areas where there are wildlife crossings. That's one of the predicted outcomes.</p>
+            <p>Something I read about in the research, which I'd never considered before, was how the animal populations in these areas are affected. Naturally, more of them survive. But because their habitat is not interrupted too much by the roads, <span class="t-hl" data-q="23" data-time="997"><span class="t-qmark">23</span>the genetic diversity of local species has improved<span class="t-note">(B — avariyalar kamayishi kutilgan edi, tuzoq)</span></span>.</p>
+            <p>That's true. It's worth the huge cost of building them if the result is a win-win for people and animals. I found the 100% renewable energy campaign, like solar and wind energy, to be really impressive.</p>
+            <p>Yes. It's not so much the size of the movement – I mean, only a few countries are involved – <span class="t-hl" data-q="24" data-time="1022"><span class="t-qmark">24</span>as the amount of support offered once a community joins<span class="t-note">(C — yordam miqdori)</span></span>. Considering the sheer amount of time and planning it takes for a city</p>
+            <p>to convert completely to renewables, the organisers of the movement would need to do that. Did you read about carrot mobbing as an environmental movement? What's that? It's where huge numbers of people learn through the internet</p>
+            <p>about where to shop at stores that use the profits to support environmental projects. So they stop buying products that aren't eco-friendly, like a boycott? No. Actually, it's the opposite of that. <span class="t-hl" data-q="25" data-time="1056"><span class="t-qmark">25</span>It allows businesses to fund initiatives<span class="t-note">(A — biznes eko-loyihalarni moliyalaydi)</span></span></p>
+            <p>to help protect the environment by boosting their profiles. It's a pity that most participants don't get to know each other personally. It's all through online notices.</p>
+            <p>Before you hear the rest of the discussion, you have some time to look at questions 26 to 30 on page 6.</p>
+            <p>Now listen and answer questions 26 to 30. Now, everyone, let's look at one particular environmental innovation, aerial reforestation. With your partner, discuss the process involved in this idea. So aerial reforestation is where they drop mixtures from planes</p>
+            <p>to sow vegetables, grains or trees and so on in areas that might be hard to reach. Let's see. What are the steps? Well, the first step is choosing the right area. Whatever size land you're working on,</p>
+            <p><span class="t-hl" data-q="26" data-time="1144"><span class="t-qmark">26</span>ensuring there's enough light is crucial<span class="t-note">(H — light)</span></span>. The next step, whatever you're planting, <span class="t-hl" data-q="27" data-time="1149"><span class="t-qmark">27</span>is to make sure you have the right seeds<span class="t-note">(C — seeds)</span></span>. To give them a better chance against the competition from other plants, you need to use a lot.</p>
+            <p>So then you make a mixture with decent quality <span class="t-hl" data-q="28" data-time="1157"><span class="t-qmark">28</span>durable compost<span class="t-note">(E — compost)</span></span> for nourishment. Then do they infuse it with insecticide? That's not necessary in this model. The next step is pressing the whole thing</p>
+            <p><span class="t-hl" data-q="29" data-time="1169"><span class="t-qmark">29</span>into a small chunk of clay<span class="t-note">(G — clay; insecticide kerak emas)</span></span> to make a ball. This may then be covered in an outer material such as paper. Right. That way, when it lands, <span class="t-hl" data-q="30" data-time="1178"><span class="t-qmark">30</span>it will add balanced nutrients to the mixture<span class="t-note">(D — nutrients)</span></span>. Yes, and it may also protect it from insects and other plants.</p>
+            <p>So a few days before they release it from the plane onto the land below, the final step is dipping it in water, just enough to get the germination process started. Yes, and after that...</p>
+            <p>That is the end of section three. You now have half a minute to check your answers.</p>
+        </div>
+        <div data-part="4">
+            <p>Now turn to section four on page seven.</p>
+            <p>Section four. You will hear a lecture on a very popular Canadian food product called maple syrup. First you have some time to look at questions thirty-one to forty on page seven.</p>
+            <p>Now listen carefully and answer questions thirty-one to forty. Maple syrup can be described as very sweet. Canadians pour it generously over things like pancakes for breakfast. The syrup is produced from the maple tree, and it actually comes from the tree's sap,</p>
+            <p>which is the watery substance that comes out of the trunk of the tree when this is cut. In order for enough sap to be produced, very special climate conditions are needed. In spring, the temperatures need to drop to well below zero at night, but then they need to rise sharply during the day,</p>
+            <p><span class="t-hl" data-q="31" data-time="1351"><span class="t-qmark">31</span>so they're hugely different over a twenty-four hour period<span class="t-note">(different)</span></span>. And that's exactly what happens in northeastern Canada every spring. The indigenous peoples of North America, known as the First Nations, discovered the maple secret long before the Europeans arrived. Early folk stories say it was first discovered by a chief who threw his tomahawk,</p>
+            <p>which is similar to an axe, into the trunk of a tree. Clear sap started to run from the cut. <span class="t-hl" data-q="32" data-time="1387"><span class="t-qmark">32</span>His wife used this sap to boil meat<span class="t-note">(meat)</span></span>, and the heat turned it into a sweet syrup, which they found delicious. Whether or not that story is true,</p>
+            <p>we do know that the maple tree was very important to First Nations peoples for hundreds of years. <span class="t-hl" data-q="33" data-time="1407"><span class="t-qmark">33</span>Collecting the sap each spring became a tradition among them<span class="t-note">(tradition)</span></span>. Whole families would migrate to the areas where the maple trees grew and set up camp there. They collected the sap from the trees using buckets. Then they needed to concentrate the sap,</p>
+            <p>removing some of the water from it to create syrup. They had two ways of doing this. One way was to drop hot stones from a fire into the buckets <span class="t-hl" data-q="34" data-time="1433"><span class="t-qmark">34</span>to create steam<span class="t-note">(steam)</span></span>. If repeated often enough, this would eventually concentrate the syrup. Another method that they used to concentrate the syrup</p>
+            <p>was to leave the sap outside overnight, exposed to freezing temperatures. This would mean that <span class="t-hl" data-q="35" data-time="1455"><span class="t-qmark">35</span>a thick layer of ice would form on top<span class="t-note">(ice)</span></span>, which could be discarded, leaving the sugary sap below. Again, this process could be repeated over several days,</p>
+            <p>and eventually a sweet brown syrup was produced. The First Nations people had various uses for the sap and syrup. They drank the sap fresh from the tree as a tonic, knowing that it was an important source of energy. But for the most part, they reduced the syrup further</p>
+            <p>and then cooled it so that it crystallized into sugar. This was easy to carry and kept indefinitely. European settlers who arrived in Canada began to learn about the syrup from First Nations peoples and further expanded its uses.</p>
+            <p>For example, <span class="t-hl" data-q="36" data-time="1508"><span class="t-qmark">36</span>they incorporated it into medicine of different kinds<span class="t-note">(medicine)</span></span>. They also discovered that by adding yeast to the sap, they could make a maple drink. And by throwing the hot syrup into the snow, they could make a toffee-like candy.</p>
+            <p>But, like the First Nations, they turned most of their sap into maple sugar. For most people, it was the only type of sugar they could afford, since the only alternative was the sugar imported from the Caribbean, which was made from sugar cane, and this was very expensive. However, after 1880,</p>
+            <p>the Canadian government <span class="t-hl" data-q="37" data-time="1547"><span class="t-qmark">37</span>decided to stop charging tax on Caribbean sugar<span class="t-note">(tax)</span></span>, and this made it much cheaper. That meant it was no longer cost-effective to produce maple sugar, and so syrup-making became the only viable industry remaining for Canadians, and that's what we've been doing ever since.</p>
+            <p>At present, maple syrup is enjoying a boom. In the last two decades, production has doubled in Canada. However, serious threats remain. Like any agricultural product, the harvest is subject to such things as major storms</p>
+            <p><span class="t-hl" data-q="38" data-time="1590"><span class="t-qmark">38</span>or the arrival of invasive insects<span class="t-note">(insects)</span></span>, both of which have happened, and these could destroy everything. It is predicted with some certainty that, in the longer term, climate change will also have an adverse effect on the sap run. Then there are the social factors.</p>
+            <p>Producing maple syrup is a very labour-intensive process, making it an expensive purchase. And of equal concern is the fact that nowadays, <span class="t-hl" data-q="39" data-time="1622"><span class="t-qmark">39</span>there's a lot of competition from cheaper<span class="t-note">(competition)</span></span>, artificially-flavoured brands. Furthermore, we're at a time when obesity is a major issue,</p>
+            <p>making a product that is 67% sugar increasingly difficult to sell. Nevertheless, there are reasons to be optimistic. Producers are developing markets abroad. Our syrup is currently being exported to over 50 countries. Back here at home, chefs use it enthusiastically.</p>
+            <p>It's certainly high in calories, but it also contains proteins, minerals and antioxidants. As such, <span class="t-hl" data-q="40" data-time="1661"><span class="t-qmark">40</span>it is still relatively healthy<span class="t-note">(healthy)</span></span> when you compare it with sugar or corn syrup. Canadians are proud of maple syrup</p>
+            <p>and its deep roots in our history and geography. However, the primary reason for maple syrup success around the world remains its taste. There's nothing quite like it.</p>
+        </div>
+    </div>
+
+    <audio id="global-audio-player" class="hidden"></audio>
+
+    <!-- Nav Arrows -->
+    <div class="nav-arrows">
+        <button class="nav-arrow" onclick="previousPart()" id="prevBtn">&#8249;</button>
+        <button class="nav-arrow" onclick="nextPart()" id="nextBtn">&#8250;</button>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="nav-row" aria-label="Questions">
+        <div class="footer__questionWrapper___1tZ46 selected multiple" role="tablist">
+            <button role="tab" class="footer__questionNo___3WNct" onclick="switchToPart(1)">
+                <span><span class="section-prefix">Part </span><span class="sectionNr">1</span><span
+                        class="attemptedCount">0 of 10</span></span>
+            </button>
+            <div class="footer__subquestionWrapper___9GgoP">
+                <button class="subQuestion" onclick="goToQuestion(1)"><span class="sr-only">Q1</span><span>1</span></button>
+                <button class="subQuestion" onclick="goToQuestion(2)"><span class="sr-only">Q2</span><span>2</span></button>
+                <button class="subQuestion" onclick="goToQuestion(3)"><span class="sr-only">Q3</span><span>3</span></button>
+                <button class="subQuestion" onclick="goToQuestion(4)"><span class="sr-only">Q4</span><span>4</span></button>
+                <button class="subQuestion" onclick="goToQuestion(5)"><span class="sr-only">Q5</span><span>5</span></button>
+                <button class="subQuestion" onclick="goToQuestion(6)"><span class="sr-only">Q6</span><span>6</span></button>
+                <button class="subQuestion" onclick="goToQuestion(7)"><span class="sr-only">Q7</span><span>7</span></button>
+                <button class="subQuestion" onclick="goToQuestion(8)"><span class="sr-only">Q8</span><span>8</span></button>
+                <button class="subQuestion" onclick="goToQuestion(9)"><span class="sr-only">Q9</span><span>9</span></button>
+                <button class="subQuestion" onclick="goToQuestion(10)"><span class="sr-only">Q10</span><span>10</span></button>
+            </div>
+        </div>
+        <div class="footer__questionWrapper___1tZ46 multiple" role="tablist">
+            <button role="tab" class="footer__questionNo___3WNct" onclick="switchToPart(2)">
+                <span><span class="section-prefix">Part </span><span class="sectionNr">2</span><span
+                        class="attemptedCount">0 of 10</span></span>
+            </button>
+            <div class="footer__subquestionWrapper___9GgoP">
+                <button class="subQuestion" onclick="goToQuestion(11)"><span>11</span></button>
+                <button class="subQuestion" onclick="goToQuestion(12)"><span>12</span></button>
+                <button class="subQuestion" onclick="goToQuestion(13)"><span>13</span></button>
+                <button class="subQuestion" onclick="goToQuestion(14)"><span>14</span></button>
+                <button class="subQuestion" onclick="goToQuestion(15)"><span>15</span></button>
+                <button class="subQuestion" onclick="goToQuestion(16)"><span>16</span></button>
+                <button class="subQuestion" onclick="goToQuestion(17)"><span>17</span></button>
+                <button class="subQuestion" onclick="goToQuestion(18)"><span>18</span></button>
+                <button class="subQuestion" onclick="goToQuestion(19)"><span>19</span></button>
+                <button class="subQuestion" onclick="goToQuestion(20)"><span>20</span></button>
+            </div>
+        </div>
+        <div class="footer__questionWrapper___1tZ46 multiple" role="tablist">
+            <button role="tab" class="footer__questionNo___3WNct" onclick="switchToPart(3)">
+                <span><span class="section-prefix">Part </span><span class="sectionNr">3</span><span
+                        class="attemptedCount">0 of 10</span></span>
+            </button>
+            <div class="footer__subquestionWrapper___9GgoP">
+                <button class="subQuestion" onclick="goToQuestion(21)"><span>21</span></button>
+                <button class="subQuestion" onclick="goToQuestion(22)"><span>22</span></button>
+                <button class="subQuestion" onclick="goToQuestion(23)"><span>23</span></button>
+                <button class="subQuestion" onclick="goToQuestion(24)"><span>24</span></button>
+                <button class="subQuestion" onclick="goToQuestion(25)"><span>25</span></button>
+                <button class="subQuestion" onclick="goToQuestion(26)"><span>26</span></button>
+                <button class="subQuestion" onclick="goToQuestion(27)"><span>27</span></button>
+                <button class="subQuestion" onclick="goToQuestion(28)"><span>28</span></button>
+                <button class="subQuestion" onclick="goToQuestion(29)"><span>29</span></button>
+                <button class="subQuestion" onclick="goToQuestion(30)"><span>30</span></button>
+            </div>
+        </div>
+        <div class="footer__questionWrapper___1tZ46 multiple" role="tablist">
+            <button role="tab" class="footer__questionNo___3WNct" onclick="switchToPart(4)">
+                <span><span class="section-prefix">Part </span><span class="sectionNr">4</span><span
+                        class="attemptedCount">0 of 10</span></span>
+            </button>
+            <div class="footer__subquestionWrapper___9GgoP">
+                <button class="subQuestion" onclick="goToQuestion(31)"><span>31</span></button>
+                <button class="subQuestion" onclick="goToQuestion(32)"><span>32</span></button>
+                <button class="subQuestion" onclick="goToQuestion(33)"><span>33</span></button>
+                <button class="subQuestion" onclick="goToQuestion(34)"><span>34</span></button>
+                <button class="subQuestion" onclick="goToQuestion(35)"><span>35</span></button>
+                <button class="subQuestion" onclick="goToQuestion(36)"><span>36</span></button>
+                <button class="subQuestion" onclick="goToQuestion(37)"><span>37</span></button>
+                <button class="subQuestion" onclick="goToQuestion(38)"><span>38</span></button>
+                <button class="subQuestion" onclick="goToQuestion(39)"><span>39</span></button>
+                <button class="subQuestion" onclick="goToQuestion(40)"><span>40</span></button>
+            </div>
+        </div>
+        <button id="deliver-button" class="footer__deliverButton___3FM07"><span>Check Answers</span></button>
+    </nav>
+
+    <!-- Context Menu -->
+    <div id="contextMenu" class="context-menu">
+        <div class="context-menu-item" id="clear-item" onclick="clearHighlight()" style="display:none;">Clear</div>
+        <div class="context-menu-item" onclick="clearAllHighlights()">Clear All</div>
+    </div>
+
+    <!-- Matn belgilanganda avtomatik chiqadigan asboblar paneli -->
+    <div id="selectionToolbar" class="selection-toolbar" style="display:none;">
+        <button type="button" onclick="addComment()">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM9 11H7V9h2v2zm4 0h-2V9h2v2zm4 0h-2V9h2v2z"/></svg>
+            <span>Note</span>
+        </button>
+        <button type="button" onclick="highlightText()">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17.75 7L14 3.25l-10 10V17h3.75l10-10zm2.96-2.96c.39-.39.39-1.02 0-1.41L18.37.29c-.39-.39-1.02-.39-1.41 0L15 2.25 18.75 6l1.96-1.96z"/><path d="M2 20h20v3H2z"/></svg>
+            <span>Highlight</span>
+        </button>
+    </div>
+
+    <!-- Result Modal -->
+    <div id="result-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Your Results</h2>
+                <button id="modal-close-button" class="modal-close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="score-summary"></p>
+                <div id="result-details"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Exam Settings oynasi -->
+    <div id="settings-modal" class="modal-overlay" style="display:none;">
+        <div class="settings-modal-content">
+            <div class="settings-header">
+                <span class="settings-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+                    Exam Settings
+                </span>
+                <button type="button" id="settings-close" class="settings-close">&times;</button>
+            </div>
+
+            <p class="settings-section-title">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 0 0-1.41 0 .996.996 0 0 0 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 0 0-1.41 0 .996.996 0 0 0 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 0 0 0-1.41l-1.06-1.06zm1.06-10.96a.996.996 0 0 0 0-1.41.996.996 0 0 0-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36a.996.996 0 0 0 0-1.41.996.996 0 0 0-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>
+                Theme
+            </p>
+            <button type="button" class="settings-option" data-theme="light">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 0 0-1.41 0 .996.996 0 0 0 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 0 0-1.41 0 .996.996 0 0 0 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 0 0 0-1.41l-1.06-1.06zm1.06-10.96a.996.996 0 0 0 0-1.41.996.996 0 0 0-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36a.996.996 0 0 0 0-1.41.996.996 0 0 0-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>
+                Light
+            </button>
+            <button type="button" class="settings-option" data-theme="dark">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
+                Dark
+            </button>
+            <button type="button" class="settings-option" data-theme="system">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 2H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h7v2H8v2h8v-2h-2v-2h7c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H3V4h18v12z"/></svg>
+                System
+            </button>
+
+            <p class="settings-section-title">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5 4v3h5.5v12h3V7H19V4z"/></svg>
+                Text Size
+            </p>
+            <button type="button" class="settings-option" data-textsize="default">Default</button>
+            <button type="button" class="settings-option" data-textsize="large" style="font-size:18.5px;">Large</button>
+            <button type="button" class="settings-option" data-textsize="xlarge" style="font-size:21.5px;">Extra Large</button>
+
+            <button type="button" id="reset-settings-btn" class="settings-reset">
+                <span class="settings-reset-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-8 8s3.58 8 8 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+                    Reset Settings
+                </span>
+                <span class="settings-reset-sub">Restore the default theme and text size. Your answers are kept.</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Submit Test tasdiqlash oynasi -->
+    <div id="confirm-submit-modal" class="modal-overlay" style="display:none;">
+        <div class="confirm-modal-content">
+            <p class="confirm-modal-title"><span class="confirm-modal-icon">&#9888;</span> Submit Test</p>
+            <p class="confirm-modal-text">Are you sure you want to submit your test? You cannot change your answers after submission.</p>
+            <div class="confirm-modal-actions">
+                <button id="confirm-submit-cancel" class="confirm-modal-btn confirm-modal-btn-cancel">Cancel</button>
+                <button id="confirm-submit-ok" class="confirm-modal-btn confirm-modal-btn-submit">Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const correctAnswers = {
+            'q1': ['diving'],
+            'q2': ['jungle'],
+            'q3': ['dance'],
+            'q4': ['1,450', '1450', '£1,450', '£1450'],
+            'q5': ['birds'],
+            'q6': ['dinner'],
+            'q7': ['electronics'],
+            'q8': ['Japan'],
+            'q9': ['costume', 'costumes'],
+            'q10': ['fish'],
+            'q11-12': ['A', 'D'],
+            'q13-14': ['C', 'D'],
+            'q15': ['C'],
+            'q16': ['E'],
+            'q17': ['I'],
+            'q18': ['F'],
+            'q19': ['D'],
+            'q20': ['B'],
+            'q21': 'B',
+            'q22': 'C',
+            'q23': 'B',
+            'q24': 'C',
+            'q25': 'A',
+            'q26': ['H'],
+            'q27': ['C'],
+            'q28': ['E'],
+            'q29': ['G'],
+            'q30': ['D'],
+            'q31': ['different'],
+            'q32': ['meat'],
+            'q33': ['tradition'],
+            'q34': ['steam'],
+            'q35': ['ice'],
+            'q36': ['medicine', 'medicines'],
+            'q37': ['tax'],
+            'q38': ['insects'],
+            'q39': ['competition'],
+            'q40': ['healthy']
+        };
+
+        const questionTypes = {
+            'q1': 'text',
+            'q2': 'text',
+            'q3': 'text',
+            'q4': 'text',
+            'q5': 'text',
+            'q6': 'text',
+            'q7': 'text',
+            'q8': 'text',
+            'q9': 'text',
+            'q10': 'text',
+            'q11-12': 'checkbox',
+            'q13-14': 'checkbox',
+            'q15': 'text',
+            'q16': 'text',
+            'q17': 'text',
+            'q18': 'text',
+            'q19': 'text',
+            'q20': 'text',
+            'q21': 'mcq',
+            'q22': 'mcq',
+            'q23': 'mcq',
+            'q24': 'mcq',
+            'q25': 'mcq',
+            'q26': 'text',
+            'q27': 'text',
+            'q28': 'text',
+            'q29': 'text',
+            'q30': 'text',
+            'q31': 'text',
+            'q32': 'text',
+            'q33': 'text',
+            'q34': 'text',
+            'q35': 'text',
+            'q36': 'text',
+            'q37': 'text',
+            'q38': 'text',
+            'q39': 'text',
+            'q40': 'text'
+        };
+
+        let currentPart = 1;
+        let currentQuestion = 1;
+        let selectedRange = null;
+        let contextElement = null;
+
+        const audioSource = 'listening2.mp3';
+        const audioPlayer = document.getElementById('global-audio-player');
+        const playPauseBtn = document.getElementById('play-pause-btn');
+        const progressBar = document.getElementById('progress-bar');
+        const currentTimeEl = document.getElementById('current-time');
+        const totalDurationEl = document.getElementById('total-duration');
+        const speedBtn = document.getElementById('speed-btn');
+        const speedOptions = document.getElementById('speed-options');
+        const volumeSlider = document.getElementById('new-volume-slider');
+
+        if (audioSource) audioPlayer.src = audioSource;
+
+        function formatTime(s) {
+            const m = Math.floor(s / 60), sec = Math.floor(s % 60);
+            return m + ':' + (sec < 10 ? '0' : '') + sec;
+        }
+
+        playPauseBtn.addEventListener('click', () => {
+            if (!audioSource) { alert('Audio URL qo\'shilmagan.'); return; }
+            if (audioPlayer.paused) audioPlayer.play(); else audioPlayer.pause();
+        });
+        audioPlayer.addEventListener('play', () => { playPauseBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>'; });
+        audioPlayer.addEventListener('pause', () => { playPauseBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>'; });
+        audioPlayer.addEventListener('loadedmetadata', () => { progressBar.max = audioPlayer.duration; totalDurationEl.textContent = formatTime(audioPlayer.duration); });
+        audioPlayer.addEventListener('timeupdate', () => { progressBar.value = audioPlayer.currentTime; currentTimeEl.textContent = formatTime(audioPlayer.currentTime); });
+        progressBar.addEventListener('input', () => { audioPlayer.currentTime = progressBar.value; });
+        volumeSlider.addEventListener('input', (e) => { audioPlayer.volume = e.target.value; });
+        speedBtn.addEventListener('click', (e) => { e.stopPropagation(); speedOptions.classList.toggle('hidden'); });
+        speedOptions.addEventListener('click', (e) => {
+            if (e.target.dataset.speed) { audioPlayer.playbackRate = parseFloat(e.target.dataset.speed); speedBtn.textContent = e.target.dataset.speed + 'x'; speedOptions.classList.add('hidden'); }
+        });
+        document.addEventListener('click', () => speedOptions.classList.add('hidden'));
+
+        function switchToPart(partNumber) {
+            currentPart = partNumber;
+            document.querySelectorAll('.question-part').forEach(p => p.classList.add('hidden'));
+            const part = document.getElementById('part-' + partNumber);
+            if (part) part.classList.remove('hidden');
+            document.querySelectorAll('.footer__questionWrapper___1tZ46').forEach((w, i) => w.classList.toggle('selected', i + 1 === partNumber));
+            const partStart = (partNumber - 1) * 10 + 1;
+            const partEnd = partNumber * 10;
+            if (currentQuestion < partStart || currentQuestion > partEnd) {
+                currentQuestion = partStart;
+                document.querySelectorAll('.subQuestion').forEach(b => b.classList.remove('active'));
+                const activeBtn = document.querySelector('.subQuestion[onclick="goToQuestion(' + partStart + ')"]');
+                if (activeBtn) activeBtn.classList.add('active');
+            }
+            if (document.querySelector('.main-container.results-mode')) {
+                const src = document.querySelector('#transcription-data [data-part="' + partNumber + '"]');
+                const tgt = document.getElementById('transcription-text');
+                if (src && tgt) tgt.innerHTML = src.innerHTML;
+            }
+            updateAttemptedCount(partNumber);
+            document.getElementById('prevBtn').disabled = currentQuestion <= 1;
+            document.getElementById('nextBtn').disabled = currentQuestion >= 40;
+        }
+
+        function goToQuestion(qNum) {
+            currentQuestion = qNum;
+            let part = 1;
+            if (qNum > 10 && qNum <= 20) part = 2;
+            else if (qNum > 20 && qNum <= 30) part = 3;
+            else if (qNum > 30) part = 4;
+            if (currentPart !== part) switchToPart(part);
+            document.querySelectorAll('.subQuestion').forEach(b => b.classList.remove('active'));
+            const btn = document.querySelector(`.subQuestion[onclick="goToQuestion(${qNum})"]`);
+            if (btn) btn.classList.add('active');
+            const pairName = pairNameForQ(qNum);
+            let el = document.getElementById('q' + qNum) || document.querySelector('input[name="q' + qNum + '"]')
+                || (pairName ? document.querySelector('input[name="' + pairName + '"]') : null);
+            document.querySelectorAll('.question.active-question').forEach(q => q.classList.remove('active-question'));
+            if (el) {
+                const container = el.closest('.question');
+                if (container) {
+                    container.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    container.classList.add('flash');
+                    setTimeout(() => container.classList.remove('flash'), 1000);
+                    container.classList.add('active-question');
+                }
+            }
+            if (document.querySelector('.main-container.results-mode')) {
+                const hl = document.querySelector('#transcription-text .t-hl[data-q="' + qNum + '"]');
+                if (hl) {
+                    document.querySelectorAll('#transcription-text .t-hl.active').forEach(x => x.classList.remove('active'));
+                    hl.classList.add('active');
+                    hl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+            document.getElementById('prevBtn').disabled = qNum <= 1;
+            document.getElementById('nextBtn').disabled = qNum >= 40;
+        }
+
+        function nextPart() { if (currentQuestion < 40) goToQuestion(currentQuestion + 1); }
+        function previousPart() { if (currentQuestion > 1) goToQuestion(currentQuestion - 1); }
+
+        const pairGroups = { 'q11-12': [11, 12], 'q13-14': [13, 14] };
+
+        function pairNameForQ(qNum) {
+            return Object.keys(pairGroups).find(name => pairGroups[name].includes(qNum)) || null;
+        }
+
+        function updateAttemptedCount(partNumber) {
+            const start = (partNumber - 1) * 10 + 1;
+            const end = partNumber * 10;
+            let count = 0;
+            const countedPairs = {};
+            for (let i = start; i <= end; i++) {
+                const pairName = pairNameForQ(i);
+                if (pairName) {
+                    if (!countedPairs[pairName]) {
+                        count += document.querySelectorAll('input[name="' + pairName + '"]:checked').length;
+                        countedPairs[pairName] = true;
+                    }
+                    continue;
+                }
+                const txt = document.getElementById('q' + i);
+                const rad = document.querySelector('input[name="q' + i + '"]:checked');
+                if ((txt && txt.value.trim()) || rad) count++;
+            }
+            const wrapper = document.querySelectorAll('.footer__questionWrapper___1tZ46')[partNumber - 1];
+            if (wrapper) {
+                const span = wrapper.querySelector('.attemptedCount');
+                if (span) span.textContent = count + ' of 10';
+            }
+        }
+
+        function updateAnsweredIndicators() {
+            for (let qNum = 1; qNum <= 40; qNum++) {
+                const btn = document.querySelector(`.subQuestion[onclick="goToQuestion(${qNum})"]`);
+                if (!btn || btn.classList.contains('correct') || btn.classList.contains('incorrect')) continue;
+                let answered;
+                const pairName = pairNameForQ(qNum);
+                if (pairName) {
+                    const idx = pairGroups[pairName].indexOf(qNum);
+                    const checkedCount = document.querySelectorAll('input[name="' + pairName + '"]:checked').length;
+                    answered = checkedCount >= (idx + 1);
+                } else {
+                    const txt = document.getElementById('q' + qNum);
+                    const rad = document.querySelector('input[name="q' + qNum + '"]:checked');
+                    answered = (txt && txt.value.trim() !== '') || !!rad;
+                }
+                btn.classList.toggle('answered', answered);
+            }
+            [1, 2, 3, 4].forEach(p => updateAttemptedCount(p));
+        }
+
+        document.querySelectorAll('.answer-input, input[type="radio"], input[type="checkbox"]').forEach(inp => {
+            inp.addEventListener('input', updateAnsweredIndicators);
+            inp.addEventListener('change', updateAnsweredIndicators);
+        });
+
+        function setupCheckboxLimits() {
+            Object.keys(pairGroups).forEach(name => {
+                const boxes = Array.from(document.querySelectorAll('input[type="checkbox"][name="' + name + '"]'));
+                if (!boxes.length) return;
+                boxes.forEach(b => b.addEventListener('change', () => {
+                    const checkedCount = boxes.filter(x => x.checked).length;
+                    boxes.forEach(x => { if (!x.checked) x.disabled = checkedCount >= pairGroups[name].length; });
+                }));
+            });
+        }
+
+        function makeReviewMark(isCorrect) {
+            const span = document.createElement('span');
+            span.className = 'review-mark ' + (isCorrect ? 'review-mark-correct' : 'review-mark-wrong');
+            span.textContent = isCorrect ? '✓' : '✗';
+            return span;
+        }
+
+        function checkAnswers() {
+            let score = 0;
+            const resultsData = [];
+
+            document.querySelectorAll('.correct-inline').forEach(el => el.remove());
+            document.querySelectorAll('.answer-input').forEach(el => el.classList.remove('correct', 'incorrect'));
+            document.querySelectorAll('.multi-choice-option').forEach(el => el.classList.remove('correct', 'incorrect'));
+
+            Object.keys(correctAnswers).forEach(key => {
+                const correct = correctAnswers[key];
+                const type = questionTypes[key];
+
+                if (type === 'checkbox') {
+                    const [startQ, endQ] = key.split('-').map(s => parseInt(s.replace('q', '')));
+                    const checked = document.querySelectorAll('input[name="' + key + '"]:checked');
+                    const userVals = Array.from(checked).map(c => c.value).sort();
+                    const correctSorted = [...correct].sort();
+                    const correctSel = userVals.filter(v => correctSorted.includes(v));
+                    score += correctSel.length;
+                    const isCorrect = correctSel.length === correctSorted.length && userVals.length === correctSorted.length;
+                    checked.forEach(cb => { const w = cb.closest('.multi-choice-option'); if (w) w.classList.add(correctSorted.includes(cb.value) ? 'correct' : 'incorrect'); });
+                    correctSorted.forEach(v => { const cb = document.querySelector('input[name="' + key + '"][value="' + v + '"]'); if (cb && !cb.checked) { const w = cb.closest('.multi-choice-option'); if (w) w.classList.add('correct'); } });
+                    for (let q = startQ; q <= endQ; q++) { const b = document.querySelector(`.subQuestion[onclick="goToQuestion(${q})"]`); if (b) { b.classList.remove('answered'); b.classList.add(isCorrect ? 'correct' : 'incorrect'); } }
+                    resultsData.push({ question: startQ + '-' + endQ, userAnswer: userVals.join(', ') || 'No Answer', correctAnswer: correctSorted.join(', '), isCorrect });
+                    return;
+                }
+
+                const qNum = parseInt(key.replace('q', ''));
+                let userAnswer = '', isCorrect = false;
+
+                if (type === 'text') {
+                    const el = document.getElementById(key);
+                    userAnswer = el ? el.value.trim() : '';
+                    const accepted = Array.isArray(correct) ? correct : [correct];
+                    if (accepted[0] === '???') {
+                        isCorrect = false;
+                    } else {
+                        isCorrect = accepted.some(a => a.toLowerCase() === userAnswer.toLowerCase());
+                    }
+                    if (el) {
+                        el.classList.add(isCorrect ? 'correct' : 'incorrect');
+                        if (!isCorrect && accepted[0] !== '???') {
+                            const sp = document.createElement('span');
+                            sp.className = 'correct-inline';
+                            sp.textContent = accepted[0];
+                            el.insertAdjacentElement('afterend', sp);
+                        }
+                    }
+                } else if (type === 'mcq') {
+                    const checked = document.querySelector('input[name="' + key + '"]:checked');
+                    userAnswer = checked ? checked.value : 'No Answer';
+                    isCorrect = correct !== '???' && userAnswer === correct;
+                    document.querySelectorAll('input[name="' + key + '"]').forEach(r => {
+                        const wrapper = r.closest('.multi-choice-option');
+                        if (!wrapper) return;
+                        if (correct !== '???' && r.value === correct) wrapper.classList.add('correct');
+                        else if (r.checked) wrapper.classList.add('incorrect');
+                    });
+                }
+
+                if (isCorrect) score++;
+                const navBtn = document.querySelector(`.subQuestion[onclick="goToQuestion(${qNum})"]`);
+                if (navBtn) { navBtn.classList.remove('answered'); navBtn.classList.add(isCorrect ? 'correct' : 'incorrect'); }
+                resultsData.push({ question: qNum, userAnswer: userAnswer || 'No Answer', correctAnswer: Array.isArray(correct) ? correct[0] : correct, isCorrect });
+            });
+
+            document.querySelectorAll('.answer-input, input[type="radio"], input[type="checkbox"]').forEach(el => el.disabled = true);
+
+            const band = (function (r) {
+                if (r >= 39) return 9; if (r >= 37) return 8.5; if (r >= 35) return 8; if (r >= 32) return 7.5;
+                if (r >= 30) return 7; if (r >= 26) return 6.5; if (r >= 23) return 6; if (r >= 18) return 5.5;
+                if (r >= 16) return 5; if (r >= 13) return 4.5; if (r >= 10) return 4; if (r >= 8) return 3.5;
+                if (r >= 6) return 3; if (r >= 4) return 2.5; if (r >= 2) return 2; if (r === 1) return 1.5; return 0;
+            })(score);
+
+            document.querySelector('.main-container').classList.add('results-mode');
+            switchToPart(currentPart);
+
+            document.getElementById('score-summary').textContent = 'You scored ' + score + ' out of 40 (Band ' + band + ').';
+
+            const resultDetails = document.getElementById('result-details');
+            let html = '<table><thead><tr><th>Question</th><th>Your Answer</th><th>Correct Answer</th><th>Result</th></tr></thead><tbody>';
+            resultsData.forEach(r => {
+                html += '<tr><td>' + r.question + '</td><td>' + r.userAnswer + '</td><td>' + r.correctAnswer + '</td><td class="' + (r.isCorrect ? 'result-correct' : 'result-incorrect') + '">' + (r.isCorrect ? '&#10003; Correct' : '&#10007; Incorrect') + '</td></tr>';
+            });
+            html += '</tbody></table>';
+            resultDetails.innerHTML = html;
+
+            const deliverButton = document.getElementById('deliver-button');
+            deliverButton.classList.add('success');
+            deliverButton.innerHTML = '<span>My Results</span>';
+            const newBtn = deliverButton.cloneNode(true);
+            deliverButton.parentNode.replaceChild(newBtn, deliverButton);
+            newBtn.addEventListener('click', () => { document.getElementById('result-modal').style.display = 'flex'; });
+            document.getElementById('result-modal').style.display = 'flex';
+        }
+
+        document.getElementById('deliver-button').addEventListener('click', () => {
+            document.getElementById('confirm-submit-modal').style.display = 'flex';
+        });
+        document.getElementById('confirm-submit-cancel').addEventListener('click', () => {
+            document.getElementById('confirm-submit-modal').style.display = 'none';
+        });
+        document.getElementById('confirm-submit-ok').addEventListener('click', () => {
+            document.getElementById('confirm-submit-modal').style.display = 'none';
+            checkAnswers();
+        });
+        document.getElementById('modal-close-button').addEventListener('click', () => { document.getElementById('result-modal').style.display = 'none'; });
+
+        document.addEventListener('selectionchange', () => {
+            const sel = window.getSelection();
+            if (sel && sel.rangeCount > 0 && !sel.isCollapsed) selectedRange = sel.getRangeAt(0);
+        });
+
+        document.addEventListener('mouseup', (e) => {
+            if (e.target.closest('.selection-toolbar') || e.target.closest('.context-menu')) return;
+            setTimeout(() => {
+                const sel = window.getSelection();
+                if (sel && sel.rangeCount > 0 && !sel.isCollapsed && sel.toString().trim()) {
+                    selectedRange = sel.getRangeAt(0);
+                    showSelectionToolbar(selectedRange);
+                } else {
+                    hideSelectionToolbar();
+                }
+            }, 0);
+        });
+
+        function showSelectionToolbar(range) {
+            const rect = range.getBoundingClientRect();
+            const toolbar = document.getElementById('selectionToolbar');
+            toolbar.style.display = 'flex';
+            const top = rect.top + window.scrollY - toolbar.offsetHeight - 8;
+            let left = rect.left + window.scrollX + rect.width / 2 - toolbar.offsetWidth / 2;
+            left = Math.max(8, Math.min(left, window.scrollX + document.documentElement.clientWidth - toolbar.offsetWidth - 8));
+            toolbar.style.top = Math.max(8, top) + 'px';
+            toolbar.style.left = left + 'px';
+        }
+        function hideSelectionToolbar() {
+            document.getElementById('selectionToolbar').style.display = 'none';
+        }
+
+        document.body.addEventListener('contextmenu', function (e) {
+            const existingHl = e.target.closest('.highlight, .comment-highlight');
+            if (!existingHl) return;
+            e.preventDefault();
+            hideSelectionToolbar();
+            const menu = document.getElementById('contextMenu');
+            menu.style.left = e.pageX + 'px';
+            menu.style.top = e.pageY + 'px';
+            menu.style.display = 'block';
+            contextElement = existingHl;
+            document.getElementById('clear-item').style.display = 'block';
+        });
+        document.body.addEventListener('click', function (e) {
+            if (!e.target.closest('.context-menu')) document.getElementById('contextMenu').style.display = 'none';
+        });
+        function highlightText() {
+            if (!selectedRange || selectedRange.collapsed) return;
+            try {
+                const span = document.createElement('span');
+                span.className = 'highlight';
+                span.appendChild(selectedRange.extractContents());
+                selectedRange.insertNode(span);
+            } catch (e) { }
+            window.getSelection().removeAllRanges();
+            hideSelectionToolbar();
+            document.getElementById('contextMenu').style.display = 'none';
+        }
+        function addComment() {
+            const t = prompt('Enter your comment:');
+            if (!t || !selectedRange) { hideSelectionToolbar(); return; }
+            try {
+                const span = document.createElement('span'); span.className = 'comment-highlight';
+                span.appendChild(selectedRange.extractContents());
+                const tip = document.createElement('span'); tip.className = 'comment-tooltip'; tip.textContent = t;
+                span.appendChild(tip);
+                selectedRange.insertNode(span);
+            } catch (e) { }
+            window.getSelection().removeAllRanges();
+            hideSelectionToolbar();
+            document.getElementById('contextMenu').style.display = 'none';
+        }
+        function clearHighlight() {
+            if (contextElement) {
+                const parent = contextElement.parentNode;
+                while (contextElement.firstChild) parent.insertBefore(contextElement.firstChild, contextElement);
+                parent.removeChild(contextElement); parent.normalize();
+            }
+            document.getElementById('contextMenu').style.display = 'none';
+        }
+        function clearAllHighlights() {
+            document.querySelectorAll('.highlight, .comment-highlight').forEach(el => {
+                const parent = el.parentNode;
+                while (el.firstChild) parent.insertBefore(el.firstChild, el);
+                parent.removeChild(el); parent.normalize();
+            });
+            document.getElementById('contextMenu').style.display = 'none';
+        }
+
+        document.getElementById('transcription-text').addEventListener('click', (e) => {
+            const hl = e.target.closest('.t-hl[data-time]');
+            if (!hl || !audioSource) return;
+            const tSec = parseFloat(hl.getAttribute('data-time'));
+            if (isNaN(tSec)) return;
+            audioPlayer.currentTime = Math.max(0, tSec - 2);
+            audioPlayer.play();
+        });
+
+        // ═══ Exam Settings: tema, matn o'lchami, fullscreen ═══
+        const settingsModal = document.getElementById('settings-modal');
+        const darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+        function readSetting(key, fallback) {
+            try { return localStorage.getItem(key) || fallback; } catch (e) { return fallback; }
+        }
+        function saveSetting(key, value) {
+            try { localStorage.setItem(key, value); } catch (e) { }
+        }
+
+        function applyTheme(theme) {
+            const dark = theme === 'dark' || (theme === 'system' && darkQuery.matches);
+            document.body.classList.toggle('theme-dark', dark);
+            document.querySelectorAll('.settings-option[data-theme]').forEach(b => {
+                b.classList.toggle('selected', b.dataset.theme === theme);
+            });
+        }
+
+        function applyTextSize(size) {
+            document.body.classList.remove('text-large', 'text-xlarge');
+            if (size === 'large') document.body.classList.add('text-large');
+            else if (size === 'xlarge') document.body.classList.add('text-xlarge');
+            document.querySelectorAll('.settings-option[data-textsize]').forEach(b => {
+                b.classList.toggle('selected', b.dataset.textsize === size);
+            });
+        }
+
+        document.querySelectorAll('.settings-option[data-theme]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                saveSetting('cdi-theme', btn.dataset.theme);
+                applyTheme(btn.dataset.theme);
+            });
+        });
+
+        document.querySelectorAll('.settings-option[data-textsize]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                saveSetting('cdi-textsize', btn.dataset.textsize);
+                applyTextSize(btn.dataset.textsize);
+            });
+        });
+
+        darkQuery.addEventListener('change', () => {
+            if (readSetting('cdi-theme', 'light') === 'system') applyTheme('system');
+        });
+
+        document.getElementById('settings-btn').addEventListener('click', () => {
+            settingsModal.style.display = 'flex';
+        });
+        document.getElementById('settings-close').addEventListener('click', () => {
+            settingsModal.style.display = 'none';
+        });
+        settingsModal.addEventListener('click', (e) => {
+            if (e.target === settingsModal) settingsModal.style.display = 'none';
+        });
+
+        document.getElementById('reset-settings-btn').addEventListener('click', () => {
+            saveSetting('cdi-theme', 'light');
+            saveSetting('cdi-textsize', 'default');
+            applyTheme('light');
+            applyTextSize('default');
+        });
+
+        document.getElementById('fullscreen-btn').addEventListener('click', () => {
+            if (document.fullscreenElement) document.exitFullscreen();
+            else document.documentElement.requestFullscreen();
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            switchToPart(1);
+            goToQuestion(1);
+            setupCheckboxLimits();
+            applyTheme(readSetting('cdi-theme', 'light'));
+            applyTextSize(readSetting('cdi-textsize', 'default'));
+        });
+    </script>
+</body>
+
+</html>
