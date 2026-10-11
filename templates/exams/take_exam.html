@@ -943,10 +943,10 @@
 </div>
 
 <!-- ─── SUBMITTING OVERLAY ─────────────────────────────── -->
-<div class="overlay-modal" id="submittingOverlay">
+<div class="overlay-modal" id="submittingOverlay" style="z-index:2600;">
     <div class="result-card" style="max-width:320px;">
         <div class="submit-spinner"></div>
-        <p style="margin-top:1.1rem; font-weight:700; color:var(--text); font-size:14px;">Natijalar hisoblanmoqda...</p>
+        <p id="submittingText" style="margin-top:1.1rem; font-weight:700; color:var(--text); font-size:14px;">Natijalar hisoblanmoqda...</p>
         <p style="margin-top:0.4rem; font-size:12px; color:#888;">Iltimos kuting, sahifani yopmang.</p>
     </div>
 </div>
@@ -963,6 +963,18 @@
             <button class="btn-confirm" id="reviewConfirmBtn" onclick="confirmSubmit()">
                 Ha, yakunlash
             </button>
+        </div>
+    </div>
+</div>
+
+<!-- ─── UNSENT ANSWERS (RECOVERY) MODAL ───────────────── -->
+<div class="overlay-modal" id="recoverModal" style="z-index:2500;">
+    <div class="review-card">
+        <h3 id="recoverTitle"></h3>
+        <div id="recoverBody"></div>
+        <div class="review-actions">
+            <button class="btn-back" id="recoverDismissBtn" onclick="document.getElementById('recoverModal').classList.remove('active')"></button>
+            <button class="btn-confirm" id="recoverSubmitBtn" onclick="submitSavedAnswers()"></button>
         </div>
     </div>
 </div>
@@ -1392,6 +1404,10 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch(e) {}
 
     // ─── DRAFT RESTORE ───────────────────────────────────
+    // Called near the end of this script, not here: it goes through
+    // saveWriting/selectMCQ/selectTFNG, which are only assigned further
+    // down. Calling it this early threw "saveWriting is not defined" for
+    // any draft holding a Writing answer and killed the whole page on reload.
     function restoreDraft() {
         allQuestions.forEach(q => {
             const val = answers[q.id];
@@ -1411,7 +1427,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (tfng) tfng.click();
         });
     }
-    restoreDraft();
 
     // ─── ANSWER TRACKER ──────────────────────────────────
     // Must be declared before buildTracker() is called below — buildTracker
@@ -2142,7 +2157,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 fd.append('audio', blob, `speaking_${qid}.${ext}`);
                 fd.append('result_id', resultId);
                 fd.append('question_id', qid);
-                fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+                fd.append('csrfmiddlewaretoken', csrfToken());
                 await fetch("{% url 'exams:speaking_eval' %}", { method: 'POST', body: fd });
             } catch(e) { console.warn('Speaking eval failed for q' + qid, e); }
         }
@@ -2404,97 +2419,179 @@ document.addEventListener('DOMContentLoaded', () => {
                 fd.append('demo', '1');
                 fd.append('result_id', resultId);
                 fd.append('question_id', qid);
-                fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+                fd.append('csrfmiddlewaretoken', csrfToken());
                 await fetch("{% url 'exams:speaking_eval' %}", { method: 'POST', body: fd });
             } catch(e) { console.warn('Demo speaking eval failed for q' + qid, e); }
         }
     }
 
     // ─── SUBMIT ───────────────────────────────────────────
+    // Submit is retried with backoff because a whole room usually finishes
+    // (or times out) in the same second and the shared host answers the
+    // overflow with a non-JSON error page. The submission_id lets the
+    // server replay its first answer if only the reply got lost, so a
+    // retry never creates a second result. The draft stays in
+    // localStorage until the server has confirmed it.
+    const SUBMIT_KEY = DRAFT_KEY + '_submit';
+    const SUBMIT_TRIES = 6;
+
+    function csrfToken() {
+        // Read fresh rather than the token baked in at render time: logging
+        // in again (e.g. in another tab) rotates the cookie mid-exam.
+        const m = document.cookie.match(/(?:^|;\s*)csrftoken=([^;]+)/);
+        return m ? decodeURIComponent(m[1]) : '{{ csrf_token }}';
+    }
+
+    function submissionId() {
+        let id = null;
+        try { id = localStorage.getItem(SUBMIT_KEY); } catch(e) {}
+        if (!id) {
+            id = (window.crypto && crypto.randomUUID) ? crypto.randomUUID()
+                : Date.now().toString(36) + Math.random().toString(36).slice(2);
+            try { localStorage.setItem(SUBMIT_KEY, id); } catch(e) {}
+        }
+        return id;
+    }
+
+    async function postSubmission() {
+        const body = JSON.stringify({ answers, submission_id: submissionId() });
+        let lastError = '';
+        for (let attempt = 1; attempt <= SUBMIT_TRIES; attempt++) {
+            if (attempt > 1) {
+                document.getElementById('submittingText').innerText =
+                    `Server band, qayta urinilmoqda (${attempt}/${SUBMIT_TRIES})...`;
+                // Jitter spreads a whole room's retries apart.
+                const wait = Math.min(2000 * 2 ** (attempt - 2), 16000) + Math.random() * 3000;
+                await new Promise(res => setTimeout(res, wait));
+            }
+            let r;
+            try {
+                r = await fetch("{% url 'exams:submit_exam' exam.id %}", {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken() },
+                    body,
+                });
+            } catch(e) {
+                lastError = "Internet aloqasi uzildi";
+                continue;
+            }
+            if (r.redirected && r.url.includes('/login')) {
+                return { ok: false, message: "Sessiyangiz tugagan. Yangi oynada saytga qayta kiring, so'ng shu sahifaga qaytib «Qayta yuborish» tugmasini bosing." };
+            }
+            let data = null;
+            try { data = await r.json(); } catch(e) {}
+            if (r.ok && data && data.status === 'success') return { ok: true, data };
+            if (r.status === 403 && !data) {
+                return { ok: false, message: "Xavfsizlik tekshiruvidan o'tmadi (403). Sahifani yangilang (F5) — so'ng chiqqan oynada «Javoblarni yuborish» tugmasini bosing." };
+            }
+            // 4xx with a message (unpaid exam, bad request): retrying won't change it.
+            if (data && data.error && r.status < 500) return { ok: false, message: data.error };
+            lastError = (data && data.error) || `Server javob bermadi (${r.status})`;
+        }
+        return { ok: false, message: lastError };
+    }
+
+    function answeredCount() {
+        return allQuestions.filter(q => answers[q.id] && String(answers[q.id]).trim()).length;
+    }
+
+    function showRecoverModal(title, html, submitLabel, dismissLabel) {
+        document.getElementById('recoverTitle').innerText = title;
+        document.getElementById('recoverBody').innerHTML = html;
+        document.getElementById('recoverSubmitBtn').innerText = submitLabel;
+        document.getElementById('recoverDismissBtn').innerText = dismissLabel;
+        document.getElementById('recoverModal').classList.add('active');
+    }
+
+    window.submitSavedAnswers = function() {
+        document.getElementById('recoverModal').classList.remove('active');
+        clearInterval(timerInterval);
+        const instr = document.getElementById('sectionInstrOverlay');
+        if (instr) instr.style.display = 'none';
+        submitExam(false);
+    };
+
     // demoSpeakingQids: superadmin QA only — question ids to grade via a
     // canned demo transcript instead of a real recording (see demoFillAndSubmit).
-    window.submitExam = function(auto = false, demoSpeakingQids = null) {
+    window.submitExam = async function(auto = false, demoSpeakingQids = null) {
         if (examSubmitted) return;
         examSubmitted = true;
         stopSpeaking();
         pauseAllListeningAudio();
+        autosave();
+        document.getElementById('submittingText').innerText = 'Natijalar hisoblanmoqda...';
         document.getElementById('submittingOverlay').classList.add('active');
 
-        fetch("{% url 'exams:submit_exam' exam.id %}", {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
-            body: JSON.stringify({ answers })
-        })
-        .then(r => r.json().then(data => ({ ok: r.ok, data })))
-        .then(({ ok, data }) => {
-            document.getElementById('submittingOverlay').classList.remove('active');
-            if (!ok || data.status !== 'success') {
-                examSubmitted = false;
-                alert(data.error || "Xatolik yuz berdi. Qayta urinib ko'ring.");
-                return;
-            }
-            localStorage.removeItem(DRAFT_KEY);
-            document.getElementById('resultModal').classList.add('active');
-            if (window.lucide) lucide.createIcons();
-
-            if (data.pending) {
-                // Writing is graded by hand — no score exists yet, so the
-                // modal just says the result is being calculated.
-                document.getElementById('resultScore').innerText = '⏳';
-                const bl = document.getElementById('bandLabel');
-                if (bl) bl.innerText = "Natija hisoblanmoqda. Writing qismi mutaxassis tomonidan tekshirilgach natijangiz chiqadi va sizga xabar yuboriladi.";
-                document.getElementById('sectionScores').innerHTML = '';
-                const link = document.getElementById('resultDetailLink');
-                link.href = `/exams/result/${data.result_id}/`;
-                link.innerText = "Natija holatini ko'rish";
-                if (demoSpeakingQids && demoSpeakingQids.length) {
-                    demoFillSpeaking(data.result_id, demoSpeakingQids);
-                } else {
-                    uploadSpeakingAudios(data.result_id);
-                }
-                return;
-            }
-
-            if (demoSpeakingQids && demoSpeakingQids.length) {
-                // The submit response's speaking band is a 0.0 placeholder — the
-                // real score only exists once the demo transcript grading below
-                // finishes — so don't show it, show a loading state instead.
-                document.getElementById('resultScore').innerText = '…';
-                const bl = document.getElementById('bandLabel');
-                if (bl) bl.innerText = 'AI Speaking javoblarini baholamoqda...';
-                document.getElementById('sectionScores').innerHTML = '';
-                const link = document.getElementById('resultDetailLink');
-                link.style.visibility = 'hidden';
-                demoFillSpeaking(data.result_id, demoSpeakingQids).then(() => {
-                    window.location.href = `/exams/result/${data.result_id}/`;
-                });
-                return;
-            }
-
-            document.getElementById('resultScore').innerText = parseFloat(data.score).toFixed(1);
-            const bandLabels = {9:'Expert',8.5:'Expert',8:'Very Good User',7.5:'Very Good User',7:'Good User',6.5:'Competent User',6:'Competent User',5.5:'Modest User',5:'Modest User',4.5:'Limited User',4:'Limited User'};
-            const bl = document.getElementById('bandLabel');
-            if (bl) bl.innerText = bandLabels[data.score] || 'IELTS Band Score';
-
-            const sc = document.getElementById('sectionScores');
-            sc.innerHTML = '';
-            [['Listening', data.listening],['Reading', data.reading],['Writing', data.writing],['Speaking', data.speaking]].forEach(([label, val]) => {
-                if (val > 0) {
-                    sc.innerHTML += `<div class="score-cell">
-                        <div class="label">${label}</div>
-                        <div class="val">${parseFloat(val).toFixed(1)}</div>
-                    </div>`;
-                }
-            });
-
-            document.getElementById('resultDetailLink').href = `/exams/result/${data.result_id}/`;
-            uploadSpeakingAudios(data.result_id);
-        })
-        .catch(() => {
-            document.getElementById('submittingOverlay').classList.remove('active');
+        const outcome = await postSubmission();
+        document.getElementById('submittingOverlay').classList.remove('active');
+        if (!outcome.ok) {
             examSubmitted = false;
-            alert("Xatolik yuz berdi. Qayta urinib ko'ring.");
+            const msg = document.createElement('p');
+            msg.style.cssText = 'color:#c62828; font-weight:600; margin-bottom:8px;';
+            msg.innerText = outcome.message;
+            showRecoverModal("Javoblar yuborilmadi",
+                msg.outerHTML + `<p style="font-size:13px; color:#555;">${answeredCount()} ta javobingiz shu brauzerda saqlangan va yo'qolmaydi. Biroz kutib, qayta yuboring.</p>`,
+                'Qayta yuborish', 'Yopish');
+            return;
+        }
+        const data = outcome.data;
+        try { localStorage.removeItem(DRAFT_KEY); localStorage.removeItem(SUBMIT_KEY); } catch(e) {}
+        document.getElementById('resultModal').classList.add('active');
+        if (window.lucide) lucide.createIcons();
+
+        if (data.pending) {
+            // Writing is graded by hand — no score exists yet, so the
+            // modal just says the result is being calculated.
+            document.getElementById('resultScore').innerText = '⏳';
+            const bl = document.getElementById('bandLabel');
+            if (bl) bl.innerText = "Natija hisoblanmoqda. Writing qismi mutaxassis tomonidan tekshirilgach natijangiz chiqadi va sizga xabar yuboriladi.";
+            document.getElementById('sectionScores').innerHTML = '';
+            const link = document.getElementById('resultDetailLink');
+            link.href = `/exams/result/${data.result_id}/`;
+            link.innerText = "Natija holatini ko'rish";
+            if (demoSpeakingQids && demoSpeakingQids.length) {
+                demoFillSpeaking(data.result_id, demoSpeakingQids);
+            } else {
+                uploadSpeakingAudios(data.result_id);
+            }
+            return;
+        }
+
+        if (demoSpeakingQids && demoSpeakingQids.length) {
+            // The submit response's speaking band is a 0.0 placeholder — the
+            // real score only exists once the demo transcript grading below
+            // finishes — so don't show it, show a loading state instead.
+            document.getElementById('resultScore').innerText = '…';
+            const bl = document.getElementById('bandLabel');
+            if (bl) bl.innerText = 'AI Speaking javoblarini baholamoqda...';
+            document.getElementById('sectionScores').innerHTML = '';
+            const link = document.getElementById('resultDetailLink');
+            link.style.visibility = 'hidden';
+            demoFillSpeaking(data.result_id, demoSpeakingQids).then(() => {
+                window.location.href = `/exams/result/${data.result_id}/`;
+            });
+            return;
+        }
+
+        document.getElementById('resultScore').innerText = parseFloat(data.score).toFixed(1);
+        const bandLabels = {9:'Expert',8.5:'Expert',8:'Very Good User',7.5:'Very Good User',7:'Good User',6.5:'Competent User',6:'Competent User',5.5:'Modest User',5:'Modest User',4.5:'Limited User',4:'Limited User'};
+        const bl = document.getElementById('bandLabel');
+        if (bl) bl.innerText = bandLabels[data.score] || 'IELTS Band Score';
+
+        const sc = document.getElementById('sectionScores');
+        sc.innerHTML = '';
+        [['Listening', data.listening],['Reading', data.reading],['Writing', data.writing],['Speaking', data.speaking]].forEach(([label, val]) => {
+            if (val > 0) {
+                sc.innerHTML += `<div class="score-cell">
+                    <div class="label">${label}</div>
+                    <div class="val">${parseFloat(val).toFixed(1)}</div>
+                </div>`;
+            }
         });
+
+        document.getElementById('resultDetailLink').href = `/exams/result/${data.result_id}/`;
+        uploadSpeakingAudios(data.result_id);
     };
 
     // ─── INLINE GAP-FILL RENDERING ───────────────────────
@@ -2653,6 +2750,21 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Audio element load error:', audioEl.id, 'src=' + audioEl.currentSrc, 'code=' + code);
         });
     });
+
+    restoreDraft();
+
+    // ─── UNSENT ANSWERS ON LOAD ──────────────────────────
+    // A submit that failed (or a tab closed mid-submit) leaves the draft in
+    // localStorage, but reopening the page restarts the timed sections from
+    // the first one — so offer to send the saved answers straight away.
+    (function offerUnsentAnswers() {
+        const count = answeredCount();
+        if (!count) return;
+        showRecoverModal("Yuborilmagan javoblar topildi",
+            `<p style="font-weight:600; margin-bottom:8px;">Oldingi urinishingizdagi ${count} ta javob serverga yetib bormagan, lekin shu brauzerda saqlangan.</p>
+             <p style="font-size:13px; color:#555;">Ularni hozir yuborib natijani olishingiz yoki testni davom ettirishingiz mumkin.</p>`,
+            'Javoblarni yuborish', 'Testni davom ettirish');
+    })();
 
     // Prevent accidental close
     window.addEventListener('beforeunload', e => {

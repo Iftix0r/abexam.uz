@@ -192,10 +192,28 @@ LOGGING = {
             'maxBytes': 2 * 1024 * 1024,
             'backupCount': 3,
         },
+        # This host's passenger.log is shared with unrelated apps, so
+        # unhandled 500s and failed exam submissions (with the submitted
+        # answers, so they can be recovered by hand) land here instead.
+        'errors_file': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': LOGS_DIR / 'errors.log',
+            'maxBytes': 10 * 1024 * 1024,
+            'backupCount': 5,
+        },
     },
     'loggers': {
         'slow_queries': {
             'handlers': ['slow_queries_file'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+        'django.request': {
+            'handlers': ['errors_file'],
+            'level': 'ERROR',
+        },
+        'exams.submit': {
+            'handlers': ['errors_file'],
             'level': 'WARNING',
             'propagate': False,
         },

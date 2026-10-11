@@ -258,3 +258,36 @@ class ChooseTwoGradingTests(TestCase):
 
     def test_one_wrong_letter(self):
         self.assertEqual(self._correct_count('A', 'e'), 1)
+
+
+@override_settings(CACHES={'default': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'}})
+class SubmitRetryTests(TestCase):
+    """Qayta yuborilgan (retry) topshiriq ikkinchi natija yaratmaydi."""
+
+    def setUp(self):
+        from django.core.cache import cache
+        cache.clear()
+        self.user = User.objects.create_user('student', password='pw')
+        self.exam = Exam.objects.create(title='Retry test', price=0)
+        section = Section.objects.create(exam=self.exam, title='Reading', section_type='reading', order=1)
+        self.q = Question.objects.create(section=section, text='q', question_type='gap_fill',
+                                         correct_answer='paris', order=1)
+        self.client.force_login(self.user)
+
+    def _submit(self, submission_id):
+        return self.client.post(
+            reverse('exams:submit_exam', args=[self.exam.pk]),
+            data=json.dumps({'answers': {str(self.q.id): 'paris'}, 'submission_id': submission_id}),
+            content_type='application/json',
+        ).json()
+
+    def test_same_submission_id_replays_first_result(self):
+        first = self._submit('abc')
+        again = self._submit('abc')
+        self.assertEqual(first, again)
+        self.assertEqual(UserResult.objects.filter(user=self.user).count(), 1)
+
+    def test_new_attempt_gets_new_result(self):
+        self._submit('abc')
+        self._submit('def')
+        self.assertEqual(UserResult.objects.filter(user=self.user).count(), 2)

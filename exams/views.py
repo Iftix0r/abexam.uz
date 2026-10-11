@@ -1,3 +1,4 @@
+import logging
 import math
 from itertools import groupby
 
@@ -15,6 +16,8 @@ from django.views.generic import DetailView
 from core.utils import parse_json_body
 from .models import Exam, UserAnswer, UserResult, Question
 from users.models import User
+
+submit_logger = logging.getLogger('exams.submit')
 
 # Generous enough to cover sitting on the exam-detail page plus the full
 # attempt; a stale flag just means a benign extra grace period, not a way
@@ -336,14 +339,23 @@ class DemoAnswersView(LoginRequiredMixin, View):
 
 
 class SubmitExamView(LoginRequiredMixin, View):
+    # The client retries a failed submit and re-sends the same
+    # submission_id; replaying the stored response keeps a retry whose
+    # first attempt actually went through (only the reply got lost) from
+    # creating a second result — or hitting the paid check, since the
+    # first attempt already cleared the paid flag.
+    _REPLAY_TTL = 7 * 24 * 3600
+
     def post(self, request, *args, **kwargs):
         try:
             return self._post(request, *args, **kwargs)
-        except Exception as e:
-            # TEMP DEBUG (2026-09-17): surface the real traceback to
-            # superusers only, since this host's passenger.log is shared
-            # across unrelated apps and doesn't carry this app's errors.
-            # Remove once the "Xatolik yuz berdi" submit failure is diagnosed.
+        except Exception:
+            # The answers go into logs/errors.log too, so a submit that keeps
+            # failing can still be recovered by hand from the server side.
+            submit_logger.exception(
+                'Exam submit failed: user=%s exam=%s body=%s',
+                request.user.pk, kwargs.get('pk'), request.body[:200_000].decode('utf-8', 'replace'),
+            )
             if request.user.is_superuser:
                 import traceback
                 return JsonResponse({'error': traceback.format_exc()}, status=500)
@@ -351,12 +363,28 @@ class SubmitExamView(LoginRequiredMixin, View):
 
     def _post(self, request, *args, **kwargs):
         exam = get_object_or_404(Exam, pk=kwargs['pk'])
-        if exam.price > 0 and not exam_is_paid(request.user.pk, exam.pk):
-            return JsonResponse({'error': "Bu imtihon uchun to'lov amalga oshirilmagan"}, status=402)
         data, err = parse_json_body(request)
         if err:
             return err
 
+        submission_id = str(data.get('submission_id') or '')[:64]
+        replay_key = f'exam_submit_{request.user.pk}_{exam.pk}_{submission_id}' if submission_id else None
+        if replay_key:
+            replay = cache.get(replay_key)
+            if replay:
+                return JsonResponse(replay)
+
+        if exam.price > 0 and not exam_is_paid(request.user.pk, exam.pk):
+            return JsonResponse({'error': "Bu imtihon uchun to'lov amalga oshirilmagan"}, status=402)
+
+        with transaction.atomic():
+            payload = self._grade_and_save(request, exam, data)
+        clear_exam_paid(request.user.pk, exam.pk)
+        if replay_key:
+            cache.set(replay_key, payload, timeout=self._REPLAY_TTL)
+        return JsonResponse(payload)
+
+    def _grade_and_save(self, request, exam, data):
         answers = data.get('answers', {})
         section_stats = {}
         # writing_tasks: list of (order, text) — preserves Task1/Task2 order
@@ -417,8 +445,6 @@ class SubmitExamView(LoginRequiredMixin, View):
             band_by_type = {'listening': l_band, 'reading': r_band, 'writing': 0.0, 'speaking': s_band}
             overall = compute_overall_band(band_by_type, present_section_types(exam))
 
-        clear_exam_paid(request.user.pk, exam.pk)
-
         result = UserResult.objects.create(
             user=request.user,
             exam=exam,
@@ -439,9 +465,9 @@ class SubmitExamView(LoginRequiredMixin, View):
         if pending:
             # No bands in the response — they'd leak the partial result
             # before the writing is graded.
-            return JsonResponse({'status': 'success', 'result_id': result.id, 'pending': True})
+            return {'status': 'success', 'result_id': result.id, 'pending': True}
 
-        return JsonResponse({
+        return {
             'status': 'success',
             'result_id': result.id,
             'score': result.score,
@@ -449,7 +475,7 @@ class SubmitExamView(LoginRequiredMixin, View):
             'reading': result.reading_score,
             'writing': result.writing_score,
             'speaking': result.speaking_score,
-        })
+        }
 
 
 class ResultDetailView(LoginRequiredMixin, DetailView):
