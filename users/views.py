@@ -1,3 +1,4 @@
+import hashlib
 import json
 
 from django.contrib import messages
@@ -13,33 +14,53 @@ from django.views.generic import CreateView, TemplateView
 
 from core.utils import get_client_ip, monthly_series, notify_admin_telegram, parse_json_body, validate_image_upload
 from exams.models import Exam, UserResult
-from .forms import RegisterForm
+from .forms import LoginForm, RegisterForm
 from .models import LoginLog, User, Vocabulary
 from payments.models import Transaction
 
 
-def _is_blocked(ip):
-    return cache.get(f'login_fail_{ip}', 0) >= 5
+# Failed logins are throttled per username *and* IP, not per IP alone: a
+# whole classroom sits behind one Wi-Fi/NAT address, and a per-IP block meant
+# five typos from any students locked everyone in the room out. The
+# separate, much higher per-IP cap still stops password spraying.
+_FAIL_WINDOW = 15 * 60
+_MAX_FAILS_PER_USER = 5
+_MAX_FAILS_PER_IP = 200
+
+
+def _fail_keys(ip, username):
+    digest = hashlib.md5(username.strip().lower().encode()).hexdigest()
+    return f'login_fail_ip_{ip}', f'login_fail_user_{ip}_{digest}'
+
+
+def _login_blocked(ip, username):
+    ip_key, user_key = _fail_keys(ip, username)
+    return cache.get(ip_key, 0) >= _MAX_FAILS_PER_IP or cache.get(user_key, 0) >= _MAX_FAILS_PER_USER
+
+
+def _bump(key):
+    fails = cache.get(key, 0) + 1
+    cache.set(key, fails, timeout=_FAIL_WINDOW)
+    return fails
 
 
 class CustomLoginView(BaseLoginView):
     template_name = 'login.html'
+    authentication_form = LoginForm
 
-    def dispatch(self, request, *args, **kwargs):
-        if _is_blocked(get_client_ip(request)):
-            from django.http import HttpResponse
-            return HttpResponse(
-                '<h2 style="font-family:sans-serif;text-align:center;margin-top:80px">'
-                '⛔ Juda ko\'p urinish. 15 daqiqadan keyin qayta urinib ko\'ring.</h2>',
-                status=429,
-            )
-        return super().dispatch(request, *args, **kwargs)
+    def post(self, request, *args, **kwargs):
+        # Only the login attempt itself is refused — the page always opens.
+        if _login_blocked(get_client_ip(request), request.POST.get('username', '')):
+            messages.error(request, "Bu foydalanuvchi nomi bilan juda ko'p noto'g'ri urinish bo'ldi. "
+                                    "15 daqiqadan keyin qayta urinib ko'ring.")
+            return redirect(request.get_full_path())
+        return super().post(request, *args, **kwargs)
 
     def form_valid(self, form):
         ip = get_client_ip(self.request)
         ua = self.request.META.get('HTTP_USER_AGENT', '')[:300]
         logged_user = form.get_user()
-        cache.delete(f'login_fail_{ip}')
+        cache.delete(_fail_keys(ip, self.request.POST.get('username', ''))[1])
         logged_user.last_ip = ip
         logged_user.save(update_fields=['last_ip'])
         LoginLog.objects.create(
@@ -59,17 +80,18 @@ class CustomLoginView(BaseLoginView):
         ip = get_client_ip(self.request)
         ua = self.request.META.get('HTTP_USER_AGENT', '')[:300]
         username = self.request.POST.get('username', '')
-        key = f'login_fail_{ip}'
-        fails = cache.get(key, 0) + 1
-        cache.set(key, fails, timeout=900)
-        status = 'blocked' if fails >= 5 else 'failed'
+        ip_key, user_key = _fail_keys(ip, username)
+        user_fails = _bump(user_key)
+        ip_fails = _bump(ip_key)
+        blocked = user_fails >= _MAX_FAILS_PER_USER or ip_fails >= _MAX_FAILS_PER_IP
         LoginLog.objects.create(
             username_attempt=username, ip=ip,
-            user_agent=ua, status=status,
+            user_agent=ua, status='blocked' if blocked else 'failed',
         )
-        if status == 'blocked':
+        if user_fails == _MAX_FAILS_PER_USER or ip_fails == _MAX_FAILS_PER_IP:
+            what = "IP bloklandi" if ip_fails >= _MAX_FAILS_PER_IP else "Foydalanuvchi 15 daqiqaga bloklandi"
             notify_admin_telegram(
-                f"⛔ <b>IP bloklandi (ko'p noto'g'ri urinish)</b>\n"
+                f"⛔ <b>{what} (ko'p noto'g'ri urinish)</b>\n"
                 f"👤 Urinilgan username: {username or '—'}\n"
                 f"🌐 IP: {ip}\n"
                 f"💻 {ua}"

@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
@@ -37,3 +38,10 @@ class RegisterForm(forms.ModelForm):
         if cleaned_data.get('password') != cleaned_data.get('confirm_password'):
             raise forms.ValidationError("Parollar mos kelmadi!")
         return cleaned_data
+
+
+class LoginForm(AuthenticationForm):
+    error_messages = {
+        'invalid_login': "Foydalanuvchi nomi yoki parol noto'g'ri. Katta-kichik harflarni tekshiring.",
+        'inactive': "Bu hisob bloklangan. Administratorga murojaat qiling.",
+    }
