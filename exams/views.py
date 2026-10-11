@@ -553,13 +553,20 @@ class SubmitExamView(LoginRequiredMixin, View):
         attempt = None
         client_id = str(data.get('attempt_id') or '')[:64]
         if client_id and isinstance(answers, dict):
-            attempt = save_attempt(request.user, exam, client_id, answers, 'finished')
-            request._exam_attempt = attempt
+            try:
+                attempt = save_attempt(request.user, exam, client_id, answers, 'finished')
+            except Exception:
+                # The server-side copy is a safety net — never let it stand
+                # between the student and their graded result.
+                submit_logger.exception('Saving attempt before submit failed: user=%s exam=%s',
+                                        request.user.pk, exam.pk)
+            else:
+                request._exam_attempt = attempt
             # A retry whose first try went through (only the reply got lost),
             # or an attempt staff already finalized from the panel: hand back
             # that result instead of creating a second one — or hitting the
             # paid check, which the first submit already cleared.
-            if attempt.is_submitted and attempt.result_id:
+            if attempt is not None and attempt.is_submitted and attempt.result_id:
                 return JsonResponse(submit_payload(attempt.result))
 
         if exam.price > 0 and not exam_is_paid(request.user.pk, exam.pk):

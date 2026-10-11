@@ -316,6 +316,14 @@ class ExamAttemptTests(TestCase):
         self.assertIn('boom', attempt.last_error)
         self.assertFalse(UserResult.objects.exists())
 
+    def test_submit_still_grades_when_attempt_storage_fails(self):
+        from unittest import mock
+        with mock.patch('exams.views.save_attempt', side_effect=RuntimeError('no such column')), \
+                self.assertLogs('exams.submit', level='ERROR'):
+            resp = self._post('submit_exam', attempt_id='a1', answers=self.answers)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(UserResult.objects.get().reading_score, 9.0)
+
     def test_admin_finalizes_unsent_attempt(self):
         self._post('autosave', attempt_id='a1', answers=self.answers, section='reading')
         attempt = ExamAttempt.objects.get()
