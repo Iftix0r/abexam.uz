@@ -112,6 +112,18 @@
 
 <div class="ln-wrap">
     <div>
+        {% if show_placement %}
+        <div class="ln-card ln-continue" style="border-color:#3b82f6;background:linear-gradient(135deg, rgba(59,130,246,0.1), transparent 60%), var(--card-bg)">
+            <div class="ln-badge" style="background:#3b82f6"><i data-lucide="compass" style="width:26px"></i></div>
+            <div style="flex:1;min-width:0">
+                <small style="color:#3b82f6;font-weight:600;font-size:0.75rem;text-transform:uppercase;letter-spacing:.05em">3 daqiqalik test</small>
+                <h2>Qaysi darajadan boshlash kerak?</h2>
+                <p>Juda oson darslar zeriktiradi, juda qiyinlari qiynaydi. Qisqa test sizga mos darajani topib beradi.</p>
+            </div>
+            <a href="{% url 'learn:placement' %}" class="ln-btn ln-btn-primary" style="background:#3b82f6">Testni boshlash</a>
+        </div>
+        {% endif %}
+
         {% if current_lesson %}
         <div class="ln-card ln-continue">
             <div class="ln-badge"><i data-lucide="play" style="width:26px"></i></div>
@@ -184,12 +196,12 @@
         <details class="ln-card ln-method">
             <summary><i data-lucide="sparkles" style="width:18px;color:var(--primary-color)"></i> Bu kurs qanday o'rgatadi?</summary>
             <ol>
-                <li><b>Tushunarli kirish (comprehensible input).</b> Har dars real hayotiy dialog yoki matndan boshlanadi — so'zlar kontekstda, audio bilan.</li>
-                <li><b>Grammatika kontekstda.</b> Qoida matndagi misollardan keyin, o'zbek tilidagi qisqa izoh bilan beriladi — O'zbek o'quvchilari ko'p qiladigan xatolarga urg'u.</li>
-                <li><b>Faol eslash (active recall).</b> Tanlash, bo'sh joy, gap tuzish, diktant, tarjima — xato javoblar dars oxirida qayta so'raladi.</li>
-                <li><b>Gapirish va yozish.</b> Mikrofon orqali talaffuz mashqi va AI'ning qisqa yozma ishga beradigan shaxsiy izohi.</li>
-                <li><b>Oraliq takrorlash (spaced repetition).</b> Darsdagi so'zlar avtomatik lug'atingizga tushadi va unutishingizdan oldin qayta so'raladi.</li>
-                <li><b>Real suhbat.</b> AI suhbatdosh bilan kafe, sayohat, ish suhbati va IELTS Speaking vaziyatlarida mashq.</li>
+                <li><b>O'z darajangizdan boshlash.</b> Qisqa test mos darajani topadi — juda oson ham, juda qiyin ham emas. Hamma narsani tushunish shart emas: biroz qiyinroq material eng tez o'stiradi.</li>
+                <li><b>Avval tushunish, keyin qoida.</b> Har dars real dialog yoki matndan boshlanadi. Notanish so'zni bossangiz — tarjimasi chiqadi, sekin ovoz (🐌) bilan qayta tinglash mumkin.</li>
+                <li><b>Grammatika o'zbekcha va kontekstda.</b> Qoida misollardan keyin, o'zbek o'quvchilari ko'p qiladigan xatolarga urg'u bilan beriladi. Mashq paytida 📖 tugmasi bilan qayta ochiladi.</li>
+                <li><b>Qiynalmasdan mashq.</b> Qiyin joyda "Yordam" maslahat beradi, boshlang'ich darajada tarjimani so'zlardan yig'asiz, kichik imlo xatosi xato hisoblanmaydi. Xato qilingan savol dars oxirida yana bir bor so'raladi.</li>
+                <li><b>Gapirishdan qo'rqmaslik.</b> Mikrofon bilan talaffuz mashqi va "Rolni o'ynash": dialogda bir qahramon o'rniga o'zingiz gapirasiz.</li>
+                <li><b>Unutmaslik.</b> Darsdagi so'zlar lug'atingizga tushadi va unutishingiz oldidan qayta so'raladi (oraliq takrorlash). Har kuni ozgina — haftada bir marta ko'pdan ko'ra samaraliroq.</li>
             </ol>
         </details>
     </div>
@@ -240,6 +252,13 @@
                 <a href="{% url 'learn:review' %}" class="ln-btn ln-btn-primary" style="background:var(--success-color)">Boshlash</a>
                 {% endif %}
             </div>
+        </div>
+
+        <div class="ln-card">
+            <h4><i data-lucide="library" style="width:16px;color:#f59e0b"></i> Yordamchi</h4>
+            <a href="{% url 'learn:grammar' %}" class="ln-side-link"><i data-lucide="book-open-check"></i><span>Grammatika qo'llanmasi</span></a>
+            <a href="{% url 'learn:placement' %}" class="ln-side-link"><i data-lucide="compass"></i><span>Darajani aniqlash testi</span></a>
+            <a href="{% url 'vocabulary' %}" class="ln-side-link"><i data-lucide="languages"></i><span>Mening lug'atim</span></a>
         </div>
 
         <div class="ln-card">

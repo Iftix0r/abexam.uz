@@ -1,0 +1,189 @@
+{
+  "level": "B2",
+  "units": [
+    {
+      "slug": "b2-ielts-skills",
+      "title": "IELTS skills 2",
+      "title_uz": "IELTS ko'nikmalari: insho, o'qish, Speaking 3",
+      "icon": "graduation-cap",
+      "lessons": [
+        {
+          "slug": "b2-opinion-essay",
+          "title": "Writing an opinion essay",
+          "title_uz": "Task 2: fikr inshosini tuzish",
+          "goal_uz": "Task 2 savolini parafraz qilasiz, aniq pozitsiya bildirasiz va fikrni hedging (ehtiyotkor ifoda) bilan yozasiz.",
+          "minutes": 15,
+          "words": [
+            {"en": "paraphrase", "uz": "boshqa so'zlar bilan ifodalamoq", "ipa": "/ˈpærəfreɪz/", "ex": "Always paraphrase the question in your introduction."},
+            {"en": "thesis statement", "uz": "asosiy fikr (pozitsiya) gapi", "ipa": "/ˈθiːsɪs ˈsteɪtmənt/", "ex": "Your thesis statement must answer the question."},
+            {"en": "to a large extent", "uz": "katta darajada", "ipa": "/tu ə lɑːdʒ ɪkˈstent/", "ex": "I agree with this view to a large extent."},
+            {"en": "it could be argued that", "uz": "aytish mumkinki", "ipa": "/ɪt kʊd bi ˈɑːɡjuːd ðæt/", "ex": "It could be argued that technology isolates people."},
+            {"en": "tend to", "uz": "odatda ... ga moyil bo'lmoq", "ipa": "/tend tuː/", "ex": "Young people tend to spend more time online."},
+            {"en": "significant", "uz": "sezilarli, muhim", "ipa": "/sɪɡˈnɪfɪkənt/", "ex": "This has a significant impact on health."},
+            {"en": "outweigh", "uz": "ustun kelmoq", "ipa": "/ˌaʊtˈweɪ/", "ex": "The benefits outweigh the drawbacks."},
+            {"en": "drawback", "uz": "kamchilik", "ipa": "/ˈdrɔːbæk/", "ex": "The main drawback is the cost."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "tip",
+              "title_uz": "Task 2 tuzilmasi: 4 abzats",
+              "body_uz": "**1) Kirish (2 gap):** savolni parafraz qiling + aniq pozitsiya (thesis statement).\n**2) Asosiy abzats 1:** asosiy sabab → tushuntirish → misol.\n**3) Asosiy abzats 2:** ikkinchi sabab (yoki qarshi fikr va unga javob).\n**4) Xulosa (1–2 gap):** pozitsiyani boshqa so'zlar bilan takrorlang. Yangi fikr qo'shmang!\nVaqt: 40 daqiqa = 5 daqiqa reja + 30 daqiqa yozish + 5 daqiqa tekshirish. Kamida **250 so'z**."
+            },
+            {
+              "type": "reading",
+              "title": "Model introduction and body paragraph",
+              "text": "Question: Some people believe that children should not be allowed to use smartphones until they are teenagers. To what extent do you agree? Answer: It is often suggested that young children should be kept away from mobile phones until adolescence. I agree with this view to a large extent, as early smartphone use can harm both concentration and social development. The main reason for my opinion is that children who spend hours on screens tend to find it harder to focus in class. Apps and games are designed to provide constant rewards, which can make ordinary lessons seem slow and boring. For example, several studies have linked heavy screen time in primary school to lower reading scores. It could be argued that phones help children stay safe, but a basic phone without internet access would serve this purpose equally well.",
+              "glossary": {"adolescence": "o'smirlik davri", "harm": "zarar yetkazmoq", "concentration": "diqqatni jamlash", "constant rewards": "doimiy rag'bat", "ordinary": "oddiy", "linked": "bog'langan", "serve this purpose": "bu maqsadga xizmat qilmoq"},
+              "uz": "Savol: Ba'zilar bolalarga o'smir bo'lgunlariga qadar smartfon ishlatishga ruxsat bermaslik kerak deb hisoblaydi. Qay darajada qo'shilasiz? Javob: Ko'pincha kichik bolalarni o'smirlik davrigacha mobil telefonlardan uzoqroq tutish kerak, deyiladi. Men bu fikrga katta darajada qo'shilaman, chunki erta smartfon ishlatish diqqatga ham, ijtimoiy rivojlanishga ham zarar yetkazishi mumkin. Fikrimning asosiy sababi shuki, ekran oldida soatlab o'tiradigan bolalar odatda darsda diqqat jamlashda qiynaladi. Ilova va o'yinlar doimiy rag'bat berish uchun yaratilgan, bu esa oddiy darslarni sekin va zerikarli qilib ko'rsatishi mumkin. Masalan, bir qancha tadqiqotlar boshlang'ich maktabdagi ko'p ekran vaqtini past o'qish natijalari bilan bog'lagan. Telefonlar bolalarning xavfsizligiga yordam beradi, deb aytish mumkin, lekin internetsiz oddiy telefon ham bu maqsadga xuddi shunday xizmat qiladi."
+            },
+            {"type": "choice", "q": "How does the introduction paraphrase \"until they are teenagers\"?", "options": ["until adolescence", "for many years", "in primary school"], "answer": 0, "explain_uz": "teenagers → **adolescence** — bir xil ma'no, boshqa so'z."},
+            {"type": "choice", "q": "What does the last sentence of the paragraph do?", "options": ["Gives a new main idea", "Mentions an opposing view and answers it", "Repeats the thesis"], "answer": 1, "explain_uz": "\"It could be argued that... but...\" — qarshi fikrni tan olib, javob beradi. Bu Task Response'ni kuchaytiradi."},
+            {
+              "type": "grammar",
+              "title_uz": "Parafraz va hedging (ehtiyotkor ifoda)",
+              "body_uz": "**Parafraz usullari:**\n1) Sinonim: children → **young people**, harmful → **damaging**\n2) So'z turkumini o'zgartirish: people **believe** → it is a common **belief** that...\n3) Gap tuzilmasini o'zgartirish (passiv): Some people think... → **It is often suggested that**...\n**Hedging** — akademik yozuvda kategorik gaplardan qochiladi:\nAll children are addicted. ✘ → Many children **tend to** become dependent. ✔\nThis destroys families. ✘ → This **can / may** damage family relationships. ✔\nFoydali iboralar: **It could be argued that**... · **to some / a large extent** · **in many cases** · **arguably**.",
+              "examples": [
+                {"en": "It is widely believed that university should be free.", "uz": "Universitet bepul bo'lishi kerak, degan fikr keng tarqalgan."},
+                {"en": "Young people tend to prefer online news.", "uz": "Yoshlar odatda onlayn yangiliklarni afzal ko'radi."},
+                {"en": "This may lead to a significant rise in costs.", "uz": "Bu xarajatlarning sezilarli oshishiga olib kelishi mumkin."},
+                {"en": "I agree with this statement to some extent.", "uz": "Bu fikrga qisman qo'shilaman."}
+              ]
+            },
+            {"type": "choice", "q": "Best paraphrase of \"Many people think that cars should be banned from city centres\":", "options": ["Many people think cars should be banned from city centres.", "It is often argued that vehicles should not be permitted in town centres.", "Cars are bad for cities."], "answer": 1, "explain_uz": "think → **argued**, cars → **vehicles**, banned → **not permitted** — haqiqiy parafraz."},
+            {"type": "choice", "q": "Which sentence is the most academic?", "options": ["Video games make all kids violent.", "Video games always make kids violent.", "Some video games may contribute to aggressive behaviour in children."], "answer": 2, "explain_uz": "**may contribute** — hedging; **children** — rasmiy so'z."},
+            {"type": "choice", "q": "A good thesis statement for \"To what extent do you agree?\" is:", "options": ["There are many opinions about this topic.", "I completely agree, because ...", "This essay will discuss this topic."], "answer": 1, "explain_uz": "Thesis savolga **aniq javob** berishi kerak: qay darajada qo'shilasiz va nega."},
+            {"type": "gap", "text": "The advantages of online learning clearly ___ its drawbacks.", "answer": ["outweigh"], "uz": "Onlayn ta'limning afzalliklari kamchiliklaridan aniq ustun.", "explain_uz": "**outweigh** — ustun kelmoq."},
+            {"type": "gap", "text": "Older people ___ to be less comfortable with new technology.", "answer": ["tend"], "uz": "Keksalar odatda yangi texnologiyaga kamroq moslashadi.", "explain_uz": "**tend to** — hedging."},
+            {"type": "gap", "text": "It could be ___ that tourism damages local culture.", "answer": ["argued"], "uz": "Turizm mahalliy madaniyatga zarar yetkazadi, deyish mumkin.", "explain_uz": "**It could be argued that** — qarshi fikrni kiritish."},
+            {"type": "match", "pairs": [["children", "young people"], ["harmful", "damaging"], ["important", "significant"], ["disadvantage", "drawback"], ["think", "believe"]]},
+            {"type": "order", "uz": "Men bu fikrga katta darajada qo'shilaman.", "words": ["I", "agree", "with", "this", "view", "to", "a", "large", "extent"], "answer": "I agree with this view to a large extent"},
+            {"type": "translate", "uz": "Ko'pchilik yoshlar odatda ijtimoiy tarmoqlarda juda ko'p vaqt o'tkazadi.", "answer": ["Many young people tend to spend too much time on social media", "Many young people tend to spend a lot of time on social media", "Most young people tend to spend too much time on social media", "Young people tend to spend too much time on social media"], "explain_uz": "**tend to** + fe'l — kategorik bo'lmagan, akademik ifoda."},
+            {"type": "listen", "answer": ["The benefits clearly outweigh the drawbacks.", "The benefits clearly outweigh the drawbacks"], "uz": "Eshiting va yozing"},
+            {"type": "speak", "text": "It could be argued that technology isolates people, but in many cases it helps them stay connected.", "uz": "Ovoz chiqarib o'qing"},
+            {"type": "write", "prompt_uz": "Task 2 kirish qismini yozing (2–3 gap): \"Some people think that all university students should study whatever they like. Others believe they should only study subjects useful in the future, such as science and technology. Discuss both views and give your opinion.\" Savolni parafraz qiling va aniq pozitsiya bildiring.", "prompt": "Write an introduction: paraphrase the question and give a clear thesis statement.", "min_words": 40, "example": "There is ongoing debate about whether students in higher education should be free to choose any field or should focus on subjects with clear career value, such as science and engineering. While I understand the economic arguments for the latter view, I believe that students should be allowed to follow their own interests, as motivation is the key to success in any discipline."}
+          ]
+        },
+        {
+          "slug": "b2-reading-skills",
+          "title": "Reading: skimming, scanning and paraphrase",
+          "title_uz": "Reading: tez o'qish va parafrazni tanish",
+          "goal_uz": "Matnni tez ko'zdan kechirasiz, kerakli ma'lumotni topasiz va savoldagi parafrazni matndan taniysiz (True / False / Not Given).",
+          "minutes": 15,
+          "words": [
+            {"en": "skim", "uz": "umumiy ma'noni tez o'qib chiqmoq", "ipa": "/skɪm/", "ex": "Skim the text first to get the main idea."},
+            {"en": "scan", "uz": "aniq ma'lumotni qidirib o'qimoq", "ipa": "/skæn/", "ex": "Scan the text for dates and names."},
+            {"en": "claim", "uz": "da'vo qilmoq; da'vo", "ipa": "/kleɪm/", "ex": "The writer claims that bees are disappearing."},
+            {"en": "decline", "uz": "kamayish", "ipa": "/dɪˈklaɪn/", "ex": "There has been a sharp decline in bee numbers."},
+            {"en": "contradict", "uz": "zid kelmoq", "ipa": "/ˌkɒntrəˈdɪkt/", "ex": "This statement contradicts the text."},
+            {"en": "approximately", "uz": "taxminan", "ipa": "/əˈprɒksɪmətli/", "ex": "Approximately 75% of crops need pollinators."},
+            {"en": "crucial", "uz": "hal qiluvchi, juda muhim", "ipa": "/ˈkruːʃl/", "ex": "Bees play a crucial role in agriculture."},
+            {"en": "researchers", "uz": "tadqiqotchilar", "ipa": "/rɪˈsɜːtʃəz/", "ex": "Researchers studied hives in 30 countries."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "tip",
+              "title_uz": "True / False / Not Given — qanday farqlash",
+              "body_uz": "**TRUE** — matn xuddi shu fikrni **boshqa so'zlar bilan** aytadi.\n**FALSE** — matn bu fikrga **zid** (teskarisini aytadi).\n**NOT GIVEN** — matnda bu haqda **ma'lumot yo'q** (na tasdiqlaydi, na inkor qiladi).\nOltin qoida: o'z bilimingizdan foydalanmang — faqat matnga qarang!\nEhtiyot bo'ling: **some / all / always / only / most** kabi so'zlar javobni butunlay o'zgartiradi."
+            },
+            {
+              "type": "reading",
+              "title": "The quiet decline of the bee",
+              "text": "Over the past two decades, researchers have recorded a worrying decline in bee populations across Europe and North America. Bees play a crucial role in food production: approximately three-quarters of the world's main food crops depend at least partly on animal pollinators. Scientists point to several causes, including the loss of wild flowers, certain pesticides and climate change. However, not all species are affected equally. While some wild bees have almost disappeared from parts of Britain, the number of managed honeybee hives worldwide has actually increased since the 1960s. Experts warn that relying on honeybees alone is risky, as wild species pollinate many plants more efficiently.",
+              "glossary": {"two decades": "yigirma yil", "worrying": "tashvishli", "food crops": "oziq-ovqat ekinlari", "pollinators": "changlatuvchilar", "pesticides": "pestitsidlar (zaharli kimyoviy moddalar)", "species": "turlar", "managed honeybee hives": "boqiladigan asalari uyalari", "efficiently": "samarali"},
+              "uz": "So'nggi yigirma yil davomida tadqiqotchilar Yevropa va Shimoliy Amerikada asalari populyatsiyasining tashvishli kamayishini qayd etishgan. Asalarilar oziq-ovqat ishlab chiqarishda hal qiluvchi rol o'ynaydi: dunyodagi asosiy oziq-ovqat ekinlarining taxminan to'rtdan uch qismi hech bo'lmaganda qisman hayvon changlatuvchilarga bog'liq. Olimlar bir nechta sababni ko'rsatadi: yovvoyi gullarning yo'qolishi, ayrim pestitsidlar va iqlim o'zgarishi. Biroq hamma turlar bir xil ta'sirlanmagan. Britaniyaning ba'zi hududlarida ayrim yovvoyi asalarilar deyarli yo'qolib ketgan bo'lsa-da, dunyo bo'yicha boqiladigan asalari uyalari soni 1960-yillardan beri aslida oshgan. Mutaxassislar faqat asalarilarga tayanish xavfli, chunki yovvoyi turlar ko'p o'simliklarni samaraliroq changlatadi, deb ogohlantiradi."
+            },
+            {"type": "choice", "q": "\"About 75% of major food crops rely to some degree on animals for pollination.\"", "options": ["TRUE", "FALSE", "NOT GIVEN"], "answer": 0, "explain_uz": "three-quarters = **75%**, depend at least partly = **rely to some degree**. Parafraz → TRUE."},
+            {"type": "choice", "q": "\"The number of honeybee hives in the world has fallen since the 1960s.\"", "options": ["TRUE", "FALSE", "NOT GIVEN"], "answer": 1, "explain_uz": "Matn: hives \"**has actually increased**\" — zid → FALSE."},
+            {"type": "choice", "q": "\"Pesticides are the main cause of the decline.\"", "options": ["TRUE", "FALSE", "NOT GIVEN"], "answer": 2, "explain_uz": "Matnda pestitsidlar sabablardan **biri** deyilgan, lekin **asosiy** sabab ekani aytilmagan → NOT GIVEN."},
+            {"type": "choice", "q": "\"All bee species have declined at the same rate.\"", "options": ["TRUE", "FALSE", "NOT GIVEN"], "answer": 1, "explain_uz": "\"**not all** species are affected equally\" — zid → FALSE. \"All\" so'ziga e'tibor bering!"},
+            {
+              "type": "grammar",
+              "title_uz": "IELTS Reading'da parafraz qanday ko'rinadi",
+              "body_uz": "Savollar matndagi so'zlarni deyarli hech qachon aynan takrorlamaydi. Ko'p uchraydigan parafraz turlari:\n**Raqamlar:** three-quarters → **75%** · a decade → **ten years** · double → **increase by 100%**\n**Sinonimlar:** crucial → **vital / essential** · decline → **fall / drop / decrease** · researchers → **scientists / experts**\n**Inkor orqali:** not all → **some** · hardly any → **very few**\n**So'z turkumi:** depend on → **dependent on / reliance on**\nStrategiya: savoldan **kalit so'z** (ism, raqam, sana) toping → matnda **scan** qiling → atrofidagi 1–2 gapni diqqat bilan o'qing.",
+              "examples": [
+                {"en": "Bees play a crucial role. = Bees are vital.", "uz": "Asalarilar hal qiluvchi rol o'ynaydi = Asalarilar juda muhim."},
+                {"en": "over the past two decades = in the last twenty years", "uz": "so'nggi yigirma yil davomida"},
+                {"en": "not all species are affected = some species are not affected", "uz": "hamma tur ta'sirlanmagan = ba'zi turlar ta'sirlanmagan"},
+                {"en": "numbers have increased = there has been a rise in numbers", "uz": "son oshgan = sonda o'sish bo'lgan"}
+              ]
+            },
+            {"type": "match", "pairs": [["crucial", "vital"], ["decline", "decrease"], ["approximately", "roughly"], ["researchers", "scientists"], ["two decades", "twenty years"]]},
+            {"type": "choice", "q": "Which question word tells you to SCAN for a number?", "options": ["Why did bees decline?", "How many crops depend on pollinators?", "What is the writer's opinion?"], "answer": 1, "explain_uz": "**How many** → raqam qidiring (scan)."},
+            {"type": "gap", "text": "Read the title and first sentences quickly — this is called ___.", "answer": ["skimming", "skim"], "uz": "Sarlavha va birinchi gaplarni tez o'qish — skimming.", "explain_uz": "**Skimming** — umumiy ma'no uchun tez o'qish."},
+            {"type": "gap", "text": "If the text says the opposite of the statement, the answer is ___.", "answer": ["FALSE", "false"], "uz": "Matn teskarisini aytsa — FALSE.", "explain_uz": "Zid → **FALSE**."},
+            {"type": "order", "uz": "Asalarilar oziq-ovqat ishlab chiqarishda hal qiluvchi rol o'ynaydi.", "words": ["Bees", "play", "a", "crucial", "role", "in", "food", "production"], "answer": "Bees play a crucial role in food production"},
+            {"type": "translate", "uz": "Tadqiqotchilar asalarilar sonining keskin kamayishini qayd etishdi.", "answer": ["Researchers recorded a sharp decline in bee numbers", "Researchers have recorded a sharp decline in bee numbers", "Researchers recorded a sharp decline in the number of bees", "Researchers have recorded a sharp decline in the number of bees", "Researchers recorded a sharp fall in bee numbers"], "explain_uz": "a sharp **decline in** + ot."},
+            {"type": "listen", "answer": ["Not all species are affected equally.", "Not all species are affected equally"], "uz": "Eshiting va yozing"},
+            {"type": "speak", "text": "Approximately three-quarters of the world's main food crops depend on pollinators.", "uz": "Ovoz chiqarib o'qing"},
+            {"type": "write", "prompt_uz": "Matndagi asosiy fikrni o'z so'zlaringiz bilan 3–4 gapda qisqacha yozing (summary). Matndagi so'zlarni imkon qadar parafraz qiling.", "prompt": "Summarise the bee text in 3–4 sentences, paraphrasing as much as you can.", "min_words": 45, "example": "In the last twenty years, scientists have noticed that bees are becoming less common in Europe and North America. This is a serious problem because most important crops need animals to pollinate them. The fall is caused by several factors, such as fewer wild flowers and the use of some chemicals. Interestingly, farmed honeybees are not in decline, but wild species are often more effective pollinators."}
+          ]
+        },
+        {
+          "slug": "b2-speaking-part3",
+          "title": "Speaking Part 3: discussing ideas",
+          "title_uz": "Speaking Part 3: fikrni kengaytirish",
+          "goal_uz": "Abstrakt savollarga 3–4 gaplik chuqur javob berasiz: fikr → sabab → misol → kelajak, va ikkinchi shart gap bilan taxmin qilasiz.",
+          "minutes": 14,
+          "words": [
+            {"en": "that's an interesting question", "uz": "qiziq savol (o'ylash uchun vaqt)", "ipa": "/ðæts ən ˈɪntrəstɪŋ ˈkwestʃən/", "ex": "That's an interesting question. I've never really thought about it."},
+            {"en": "on the whole", "uz": "umuman olganda", "ipa": "/ɒn ðə həʊl/", "ex": "On the whole, I think it's a positive change."},
+            {"en": "it depends on", "uz": "... ga bog'liq", "ipa": "/ɪt dɪˈpendz ɒn/", "ex": "It depends on the person's age."},
+            {"en": "in the long run", "uz": "uzoq muddatda", "ipa": "/ɪn ðə lɒŋ rʌn/", "ex": "In the long run, it will save money."},
+            {"en": "take for example", "uz": "masalan olaylik", "ipa": "/teɪk fər ɪɡˈzɑːmpl/", "ex": "Take my grandparents, for example."},
+            {"en": "the older generation", "uz": "katta avlod", "ipa": "/ði ˈəʊldə ˌdʒenəˈreɪʃn/", "ex": "The older generation prefers face-to-face contact."},
+            {"en": "to some extent", "uz": "ma'lum darajada", "ipa": "/tə sʌm ɪkˈstent/", "ex": "I agree to some extent."},
+            {"en": "whereas in the past", "uz": "holbuki ilgari", "ipa": "/weərˈæz ɪn ðə pɑːst/", "ex": "Now we shop online, whereas in the past we went to bazaars."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "tip",
+              "title_uz": "Part 3 javob formulasi: A-R-E-A",
+              "body_uz": "Part 3 savollari abstrakt (jamiyat, kelajak, taqqoslash). Qisqa \"Yes, I think so\" javobi past ball oladi. **A-R-E-A** formulasi:\n**A — Answer:** to'g'ridan-to'g'ri javob (On the whole, I'd say...).\n**R — Reason:** sabab (mainly because...).\n**E — Example:** misol (Take ..., for example).\n**A — Alternative:** boshqa tomon yoki kelajak (Having said that... / In the future...).\nO'ylash uchun vaqt kerak bo'lsa: \"That's an interesting question...\" — bu tabiiy ibora va ballni kamaytirmaydi!"
+            },
+            {
+              "type": "dialogue",
+              "title": "Technology and communication",
+              "context_uz": "IELTS imtihonchisi Part 3'da texnologiya va muloqot haqida so'ramoqda. Kandidatning javobi A-R-E-A formulasiga e'tibor bering.",
+              "lines": [
+                {"who": "Examiner", "en": "Do you think technology has made people's relationships stronger or weaker?", "uz": "Sizningcha, texnologiya odamlar munosabatlarini mustahkamladimi yoki zaiflashtirdimi?"},
+                {"who": "Candidate", "en": "That's an interesting question. On the whole, I'd say it has made long-distance relationships stronger, mainly because staying in touch is now free and instant.", "uz": "Qiziq savol. Umuman olganda, uzoq masofadagi munosabatlarni mustahkamladi deyman, asosan chunki aloqada bo'lish endi bepul va tezkor."},
+                {"who": "Candidate", "en": "Take my family, for example. My brother works in Korea, but we video-call every evening, whereas in the past people could only write letters.", "uz": "Masalan, oilamni olaylik. Akam Koreyada ishlaydi, lekin har kuni kechqurun video qo'ng'iroq qilamiz, holbuki ilgari odamlar faqat xat yoza olardi."},
+                {"who": "Candidate", "en": "Having said that, it may have weakened face-to-face communication to some extent. If people put their phones away at dinner, families would probably talk much more.", "uz": "Shunday bo'lsa-da, yuzma-yuz muloqotni ma'lum darajada zaiflashtirgan bo'lishi mumkin. Agar odamlar kechki ovqatda telefonlarini chetga qo'ysa, oilalar ehtimol ancha ko'proq gaplashardi."},
+                {"who": "Examiner", "en": "How might this change in the future?", "uz": "Kelajakda bu qanday o'zgarishi mumkin?"},
+                {"who": "Candidate", "en": "It's hard to say, but in the long run I think people will become more aware of screen addiction, and schools might start teaching digital balance.", "uz": "Aytish qiyin, lekin uzoq muddatda odamlar ekranga qaramlikni ko'proq anglaydi va maktablar raqamli muvozanatni o'rgata boshlashi mumkin, deb o'ylayman."}
+              ]
+            },
+            {"type": "choice", "q": "Which part of A-R-E-A is \"Take my family, for example...\"?", "options": ["Answer", "Reason", "Example"], "answer": 2, "explain_uz": "Shaxsiy misol → **E (Example)**."},
+            {"type": "choice", "q": "How does the candidate show the other side?", "options": ["\"Having said that...\"", "\"That's an interesting question.\"", "\"mainly because...\""], "answer": 0, "explain_uz": "**Having said that** — boshqa tomonni kiritadi (Alternative)."},
+            {
+              "type": "grammar",
+              "title_uz": "Taxmin qilish: Second Conditional va modal fe'llar",
+              "body_uz": "Part 3'da \"agar ... bo'lsa\" degan **xayoliy vaziyat** haqida ko'p gapiriladi.\n**Second Conditional:** If + **Past Simple**, **would** + fe'l — hozirgi/kelajakdagi xayoliy holat.\nIf governments **invested** more in public transport, fewer people **would drive**.\n(If they **will** invest... — xato! If qismida would/will qo'yilmaydi.)\nbe → **were** (hamma shaxs uchun): If I **were** the mayor, I **would** build more parks.\n**Ehtimollik darajasi:** will (aniq) → **will probably** → **might / may / could** (balki) → **probably won't**.\nIhtiyot bilan: \"It's hard to say, but...\" · \"I'd imagine that...\"",
+              "examples": [
+                {"en": "If people read more, they would have a wider vocabulary.", "uz": "Agar odamlar ko'proq o'qisa, lug'atlari kengroq bo'lardi."},
+                {"en": "If I were a teacher, I would use more games in class.", "uz": "O'qituvchi bo'lganimda, darsda ko'proq o'yin ishlatardim."},
+                {"en": "Robots might replace some jobs in the future.", "uz": "Kelajakda robotlar ba'zi ishlarning o'rnini egallashi mumkin."},
+                {"en": "I'd imagine that most people will work from home.", "uz": "Menimcha, ko'pchilik uydan ishlaydi."}
+              ]
+            },
+            {"type": "choice", "q": "If public transport ___ cheaper, more people would use it.", "options": ["is", "was / were", "will be"], "answer": 1, "explain_uz": "Second Conditional: If + **Past Simple** (were/was)."},
+            {"type": "choice", "q": "If I were the president, I ___ make education free.", "options": ["will", "would", "am"], "answer": 1, "explain_uz": "Natija qismida **would** + fe'l."},
+            {"type": "choice", "q": "Which answer would get a higher band in Part 3?", "options": ["Yes, I think so.", "Yes, because it's good.", "On the whole, yes, mainly because it saves time. Take online banking, for example — you can pay bills in seconds."], "answer": 2, "explain_uz": "Javob + sabab + misol — kengaytirilgan javob (Fluency & Coherence)."},
+            {"type": "gap", "text": "If people ___ (exercise) more, they would be healthier.", "answer": ["exercised"], "uz": "Agar odamlar ko'proq sport qilsa, sog'lomroq bo'lardi.", "explain_uz": "If + Past Simple: **exercised**."},
+            {"type": "gap", "text": "It ___ on the person's age and background.", "answer": ["depends"], "uz": "Bu insonning yoshi va kelib chiqishiga bog'liq.", "explain_uz": "It **depends on**..."},
+            {"type": "gap", "text": "In the long ___, renewable energy will be cheaper.", "answer": ["run"], "uz": "Uzoq muddatda qayta tiklanadigan energiya arzonroq bo'ladi.", "explain_uz": "**In the long run** — uzoq muddatda."},
+            {"type": "match", "pairs": [["on the whole", "umuman olganda"], ["in the long run", "uzoq muddatda"], ["to some extent", "ma'lum darajada"], ["it depends on", "... ga bog'liq"], ["having said that", "shunday bo'lsa-da"]]},
+            {"type": "order", "uz": "Agar men shahar hokimi bo'lsam, ko'proq park qurardim.", "words": ["If", "I", "were", "the", "mayor", "I", "would", "build", "more", "parks"], "answer": "If I were the mayor I would build more parks"},
+            {"type": "listen", "answer": ["On the whole, I'd say it's a positive change.", "On the whole I'd say it's a positive change", "On the whole, I would say it's a positive change"], "uz": "Eshiting va yozing"},
+            {"type": "translate", "uz": "Agar hukumat jamoat transportiga ko'proq sarmoya kiritsa, havo tozaroq bo'lardi.", "answer": ["If the government invested more in public transport, the air would be cleaner", "If governments invested more in public transport, the air would be cleaner", "If the government invested more in public transport the air would be cleaner", "If the government invested more money in public transport, the air would be cleaner"], "explain_uz": "If + **invested**, ... **would be**."},
+            {"type": "speak", "text": "On the whole, I'd say yes, mainly because it saves time. Having said that, it depends on the person.", "uz": "Ravon ayting — ovoz chiqarib"},
+            {"type": "write", "prompt_uz": "Part 3 savoliga A-R-E-A formulasi bilan javob yozing (5–6 gap): \"Should children learn to cook at school?\" Kamida bitta Second Conditional ishlating.", "prompt": "Answer using A-R-E-A: Should children learn to cook at school? Use at least one second conditional.", "min_words": 60, "example": "On the whole, I'd say yes, mainly because cooking is a basic life skill that many young people simply don't have. Take my cousins, for example — they live in a dormitory and eat fast food almost every day because they can't cook. If schools taught simple, healthy recipes, students would probably make better choices later in life. Having said that, it depends on the school's budget, since kitchens are expensive. In the long run, though, I think it would save money on healthcare."}
+          ]
+        }
+      ]
+    }
+  ]
+}

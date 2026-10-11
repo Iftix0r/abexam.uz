@@ -1,0 +1,190 @@
+{
+  "level": "A1",
+  "units": [
+    {
+      "slug": "a1-around-me",
+      "title": "Around me",
+      "title_uz": "Atrofimdagi dunyo",
+      "icon": "house",
+      "lessons": [
+        {
+          "slug": "a1-how-much",
+          "title": "How much is it?",
+          "title_uz": "Raqamlar va xarid",
+          "goal_uz": "Narx so'raysiz, raqamlarni tushunasiz va this / that / these / those bilan narsalarni ko'rsatasiz.",
+          "minutes": 10,
+          "words": [
+            {"en": "how much", "uz": "qancha (narx)", "ipa": "/haʊ mʌtʃ/", "ex": "How much is this bag?"},
+            {"en": "price", "uz": "narx", "ipa": "/praɪs/", "ex": "The price is ten dollars."},
+            {"en": "cheap", "uz": "arzon", "ipa": "/tʃiːp/", "ex": "These apples are cheap."},
+            {"en": "expensive", "uz": "qimmat", "ipa": "/ɪkˈspensɪv/", "ex": "That phone is very expensive."},
+            {"en": "buy", "uz": "sotib olmoq", "ipa": "/baɪ/", "ex": "I want to buy a T-shirt."},
+            {"en": "size", "uz": "o'lcham", "ipa": "/saɪz/", "ex": "What size are you?"},
+            {"en": "here you are", "uz": "marhamat (berayotganda)", "ipa": "/hɪə juː ɑː/", "ex": "Here you are. That's five pounds."},
+            {"en": "pay by card", "uz": "karta bilan to'lamoq", "ipa": "/peɪ baɪ kɑːd/", "ex": "Can I pay by card?"}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "tip",
+              "title_uz": "Raqamlar: -teen va -ty",
+              "body_uz": "Eng ko'p adashtiriladigan raqamlar: **thirteen (13)** va **thirty (30)**, **fifteen (15)** va **fifty (50)**.\n-**teen** so'zlarida urg'u oxirida: thir**TEEN**. -**ty** so'zlarida urg'u boshida: **THIR**ty.\nNarx aytish: £4.50 = \"four pounds fifty\", $12 = \"twelve dollars\"."
+            },
+            {
+              "type": "dialogue",
+              "title": "At a clothes shop",
+              "context_uz": "Ozoda Londondagi kiyim do'konida futbolka sotib olmoqda.",
+              "lines": [
+                {"who": "Assistant", "en": "Hello! Can I help you?", "uz": "Salom! Yordam bera olamanmi?"},
+                {"who": "Ozoda", "en": "Yes, please. How much is this T-shirt?", "uz": "Ha, iltimos. Bu futbolka qancha turadi?"},
+                {"who": "Assistant", "en": "It's fifteen pounds.", "uz": "O'n besh funt."},
+                {"who": "Ozoda", "en": "Fifteen or fifty?", "uz": "O'n beshmi yoki ellikmi?"},
+                {"who": "Assistant", "en": "Fifteen — one, five. And these T-shirts are only ten pounds.", "uz": "O'n besh — bir, besh. Manavi futbolkalar esa atigi o'n funt."},
+                {"who": "Ozoda", "en": "Oh, they're cheap! Do you have this one in a medium size?", "uz": "Voy, arzon ekan! Shunisining o'rtacha o'lchami bormi?"},
+                {"who": "Assistant", "en": "Yes, here you are.", "uz": "Ha, marhamat."},
+                {"who": "Ozoda", "en": "Great, I'll take it. Can I pay by card?", "uz": "Zo'r, olaman. Karta bilan to'lasam bo'ladimi?"},
+                {"who": "Assistant", "en": "Of course.", "uz": "Albatta."}
+              ]
+            },
+            {"type": "choice", "q": "How much is the first T-shirt?", "q_uz": "Birinchi futbolka qancha turadi?", "options": ["£50", "£15", "£10"], "answer": 1, "explain_uz": "\"Fifteen — one, five.\" = 15."},
+            {"type": "choice", "q": "How does Ozoda pay?", "q_uz": "Ozoda qanday to'laydi?", "options": ["By card", "In cash", "She doesn't buy it."], "answer": 0, "explain_uz": "\"Can I pay by card?\" — \"Of course.\""},
+            {
+              "type": "grammar",
+              "title_uz": "this / that / these / those",
+              "body_uz": "Narsani ko'rsatish uchun:\n**this** — bu (yaqin, bitta) · **that** — u, anavi (uzoq, bitta)\n**these** — bular (yaqin, ko'p) · **those** — ular, anavilar (uzoq, ko'p)\nKo'plikda fe'l ham o'zgaradi: **This is** cheap. → **These are** cheap.\nNarx so'rash: **How much is** this? · **How much are** these?",
+              "examples": [
+                {"en": "How much is this bag?", "uz": "Bu sumka qancha?"},
+                {"en": "These shoes are expensive.", "uz": "Bu poyabzallar qimmat."},
+                {"en": "Is that your car?", "uz": "Anavi sizning mashinangizmi?"},
+                {"en": "Those apples are very cheap.", "uz": "Anavi olmalar juda arzon."}
+              ]
+            },
+            {"type": "choice", "q": "How much ___ these jeans?", "options": ["is", "are", "am"], "answer": 1, "explain_uz": "these (ko'plik) → **are**."},
+            {"type": "choice", "q": "(Uzoqdagi ikki do'konni ko'rsatib) ___ shops are new.", "options": ["This", "That", "Those"], "answer": 2, "explain_uz": "Uzoq va ko'p → **those**."},
+            {"type": "gap", "text": "___ is my phone. (qo'limdagi)", "answer": ["This"], "uz": "Bu mening telefonim.", "explain_uz": "Yaqin, bitta → **This**."},
+            {"type": "gap", "text": "How ___ is the ticket?", "answer": ["much"], "uz": "Chipta qancha turadi?", "explain_uz": "Narx: **How much**...?"},
+            {"type": "choice", "audio": true, "q": "What is the price?", "q_uz": "Narxi qancha?", "say": "That's thirty pounds, please.", "options": ["£13", "£30", "£33"], "answer": 1, "explain_uz": "THIR-ty (urg'u boshida) = 30."},
+            {"type": "choice", "audio": true, "q": "What is the price?", "q_uz": "Narxi qancha?", "say": "It's fifteen dollars.", "options": ["$15", "$50", "$5"], "answer": 0, "explain_uz": "fif-TEEN (urg'u oxirida) = 15."},
+            {"type": "match", "pairs": [["cheap", "arzon"], ["expensive", "qimmat"], ["price", "narx"], ["size", "o'lcham"], ["buy", "sotib olmoq"]]},
+            {"type": "order", "uz": "Karta bilan to'lasam bo'ladimi?", "words": ["Can", "I", "pay", "by", "card"], "answer": "Can I pay by card"},
+            {"type": "listen", "answer": ["How much is this bag?", "How much is this bag"], "uz": "Eshiting va yozing"},
+            {"type": "translate", "uz": "Bu poyabzallar juda qimmat.", "answer": ["These shoes are very expensive", "These shoes are too expensive"], "explain_uz": "these + **are**."},
+            {"type": "speak", "text": "Excuse me, how much is this T-shirt?", "uz": "Narxini so'rang — ovoz chiqarib"},
+            {"type": "write", "prompt_uz": "Do'konda sotuvchi bilan qisqa dialog yozing (4–6 gap): narx so'rang, o'lcham so'rang va qanday to'lashni ayting.", "prompt": "Write a short dialogue in a shop: ask the price, ask for a size and say how you will pay.", "min_words": 20, "example": "Me: Excuse me, how much is this jacket? Assistant: It's forty pounds. Me: Do you have it in a small size? Assistant: Yes, here you are. Me: Thank you. Can I pay by card? Assistant: Of course."}
+          ]
+        },
+        {
+          "slug": "a1-my-home",
+          "title": "My home",
+          "title_uz": "Mening uyim",
+          "goal_uz": "Uyingizni tasvirlaysiz: there is / there are va in, on, under, next to.",
+          "minutes": 10,
+          "words": [
+            {"en": "flat", "uz": "kvartira", "ipa": "/flæt/", "ex": "We live in a flat on the fifth floor."},
+            {"en": "bedroom", "uz": "yotoqxona", "ipa": "/ˈbedruːm/", "ex": "There are two bedrooms."},
+            {"en": "kitchen", "uz": "oshxona", "ipa": "/ˈkɪtʃɪn/", "ex": "My mother is in the kitchen."},
+            {"en": "living room", "uz": "mehmonxona (zal)", "ipa": "/ˈlɪvɪŋ ruːm/", "ex": "There's a big sofa in the living room."},
+            {"en": "bathroom", "uz": "hammom", "ipa": "/ˈbɑːθruːm/", "ex": "The bathroom is next to my bedroom."},
+            {"en": "window", "uz": "deraza", "ipa": "/ˈwɪndəʊ/", "ex": "My desk is near the window."},
+            {"en": "under", "uz": "ostida", "ipa": "/ˈʌndə/", "ex": "The cat is under the bed."},
+            {"en": "floor", "uz": "qavat; pol", "ipa": "/flɔː/", "ex": "Our flat is on the third floor."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "reading",
+              "title": "Bobur's flat",
+              "text": "I live with my parents in a flat in Tashkent. It's on the fourth floor. There are three bedrooms, a kitchen, a living room and a bathroom. My bedroom is small, but I love it. There's a bed, a desk and a big window. There are a lot of books on my desk! The kitchen is my mother's favourite room. There's a big table in the kitchen, and we have breakfast there every morning. There isn't a garden, but there's a nice balcony with flowers.",
+              "glossary": {"parents": "ota-ona", "small": "kichik", "love": "yaxshi ko'raman", "a lot of": "ko'p", "favourite": "eng sevimli", "garden": "bog'", "balcony": "balkon", "flowers": "gullar"},
+              "uz": "Men ota-onam bilan Toshkentdagi kvartirada yashayman. U to'rtinchi qavatda. Uchta yotoqxona, oshxona, mehmonxona va hammom bor. Mening xonam kichik, lekin men uni yaxshi ko'raman. Unda karavot, stol va katta deraza bor. Stolimda ko'p kitob bor! Oshxona — onamning eng sevimli xonasi. Oshxonada katta stol bor, biz har kuni ertalab o'sha yerda nonushta qilamiz. Bog' yo'q, lekin gulli chiroyli balkon bor."
+            },
+            {"type": "choice", "q": "How many bedrooms are there?", "q_uz": "Nechta yotoqxona bor?", "options": ["Two", "Three", "Four"], "answer": 1, "explain_uz": "\"There are three bedrooms\"."},
+            {"type": "choice", "q": "Is there a garden?", "q_uz": "Bog' bormi?", "options": ["Yes, there is.", "No, there isn't.", "Yes, a big one."], "answer": 1, "explain_uz": "\"There isn't a garden, but there's a nice balcony\"."},
+            {
+              "type": "grammar",
+              "title_uz": "there is / there are — \"... bor\"",
+              "body_uz": "O'zbekcha \"Xonada stol **bor**\" — inglizcha **There is** a table in the room.\n**There is** (There's) + bitta narsa · **There are** + ko'p narsa.\nInkor: There **isn't** a garden. · There **aren't** any chairs.\nSo'roq: **Is there** a lift? — Yes, there is. · **Are there** any shops near here?\nJoy: **in** (ichida) · **on** (ustida) · **under** (ostida) · **next to** (yonida).",
+              "examples": [
+                {"en": "There's a sofa in the living room.", "uz": "Mehmonxonada divan bor."},
+                {"en": "There are two windows in my room.", "uz": "Xonamda ikkita deraza bor."},
+                {"en": "There isn't a lift in our building.", "uz": "Binomizda lift yo'q."},
+                {"en": "Is there a park near your house?", "uz": "Uyingiz yaqinida park bormi?"}
+              ]
+            },
+            {"type": "choice", "q": "___ two bathrooms in our flat.", "options": ["There is", "There are", "It is"], "answer": 1, "explain_uz": "Ko'p (two bathrooms) → **There are**."},
+            {"type": "choice", "q": "The cat is ___ the bed. (karavot ostida)", "options": ["on", "in", "under"], "answer": 2, "explain_uz": "ostida → **under**."},
+            {"type": "gap", "text": "There ___ a big table in the kitchen.", "answer": ["is", "'s"], "uz": "Oshxonada katta stol bor.", "explain_uz": "Bitta narsa → **is**."},
+            {"type": "gap", "text": "___ there a lift in your building?", "answer": ["Is"], "uz": "Binongizda lift bormi?", "explain_uz": "So'roq: **Is there**...?"},
+            {"type": "gap", "text": "The books are ___ the desk. (stol ustida)", "answer": ["on"], "uz": "Kitoblar stol ustida.", "explain_uz": "ustida → **on**."},
+            {"type": "match", "pairs": [["kitchen", "oshxona"], ["bedroom", "yotoqxona"], ["bathroom", "hammom"], ["window", "deraza"], ["floor", "qavat"]]},
+            {"type": "order", "uz": "Xonamda katta deraza bor.", "words": ["There", "is", "a", "big", "window", "in", "my", "room"], "answer": "There is a big window in my room"},
+            {"type": "choice", "audio": true, "q": "Where are the keys?", "q_uz": "Kalitlar qayerda?", "say": "Your keys are on the table, next to the TV.", "options": ["Under the table", "On the table", "In the bag"], "answer": 1, "explain_uz": "\"on the table, next to the TV\"."},
+            {"type": "listen", "answer": ["There are three bedrooms.", "There are three bedrooms", "There are 3 bedrooms"], "uz": "Eshiting va yozing"},
+            {"type": "translate", "uz": "Uyimiz yaqinida park bor.", "answer": ["There is a park near our house", "There's a park near our house", "There is a park near our home", "There's a park near my house", "There is a park near my house"], "explain_uz": "There's a ... near ..."},
+            {"type": "speak", "text": "I live in a flat. There are three bedrooms and a big kitchen.", "uz": "Uyingiz haqida ayting — ovoz chiqarib"},
+            {"type": "write", "prompt_uz": "Uyingiz yoki xonangizni 4–5 gapda tasvirlang. there is / there are va in, on, next to ishlating.", "prompt": "Describe your home or your room. Use there is / there are and in, on, next to.", "min_words": 25, "example": "I live in a house with a small garden. There are four rooms. My room is next to the kitchen. There is a bed, a wardrobe and a desk in my room. There are some photos on the wall. I like my room because it is quiet."}
+          ]
+        },
+        {
+          "slug": "a1-likes",
+          "title": "I love it!",
+          "title_uz": "Yoqtirgan narsalarim",
+          "goal_uz": "Qiziqishlaringiz haqida gapirasiz: like / love / don't like / hate + -ing va Do you like...?",
+          "minutes": 10,
+          "words": [
+            {"en": "like", "uz": "yoqtirmoq", "ipa": "/laɪk/", "ex": "I like music."},
+            {"en": "love", "uz": "juda yaxshi ko'rmoq", "ipa": "/lʌv/", "ex": "She loves cooking."},
+            {"en": "hate", "uz": "yomon ko'rmoq", "ipa": "/heɪt/", "ex": "I hate getting up early."},
+            {"en": "free time", "uz": "bo'sh vaqt", "ipa": "/friː taɪm/", "ex": "What do you do in your free time?"},
+            {"en": "hobby", "uz": "qiziqish, hobbi", "ipa": "/ˈhɒbi/", "ex": "My hobby is drawing."},
+            {"en": "swimming", "uz": "suzish", "ipa": "/ˈswɪmɪŋ/", "ex": "Swimming is good for you."},
+            {"en": "favourite", "uz": "eng sevimli", "ipa": "/ˈfeɪvərɪt/", "ex": "My favourite food is plov."},
+            {"en": "boring", "uz": "zerikarli", "ipa": "/ˈbɔːrɪŋ/", "ex": "I think this film is boring."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "dialogue",
+              "title": "What do you do in your free time?",
+              "context_uz": "Ikki yangi do'st — Shoxrux va Lucy — qiziqishlari haqida gaplashmoqda.",
+              "lines": [
+                {"who": "Lucy", "en": "What do you do in your free time, Shokhrukh?", "uz": "Bo'sh vaqtingda nima qilasan, Shoxrux?"},
+                {"who": "Shokhrukh", "en": "I love playing football. I play with my friends every weekend.", "uz": "Futbol o'ynashni juda yaxshi ko'raman. Har dam olish kuni do'stlarim bilan o'ynayman."},
+                {"who": "Lucy", "en": "Cool! I don't like football, but I like watching tennis.", "uz": "Zo'r! Men futbolni yoqtirmayman, lekin tennis tomosha qilishni yoqtiraman."},
+                {"who": "Shokhrukh", "en": "Do you like cooking?", "uz": "Ovqat pishirishni yoqtirasanmi?"},
+                {"who": "Lucy", "en": "Yes, I do! I love cooking Italian food. What's your favourite food?", "uz": "Ha! Italyan taomlarini pishirishni juda yaxshi ko'raman. Sening sevimli taoming nima?"},
+                {"who": "Shokhrukh", "en": "Plov, of course! But I hate washing the dishes after dinner.", "uz": "Albatta palov! Lekin kechki ovqatdan keyin idish yuvishni yomon ko'raman."},
+                {"who": "Lucy", "en": "Ha! Me too.", "uz": "Ha! Men ham."}
+              ]
+            },
+            {"type": "choice", "q": "What does Shokhrukh love doing?", "q_uz": "Shoxrux nima qilishni juda yaxshi ko'radi?", "options": ["Cooking", "Playing football", "Watching tennis"], "answer": 1, "explain_uz": "\"I love playing football.\""},
+            {"type": "choice", "q": "What do they both hate?", "q_uz": "Ikkalasi nimani yomon ko'radi?", "options": ["Washing the dishes", "Cooking", "Football"], "answer": 0, "explain_uz": "\"I hate washing the dishes\" — \"Me too.\""},
+            {
+              "type": "grammar",
+              "title_uz": "like / love / hate + -ing",
+              "body_uz": "His-tuyg'u darajasi: **love** ❤️❤️ · **like** ❤️ · **don't like** 👎 · **hate** 👎👎\nBu fe'llardan keyin ish-harakat **-ing** bilan keladi: I like **playing**. She loves **cooking**. (\"I like play\" — xato!)\nOt bilan: I like **music**. I don't like **coffee**.\nSo'roq: **Do you like** swimming? — Yes, I do. / No, I don't.\nhe/she uchun: She **likes** · Does he **like**...?",
+              "examples": [
+                {"en": "I love reading books.", "uz": "Kitob o'qishni juda yaxshi ko'raman."},
+                {"en": "He doesn't like dancing.", "uz": "U raqsga tushishni yoqtirmaydi."},
+                {"en": "Do you like swimming?", "uz": "Suzishni yoqtirasizmi?"},
+                {"en": "My sister hates cleaning her room.", "uz": "Singlim xonasini tozalashni yomon ko'radi."}
+              ]
+            },
+            {"type": "choice", "q": "I like ___ to music.", "options": ["listen", "listening", "listens"], "answer": 1, "explain_uz": "like + **-ing**."},
+            {"type": "choice", "q": "___ your brother like football?", "options": ["Do", "Does", "Is"], "answer": 1, "explain_uz": "your brother = he → **Does**."},
+            {"type": "gap", "text": "She ___ cooking. She cooks every day! (❤️❤️)", "answer": ["loves"], "uz": "U ovqat pishirishni juda yaxshi ko'radi.", "explain_uz": "she → love**s**."},
+            {"type": "gap", "text": "I don't like ___ (get) up early.", "answer": ["getting"], "uz": "Erta turishni yoqtirmayman.", "explain_uz": "get → **getting** (t ikkilanadi)."},
+            {"type": "gap", "text": "Do you like dancing? — No, I ___.", "answer": ["don't", "do not"], "uz": "Yo'q, yoqtirmayman.", "explain_uz": "Qisqa javob: No, I **don't**."},
+            {"type": "match", "pairs": [["love", "juda yaxshi ko'rmoq"], ["hate", "yomon ko'rmoq"], ["hobby", "qiziqish"], ["free time", "bo'sh vaqt"], ["boring", "zerikarli"]]},
+            {"type": "order", "uz": "Mening sevimli taomim — palov.", "words": ["My", "favourite", "food", "is", "plov"], "answer": "My favourite food is plov"},
+            {"type": "choice", "audio": true, "q": "What does the speaker NOT like?", "q_uz": "Gapiruvchi nimani yoqtirmaydi?", "say": "I love drawing and I like swimming, but I don't like running.", "options": ["Drawing", "Swimming", "Running"], "answer": 2, "explain_uz": "\"but I don't like running\"."},
+            {"type": "listen", "answer": ["What do you do in your free time?", "What do you do in your free time"], "uz": "Eshiting va yozing"},
+            {"type": "translate", "uz": "Men kitob o'qishni yaxshi ko'raman.", "answer": ["I like reading books", "I love reading books", "I like reading", "I love reading"], "explain_uz": "like/love + **reading**."},
+            {"type": "speak", "text": "In my free time, I love playing football and listening to music.", "uz": "Qiziqishlaringizni ayting — ovoz chiqarib"},
+            {"type": "write", "prompt_uz": "Qiziqishlaringiz haqida 4–5 gap yozing: nimani juda yaxshi ko'rasiz, nimani yoqtirasiz, nimani yomon ko'rasiz.", "prompt": "Write about what you love, like, don't like and hate doing.", "min_words": 25, "example": "In my free time I love drawing. I also like watching films with my family. I don't like playing computer games because they are boring for me. I hate cleaning my room, but I do it every Saturday. My favourite day is Sunday."}
+          ]
+        }
+      ]
+    }
+  ]
+}

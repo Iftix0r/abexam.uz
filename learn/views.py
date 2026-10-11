@@ -11,7 +11,7 @@ from django.views.generic import TemplateView
 from core.utils import parse_json_body
 from users.models import Vocabulary
 from . import ai, srs
-from .content import LEVELS, get_course, get_lesson
+from .content import LEVELS, get_course, get_lesson, get_placement, placement_level
 from .models import LessonProgress
 from .services import (
     REVIEW_XP, TUTOR_XP, award_xp, complete_lesson, get_profile,
@@ -107,6 +107,7 @@ class HubView(LoginRequiredMixin, TemplateView):
             'rec_avg': rec_avg,
             'daily_goals': DAILY_GOALS,
             'scenarios': ai.SCENARIOS,
+            'show_placement': not profile.level and not done,
         })
         return ctx
 
@@ -250,3 +251,49 @@ class TutorSendView(LoginRequiredMixin, View):
             return JsonResponse({'error': "AI hozir javob bermadi. Qayta urinib ko'ring."}, status=503)
         award_xp(request.user, TUTOR_XP)
         return JsonResponse({'ok': True, **result})
+
+
+class PlacementView(LoginRequiredMixin, TemplateView):
+    template_name = 'learn/placement.html'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['test'] = get_placement()
+        return ctx
+
+
+class PlacementSaveView(LoginRequiredMixin, View):
+    def post(self, request):
+        data, err = parse_json_body(request)
+        if err:
+            return err
+        answers = data.get('answers')
+        if not isinstance(answers, dict):
+            return JsonResponse({'error': "Javoblar topilmadi"}, status=400)
+        level = placement_level(get_placement(), answers)
+        profile = get_profile(request.user)
+        profile.level = level
+        profile.save(update_fields=['level'])
+        return JsonResponse({'ok': True, 'level': level})
+
+
+class GrammarView(LoginRequiredMixin, TemplateView):
+    """Every grammar explanation of the course on one searchable page."""
+    template_name = 'learn/grammar.html'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        done = _done_map(self.request.user)
+        course = get_course()
+        levels = []
+        for code in LEVELS:
+            items = []
+            for unit in course['levels'][code]['units']:
+                for lesson in unit['lessons']:
+                    for step in lesson['steps']:
+                        if step.get('type') == 'grammar':
+                            items.append({'step': step, 'lesson': lesson, 'open': _is_unlocked(lesson, done)})
+            if items:
+                levels.append({'code': code, 'name': course['levels'][code]['name'], 'items': items})
+        ctx['levels'] = levels
+        return ctx

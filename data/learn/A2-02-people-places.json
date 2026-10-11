@@ -1,0 +1,186 @@
+{
+  "level": "A2",
+  "units": [
+    {
+      "slug": "a2-people-places",
+      "title": "People and places",
+      "title_uz": "Odamlar va joylar",
+      "icon": "users",
+      "lessons": [
+        {
+          "slug": "a2-describe-people",
+          "title": "What does she look like?",
+          "title_uz": "Odamlarni tasvirlash",
+          "goal_uz": "Odamlarning tashqi ko'rinishi va xarakterini tasvirlaysiz: What does she look like? va What is she like? farqi.",
+          "minutes": 11,
+          "words": [
+            {"en": "tall", "uz": "baland bo'yli", "ipa": "/tɔːl/", "ex": "My brother is very tall."},
+            {"en": "short", "uz": "past bo'yli; qisqa", "ipa": "/ʃɔːt/", "ex": "She has short dark hair."},
+            {"en": "curly hair", "uz": "jingalak soch", "ipa": "/ˈkɜːli heə/", "ex": "Her daughter has curly hair."},
+            {"en": "beard", "uz": "soqol", "ipa": "/bɪəd/", "ex": "My uncle has a long beard."},
+            {"en": "friendly", "uz": "do'stona, xushmuomala", "ipa": "/ˈfrendli/", "ex": "Our neighbours are very friendly."},
+            {"en": "shy", "uz": "uyatchan", "ipa": "/ʃaɪ/", "ex": "He's shy, so he doesn't talk much."},
+            {"en": "funny", "uz": "kulgili, hazilkash", "ipa": "/ˈfʌni/", "ex": "My best friend is really funny."},
+            {"en": "hard-working", "uz": "mehnatkash", "ipa": "/ˌhɑːd ˈwɜːkɪŋ/", "ex": "Our teacher is very hard-working."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "dialogue",
+              "title": "Meeting someone at the airport",
+              "context_uz": "Kamron Londonda yashovchi xolasining qizini aeroportda kutib olishi kerak, lekin uni hech ko'rmagan.",
+              "lines": [
+                {"who": "Kamron", "en": "Mum, I've never met Nilufar. What does she look like?", "uz": "Oyi, men Nilufarni hech ko'rmaganman. U qanaqa ko'rinishda?"},
+                {"who": "Mum", "en": "She's quite tall and slim, with long curly hair. She usually wears glasses.", "uz": "U ancha baland bo'yli va ozg'in, uzun jingalak sochli. Odatda ko'zoynak taqadi."},
+                {"who": "Kamron", "en": "OK. And what is she like? Is she friendly?", "uz": "Xo'p. Xarakteri qanaqa? Xushmuomalami?"},
+                {"who": "Mum", "en": "Very! She's a bit shy at first, but she's really funny when you know her.", "uz": "Juda! Boshida biroz uyatchan, lekin tanishib olsang juda hazilkash."},
+                {"who": "Kamron", "en": "What will she wear?", "uz": "U nima kiyib keladi?"},
+                {"who": "Mum", "en": "She said a red jacket and white trainers.", "uz": "Qizil kurtka va oq krossovka dedi."},
+                {"who": "Kamron", "en": "Great, I'll find her. Tall, curly hair, glasses, red jacket.", "uz": "Zo'r, topaman. Baland, jingalak soch, ko'zoynak, qizil kurtka."}
+              ]
+            },
+            {"type": "choice", "q": "What does Nilufar look like?", "options": ["Short with straight hair", "Tall with long curly hair", "Tall with short dark hair"], "answer": 1, "explain_uz": "\"quite tall and slim, with long curly hair\"."},
+            {"type": "choice", "q": "What is Nilufar like?", "options": ["Shy at first, but funny", "Very serious", "Lazy"], "answer": 0, "explain_uz": "\"a bit shy at first, but she's really funny\"."},
+            {
+              "type": "grammar",
+              "title_uz": "look like vs be like · has/have got",
+              "body_uz": "**What does he look like?** — tashqi ko'rinish: He's tall. He has a beard.\n**What is he like?** — xarakter: He's friendly and funny.\n(\"What is he look like?\" — xato!)\nSoch, ko'z, soqol uchun **have / has**: She **has** long hair. He **has got** blue eyes. (\"She is long hair\" — xato!)\nBo'y va gavda uchun **be**: He **is** tall. She **is** slim.\nSifatlar tartibi: long **dark** hair (uzunlik → rang → ot).\nYumshatish: **quite** tall (ancha), **a bit** shy (biroz — faqat salbiy sifatlar bilan).",
+              "examples": [
+                {"en": "What does your teacher look like?", "uz": "O'qituvchingiz qanaqa ko'rinishda?"},
+                {"en": "She has short blonde hair and brown eyes.", "uz": "Uning qisqa sariq sochi va jigarrang ko'zlari bor."},
+                {"en": "What is your brother like? — He's very kind.", "uz": "Akangizning xarakteri qanaqa? — U juda mehribon."},
+                {"en": "He's a bit lazy, but he's very funny.", "uz": "U biroz dangasa, lekin juda kulgili."}
+              ]
+            },
+            {"type": "choice", "q": "\"What ___ she like?\" — \"She's kind and hard-working.\"", "options": ["does", "is", "has"], "answer": 1, "explain_uz": "Xarakter so'raganda: What **is** she like?"},
+            {"type": "choice", "q": "Which sentence is correct?", "options": ["She is long hair.", "She has long hair.", "She have long hair."], "answer": 1, "explain_uz": "Soch uchun **has**."},
+            {"type": "gap", "text": "What does your father look ___?", "answer": ["like"], "uz": "Otangiz qanaqa ko'rinishda?", "explain_uz": "look **like**."},
+            {"type": "gap", "text": "My grandfather ___ a long white beard.", "answer": ["has", "has got"], "uz": "Bobomning uzun oq soqoli bor.", "explain_uz": "he → **has**."},
+            {"type": "choice", "q": "Choose the correct word order:", "options": ["She has dark long hair.", "She has long dark hair.", "She has hair long dark."], "answer": 1, "explain_uz": "Uzunlik → rang: **long dark** hair."},
+            {"type": "match", "pairs": [["shy", "uyatchan"], ["funny", "hazilkash"], ["hard-working", "mehnatkash"], ["beard", "soqol"], ["curly", "jingalak"]]},
+            {"type": "order", "uz": "Uning qisqa qora sochi bor.", "words": ["He", "has", "short", "black", "hair"], "answer": "He has short black hair"},
+            {"type": "choice", "audio": true, "q": "Which person is Tom?", "say": "Tom is the man with a beard. He's wearing a blue shirt and he's sitting next to the window.", "options": ["The man with glasses", "The man with a beard and a blue shirt", "The tall man in a red jacket"], "answer": 1, "explain_uz": "\"the man with a beard... a blue shirt\"."},
+            {"type": "listen", "answer": ["She's a bit shy at first.", "She is a bit shy at first", "She's a bit shy at first"], "uz": "Eshiting va yozing"},
+            {"type": "translate", "uz": "Eng yaqin do'stim juda hazilkash va mehnatkash.", "answer": ["My best friend is very funny and hard-working", "My best friend is really funny and hard-working", "My best friend is very funny and hardworking"], "explain_uz": "be + sifat: is funny **and** hard-working."},
+            {"type": "speak", "text": "My best friend is quite tall and has short dark hair. She's really funny.", "uz": "Do'stingizni tasvirlang — ovoz chiqarib"},
+            {"type": "write", "prompt_uz": "Oilangizdan yoki do'stlaringizdan birini tasvirlang (5–6 gap): tashqi ko'rinishi (look like) va xarakteri (be like).", "prompt": "Describe a family member or friend: what they look like and what they are like.", "min_words": 40, "example": "I want to describe my aunt Zulfiya. She is quite short and she has long black hair and big brown eyes. She usually wears colourful dresses. She is very kind and friendly, and she is a great cook. She is a bit strict with her children, but she is really funny at family parties."}
+          ]
+        },
+        {
+          "slug": "a2-compare",
+          "title": "Bigger, better, the best",
+          "title_uz": "Solishtirish: shaharlar va narsalar",
+          "goal_uz": "Ikki va undan ko'p narsani solishtirasiz: -er / more, the -est / the most, as ... as.",
+          "minutes": 12,
+          "words": [
+            {"en": "crowded", "uz": "odam gavjum", "ipa": "/ˈkraʊdɪd/", "ex": "The metro is crowded in the morning."},
+            {"en": "quiet", "uz": "tinch, sokin", "ipa": "/ˈkwaɪət/", "ex": "Villages are quieter than cities."},
+            {"en": "modern", "uz": "zamonaviy", "ipa": "/ˈmɒdn/", "ex": "Tashkent has many modern buildings."},
+            {"en": "ancient", "uz": "qadimiy", "ipa": "/ˈeɪnʃənt/", "ex": "Khiva is an ancient city."},
+            {"en": "population", "uz": "aholi", "ipa": "/ˌpɒpjuˈleɪʃn/", "ex": "Tashkent has a population of about three million."},
+            {"en": "safe", "uz": "xavfsiz", "ipa": "/seɪf/", "ex": "It's a very safe place to live."},
+            {"en": "polluted", "uz": "ifloslangan", "ipa": "/pəˈluːtɪd/", "ex": "The air is more polluted in winter."},
+            {"en": "worse", "uz": "yomonroq", "ipa": "/wɜːs/", "ex": "The traffic is worse than last year."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "reading",
+              "title": "Tashkent or Samarkand?",
+              "text": "People often ask me which city is better: Tashkent or Samarkand. Tashkent is bigger and more modern than Samarkand. It has the biggest population in Central Asia and the best universities in the country. But it is also more crowded, and the traffic is worse. Samarkand is smaller and quieter. It is one of the oldest cities in the world, and the Registan is the most beautiful place I have ever seen. Life in Samarkand is not as expensive as life in Tashkent. For work, Tashkent is the best choice. For a relaxing holiday, I prefer Samarkand.",
+              "glossary": {"which": "qaysi", "Central Asia": "Markaziy Osiyo", "country": "mamlakat", "one of the oldest": "eng qadimiylaridan biri", "choice": "tanlov", "relaxing": "dam beruvchi", "prefer": "afzal ko'raman"},
+              "uz": "Odamlar mendan ko'pincha qaysi shahar yaxshiroq deb so'rashadi: Toshkentmi yoki Samarqand. Toshkent Samarqanddan kattaroq va zamonaviyroq. U Markaziy Osiyodagi eng katta aholiga va mamlakatdagi eng yaxshi universitetlarga ega. Lekin u gavjumroq va tirbandlik yomonroq. Samarqand kichikroq va tinchroq. U dunyodagi eng qadimiy shaharlardan biri, Registon esa men ko'rgan eng go'zal joy. Samarqandda hayot Toshkentdagidek qimmat emas. Ish uchun Toshkent eng yaxshi tanlov. Dam olish uchun men Samarqandni afzal ko'raman."
+            },
+            {"type": "choice", "q": "Which city is more crowded?", "options": ["Samarkand", "Tashkent", "They are the same."], "answer": 1, "explain_uz": "Tashkent \"is also more crowded\"."},
+            {"type": "choice", "q": "Where is life cheaper?", "options": ["In Samarkand", "In Tashkent", "The text doesn't say."], "answer": 0, "explain_uz": "\"Life in Samarkand is not as expensive as life in Tashkent.\""},
+            {
+              "type": "grammar",
+              "title_uz": "Qiyosiy va orttirma daraja",
+              "body_uz": "**Qisqa sifat (1 bo'g'in): + er / the + est** — big → bigg**er** → the bigg**est** · old → old**er** → the old**est**\n**-y bilan tugasa: y → ier / iest** — busy → bus**ier** → the bus**iest**\n**Uzun sifat (2+ bo'g'in): more / the most** — modern → **more** modern → **the most** modern\n**Noto'g'rilar:** good → **better** → **the best** · bad → **worse** → **the worst** · far → **further** → **the furthest**\nSolishtirishda **than**: Tashkent is bigger **than** Samarkand. (\"more bigger\" — xato!)\nTenglik: **as ... as** — It's **not as** expensive **as** Tashkent.",
+              "examples": [
+                {"en": "My flat is smaller than yours.", "uz": "Mening kvartiram sizlarnikidan kichikroq."},
+                {"en": "This is the most expensive restaurant in town.", "uz": "Bu shahardagi eng qimmat restoran."},
+                {"en": "The weather today is worse than yesterday.", "uz": "Bugungi ob-havo kechagidan yomonroq."},
+                {"en": "The bus is not as fast as the metro.", "uz": "Avtobus metroday tez emas."}
+              ]
+            },
+            {"type": "choice", "q": "Khiva is ___ than Tashkent.", "options": ["more old", "older", "oldest"], "answer": 1, "explain_uz": "Qisqa sifat: old → **older** than."},
+            {"type": "choice", "q": "This is ___ film I've ever seen!", "options": ["the best", "the better", "the goodest"], "answer": 0, "explain_uz": "good → better → **the best**."},
+            {"type": "choice", "q": "Which sentence is correct?", "options": ["Tashkent is more bigger than Bukhara.", "Tashkent is bigger than Bukhara.", "Tashkent is biggest than Bukhara."], "answer": 1, "explain_uz": "more + er birga kelmaydi: **bigger than**."},
+            {"type": "gap", "text": "Moscow is ___ (expensive) than Tashkent.", "answer": ["more expensive"], "uz": "Moskva Toshkentdan qimmatroq.", "explain_uz": "Uzun sifat → **more expensive**."},
+            {"type": "gap", "text": "Today is ___ (hot) day of the year.", "answer": ["the hottest"], "uz": "Bugun yilning eng issiq kuni.", "explain_uz": "hot → the ho**tt**est (t ikkilanadi)."},
+            {"type": "gap", "text": "My village is not as crowded ___ the city.", "answer": ["as"], "uz": "Qishlog'im shahardek gavjum emas.", "explain_uz": "not **as** ... **as**."},
+            {"type": "match", "pairs": [["good", "better"], ["bad", "worse"], ["happy", "happier"], ["modern", "more modern"], ["far", "further"]]},
+            {"type": "order", "uz": "Samarqand Toshkentdan tinchroq.", "words": ["Samarkand", "is", "quieter", "than", "Tashkent"], "answer": "Samarkand is quieter than Tashkent"},
+            {"type": "choice", "audio": true, "q": "Why does the speaker prefer the train?", "say": "The plane is faster, but the train is cheaper and much more comfortable, so I usually take the train.", "options": ["It's faster.", "It's cheaper and more comfortable.", "It's more modern."], "answer": 1, "explain_uz": "\"the train is cheaper and much more comfortable\"."},
+            {"type": "listen", "answer": ["The traffic is worse than last year.", "The traffic is worse than last year"], "uz": "Eshiting va yozing"},
+            {"type": "translate", "uz": "Bu shahardagi eng chiroyli park.", "answer": ["This is the most beautiful park in the city", "This is the most beautiful park in the town", "It's the most beautiful park in the city", "It is the most beautiful park in the city"], "explain_uz": "the most + uzun sifat + **in** the city."},
+            {"type": "speak", "text": "My hometown is smaller and quieter than Tashkent, but it isn't as modern.", "uz": "Ovoz chiqarib solishtiring"},
+            {"type": "write", "prompt_uz": "Ikki shaharni (yoki qishloq va shaharni) solishtiring (5–7 gap). Qiyosiy, orttirma daraja va as ... as ishlating.", "prompt": "Compare two cities (or a village and a city). Use comparatives, superlatives and as ... as.", "min_words": 45, "example": "I was born in Namangan, but now I study in Tashkent. Tashkent is much bigger and busier than Namangan. It has the best universities and the most modern shopping centres. However, Namangan is greener and quieter, and the food is cheaper. The air in Namangan is not as polluted as in Tashkent. For me, Namangan is the best place to relax."}
+          ]
+        },
+        {
+          "slug": "a2-travel",
+          "title": "Have you got your passport?",
+          "title_uz": "Sayohat: aeroport va qoidalar",
+          "goal_uz": "Aeroportda gaplasha olasiz va majburiyatni have to / don't have to / can't bilan aytasiz.",
+          "minutes": 11,
+          "words": [
+            {"en": "passport", "uz": "pasport", "ipa": "/ˈpɑːspɔːt/", "ex": "Can I see your passport, please?"},
+            {"en": "boarding pass", "uz": "samolyotga chiqish taloni", "ipa": "/ˈbɔːdɪŋ pɑːs/", "ex": "Here's your boarding pass."},
+            {"en": "luggage", "uz": "yuk, bagaj", "ipa": "/ˈlʌɡɪdʒ/", "ex": "How much luggage do you have?"},
+            {"en": "check in", "uz": "ro'yxatdan o'tmoq", "ipa": "/tʃek ɪn/", "ex": "You have to check in two hours before the flight."},
+            {"en": "gate", "uz": "chiqish yo'lagi (gate)", "ipa": "/ɡeɪt/", "ex": "Your flight leaves from gate 12."},
+            {"en": "delayed", "uz": "kechiktirilgan", "ipa": "/dɪˈleɪd/", "ex": "Our flight is delayed by one hour."},
+            {"en": "window seat", "uz": "deraza yonidagi o'rindiq", "ipa": "/ˈwɪndəʊ siːt/", "ex": "Can I have a window seat, please?"},
+            {"en": "allowed", "uz": "ruxsat etilgan", "ipa": "/əˈlaʊd/", "ex": "Liquids over 100 ml are not allowed."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "dialogue",
+              "title": "At the check-in desk",
+              "context_uz": "Gulshan Toshkent aeroportida Istanbulga uchish uchun ro'yxatdan o'tmoqda.",
+              "lines": [
+                {"who": "Agent", "en": "Good morning. Can I see your passport, please?", "uz": "Xayrli tong. Pasportingizni ko'rsam bo'ladimi?"},
+                {"who": "Gulshan", "en": "Here you are.", "uz": "Marhamat."},
+                {"who": "Agent", "en": "Thank you. Do you have any luggage to check in?", "uz": "Rahmat. Topshiradigan yukingiz bormi?"},
+                {"who": "Gulshan", "en": "Just this suitcase. Do I have to pay for it?", "uz": "Faqat shu chamadon. Uning uchun to'lashim kerakmi?"},
+                {"who": "Agent", "en": "No, you don't have to pay. Twenty kilos are free. Would you like a window seat or an aisle seat?", "uz": "Yo'q, to'lashingiz shart emas. Yigirma kilo bepul. Deraza yonidagi o'rindiqmi yoki yo'lak yonidagimi?"},
+                {"who": "Gulshan", "en": "A window seat, please.", "uz": "Deraza yonida, iltimos."},
+                {"who": "Agent", "en": "Here's your boarding pass. Your flight leaves from gate seven. You have to be at the gate by ten fifteen.", "uz": "Mana chiqish taloni. Reysingiz 7-gate'dan uchadi. Soat 10:15 gacha gate'da bo'lishingiz kerak."},
+                {"who": "Gulshan", "en": "Can I take this water bottle with me?", "uz": "Bu suv shishasini o'zim bilan olsam bo'ladimi?"},
+                {"who": "Agent", "en": "I'm afraid you can't take it through security. You have to drink it or throw it away.", "uz": "Afsuski, xavfsizlik nazoratidan olib o'tolmaysiz. Uni ichib yuborishingiz yoki tashlashingiz kerak."}
+              ]
+            },
+            {"type": "choice", "q": "Does Gulshan have to pay for her suitcase?", "options": ["Yes, twenty dollars.", "No, she doesn't.", "Only for the water."], "answer": 1, "explain_uz": "\"No, you don't have to pay. Twenty kilos are free.\""},
+            {"type": "choice", "q": "When does she have to be at the gate?", "options": ["By 10:15", "By 10:50", "At 7:00"], "answer": 0, "explain_uz": "\"by ten fifteen\" = 10:15 gacha."},
+            {
+              "type": "grammar",
+              "title_uz": "have to · don't have to · can't",
+              "body_uz": "**have to / has to** — majburiyat, qoida (kerak): You **have to** show your passport. She **has to** check in early.\n**don't have to** — shart emas, ixtiyoriy (taqiq EMAS!): You **don't have to** pay. (To'lamasangiz ham bo'ladi.)\n**can't** — mumkin emas, taqiq: You **can't** take water through security.\nO'tgan zamon: **had to** — I **had to** wait for three hours.\nSo'roq: **Do I have to** pay? · **Does** she **have to** wear a uniform?\nDiqqat: \"don't have to\" va \"can't\" butunlay boshqa ma'no!",
+              "examples": [
+                {"en": "You have to arrive two hours before the flight.", "uz": "Reysdan ikki soat oldin kelishingiz kerak."},
+                {"en": "Children don't have to pay on the bus.", "uz": "Bolalar avtobusda to'lashi shart emas."},
+                {"en": "You can't smoke on the plane.", "uz": "Samolyotda chekish mumkin emas."},
+                {"en": "We had to change planes in Dubai.", "uz": "Dubayda samolyot almashtirishimizga to'g'ri keldi."}
+              ]
+            },
+            {"type": "choice", "q": "Entry to the museum is free. You ___ buy a ticket.", "options": ["have to", "don't have to", "can't"], "answer": 1, "explain_uz": "Bepul → shart emas: **don't have to**."},
+            {"type": "choice", "q": "You ___ use your phone during take-off. It's the rule.", "options": ["can't", "don't have to", "has to"], "answer": 0, "explain_uz": "Taqiq → **can't**."},
+            {"type": "choice", "q": "My flight was delayed, so I ___ wait for four hours.", "options": ["have to", "had to", "must to"], "answer": 1, "explain_uz": "O'tgan zamon → **had to**."},
+            {"type": "gap", "text": "She ___ to show her passport at the border.", "answer": ["has"], "uz": "U chegarada pasportini ko'rsatishi kerak.", "explain_uz": "she → **has** to."},
+            {"type": "gap", "text": "___ I have to print my boarding pass?", "answer": ["Do"], "uz": "Chiqish talonini chop etishim kerakmi?", "explain_uz": "So'roq: **Do** I have to...?"},
+            {"type": "match", "pairs": [["luggage", "bagaj"], ["delayed", "kechiktirilgan"], ["gate", "chiqish yo'lagi"], ["check in", "ro'yxatdan o'tmoq"], ["allowed", "ruxsat etilgan"]]},
+            {"type": "order", "uz": "Siz yuk uchun to'lashingiz shart emas.", "words": ["You", "don't", "have", "to", "pay", "for", "luggage"], "answer": "You don't have to pay for luggage"},
+            {"type": "choice", "audio": true, "q": "What is the problem with the flight?", "say": "Attention please. Flight TK three seven one to Istanbul is delayed by forty-five minutes. We apologise for the delay.", "options": ["It's cancelled.", "It's 45 minutes late.", "The gate has changed."], "answer": 1, "explain_uz": "\"delayed by forty-five minutes\"."},
+            {"type": "listen", "answer": ["Can I have a window seat, please?", "Can I have a window seat please"], "uz": "Eshiting va yozing"},
+            {"type": "translate", "uz": "Men Dubayda uch soat kutishim kerak edi.", "answer": ["I had to wait for three hours in Dubai", "I had to wait three hours in Dubai", "I had to wait in Dubai for three hours"], "explain_uz": "O'tmishdagi majburiyat → **had to**."},
+            {"type": "speak", "text": "Excuse me, do I have to pay for this suitcase? And can I have a window seat, please?", "uz": "Aeroportda so'rang — ovoz chiqarib"},
+            {"type": "write", "prompt_uz": "Mehmoningizga O'zbekistonga kelish uchun maslahat yozing (5–6 gap): nima qilishi kerak (have to), nima shart emas (don't have to), nima mumkin emas (can't).", "prompt": "Write travel advice for a friend visiting Uzbekistan: what they have to do, don't have to do and can't do.", "min_words": 40, "example": "Hi Anna! When you come to Uzbekistan, you have to bring your passport, of course. You don't have to get a visa because British citizens can stay for thirty days without one. You have to take your shoes off when you visit someone's home. You can't take photos inside some museums. You don't have to bring a lot of cash — many shops accept cards now."}
+          ]
+        }
+      ]
+    }
+  ]
+}

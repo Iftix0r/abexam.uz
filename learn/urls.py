@@ -14,4 +14,7 @@ urlpatterns = [
     path('review/grade/', views.ReviewGradeView.as_view(), name='review_grade'),
     path('tutor/', views.TutorView.as_view(), name='tutor'),
     path('tutor/send/', views.TutorSendView.as_view(), name='tutor_send'),
+    path('placement/', views.PlacementView.as_view(), name='placement'),
+    path('placement/save/', views.PlacementSaveView.as_view(), name='placement_save'),
+    path('grammar/', views.GrammarView.as_view(), name='grammar'),
 ]

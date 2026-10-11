@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}Grammatika qo'llanmasi - AbExam{% endblock %}
+{% block page_title %}Grammatika qo'llanmasi{% endblock %}
+
+{% block extra_css %}
+<style>
+    .gr-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin-bottom: 22px; }
+    .gr-head h1 { font-size: 1.7rem; font-weight: 600; }
+    .gr-head p { color: var(--text-muted); margin-top: 4px; }
+    .gr-search { background: var(--tint-a); border: 1px solid var(--border-color); border-radius: 12px; padding: 10px 14px; color: var(--text-color); width: 280px; max-width: 100%; outline: none; font-size: .95rem; }
+    .gr-level { margin-bottom: 26px; }
+    .gr-level h2 { font-size: 1.05rem; margin-bottom: 12px; display: flex; gap: 10px; align-items: center; }
+    .gr-level h2 span { background: var(--primary-color); color: #fff; border-radius: 8px; padding: 2px 8px; font-size: .85rem; }
+    .gr-item { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; margin-bottom: 10px; }
+    .gr-item summary { cursor: pointer; padding: 14px 16px; list-style: none; display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+    .gr-item summary::-webkit-details-marker { display: none; }
+    .gr-item summary b { font-weight: 600; }
+    .gr-item summary small { color: var(--text-muted); font-size: .78rem; white-space: nowrap; }
+    .gr-body { padding: 0 16px 16px; line-height: 1.7; font-size: .94rem; }
+    .gr-body p + p { margin-top: 6px; }
+    .gr-ex { margin-top: 12px; display: grid; gap: 6px; }
+    .gr-ex div { background: var(--tint-a); border-radius: 10px; padding: 8px 12px; }
+    .gr-ex span { display: block; color: var(--text-muted); font-size: .84rem; }
+    .gr-say { background: none; border: none; color: var(--primary-color); cursor: pointer; vertical-align: middle; padding: 2px; }
+    .gr-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; font-size: .85rem; color: var(--primary-color); text-decoration: none; font-weight: 600; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="gr-head">
+    <div>
+        <h1>Grammatika qo'llanmasi</h1>
+        <p>Kursdagi barcha qoidalar bir joyda — o'zbekcha izoh va audio misollar bilan.</p>
+    </div>
+    <input class="gr-search" id="q" placeholder="Qidirish: past simple, should, since..." aria-label="Qidirish">
+</div>
+
+{% for lv in levels %}
+<section class="gr-level">
+    <h2><span>{{ lv.code }}</span> {{ lv.name }}</h2>
+    {% for it in lv.items %}
+    <details class="gr-item" data-text="{{ it.step.title_uz|lower }} {{ it.step.body_uz|lower }} {{ it.lesson.title|lower }}">
+        <summary><b>{{ it.step.title_uz }}</b><small>{{ it.lesson.title_uz }}</small></summary>
+        <div class="gr-body">
+            <div class="gr-text" data-md="{{ it.step.body_uz }}"></div>
+            {% if it.step.examples %}
+            <div class="gr-ex">
+                {% for e in it.step.examples %}
+                <div><b>{{ e.en }}</b> <button class="gr-say" data-say="{{ e.en }}" aria-label="Tinglash"><i data-lucide="volume-2" style="width:16px"></i></button><span>{{ e.uz }}</span></div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% if it.open %}
+            <a class="gr-link" href="{% url 'learn:lesson' it.lesson.slug %}">Darsni ochish <i data-lucide="arrow-right" style="width:14px"></i></a>
+            {% endif %}
+        </div>
+    </details>
+    {% endfor %}
+</section>
+{% endfor %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    document.querySelectorAll('.gr-text').forEach(el => {
+        el.innerHTML = el.dataset.md.split('\n').map(p => `<p>${esc(p).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')}</p>`).join('');
+    });
+    document.addEventListener('click', e => {
+        const b = e.target.closest('[data-say]'); if (!b || !window.speechSynthesis) return;
+        speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(b.dataset.say); u.lang = 'en-GB'; u.rate = .9;
+        speechSynthesis.speak(u);
+    });
+    document.getElementById('q').addEventListener('input', e => {
+        const q = e.target.value.trim().toLowerCase();
+        document.querySelectorAll('.gr-item').forEach(d => {
+            const hit = !q || d.dataset.text.includes(q);
+            d.style.display = hit ? '' : 'none';
+            if (q && hit) d.open = true;
+        });
+        document.querySelectorAll('.gr-level').forEach(s => {
+            s.style.display = [...s.querySelectorAll('.gr-item')].some(d => d.style.display !== 'none') ? '' : 'none';
+        });
+    });
+})();
+</script>
+{% endblock %}

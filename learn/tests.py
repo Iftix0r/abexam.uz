@@ -9,7 +9,7 @@ from django.utils import timezone
 
 from users.models import User, Vocabulary
 from . import srs
-from .content import answer_matches, get_course, get_lesson, validate_course
+from .content import answer_matches, get_course, get_lesson, get_placement, placement_level, validate_course
 from .models import DailyXP, LearnerProfile, LessonProgress
 from .services import award_xp, complete_lesson
 
@@ -31,6 +31,23 @@ class ContentTests(TestCase):
         self.assertTrue(answer_matches('I’m fine', "I'm fine"))
         self.assertFalse(answer_matches('', ['am']))
         self.assertFalse(answer_matches('is', ['am', "'m"]))
+
+
+class PlacementTests(TestCase):
+    def test_placement_file_is_well_formed(self):
+        test = get_placement()
+        self.assertEqual([b['level'] for b in test['blocks']], ['A1', 'A2', 'B1', 'B2'])
+        for block in test['blocks']:
+            for q in block['questions']:
+                self.assertTrue(0 <= q['answer'] < len(q['options']), q['q'])
+
+    def test_start_level_is_first_block_not_passed(self):
+        test = get_placement()
+        right = {str(i): [q['answer'] for q in b['questions']] for i, b in enumerate(test['blocks'])}
+        self.assertEqual(placement_level(test, {}), 'A1')
+        self.assertEqual(placement_level(test, {'0': right['0']}), 'A2')
+        self.assertEqual(placement_level(test, {'0': right['0'], '1': right['1'], '2': [-1] * 6}), 'B1')
+        self.assertEqual(placement_level(test, right), 'B2')
 
 
 class SrsTests(TestCase):
@@ -123,6 +140,14 @@ class EndpointTests(TestCase):
         self.assertEqual(mine.reps, 1)
         self.assertIsNotNone(mine.due_at)
 
+    def test_placement_sets_level(self):
+        test = get_placement()
+        answers = {'0': [q['answer'] for q in test['blocks'][0]['questions']]}
+        resp = self._post('learn:placement_save', {'answers': answers})
+        self.assertEqual(resp.json()['level'], 'A2')
+        self.assertEqual(LearnerProfile.objects.get(user=self.user).level, 'A2')
+        self.assertEqual(self._post('learn:placement_save', {'answers': []}).status_code, 400)
+
     @mock.patch('learn.views.ai.tutor_reply', return_value={'reply': 'Great! And you?', 'correction': None, 'tip': None})
     def test_tutor_reply_and_daily_limit(self, reply):
         resp = self._post('learn:tutor_send', {'scenario': 'cafe', 'message': 'I want coffee', 'history': []})
@@ -157,3 +182,12 @@ class PageTests(TestCase):
         self.assertEqual(self.client.get(reverse('learn:lesson', args=['nope'])).status_code, 404)
         self.assertEqual(self.client.get(reverse('learn:review')).status_code, 200)
         self.assertContains(self.client.get(reverse('learn:tutor') + '?s=ielts1'), 'IELTS Speaking Part 1')
+        self.assertContains(self.client.get(reverse('learn:placement')), 'test-data')
+        grammar = self.client.get(reverse('learn:grammar'))
+        self.assertContains(grammar, 'Present Perfect vs Past Simple')
+        # Only lessons the learner has unlocked get a link from the reference.
+        self.assertContains(grammar, reverse('learn:lesson', args=['b2-trends']))
+        self.assertNotContains(grammar, reverse('learn:lesson', args=['b2-linking']))
+
+    def test_new_learner_is_offered_the_placement_test(self):
+        self.assertContains(self.client.get(reverse('learn:hub')), reverse('learn:placement') + '" class="ln-btn')

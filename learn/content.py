@@ -167,3 +167,22 @@ def validate_course():
                 seen.add(lesson.get('slug'))
                 errors.extend(validate_lesson(lesson))
     return errors
+
+
+# ── Placement test (data/learn/placement/test.json) ──────────────────────
+def get_placement():
+    path = content_dir() / 'placement' / 'test.json'
+    return json.loads(path.read_text(encoding='utf-8'))
+
+
+def placement_level(test, answers):
+    """Start level = the first block not passed (all passed → the top level).
+
+    `answers` maps block index (as str) to the list of chosen option indexes.
+    """
+    for i, block in enumerate(test['blocks']):
+        chosen = answers.get(str(i)) or []
+        right = sum(1 for q, a in zip(block['questions'], chosen) if a == q['answer'])
+        if right < test.get('pass_mark', 4):
+            return block['level']
+    return test['blocks'][-1]['level']

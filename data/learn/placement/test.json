@@ -1,0 +1,49 @@
+{
+  "pass_mark": 4,
+  "blocks": [
+    {
+      "level": "A1",
+      "questions": [
+        {"q": "My name ___ Sardor.", "options": ["am", "is", "are"], "answer": 1},
+        {"q": "___ you a student?", "options": ["Is", "Do", "Are"], "answer": 2},
+        {"q": "\"Nice to meet you!\" — Choose the answer.", "options": ["Nice to meet you too.", "I'm twenty.", "Goodbye, see you."], "answer": 0},
+        {"q": "She ___ to school by bus every day.", "options": ["go", "goes", "going"], "answer": 1},
+        {"audio": true, "say": "I have two brothers and one sister.", "q": "How many brothers does the speaker have?", "options": ["One", "Two", "Three"], "answer": 1},
+        {"q": "This is Malika. ___ father is a doctor.", "options": ["His", "Her", "Their"], "answer": 1}
+      ]
+    },
+    {
+      "level": "A2",
+      "questions": [
+        {"q": "Yesterday we ___ to the cinema.", "options": ["go", "went", "have gone"], "answer": 1},
+        {"q": "Did you ___ my message?", "options": ["saw", "see", "seen"], "answer": 1},
+        {"q": "Do you have ___ milk?", "options": ["any", "a", "some of"], "answer": 0},
+        {"q": "The bank is ___ the café and the post office.", "options": ["opposite", "between", "next"], "answer": 1},
+        {"audio": true, "say": "Could I have a cup of coffee and a piece of chocolate cake, please?", "q": "What does the customer want?", "options": ["Tea and cake", "Coffee and cake", "Only coffee"], "answer": 1},
+        {"q": "Which is the most polite?", "options": ["Give me the bill.", "I want the bill.", "Could we have the bill, please?"], "answer": 2}
+      ]
+    },
+    {
+      "level": "B1",
+      "questions": [
+        {"q": "Have you ever ___ to London?", "options": ["went", "been", "go"], "answer": 1},
+        {"q": "I've lived here ___ 2019.", "options": ["for", "since", "from"], "answer": 1},
+        {"q": "___ it was raining, we went for a walk.", "options": ["Although", "Because", "So"], "answer": 0},
+        {"q": "\"The phone is ringing.\" — \"OK, I ___ answer it.\"", "options": ["am going to", "will", "am answering"], "answer": 1},
+        {"audio": true, "say": "I used to play football at school, but now I prefer swimming because it's better for my back.", "q": "What sport does the speaker do now?", "options": ["Football", "Swimming", "Running"], "answer": 1},
+        {"q": "You look tired. You ___ go to bed earlier.", "options": ["should", "must to", "ought"], "answer": 0}
+      ]
+    },
+    {
+      "level": "B2",
+      "questions": [
+        {"q": "There was a ___ increase in sales in 2020.", "options": ["sharply", "sharp", "sharpen"], "answer": 1},
+        {"q": "___ the high cost, many students choose to study abroad.", "options": ["Although", "Despite", "However"], "answer": 1},
+        {"q": "When I arrived at the station, the train ___.", "options": ["already left", "had already left", "has already left"], "answer": 1},
+        {"q": "Cities offer more jobs, ___ villages offer a quieter life.", "options": ["whereas", "therefore", "moreover"], "answer": 0},
+        {"audio": true, "say": "Overall, unemployment fell steadily over the decade, despite a slight rise in 2015.", "q": "What happened to unemployment in 2015?", "options": ["It fell sharply.", "It rose slightly.", "It remained stable."], "answer": 1},
+        {"q": "If I ___ more time, I would learn another language.", "options": ["have", "had", "will have"], "answer": 1}
+      ]
+    }
+  ]
+}
