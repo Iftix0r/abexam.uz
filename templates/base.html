@@ -359,6 +359,11 @@
                 <i data-lucide="file-text" style="width: 20px;"></i>
                 <span class="nav-toggle-text">Testlar</span>
             </a>
+            <a href="{% url 'learn:hub' %}" class="nav-link {% if request.resolver_match.namespace == 'learn' %}active{% endif %}">
+                <i data-lucide="graduation-cap" style="width: 20px;"></i>
+                <span class="nav-toggle-text">Ingliz tili</span>
+                <span style="margin-left: auto; font-size: 0.6rem; font-weight: 700; background: #f59e0b; color: #000; border-radius: 6px; padding: 2px 6px;">YANGI</span>
+            </a>
 
             <div style="margin-top: 1.5rem; padding: 0 0.8rem; margin-bottom: 0.5rem;" class="sidebar-label">
                 <span style="font-size: 0.75rem; font-weight: 500; color: #888; text-transform: uppercase;">Bo'limlar</span>

@@ -1,0 +1,170 @@
+{
+  "level": "A1",
+  "units": [
+    {
+      "slug": "a1-first-steps",
+      "title": "First steps",
+      "title_uz": "Ilk qadamlar",
+      "icon": "hand",
+      "lessons": [
+        {
+          "slug": "a1-hello",
+          "title": "Hello! Nice to meet you",
+          "title_uz": "Salomlashish va tanishish",
+          "goal_uz": "Darsdan so'ng siz salomlasha olasiz, ismingizni va qayerdan ekaningizni ayta olasiz.",
+          "minutes": 8,
+          "words": [
+            {"en": "hello", "uz": "salom", "ipa": "/həˈləʊ/", "ex": "Hello! I'm Aziz."},
+            {"en": "name", "uz": "ism", "ipa": "/neɪm/", "ex": "My name is Malika."},
+            {"en": "nice to meet you", "uz": "tanishganimdan xursandman", "ipa": "/naɪs tə miːt juː/", "ex": "Nice to meet you, Tom."},
+            {"en": "from", "uz": "-dan (kelib chiqish)", "ipa": "/frɒm/", "ex": "I'm from Uzbekistan."},
+            {"en": "student", "uz": "talaba, o'quvchi", "ipa": "/ˈstjuːdnt/", "ex": "I'm a student."},
+            {"en": "teacher", "uz": "o'qituvchi", "ipa": "/ˈtiːtʃə/", "ex": "She is a teacher."},
+            {"en": "how are you?", "uz": "qalaysiz?", "ipa": "/haʊ ɑː juː/", "ex": "Hi, Anna! How are you?"},
+            {"en": "fine, thanks", "uz": "yaxshi, rahmat", "ipa": "/faɪn θæŋks/", "ex": "I'm fine, thanks. And you?"}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "dialogue",
+              "title": "At the language school",
+              "context_uz": "Aziz til maktabida yangi guruhdoshi Anna bilan tanishmoqda.",
+              "lines": [
+                {"who": "Anna", "en": "Hi! I'm Anna. What's your name?", "uz": "Salom! Men Annaman. Ismingiz nima?"},
+                {"who": "Aziz", "en": "Hello, Anna. My name is Aziz.", "uz": "Salom, Anna. Mening ismim Aziz."},
+                {"who": "Anna", "en": "Nice to meet you, Aziz. Where are you from?", "uz": "Tanishganimdan xursandman, Aziz. Qayerdansiz?"},
+                {"who": "Aziz", "en": "I'm from Samarkand, in Uzbekistan. And you?", "uz": "Men Samarqanddanman, O'zbekistonda. Sizchi?"},
+                {"who": "Anna", "en": "I'm from London. Are you a student?", "uz": "Men Londondanman. Siz talabamisiz?"},
+                {"who": "Aziz", "en": "Yes, I am. I'm a student at the university.", "uz": "Ha. Men universitetda talabaman."},
+                {"who": "Anna", "en": "Me too! Nice to meet you.", "uz": "Men ham! Tanishganimdan xursandman."}
+              ]
+            },
+            {
+              "type": "grammar",
+              "title_uz": "\"to be\" fe'li: am / is / are",
+              "body_uz": "O'zbek tilida \"Men talabaman\" deymiz — fe'l yo'q. Ingliz tilida esa gapda albatta **to be** fe'li bo'ladi:\n**I am** (I'm) · **you / we / they are** (you're) · **he / she / it is** (he's, she's).\nSo'roq gapda fe'l oldinga chiqadi: **Are you** a student? — **Yes, I am.**",
+              "examples": [
+                {"en": "I am a student.", "uz": "Men talabaman."},
+                {"en": "She is from Bukhara.", "uz": "U Buxorodan."},
+                {"en": "Are you a teacher?", "uz": "Siz o'qituvchimisiz?"},
+                {"en": "We are friends.", "uz": "Biz do'stmiz."}
+              ]
+            },
+            {"type": "choice", "q": "My name ___ Aziz.", "options": ["am", "is", "are"], "answer": 1, "explain_uz": "\"My name\" — bu \"it\" kabi, shuning uchun **is**."},
+            {"type": "choice", "q": "Anna: \"Nice to meet you!\" — What is a good answer?", "options": ["Nice to meet you too!", "I'm fine.", "Goodbye."], "answer": 0, "explain_uz": "Tanishuvga javoban \"Nice to meet you too!\" deyiladi."},
+            {"type": "gap", "text": "Where ___ you from?", "answer": ["are"], "uz": "Siz qayerdansiz?", "explain_uz": "you → **are**"},
+            {"type": "gap", "text": "I ___ from Tashkent.", "answer": ["am", "'m"], "uz": "Men Toshkentdanman.", "explain_uz": "I → **am**"},
+            {"type": "match", "pairs": [["hello", "salom"], ["teacher", "o'qituvchi"], ["name", "ism"], ["student", "talaba"]]},
+            {"type": "order", "uz": "Men Samarqanddanman.", "words": ["I'm", "from", "Samarkand"], "answer": "I'm from Samarkand"},
+            {"type": "listen", "answer": ["Nice to meet you", "Nice to meet you."], "uz": "Eshiting va yozing"},
+            {"type": "choice", "audio": true, "q": "Where is Anna from?", "say": "Hi, I'm Anna. I'm from London.", "options": ["Samarkand", "London", "Tashkent"], "answer": 1, "explain_uz": "\"I'm from London\" — Anna Londondan."},
+            {"type": "translate", "uz": "U o'qituvchi.", "answer": ["She is a teacher", "He is a teacher", "She's a teacher", "He's a teacher"], "explain_uz": "Ingliz tilida \"u\" — he (erkak) yoki she (ayol). Kasb oldidan **a** qo'yiladi."},
+            {"type": "speak", "text": "Hello! My name is Aziz. Nice to meet you.", "uz": "O'zingizni tanishtiring — ovoz chiqarib ayting"},
+            {"type": "write", "prompt_uz": "O'zingizni 2–3 gapda tanishtiring: ismingiz, qayerdansiz, talaba yoki ishlaysizmi.", "prompt": "Introduce yourself: your name, where you are from, and if you are a student.", "min_words": 12, "example": "Hello! My name is Malika. I'm from Namangan. I'm a student at the university."}
+          ]
+        },
+        {
+          "slug": "a1-family",
+          "title": "This is my family",
+          "title_uz": "Mening oilam",
+          "goal_uz": "Oila a'zolaringizni tanishtira olasiz va my / your / his / her so'zlarini to'g'ri ishlatasiz.",
+          "minutes": 9,
+          "words": [
+            {"en": "mother", "uz": "ona", "ipa": "/ˈmʌðə/", "ex": "This is my mother."},
+            {"en": "father", "uz": "ota", "ipa": "/ˈfɑːðə/", "ex": "My father is a doctor."},
+            {"en": "brother", "uz": "aka / uka", "ipa": "/ˈbrʌðə/", "ex": "I have one brother."},
+            {"en": "sister", "uz": "opa / singil", "ipa": "/ˈsɪstə/", "ex": "Her sister is twelve."},
+            {"en": "old", "uz": "yoshli (yoshda), qari", "ipa": "/əʊld/", "ex": "He is twenty years old."},
+            {"en": "young", "uz": "yosh", "ipa": "/jʌŋ/", "ex": "My sister is young."},
+            {"en": "married", "uz": "uylangan / turmushga chiqqan", "ipa": "/ˈmærɪd/", "ex": "My brother is married."},
+            {"en": "children", "uz": "bolalar", "ipa": "/ˈtʃɪldrən/", "ex": "They have two children."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "reading",
+              "title": "Dilnoza's family photo",
+              "text": "Hi! I'm Dilnoza and this is my family. This is my father. His name is Rustam and he is a doctor. This is my mother, Gulnora. She is a teacher. I have one brother and one sister. My brother is twenty-five years old. He is married and he has two children. My sister, Madina, is very young — she is ten. Her favourite colour is pink!",
+              "glossary": {"photo": "rasm", "doctor": "shifokor", "favourite": "eng sevimli", "colour": "rang", "very": "juda", "have": "bor (menda bor)"},
+              "uz": "Salom! Men Dilnozaman va bu mening oilam. Bu mening otam. Uning ismi Rustam, u shifokor. Bu onam, Gulnora. U o'qituvchi. Mening bitta akam va bitta singlim bor. Akam yigirma besh yoshda. U uylangan va ikki farzandi bor. Singlim Madina juda yosh — u o'n yoshda. Uning sevimli rangi pushti!"
+            },
+            {"type": "choice", "q": "What does Dilnoza's father do?", "options": ["He is a teacher.", "He is a doctor.", "He is a student."], "answer": 1, "explain_uz": "\"His name is Rustam and he is a doctor.\""},
+            {"type": "choice", "q": "How old is Madina?", "options": ["10", "25", "12"], "answer": 0, "explain_uz": "\"she is ten\" — u o'n yoshda."},
+            {
+              "type": "grammar",
+              "title_uz": "Egalik: my, your, his, her, our, their",
+              "body_uz": "O'zbekchada qo'shimcha qo'shamiz: oila**m**, oila**ngiz**. Ingliz tilida so'z oldidan alohida so'z qo'yiladi:\n**I → my** · **you → your** · **he → his** · **she → her** · **we → our** · **they → their**.\nYosh aytish: **He is 20 years old.** (\"have\" emas, **be** ishlatiladi!)",
+              "examples": [
+                {"en": "This is my brother.", "uz": "Bu mening akam."},
+                {"en": "His name is Rustam.", "uz": "Uning (erkak) ismi Rustam."},
+                {"en": "Her sister is ten years old.", "uz": "Uning (ayol) singlisi o'n yoshda."},
+                {"en": "Our teacher is from London.", "uz": "Bizning o'qituvchimiz Londondan."}
+              ]
+            },
+            {"type": "choice", "q": "This is Rustam. ___ son is a teacher.", "options": ["Her", "His", "Their"], "answer": 1, "explain_uz": "Rustam — erkak, shuning uchun **his**."},
+            {"type": "choice", "q": "Malika is my friend. ___ mother is a doctor.", "options": ["His", "Her", "My"], "answer": 1, "explain_uz": "Malika — ayol, shuning uchun **her**."},
+            {"type": "gap", "text": "My sister ___ twelve years old.", "answer": ["is", "'s"], "uz": "Singlim o'n ikki yoshda.", "explain_uz": "Yosh aytilganda **be** fe'li: is. \"has 12 years\" — xato!"},
+            {"type": "gap", "text": "We love ___ parents.", "answer": ["our"], "uz": "Biz ota-onamizni yaxshi ko'ramiz.", "explain_uz": "we → **our**"},
+            {"type": "match", "pairs": [["mother", "ona"], ["father", "ota"], ["brother", "aka/uka"], ["sister", "opa/singil"], ["children", "bolalar"]]},
+            {"type": "order", "uz": "Uning ismi Gulnora.", "words": ["Her", "name", "is", "Gulnora"], "answer": "Her name is Gulnora"},
+            {"type": "listen", "answer": ["My brother is married", "My brother is married."], "uz": "Eshiting va yozing"},
+            {"type": "translate", "uz": "Otam qirq yoshda.", "answer": ["My father is forty", "My father is forty years old", "My father is 40", "My father is 40 years old", "My dad is forty", "My dad is forty years old"], "explain_uz": "Yosh: **is ... years old**."},
+            {"type": "speak", "text": "This is my mother. Her name is Gulnora.", "uz": "Ovoz chiqarib o'qing"},
+            {"type": "write", "prompt_uz": "Oilangiz haqida 3–4 gap yozing: kim bor, ismlari, yoshlari, kasblari.", "prompt": "Write about your family: who is in it, their names, ages and jobs.", "min_words": 20, "example": "There are five people in my family. My father's name is Bahodir. He is a driver. My mother is a nurse. I have one sister. She is fifteen years old."}
+          ]
+        },
+        {
+          "slug": "a1-my-day",
+          "title": "My day",
+          "title_uz": "Mening kunim",
+          "goal_uz": "Kundalik ishlaringizni Present Simple'da aytasiz va vaqtni so'ray olasiz.",
+          "minutes": 10,
+          "words": [
+            {"en": "get up", "uz": "o'rnidan turmoq", "ipa": "/ɡet ʌp/", "ex": "I get up at seven."},
+            {"en": "have breakfast", "uz": "nonushta qilmoq", "ipa": "/hæv ˈbrekfəst/", "ex": "We have breakfast at home."},
+            {"en": "go to work", "uz": "ishga bormoq", "ipa": "/ɡəʊ tə wɜːk/", "ex": "My mother goes to work by bus."},
+            {"en": "usually", "uz": "odatda", "ipa": "/ˈjuːʒuəli/", "ex": "I usually walk to school."},
+            {"en": "always", "uz": "har doim", "ipa": "/ˈɔːlweɪz/", "ex": "He always drinks tea."},
+            {"en": "never", "uz": "hech qachon", "ipa": "/ˈnevə/", "ex": "I never watch TV in the morning."},
+            {"en": "evening", "uz": "kechqurun", "ipa": "/ˈiːvnɪŋ/", "ex": "In the evening I read."},
+            {"en": "o'clock", "uz": "soat (aniq)", "ipa": "/əˈklɒk/", "ex": "It's eight o'clock."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "reading",
+              "title": "Jasur's day",
+              "text": "Jasur is a student. He gets up at seven o'clock every day. He has breakfast with his family — he always drinks green tea. He goes to university by metro. His classes start at nine. After classes, he usually plays football with his friends. In the evening, he does his homework and studies English for thirty minutes. He never goes to bed late.",
+              "glossary": {"every day": "har kuni", "classes": "darslar", "start": "boshlanadi", "after": "-dan keyin", "homework": "uy vazifasi", "late": "kech", "go to bed": "uxlashga yotmoq"},
+              "uz": "Jasur talaba. U har kuni soat yettida turadi. Oilasi bilan nonushta qiladi — har doim ko'k choy ichadi. Universitetga metroda boradi. Darslari soat to'qqizda boshlanadi. Darslardan keyin odatda do'stlari bilan futbol o'ynaydi. Kechqurun uy vazifasini qiladi va o'ttiz daqiqa ingliz tili o'rganadi. U hech qachon kech yotmaydi."
+            },
+            {"type": "choice", "q": "How does Jasur go to university?", "options": ["By bus", "By metro", "On foot"], "answer": 1, "explain_uz": "\"He goes to university by metro.\""},
+            {"type": "choice", "q": "What does he do in the evening?", "options": ["He plays football.", "He watches TV.", "He does his homework."], "answer": 2, "explain_uz": "\"In the evening, he does his homework...\""},
+            {
+              "type": "grammar",
+              "title_uz": "Present Simple — odatiy ishlar",
+              "body_uz": "Har kuni, odatda takrorlanadigan ishlar uchun **Present Simple** ishlatiladi.\n**I / you / we / they + fe'l:** I get up at 7.\n**he / she / it + fe'l + s:** He get**s** up at 7. (go → go**es**, do → do**es**, have → **has**)\nInkor: I **don't** drink coffee. · He **doesn't** drink coffee.\nSo'roq: **Do** you work? · **Does** she work?\n**always / usually / never** fe'ldan oldin turadi: I **usually** walk.",
+              "examples": [
+                {"en": "She gets up at six.", "uz": "U oltida turadi."},
+                {"en": "He doesn't like coffee.", "uz": "U qahvani yoqtirmaydi."},
+                {"en": "Do you have breakfast at home?", "uz": "Uyda nonushta qilasizmi?"},
+                {"en": "I never go to bed late.", "uz": "Men hech qachon kech yotmayman."}
+              ]
+            },
+            {"type": "choice", "q": "My father ___ to work at eight.", "options": ["go", "goes", "going"], "answer": 1, "explain_uz": "he/she/it bilan fe'lga **-s/-es**: goes."},
+            {"type": "choice", "q": "___ you speak English?", "options": ["Does", "Are", "Do"], "answer": 2, "explain_uz": "you bilan so'roq: **Do** you...?"},
+            {"type": "gap", "text": "She ___ drink coffee. She drinks tea.", "answer": ["doesn't", "does not"], "uz": "U qahva ichmaydi. U choy ichadi.", "explain_uz": "she → **doesn't** + fe'l (s'siz)."},
+            {"type": "gap", "text": "Jasur ___ breakfast with his family.", "answer": ["has"], "uz": "Jasur oilasi bilan nonushta qiladi.", "explain_uz": "have → he/she uchun **has**."},
+            {"type": "order", "uz": "Men odatda soat yettida turaman.", "words": ["I", "usually", "get", "up", "at", "seven"], "answer": "I usually get up at seven"},
+            {"type": "match", "pairs": [["always", "har doim"], ["usually", "odatda"], ["never", "hech qachon"], ["evening", "kechqurun"]]},
+            {"type": "listen", "answer": ["He goes to work by bus", "He goes to work by bus."], "uz": "Eshiting va yozing"},
+            {"type": "choice", "audio": true, "q": "What time does she get up?", "say": "My sister gets up at half past six, but I get up at eight.", "options": ["At 6:30", "At 8:00", "At 7:00"], "answer": 0, "explain_uz": "\"half past six\" = 6:30."},
+            {"type": "translate", "uz": "U har doim choy ichadi.", "answer": ["He always drinks tea", "She always drinks tea"], "explain_uz": "always fe'ldan oldin; he/she → drink**s**."},
+            {"type": "speak", "text": "I usually get up at seven and have breakfast with my family.", "uz": "Ovoz chiqarib ayting"},
+            {"type": "write", "prompt_uz": "Odatiy kuningizni 4–5 gapda yozing. always / usually / never so'zlarini ishlating.", "prompt": "Describe your typical day. Use always, usually and never.", "min_words": 25, "example": "I usually get up at half past six. I always have breakfast with my family. Then I go to work by bus. In the evening I cook dinner and watch a film. I never go to bed after midnight."}
+          ]
+        }
+      ]
+    }
+  ]
+}

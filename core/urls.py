@@ -71,6 +71,7 @@ urlpatterns = [
     path('users/', include('users.urls', namespace='users')),
     path('exams/', include('exams.urls', namespace='exams')),
     path('payments/', include('payments.urls', namespace='payments')),
+    path('learn/', include('learn.urls', namespace='learn')),
 ]
 
 if settings.DEBUG:

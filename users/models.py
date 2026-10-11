@@ -32,6 +32,15 @@ class Vocabulary(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='vocabulary')
     english = models.CharField(max_length=255)
     translation = models.CharField(max_length=255)
+    example = models.CharField(max_length=300, blank=True)
+    lesson_slug = models.CharField(max_length=100, blank=True, help_text="Qaysi darsdan qo'shilgan")
+    # Spaced repetition (SM-2 style, see learn/srs.py). due_at is empty for a
+    # word that has never been reviewed — it counts as a new card.
+    due_at = models.DateTimeField(null=True, blank=True, db_index=True)
+    interval_days = models.FloatField(default=0)
+    ease = models.FloatField(default=2.5)
+    reps = models.PositiveIntegerField(default=0)
+    lapses = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

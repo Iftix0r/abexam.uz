@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+
+{% block title %}AI suhbatdosh - AbExam{% endblock %}
+{% block page_title %}AI suhbatdosh{% endblock %}
+
+{% block extra_css %}
+<style>
+    .tt { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 20px; height: calc(100vh - 150px); min-height: 520px; }
+    .tt-side { display: flex; flex-direction: column; gap: 6px; overflow-y: auto; }
+    .tt-side h4 { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: .05em; margin: 0 0 6px 4px; }
+    .tt-sc { display: flex; gap: 10px; padding: 10px 12px; border-radius: 12px; text-decoration: none; color: var(--text-color); border: 1px solid transparent; }
+    .tt-sc:hover { background: var(--tint-a); }
+    .tt-sc.active { background: var(--card-bg); border-color: var(--primary-color); }
+    .tt-sc i { width: 18px; color: var(--primary-color); flex-shrink: 0; margin-top: 2px; }
+    .tt-sc b { font-size: 0.88rem; font-weight: 600; display: block; }
+    .tt-sc span { font-size: 0.75rem; color: var(--text-muted); line-height: 1.4; }
+    .tt-level { margin-top: auto; font-size: 0.78rem; color: var(--text-muted); padding: 10px 12px; background: var(--tint-a); border-radius: 10px; }
+
+    .tt-chat { display: flex; flex-direction: column; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 18px; overflow: hidden; min-height: 0; }
+    .tt-head { padding: 14px 18px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .tt-head b { font-size: 0.98rem; }
+    .tt-head small { display: block; color: var(--text-muted); font-size: 0.78rem; }
+    .tt-toggle { display: flex; align-items: center; gap: 6px; font-size: 0.78rem; color: var(--text-muted); cursor: pointer; user-select: none; white-space: nowrap; }
+    .tt-msgs { flex: 1; overflow-y: auto; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+    .tt-m { max-width: 80%; padding: 10px 14px; border-radius: 16px; line-height: 1.55; font-size: 0.95rem; }
+    .tt-m.ai { background: var(--bg-color); border: 1px solid var(--border-color); border-bottom-left-radius: 4px; align-self: flex-start; }
+    .tt-m.me { background: var(--primary-color); color: #fff; border-bottom-right-radius: 4px; align-self: flex-end; }
+    .tt-m .tt-say { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 0 0 0 6px; vertical-align: middle; }
+    .tt-fix { align-self: flex-end; max-width: 80%; background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.35); border-radius: 12px; padding: 8px 12px; font-size: 0.84rem; margin-top: -6px; }
+    .tt-fix b { color: #16a34a; }
+    .tt-fix span { color: var(--text-muted); display: block; margin-top: 2px; }
+    .tt-tip { align-self: flex-start; max-width: 80%; background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.3); border-radius: 12px; padding: 8px 12px; font-size: 0.84rem; margin-top: -6px; }
+    .tt-tip button { background: none; border: none; color: #3b82f6; cursor: pointer; font-size: 0.78rem; font-weight: 600; padding: 0; margin-left: 6px; }
+    .tt-typing { align-self: flex-start; color: var(--text-muted); font-size: 0.85rem; }
+    .tt-input { border-top: 1px solid var(--border-color); padding: 12px; display: flex; gap: 8px; align-items: flex-end; }
+    .tt-input textarea { flex: 1; resize: none; max-height: 120px; min-height: 46px; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 12px; padding: 12px 14px; color: var(--text-color); font-size: 0.95rem; outline: none; font-family: inherit; }
+    .tt-input textarea:focus { border-color: var(--primary-color); }
+    .tt-btn { width: 46px; height: 46px; border-radius: 12px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .tt-btn.mic { background: var(--tint-b); color: var(--text-color); }
+    .tt-btn.mic.rec { background: var(--primary-color); color: #fff; animation: ttRec 1.2s infinite; }
+    @keyframes ttRec { 0%,100% { box-shadow: 0 0 0 0 rgba(211,47,47,.5); } 50% { box-shadow: 0 0 0 10px rgba(211,47,47,0); } }
+    .tt-btn.send { background: var(--primary-color); color: #fff; }
+    .tt-btn:disabled { opacity: .5; cursor: default; }
+    .tt-hints { display: flex; gap: 6px; flex-wrap: wrap; padding: 0 12px 10px; }
+    .tt-hints button { background: var(--tint-a); border: 1px solid var(--border-color); border-radius: 999px; padding: 5px 10px; font-size: 0.75rem; color: var(--text-muted); cursor: pointer; }
+    @media (max-width: 860px) {
+        .tt { grid-template-columns: 1fr; height: auto; }
+        .tt-side { flex-direction: row; overflow-x: auto; padding-bottom: 4px; }
+        .tt-side h4, .tt-sc span, .tt-level { display: none; }
+        .tt-sc { white-space: nowrap; border-color: var(--border-color); }
+        .tt-chat { height: calc(100vh - 210px); min-height: 460px; }
+        .tt-m, .tt-fix, .tt-tip { max-width: 92%; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="tt">
+    <aside class="tt-side">
+        <h4>Vaziyatni tanlang</h4>
+        {% for key, sc in scenarios.items %}
+        <a href="?s={{ key }}" class="tt-sc {% if key == scenario_key %}active{% endif %}">
+            <i data-lucide="{{ sc.icon }}"></i>
+            <div><b>{{ sc.title_uz }}</b><span>{{ sc.desc_uz }}</span></div>
+        </a>
+        {% endfor %}
+        <div class="tt-level">AI sizning <b>{{ level_code }}</b> darajangizga moslashadi. Har bir xabaringizdagi xatolarni tuzatib, o'zbekcha izohlaydi. Har xabar uchun +2 XP.</div>
+    </aside>
+
+    <section class="tt-chat">
+        <div class="tt-head">
+            <div><b>{{ scenario.title_uz }}</b><small>{{ scenario.desc_uz }}</small></div>
+            <label class="tt-toggle"><input type="checkbox" id="autoSpeak" checked> Ovozli javob</label>
+        </div>
+        <div class="tt-msgs" id="msgs"></div>
+        <div class="tt-hints" id="hints">
+            <button data-h="Could you repeat that, please?">Qaytaring</button>
+            <button data-h="Sorry, could you speak more slowly?">Sekinroq</button>
+            <button data-h="What does that word mean?">So'z ma'nosi?</button>
+            <button data-h="Can you give me an example?">Misol bering</button>
+        </div>
+        <div class="tt-input">
+            <button class="tt-btn mic" id="mic" title="Ovoz bilan yozish" aria-label="Ovoz bilan yozish"><i data-lucide="mic" style="width:20px"></i></button>
+            <textarea id="inp" rows="1" placeholder="Inglizcha yozing yoki mikrofonni bosing..."></textarea>
+            <button class="tt-btn send" id="send" aria-label="Yuborish"><i data-lucide="send" style="width:18px"></i></button>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+    const SCENARIO = '{{ scenario_key|escapejs }}';
+    const OPENER = '{{ scenario.opener|escapejs }}';
+    const CSRF = '{{ csrf_token }}';
+    const URL_SEND = '{% url "learn:tutor_send" %}';
+    const msgs = document.getElementById('msgs');
+    const inp = document.getElementById('inp');
+    const sendBtn = document.getElementById('send');
+    const history = [{ role: 'assistant', content: OPENER }];
+
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    let voice = null;
+    const pick = () => { const v = speechSynthesis.getVoices(); voice = v.find(x => /en-GB/i.test(x.lang)) || v.find(x => /^en/i.test(x.lang)) || null; };
+    if (window.speechSynthesis) { pick(); speechSynthesis.onvoiceschanged = pick; }
+    const speak = t => { if (!window.speechSynthesis) return; speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = 'en-GB'; u.rate = .95; if (voice) u.voice = voice; speechSynthesis.speak(u); };
+
+    function add(html, cls) {
+        const d = document.createElement('div');
+        d.className = cls; d.innerHTML = html;
+        msgs.appendChild(d); msgs.scrollTop = msgs.scrollHeight;
+        return d;
+    }
+    function addAI(text) {
+        const d = add(`${esc(text)}<button class="tt-say" title="Tinglash" aria-label="Tinglash"><i data-lucide="volume-2" style="width:15px"></i></button>`, 'tt-m ai');
+        d.querySelector('.tt-say').onclick = () => speak(text);
+        lucide.createIcons();
+        if (document.getElementById('autoSpeak').checked) speak(text);
+    }
+
+    async function send(text) {
+        text = (text || inp.value).trim();
+        if (!text || sendBtn.disabled) return;
+        inp.value = ''; autoGrow();
+        add(esc(text), 'tt-m me');
+        const typing = add('AI yozmoqda…', 'tt-typing');
+        sendBtn.disabled = true;
+        try {
+            const r = await fetch(URL_SEND, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF },
+                body: JSON.stringify({ scenario: SCENARIO, message: text, history }) });
+            const d = await r.json();
+            typing.remove();
+            if (!r.ok) { add(esc(d.error || 'Xatolik'), 'tt-typing'); return; }
+            history.push({ role: 'user', content: text }, { role: 'assistant', content: d.reply });
+            if (d.correction) add(`✏️ <b>${esc(d.correction.corrected)}</b><span>${esc(d.correction.explain_uz || '')}</span>`, 'tt-fix');
+            addAI(d.reply);
+            if (d.tip) {
+                const t = add(`💡 <b>${esc(d.tip.phrase)}</b> — ${esc(d.tip.uz || '')}<button>Lug'atga</button>`, 'tt-tip');
+                t.querySelector('button').onclick = async ev => {
+                    const fd = new FormData();
+                    fd.append('english', d.tip.phrase); fd.append('translation', d.tip.uz || '-'); fd.append('csrfmiddlewaretoken', CSRF);
+                    await fetch('{% url "vocabulary" %}', { method: 'POST', body: fd });
+                    ev.target.textContent = "✓ qo'shildi"; ev.target.disabled = true;
+                };
+            }
+        } catch (e) {
+            typing.remove();
+            add("Internet bilan bog'liq xatolik. Qayta urinib ko'ring.", 'tt-typing');
+        } finally {
+            sendBtn.disabled = false;
+        }
+    }
+
+    function autoGrow() { inp.style.height = 'auto'; inp.style.height = Math.min(inp.scrollHeight, 120) + 'px'; }
+    inp.addEventListener('input', autoGrow);
+    inp.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } });
+    sendBtn.onclick = () => send();
+    document.getElementById('hints').addEventListener('click', e => { const b = e.target.closest('[data-h]'); if (b) send(b.dataset.h); });
+
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const mic = document.getElementById('mic');
+    if (!SR) mic.style.display = 'none';
+    else mic.onclick = () => {
+        const rec = new SR();
+        rec.lang = 'en-GB'; rec.interimResults = true;
+        mic.classList.add('rec');
+        speechSynthesis && speechSynthesis.cancel();
+        rec.onresult = ev => { inp.value = [...ev.results].map(r => r[0].transcript).join(' '); autoGrow(); };
+        rec.onend = () => { mic.classList.remove('rec'); if (inp.value.trim()) inp.focus(); };
+        rec.start();
+    };
+
+    addAI(OPENER);
+})();
+</script>
+{% endblock %}

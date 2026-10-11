@@ -152,6 +152,12 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             avg_w=Avg('writing_score'), avg_s=Avg('speaking_score'),
         )
         context['section_avgs'] = avgs
+
+        from learn.models import LearnerProfile
+        from learn.srs import due_queryset
+        learner = LearnerProfile.objects.filter(user=user).first()
+        context['learn_streak'] = learner.current_streak if learner else 0
+        context['learn_due'] = due_queryset(user).count()
         return context
 
 

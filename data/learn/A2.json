@@ -1,0 +1,185 @@
+{
+  "level": "A2",
+  "units": [
+    {
+      "slug": "a2-everyday-life",
+      "title": "Everyday life",
+      "title_uz": "Kundalik hayot",
+      "icon": "shopping-bag",
+      "lessons": [
+        {
+          "slug": "a2-cafe",
+          "title": "At the café",
+          "title_uz": "Kafeda buyurtma berish",
+          "goal_uz": "Kafeda xushmuomala buyurtma berasiz: I'd like..., Can I have...?, some / any.",
+          "minutes": 10,
+          "words": [
+            {"en": "I'd like", "uz": "men ... istardim", "ipa": "/aɪd laɪk/", "ex": "I'd like a cup of tea, please."},
+            {"en": "menu", "uz": "menyu", "ipa": "/ˈmenjuː/", "ex": "Can I see the menu, please?"},
+            {"en": "order", "uz": "buyurtma (bermoq)", "ipa": "/ˈɔːdə/", "ex": "Are you ready to order?"},
+            {"en": "bill", "uz": "hisob (chek)", "ipa": "/bɪl/", "ex": "Could we have the bill, please?"},
+            {"en": "sparkling water", "uz": "gazli suv", "ipa": "/ˈspɑːklɪŋ ˈwɔːtə/", "ex": "A bottle of sparkling water, please."},
+            {"en": "dessert", "uz": "shirinlik (desert)", "ipa": "/dɪˈzɜːt/", "ex": "Would you like a dessert?"},
+            {"en": "to take away", "uz": "olib ketish uchun", "ipa": "/tə teɪk əˈweɪ/", "ex": "Is it to eat in or to take away?"},
+            {"en": "change", "uz": "qaytim", "ipa": "/tʃeɪndʒ/", "ex": "Keep the change."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "dialogue",
+              "title": "Lunch in Riverside Café",
+              "context_uz": "Kamola Londondagi kafega tushlik qilish uchun kirdi.",
+              "lines": [
+                {"who": "Waiter", "en": "Hi there! Are you ready to order?", "uz": "Salom! Buyurtma berishga tayyormisiz?"},
+                {"who": "Kamola", "en": "Yes, I'd like the chicken salad, please.", "uz": "Ha, tovuqli salatni istardim."},
+                {"who": "Waiter", "en": "Sure. Would you like anything to drink?", "uz": "Albatta. Biror narsa ichasizmi?"},
+                {"who": "Kamola", "en": "Can I have some sparkling water?", "uz": "Gazli suv bersangiz bo'ladimi?"},
+                {"who": "Waiter", "en": "Of course. Is that to eat in or to take away?", "uz": "Albatta. Shu yerda yeysizmi yoki olib ketasizmi?"},
+                {"who": "Kamola", "en": "To eat in, please. Do you have any desserts?", "uz": "Shu yerda. Shirinliklaringiz bormi?"},
+                {"who": "Waiter", "en": "We have some lovely apple cake today.", "uz": "Bugun ajoyib olmali pirogimiz bor."},
+                {"who": "Kamola", "en": "Perfect. And could I have the bill at the end, please?", "uz": "Zo'r. Oxirida hisobni bera olasizmi?"}
+              ]
+            },
+            {
+              "type": "grammar",
+              "title_uz": "Xushmuomala so'rov va some / any",
+              "body_uz": "Ingliz tilida \"I want\" qo'pol eshitiladi. Buning o'rniga: **I'd like...** · **Can I have...?** · **Could I have...?** (eng xushmuomala).\n**some** — tasdiq gapda va taklif/so'rovda: I'd like **some** water. Would you like **some** cake?\n**any** — inkor va oddiy so'roqda: Do you have **any** desserts? We don't have **any** milk.",
+              "examples": [
+                {"en": "Could I have a coffee, please?", "uz": "Bitta qahva bersangiz bo'ladimi?"},
+                {"en": "Would you like some tea?", "uz": "Choy ichasizmi?"},
+                {"en": "Is there any sugar?", "uz": "Shakar bormi?"},
+                {"en": "Sorry, we don't have any soup today.", "uz": "Kechirasiz, bugun sho'rva yo'q."}
+              ]
+            },
+            {"type": "choice", "q": "Which is the most polite?", "options": ["Give me a tea.", "I want tea.", "Could I have a tea, please?"], "answer": 2, "explain_uz": "**Could I have... please?** — eng xushmuomala shakl."},
+            {"type": "choice", "q": "Do you have ___ vegetarian dishes?", "options": ["some", "any", "a"], "answer": 1, "explain_uz": "Oddiy so'roq gapda **any**."},
+            {"type": "gap", "text": "Would you like ___ more bread?", "answer": ["some"], "uz": "Yana non olasizmi?", "explain_uz": "Taklif (Would you like...?) — **some**."},
+            {"type": "gap", "text": "I'd ___ the soup, please.", "answer": ["like"], "uz": "Sho'rvani istardim.", "explain_uz": "**I'd like** = I would like."},
+            {"type": "choice", "audio": true, "q": "What does the customer order to drink?", "say": "I'll have the pasta, and an orange juice, please. No ice.", "options": ["Water", "Orange juice", "Coffee"], "answer": 1, "explain_uz": "\"...and an orange juice\"."},
+            {"type": "match", "pairs": [["bill", "hisob"], ["menu", "menyu"], ["change", "qaytim"], ["dessert", "shirinlik"]]},
+            {"type": "order", "uz": "Hisobni bera olasizmi?", "words": ["Could", "we", "have", "the", "bill", "please"], "answer": "Could we have the bill please"},
+            {"type": "listen", "answer": ["Can I see the menu, please?", "Can I see the menu please"], "uz": "Eshiting va yozing"},
+            {"type": "translate", "uz": "Bitta qahva olib ketish uchun, iltimos.", "answer": ["A coffee to take away, please", "One coffee to take away, please", "A coffee to take away please", "Could I have a coffee to take away, please", "Can I have a coffee to take away, please"], "explain_uz": "\"olib ketish uchun\" = **to take away** (AQShda: to go)."},
+            {"type": "tip", "title_uz": "Madaniy maslahat", "body_uz": "Britaniyada ofitsiantga \"please\" va \"thank you\"ni ko'p aytish odat. Kafeda hisob so'rash uchun qo'lingizni yengil ko'tarib, ko'z bilan qarashning o'zi kifoya — baqirish yoki barmoq bilan chaqirish qo'pol hisoblanadi."},
+            {"type": "speak", "text": "Hi, could I have a cup of tea and some apple cake, please?", "uz": "Buyurtma bering — ovoz chiqarib"},
+            {"type": "write", "prompt_uz": "Kafedagi qisqa dialog yozing (4–6 gap): siz va ofitsiant. I'd like, Can I have, some/any ishlating.", "prompt": "Write a short dialogue between you and a waiter. Use I'd like, Can I have, some and any.", "min_words": 25, "example": "Waiter: Are you ready to order? Me: Yes, I'd like a cheese sandwich, please. Waiter: Anything to drink? Me: Can I have some green tea? Do you have any cakes? Waiter: Yes, we have chocolate cake."}
+          ]
+        },
+        {
+          "slug": "a2-weekend",
+          "title": "What did you do last weekend?",
+          "title_uz": "O'tgan dam olish kunlari",
+          "goal_uz": "O'tgan voqealarni Past Simple'da aytib bera olasiz (to'g'ri va noto'g'ri fe'llar).",
+          "minutes": 11,
+          "words": [
+            {"en": "last weekend", "uz": "o'tgan dam olish kunlari", "ipa": "/lɑːst ˌwiːkˈend/", "ex": "What did you do last weekend?"},
+            {"en": "went", "uz": "bordi (go)", "ipa": "/went/", "ex": "We went to the mountains."},
+            {"en": "saw", "uz": "ko'rdi (see)", "ipa": "/sɔː/", "ex": "I saw a great film."},
+            {"en": "visited", "uz": "tashrif buyurdi", "ipa": "/ˈvɪzɪtɪd/", "ex": "She visited her grandparents."},
+            {"en": "stayed at home", "uz": "uyda qoldi", "ipa": "/steɪd ət həʊm/", "ex": "It rained, so I stayed at home."},
+            {"en": "had a great time", "uz": "ajoyib vaqt o'tkazdi", "ipa": "/hæd ə ɡreɪt taɪm/", "ex": "We had a great time at the party."},
+            {"en": "ago", "uz": "oldin", "ipa": "/əˈɡəʊ/", "ex": "I came here two years ago."},
+            {"en": "tired", "uz": "charchagan", "ipa": "/ˈtaɪəd/", "ex": "I was very tired on Sunday."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "dialogue",
+              "title": "Monday morning",
+              "context_uz": "Dushanba kuni ertalab ikki hamkasb dam olish kunlari haqida gaplashmoqda.",
+              "lines": [
+                {"who": "Tom", "en": "Morning, Sardor! Did you have a good weekend?", "uz": "Xayrli tong, Sardor! Dam olish kunlari yaxshi o'tdimi?"},
+                {"who": "Sardor", "en": "Yes, thanks! On Saturday we went to Chimgan with some friends.", "uz": "Ha, rahmat! Shanba kuni do'stlar bilan Chimyonga bordik."},
+                {"who": "Tom", "en": "Wow! What did you do there?", "uz": "Voy! U yerda nima qildingiz?"},
+                {"who": "Sardor", "en": "We walked in the mountains and had a picnic. We had a great time.", "uz": "Tog'larda sayr qildik va piknik qildik. Ajoyib vaqt o'tkazdik."},
+                {"who": "Tom", "en": "Sounds amazing. Did you do anything on Sunday?", "uz": "Zo'r ekan. Yakshanba kuni biror narsa qildingizmi?"},
+                {"who": "Sardor", "en": "No, I didn't. I was really tired, so I stayed at home. What about you?", "uz": "Yo'q. Juda charchagan edim, shuning uchun uyda qoldim. Sizchi?"},
+                {"who": "Tom", "en": "I saw a film at the cinema and cooked dinner for my parents.", "uz": "Kinoteatrda film ko'rdim va ota-onamga kechki ovqat pishirdim."}
+              ]
+            },
+            {
+              "type": "grammar",
+              "title_uz": "Past Simple — o'tgan zamon",
+              "body_uz": "Tugagan, vaqti ma'lum o'tgan ish uchun (yesterday, last week, two days ago).\n**To'g'ri fe'llar: + ed** → walk**ed**, visit**ed**, stay**ed**, cook**ed**.\n**Noto'g'ri fe'llarni yodlash kerak:** go → **went**, see → **saw**, have → **had**, do → **did**, eat → **ate**, buy → **bought**.\nInkor va so'roqda **did** yordamchi fe'li, asosiy fe'l esa oddiy shaklda: I **didn't go**. **Did** you **see** it? (\"Did you saw\" — xato!)\nbe: I/he/she **was**, you/we/they **were**.",
+              "examples": [
+                {"en": "We visited the museum yesterday.", "uz": "Kecha muzeyga bordik."},
+                {"en": "She bought a new phone last week.", "uz": "U o'tgan hafta yangi telefon sotib oldi."},
+                {"en": "I didn't see him on Monday.", "uz": "Dushanba kuni uni ko'rmadim."},
+                {"en": "Where did you go?", "uz": "Qayerga bordingiz?"}
+              ]
+            },
+            {"type": "choice", "q": "Where did Sardor go on Saturday?", "options": ["To the cinema", "To Chimgan", "To his parents' house"], "answer": 1, "explain_uz": "\"On Saturday we went to Chimgan\"."},
+            {"type": "choice", "q": "Why did Sardor stay at home on Sunday?", "options": ["He was tired.", "It rained.", "He was ill."], "answer": 0, "explain_uz": "\"I was really tired, so I stayed at home.\""},
+            {"type": "choice", "q": "Yesterday I ___ to the bazaar.", "options": ["go", "went", "goed"], "answer": 1, "explain_uz": "go — noto'g'ri fe'l: **went**."},
+            {"type": "choice", "q": "Did you ___ the match last night?", "options": ["watched", "watch", "watching"], "answer": 1, "explain_uz": "did'dan keyin fe'l oddiy shaklda: **watch**."},
+            {"type": "gap", "text": "We ___ a great time at the wedding.", "answer": ["had"], "uz": "To'yda ajoyib vaqt o'tkazdik.", "explain_uz": "have → **had**."},
+            {"type": "gap", "text": "I ___ go out because it was cold.", "answer": ["didn't", "did not"], "uz": "Sovuq bo'lgani uchun tashqariga chiqmadim.", "explain_uz": "Inkor: **didn't** + fe'l."},
+            {"type": "match", "pairs": [["go", "went"], ["see", "saw"], ["buy", "bought"], ["eat", "ate"], ["do", "did"]]},
+            {"type": "order", "uz": "Men ikki yil oldin Londonga bordim.", "words": ["I", "went", "to", "London", "two", "years", "ago"], "answer": "I went to London two years ago"},
+            {"type": "listen", "answer": ["We stayed at home on Sunday", "We stayed at home on Sunday."], "uz": "Eshiting va yozing"},
+            {"type": "translate", "uz": "Kecha kechqurun nima qildingiz?", "answer": ["What did you do yesterday evening", "What did you do last night", "What did you do yesterday evening?", "What did you do last night?"], "explain_uz": "So'roq: What **did** you **do**...?"},
+            {"type": "speak", "text": "Last weekend I visited my grandparents and we had a great time.", "uz": "Ovoz chiqarib ayting"},
+            {"type": "write", "prompt_uz": "O'tgan dam olish kunlaringiz haqida 4–6 gap yozing: qayerga bordingiz, nima qildingiz, qanday o'tdi.", "prompt": "Write about your last weekend: where you went, what you did, how it was.", "min_words": 30, "example": "Last Saturday I went to the bazaar with my mother. We bought fruit and vegetables. In the afternoon I cleaned my room. On Sunday my friends came to my house and we watched a football match. It was a nice weekend."}
+          ]
+        },
+        {
+          "slug": "a2-directions",
+          "title": "Excuse me, where is...?",
+          "title_uz": "Shaharda yo'l so'rash",
+          "goal_uz": "Yo'l so'raysiz va tushuntirasiz: next to, opposite, turn left, go straight on.",
+          "minutes": 10,
+          "words": [
+            {"en": "excuse me", "uz": "kechirasiz (murojaat)", "ipa": "/ɪkˈskjuːz miː/", "ex": "Excuse me, is there a bank near here?"},
+            {"en": "turn left", "uz": "chapga buriling", "ipa": "/tɜːn left/", "ex": "Turn left at the traffic lights."},
+            {"en": "turn right", "uz": "o'ngga buriling", "ipa": "/tɜːn raɪt/", "ex": "Turn right after the bridge."},
+            {"en": "go straight on", "uz": "to'g'ri yuring", "ipa": "/ɡəʊ streɪt ɒn/", "ex": "Go straight on for two minutes."},
+            {"en": "next to", "uz": "yonida", "ipa": "/nekst tuː/", "ex": "The café is next to the bank."},
+            {"en": "opposite", "uz": "ro'parasida", "ipa": "/ˈɒpəzɪt/", "ex": "The hotel is opposite the park."},
+            {"en": "between", "uz": "o'rtasida", "ipa": "/bɪˈtwiːn/", "ex": "It's between the pharmacy and the school."},
+            {"en": "corner", "uz": "burchak", "ipa": "/ˈkɔːnə/", "ex": "There's a shop on the corner."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "dialogue",
+              "title": "Looking for the station",
+              "context_uz": "Nodir Edinburgda temir yo'l stansiyasini qidirmoqda.",
+              "lines": [
+                {"who": "Nodir", "en": "Excuse me, how do I get to the train station?", "uz": "Kechirasiz, temir yo'l stansiyasiga qanday borsam bo'ladi?"},
+                {"who": "Woman", "en": "Go straight on along this street and turn left at the traffic lights.", "uz": "Shu ko'cha bo'ylab to'g'ri yuring va svetoforda chapga buriling."},
+                {"who": "Nodir", "en": "Left at the traffic lights. OK.", "uz": "Svetoforda chapga. Xo'p."},
+                {"who": "Woman", "en": "Then take the second right. The station is opposite a big supermarket.", "uz": "Keyin ikkinchi o'ngga buriling. Stansiya katta supermarketning ro'parasida."},
+                {"who": "Nodir", "en": "Is it far?", "uz": "Uzoqmi?"},
+                {"who": "Woman", "en": "No, it's about ten minutes on foot.", "uz": "Yo'q, piyoda taxminan o'n daqiqa."},
+                {"who": "Nodir", "en": "Thank you so much!", "uz": "Katta rahmat!"}
+              ]
+            },
+            {
+              "type": "grammar",
+              "title_uz": "Joy predloglari va buyruq gaplar",
+              "body_uz": "Joy: **next to** (yonida) · **opposite** (ro'parasida) · **between A and B** (A va B o'rtasida) · **on the corner** (burchakda) · **near** (yaqinida).\nYo'l ko'rsatishda **buyruq gap** ishlatiladi — fe'l bilan boshlanadi, \"you\" kerak emas: **Turn** left. **Go** straight on. **Take** the second right.\nSo'rash: **How do I get to...?** · **Is there a ... near here?**",
+              "examples": [
+                {"en": "Is there a pharmacy near here?", "uz": "Yaqin atrofda dorixona bormi?"},
+                {"en": "The bank is between the post office and the café.", "uz": "Bank pochta va kafe o'rtasida."},
+                {"en": "Take the first left.", "uz": "Birinchi chapga buriling."},
+                {"en": "It's on the corner of Navoi Street.", "uz": "U Navoiy ko'chasining burchagida."}
+              ]
+            },
+            {"type": "choice", "q": "Where is the station?", "options": ["Next to the supermarket", "Opposite a big supermarket", "Between two banks"], "answer": 1, "explain_uz": "\"The station is opposite a big supermarket.\""},
+            {"type": "choice", "q": "How far is the station?", "options": ["2 minutes on foot", "10 minutes on foot", "10 minutes by bus"], "answer": 1, "explain_uz": "\"about ten minutes on foot\"."},
+            {"type": "choice", "q": "The hotel is ___ the museum and the park.", "options": ["between", "opposite", "next"], "answer": 0, "explain_uz": "Ikki narsa o'rtasida: **between** A **and** B."},
+            {"type": "gap", "text": "___ do I get to the city centre?", "answer": ["How"], "uz": "Shahar markaziga qanday borsam bo'ladi?", "explain_uz": "**How** do I get to...?"},
+            {"type": "gap", "text": "Is there a bank ___ here?", "answer": ["near"], "uz": "Bu yerga yaqin bank bormi?", "explain_uz": "near here — shu yerga yaqin."},
+            {"type": "choice", "audio": true, "q": "Where should you turn right?", "say": "Go straight on, and turn right after the bridge. The museum is on your left.", "options": ["At the traffic lights", "After the bridge", "On the corner"], "answer": 1, "explain_uz": "\"turn right after the bridge\"."},
+            {"type": "match", "pairs": [["next to", "yonida"], ["opposite", "ro'parasida"], ["between", "o'rtasida"], ["corner", "burchak"]]},
+            {"type": "order", "uz": "Svetoforda chapga buriling.", "words": ["Turn", "left", "at", "the", "traffic", "lights"], "answer": "Turn left at the traffic lights"},
+            {"type": "listen", "answer": ["The café is next to the bank", "The cafe is next to the bank"], "uz": "Eshiting va yozing"},
+            {"type": "translate", "uz": "Kechirasiz, yaqin atrofda dorixona bormi?", "answer": ["Excuse me, is there a pharmacy near here", "Excuse me, is there a chemist near here", "Excuse me, is there a pharmacy nearby", "Excuse me is there a pharmacy near here"], "explain_uz": "**Is there a ... near here?**"},
+            {"type": "speak", "text": "Excuse me, how do I get to the train station?", "uz": "Yo'l so'rang — ovoz chiqarib"},
+            {"type": "write", "prompt_uz": "Uyingizdan eng yaqin do'kon yoki bekatgacha yo'lni tushuntiring (3–5 gap).", "prompt": "Explain the way from your home to the nearest shop or bus stop.", "min_words": 25, "example": "Go out of my building and turn right. Go straight on for about two hundred metres. Then turn left at the school. The shop is on the corner, opposite the park."}
+          ]
+        }
+      ]
+    }
+  ]
+}

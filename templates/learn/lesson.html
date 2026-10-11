@@ -1,0 +1,613 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ lesson.title_uz }} - AbExam{% endblock %}
+{% block page_title %}{{ lesson.level }} · {{ lesson.title_uz }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .lp { max-width: 760px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; min-height: calc(100vh - 140px); }
+    .lp-top { display: flex; align-items: center; gap: 14px; margin-bottom: 26px; }
+    .lp-close { color: var(--text-muted); display: flex; padding: 6px; border-radius: 8px; }
+    .lp-close:hover { background: var(--tint-a); }
+    .lp-progress { flex: 1; height: 12px; background: var(--tint-b); border-radius: 6px; overflow: hidden; }
+    .lp-progress div { height: 100%; width: 0; background: linear-gradient(90deg, #22c55e, #16a34a); border-radius: 6px; transition: width .4s ease; }
+    .lp-count { font-size: 0.8rem; color: var(--text-muted); min-width: 48px; text-align: right; }
+
+    .lp-body { flex: 1; animation: lpIn .3s ease; }
+    @keyframes lpIn { from { opacity: 0; transform: translateX(14px); } to { opacity: 1; transform: none; } }
+    @media (prefers-reduced-motion: reduce) { .lp-body { animation: none; } }
+    .lp-kicker { font-size: 0.75rem; font-weight: 700; color: var(--primary-color); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+    .lp-kicker i { width: 15px; }
+    .lp-h { font-size: 1.45rem; font-weight: 600; margin-bottom: 16px; line-height: 1.35; }
+    .lp-sub { color: var(--text-muted); font-size: 0.9rem; margin: -8px 0 18px; }
+
+    .lp-say { background: none; border: none; color: var(--primary-color); cursor: pointer; padding: 4px; border-radius: 6px; display: inline-flex; vertical-align: middle; }
+    .lp-say:hover { background: var(--tint-a); }
+    .lp-say i { width: 18px; height: 18px; }
+
+    /* words */
+    .lp-words { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+    .lp-word { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; padding: 14px 16px; cursor: pointer; transition: var(--transition); }
+    .lp-word:hover { border-color: var(--primary-color); }
+    .lp-word b { font-size: 1.08rem; }
+    .lp-word .ipa { color: var(--text-muted); font-size: 0.8rem; margin-left: 4px; }
+    .lp-word .uz { color: var(--primary-color); font-weight: 500; margin-top: 4px; font-size: 0.92rem; }
+    .lp-word .ex { color: var(--text-muted); font-size: 0.82rem; font-style: italic; margin-top: 6px; }
+
+    /* dialogue */
+    .lp-dlg { display: flex; flex-direction: column; gap: 10px; }
+    .lp-line { max-width: 82%; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px 16px 16px 4px; padding: 10px 14px; cursor: pointer; transition: var(--transition); }
+    .lp-line.me { align-self: flex-end; border-radius: 16px 16px 4px 16px; background: var(--tint-b); }
+    .lp-line.playing { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(211,47,47,0.12); }
+    .lp-line small { display: block; font-size: 0.72rem; font-weight: 700; color: var(--text-muted); margin-bottom: 2px; }
+    .lp-line .uz { display: none; color: var(--text-muted); font-size: 0.84rem; margin-top: 4px; border-top: 1px dashed var(--border-color); padding-top: 4px; }
+    .lp-show-uz .lp-line .uz, .lp-show-uz .lp-read-uz { display: block; }
+    .lp-tools { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+    .lp-tool { display: inline-flex; align-items: center; gap: 6px; background: var(--tint-a); border: 1px solid var(--border-color); border-radius: 999px; padding: 6px 12px; font-size: 0.8rem; color: var(--text-color); cursor: pointer; }
+    .lp-tool:hover { border-color: var(--primary-color); }
+    .lp-tool i { width: 15px; }
+
+    /* reading */
+    .lp-read { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; padding: 18px 20px; line-height: 1.85; font-size: 1.02rem; }
+    .lp-gl { border-bottom: 2px dotted var(--primary-color); cursor: help; position: relative; }
+    .lp-gl.open::after { content: attr(data-uz); position: absolute; left: 0; top: 100%; margin-top: 4px; background: var(--text-color); color: var(--bg-color); font-size: 0.78rem; padding: 3px 8px; border-radius: 6px; white-space: nowrap; z-index: 5; line-height: 1.4; }
+    .lp-read-uz { display: none; margin-top: 12px; color: var(--text-muted); font-size: 0.88rem; line-height: 1.6; }
+
+    /* grammar / tip */
+    .lp-gram { background: var(--card-bg); border: 1px solid var(--border-color); border-left: 4px solid var(--primary-color); border-radius: 12px; padding: 16px 18px; line-height: 1.7; font-size: 0.95rem; }
+    .lp-gram p + p { margin-top: 8px; }
+    .lp-ex { margin-top: 14px; display: grid; gap: 8px; }
+    .lp-ex div { background: var(--tint-a); border-radius: 10px; padding: 8px 12px; }
+    .lp-ex b { font-weight: 600; }
+    .lp-ex span { display: block; color: var(--text-muted); font-size: 0.84rem; }
+    .lp-tip { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.35); border-radius: 12px; padding: 16px 18px; line-height: 1.7; }
+
+    /* exercises */
+    .lp-opts { display: grid; gap: 10px; }
+    .lp-opt { text-align: left; background: var(--card-bg); border: 2px solid var(--border-color); border-bottom-width: 4px; border-radius: 14px; padding: 14px 16px; font-size: 1rem; color: var(--text-color); cursor: pointer; transition: border-color .15s, background .15s; }
+    .lp-opt:hover:not(:disabled) { border-color: var(--text-muted); }
+    .lp-opt.sel { border-color: #3b82f6; background: rgba(59,130,246,0.08); }
+    .lp-opt.ok { border-color: #22c55e; background: rgba(34,197,94,0.12); }
+    .lp-opt.bad { border-color: #ef4444; background: rgba(239,68,68,0.1); }
+    .lp-input { width: 100%; background: var(--card-bg); border: 2px solid var(--border-color); border-radius: 12px; padding: 12px 14px; font-size: 1.05rem; color: var(--text-color); outline: none; font-family: inherit; }
+    .lp-input:focus, .lp-input:focus-visible { border-color: #3b82f6; outline: none; }
+    textarea.lp-input { min-height: 110px; resize: vertical; line-height: 1.6; }
+    .lp-gap { font-size: 1.25rem; line-height: 2.2; }
+    .lp-gap input { display: inline-block; width: 150px; padding: 4px 10px; font-size: 1.1rem; margin: 0 4px; }
+    .lp-hint { color: var(--text-muted); font-size: 0.88rem; margin-top: 10px; }
+    .lp-big-play { display: flex; gap: 12px; justify-content: center; margin: 10px 0 22px; }
+    .lp-play { width: 84px; height: 84px; border-radius: 22px; border: none; background: #3b82f6; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 0 #1d4ed8; }
+    .lp-play.slow { width: 60px; height: 60px; border-radius: 16px; align-self: flex-end; background: #60a5fa; box-shadow: 0 4px 0 #2563eb; }
+    .lp-play:active { transform: translateY(2px); box-shadow: none; }
+
+    .lp-answer-line { min-height: 64px; border-bottom: 2px solid var(--border-color); display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 0; margin-bottom: 22px; }
+    .lp-bank { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+    .lp-chipw { background: var(--card-bg); border: 2px solid var(--border-color); border-bottom-width: 4px; border-radius: 12px; padding: 8px 14px; font-size: 1rem; cursor: pointer; color: var(--text-color); }
+    .lp-chipw.used { visibility: hidden; }
+
+    .lp-match { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .lp-match .lp-opt { text-align: center; padding: 12px; }
+    .lp-match .lp-opt.done { opacity: .35; border-color: #22c55e; }
+
+    .lp-speak-text { font-size: 1.35rem; font-weight: 500; line-height: 1.5; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; padding: 18px; }
+    .lp-speak-text .hit { color: #22c55e; }
+    .lp-speak-text .miss { color: #ef4444; }
+    .lp-mic { width: 84px; height: 84px; border-radius: 50%; border: none; background: var(--primary-color); color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; margin: 22px auto 10px; }
+    .lp-mic.rec { animation: lpRec 1.2s infinite; }
+    @keyframes lpRec { 0%,100% { box-shadow: 0 0 0 0 rgba(211,47,47,.5); } 50% { box-shadow: 0 0 0 14px rgba(211,47,47,0); } }
+    .lp-heard { text-align: center; color: var(--text-muted); font-size: 0.9rem; min-height: 1.4em; }
+
+    .lp-ai { margin-top: 16px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; padding: 16px; display: none; }
+    .lp-ai h5 { font-size: 0.85rem; margin: 12px 0 6px; }
+    .lp-ai .mist { font-size: 0.88rem; padding: 6px 0; border-bottom: 1px dashed var(--border-color); }
+    .lp-ai s { color: #ef4444; }
+    .lp-ai ins { color: #22c55e; text-decoration: none; font-weight: 600; }
+    .lp-model { display: none; margin-top: 12px; background: var(--tint-a); border-radius: 10px; padding: 12px 14px; font-size: 0.92rem; line-height: 1.6; }
+
+    /* footer */
+    .lp-foot { position: sticky; bottom: 0; margin: 28px -1.5rem -2rem; padding: 16px 1.5rem 20px; background: var(--bg-color); border-top: 2px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; gap: 16px; transition: background .2s; }
+    .lp-foot.ok { background: rgba(34,197,94,0.14); border-top-color: #22c55e; }
+    .lp-foot.bad { background: rgba(239,68,68,0.12); border-top-color: #ef4444; }
+    .lp-fb { flex: 1; min-width: 0; }
+    .lp-fb b { display: block; font-size: 1.05rem; }
+    .lp-foot.ok .lp-fb b { color: #16a34a; }
+    .lp-foot.bad .lp-fb b { color: #dc2626; }
+    .lp-fb span { font-size: 0.88rem; color: var(--text-color); }
+    .lp-main-btn { min-width: 160px; padding: 14px 22px; border-radius: 14px; border: none; font-weight: 700; font-size: 0.95rem; cursor: pointer; background: #22c55e; color: #fff; box-shadow: 0 4px 0 #15803d; text-transform: uppercase; letter-spacing: .03em; }
+    .lp-main-btn:disabled { background: var(--tint-b); color: var(--text-muted); box-shadow: none; cursor: default; }
+    .lp-foot.bad .lp-main-btn { background: #ef4444; box-shadow: 0 4px 0 #b91c1c; }
+    .lp-skip { background: none; border: none; color: var(--text-muted); font-weight: 600; cursor: pointer; font-size: 0.85rem; text-transform: uppercase; }
+
+    /* finish */
+    .lp-finish { text-align: center; padding: 30px 0; }
+    .lp-finish .big { font-size: 4rem; }
+    .lp-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 26px auto; max-width: 520px; }
+    .lp-stat { border: 2px solid var(--border-color); border-radius: 14px; padding: 12px; }
+    .lp-stat b { display: block; font-size: 1.5rem; }
+    .lp-stat small { color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; }
+    .lp-finish-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .lp-finish-actions a { padding: 12px 20px; border-radius: 12px; text-decoration: none; font-weight: 600; }
+
+    @media (max-width: 600px) {
+        .lp-h { font-size: 1.2rem; }
+        .lp-foot { margin: 20px -1rem -1rem; padding: 12px 1rem 16px; flex-wrap: wrap; }
+        .lp-main-btn { width: 100%; }
+        .lp-line { max-width: 92%; }
+        .lp-stats { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="lp" id="lp">
+    <div class="lp-top">
+        <a href="{% url 'learn:hub' %}?level={{ lesson.level }}" class="lp-close" title="Darsni yopish" aria-label="Darsni yopish"><i data-lucide="x" style="width:22px"></i></a>
+        <div class="lp-progress"><div id="lpBar"></div></div>
+        <div class="lp-count" id="lpCount"></div>
+    </div>
+    <div class="lp-body" id="lpBody"></div>
+    <div class="lp-foot" id="lpFoot">
+        <button class="lp-skip" id="lpSkip" style="display:none">O'tkazib yuborish</button>
+        <div class="lp-fb" id="lpFb"></div>
+        <button class="lp-main-btn" id="lpMain">Davom etish</button>
+    </div>
+</div>
+{{ lesson_data|json_script:"lesson-data" }}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+    const L = JSON.parse(document.getElementById('lesson-data').textContent);
+    const CSRF = '{{ csrf_token }}';
+    const URLS = {
+        complete: '{% url "learn:lesson_complete" lesson.slug %}',
+        write: '{% url "learn:write_check" %}',
+        hub: '{% url "learn:hub" %}?level=' + L.level,
+        review: '{% url "learn:review" %}',
+        next: L.next_slug ? '{% url "learn:lesson" "__s__" %}'.replace('__s__', L.next_slug) : null,
+    };
+    const PRAISE = ['Barakalla!', "To'g'ri!", "Zo'r!", 'Ajoyib!', 'Aynan shunday!'];
+
+    const body = document.getElementById('lpBody');
+    const foot = document.getElementById('lpFoot');
+    const fb = document.getElementById('lpFb');
+    const mainBtn = document.getElementById('lpMain');
+    const skipBtn = document.getElementById('lpSkip');
+
+    // Queue of step indexes; a step answered wrong is asked again at the end.
+    let queue = L.steps.map((_, i) => i);
+    let pos = 0;
+    const firstTry = {};      // step index -> true/false (first attempt result)
+    const retried = new Set();
+    let state = null;         // per-step: {check(), answered, onContinue}
+
+    // ── helpers ──────────────────────────────────────────────────────────
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const md = s => esc(s).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    const norm = s => String(s || '').toLowerCase().replace(/[’‘]/g, "'").replace(/[^\p{L}\p{N}\s']/gu, ' ').replace(/\s+/g, ' ').trim();
+    const matches = (given, accepted) => {
+        const g = norm(given);
+        return !!g && [].concat(accepted).some(a => norm(a) === g);
+    };
+    const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+    const icon = n => `<i data-lucide="${n}"></i>`;
+    const sayBtn = text => `<button type="button" class="lp-say" data-say="${esc(text)}" title="Tinglash" aria-label="Tinglash">${icon('volume-2')}</button>`;
+
+    let voice = null;
+    function pickVoice() {
+        const vs = window.speechSynthesis ? speechSynthesis.getVoices() : [];
+        voice = vs.find(v => /en-GB/i.test(v.lang) && /female|Google UK English Female|Libby|Sonia/i.test(v.name))
+             || vs.find(v => /en-GB/i.test(v.lang)) || vs.find(v => /^en/i.test(v.lang)) || null;
+    }
+    if (window.speechSynthesis) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+    function speak(text, rate = 0.95, onend) {
+        if (!window.speechSynthesis) { onend && onend(); return; }
+        speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = 'en-GB'; u.rate = rate; if (voice) u.voice = voice;
+        if (onend) u.onend = onend;
+        speechSynthesis.speak(u);
+    }
+    body.addEventListener('click', e => {
+        const b = e.target.closest('[data-say]');
+        if (b) { e.stopPropagation(); speak(b.dataset.say); }
+    });
+
+    function setFoot(mode, title, text) {
+        foot.className = 'lp-foot' + (mode ? ' ' + mode : '');
+        fb.innerHTML = title ? `<b>${esc(title)}</b>${text ? `<span>${md(text)}</span>` : ''}` : '';
+    }
+
+    function updateProgress() {
+        const done = Math.min(pos, queue.length);
+        document.getElementById('lpBar').style.width = (done / queue.length * 100) + '%';
+        document.getElementById('lpCount').textContent = `${Math.min(pos + 1, queue.length)} / ${queue.length}`;
+    }
+
+    // ── flow ─────────────────────────────────────────────────────────────
+    function render() {
+        updateProgress();
+        if (pos >= queue.length) return finish();
+        const idx = queue[pos];
+        const step = L.steps[idx];
+        body.style.animation = 'none'; body.offsetHeight; body.style.animation = '';
+        setFoot('', '', '');
+        skipBtn.style.display = 'none';
+        mainBtn.disabled = false;
+        mainBtn.textContent = 'Davom etish';
+        state = { idx, step, answered: false };
+        (RENDER[step.type] || RENDER.tip)(step, idx);
+        lucide.createIcons();
+        const inp = body.querySelector('input, textarea');
+        if (inp && window.matchMedia('(min-width: 700px)').matches) inp.focus();
+    }
+
+    function next() { speechSynthesis && speechSynthesis.cancel(); pos++; render(); }
+
+    // Graded steps: the main button is "Tekshirish" until answered.
+    function asExercise(check, ready = false) {
+        state.check = check;
+        mainBtn.textContent = 'Tekshirish';
+        mainBtn.disabled = !ready;
+        skipBtn.style.display = 'none';
+    }
+    function enableCheck(on = true) { if (!state.answered) mainBtn.disabled = !on; }
+
+    function resolve(correct, rightAnswer) {
+        state.answered = true;
+        const { idx, step } = state;
+        if (!(idx in firstTry)) firstTry[idx] = correct;
+        if (!correct && !retried.has(idx)) { retried.add(idx); queue.push(idx); }
+        if (correct) setFoot('ok', PRAISE[Math.floor(Math.random() * PRAISE.length)], step.explain_uz || '');
+        else setFoot('bad', "To'g'ri javob:", (rightAnswer ? `**${rightAnswer}**` : '') + (step.explain_uz ? ' — ' + step.explain_uz : ''));
+        mainBtn.disabled = false;
+        mainBtn.textContent = 'Davom etish';
+        body.querySelectorAll('input, textarea, .lp-opt, .lp-chipw').forEach(el => el.disabled = true);
+    }
+
+    mainBtn.addEventListener('click', () => {
+        if (mainBtn.disabled) return;
+        if (state && state.check && !state.answered) return state.check();
+        if (state && state.onContinue) return state.onContinue();
+        next();
+    });
+    skipBtn.addEventListener('click', () => { if (state && state.skip) state.skip(); else next(); });
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Enter' && !e.shiftKey && !(e.target.tagName === 'TEXTAREA' && !state.answered && state.step.type === 'write')) {
+            if (e.target.tagName === 'A' || (e.target.tagName === 'BUTTON' && e.target !== mainBtn)) return;
+            e.preventDefault();
+            mainBtn.click();
+        }
+    });
+
+    // ── step renderers ───────────────────────────────────────────────────
+    const RENDER = {
+        words() {
+            body.innerHTML = `<div class="lp-kicker">${icon('sparkles')} Yangi so'zlar</div>
+                <h2 class="lp-h">Bu darsda ${L.words.length} ta yangi so'z/ibora bor</h2>
+                <p class="lp-sub">Kartochkani bosing — talaffuzni eshitasiz. Bu so'zlar dars oxirida lug'atingizga qo'shiladi.</p>
+                <div class="lp-words">${L.words.map(w => `
+                    <div class="lp-word" data-say="${esc(w.en)}">
+                        <b>${esc(w.en)}</b><span class="ipa">${esc(w.ipa || '')}</span>
+                        <div class="uz">${esc(w.uz)}</div>
+                        ${w.ex ? `<div class="ex">${esc(w.ex)} ${sayBtn(w.ex)}</div>` : ''}
+                    </div>`).join('')}</div>`;
+        },
+
+        dialogue(s) {
+            const speakers = [...new Set(s.lines.map(l => l.who))];
+            body.innerHTML = `<div class="lp-kicker">${icon('messages-square')} Dialog</div>
+                <h2 class="lp-h">${esc(s.title || '')}</h2>
+                ${s.context_uz ? `<p class="lp-sub">${esc(s.context_uz)}</p>` : ''}
+                <div class="lp-tools">
+                    <button class="lp-tool" id="playAll">${icon('play')} Hammasini tinglash</button>
+                    <button class="lp-tool" id="toggleUz">${icon('languages')} Tarjima</button>
+                </div>
+                <div class="lp-dlg" id="dlg">${s.lines.map((l, i) => `
+                    <div class="lp-line ${speakers.indexOf(l.who) % 2 ? 'me' : ''}" data-i="${i}">
+                        <small>${esc(l.who)}</small>${esc(l.en)}<div class="uz">${esc(l.uz || '')}</div>
+                    </div>`).join('')}</div>`;
+            const lines = [...body.querySelectorAll('.lp-line')];
+            const mark = i => lines.forEach((el, j) => el.classList.toggle('playing', j === i));
+            lines.forEach((el, i) => el.addEventListener('click', () => { mark(i); speak(s.lines[i].en, 0.95, () => mark(-1)); }));
+            document.getElementById('toggleUz').onclick = () => document.getElementById('dlg').classList.toggle('lp-show-uz');
+            document.getElementById('playAll').onclick = () => {
+                let i = 0;
+                const go = () => { if (i >= lines.length) return mark(-1); mark(i); speak(s.lines[i].en, 0.95, () => { i++; setTimeout(go, 350); }); };
+                go();
+            };
+        },
+
+        reading(s) {
+            let html = esc(s.text);
+            Object.entries(s.glossary || {}).sort((a, b) => b[0].length - a[0].length).forEach(([w, uz]) => {
+                const re = new RegExp(`\\b(${w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})\\b(?![^<]*>)`, 'i');
+                html = html.replace(re, `<span class="lp-gl" data-uz="${esc(uz)}">$1</span>`);
+            });
+            body.innerHTML = `<div class="lp-kicker">${icon('book-open')} O'qish</div>
+                <h2 class="lp-h">${esc(s.title || '')}</h2>
+                <div class="lp-tools">
+                    <button class="lp-tool" id="playText">${icon('play')} Tinglash</button>
+                    ${s.uz ? `<button class="lp-tool" id="toggleUz">${icon('languages')} To'liq tarjima</button>` : ''}
+                </div>
+                <div id="readBox"><div class="lp-read">${html}</div>${s.uz ? `<div class="lp-read-uz">${esc(s.uz)}</div>` : ''}</div>
+                <p class="lp-hint">Tagiga chizilgan so'zlarni bosing — tarjimasi chiqadi.</p>`;
+            body.querySelectorAll('.lp-gl').forEach(el => el.addEventListener('click', () => {
+                body.querySelectorAll('.lp-gl.open').forEach(o => o !== el && o.classList.remove('open'));
+                el.classList.toggle('open');
+            }));
+            document.getElementById('playText').onclick = () => speak(s.text, 0.92);
+            const t = document.getElementById('toggleUz');
+            if (t) t.onclick = () => document.getElementById('readBox').classList.toggle('lp-show-uz');
+        },
+
+        grammar(s) {
+            body.innerHTML = `<div class="lp-kicker">${icon('lightbulb')} Grammatika</div>
+                <h2 class="lp-h">${esc(s.title_uz || '')}</h2>
+                <div class="lp-gram">${String(s.body_uz || '').split('\n').map(p => `<p>${md(p)}</p>`).join('')}
+                    ${(s.examples || []).length ? `<div class="lp-ex">${s.examples.map(e => `<div><b>${esc(e.en)}</b> ${sayBtn(e.en)}<span>${esc(e.uz)}</span></div>`).join('')}</div>` : ''}
+                </div>`;
+        },
+
+        tip(s) {
+            body.innerHTML = `<div class="lp-kicker">${icon('info')} Maslahat</div>
+                <h2 class="lp-h">${esc(s.title_uz || '')}</h2>
+                <div class="lp-tip">${String(s.body_uz || '').split('\n').map(p => `<p>${md(p)}</p>`).join('')}</div>`;
+        },
+
+        choice(s) {
+            const audio = s.audio && s.say;
+            body.innerHTML = `<div class="lp-kicker">${icon(audio ? 'headphones' : 'list-checks')} ${audio ? 'Tinglab tushunish' : "To'g'ri javobni tanlang"}</div>
+                ${audio ? `<div class="lp-big-play"><button class="lp-play" id="pl" aria-label="Tinglash">${icon('volume-2')}</button><button class="lp-play slow" id="plSlow" aria-label="Sekin tinglash">${icon('snail')}</button></div>` : ''}
+                <h2 class="lp-h">${md(s.q)}</h2>
+                <div class="lp-opts">${s.options.map((o, i) => `<button class="lp-opt" data-i="${i}">${esc(o)}</button>`).join('')}</div>`;
+            if (audio) {
+                document.getElementById('pl').onclick = () => speak(s.say);
+                document.getElementById('plSlow').onclick = () => speak(s.say, 0.65);
+                setTimeout(() => speak(s.say), 400);
+            }
+            let sel = null;
+            const opts = [...body.querySelectorAll('.lp-opt')];
+            opts.forEach(b => b.addEventListener('click', () => {
+                if (state.answered) return;
+                opts.forEach(o => o.classList.remove('sel'));
+                b.classList.add('sel'); sel = +b.dataset.i; enableCheck();
+            }));
+            asExercise(() => {
+                const ok = sel === s.answer;
+                opts[s.answer].classList.add('ok');
+                if (!ok) opts[sel].classList.add('bad');
+                resolve(ok, s.options[s.answer]);
+            });
+        },
+
+        gap(s) {
+            const [a, b] = s.text.split('___');
+            body.innerHTML = `<div class="lp-kicker">${icon('pencil')} Bo'sh joyni to'ldiring</div>
+                <div class="lp-gap">${esc(a)}<input class="lp-input" id="gi" autocomplete="off" autocapitalize="off" spellcheck="false">${esc(b || '')}</div>
+                ${s.uz ? `<p class="lp-hint">${esc(s.uz)}</p>` : ''}`;
+            const inp = document.getElementById('gi');
+            inp.addEventListener('input', () => enableCheck(inp.value.trim().length > 0));
+            asExercise(() => resolve(matches(inp.value, s.answer), [].concat(s.answer)[0]));
+        },
+
+        translate(s) {
+            body.innerHTML = `<div class="lp-kicker">${icon('languages')} Ingliz tiliga tarjima qiling</div>
+                <h2 class="lp-h">${esc(s.uz)}</h2>
+                <textarea class="lp-input" id="ti" placeholder="Inglizcha yozing..." autocapitalize="off" spellcheck="false"></textarea>`;
+            const inp = document.getElementById('ti');
+            inp.addEventListener('input', () => enableCheck(inp.value.trim().length > 0));
+            asExercise(() => resolve(matches(inp.value, s.answer), [].concat(s.answer)[0]));
+        },
+
+        listen(s) {
+            const text = [].concat(s.answer)[0];
+            body.innerHTML = `<div class="lp-kicker">${icon('headphones')} Diktant</div>
+                <h2 class="lp-h">Eshitganingizni yozing</h2>
+                <div class="lp-big-play"><button class="lp-play" id="pl" aria-label="Tinglash">${icon('volume-2')}</button><button class="lp-play slow" id="plSlow" aria-label="Sekin tinglash">${icon('snail')}</button></div>
+                <textarea class="lp-input" id="li" placeholder="Inglizcha yozing..." autocapitalize="off" spellcheck="false"></textarea>`;
+            document.getElementById('pl').onclick = () => speak(text);
+            document.getElementById('plSlow').onclick = () => speak(text, 0.6);
+            setTimeout(() => speak(text), 400);
+            const inp = document.getElementById('li');
+            inp.addEventListener('input', () => enableCheck(inp.value.trim().length > 0));
+            asExercise(() => resolve(matches(inp.value, s.answer), text));
+        },
+
+        order(s) {
+            body.innerHTML = `<div class="lp-kicker">${icon('puzzle')} Gap tuzing</div>
+                <h2 class="lp-h">${esc(s.uz || '')}</h2>
+                <div class="lp-answer-line" id="line"></div>
+                <div class="lp-bank" id="bank">${shuffle(s.words.map((w, i) => [w, i])).map(([w, i]) => `<button class="lp-chipw" data-i="${i}">${esc(w)}</button>`).join('')}</div>`;
+            const line = document.getElementById('line');
+            const picked = [];
+            const redraw = () => {
+                line.innerHTML = picked.map(i => `<button class="lp-chipw" data-i="${i}">${esc(s.words[i])}</button>`).join('');
+                body.querySelectorAll('#bank .lp-chipw').forEach(b => b.classList.toggle('used', picked.includes(+b.dataset.i)));
+                enableCheck(picked.length === s.words.length);
+            };
+            body.querySelector('#bank').addEventListener('click', e => {
+                const b = e.target.closest('.lp-chipw'); if (!b || state.answered || b.classList.contains('used')) return;
+                picked.push(+b.dataset.i); speak(s.words[+b.dataset.i], 1); redraw();
+            });
+            line.addEventListener('click', e => {
+                const b = e.target.closest('.lp-chipw'); if (!b || state.answered) return;
+                picked.splice(picked.indexOf(+b.dataset.i), 1); redraw();
+            });
+            asExercise(() => {
+                const ok = matches(picked.map(i => s.words[i]).join(' '), s.answer);
+                if (ok) speak(s.answer);
+                resolve(ok, s.answer);
+            });
+        },
+
+        match(s) {
+            const left = shuffle(s.pairs.map((p, i) => [p[0], i]));
+            const right = shuffle(s.pairs.map((p, i) => [p[1], i]));
+            body.innerHTML = `<div class="lp-kicker">${icon('link')} Juftlarini toping</div>
+                <h2 class="lp-h">Mos keladiganlarini bosing</h2>
+                <div class="lp-match"><div class="lp-opts" id="ml">${left.map(([t, i]) => `<button class="lp-opt" data-i="${i}">${esc(t)}</button>`).join('')}</div>
+                <div class="lp-opts" id="mr">${right.map(([t, i]) => `<button class="lp-opt" data-i="${i}">${esc(t)}</button>`).join('')}</div></div>`;
+            let pickL = null, pickR = null, mistakes = 0, done = 0;
+            mainBtn.disabled = true;
+            const tryPair = () => {
+                if (!pickL || !pickR) return;
+                const a = pickL, b = pickR; pickL = pickR = null;
+                if (a.dataset.i === b.dataset.i) {
+                    [a, b].forEach(x => { x.classList.remove('sel'); x.classList.add('ok', 'done'); x.disabled = true; });
+                    if (++done === s.pairs.length) {
+                        state.check = null;
+                        resolve(mistakes === 0, null);
+                        if (mistakes) setFoot('bad', `${mistakes} ta xato`, "Bu mashq oxirida yana bir bor so'raladi.");
+                    }
+                } else {
+                    mistakes++;
+                    [a, b].forEach(x => { x.classList.remove('sel'); x.classList.add('bad'); setTimeout(() => x.classList.remove('bad'), 500); });
+                }
+            };
+            body.querySelector('#ml').addEventListener('click', e => {
+                const b = e.target.closest('.lp-opt'); if (!b || b.disabled) return;
+                body.querySelectorAll('#ml .lp-opt').forEach(x => x.classList.remove('sel'));
+                b.classList.add('sel'); pickL = b; speak(b.textContent, 1); tryPair();
+            });
+            body.querySelector('#mr').addEventListener('click', e => {
+                const b = e.target.closest('.lp-opt'); if (!b || b.disabled) return;
+                body.querySelectorAll('#mr .lp-opt').forEach(x => x.classList.remove('sel'));
+                b.classList.add('sel'); pickR = b; tryPair();
+            });
+            state.check = () => {};
+            mainBtn.textContent = 'Tekshirish';
+        },
+
+        speak(s) {
+            const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+            body.innerHTML = `<div class="lp-kicker">${icon('mic')} Gapirish</div>
+                <h2 class="lp-h">${esc(s.uz || 'Ovoz chiqarib ayting')}</h2>
+                <div class="lp-speak-text" id="spText">${esc(s.text)} ${sayBtn(s.text)}</div>
+                ${SR ? `<button class="lp-mic" id="mic" aria-label="Gapirish">${icon('mic')}</button>
+                       <div class="lp-heard" id="heard">Mikrofonni bosing va gapni ayting</div>`
+                     : `<p class="lp-hint" style="text-align:center;margin-top:20px">Brauzeringiz ovozni tanimaydi (Chrome tavsiya etiladi). Gapni tinglang va ovoz chiqarib takrorlang.</p>`}`;
+            skipBtn.style.display = '';
+            state.skip = () => next();   // skipping a speaking task isn't counted as a mistake
+            if (!SR) return;
+            mainBtn.disabled = true;
+            let tries = 0;
+            const target = norm(s.text).split(' ');
+            document.getElementById('mic').onclick = () => {
+                const btn = document.getElementById('mic');
+                const rec = new SR();
+                rec.lang = 'en-GB'; rec.interimResults = false; rec.maxAlternatives = 3;
+                btn.classList.add('rec');
+                document.getElementById('heard').textContent = 'Eshityapman...';
+                rec.onresult = ev => {
+                    const alts = [...ev.results[0]].map(r => r.transcript);
+                    let best = { score: -1 };
+                    alts.forEach(t => {
+                        const heard = new Set(norm(t).split(' '));
+                        const hits = target.map(w => heard.has(w));
+                        const score = hits.filter(Boolean).length / target.length;
+                        if (score > best.score) best = { score, hits, t };
+                    });
+                    tries++;
+                    const words = s.text.split(/\s+/);
+                    document.getElementById('spText').innerHTML = words.map((w, i) => `<span class="${best.hits[i] === false ? 'miss' : 'hit'}">${esc(w)}</span>`).join(' ') + ' ' + sayBtn(s.text);
+                    lucide.createIcons();
+                    document.getElementById('heard').textContent = `Siz: "${best.t}"`;
+                    if (best.score >= 0.7) { state.check = null; resolve(true); setFoot('ok', `Ajoyib talaffuz! ${Math.round(best.score * 100)}%`, ''); }
+                    else if (tries >= 3) { setFoot('bad', `${Math.round(best.score * 100)}% — yana mashq qiling`, "Qizil so'zlarni tinglab takrorlang. Davom etishingiz mumkin."); mainBtn.disabled = false; state.check = null; firstTry[state.idx] = firstTry[state.idx] ?? false; state.answered = true; }
+                    else setFoot('bad', `${Math.round(best.score * 100)}% — yana bir bor urinib ko'ring`, "Qizil so'zlarni aniqroq ayting.");
+                };
+                rec.onerror = () => { document.getElementById('heard').textContent = "Ovoz eshitilmadi. Mikrofonga ruxsat berilganini tekshiring."; };
+                rec.onend = () => btn.classList.remove('rec');
+                rec.start();
+            };
+        },
+
+        write(s, idx) {
+            body.innerHTML = `<div class="lp-kicker">${icon('pen-line')} Yozish · AI tekshiradi</div>
+                <h2 class="lp-h">${esc(s.prompt_uz)}</h2>
+                ${s.prompt ? `<p class="lp-sub">${esc(s.prompt)}</p>` : ''}
+                <textarea class="lp-input" id="wi" placeholder="Inglizcha yozing..." style="min-height:150px"></textarea>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;flex-wrap:wrap;gap:8px">
+                    <span class="lp-hint" id="wc" style="margin:0">0 so'z${s.min_words ? ` · tavsiya: ${s.min_words}+` : ''}</span>
+                    ${s.example ? `<button class="lp-tool" id="showModel">${icon('eye')} Namuna javob</button>` : ''}
+                </div>
+                <div class="lp-model" id="model">${esc(s.example || '')}</div>
+                <div class="lp-ai" id="ai"></div>`;
+            const inp = document.getElementById('wi');
+            const wc = () => inp.value.trim() ? inp.value.trim().split(/\s+/).length : 0;
+            inp.addEventListener('input', () => {
+                document.getElementById('wc').textContent = `${wc()} so'z${s.min_words ? ` · tavsiya: ${s.min_words}+` : ''}`;
+                enableCheck(wc() >= 3);
+            });
+            const sm = document.getElementById('showModel');
+            if (sm) sm.onclick = () => { const m = document.getElementById('model'); m.style.display = m.style.display === 'block' ? 'none' : 'block'; };
+            skipBtn.style.display = '';
+            state.skip = () => next();
+            mainBtn.textContent = 'AI tekshiruvi';
+            mainBtn.disabled = true;
+            state.check = async () => {
+                mainBtn.disabled = true; mainBtn.textContent = 'Tekshirilmoqda...';
+                try {
+                    const r = await fetch(URLS.write, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF },
+                        body: JSON.stringify({ slug: L.slug, step: idx, text: inp.value }) });
+                    const d = await r.json();
+                    if (!r.ok) throw new Error(d.error || 'Xatolik');
+                    const box = document.getElementById('ai');
+                    box.style.display = 'block';
+                    box.innerHTML = `<div style="display:flex;align-items:center;gap:10px"><b style="font-size:1.6rem;color:${d.score >= 70 ? '#22c55e' : d.score >= 40 ? '#f59e0b' : '#ef4444'}">${d.score}</b><span style="color:var(--text-muted);font-size:.85rem">/ 100</span></div>
+                        ${d.praise_uz ? `<p style="margin-top:8px">👍 ${esc(d.praise_uz)}</p>` : ''}
+                        ${d.mistakes.length ? `<h5>Xatolar</h5>${d.mistakes.map(m => `<div class="mist"><s>${esc(m.wrong)}</s> → <ins>${esc(m.right)}</ins><br><span style="color:var(--text-muted)">${esc(m.why_uz || '')}</span></div>`).join('')}` : '<p style="margin-top:8px;color:#22c55e">Jiddiy xato topilmadi!</p>'}
+                        ${d.corrected ? `<h5>Tuzatilgan matn</h5><p style="line-height:1.6">${esc(d.corrected)}</p>` : ''}
+                        ${d.next_uz ? `<h5>Keyingi qadam</h5><p>${esc(d.next_uz)}</p>` : ''}`;
+                    state.answered = true; inp.disabled = true;
+                    setFoot('ok', 'AI izohini o\'qing', '');
+                    mainBtn.disabled = false; mainBtn.textContent = 'Davom etish';
+                    skipBtn.style.display = 'none';
+                } catch (err) {
+                    setFoot('bad', err.message, "Bu qadamni o'tkazib yuborishingiz mumkin.");
+                    mainBtn.disabled = false; mainBtn.textContent = 'Qayta urinish';
+                }
+            };
+        },
+    };
+
+    // ── finish ───────────────────────────────────────────────────────────
+    async function finish() {
+        document.getElementById('lpBar').style.width = '100%';
+        document.getElementById('lpCount').textContent = '';
+        const graded = Object.keys(firstTry);
+        const right = graded.filter(k => firstTry[k]).length;
+        const score = graded.length ? Math.round(right * 100 / graded.length) : 100;
+        foot.style.display = 'none';
+        body.innerHTML = `<div class="lp-finish"><div class="big">⏳</div><h2 class="lp-h">Natija saqlanmoqda...</h2></div>`;
+        let d = {};
+        try {
+            const r = await fetch(URLS.complete, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF }, body: JSON.stringify({ score }) });
+            d = await r.json();
+        } catch (e) { d = { error: true }; }
+        const emoji = score >= 90 ? '🏆' : score >= 70 ? '🎉' : '💪';
+        const msg = score >= 90 ? 'Mukammal!' : score >= 70 ? 'Dars tugallandi!' : "Yaxshi harakat! Takrorlash foydali bo'ladi.";
+        body.innerHTML = `<div class="lp-finish">
+            <div class="big">${emoji}</div>
+            <h2 class="lp-h" style="margin-top:10px">${msg}</h2>
+            <p class="lp-sub">${esc(L.title_uz)}</p>
+            <div class="lp-stats">
+                <div class="lp-stat" style="border-color:#f59e0b"><small>XP</small><b style="color:#f59e0b">+${d.xp ?? 0}</b></div>
+                <div class="lp-stat" style="border-color:#22c55e"><small>Aniqlik</small><b style="color:#22c55e">${score}%</b></div>
+                <div class="lp-stat" style="border-color:#f97316"><small>Streak</small><b style="color:#f97316">🔥 ${d.streak ?? '—'}</b></div>
+            </div>
+            ${d.words_added ? `<p class="lp-hint" style="margin-bottom:20px">📚 ${d.words_added} ta yangi so'z lug'atingizga qo'shildi — ertaga takrorlash uchun tayyor.</p>` : ''}
+            ${d.error ? `<p class="lp-hint" style="color:#ef4444">Natijani saqlab bo'lmadi — internetni tekshiring.</p>` : ''}
+            <div class="lp-finish-actions">
+                ${URLS.next ? `<a href="${URLS.next}" class="lp-main-btn" style="text-transform:none">Keyingi dars →</a>` : ''}
+                <a href="${URLS.review}" class="ln-btn" style="background:var(--tint-a);color:var(--text-color);border:1px solid var(--border-color)">So'zlarni takrorlash</a>
+                <a href="${URLS.hub}" class="ln-btn" style="background:var(--tint-a);color:var(--text-color);border:1px solid var(--border-color)">Kursga qaytish</a>
+            </div></div>`;
+    }
+
+    render();
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,183 @@
+{
+  "level": "B1",
+  "units": [
+    {
+      "slug": "b1-life-opinions",
+      "title": "Experiences and opinions",
+      "title_uz": "Tajriba va fikrlar",
+      "icon": "message-square",
+      "lessons": [
+        {
+          "slug": "b1-experiences",
+          "title": "Have you ever...?",
+          "title_uz": "Hayotiy tajriba: Present Perfect",
+          "goal_uz": "Hayotingizdagi tajribalar haqida gapirasiz va Present Perfect bilan Past Simple farqini tushunasiz.",
+          "minutes": 12,
+          "words": [
+            {"en": "ever", "uz": "qachondir (hayotda)", "ipa": "/ˈevə/", "ex": "Have you ever been to Japan?"},
+            {"en": "abroad", "uz": "chet elda / chet elga", "ipa": "/əˈbrɔːd/", "ex": "I've never lived abroad."},
+            {"en": "experience", "uz": "tajriba", "ipa": "/ɪkˈspɪəriəns/", "ex": "It was an amazing experience."},
+            {"en": "already", "uz": "allaqachon", "ipa": "/ɔːlˈredi/", "ex": "I've already finished my homework."},
+            {"en": "yet", "uz": "hali (inkor/so'roqda)", "ipa": "/jet/", "ex": "Have you booked the tickets yet?"},
+            {"en": "once", "uz": "bir marta", "ipa": "/wʌns/", "ex": "I've been to Istanbul once."},
+            {"en": "unforgettable", "uz": "unutilmas", "ipa": "/ˌʌnfəˈɡetəbl/", "ex": "The trip was unforgettable."},
+            {"en": "try", "uz": "tatib ko'rmoq, urinib ko'rmoq", "ipa": "/traɪ/", "ex": "Have you ever tried sushi?"}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "dialogue",
+              "title": "Travel stories",
+              "context_uz": "Laylo va uning britaniyalik do'sti Ben sayohatlar haqida suhbatlashmoqda.",
+              "lines": [
+                {"who": "Ben", "en": "Have you ever been abroad, Laylo?", "uz": "Laylo, hech chet elga chiqqanmisan?"},
+                {"who": "Laylo", "en": "Yes, I have. I've been to Turkey and Malaysia.", "uz": "Ha. Turkiya va Malayziyada bo'lganman."},
+                {"who": "Ben", "en": "Nice! When did you go to Malaysia?", "uz": "Zo'r! Malayziyaga qachon borgansan?"},
+                {"who": "Laylo", "en": "Two years ago. I went with my university for a student conference.", "uz": "Ikki yil oldin. Universitetim bilan talabalar konferensiyasiga borganman."},
+                {"who": "Ben", "en": "Did you try any local food?", "uz": "Mahalliy taomlardan tatib ko'rdingmi?"},
+                {"who": "Laylo", "en": "Of course! I tried durian — it smelled terrible but tasted OK! Have you ever tried plov?", "uz": "Albatta! Durian yeb ko'rdim — hidi dahshat, lekin ta'mi chakki emas! Sen hech palov yeb ko'rganmisan?"},
+                {"who": "Ben", "en": "No, I haven't tried it yet. But I've heard it's delicious.", "uz": "Yo'q, hali yeb ko'rmaganman. Lekin juda mazali deb eshitganman."},
+                {"who": "Laylo", "en": "Then you have to visit Uzbekistan — it'll be an unforgettable experience!", "uz": "Unda O'zbekistonga kelishing kerak — unutilmas tajriba bo'ladi!"}
+              ]
+            },
+            {
+              "type": "grammar",
+              "title_uz": "Present Perfect vs Past Simple",
+              "body_uz": "**Present Perfect (have/has + V3)** — hayotdagi tajriba, vaqti aytilmaydi yoki muhim emas: I**'ve been** to Turkey. **Have you ever tried** plov?\n**Past Simple** — aniq vaqt aytilganda yoki so'ralganda: I **went** there **two years ago**. **When did** you **go**?\nOdatiy suhbat shunday boradi: savol Present Perfect bilan boshlanadi, tafsilotlar Past Simple'da davom etadi.\n**already** (allaqachon) — tasdiqda; **yet** (hali) — inkor va so'roq oxirida; **never** — hech qachon.\n**been to** vs **gone to**: He **has been to** London (borib qaytgan). He **has gone to** London (hozir o'sha yerda).",
+              "examples": [
+                {"en": "I've never seen snow.", "uz": "Men hech qachon qor ko'rmaganman."},
+                {"en": "She has already finished the report.", "uz": "U hisobotni allaqachon tugatdi."},
+                {"en": "Have you done your homework yet?", "uz": "Uy vazifangni qilib bo'ldingmi?"},
+                {"en": "I saw that film last week.", "uz": "O'sha filmni o'tgan hafta ko'rdim."}
+              ]
+            },
+            {"type": "choice", "q": "When did Laylo go to Malaysia?", "options": ["Last month", "Two years ago", "She has never been there."], "answer": 1, "explain_uz": "\"Two years ago.\""},
+            {"type": "choice", "q": "Has Ben tried plov?", "options": ["Yes, he loved it.", "No, not yet.", "Yes, in Malaysia."], "answer": 1, "explain_uz": "\"No, I haven't tried it yet.\""},
+            {"type": "choice", "q": "I ___ to Paris in 2019.", "options": ["have been", "went", "have gone"], "answer": 1, "explain_uz": "Aniq vaqt (in 2019) → Past Simple: **went**."},
+            {"type": "choice", "q": "___ you ever ridden a horse?", "options": ["Did", "Have", "Were"], "answer": 1, "explain_uz": "ever + tajriba → **Have** you ever + V3."},
+            {"type": "gap", "text": "I haven't finished my essay ___.", "answer": ["yet"], "uz": "Inshoimni hali tugatmadim.", "explain_uz": "Inkor gap oxirida **yet**."},
+            {"type": "gap", "text": "She has ___ been to Samarkand. She went there last summer.", "answer": ["already"], "uz": "U Samarqandda allaqachon bo'lgan.", "explain_uz": "Tasdiq gapda, have va V3 o'rtasida **already**."},
+            {"type": "gap", "text": "Have you ever ___ (eat) Indian food?", "answer": ["eaten"], "uz": "Hech hind taomini yeganmisiz?", "explain_uz": "eat → ate → **eaten** (V3)."},
+            {"type": "match", "pairs": [["go", "gone"], ["see", "seen"], ["write", "written"], ["take", "taken"], ["be", "been"]]},
+            {"type": "order", "uz": "Men hech qachon chet elda yashamaganman.", "words": ["I", "have", "never", "lived", "abroad"], "answer": "I have never lived abroad"},
+            {"type": "choice", "audio": true, "q": "How many times has the speaker been to London?", "say": "I've been to London twice — once for work in 2020 and once on holiday last year.", "options": ["Once", "Twice", "Never"], "answer": 1, "explain_uz": "\"twice\" = ikki marta."},
+            {"type": "listen", "answer": ["Have you ever tried sushi?", "Have you ever tried sushi"], "uz": "Eshiting va yozing"},
+            {"type": "translate", "uz": "Men bu kitobni hali o'qimaganman.", "answer": ["I haven't read this book yet", "I have not read this book yet", "I haven't read the book yet", "I haven't read that book yet"], "explain_uz": "Present Perfect inkor + **yet** oxirida."},
+            {"type": "speak", "text": "I've never been to Japan, but I'd love to go there one day.", "uz": "Ovoz chiqarib ayting"},
+            {"type": "write", "prompt_uz": "Hayotingizdagi eng qiziqarli tajriba haqida yozing (5–7 gap). Present Perfect bilan boshlang, tafsilotlarni Past Simple'da yozing.", "prompt": "Write about an interesting experience you have had. Start with the Present Perfect, then give details in the Past Simple.", "min_words": 50, "example": "I have climbed a real mountain only once. It happened last summer, when my cousins and I went to Chimgan. We started early in the morning and it took us five hours to reach the top. I was very tired, but the view was unforgettable. I have never felt so proud of myself."}
+          ]
+        },
+        {
+          "slug": "b1-opinions",
+          "title": "In my opinion...",
+          "title_uz": "Fikr bildirish va asoslash",
+          "goal_uz": "Fikringizni aniq aytasiz, rozilik/norozilik bildirasiz va because, although, so bilan asoslaysiz.",
+          "minutes": 12,
+          "words": [
+            {"en": "in my opinion", "uz": "mening fikrimcha", "ipa": "/ɪn maɪ əˈpɪnjən/", "ex": "In my opinion, school uniforms are useful."},
+            {"en": "I agree", "uz": "qo'shilaman", "ipa": "/aɪ əˈɡriː/", "ex": "I agree with you completely."},
+            {"en": "I disagree", "uz": "qo'shilmayman", "ipa": "/aɪ ˌdɪsəˈɡriː/", "ex": "Sorry, but I disagree."},
+            {"en": "although", "uz": "garchi ... bo'lsa ham", "ipa": "/ɔːlˈðəʊ/", "ex": "Although it's expensive, it's worth it."},
+            {"en": "advantage", "uz": "afzallik", "ipa": "/ədˈvɑːntɪdʒ/", "ex": "The main advantage is the price."},
+            {"en": "disadvantage", "uz": "kamchilik", "ipa": "/ˌdɪsədˈvɑːntɪdʒ/", "ex": "One disadvantage is the noise."},
+            {"en": "waste of time", "uz": "vaqtni behuda sarflash", "ipa": "/weɪst əv taɪm/", "ex": "Some people think social media is a waste of time."},
+            {"en": "it depends", "uz": "vaziyatga bog'liq", "ipa": "/ɪt dɪˈpendz/", "ex": "Is it good? Well, it depends."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "dialogue",
+              "title": "Should students use phones at school?",
+              "context_uz": "Ikki do'st maktabda telefon ishlatish taqiqlanishi haqida bahslashmoqda.",
+              "lines": [
+                {"who": "Nigora", "en": "Did you hear? Our school wants to ban phones in class.", "uz": "Eshitdingmi? Maktabimiz darsda telefonni taqiqlamoqchi."},
+                {"who": "Otabek", "en": "Honestly, I think it's a good idea. Phones are really distracting.", "uz": "Rostini aytsam, menimcha yaxshi fikr. Telefonlar juda chalg'itadi."},
+                {"who": "Nigora", "en": "I see your point, but I disagree. We use them for dictionaries and research.", "uz": "Fikringni tushunaman, lekin qo'shilmayman. Biz ulardan lug'at va izlanish uchun foydalanamiz."},
+                {"who": "Otabek", "en": "That's true, although most students just check social media.", "uz": "To'g'ri, garchi ko'p o'quvchilar shunchaki ijtimoiy tarmoqlarni ko'rsa ham."},
+                {"who": "Nigora", "en": "Maybe. In my opinion, teachers should teach us to use phones wisely instead of banning them.", "uz": "Balki. Mening fikrimcha, o'qituvchilar taqiqlash o'rniga telefondan oqilona foydalanishni o'rgatishi kerak."},
+                {"who": "Otabek", "en": "Hmm, that's a fair point. So maybe phones should be allowed only for specific tasks.", "uz": "Hmm, bu asosli fikr. Demak, telefonlarga faqat aniq topshiriqlar uchun ruxsat berish kerakdir."},
+                {"who": "Nigora", "en": "Exactly! I completely agree with that.", "uz": "Aynan! Bunga to'liq qo'shilaman."}
+              ]
+            },
+            {
+              "type": "grammar",
+              "title_uz": "Fikr bildirish iboralari va bog'lovchilar",
+              "body_uz": "**Fikr:** I think... · In my opinion... · Personally, I believe... · As far as I'm concerned...\n**Rozilik:** I agree (with you). · Exactly! · That's a fair point.\n**Muloyim norozilik:** I see your point, but... · I'm not sure about that. · I'm afraid I disagree.\n**Bog'lovchilar:** **because** (chunki — sabab) · **so** (shuning uchun — natija) · **although** (garchi — qarama-qarshilik) · **however** (biroq — yangi gap boshida, vergul bilan).\nDiqqat: \"I am agree\" — **xato**! To'g'risi: **I agree**.",
+              "examples": [
+                {"en": "I disagree because phones can be useful.", "uz": "Qo'shilmayman, chunki telefonlar foydali bo'lishi mumkin."},
+                {"en": "It was raining, so we stayed inside.", "uz": "Yomg'ir yog'ayotgandi, shuning uchun ichkarida qoldik."},
+                {"en": "Although he is young, he is very wise.", "uz": "Garchi u yosh bo'lsa ham, juda dono."},
+                {"en": "The idea is good. However, it is expensive.", "uz": "G'oya yaxshi. Biroq u qimmat."}
+              ]
+            },
+            {"type": "choice", "q": "What is Otabek's first opinion?", "options": ["Phones are useful for research.", "Banning phones is a good idea.", "Teachers should use phones."], "answer": 1, "explain_uz": "\"I think it's a good idea. Phones are really distracting.\""},
+            {"type": "choice", "q": "Which sentence is correct?", "options": ["I am agree with you.", "I agree with you.", "I agreeing with you."], "answer": 1, "explain_uz": "agree — fe'l, oldidan **am** kerak emas."},
+            {"type": "choice", "q": "___ it was late, we continued working.", "options": ["Because", "So", "Although"], "answer": 2, "explain_uz": "Qarama-qarshilik (kech bo'lsa ham davom etdik) → **Although**."},
+            {"type": "gap", "text": "I was tired, ___ I went to bed early.", "answer": ["so"], "uz": "Charchagan edim, shuning uchun erta yotdim.", "explain_uz": "Natija → **so**."},
+            {"type": "gap", "text": "I see your ___, but I don't agree.", "answer": ["point"], "uz": "Fikringizni tushunaman, lekin qo'shilmayman.", "explain_uz": "**I see your point** — muloyim norozilik iborasi."},
+            {"type": "choice", "q": "Choose the most polite way to disagree:", "options": ["You're wrong.", "No, that's stupid.", "I'm not sure I agree with that."], "answer": 2, "explain_uz": "Ingliz tilida norozilik yumshoq ifodalanadi: **I'm not sure I agree...**"},
+            {"type": "match", "pairs": [["because", "chunki"], ["so", "shuning uchun"], ["although", "garchi"], ["however", "biroq"]]},
+            {"type": "order", "uz": "Mening fikrimcha, sport hamma uchun muhim.", "words": ["In", "my", "opinion", "sport", "is", "important", "for", "everyone"], "answer": "In my opinion sport is important for everyone"},
+            {"type": "listen", "answer": ["That's a fair point.", "That's a fair point", "That is a fair point"], "uz": "Eshiting va yozing"},
+            {"type": "choice", "audio": true, "q": "What does the speaker think about online shopping?", "say": "Personally, I prefer online shopping because it saves time, although sometimes the clothes don't fit.", "options": ["She hates it.", "She prefers it, but there is a problem.", "She never does it."], "answer": 1, "explain_uz": "\"I prefer online shopping... although sometimes the clothes don't fit\"."},
+            {"type": "translate", "uz": "Men qo'shilmayman, chunki bu juda qimmat.", "answer": ["I disagree because it is too expensive", "I disagree because it's too expensive", "I don't agree because it is too expensive", "I don't agree because it's too expensive", "I disagree because it's very expensive", "I disagree because it is very expensive"], "explain_uz": "I disagree / I don't agree + **because**."},
+            {"type": "speak", "text": "I see your point, but personally I believe that phones can help students learn.", "uz": "Fikringizni ovoz chiqarib ayting"},
+            {"type": "write", "prompt_uz": "\"Talabalar o'qish bilan birga ishlashi kerakmi?\" — fikringizni yozing (5–7 gap). Kamida bitta because, so, although ishlating.", "prompt": "Should students work while they study? Give your opinion with reasons. Use because, so and although.", "min_words": 50, "example": "In my opinion, students should have a part-time job, although it is not easy. Firstly, working teaches responsibility because you have to manage your time. Secondly, students earn their own money, so they depend less on their parents. However, the job should not take more than fifteen hours a week, because studying is still the main priority."}
+          ]
+        },
+        {
+          "slug": "b1-plans",
+          "title": "Plans for the future",
+          "title_uz": "Kelajak rejalari",
+          "goal_uz": "Reja, qaror va taxminlarni going to, will va Present Continuous bilan farqlab gapirasiz.",
+          "minutes": 12,
+          "words": [
+            {"en": "plan", "uz": "reja", "ipa": "/plæn/", "ex": "What are your plans for the summer?"},
+            {"en": "be going to", "uz": "... moqchi (reja)", "ipa": "/bi ˈɡəʊɪŋ tə/", "ex": "I'm going to study medicine."},
+            {"en": "probably", "uz": "ehtimol", "ipa": "/ˈprɒbəbli/", "ex": "It will probably rain tomorrow."},
+            {"en": "apply for", "uz": "ariza topshirmoq", "ipa": "/əˈplaɪ fɔː/", "ex": "She's going to apply for a scholarship."},
+            {"en": "scholarship", "uz": "grant, stipendiya", "ipa": "/ˈskɒləʃɪp/", "ex": "He got a full scholarship."},
+            {"en": "career", "uz": "karyera, kasbiy yo'l", "ipa": "/kəˈrɪə/", "ex": "She wants a career in IT."},
+            {"en": "goal", "uz": "maqsad", "ipa": "/ɡəʊl/", "ex": "My goal is to get band 7."},
+            {"en": "look forward to", "uz": "intiqlik bilan kutmoq", "ipa": "/lʊk ˈfɔːwəd tuː/", "ex": "I'm looking forward to the holidays."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "reading",
+              "title": "Shahzod's big year",
+              "text": "This year is going to be very important for me. I'm finishing school in June, and I'm going to apply for a scholarship to study computer science in Korea. My goal is to get band 6.5 in IELTS, so I'm taking a mock test every month. Next Saturday I'm meeting a student who studied in Seoul — I hope he'll give me some useful advice. I think the exam will be difficult, but I'll probably pass if I keep practising. I'm really looking forward to starting a new chapter of my life!",
+              "glossary": {"important": "muhim", "computer science": "informatika", "mock test": "sinov imtihoni", "advice": "maslahat", "keep practising": "mashq qilishda davom etmoq", "chapter": "bob, sahifa (hayot)"},
+              "uz": "Bu yil men uchun juda muhim bo'ladi. Iyunda maktabni bitiraman va Koreyada informatika o'qish uchun grantga ariza topshirmoqchiman. Maqsadim IELTSdan 6.5 olish, shuning uchun har oy sinov imtihoni topshiryapman. Kelasi shanba Seulda o'qigan talaba bilan uchrashaman — umid qilamanki, u foydali maslahat beradi. Menimcha, imtihon qiyin bo'ladi, lekin mashq qilishda davom etsam, ehtimol topshiraman. Hayotimning yangi sahifasini boshlashni intiqlik bilan kutyapman!"
+            },
+            {"type": "choice", "q": "What is Shahzod's IELTS goal?", "options": ["Band 6.0", "Band 6.5", "Band 7.5"], "answer": 1, "explain_uz": "\"My goal is to get band 6.5\"."},
+            {"type": "choice", "q": "What is he doing next Saturday?", "options": ["Taking the IELTS exam", "Meeting a student who studied in Seoul", "Flying to Korea"], "answer": 1, "explain_uz": "\"Next Saturday I'm meeting a student...\" — kelishilgan uchrashuv."},
+            {
+              "type": "grammar",
+              "title_uz": "Kelajak: going to · will · Present Continuous",
+              "body_uz": "**be going to** — oldindan o'ylangan reja/niyat: I**'m going to** apply for a scholarship.\n**Present Continuous** — vaqti, joyi kelishilgan uchrashuv (kalendarga yozilgan): I**'m meeting** him next Saturday.\n**will** — 1) shu zahoti qilingan qaror: \"The phone's ringing.\" — \"I**'ll** answer it!\" 2) fikr/taxmin (I think, probably bilan): It**'ll probably** be difficult. 3) va'da: I**'ll** help you.\nDiqqat: \"I will to go\" — xato! **will + fe'l** (to'siz).",
+              "examples": [
+                {"en": "We're going to buy a new car next year.", "uz": "Kelasi yil yangi mashina olmoqchimiz."},
+                {"en": "I'm seeing the dentist at 4 tomorrow.", "uz": "Ertaga soat 4 da tish shifokoriga boraman (yozilganman)."},
+                {"en": "I think she'll win.", "uz": "Menimcha, u yutadi."},
+                {"en": "Don't worry, I'll call you later.", "uz": "Xavotir olmang, keyinroq qo'ng'iroq qilaman."}
+              ]
+            },
+            {"type": "choice", "q": "\"I'm cold.\" — \"OK, I ___ close the window.\"", "options": ["am going to", "will", "am closing"], "answer": 1, "explain_uz": "Shu zahoti qilingan qaror → **will** ('ll)."},
+            {"type": "choice", "q": "We ___ a party on Friday. Everyone is invited!", "options": ["will have", "are having", "have"], "answer": 1, "explain_uz": "Kelishilgan, rejalashtirilgan tadbir → Present Continuous."},
+            {"type": "choice", "q": "I think robots ___ do most jobs in the future.", "options": ["are doing", "will", "are going"], "answer": 1, "explain_uz": "I think + taxmin → **will**."},
+            {"type": "gap", "text": "She's ___ to study law at university.", "answer": ["going"], "uz": "U universitetda huquqshunoslik o'qimoqchi.", "explain_uz": "be **going** to — reja."},
+            {"type": "gap", "text": "I'm looking forward ___ seeing you.", "answer": ["to"], "uz": "Siz bilan ko'rishishni intiqlik bilan kutyapman.", "explain_uz": "look forward **to** + -ing."},
+            {"type": "match", "pairs": [["goal", "maqsad"], ["career", "karyera"], ["scholarship", "grant"], ["probably", "ehtimol"]]},
+            {"type": "order", "uz": "Men keyingi oy grantga ariza topshirmoqchiman.", "words": ["I'm", "going", "to", "apply", "for", "a", "scholarship", "next", "month"], "answer": "I'm going to apply for a scholarship next month"},
+            {"type": "listen", "answer": ["It will probably rain tomorrow.", "It will probably rain tomorrow", "It'll probably rain tomorrow"], "uz": "Eshiting va yozing"},
+            {"type": "choice", "audio": true, "q": "When is the speaker flying to Dubai?", "say": "I'm flying to Dubai on the fifteenth, and I'm going to stay there for a week.", "options": ["On the 5th", "On the 15th", "In a week"], "answer": 1, "explain_uz": "\"on the fifteenth\" — 15-sanada."},
+            {"type": "translate", "uz": "Menimcha, imtihon oson bo'ladi.", "answer": ["I think the exam will be easy", "I think that the exam will be easy", "I think the test will be easy"], "explain_uz": "Taxmin: I think + **will**."},
+            {"type": "speak", "text": "Next year I'm going to apply to a university abroad, and I think I'll study engineering.", "uz": "Rejangizni ovoz chiqarib ayting"},
+            {"type": "write", "prompt_uz": "Kelasi bir yil uchun rejalaringiz haqida yozing (5–7 gap): going to, will va Present Continuous'ni ishlating.", "prompt": "Write about your plans for the next year. Use going to, will and the Present Continuous.", "min_words": 50, "example": "Next year is going to be busy. I'm going to take the IELTS exam in March, and I'm starting a preparation course next Monday. I think the writing part will be the hardest for me. After the exam, I'm going to apply to universities in Europe. I hope I'll get a scholarship."}
+          ]
+        }
+      ]
+    }
+  ]
+}

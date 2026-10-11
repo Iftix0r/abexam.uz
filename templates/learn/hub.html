@@ -1,0 +1,256 @@
+{% extends 'base.html' %}
+
+{% block title %}Ingliz tili kursi - AbExam{% endblock %}
+{% block page_title %}Ingliz tili{% endblock %}
+
+{% block extra_css %}
+<style>
+    .ln-wrap { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 24px; align-items: start; }
+    .ln-hero { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
+    .ln-hero h1 { font-size: 1.9rem; font-weight: 600; letter-spacing: -0.02em; }
+    .ln-hero p { color: var(--text-muted); margin-top: 4px; font-size: 0.95rem; }
+    .ln-chips { display: flex; gap: 10px; flex-wrap: wrap; }
+    .ln-chip { display: flex; align-items: center; gap: 8px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 999px; padding: 8px 14px; font-size: 0.9rem; font-weight: 600; }
+    .ln-chip i { width: 18px; }
+    .ln-chip small { font-weight: 400; color: var(--text-muted); }
+
+    .ln-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; }
+    .ln-continue { display: flex; align-items: center; gap: 20px; padding: 22px; margin-bottom: 20px; border: 1px solid var(--primary-color); background: linear-gradient(135deg, rgba(211,47,47,0.08), transparent 60%), var(--card-bg); }
+    .ln-continue .ln-badge { width: 56px; height: 56px; border-radius: 16px; background: var(--primary-color); color: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .ln-continue h2 { font-size: 1.15rem; font-weight: 600; }
+    .ln-continue p { color: var(--text-muted); font-size: 0.85rem; margin-top: 2px; }
+    .ln-btn { display: inline-flex; align-items: center; gap: 8px; padding: 0.75rem 1.3rem; border-radius: 12px; font-weight: 600; font-size: 0.92rem; text-decoration: none; border: none; cursor: pointer; }
+    .ln-btn-primary { background: var(--primary-color); color: #fff; }
+    .ln-btn-ghost { background: var(--tint-a); color: var(--text-color); border: 1px solid var(--border-color); }
+    .ln-btn:hover { filter: brightness(1.05); }
+
+    .ln-levels { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 22px; }
+    .ln-level { position: relative; display: block; text-decoration: none; color: var(--text-color); background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; padding: 12px 14px; transition: var(--transition); }
+    .ln-level:hover { border-color: var(--primary-color); }
+    .ln-level.active { border: 2px solid var(--primary-color); padding: 11px 13px; }
+    .ln-level b { font-size: 1.2rem; }
+    .ln-level span { display: block; font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
+    .ln-level .ln-bar { margin-top: 8px; }
+    .ln-level .ln-rec { position: absolute; top: -9px; right: 10px; background: #f59e0b; color: #000; font-size: 0.62rem; font-weight: 700; border-radius: 6px; padding: 2px 6px; text-transform: uppercase; }
+    .ln-bar { height: 6px; background: var(--tint-b); border-radius: 3px; overflow: hidden; }
+    .ln-bar > div { height: 100%; background: var(--success-color); border-radius: 3px; }
+
+    .ln-level-desc { color: var(--text-muted); font-size: 0.88rem; margin: -8px 0 18px; }
+    .ln-unit { margin-bottom: 22px; }
+    .ln-unit-head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .ln-unit-head .ln-ico { width: 38px; height: 38px; border-radius: 10px; background: var(--tint-b); display: flex; align-items: center; justify-content: center; }
+    .ln-unit-head h3 { font-size: 1rem; font-weight: 600; }
+    .ln-unit-head small { color: var(--text-muted); font-size: 0.8rem; }
+
+    .ln-path { display: flex; flex-direction: column; gap: 10px; position: relative; padding-left: 8px; }
+    .ln-path::before { content: ''; position: absolute; left: 30px; top: 24px; bottom: 24px; width: 2px; background: var(--border-color); }
+    .ln-node { position: relative; display: flex; align-items: center; gap: 14px; text-decoration: none; color: var(--text-color); background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; padding: 12px 14px 12px 10px; transition: var(--transition); }
+    a.ln-node:hover { border-color: var(--primary-color); transform: translateX(3px); }
+    .ln-dot { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; z-index: 1; background: var(--tint-b); color: var(--text-muted); }
+    .ln-node.done .ln-dot { background: var(--success-color); color: #fff; }
+    .ln-node.current { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(211,47,47,0.12); }
+    .ln-node.current .ln-dot { background: var(--primary-color); color: #fff; animation: lnPulse 2s infinite; }
+    .ln-node.locked { opacity: 0.55; cursor: not-allowed; }
+    @keyframes lnPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(211,47,47,0.45); } 50% { box-shadow: 0 0 0 8px rgba(211,47,47,0); } }
+    @media (prefers-reduced-motion: reduce) { .ln-node.current .ln-dot { animation: none; } }
+    .ln-node-body { flex: 1; min-width: 0; }
+    .ln-node-body b { display: block; font-size: 0.95rem; font-weight: 600; }
+    .ln-node-body span { font-size: 0.8rem; color: var(--text-muted); }
+    .ln-node-meta { font-size: 0.78rem; color: var(--text-muted); text-align: right; white-space: nowrap; }
+    .ln-score { font-weight: 700; color: var(--success-color); font-size: 0.85rem; }
+
+    .ln-side { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 84px; }
+    .ln-side h4 { font-size: 0.85rem; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .ln-goal { display: flex; align-items: center; gap: 16px; }
+    .ln-ring { position: relative; width: 76px; height: 76px; flex-shrink: 0; }
+    .ln-ring svg { transform: rotate(-90deg); }
+    .ln-ring b { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; }
+    .ln-week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; align-items: end; height: 70px; margin-top: 14px; }
+    .ln-week div { display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; justify-content: flex-end; }
+    .ln-week span { width: 100%; max-width: 22px; border-radius: 5px 5px 2px 2px; background: var(--tint-b); min-height: 4px; }
+    .ln-week span.hit { background: #f59e0b; }
+    .ln-week small { font-size: 0.65rem; color: var(--text-muted); }
+    .ln-week .today small { color: var(--text-color); font-weight: 700; }
+    .ln-goal-form { display: flex; gap: 6px; margin-top: 12px; }
+    .ln-goal-form button { flex: 1; padding: 6px 0; border-radius: 8px; border: 1px solid var(--border-color); background: transparent; color: var(--text-muted); font-size: 0.75rem; cursor: pointer; }
+    .ln-goal-form button.on { background: var(--primary-color); color: #fff; border-color: var(--primary-color); }
+    .ln-review-num { font-size: 2rem; font-weight: 700; line-height: 1; }
+    .ln-side-link { display: flex; align-items: center; gap: 12px; padding: 10px; margin: 0 -10px; border-radius: 10px; text-decoration: none; color: var(--text-color); font-size: 0.86rem; }
+    .ln-side-link:hover { background: var(--tint-a); }
+    .ln-side-link i { width: 18px; color: var(--primary-color); flex-shrink: 0; }
+
+    .ln-method { margin-top: 8px; }
+    .ln-method summary { cursor: pointer; font-weight: 600; font-size: 0.95rem; list-style: none; display: flex; align-items: center; gap: 8px; }
+    .ln-method summary::-webkit-details-marker { display: none; }
+    .ln-method ol { margin: 14px 0 0 18px; display: grid; gap: 8px; font-size: 0.86rem; color: var(--text-muted); }
+    .ln-method ol b { color: var(--text-color); }
+
+    @media (max-width: 980px) {
+        .ln-wrap { grid-template-columns: 1fr; }
+        .ln-side { position: static; }
+    }
+    @media (max-width: 600px) {
+        .ln-levels { grid-template-columns: repeat(2, 1fr); }
+        .ln-continue { flex-direction: column; align-items: flex-start; }
+        .ln-hero h1 { font-size: 1.5rem; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ln-hero">
+    <div>
+        <h1>Ingliz tilini o'rganamiz</h1>
+        <p>Har kuni 10–15 daqiqa: real dialoglar, mashqlar, gapirish va AI bilan suhbat.</p>
+    </div>
+    <div class="ln-chips">
+        <div class="ln-chip" title="Ketma-ket kunlar"><i data-lucide="flame" style="color:#f97316"></i>{{ profile.current_streak }} <small>kun</small></div>
+        <div class="ln-chip" title="Jami tajriba ballari"><i data-lucide="zap" style="color:#eab308"></i>{{ profile.xp }} <small>XP</small></div>
+        <div class="ln-chip" title="Lug'atdagi so'zlar"><i data-lucide="book-marked" style="color:#22c55e"></i>{{ review.total }} <small>so'z</small></div>
+    </div>
+</div>
+
+<div class="ln-wrap">
+    <div>
+        {% if current_lesson %}
+        <div class="ln-card ln-continue">
+            <div class="ln-badge"><i data-lucide="play" style="width:26px"></i></div>
+            <div style="flex:1;min-width:0">
+                <small style="color:var(--primary-color);font-weight:600;font-size:0.75rem;text-transform:uppercase;letter-spacing:.05em">{% if level_done %}Davom etish{% else %}Birinchi dars{% endif %} · {{ current_lesson.level }}</small>
+                <h2>{{ current_lesson.title_uz }}</h2>
+                <p>{{ current_lesson.goal_uz }}</p>
+            </div>
+            <a href="{% url 'learn:lesson' current_lesson.slug %}" class="ln-btn ln-btn-primary">Boshlash <i data-lucide="arrow-right" style="width:16px"></i></a>
+        </div>
+        {% elif level.lesson_count %}
+        <div class="ln-card ln-continue" style="border-color:var(--success-color)">
+            <div class="ln-badge" style="background:var(--success-color)"><i data-lucide="party-popper" style="width:26px"></i></div>
+            <div style="flex:1">
+                <h2>{{ level_code }} darajasi tugallandi!</h2>
+                <p>Ajoyib natija. Keyingi darajaga o'ting yoki so'zlarni takrorlang.</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="ln-levels">
+            {% for lv in levels %}
+            <a href="?level={{ lv.code }}" class="ln-level {% if lv.code == level_code %}active{% endif %}">
+                {% if lv.code == rec_level %}<span class="ln-rec">Tavsiya</span>{% endif %}
+                <b>{{ lv.code }}</b>
+                <span>{{ lv.name }}{% if lv.ielts != '—' %} · IELTS {{ lv.ielts }}{% endif %}</span>
+                <div class="ln-bar"><div style="width: {{ lv.pct }}%"></div></div>
+            </a>
+            {% endfor %}
+        </div>
+        <p class="ln-level-desc">
+            {{ level.desc }}
+            {% if rec_level and rec_level != level_code %}· <span style="color:#f59e0b">IELTS o'rtacha natijangiz ({{ rec_avg }}) bo'yicha {{ rec_level }} darajasi tavsiya etiladi.</span>{% endif %}
+        </p>
+
+        {% for u in units %}
+        <section class="ln-unit">
+            <div class="ln-unit-head">
+                <div class="ln-ico"><i data-lucide="{{ u.unit.icon|default:'book-open' }}" style="width:20px"></i></div>
+                <div>
+                    <h3>{{ u.unit.title_uz }}</h3>
+                    <small>{{ u.unit.title }} · {{ u.done }}/{{ u.items|length }} dars</small>
+                </div>
+            </div>
+            <div class="ln-path">
+                {% for it in u.items %}
+                {% if it.state == 'locked' %}
+                <div class="ln-node locked" title="Avval oldingi darsni tugating">
+                    <div class="ln-dot"><i data-lucide="lock" style="width:18px"></i></div>
+                {% else %}
+                <a href="{% url 'learn:lesson' it.lesson.slug %}" class="ln-node {{ it.state }}">
+                    <div class="ln-dot"><i data-lucide="{% if it.state == 'done' %}check{% else %}play{% endif %}" style="width:20px"></i></div>
+                {% endif %}
+                    <div class="ln-node-body">
+                        <b>{{ it.lesson.title_uz }}</b>
+                        <span>{{ it.lesson.title }}</span>
+                    </div>
+                    <div class="ln-node-meta">
+                        {% if it.score is not None %}<div class="ln-score">{{ it.score }}%</div>{% endif %}
+                        {{ it.lesson.minutes|default:10 }} daq · {{ it.lesson.words|length }} so'z
+                    </div>
+                {% if it.state == 'locked' %}</div>{% else %}</a>{% endif %}
+                {% endfor %}
+            </div>
+        </section>
+        {% empty %}
+        <div class="ln-card" style="text-align:center;color:var(--text-muted)">Bu daraja uchun darslar tez orada qo'shiladi.</div>
+        {% endfor %}
+
+        <details class="ln-card ln-method">
+            <summary><i data-lucide="sparkles" style="width:18px;color:var(--primary-color)"></i> Bu kurs qanday o'rgatadi?</summary>
+            <ol>
+                <li><b>Tushunarli kirish (comprehensible input).</b> Har dars real hayotiy dialog yoki matndan boshlanadi — so'zlar kontekstda, audio bilan.</li>
+                <li><b>Grammatika kontekstda.</b> Qoida matndagi misollardan keyin, o'zbek tilidagi qisqa izoh bilan beriladi — O'zbek o'quvchilari ko'p qiladigan xatolarga urg'u.</li>
+                <li><b>Faol eslash (active recall).</b> Tanlash, bo'sh joy, gap tuzish, diktant, tarjima — xato javoblar dars oxirida qayta so'raladi.</li>
+                <li><b>Gapirish va yozish.</b> Mikrofon orqali talaffuz mashqi va AI'ning qisqa yozma ishga beradigan shaxsiy izohi.</li>
+                <li><b>Oraliq takrorlash (spaced repetition).</b> Darsdagi so'zlar avtomatik lug'atingizga tushadi va unutishingizdan oldin qayta so'raladi.</li>
+                <li><b>Real suhbat.</b> AI suhbatdosh bilan kafe, sayohat, ish suhbati va IELTS Speaking vaziyatlarida mashq.</li>
+            </ol>
+        </details>
+    </div>
+
+    <aside class="ln-side">
+        <div class="ln-card">
+            <h4><i data-lucide="target" style="width:16px;color:var(--primary-color)"></i> Bugungi maqsad</h4>
+            <div class="ln-goal">
+                <div class="ln-ring">
+                    <svg width="76" height="76" viewBox="0 0 76 76" aria-hidden="true">
+                        <circle cx="38" cy="38" r="32" fill="none" stroke="var(--tint-b)" stroke-width="8"/>
+                        <circle cx="38" cy="38" r="32" fill="none" stroke="{% if goal_pct >= 100 %}var(--success-color){% else %}#f59e0b{% endif %}" stroke-width="8" stroke-linecap="round"
+                                stroke-dasharray="201.06" stroke-dashoffset="{{ goal_offset }}"/>
+                    </svg>
+                    <b>{{ goal_pct }}%</b>
+                </div>
+                <div>
+                    <div style="font-size:1.25rem;font-weight:700">{{ xp_today }} / {{ profile.daily_goal }} XP</div>
+                    <div style="font-size:0.8rem;color:var(--text-muted);margin-top:2px">
+                        {% if goal_pct >= 100 %}Maqsad bajarildi! 🎉{% else %}Dars ≈ 10–20 XP · takrorlash 1 XP/so'z{% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="ln-week">
+                {% for d in week %}
+                <div class="{% if d.today %}today{% endif %}" title="{{ d.date|date:'d.m' }}: {{ d.xp }} XP">
+                    <span class="{% if d.xp >= profile.daily_goal %}hit{% endif %}" style="height: {{ d.h }}px"></span>
+                    <small>{{ d.label }}</small>
+                </div>
+                {% endfor %}
+            </div>
+            <form method="post" action="{% url 'learn:goal' %}" class="ln-goal-form">
+                {% csrf_token %}
+                {% for g in daily_goals %}
+                <button name="goal" value="{{ g }}" class="{% if g == profile.daily_goal %}on{% endif %}" title="Kunlik maqsad">{{ g }} XP</button>
+                {% endfor %}
+            </form>
+        </div>
+
+        <div class="ln-card">
+            <h4><i data-lucide="repeat" style="width:16px;color:#22c55e"></i> So'zlarni takrorlash</h4>
+            <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px">
+                <div>
+                    <div class="ln-review-num">{{ review.session }}</div>
+                    <div style="font-size:0.8rem;color:var(--text-muted);margin-top:4px">{{ review.due }} ta takrorlash · {{ review.new }} ta yangi<br>{{ review.learned }} ta so'z mustahkam o'rganilgan</div>
+                </div>
+                {% if review.session %}
+                <a href="{% url 'learn:review' %}" class="ln-btn ln-btn-primary" style="background:var(--success-color)">Boshlash</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="ln-card">
+            <h4><i data-lucide="bot" style="width:16px;color:#6366f1"></i> AI suhbatdosh</h4>
+            {% for key, sc in scenarios.items %}
+            <a href="{% url 'learn:tutor' %}?s={{ key }}" class="ln-side-link">
+                <i data-lucide="{{ sc.icon }}"></i>
+                <span>{{ sc.title_uz }}</span>
+            </a>
+            {% endfor %}
+        </div>
+    </aside>
+</div>
+{% endblock %}

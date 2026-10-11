@@ -1,0 +1,173 @@
+{
+  "level": "B2",
+  "units": [
+    {
+      "slug": "b2-ielts-toolkit",
+      "title": "IELTS toolkit",
+      "title_uz": "IELTS uchun asboblar",
+      "icon": "target",
+      "lessons": [
+        {
+          "slug": "b2-trends",
+          "title": "Describing trends",
+          "title_uz": "Grafiklarni tasvirlash (Writing Task 1)",
+          "goal_uz": "Grafikdagi o'zgarishlarni aniq fe'l, ot va ravishlar bilan tasvirlaysiz — Task 1 uchun asosiy lug'at.",
+          "minutes": 14,
+          "words": [
+            {"en": "increase / rise", "uz": "oshmoq / o'sish", "ipa": "/ɪnˈkriːs/ /raɪz/", "ex": "Sales rose steadily over the decade."},
+            {"en": "decrease / decline", "uz": "kamaymoq / pasayish", "ipa": "/dɪˈkriːs/ /dɪˈklaɪn/", "ex": "There was a sharp decline in tourism."},
+            {"en": "fluctuate", "uz": "tebranmoq (ko'tarilib-tushmoq)", "ipa": "/ˈflʌktʃueɪt/", "ex": "Prices fluctuated between $20 and $30."},
+            {"en": "remain stable", "uz": "barqaror qolmoq", "ipa": "/rɪˈmeɪn ˈsteɪbl/", "ex": "The figure remained stable at 40%."},
+            {"en": "peak", "uz": "cho'qqiga chiqmoq, eng yuqori nuqta", "ipa": "/piːk/", "ex": "Usage peaked at 80% in 2015."},
+            {"en": "dramatically", "uz": "keskin (juda katta)", "ipa": "/drəˈmætɪkli/", "ex": "Car ownership increased dramatically."},
+            {"en": "gradually", "uz": "asta-sekin", "ipa": "/ˈɡrædʒuəli/", "ex": "The population grew gradually."},
+            {"en": "slightly", "uz": "biroz, ozgina", "ipa": "/ˈslaɪtli/", "ex": "Unemployment fell slightly in May."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "reading",
+              "title": "Model answer: cinema attendance",
+              "text": "The line graph illustrates the number of cinema visits per person in the UK between 1990 and 2020. Overall, attendance rose for most of the period before dropping sharply at the end. In 1990, the average person went to the cinema twice a year. This figure increased gradually over the next two decades and peaked at just over four visits in 2010. It then remained stable until 2018. However, there was a dramatic fall in 2020, when attendance plunged to fewer than one visit per person, the lowest point in the period.",
+              "glossary": {"illustrates": "tasvirlaydi", "per person": "har bir kishiga", "overall": "umuman olganda", "decades": "o'n yilliklar", "plunged": "keskin qulab tushdi", "figure": "ko'rsatkich (raqam)", "the lowest point": "eng past nuqta"},
+              "uz": "Chiziqli grafik 1990–2020 yillarda Buyuk Britaniyada bir kishiga to'g'ri keladigan kinoga borishlar sonini ko'rsatadi. Umuman olganda, davrning ko'p qismida tashrif oshib bordi, so'ng oxirida keskin tushib ketdi. 1990-yilda o'rtacha odam yiliga ikki marta kinoga borgan. Bu ko'rsatkich keyingi yigirma yil davomida asta-sekin oshib, 2010-yilda to'rtdan biroz ko'proq tashrif bilan cho'qqiga chiqdi. Keyin u 2018-yilgacha barqaror qoldi. Biroq 2020-yilda keskin pasayish bo'ldi — tashrif bir kishiga birdan kam darajaga qulab, davrning eng past nuqtasiga tushdi."
+            },
+            {"type": "tip", "title_uz": "IELTS maslahati: Overview", "body_uz": "Task 1 da **Overview** (umumiy xulosa) bo'lmasa, Task Achievement 5 dan oshmaydi! Overview'ni **Overall, ...** bilan boshlang va faqat eng asosiy tendensiyani yozing — raqamlarsiz. Raqamlar keyingi abzatslarda keladi."},
+            {"type": "choice", "q": "Which sentence in the model is the overview?", "options": ["In 1990, the average person went to the cinema twice a year.", "Overall, attendance rose for most of the period before dropping sharply at the end.", "It then remained stable until 2018."], "answer": 1, "explain_uz": "Overview — umumiy tendensiya, **Overall** bilan boshlangan, raqamsiz."},
+            {"type": "choice", "q": "When did attendance reach its highest point?", "options": ["1990", "2010", "2020"], "answer": 1, "explain_uz": "\"peaked at just over four visits in 2010\"."},
+            {
+              "type": "grammar",
+              "title_uz": "Ikki xil tuzilma: fe'l + ravish va sifat + ot",
+              "body_uz": "Bir xil ma'noni ikki yo'l bilan yozib, lug'atingizni boyiting (Lexical Resource uchun muhim):\n**1) Ot + fe'l + ravish:** Sales **increased sharply**.\n**2) There was a/an + sifat + ot + in:** There was **a sharp increase in** sales.\nRavish → sifat: sharp**ly** → sharp · gradual**ly** → gradual · slight**ly** → slight · dramatic**ally** → dramatic · steadi**ly** → steady.\nRaqamlar bilan predloglar: rose **to** 50% (yetib bordi) · rose **by** 10% (farq) · peaked **at** 80% · **from** 20% **to** 35%.",
+              "examples": [
+                {"en": "The price of oil fell dramatically in 2008.", "uz": "2008-yilda neft narxi keskin tushdi."},
+                {"en": "There was a dramatic fall in the price of oil.", "uz": "Neft narxida keskin pasayish bo'ldi."},
+                {"en": "Exports rose by 15% to $2 billion.", "uz": "Eksport 15% ga oshib, 2 mlrd dollarga yetdi."},
+                {"en": "The number of students remained stable at around 500.", "uz": "Talabalar soni taxminan 500 da barqaror qoldi."}
+              ]
+            },
+            {"type": "choice", "q": "There was a ___ increase in the number of tourists.", "options": ["sharply", "sharp", "sharpness"], "answer": 1, "explain_uz": "Ot (increase) oldidan **sifat**: a sharp increase."},
+            {"type": "choice", "q": "Unemployment rose ___ 5% ___ 7%.", "options": ["by / at", "from / to", "to / by"], "answer": 1, "explain_uz": "Boshlang'ich va oxirgi qiymat: **from** 5% **to** 7%."},
+            {"type": "choice", "q": "Prices went up and down several times. They ___.", "options": ["fluctuated", "peaked", "remained stable"], "answer": 0, "explain_uz": "Ko'tarilib-tushish → **fluctuate**."},
+            {"type": "gap", "text": "The population grew ___ (gradual) between 1950 and 2000.", "answer": ["gradually"], "uz": "Aholi 1950–2000 yillarda asta-sekin o'sdi.", "explain_uz": "Fe'l (grew) dan keyin **ravish**: gradually."},
+            {"type": "gap", "text": "Car sales increased ___ 20%, from 100,000 to 120,000.", "answer": ["by"], "uz": "Avtomobil savdosi 20% ga oshdi.", "explain_uz": "Farq miqdori → **by**."},
+            {"type": "translate", "uz": "Internetdan foydalanish keskin oshdi.", "answer": ["Internet use increased dramatically", "Internet usage increased dramatically", "Internet use rose dramatically", "Internet usage rose dramatically", "Internet use increased sharply", "Internet usage increased sharply", "The use of the internet increased dramatically", "There was a dramatic increase in internet use", "There was a sharp increase in internet use"], "explain_uz": "Ot + fe'l + ravish yoki There was a + sifat + ot."},
+            {"type": "match", "pairs": [["sharply", "keskin"], ["gradually", "asta-sekin"], ["slightly", "biroz"], ["steadily", "bir maromda"], ["fluctuate", "tebranmoq"]]},
+            {"type": "order", "uz": "2015-yilda foydalanish 80% bilan cho'qqiga chiqdi.", "words": ["Usage", "peaked", "at", "80%", "in", "2015"], "answer": "Usage peaked at 80% in 2015"},
+            {"type": "listen", "answer": ["There was a slight decline in sales.", "There was a slight decline in sales"], "uz": "Eshiting va yozing"},
+            {"type": "speak", "text": "Overall, the number of visitors increased steadily, although there was a slight fall in 2012.", "uz": "Ovoz chiqarib o'qing"},
+            {"type": "write", "prompt_uz": "Quyidagi ma'lumotni 4–6 gapda tasvirlang (Overview bilan): Toshkentda velosiped ijarasi — 2018: 2 000, 2019: 5 000, 2020: 4 800, 2021: 12 000, 2022: 15 000 marta.", "prompt": "Describe the data with an overview: bike rentals in Tashkent — 2018: 2,000; 2019: 5,000; 2020: 4,800; 2021: 12,000; 2022: 15,000.", "min_words": 60, "example": "The data shows the number of bike rentals in Tashkent between 2018 and 2022. Overall, rentals rose significantly over the period, despite a slight dip in 2020. In 2018, bikes were rented 2,000 times, and this figure more than doubled to 5,000 the following year. After falling slightly to 4,800 in 2020, rentals increased dramatically to 12,000 in 2021 and continued to grow, reaching a peak of 15,000 in 2022."}
+          ]
+        },
+        {
+          "slug": "b2-linking",
+          "title": "Linking ideas in essays",
+          "title_uz": "Inshoda fikrlarni bog'lash (Writing Task 2)",
+          "goal_uz": "However, moreover, therefore, whereas, despite kabi bog'lovchilarni to'g'ri tuzilma va tinish belgisi bilan ishlatasiz.",
+          "minutes": 14,
+          "words": [
+            {"en": "moreover", "uz": "bundan tashqari", "ipa": "/mɔːrˈəʊvə/", "ex": "Moreover, public transport reduces pollution."},
+            {"en": "however", "uz": "biroq", "ipa": "/haʊˈevə/", "ex": "However, this solution is expensive."},
+            {"en": "therefore", "uz": "shu sababli", "ipa": "/ˈðeəfɔː/", "ex": "Therefore, governments should invest more."},
+            {"en": "whereas", "uz": "holbuki, ... esa", "ipa": "/weərˈæz/", "ex": "Some prefer cities, whereas others like villages."},
+            {"en": "despite", "uz": "-ga qaramay", "ipa": "/dɪˈspaɪt/", "ex": "Despite the rain, the match continued."},
+            {"en": "for instance", "uz": "masalan", "ipa": "/fər ˈɪnstəns/", "ex": "For instance, Finland has free education."},
+            {"en": "as a result", "uz": "natijada", "ipa": "/əz ə rɪˈzʌlt/", "ex": "As a result, crime rates fell."},
+            {"en": "on the other hand", "uz": "boshqa tomondan", "ipa": "/ɒn ði ˈʌðə hænd/", "ex": "On the other hand, online courses lack interaction."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "reading",
+              "title": "Body paragraph: working from home",
+              "text": "Working from home offers clear benefits for employees. Firstly, it removes the daily commute, which can take up to two hours in large cities. As a result, workers have more time for their families and hobbies. Moreover, many people report that they concentrate better without office distractions. For instance, a 2022 survey found that 60% of remote workers felt more productive. However, these advantages are not universal. Some employees feel isolated, whereas others struggle to separate work from home life. Therefore, a hybrid model may be the most sensible solution.",
+              "glossary": {"employees": "xodimlar", "commute": "ishga qatnash yo'li", "concentrate": "diqqatni jamlamoq", "survey": "so'rovnoma", "productive": "samarali", "isolated": "yolg'iz, ajralgan", "hybrid model": "aralash (gibrid) model"},
+              "uz": "Uydan ishlash xodimlar uchun aniq foyda beradi. Birinchidan, katta shaharlarda ikki soatgacha vaqt oladigan kundalik yo'l yo'qoladi. Natijada xodimlarda oila va qiziqishlar uchun ko'proq vaqt bo'ladi. Bundan tashqari, ko'pchilik ofisdagi chalg'ituvchi narsalarsiz yaxshiroq diqqat qilishini aytadi. Masalan, 2022-yilgi so'rovnomada masofaviy ishchilarning 60% o'zlarini samaraliroq his qilgan. Biroq bu afzalliklar hamma uchun emas. Ba'zi xodimlar o'zini yolg'iz his qiladi, boshqalari esa ishni uy hayotidan ajratishda qiynaladi. Shu sababli gibrid model eng oqilona yechim bo'lishi mumkin."
+            },
+            {"type": "choice", "q": "What is the function of \"For instance\" in the paragraph?", "options": ["It adds a contrast.", "It introduces an example that supports the idea.", "It gives a conclusion."], "answer": 1, "explain_uz": "**For instance** — misol keltiradi (so'rovnoma)."},
+            {"type": "choice", "q": "Which linker introduces the writer's conclusion?", "options": ["Moreover", "However", "Therefore"], "answer": 2, "explain_uz": "**Therefore** — xulosa/natija."},
+            {
+              "type": "grammar",
+              "title_uz": "Bog'lovchilar: tuzilma va tinish belgilari",
+              "body_uz": "Coherence & Cohesion bahosi aynan shularga bog'liq. Faqat ko'p ishlatish emas — **to'g'ri** ishlatish muhim.\n**Gap boshida + vergul:** However, ... · Moreover, ... · Therefore, ... · As a result, ... · For instance, ...\n**Ikki qismni bitta gapda bog'laydi:** ..., **whereas** ... · **Although** + gap (ega + fe'l).\n**despite / in spite of + ot yoki -ing** (gap emas!): Despite **the rain** ✔ · Despite **being tired** ✔ · Despite **it was raining** ✘ → Despite **the fact that** it was raining ✔.\nKo'p uchraydigan xato: \"Although..., but...\" — ikkalasini birga ishlatmang!",
+              "examples": [
+                {"en": "Despite the high cost, many families choose private schools.", "uz": "Yuqori narxga qaramay, ko'p oilalar xususiy maktabni tanlaydi."},
+                {"en": "Although it is costly, it saves time.", "uz": "Garchi qimmat bo'lsa ham, vaqtni tejaydi."},
+                {"en": "Cities offer jobs, whereas villages offer peace.", "uz": "Shaharlar ish beradi, qishloqlar esa osoyishtalik."},
+                {"en": "Pollution has increased. As a result, more people suffer from asthma.", "uz": "Ifloslanish oshdi. Natijada ko'proq odam astmadan aziyat chekmoqda."}
+              ]
+            },
+            {"type": "choice", "q": "___ the bad weather, the event was a success.", "options": ["Although", "Despite", "However"], "answer": 1, "explain_uz": "Keyin **ot** (the bad weather) keladi → **Despite**."},
+            {"type": "choice", "q": "Which sentence is correct?", "options": ["Although it was expensive, but we bought it.", "Despite it was expensive, we bought it.", "Although it was expensive, we bought it."], "answer": 2, "explain_uz": "Although + gap, (but'siz)."},
+            {"type": "choice", "q": "Technology improves communication. ___, it can make people less sociable.", "options": ["Moreover", "On the other hand", "For instance"], "answer": 1, "explain_uz": "Qarama-qarshi fikr → **On the other hand**."},
+            {"type": "gap", "text": "Tuition is free in Germany, ___ in the UK it is very expensive.", "answer": ["whereas", "while"], "uz": "Germaniyada o'qish bepul, Buyuk Britaniyada esa juda qimmat.", "explain_uz": "Ikki holatni solishtirish → **whereas**."},
+            {"type": "gap", "text": "Fast food is cheap. ___, it is often unhealthy.", "answer": ["However"], "uz": "Fast-fud arzon. Biroq u ko'pincha zararli.", "explain_uz": "Yangi gap boshida qarama-qarshilik → **However,**"},
+            {"type": "gap", "text": "Smoking was banned in cafés. As a ___, fewer young people started smoking.", "answer": ["result"], "uz": "Natijada kamroq yoshlar chekishni boshladi.", "explain_uz": "**As a result** — natijada."},
+            {"type": "match", "pairs": [["moreover", "bundan tashqari"], ["therefore", "shu sababli"], ["whereas", "... esa"], ["despite", "-ga qaramay"], ["for instance", "masalan"]]},
+            {"type": "order", "uz": "Shu sababli hukumatlar jamoat transportiga ko'proq sarmoya kiritishi kerak.", "words": ["Therefore", "governments", "should", "invest", "more", "in", "public", "transport"], "answer": "Therefore governments should invest more in public transport"},
+            {"type": "translate", "uz": "Ko'p afzalliklariga qaramay, onlayn ta'limning kamchiliklari ham bor.", "answer": ["Despite its many advantages, online education also has disadvantages", "Despite its many advantages, online learning also has disadvantages", "Despite many advantages, online education also has disadvantages", "Despite the many advantages, online education also has disadvantages", "Despite its many advantages, online education has disadvantages too", "Despite its many benefits, online education also has drawbacks"], "explain_uz": "**Despite + ot birikmasi**, keyin asosiy gap."},
+            {"type": "listen", "answer": ["On the other hand, online courses are cheaper.", "On the other hand online courses are cheaper"], "uz": "Eshiting va yozing"},
+            {"type": "speak", "text": "Although online learning is flexible, many students still prefer traditional classes because of the social interaction.", "uz": "Ovoz chiqarib o'qing"},
+            {"type": "write", "prompt_uz": "IELTS Task 2 uchun bitta asosiy abzats yozing (6–8 gap): \"Some people think university education should be free for everyone. Do you agree?\" Kamida 4 xil bog'lovchi ishlating.", "prompt": "Write one body paragraph: Some people think university education should be free for everyone. Do you agree? Use at least four different linkers.", "min_words": 80, "example": "There are strong reasons why university education should be free. Firstly, it gives talented students from poor families the same opportunities as wealthy students. As a result, society benefits from a wider pool of skilled professionals. Moreover, graduates without debt can start businesses or families earlier. For instance, Germany abolished tuition fees in 2014, and student numbers have since grown. However, free education requires high taxes, whereas the money could be spent on schools or hospitals. Therefore, governments need to balance access with cost."}
+          ]
+        },
+        {
+          "slug": "b2-part2-story",
+          "title": "Telling a story in Speaking Part 2",
+          "title_uz": "Speaking Part 2: voqeani hikoya qilish",
+          "goal_uz": "2 daqiqa davomida voqeani mantiqiy, Past Continuous va Past Perfect bilan boy qilib gapirasiz.",
+          "minutes": 14,
+          "words": [
+            {"en": "vividly", "uz": "aniq-tiniq (eslamoq)", "ipa": "/ˈvɪvɪdli/", "ex": "I vividly remember my first day at school."},
+            {"en": "it turned out that", "uz": "ma'lum bo'lishicha", "ipa": "/ɪt tɜːnd aʊt ðæt/", "ex": "It turned out that the shop was closed."},
+            {"en": "all of a sudden", "uz": "birdaniga", "ipa": "/ɔːl əv ə ˈsʌdn/", "ex": "All of a sudden, the lights went out."},
+            {"en": "looking back", "uz": "orqaga nazar tashlab", "ipa": "/ˈlʊkɪŋ bæk/", "ex": "Looking back, it was the right decision."},
+            {"en": "make a decision", "uz": "qaror qabul qilmoq", "ipa": "/meɪk ə dɪˈsɪʒn/", "ex": "I had to make a decision quickly."},
+            {"en": "be thrilled", "uz": "juda xursand bo'lmoq", "ipa": "/bi θrɪld/", "ex": "I was thrilled when I got the results."},
+            {"en": "unexpectedly", "uz": "kutilmaganda", "ipa": "/ˌʌnɪkˈspektɪdli/", "ex": "My uncle visited us unexpectedly."},
+            {"en": "a turning point", "uz": "burilish nuqtasi", "ipa": "/ə ˈtɜːnɪŋ pɔɪnt/", "ex": "That trip was a turning point in my life."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "tip",
+              "title_uz": "Part 2 tuzilmasi",
+              "body_uz": "Kartochkada 4 ta savol bo'ladi (what / when / where / why). 1 daqiqalik tayyorgarlikda har biriga 2–3 kalit so'z yozing. Gapirish rejasi: **1) Kirish** (What I'd like to talk about is...) → **2) Fon** (When/Where — Past Continuous) → **3) Asosiy voqea** (Past Simple + All of a sudden...) → **4) Natija va his-tuyg'u** (Looking back... / Why). Shu reja 2 daqiqani to'ldiradi va Fluency & Coherence'ni oshiradi."
+            },
+            {
+              "type": "reading",
+              "title": "Describe a time you helped someone",
+              "text": "What I'd like to talk about is a time I helped a tourist in Bukhara about two years ago. I was walking home from university one evening, and it was getting dark. All of a sudden, I noticed an elderly woman who was standing near the Lyabi-Hauz looking at a map, clearly confused. I asked her if she needed help, and it turned out that she had lost her group and her phone had died. Since I had studied English for several years, I was able to explain the situation to a taxi driver and we found her hotel together. She was so grateful that she sent me a postcard from Germany a month later. Looking back, it was a small thing, but it was a turning point for me, because I realised how useful my English could be.",
+              "glossary": {"elderly": "keksa", "clearly": "aniq, ko'rinib turibdiki", "confused": "sarosimada", "her phone had died": "telefoni o'chib qolgan edi", "grateful": "minnatdor", "realised": "angladim"},
+              "uz": "Men taxminan ikki yil oldin Buxoroda bir sayyohga yordam berganim haqida gapirmoqchiman. Bir kuni kechqurun universitetdan uyga ketayotgan edim, qorong'i tushayotgandi. Birdaniga Labi Hovuz yonida xaritaga qarab turgan, sarosimada bo'lgan keksa ayolni ko'rib qoldim. Yordam kerakmi deb so'radim va ma'lum bo'lishicha, u guruhini yo'qotib qo'ygan, telefoni ham o'chib qolgan ekan. Bir necha yil ingliz tili o'rganganim uchun vaziyatni taksi haydovchisiga tushuntira oldim va birga mehmonxonasini topdik. U shunchalik minnatdor bo'ldiki, bir oydan keyin Germaniyadan menga otkritka yubordi. Orqaga nazar tashlasam, bu kichik ish edi, lekin men uchun burilish nuqtasi bo'ldi, chunki ingliz tilim qanchalik foydali ekanini angladim."
+            },
+            {"type": "choice", "q": "Why couldn't the tourist call her group?", "options": ["She didn't have their number.", "Her phone had died.", "She didn't speak English."], "answer": 1, "explain_uz": "\"her phone had died\" — telefoni o'chib qolgan edi."},
+            {"type": "choice", "q": "How did the speaker feel about the experience later?", "options": ["It changed how he saw his English.", "He regretted helping.", "He forgot about it."], "answer": 0, "explain_uz": "\"I realised how useful my English could be\"."},
+            {
+              "type": "grammar",
+              "title_uz": "Hikoya zamonlari: Past Simple · Past Continuous · Past Perfect",
+              "body_uz": "Uchta zamonni aralashtirish — Grammatical Range uchun eng oson \"ball oluvchi\" usul.\n**Past Continuous (was/were + -ing)** — fon, davom etayotgan jarayon: I **was walking** home, it **was getting** dark.\n**Past Simple** — asosiy voqealar ketma-ketligi: I **noticed** a woman, I **asked** her...\n**Past Perfect (had + V3)** — hikoyadagi vaqtdan ham **oldinroq** bo'lgan ish: she **had lost** her group (men ko'rishdan oldin).\nTuzilma: I **was walking** home **when** I **noticed** her. (uzun fon + qisqa voqea)",
+              "examples": [
+                {"en": "I was cooking dinner when the phone rang.", "uz": "Kechki ovqat pishirayotgan edim, telefon jiringladi."},
+                {"en": "When we arrived, the film had already started.", "uz": "Biz yetib kelganimizda film allaqachon boshlangan edi."},
+                {"en": "While she was studying abroad, she met her best friend.", "uz": "Chet elda o'qiyotgan paytida eng yaqin do'stini uchratdi."},
+                {"en": "I realised I had left my passport at home.", "uz": "Pasportimni uyda qoldirganimni angladim."}
+              ]
+            },
+            {"type": "choice", "q": "I ___ along the street when I saw an old friend.", "options": ["walked", "was walking", "had walked"], "answer": 1, "explain_uz": "Fon jarayoni (… when + qisqa voqea) → **was walking**."},
+            {"type": "choice", "q": "When I got to the station, the train ___.", "options": ["already left", "was leaving already", "had already left"], "answer": 2, "explain_uz": "Men kelishimdan **oldin** ketgan → Past Perfect: **had already left**."},
+            {"type": "gap", "text": "While I ___ (sleep), someone knocked on the door.", "answer": ["was sleeping"], "uz": "Men uxlayotganimda kimdir eshikni taqillatdi.", "explain_uz": "While + davom etayotgan jarayon → **was sleeping**."},
+            {"type": "gap", "text": "It turned out that he ___ forgotten his keys.", "answer": ["had"], "uz": "Ma'lum bo'lishicha, u kalitlarini unutgan ekan.", "explain_uz": "Oldinroq bo'lgan voqea → **had** + V3."},
+            {"type": "match", "pairs": [["all of a sudden", "birdaniga"], ["looking back", "orqaga nazar tashlab"], ["it turned out that", "ma'lum bo'lishicha"], ["a turning point", "burilish nuqtasi"]]},
+            {"type": "order", "uz": "Men buni hali ham aniq-tiniq eslayman.", "words": ["I", "still", "remember", "it", "vividly"], "answer": "I still remember it vividly"},
+            {"type": "listen", "answer": ["All of a sudden, the lights went out.", "All of a sudden the lights went out"], "uz": "Eshiting va yozing"},
+            {"type": "choice", "audio": true, "q": "What had happened before the speaker arrived at the airport?", "say": "By the time I arrived at the airport, my flight had been cancelled, so I had to stay at a hotel overnight.", "options": ["The flight had been cancelled.", "He had lost his passport.", "The hotel had closed."], "answer": 0, "explain_uz": "\"my flight had been cancelled\" — reys bekor qilingan edi."},
+            {"type": "translate", "uz": "Biz uyga yetib kelganimizda mehmonlar allaqachon ketgan edi.", "answer": ["When we got home, the guests had already left", "When we arrived home, the guests had already left", "When we got home the guests had already gone", "When we arrived home, the guests had already gone", "By the time we got home, the guests had already left"], "explain_uz": "Avvalroq bo'lgan ish → **had already left**."},
+            {"type": "speak", "text": "I was walking home from university when, all of a sudden, I noticed a tourist who had lost her way.", "uz": "Ovoz chiqarib, ravon ayting"},
+            {"type": "write", "prompt_uz": "Part 2 kartochkasi: \"Describe a time when something unexpected happened.\" Javobingizni 8–10 gapda yozing: Past Continuous, Past Perfect va kamida 2 ta yangi iborani ishlating.", "prompt": "Describe a time when something unexpected happened. Say what happened, when and where it happened, and how you felt.", "min_words": 90, "example": "I'd like to talk about the day I unexpectedly met my favourite writer. It happened last spring, when I was visiting a book fair in Tashkent with my sister. We were looking at some old novels when, all of a sudden, I heard a familiar voice. It turned out that the author of my favourite book was signing copies at the next stand. I had read all of his novels, but I had never seen him in person. I was so thrilled that I could hardly speak. Looking back, that short conversation was a turning point, because it inspired me to start writing my own stories."}
+          ]
+        }
+      ]
+    }
+  ]
+}

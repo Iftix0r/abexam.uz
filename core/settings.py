@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     'exams',
     'payments',
     'panel',
+    'learn',
 ]
 
 MIDDLEWARE = [

@@ -77,6 +77,7 @@
     .qa-card.results::before { background: linear-gradient(90deg, #22c55e, #16a34a); }
     .qa-card.vocab::before { background: linear-gradient(90deg, #f59e0b, #d97706); }
     .qa-card.finance::before { background: linear-gradient(90deg, #6366f1, #4f46e5); }
+    .qa-card.learn::before { background: linear-gradient(90deg, #0ea5e9, #0284c7); }
 
     .qa-icon {
         width: 40px; height: 40px;
@@ -88,6 +89,7 @@
     .qa-icon.results { background: rgba(34,197,94,.15);  color: #22c55e; }
     .qa-icon.vocab   { background: rgba(245,158,11,.15); color: #f59e0b; }
     .qa-icon.finance { background: rgba(99,102,241,.15); color: #6366f1; }
+    .qa-icon.learn   { background: rgba(14,165,233,.15); color: #0ea5e9; }
 
     .qa-card h3 {
         font-size: 15px;
@@ -128,6 +130,12 @@
         <div class="qa-icon exam"><i data-lucide="clipboard-check" style="width:20px;"></i></div>
         <h3>Test topshirish</h3>
         <p>Mock IELTS imtihonlaridan birini tanlang va boshlang</p>
+        <span class="arrow">→</span>
+    </a>
+    <a href="{% url 'learn:hub' %}" class="qa-card learn">
+        <div class="qa-icon learn"><i data-lucide="graduation-cap" style="width:20px;"></i></div>
+        <h3>Ingliz tili kursi</h3>
+        <p>{% if learn_streak %}🔥 {{ learn_streak }} kun ketma-ket · {% endif %}{% if learn_due %}{{ learn_due }} ta so'z takrorlashni kutmoqda{% else %}Har kuni 10 daqiqa: dialoglar, mashqlar, AI suhbat{% endif %}</p>
         <span class="arrow">→</span>
     </a>
     <a href="{% url 'results_list' %}" class="qa-card results">
