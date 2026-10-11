@@ -4,6 +4,11 @@
 {% block nav_live %}active{% endblock %}
 
 {% block content %}
+<style>
+@keyframes rowAlert { 0%,100% { background: transparent } 50% { background: #ef444433 } }
+tr.row-alert td { animation: rowAlert 1s ease-in-out 6; }
+</style>
+<div id="liveStats">
 <div class="stat-grid">
   <div class="stat-card">
     <div class="stat-icon" style="background:#6366f118"><svg fill="none" stroke="#6366f1" viewBox="0 0 24 24"><path stroke-width="1.8" d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4" stroke-width="1.8"/></svg></div>
@@ -21,6 +26,7 @@
     <div class="stat-icon" style="background:#ef444418"><svg fill="none" stroke="#ef4444" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke-width="1.8"/><line x1="12" y1="8" x2="12" y2="12" stroke-width="2"/><line x1="12" y1="16" x2="12" y2="16" stroke-width="2"/></svg></div>
     <div><div class="stat-val">{{ counts.unsent }}</div><div class="stat-label">Yuborilmagan</div></div>
   </div>
+</div>
 </div>
 
 <div class="section-header">
@@ -40,9 +46,14 @@
       {% endfor %}
     </select>
   </form>
-  <label style="font-size:13px;color:var(--muted);display:flex;gap:6px;align-items:center;cursor:pointer">
-    <input type="checkbox" id="autoRefresh"> Har 20 soniyada yangilash
-  </label>
+  <div style="display:flex;gap:14px;flex-wrap:wrap">
+    <label style="font-size:13px;color:var(--muted);display:flex;gap:6px;align-items:center;cursor:pointer">
+      <input type="checkbox" id="autoRefresh"> Har 10 soniyada yangilash
+    </label>
+    <label style="font-size:13px;color:var(--muted);display:flex;gap:6px;align-items:center;cursor:pointer" title="Kimdir test oynasidan chiqsa yoki matn joylasa, shu kompyuterda ovoz chiqadi">
+      <input type="checkbox" id="soundAlerts"> 🔔 Shubhali harakatda ovoz
+    </label>
+  </div>
 </div>
 
 <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
@@ -57,7 +68,7 @@
   </span>
 </div>
 
-<div class="card" style="padding:0">
+<div class="card" style="padding:0" id="liveTable">
   <div class="table-wrap">
     <table>
       <thead><tr>
@@ -66,7 +77,7 @@
       </tr></thead>
       <tbody>
         {% for a in attempts %}
-        <tr id="attempt-row-{{ a.pk }}">
+        <tr id="attempt-row-{{ a.pk }}" data-user="{{ a.user.username }}" data-flags="{{ a.leave_count }}|{{ a.pasted_chars }}">
           <td>{% if not a.is_submitted %}<input type="checkbox" class="attempt-checkbox" value="{{ a.pk }}" data-answered="{{ a.answered_count }}" onchange="updateBulk()">{% endif %}</td>
           <td><a href="{% url 'panel:user_detail' a.user.pk %}" style="color:var(--primary);font-weight:500">{{ a.user.username }}</a>
             {% if a.user.get_full_name %}<div style="font-size:12px;color:var(--muted)">{{ a.user.get_full_name }}</div>{% endif %}
@@ -116,7 +127,7 @@
 </div>
 
 <p style="font-size:12px;color:var(--muted);margin-top:12px;line-height:1.6">
-  Test sahifasi har 20 soniyada javoblar va holatni serverga yuboradi; xabar va qo'shimcha vaqt o'quvchiga shu orqali ~20 soniyada yetadi.
+  Test sahifasi har 20 soniyada (shubhali harakatda — darhol) javoblar va holatni serverga yuboradi; xabar va qo'shimcha vaqt o'quvchiga shu orqali ~20 soniyada yetadi.
   <b>Nazorat</b> ustuni: test oynasidan chiqishlar (boshqa tab/dastur) va Writing'ga joylangan matn — 3+ chiqish yoki 100+ belgi qizil bilan belgilanadi.
   «Hammasini yakunlash» tanlangan imtihonning barcha yuborilmagan urinishlaridan natija yaratadi; ochiq turgan test sahifalari to'xtaydi.
 </p>
@@ -126,13 +137,81 @@
 <script>
 const EXAM_ID = "{{ exam_id }}";
 const REFRESH_KEY = 'panel_live_autorefresh';
+const SOUND_KEY = 'panel_live_sound';
 const autoRefresh = document.getElementById('autoRefresh');
-try { autoRefresh.checked = localStorage.getItem(REFRESH_KEY) === '1'; } catch(e) {}
+const soundAlerts = document.getElementById('soundAlerts');
+try {
+  autoRefresh.checked = localStorage.getItem(REFRESH_KEY) === '1';
+  soundAlerts.checked = localStorage.getItem(SOUND_KEY) === '1';
+} catch(e) {}
 autoRefresh.addEventListener('change', () => { try { localStorage.setItem(REFRESH_KEY, autoRefresh.checked ? '1' : '0'); } catch(e) {} });
-setInterval(() => {
-  // Don't reload away a selection the admin is in the middle of making.
-  if (autoRefresh.checked && !document.querySelector('.attempt-checkbox:checked')) location.reload();
-}, 20000);
+soundAlerts.addEventListener('change', () => {
+  try { localStorage.setItem(SOUND_KEY, soundAlerts.checked ? '1' : '0'); } catch(e) {}
+  if (soundAlerts.checked) { unlockAudio(); beep(1); }
+});
+
+// Browsers only play sound after a click on the page, so the alert audio
+// is unlocked on the first click anywhere (the table refreshes in place,
+// so that unlock survives — a full page reload would lose it).
+let audioCtx = null;
+function unlockAudio(){
+  try {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+  } catch(e) {}
+}
+document.addEventListener('pointerdown', unlockAudio);
+function beep(times){
+  if (!audioCtx || audioCtx.state !== 'running') return;
+  const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+  osc.type = 'triangle'; osc.frequency.value = 660;
+  osc.connect(gain); gain.connect(audioCtx.destination);
+  const t0 = audioCtx.currentTime;
+  gain.gain.setValueAtTime(0, t0);
+  for (let i = 0; i < times; i++) {
+    gain.gain.setValueAtTime(0.4, t0 + i * 0.4);
+    gain.gain.setValueAtTime(0, t0 + i * 0.4 + 0.2);
+  }
+  osc.start(t0); osc.stop(t0 + times * 0.4);
+}
+
+function flagMap(){
+  const m = {};
+  document.querySelectorAll('#liveTable tr[data-flags]').forEach(tr => { m[tr.id] = tr.dataset.flags; });
+  return m;
+}
+// Refreshes the stats and table in place and calls out every student whose
+// "left the window" / "pasted" counters went up since the last refresh.
+async function refreshLive(force){
+  if (!force && document.querySelector('.attempt-checkbox:checked')) return;  // don't wipe a selection
+  let doc;
+  try {
+    const r = await fetch(location.href, {credentials: 'same-origin'});
+    if (!r.ok) return;
+    doc = new DOMParser().parseFromString(await r.text(), 'text/html');
+  } catch(e) { return; }
+  const before = flagMap();
+  ['liveStats', 'liveTable'].forEach(id => {
+    const fresh = doc.getElementById(id);
+    if (fresh) document.getElementById(id).innerHTML = fresh.innerHTML;
+  });
+  updateBulk();
+  const alerts = [];
+  document.querySelectorAll('#liveTable tr[data-flags]').forEach(tr => {
+    const old = before[tr.id];
+    if (old === undefined || old === tr.dataset.flags) return;
+    const [l0, p0] = old.split('|').map(Number), [l1, p1] = tr.dataset.flags.split('|').map(Number);
+    if (l1 > l0 || p1 > p0) {
+      tr.classList.add('row-alert');
+      alerts.push(`${tr.dataset.user}: ${l1 > l0 ? 'test oynasidan chiqdi' : 'matn joyladi'}`);
+    }
+  });
+  if (alerts.length) {
+    toast('⚠ ' + alerts.join(', '), '#ef4444');
+    if (soundAlerts.checked) beep(3);
+  }
+}
+setInterval(() => { if (autoRefresh.checked) refreshLive(); }, 10000);
 
 function selectedIds(){ return Array.from(document.querySelectorAll('.attempt-checkbox:checked')).map(cb => Number(cb.value)); }
 function toggleAll(master){
@@ -173,7 +252,7 @@ async function finishAll(){
   if (!EXAM_ID) { toast('Avval yuqoridan imtihonni tanlang', '#eab308'); return; }
   if (!confirm("Shu imtihonning BARCHA yuborilmagan urinishlaridan (hozir yozayotganlar ham) natija yaratilsinmi? Ochiq test sahifalari to'xtaydi.")) return;
   const d = await postJSON('/panel/live/finish-all/', {exam: EXAM_ID});
-  if (d.ok) { toast(`${d.done} ta natija yaratildi`); setTimeout(() => location.reload(), 700); }
+  if (d.ok) { toast(`${d.done} ta natija yaratildi`); setTimeout(() => refreshLive(true), 700); }
   else toast(d.error || 'Xatolik yuz berdi', '#ef4444');
 }
 async function finalizeAttempt(pk, state){
@@ -182,7 +261,7 @@ async function finalizeAttempt(pk, state){
     : "Saqlangan javoblardan natija yaratilsinmi?";
   if (!confirm(warn)) return;
   const d = await postJSON(`/panel/live/${pk}/finalize/`);
-  if (d.ok) { toast('Natija yaratildi'); setTimeout(() => location.reload(), 600); }
+  if (d.ok) { toast('Natija yaratildi'); setTimeout(() => refreshLive(true), 600); }
   else toast(d.error || 'Xatolik yuz berdi', '#ef4444');
 }
 async function bulkFinalize(){
@@ -191,7 +270,7 @@ async function bulkFinalize(){
   if (!ids.length) { toast("Tanlanganlarda javob yo'q", '#eab308'); return; }
   if (!confirm(`${ids.length} ta urinishning saqlangan javoblaridan natija yaratilsinmi?`)) return;
   const d = await postJSON('/panel/live/bulk-finalize/', {ids});
-  if (d.ok) { toast(`${d.done} ta natija yaratildi`); setTimeout(() => location.reload(), 600); }
+  if (d.ok) { toast(`${d.done} ta natija yaratildi`); setTimeout(() => refreshLive(true), 600); }
   else toast('Xatolik yuz berdi', '#ef4444');
 }
 async function deleteAttempt(pk){

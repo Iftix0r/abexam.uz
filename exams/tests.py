@@ -411,3 +411,23 @@ class LiveMonitoringTests(TestCase):
                          data=json.dumps({'attempt_id': 'other-pc', 'answers': {}}), content_type='application/json')
         self.client.force_login(self.admin)
         self.assertContains(self.client.get(reverse('panel:attempts_live')), '2 qurilma', count=2)
+
+
+@override_settings(CACHES={'default': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'}},
+                   STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
+class ProctorAlarmSettingTests(TestCase):
+    def test_alarm_follows_site_setting(self):
+        from core.models import SiteSettings
+        from django.core.cache import cache
+        cache.clear()
+        user = User.objects.create_user('student', password='pw')
+        exam = Exam.objects.create(title='Alarm test', price=0)
+        section = Section.objects.create(exam=exam, title='Reading', section_type='reading', order=1)
+        Question.objects.create(section=section, text='q', question_type='gap_fill', correct_answer='a', order=1)
+        self.client.force_login(user)
+        url = reverse('exams:take_exam', args=[exam.pk])
+        self.assertContains(self.client.get(url), 'const PROCTOR_ALARM = true;')
+        site = SiteSettings.get()
+        site.proctor_alarm = False
+        site.save()
+        self.assertContains(self.client.get(url), 'const PROCTOR_ALARM = false;')

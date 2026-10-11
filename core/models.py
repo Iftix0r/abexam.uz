@@ -11,6 +11,9 @@ class SiteSettings(models.Model):
     maintenance_mode = models.BooleanField(default=False)
     maintenance_message = models.TextField(blank=True, default='Sayt texnik ishlar uchun vaqtincha to\'xtatilgan.')
     logo = models.ImageField(upload_to='site/', null=True, blank=True)
+    # Exam page beeps and flashes red when the student leaves the test window
+    # or pastes into Writing, so invigilators in the room notice.
+    proctor_alarm = models.BooleanField(default=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:

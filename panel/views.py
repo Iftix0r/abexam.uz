@@ -1498,6 +1498,7 @@ def site_settings(request):
         settings_obj.announcement = request.POST.get('announcement', '').strip()
         settings_obj.announcement_active = request.POST.get('announcement_active') == 'on'
         settings_obj.maintenance_mode = request.POST.get('maintenance_mode') == 'on'
+        settings_obj.proctor_alarm = request.POST.get('proctor_alarm') == 'on'
         settings_obj.maintenance_message = request.POST.get('maintenance_message', '').strip()
         settings_obj.save()
         messages.success(request, 'Sozlamalar saqlandi')
