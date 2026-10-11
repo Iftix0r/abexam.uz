@@ -1,0 +1,81 @@
+{
+  "slug": "b1-first-interview",
+  "level": "B1",
+  "order": 2,
+  "emoji": "💼",
+  "minutes": 6,
+  "title": "My first job interview",
+  "title_uz": "Birinchi ish suhbatim",
+  "paragraphs": [
+    {
+      "en": "When I finished university, I applied for a job at an international IT company in Tashkent. I was excited, but also terrified, because the interview was going to be in English.",
+      "uz": "Universitetni tugatgach, Toshkentdagi xalqaro IT kompaniyasiga ishga ariza topshirdim. Hayajonda edim, lekin juda qo'rqardim ham, chunki suhbat ingliz tilida bo'lishi kerak edi."
+    },
+    {
+      "en": "For two weeks, I prepared every evening. I wrote down answers to typical questions like \"Why do you want this job?\" and practised them in front of the mirror. My sister pretended to be the interviewer.",
+      "uz": "Ikki hafta davomida har kecha tayyorlandim. \"Nega bu ishni xohlaysiz?\" kabi odatiy savollarga javoblarni yozib, ko'zgu oldida mashq qildim. Opam suhbatdosh rolini o'ynadi."
+    },
+    {
+      "en": "On the day of the interview, my hands were shaking. The manager, a friendly woman from Ireland, asked me to describe a difficult situation I had dealt with. Suddenly, I forgot all my prepared answers!",
+      "uz": "Suhbat kuni qo'llarim titrardi. Menejer — Irlandiyalik xushmuomala ayol — men duch kelgan qiyin vaziyatni tasvirlashimni so'radi. Birdaniga tayyorlagan barcha javoblarimni unutib qo'ydim!"
+    },
+    {
+      "en": "So I just told the truth: a real story about a group project that went wrong and how I helped fix it. I made some grammar mistakes, but I spoke naturally. The manager listened carefully and nodded.",
+      "uz": "Shunda men shunchaki haqiqatni aytdim: muvaffaqiyatsiz chiqqan guruh loyihasi va uni tuzatishga qanday yordam berganim haqidagi haqiqiy voqeani. Biroz grammatik xatolar qildim, lekin tabiiy gapirdim. Menejer diqqat bilan tingladi va bosh irg'adi."
+    },
+    {
+      "en": "A week later, they offered me the job. Later, the manager told me, \"Your English wasn't perfect, but you were honest and clear. That's what we need.\" Since then, I've stopped worrying about being perfect. Communication matters more than perfection.",
+      "uz": "Bir haftadan keyin menga ishni taklif qilishdi. Keyinroq menejer menga: \"Ingliz tilingiz mukammal emas edi, lekin siz samimiy va aniq edingiz. Bizga aynan shu kerak,\" dedi. O'shandan beri mukammal bo'lish haqida qayg'urishni to'xtatdim. Muloqot mukammallikdan muhimroq."
+    }
+  ],
+  "glossary": {
+    "applied for": "ariza topshirdim",
+    "terrified": "juda qo'rqqan",
+    "typical": "odatiy",
+    "mirror": "ko'zgu",
+    "pretended": "o'zini ... qilib ko'rsatdi",
+    "shaking": "titrayotgan",
+    "dealt with": "hal qilgan, duch kelgan",
+    "nodded": "bosh irg'adi",
+    "offered": "taklif qilishdi",
+    "perfection": "mukammallik"
+  },
+  "questions": [
+    {
+      "q": "Why was the writer terrified?",
+      "options": [
+        "The company was very big.",
+        "The interview was in English.",
+        "He was late."
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What happened when the manager asked about a difficult situation?",
+      "options": [
+        "He forgot his prepared answers.",
+        "He refused to answer.",
+        "He answered in Uzbek."
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Why did the company choose him?",
+      "options": [
+        "His English was perfect.",
+        "He was honest and clear.",
+        "His sister recommended him."
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is the main message of the story?",
+      "options": [
+        "Always memorise your answers.",
+        "Communication matters more than perfection.",
+        "IT jobs are easy to get."
+      ],
+      "answer": 1
+    }
+  ]
+}

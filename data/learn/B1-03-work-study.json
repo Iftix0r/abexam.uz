@@ -1,0 +1,184 @@
+{
+  "level": "B1",
+  "units": [
+    {
+      "slug": "b1-work-study",
+      "title": "Work and study",
+      "title_uz": "Ish va o'qish",
+      "icon": "briefcase",
+      "lessons": [
+        {
+          "slug": "b1-jobs",
+          "title": "Jobs and workplaces",
+          "title_uz": "Kasblar va ish joyi",
+          "goal_uz": "Kasblarni tushuntirasiz va who / which / where bilan aniqlovchi ergash gap tuzasiz.",
+          "minutes": 12,
+          "words": [
+            {"en": "colleague", "uz": "hamkasb", "ipa": "/ˈkɒliːɡ/", "ex": "My colleagues are very helpful."},
+            {"en": "salary", "uz": "maosh", "ipa": "/ˈsæləri/", "ex": "The salary is good, but the hours are long."},
+            {"en": "be responsible for", "uz": "... uchun mas'ul bo'lmoq", "ipa": "/bi rɪˈspɒnsəbl fɔː/", "ex": "She is responsible for the marketing team."},
+            {"en": "deal with", "uz": "shug'ullanmoq, hal qilmoq", "ipa": "/diːl wɪð/", "ex": "I deal with customer complaints."},
+            {"en": "deadline", "uz": "muddat (oxirgi)", "ipa": "/ˈdedlaɪn/", "ex": "We have a deadline on Friday."},
+            {"en": "shift", "uz": "smena", "ipa": "/ʃɪft/", "ex": "Nurses often work night shifts."},
+            {"en": "part-time", "uz": "yarim stavka", "ipa": "/ˌpɑːt ˈtaɪm/", "ex": "He has a part-time job in a café."},
+            {"en": "skills", "uz": "ko'nikmalar", "ipa": "/skɪlz/", "ex": "This job needs good communication skills."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "reading",
+              "title": "Three people, three jobs",
+              "text": "Aziza is a software developer who works for a bank in Tashkent. She is responsible for the bank's mobile app, and she often works with colleagues who live in other countries. Rustam is a chef in a restaurant which is famous for its modern Uzbek food. He works long shifts, but he loves creating new dishes. Kamila works part-time in a hospital where her mother also works. She deals with patients at the reception desk while she studies medicine at university. All three say the same thing: the best job is one which uses your skills and makes you want to learn more.",
+              "glossary": {"software developer": "dasturchi", "famous for": "... bilan mashhur", "creating": "yaratish", "dishes": "taomlar", "patients": "bemorlar", "reception desk": "qabulxona", "medicine": "tibbiyot"},
+              "uz": "Aziza — Toshkentdagi bankda ishlaydigan dasturchi. U bankning mobil ilovasi uchun mas'ul va ko'pincha boshqa mamlakatlarda yashaydigan hamkasblari bilan ishlaydi. Rustam zamonaviy o'zbek taomlari bilan mashhur restoranda oshpaz. U uzoq smenalarda ishlaydi, lekin yangi taomlar yaratishni yaxshi ko'radi. Kamila onasi ham ishlaydigan kasalxonada yarim stavkada ishlaydi. U universitetda tibbiyot o'qir ekan, qabulxonada bemorlar bilan ishlaydi. Uchalasi ham bir xil gapni aytadi: eng yaxshi ish — ko'nikmalaringdan foydalanadigan va ko'proq o'rganishga undaydigan ish."
+            },
+            {"type": "choice", "q": "What is Aziza responsible for?", "options": ["The bank's mobile app", "The restaurant menu", "Patients at the hospital"], "answer": 0, "explain_uz": "\"She is responsible for the bank's mobile app\"."},
+            {"type": "choice", "q": "Why does Kamila work part-time?", "options": ["Her mother is ill.", "She is also studying medicine.", "She works in a restaurant too."], "answer": 1, "explain_uz": "\"...while she studies medicine at university\"."},
+            {
+              "type": "grammar",
+              "title_uz": "Aniqlovchi ergash gap: who / which / that / where",
+              "body_uz": "O'zbekchada aniqlovchi otdan **oldin** keladi: \"bankda **ishlaydigan** dasturchi\". Ingliz tilida esa **otdan keyin**, maxsus so'z bilan:\n**who** — odamlar uchun: a developer **who works** for a bank\n**which** — narsa/hayvon uchun: a restaurant **which is** famous\n**that** — odam va narsa uchun (og'zaki nutqda keng): the job **that** I want\n**where** — joy uchun: the hospital **where** her mother works\nDiqqat: ikkinchi ega takrorlanmaydi! a man who **he** works here ✘ → a man who works here ✔",
+              "examples": [
+                {"en": "A pilot is a person who flies planes.", "uz": "Uchuvchi — samolyot boshqaradigan odam."},
+                {"en": "This is the laptop which I bought last week.", "uz": "Bu men o'tgan hafta sotib olgan noutbuk."},
+                {"en": "That's the office where my father works.", "uz": "Bu otam ishlaydigan ofis."},
+                {"en": "I need a job that pays well.", "uz": "Menga yaxshi maosh to'laydigan ish kerak."}
+              ]
+            },
+            {"type": "choice", "q": "A dentist is a doctor ___ looks after your teeth.", "options": ["which", "who", "where"], "answer": 1, "explain_uz": "Odam → **who**."},
+            {"type": "choice", "q": "This is the café ___ I work on Saturdays.", "options": ["where", "which", "who"], "answer": 0, "explain_uz": "Joy (café da ishlayman) → **where**."},
+            {"type": "choice", "q": "Which sentence is correct?", "options": ["I have a colleague who she speaks Korean.", "I have a colleague who speaks Korean.", "I have a colleague which speaks Korean."], "answer": 1, "explain_uz": "who'dan keyin **she** takrorlanmaydi; odam uchun **which** emas."},
+            {"type": "gap", "text": "It's a job ___ needs good communication skills.", "answer": ["which", "that"], "uz": "Bu yaxshi muloqot ko'nikmalarini talab qiladigan ish.", "explain_uz": "Narsa (job) → **which / that**."},
+            {"type": "gap", "text": "We have a deadline ___ Friday.", "answer": ["on"], "uz": "Juma kuni muddatimiz bor.", "explain_uz": "Hafta kunlari bilan **on**."},
+            {"type": "gap", "text": "She is responsible ___ the whole team.", "answer": ["for"], "uz": "U butun jamoa uchun mas'ul.", "explain_uz": "responsible **for**."},
+            {"type": "match", "pairs": [["colleague", "hamkasb"], ["salary", "maosh"], ["deadline", "muddat"], ["shift", "smena"], ["skills", "ko'nikmalar"]]},
+            {"type": "order", "uz": "U mijozlar shikoyatlari bilan shug'ullanadi.", "words": ["He", "deals", "with", "customer", "complaints"], "answer": "He deals with customer complaints"},
+            {"type": "choice", "audio": true, "q": "What does the speaker dislike about her job?", "say": "I love my colleagues and the salary is fine, but I hate the night shifts. I never get enough sleep.", "options": ["Her colleagues", "The salary", "The night shifts"], "answer": 2, "explain_uz": "\"I hate the night shifts\"."},
+            {"type": "listen", "answer": ["I need a job that pays well.", "I need a job that pays well"], "uz": "Eshiting va yozing"},
+            {"type": "translate", "uz": "Bu men ishlaydigan kompaniya.", "answer": ["This is the company where I work", "This is the company that I work for", "This is the company which I work for", "This is the company I work for", "It's the company where I work"], "explain_uz": "joy → **where**, yoki work **for** bilan which/that."},
+            {"type": "speak", "text": "I'd like a job which uses my skills and lets me work with people from other countries.", "uz": "Orzuingizdagi ishni ayting — ovoz chiqarib"},
+            {"type": "write", "prompt_uz": "Oilangizdagi bir kishining yoki orzuingizdagi kasbni tasvirlang (5–6 gap): nima qiladi, nima uchun mas'ul, qanday ko'nikmalar kerak. Kamida 2 ta who / which / where ishlating.", "prompt": "Describe a job (a family member's or your dream job): duties, responsibilities and skills. Use who, which or where at least twice.", "min_words": 50, "example": "My uncle is an engineer who works for a company which builds bridges. He is responsible for checking that every bridge is safe. He often travels to small towns where new roads are being built. His job needs strong maths skills and a lot of patience. I think it's a job that really helps people."}
+          ]
+        },
+        {
+          "slug": "b1-study-abroad",
+          "title": "Studying abroad",
+          "title_uz": "Chet elda o'qish",
+          "goal_uz": "Real imkoniyatlar va natijalar haqida First Conditional (If ... , I will ...) bilan gapirasiz.",
+          "minutes": 12,
+          "words": [
+            {"en": "apply to", "uz": "(universitetga) hujjat topshirmoq", "ipa": "/əˈplaɪ tuː/", "ex": "I'm going to apply to three universities."},
+            {"en": "requirement", "uz": "talab", "ipa": "/rɪˈkwaɪəmənt/", "ex": "The main requirement is IELTS 6.5."},
+            {"en": "tuition fees", "uz": "o'qish to'lovi (kontrakt)", "ipa": "/tjuˈɪʃn fiːz/", "ex": "Tuition fees in the UK are very high."},
+            {"en": "accommodation", "uz": "turar joy", "ipa": "/əˌkɒməˈdeɪʃn/", "ex": "The university offers student accommodation."},
+            {"en": "accept", "uz": "qabul qilmoq", "ipa": "/əkˈsept/", "ex": "If they accept me, I'll move to Seoul."},
+            {"en": "homesick", "uz": "uyni sog'ingan", "ipa": "/ˈhəʊmsɪk/", "ex": "I felt homesick in my first month."},
+            {"en": "unless", "uz": "agar ... bo'lmasa", "ipa": "/ənˈles/", "ex": "You won't pass unless you practise."},
+            {"en": "as soon as", "uz": "... bilanoq", "ipa": "/əz suːn əz/", "ex": "I'll call you as soon as I get the results."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "dialogue",
+              "title": "Talking to an education consultant",
+              "context_uz": "Sevara chet elda o'qish bo'yicha maslahatchi bilan gaplashmoqda.",
+              "lines": [
+                {"who": "Sevara", "en": "I'd like to study business in the UK. What are the main requirements?", "uz": "Buyuk Britaniyada biznes o'qimoqchiman. Asosiy talablar qanday?"},
+                {"who": "Consultant", "en": "Most universities ask for IELTS 6.5. If you get 6.5, you'll have a good choice of programmes.", "uz": "Ko'p universitetlar IELTS 6.5 so'raydi. Agar 6.5 olsangiz, dasturlardan tanlash imkoniyatingiz katta bo'ladi."},
+                {"who": "Sevara", "en": "And what will happen if I only get 6.0?", "uz": "Agar faqat 6.0 olsam-chi?"},
+                {"who": "Consultant", "en": "Then you'll probably need a pre-sessional English course before you start.", "uz": "Unda boshlashdan oldin ehtimol tayyorlov ingliz tili kursi kerak bo'ladi."},
+                {"who": "Sevara", "en": "The tuition fees are really high. Are there any scholarships?", "uz": "O'qish to'lovlari juda yuqori. Grantlar bormi?"},
+                {"who": "Consultant", "en": "Yes, but the deadlines are early. You won't get one unless you apply by January.", "uz": "Ha, lekin muddatlari erta. Yanvargacha topshirmasangiz, ololmaysiz."},
+                {"who": "Sevara", "en": "OK. I'll start my application as soon as I get my IELTS results.", "uz": "Xo'p. IELTS natijamni olishim bilanoq arizamni boshlayman."}
+              ]
+            },
+            {"type": "choice", "q": "What score do most universities ask for?", "options": ["IELTS 6.0", "IELTS 6.5", "IELTS 7.5"], "answer": 1, "explain_uz": "\"Most universities ask for IELTS 6.5.\""},
+            {"type": "choice", "q": "What will Sevara need if she gets 6.0?", "options": ["A scholarship", "A pre-sessional English course", "A new passport"], "answer": 1, "explain_uz": "\"you'll probably need a pre-sessional English course\"."},
+            {
+              "type": "grammar",
+              "title_uz": "First Conditional: haqiqiy imkoniyat",
+              "body_uz": "Kelajakda **haqiqatan sodir bo'lishi mumkin** bo'lgan holat va uning natijasi:\n**If + Present Simple, will + fe'l**\nIf I **get** 6.5, I **will apply** to Manchester.\nEng ko'p xato: If I **will get**... ✘ — If qismida **will qo'yilmaydi** (o'zbekchadagi \"olsam\" kabi).\nQismlar o'rnini almashtirish mumkin: I'll apply to Manchester **if** I get 6.5. (vergulsiz)\n**unless** = if ... not: You won't pass **unless** you practise. (= if you don't practise)\nVaqt bog'lovchilari ham shunday: **when / as soon as / before / after** + Present Simple: I'll call you **as soon as** I **arrive**.",
+              "examples": [
+                {"en": "If it rains tomorrow, we'll stay at home.", "uz": "Ertaga yomg'ir yog'sa, uyda qolamiz."},
+                {"en": "If they accept me, I'll move to Seoul.", "uz": "Meni qabul qilishsa, Seulga ko'chaman."},
+                {"en": "You won't get a visa unless you show your bank statement.", "uz": "Bank ko'chirmasini ko'rsatmasangiz, viza ololmaysiz."},
+                {"en": "I'll message you when I land.", "uz": "Qo'nishim bilan sizga yozaman."}
+              ]
+            },
+            {"type": "choice", "q": "If I ___ a scholarship, I'll study in Germany.", "options": ["will get", "get", "got"], "answer": 1, "explain_uz": "If qismida Present Simple: **get**."},
+            {"type": "choice", "q": "You won't improve ___ you practise every day.", "options": ["if", "unless", "when"], "answer": 1, "explain_uz": "= if you don't practise → **unless**."},
+            {"type": "choice", "q": "I'll call you as soon as I ___ the results.", "options": ["will receive", "receive", "received"], "answer": 1, "explain_uz": "as soon as + Present Simple: **receive**."},
+            {"type": "gap", "text": "If you study hard, you ___ pass the exam.", "answer": ["will", "'ll"], "uz": "Qattiq o'qisang, imtihondan o'tasan.", "explain_uz": "Natija qismi → **will**."},
+            {"type": "gap", "text": "I'll feel homesick if I ___ (not / call) my family often.", "answer": ["don't call", "do not call"], "uz": "Oilamga tez-tez qo'ng'iroq qilmasam, sog'inib qolaman.", "explain_uz": "If qismi inkor: **don't call**."},
+            {"type": "match", "pairs": [["requirement", "talab"], ["tuition fees", "o'qish to'lovi"], ["accommodation", "turar joy"], ["homesick", "uyni sog'ingan"], ["unless", "agar ... bo'lmasa"]]},
+            {"type": "order", "uz": "Agar meni qabul qilishsa, Seulga ko'chaman.", "words": ["If", "they", "accept", "me", "I'll", "move", "to", "Seoul"], "answer": "If they accept me I'll move to Seoul"},
+            {"type": "choice", "audio": true, "q": "When will the speaker book her flight?", "say": "I'm not going to book my flight until I get my visa. If everything goes well, I'll fly in early September.", "options": ["Today", "After she gets her visa", "In January"], "answer": 1, "explain_uz": "\"not ... until I get my visa\" — vizani olgandan keyin."},
+            {"type": "listen", "answer": ["I'll call you as soon as I get the results.", "I'll call you as soon as I get the results", "I will call you as soon as I get the results"], "uz": "Eshiting va yozing"},
+            {"type": "translate", "uz": "Agar IELTSdan 7 olsam, grantga ariza topshiraman.", "answer": ["If I get 7 in IELTS, I'll apply for a scholarship", "If I get a 7 in IELTS, I'll apply for a scholarship", "If I get band 7 in IELTS, I will apply for a scholarship", "If I get 7 in IELTS, I will apply for a scholarship", "If I get seven in IELTS, I'll apply for a scholarship", "I'll apply for a scholarship if I get 7 in IELTS"], "explain_uz": "If + **get**, **I'll** apply..."},
+            {"type": "speak", "text": "If I get band seven, I'll apply to a university in the UK.", "uz": "Rejangizni ayting — ovoz chiqarib"},
+            {"type": "write", "prompt_uz": "Chet elda o'qish (yoki boshqa katta maqsad) haqidagi rejangizni yozing (5–6 gap). Kamida 3 ta First Conditional va bitta unless / as soon as ishlating.", "prompt": "Write about your plan to study abroad or another big goal. Use at least three first conditionals and unless or as soon as.", "min_words": 50, "example": "I hope to study computer science in South Korea. If I get IELTS 6.5 this spring, I'll apply to three universities. If they accept me, I'll try to get a government scholarship, because the tuition fees are high. I won't be able to go unless I find cheap accommodation. As soon as I arrive, I'll join a language club so I don't feel homesick."}
+          ]
+        },
+        {
+          "slug": "b1-polite-questions",
+          "title": "Could you tell me...?",
+          "title_uz": "Rasmiy va xushmuomala savollar",
+          "goal_uz": "Ofis, universitet va telefon suhbatida indirect (bilvosita) savollar va rasmiy iboralarni ishlatasiz.",
+          "minutes": 11,
+          "words": [
+            {"en": "Could you tell me", "uz": "Ayta olasizmi", "ipa": "/kʊd juː tel miː/", "ex": "Could you tell me where the library is?"},
+            {"en": "Do you know", "uz": "Bilasizmi", "ipa": "/də juː nəʊ/", "ex": "Do you know what time the office opens?"},
+            {"en": "I was wondering", "uz": "Qiziqib qoldim / so'ramoqchi edim", "ipa": "/aɪ wəz ˈwʌndərɪŋ/", "ex": "I was wondering if you could help me."},
+            {"en": "whether", "uz": "-mi yo'qmi", "ipa": "/ˈweðə/", "ex": "Do you know whether the course is free?"},
+            {"en": "enquiry", "uz": "so'rov, murojaat", "ipa": "/ɪnˈkwaɪəri/", "ex": "I'm calling with an enquiry about the course."},
+            {"en": "available", "uz": "bo'sh, mavjud", "ipa": "/əˈveɪləbl/", "ex": "Is Dr Brown available this afternoon?"},
+            {"en": "hold on", "uz": "kutib turing (telefonda)", "ipa": "/həʊld ɒn/", "ex": "Hold on a moment, please."},
+            {"en": "get back to you", "uz": "sizga qayta aloqaga chiqmoq", "ipa": "/ɡet bæk tə juː/", "ex": "I'll get back to you tomorrow."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "dialogue",
+              "title": "Calling the university office",
+              "context_uz": "Islom chet eldagi universitet qabul bo'limiga qo'ng'iroq qilmoqda.",
+              "lines": [
+                {"who": "Office", "en": "Good morning, Admissions Office. How can I help?", "uz": "Xayrli tong, qabul bo'limi. Qanday yordam bera olaman?"},
+                {"who": "Islom", "en": "Hello, I'm calling with an enquiry about the summer English course. Could you tell me when it starts?", "uz": "Salom, yozgi ingliz tili kursi bo'yicha so'rov bilan qo'ng'iroq qilyapman. Qachon boshlanishini ayta olasizmi?"},
+                {"who": "Office", "en": "Of course. It starts on the fifth of July and lasts six weeks.", "uz": "Albatta. 5-iyulda boshlanadi va olti hafta davom etadi."},
+                {"who": "Islom", "en": "Great. Do you know whether accommodation is included in the price?", "uz": "Zo'r. Narxga turar joy kiradimi-yo'qmi, bilasizmi?"},
+                {"who": "Office", "en": "Hold on a moment, please... No, I'm afraid it isn't. But we can help you find a room.", "uz": "Bir daqiqa kutib turing... Yo'q, afsuski kirmaydi. Lekin xona topishga yordam beramiz."},
+                {"who": "Islom", "en": "I see. I was wondering if I could pay in two parts.", "uz": "Tushunarli. Ikki qismda to'lasam bo'larmikan, deb so'ramoqchi edim."},
+                {"who": "Office", "en": "I'm not sure. Let me check with my manager and I'll get back to you by email.", "uz": "Aniq bilmayman. Rahbarim bilan aniqlab, sizga email orqali javob beraman."}
+              ]
+            },
+            {"type": "choice", "q": "How long is the course?", "options": ["Five weeks", "Six weeks", "Two months"], "answer": 1, "explain_uz": "\"lasts six weeks\"."},
+            {"type": "choice", "q": "Is accommodation included?", "options": ["Yes, it is.", "No, it isn't.", "The text doesn't say."], "answer": 1, "explain_uz": "\"No, I'm afraid it isn't.\""},
+            {
+              "type": "grammar",
+              "title_uz": "Indirect (bilvosita) savollar",
+              "body_uz": "Rasmiy vaziyatda to'g'ridan-to'g'ri savol qo'pol eshitilishi mumkin. Xushmuomala boshlanma qo'shamiz va **so'z tartibi tasdiq gapdek** bo'ladi:\nWhere **is** the library? → Could you tell me where the library **is**?\nWhen **does** the course **start**? → Do you know when the course **starts**? (do/does yo'qoladi!)\n**Ha/yo'q savollarida if / whether:** Is it free? → Do you know **if / whether** it **is** free?\nBoshlanmalar: **Could you tell me...** · **Do you know...** · **I was wondering if...** · **Would you mind telling me...**\nEng ko'p xato: Could you tell me where **is** the library? ✘",
+              "examples": [
+                {"en": "Could you tell me how much the course costs?", "uz": "Kurs qancha turishini ayta olasizmi?"},
+                {"en": "Do you know if Dr Brown is available?", "uz": "Doktor Braun bo'shmi, bilasizmi?"},
+                {"en": "I was wondering whether I could change my room.", "uz": "Xonamni almashtirsam bo'ladimi, deb so'ramoqchi edim."},
+                {"en": "Would you mind telling me where you found this?", "uz": "Buni qayerdan topganingizni aytsangiz maylimi?"}
+              ]
+            },
+            {"type": "choice", "q": "Which question is correct?", "options": ["Could you tell me where is the station?", "Could you tell me where the station is?", "Could you tell me where does the station is?"], "answer": 1, "explain_uz": "Indirect savolda tartib: **where the station is**."},
+            {"type": "choice", "q": "Do you know when the bank ___?", "options": ["does open", "opens", "is open it"], "answer": 1, "explain_uz": "do/does yo'qoladi: **opens**."},
+            {"type": "choice", "q": "Direct: \"Is the exam on Monday?\" → Indirect:", "options": ["Do you know is the exam on Monday?", "Do you know if the exam is on Monday?", "Do you know the exam is it on Monday?"], "answer": 1, "explain_uz": "Ha/yo'q savol → **if / whether** + tasdiq tartibi."},
+            {"type": "gap", "text": "I was wondering ___ you could help me with my application.", "answer": ["if", "whether"], "uz": "Arizam bilan yordam bera olasizmi, deb so'ramoqchi edim.", "explain_uz": "I was wondering **if**..."},
+            {"type": "gap", "text": "Could you tell me what time the office ___ (close)?", "answer": ["closes"], "uz": "Ofis soat nechada yopilishini ayta olasizmi?", "explain_uz": "the office = it → **closes**."},
+            {"type": "match", "pairs": [["enquiry", "so'rov"], ["available", "bo'sh, mavjud"], ["hold on", "kutib turing"], ["whether", "-mi yo'qmi"], ["get back to you", "qayta aloqaga chiqmoq"]]},
+            {"type": "order", "uz": "Kutubxona qayerdaligini ayta olasizmi?", "words": ["Could", "you", "tell", "me", "where", "the", "library", "is"], "answer": "Could you tell me where the library is"},
+            {"type": "choice", "audio": true, "q": "What does the caller want to know?", "say": "Hi, I was wondering if you could tell me whether the exam results are available online yet.", "options": ["When the exam is", "Whether the results are online", "How much the exam costs"], "answer": 1, "explain_uz": "\"whether the exam results are available online\"."},
+            {"type": "listen", "answer": ["Do you know what time the office opens?", "Do you know what time the office opens"], "uz": "Eshiting va yozing"},
+            {"type": "translate", "uz": "Kurs bepulmi-yo'qmi, bilasizmi?", "answer": ["Do you know if the course is free", "Do you know whether the course is free", "Do you know if the course is free?", "Do you know whether the course is free or not"], "explain_uz": "Do you know **if / whether** + the course **is** free."},
+            {"type": "speak", "text": "Good morning. Could you tell me when the summer course starts, please?", "uz": "Rasmiy so'rang — ovoz chiqarib"},
+            {"type": "write", "prompt_uz": "Universitet yoki til markaziga qisqa rasmiy email yozing (5–6 gap): kurs haqida 3 ta indirect savol bering.", "prompt": "Write a short formal email to a language school asking three indirect questions about a course.", "min_words": 50, "example": "Dear Sir or Madam, I am writing to enquire about your evening IELTS course. Could you tell me when the next course starts? I would also like to know how many students there are in each group. Finally, I was wondering whether it is possible to pay in two instalments. I look forward to hearing from you. Yours faithfully, Nodira Karimova"}
+          ]
+        }
+      ]
+    }
+  ]
+}

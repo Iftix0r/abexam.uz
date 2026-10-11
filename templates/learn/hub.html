@@ -79,6 +79,18 @@
     .ln-side-link:hover { background: var(--tint-a); }
     .ln-side-link i { width: 18px; color: var(--primary-color); flex-shrink: 0; }
 
+    .ln-duo { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+    .ln-mini { display: flex; gap: 14px; align-items: center; text-decoration: none; color: var(--text-color); background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 16px; transition: var(--transition); }
+    .ln-mini:hover { border-color: var(--primary-color); transform: translateY(-2px); }
+    .ln-mini .ic { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1.4rem; }
+    .ln-mini b { display: block; font-size: .95rem; }
+    .ln-mini span { color: var(--text-muted); font-size: .8rem; line-height: 1.4; }
+    .ln-mini.off { opacity: .55; pointer-events: none; }
+    .ln-lb-row { display: flex; align-items: center; gap: 10px; padding: 7px 0; font-size: .86rem; }
+    .ln-lb-row.me { font-weight: 700; color: #3b82f6; }
+    .ln-lb-row span:first-child { width: 22px; text-align: center; }
+    .ln-lb-row span:nth-child(2) { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .ln-lb-row b { color: #f59e0b; font-size: .82rem; }
     .ln-method { margin-top: 8px; }
     .ln-method summary { cursor: pointer; font-weight: 600; font-size: 0.95rem; list-style: none; display: flex; align-items: center; gap: 8px; }
     .ln-method summary::-webkit-details-marker { display: none; }
@@ -91,6 +103,7 @@
     }
     @media (max-width: 600px) {
         .ln-levels { grid-template-columns: repeat(2, 1fr); }
+        .ln-duo { grid-template-columns: 1fr; }
         .ln-continue { flex-direction: column; align-items: flex-start; }
         .ln-hero h1 { font-size: 1.5rem; }
     }
@@ -143,6 +156,18 @@
             </div>
         </div>
         {% endif %}
+
+        <div class="ln-duo">
+            <a href="{% url 'learn:practice' %}" class="ln-mini {% if not can_practice %}off{% endif %}">
+                <div class="ic" style="background:rgba(245,158,11,.15)">🎯</div>
+                <div><b>Aralash mashq</b>
+                    <span>{% if mistake_count %}{{ mistake_count }} ta xato ustida ishlash + o'tilgan mavzular{% elif can_practice %}O'tilgan darslardan aralash takrorlash, 3 daqiqa{% else %}Birinchi darsdan keyin ochiladi{% endif %}</span></div>
+            </a>
+            <a href="{% url 'learn:stories' %}" class="ln-mini">
+                <div class="ic" style="background:rgba(59,130,246,.15)">📚</div>
+                <div><b>Hikoyalar</b><span>{{ level_code }} darajasida {{ story_count }} ta qisqa hikoya — tinglab o'qing</span></div>
+            </a>
+        </div>
 
         <div class="ln-levels">
             {% for lv in levels %}
@@ -252,6 +277,17 @@
                 <a href="{% url 'learn:review' %}" class="ln-btn ln-btn-primary" style="background:var(--success-color)">Boshlash</a>
                 {% endif %}
             </div>
+        </div>
+
+        <div class="ln-card">
+            <h4><i data-lucide="trophy" style="width:16px;color:#f59e0b"></i> Haftalik reyting</h4>
+            {% for r in board.rows %}
+            <div class="ln-lb-row {% if r.me %}me{% endif %}"><span>{% if r.rank == 1 %}🥇{% elif r.rank == 2 %}🥈{% elif r.rank == 3 %}🥉{% else %}{{ r.rank }}{% endif %}</span><span>{{ r.name }}</span><b>{{ r.xp }} XP</b></div>
+            {% empty %}
+            <p style="font-size:.82rem;color:var(--text-muted)">Bu hafta birinchi bo'ling!</p>
+            {% endfor %}
+            {% if board.me and board.me.rank > 5 %}<div class="ln-lb-row me"><span>{{ board.me.rank }}</span><span>Siz</span><b>{{ board.me.xp }} XP</b></div>{% endif %}
+            <a href="{% url 'learn:leaderboard' %}" class="ln-side-link" style="margin-top:4px"><i data-lucide="chevron-right"></i><span>To'liq reyting</span></a>
         </div>
 
         <div class="ln-card">

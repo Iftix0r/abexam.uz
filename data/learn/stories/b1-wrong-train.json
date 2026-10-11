@@ -1,0 +1,81 @@
+{
+  "slug": "b1-wrong-train",
+  "level": "B1",
+  "order": 1,
+  "emoji": "🚆",
+  "minutes": 6,
+  "title": "The wrong train",
+  "title_uz": "Noto'g'ri poyezd",
+  "paragraphs": [
+    {
+      "en": "I've travelled a lot in my life, but I've never been as lost as I was in Germany two years ago. I was studying in Berlin on an exchange programme, and one weekend I decided to visit a friend in Hamburg.",
+      "uz": "Hayotimda ko'p sayohat qilganman, lekin ikki yil oldin Germaniyadagidek hech qachon adashmaganman. Berlinda almashinuv dasturi bo'yicha o'qiyotgan edim va bir dam olish kuni Gamburgdagi do'stimni ko'rishga qaror qildim."
+    },
+    {
+      "en": "The station was huge and very busy. My train was leaving in three minutes, so I ran to the platform, jumped onto the first train I saw and sat down, feeling proud of myself.",
+      "uz": "Vokzal ulkan va juda gavjum edi. Poyezdim uch daqiqadan keyin jo'nardi, shuning uchun platformaga yugurdim, ko'rgan birinchi poyezdga sakrab chiqdim va o'zimdan mamnun holda o'tirdim."
+    },
+    {
+      "en": "About an hour later, the conductor checked my ticket and frowned. \"This ticket is for Hamburg,\" he said politely. \"But this train is going to Leipzig.\" I couldn't believe it. I was going in completely the opposite direction!",
+      "uz": "Taxminan bir soatdan keyin konduktor chiptamni tekshirib, qovog'ini soldi. \"Bu chipta Gamburgga,\" dedi u xushmuomalalik bilan. \"Lekin bu poyezd Leyptsigga ketyapti.\" Ishonolmadim. Men butunlay teskari tomonga ketayotgan ekanman!"
+    },
+    {
+      "en": "I got off at the next town, which was tiny and quiet. While I was waiting for a train back, an old man started talking to me. He had worked in Tashkent in the 1980s and still remembered a few words of Uzbek! We had coffee together and he told me amazing stories.",
+      "uz": "Keyingi shaharchada tushdim — u juda kichkina va sokin edi. Qaytish poyezdini kutayotganimda bir keksa kishi men bilan gaplasha boshladi. U 1980-yillarda Toshkentda ishlagan ekan va hali ham bir nechta o'zbekcha so'zni eslardi! Birga qahva ichdik va u menga ajoyib voqealarni so'zlab berdi."
+    },
+    {
+      "en": "I arrived in Hamburg five hours late. My friend laughed at me, but honestly, I wasn't upset. Sometimes the wrong train takes you to the right place.",
+      "uz": "Gamburgga besh soat kechikib yetib keldim. Do'stim ustimdan kuldi, lekin rostini aytsam, xafa emas edim. Ba'zan noto'g'ri poyezd seni to'g'ri joyga olib boradi."
+    }
+  ],
+  "glossary": {
+    "exchange programme": "almashinuv dasturi",
+    "huge": "ulkan",
+    "platform": "platforma",
+    "proud of myself": "o'zimdan mamnun",
+    "conductor": "konduktor",
+    "frowned": "qovog'ini soldi",
+    "politely": "xushmuomalalik bilan",
+    "opposite direction": "teskari yo'nalish",
+    "tiny": "juda kichik",
+    "upset": "xafa"
+  },
+  "questions": [
+    {
+      "q": "Why was the writer in Germany?",
+      "options": [
+        "On holiday",
+        "Studying on an exchange programme",
+        "Working in a hotel"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Where was the train actually going?",
+      "options": [
+        "Hamburg",
+        "Berlin",
+        "Leipzig"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "What was special about the old man?",
+      "options": [
+        "He had worked in Tashkent.",
+        "He was the conductor.",
+        "He was the writer's teacher."
+      ],
+      "answer": 0
+    },
+    {
+      "q": "How did the writer feel about the experience in the end?",
+      "options": [
+        "Angry",
+        "Not upset — it was a good experience",
+        "Embarrassed and sad"
+      ],
+      "answer": 1
+    }
+  ]
+}

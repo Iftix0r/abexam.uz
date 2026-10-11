@@ -215,13 +215,14 @@
     const L = JSON.parse(document.getElementById('lesson-data').textContent);
     const CSRF = '{{ csrf_token }}';
     const URLS = {
-        complete: '{% url "learn:lesson_complete" lesson.slug %}',
+        complete: L.complete_url,
         write: '{% url "learn:write_check" %}',
         hub: '{% url "learn:hub" %}?level=' + L.level,
         review: '{% url "learn:review" %}',
         next: L.next_slug ? '{% url "learn:lesson" "__s__" %}'.replace('__s__', L.next_slug) : null,
     };
     const BEGINNER = L.level === 'A1' || L.level === 'A2';
+    const PRACTICE = L.mode === 'practice';
     const PRAISE = ['Barakalla!', "To'g'ri!", "Zo'r!", 'Ajoyib!', 'Aynan shunday!', 'Juda yaxshi!'];
 
     const $ = id => document.getElementById(id);
@@ -375,6 +376,7 @@
     }
 
     function save() {
+        if (PRACTICE) return;
         store.set(SAVE_KEY, { sig: SIG, queue, pos, firstTry, retried, mistakes, at: Date.now() });
     }
 
@@ -391,6 +393,10 @@
         state = { idx, step, answered: false, hinted: false };
         side(null);
         (RENDER[step.type] || RENDER.tip)(step, idx);
+        if (step._src && step._src.mistake) {
+            const k = body.querySelector('.lp-kicker');
+            if (k) k.insertAdjacentHTML('beforeend', ' <span style="background:rgba(245,158,11,.18);color:#d97706;border-radius:6px;padding:1px 7px;text-transform:none;letter-spacing:0">avval xato qilgansiz</span>');
+        }
         lucide.createIcons();
         const inp = body.querySelector('input, textarea');
         if (inp && window.matchMedia('(min-width: 700px)').matches) inp.focus();
@@ -942,13 +948,17 @@
         foot.style.display = 'none';
         body.innerHTML = `<div class="lp-center"><div class="big">⏳</div><h2 class="lp-h">Natija saqlanmoqda...</h2></div>`;
         let d = {};
+        const payload = PRACTICE
+            ? { results: graded.map(k => ({ slug: L.steps[k]._src.slug, step: L.steps[k]._src.idx, ok: firstTry[k] })) }
+            : { score, mistakes: graded.filter(k => !firstTry[k]).map(Number) };
         try {
-            const r = await fetch(URLS.complete, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF }, body: JSON.stringify({ score }) });
+            const r = await fetch(URLS.complete, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF }, body: JSON.stringify(payload) });
             d = await r.json();
             if (r.ok) store.del(SAVE_KEY);
         } catch (e) { d = { error: true }; }
         const emoji = score >= 90 ? '🏆' : score >= 70 ? '🎉' : '💪';
-        const msg = score >= 90 ? 'Mukammal!' : score >= 70 ? 'Dars tugallandi!' : "Dars tugallandi! Har bir xato — yangi bilim.";
+        const done = PRACTICE ? 'Mashq tugallandi!' : 'Dars tugallandi!';
+        const msg = score >= 90 ? 'Mukammal!' : score >= 70 ? done : `${done} Har bir xato — yangi bilim.`;
         const review = mistakes.filter(m => L.steps[m.idx]);
         body.innerHTML = `<div class="lp-center">
             <div class="big">${emoji}</div>
@@ -959,11 +969,13 @@
                 <div class="lp-stat" style="border-color:#22c55e"><small>Aniqlik</small><b style="color:#22c55e">${score}%</b></div>
                 <div class="lp-stat" style="border-color:#f97316"><small>Streak</small><b style="color:#f97316">🔥 ${d.streak ?? '—'}</b></div>
             </div>
+            ${PRACTICE && d.mistakes_left !== undefined ? `<p class="lp-hint" style="margin-bottom:20px">${d.mistakes_left ? `🎯 Yana ${d.mistakes_left} ta mashq ustida ishlash kerak. Har birini 2 marta ketma-ket to'g'ri yechsangiz, ro'yxatdan o'chadi.` : "🎉 Barcha xatolaringiz tuzatildi!"}</p>` : ''}
             ${d.words_added ? `<p class="lp-hint" style="margin-bottom:20px">📚 ${d.words_added} ta yangi so'z lug'atingizga qo'shildi — ertaga takrorlash uchun tayyor bo'ladi.</p>` : ''}
             ${review.length ? `<div class="lp-review"><h4>📝 Xatolar ustida ishlash</h4>${review.map(m => `<div><span>${esc(describe(L.steps[m.idx]))}</span>${m.right ? `<b>${esc(m.right)}</b>` : ''}${L.steps[m.idx].explain_uz ? ` — ${md(L.steps[m.idx].explain_uz)}` : ''}</div>`).join('')}</div>` : ''}
             ${d.error ? `<p class="lp-hint" style="color:#ef4444">Natijani saqlab bo'lmadi — internetni tekshiring.</p>` : ''}
             <div class="lp-actions">
                 ${URLS.next ? `<a href="${URLS.next}" class="lp-main-btn" style="text-transform:none">Keyingi dars →</a>` : ''}
+                ${PRACTICE ? `<a href="" class="lp-main-btn" style="text-transform:none">Yana mashq qilish ↻</a>` : ''}
                 <a href="${URLS.review}" class="lp-ghost">So'zlarni takrorlash</a>
                 <a href="${URLS.hub}" class="lp-ghost">Kursga qaytish</a>
             </div></div>`;
@@ -971,8 +983,14 @@
     }
 
     // ── start (or resume where the learner left off) ─────────────────────
-    const saved = store.get(SAVE_KEY, null);
-    if (saved && saved.sig === SIG && saved.pos > 0 && saved.pos < saved.queue.length && Date.now() - saved.at < 7 * 864e5) {
+    const saved = PRACTICE ? null : store.get(SAVE_KEY, null);
+    if (!L.steps.length) {
+        foot.style.display = 'none';
+        body.innerHTML = `<div class="lp-center"><div class="big">📚</div>
+            <h2 class="lp-h">Hozircha mashq uchun material yo'q</h2>
+            <p class="lp-sub">Avval bir-ikkita dars o'ting — keyin bu yerda xatolaringiz va o'tilgan mavzulardan aralash mashq paydo bo'ladi.</p>
+            <div class="lp-actions"><a class="lp-main-btn" href="${URLS.hub}" style="text-transform:none">Darslarga o'tish</a></div></div>`;
+    } else if (saved && saved.sig === SIG && saved.pos > 0 && saved.pos < saved.queue.length && Date.now() - saved.at < 7 * 864e5) {
         foot.style.display = 'none';
         body.innerHTML = `<div class="lp-center"><div class="big">📍</div>
             <h2 class="lp-h">Bu darsni ${saved.pos} / ${saved.queue.length} qadamda to'xtatgansiz</h2>

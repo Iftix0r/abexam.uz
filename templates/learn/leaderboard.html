@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Haftalik reyting - AbExam{% endblock %}
+{% block page_title %}Haftalik reyting{% endblock %}
+
+{% block extra_css %}
+<style>
+    .lb { max-width: 640px; width: 100%; margin: 0 auto; }
+    .lb-head { text-align: center; margin-bottom: 24px; }
+    .lb-head .big { font-size: 3rem; }
+    .lb-head h1 { font-size: 1.6rem; font-weight: 600; margin-top: 6px; }
+    .lb-head p { color: var(--text-muted); margin-top: 4px; }
+    .lb-me { display: flex; justify-content: space-between; align-items: center; background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.35); border-radius: 14px; padding: 12px 16px; margin-bottom: 16px; font-size: .92rem; }
+    .lb-row { display: flex; align-items: center; gap: 14px; padding: 12px 16px; border-radius: 14px; background: var(--card-bg); border: 1px solid var(--border-color); margin-bottom: 8px; }
+    .lb-row.me { border: 2px solid #3b82f6; }
+    .lb-rank { width: 34px; text-align: center; font-weight: 800; color: var(--text-muted); font-size: 1rem; }
+    .lb-row:nth-child(1) .lb-rank, .lb-row:nth-child(2) .lb-rank, .lb-row:nth-child(3) .lb-rank { font-size: 1.4rem; }
+    .lb-av { width: 36px; height: 36px; border-radius: 50%; background: var(--primary-color); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; }
+    .lb-name { flex: 1; font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .lb-xp { font-weight: 700; color: #f59e0b; white-space: nowrap; }
+    .lb-empty { text-align: center; color: var(--text-muted); padding: 30px; background: var(--card-bg); border-radius: 14px; border: 1px dashed var(--border-color); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="lb">
+    <div class="lb-head">
+        <div class="big">🏆</div>
+        <h1>Haftaning eng faol o'quvchilari</h1>
+        <p>{{ board.start|date:"d.m" }} – {{ board.end|date:"d.m" }} · har dushanba yangidan boshlanadi</p>
+    </div>
+    {% if board.me %}
+    <div class="lb-me"><span>Sizning o'rningiz: <b>#{{ board.me.rank }}</b> / {{ board.total }}</span><b style="color:#f59e0b">{{ board.me.xp }} XP</b></div>
+    {% else %}
+    <div class="lb-me"><span>Bu hafta hali XP to'plamadingiz. Bitta dars — va siz ro'yxatdasiz!</span><a href="{% url 'learn:hub' %}" style="color:#3b82f6;font-weight:600;text-decoration:none">Boshlash →</a></div>
+    {% endif %}
+    <div>
+        {% for r in board.rows %}
+        <div class="lb-row {% if r.me %}me{% endif %}">
+            <div class="lb-rank">{% if r.rank == 1 %}🥇{% elif r.rank == 2 %}🥈{% elif r.rank == 3 %}🥉{% else %}{{ r.rank }}{% endif %}</div>
+            <div class="lb-av">{{ r.name|first|upper }}</div>
+            <div class="lb-name">{{ r.name }}{% if r.me %} (siz){% endif %}</div>
+            <div class="lb-xp">{{ r.xp }} XP</div>
+        </div>
+        {% empty %}
+        <div class="lb-empty">Bu hafta hali hech kim XP to'plamadi. Birinchi bo'ling!</div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

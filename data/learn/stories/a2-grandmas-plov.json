@@ -1,0 +1,81 @@
+{
+  "slug": "a2-grandmas-plov",
+  "level": "A2",
+  "order": 2,
+  "emoji": "🍚",
+  "minutes": 5,
+  "title": "Grandma's plov",
+  "title_uz": "Buvimning palovi",
+  "paragraphs": [
+    {
+      "en": "When I was a child, I spent every summer at my grandparents' house in a village near Fergana. My favourite day was Sunday, because on Sundays my grandmother made plov for the whole family.",
+      "uz": "Bolaligimda har yozni Farg'ona yaqinidagi qishloqda, bobo-buvimning uyida o'tkazardim. Eng sevimli kunim yakshanba edi, chunki yakshanba kunlari buvim butun oila uchun palov qilardi."
+    },
+    {
+      "en": "Last summer, I asked her to teach me. \"First, you have to cut the onions and carrots,\" she said. I cut the carrots into long thin pieces. It took me almost an hour!",
+      "uz": "O'tgan yozda undan menga o'rgatishini so'radim. \"Avval piyoz va sabzini to'g'rashing kerak,\" dedi u. Men sabzini uzun ingichka qilib to'g'radim. Bu menga deyarli bir soat vaqt oldi!"
+    },
+    {
+      "en": "Then she heated the oil in a big kazan and fried the meat. After that, we added the onions and carrots. The kitchen smelled wonderful.",
+      "uz": "Keyin u katta qozonda yog'ni qizdirdi va go'shtni qovurdi. Shundan so'ng piyoz va sabzini qo'shdik. Oshxonadan ajoyib hid taraldi."
+    },
+    {
+      "en": "Finally, she added the rice and water and closed the kazan. \"Now we wait,\" she said. \"Good plov needs patience.\"",
+      "uz": "Nihoyat, u guruch va suvni qo'shib, qozonni yopdi. \"Endi kutamiz,\" dedi u. \"Yaxshi palov sabr talab qiladi.\""
+    },
+    {
+      "en": "My plov wasn't as good as hers, but everyone ate it and said it was delicious. Grandma smiled. \"Next year, you'll make it alone,\" she said.",
+      "uz": "Mening palovim unikidek yaxshi chiqmadi, lekin hamma yedi va mazali dedi. Buvim jilmaydi. \"Kelasi yil o'zing yolg'iz qilasan,\" dedi u."
+    }
+  ],
+  "glossary": {
+    "spent": "o'tkazdim",
+    "village": "qishloq",
+    "the whole family": "butun oila",
+    "cut": "to'g'ramoq",
+    "thin pieces": "ingichka bo'laklar",
+    "heated": "qizdirdi",
+    "fried": "qovurdi",
+    "smelled wonderful": "ajoyib hid taraldi",
+    "patience": "sabr",
+    "alone": "yolg'iz"
+  },
+  "questions": [
+    {
+      "q": "Where did the writer spend the summers?",
+      "options": [
+        "In Tashkent",
+        "In a village near Fergana",
+        "In Samarkand"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What did the writer do first?",
+      "options": [
+        "Fried the meat",
+        "Cut the onions and carrots",
+        "Washed the rice"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What does good plov need, according to Grandma?",
+      "options": [
+        "Patience",
+        "A lot of salt",
+        "A new kazan"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Was the writer's plov better than Grandma's?",
+      "options": [
+        "Yes, much better.",
+        "No, it wasn't as good.",
+        "It was the same."
+      ],
+      "answer": 1
+    }
+  ]
+}

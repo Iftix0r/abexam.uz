@@ -1,0 +1,82 @@
+{
+  "slug": "b2-letter-younger-self",
+  "level": "B2",
+  "order": 2,
+  "emoji": "✉️",
+  "minutes": 6,
+  "title": "A letter to my younger self",
+  "title_uz": "Yoshlikdagi o'zimga maktub",
+  "paragraphs": [
+    {
+      "en": "Dear sixteen-year-old me, I know you think English is impossible. You sit at the back of the class, hoping the teacher won't ask you anything, and you are convinced that some people are simply born with a talent for languages. I'm writing to tell you that you're wrong.",
+      "uz": "Aziz o'n olti yoshli men, bilaman, sen ingliz tilini imkonsiz deb o'ylaysan. Sinfning orqasida o'tirib, o'qituvchi sendan hech narsa so'ramasligini umid qilasan va ba'zi odamlar til qobiliyati bilan tug'iladi, deb ishonasan. Senga noto'g'ri ekaningni aytish uchun yozyapman."
+    },
+    {
+      "en": "If I could go back, I would tell you to stop being afraid of mistakes. Every mistake you make is a sign that you are trying. The students who seem fluent are not the ones who never get things wrong; they are the ones who keep talking anyway.",
+      "uz": "Agar ortga qaytish imkonim bo'lsa, senga xato qilishdan qo'rqishni to'xtat, derdim. Har bir xato — harakat qilayotganingning belgisi. Ravon gapiradigandek ko'ringan o'quvchilar hech qachon xato qilmaydiganlar emas; ular baribir gapirishda davom etadiganlardir."
+    },
+    {
+      "en": "I would also tell you that twenty minutes a day is worth more than five hours once a week. Had I understood this earlier, I would have saved myself years of frustration. Little by little, the words you review on the bus will become the words you use without thinking.",
+      "uz": "Shuningdek, kuniga yigirma daqiqa haftada bir marta besh soatdan qimmatroq ekanini aytardim. Buni ertaroq tushunganimda, o'zimni yillab davom etgan umidsizlikdan qutqargan bo'lardim. Asta-sekin avtobusda takrorlagan so'zlaring o'ylamasdan ishlatadigan so'zlaringga aylanadi."
+    },
+    {
+      "en": "Most importantly, find something you genuinely enjoy in English — songs, football commentary, cooking videos, anything. Grammar books are useful, but it was a cooking channel, not a textbook, that finally made English feel real to me.",
+      "uz": "Eng muhimi, ingliz tilida chin dildan zavqlanadigan narsani top — qo'shiqlar, futbol sharhlari, oshpazlik videolari, xohlagan narsa. Grammatika kitoblari foydali, lekin ingliz tilini menga nihoyat haqiqiy qilib ko'rsatgan narsa darslik emas, oshpazlik kanali bo'ldi."
+    },
+    {
+      "en": "Today, I use English every day at work, and last month I gave a presentation at a conference in Singapore. You won't believe it now, but you'll get there. Be patient with yourself. With love, your future self.",
+      "uz": "Bugun men ingliz tilini har kuni ishda ishlataman, o'tgan oy esa Singapurdagi konferensiyada taqdimot qildim. Hozir bunga ishonmaysan, lekin yetib borasan. O'zingga sabrli bo'l. Mehr bilan, kelajakdagi o'zing."
+    }
+  ],
+  "glossary": {
+    "convinced": "ishonch hosil qilgan",
+    "talent": "iste'dod",
+    "fluent": "ravon",
+    "anyway": "baribir",
+    "is worth more": "qimmatroq, ko'proq arziydi",
+    "frustration": "umidsizlik, asabiylashish",
+    "genuinely": "chin dildan",
+    "commentary": "sharh",
+    "textbook": "darslik",
+    "patient": "sabrli"
+  },
+  "questions": [
+    {
+      "q": "What did the writer believe at sixteen?",
+      "options": [
+        "English is easy.",
+        "Some people are born with a talent for languages.",
+        "Grammar books are useless."
+      ],
+      "answer": 1
+    },
+    {
+      "q": "According to the writer, what do fluent students do?",
+      "options": [
+        "They never make mistakes.",
+        "They keep talking even when they make mistakes.",
+        "They study five hours a week."
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What finally made English feel real to the writer?",
+      "options": [
+        "A textbook",
+        "A cooking channel",
+        "A teacher in Singapore"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which grammar structure is used in \"Had I understood this earlier, I would have saved...\"?",
+      "options": [
+        "Second conditional",
+        "Third conditional (inverted)",
+        "Present perfect"
+      ],
+      "answer": 1,
+      "explain_uz": "\"Had I understood\" = \"If I had understood\" — o'tmishdagi xayoliy holat (third conditional)."
+    }
+  ]
+}

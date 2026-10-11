@@ -64,6 +64,16 @@ def _build(files):
                 lesson = dict(lesson, level=code, unit_slug=unit['slug'], unit_title_uz=unit.get('title_uz', ''),
                               index=i, words=lesson.get('words', []), steps=lesson.get('steps', []))
                 lesson['exercise_count'] = sum(1 for s in lesson['steps'] if s.get('type') in EXERCISE_STEPS)
+                # Questions about the lesson's dialogue/text make no sense on
+                # their own, so mixed practice skips them.
+                after_text = False
+                for st in lesson['steps']:
+                    if st.get('type') in ('dialogue', 'reading'):
+                        after_text = True
+                    elif st.get('type') == 'grammar':
+                        after_text = False
+                    elif st.get('type') == 'choice' and after_text and not st.get('say'):
+                        st['needs_text'] = True
                 unit['lessons'][i] = lesson
                 lessons[lesson['slug']] = lesson
             levels[code]['units'].append(unit)
@@ -186,3 +196,37 @@ def placement_level(test, answers):
         if right < test.get('pass_mark', 4):
             return block['level']
     return test['blocks'][-1]['level']
+
+
+# ── Graded reading stories (data/learn/stories/*.json) ───────────────────
+_story_cache = {'key': None, 'stories': None}
+
+
+def get_stories():
+    """{slug: story}, ordered by level then file name."""
+    files = sorted((content_dir() / 'stories').glob('*.json'))
+    key = tuple((p.name, p.stat().st_mtime_ns) for p in files)
+    with _lock:
+        if _story_cache['key'] != key:
+            stories = [json.loads(p.read_text(encoding='utf-8')) for p in files]
+            stories.sort(key=lambda s: (LEVELS.index(s['level']) if s.get('level') in LEVELS else 9, s.get('order', 0)))
+            _story_cache['stories'] = {s['slug']: s for s in stories}
+            _story_cache['key'] = key
+        return _story_cache['stories']
+
+
+def validate_stories():
+    errors = []
+    for slug, s in get_stories().items():
+        for field in ('title', 'title_uz', 'level', 'paragraphs', 'questions'):
+            if not s.get(field):
+                errors.append(f"{slug}: '{field}' yo'q")
+        if s.get('level') not in LEVELS:
+            errors.append(f"{slug}: level noto'g'ri")
+        for p in s.get('paragraphs', []):
+            if not p.get('en'):
+                errors.append(f"{slug}: bo'sh abzats")
+        for q in s.get('questions', []):
+            if not 0 <= q.get('answer', -1) < len(q.get('options', [])):
+                errors.append(f"{slug}: savol javobi noto'g'ri: {q.get('q')}")
+    return errors

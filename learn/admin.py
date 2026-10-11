@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import DailyXP, LearnerProfile, LessonProgress
+from .models import DailyXP, LearnerProfile, LessonProgress, Mistake
 
 
 @admin.register(LearnerProfile)
@@ -20,3 +20,9 @@ class LessonProgressAdmin(admin.ModelAdmin):
 class DailyXPAdmin(admin.ModelAdmin):
     list_display = ('user', 'date', 'xp')
     date_hierarchy = 'date'
+
+
+@admin.register(Mistake)
+class MistakeAdmin(admin.ModelAdmin):
+    list_display = ('user', 'lesson_slug', 'step_index', 'wrong_count', 'right_streak', 'last_wrong_at')
+    search_fields = ('user__username', 'lesson_slug')

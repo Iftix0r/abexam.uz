@@ -1,0 +1,73 @@
+{
+  "slug": "a1-chorsu-bazaar",
+  "level": "A1",
+  "order": 2,
+  "emoji": "🍉",
+  "minutes": 4,
+  "title": "Saturday at Chorsu Bazaar",
+  "title_uz": "Shanba kuni Chorsu bozorida",
+  "paragraphs": [
+    {
+      "en": "Every Saturday, Tom and his Uzbek friend Jamshid go to Chorsu Bazaar in Tashkent. Tom is from England. He is a teacher at a language school.",
+      "uz": "Har shanba kuni Tom va uning o'zbek do'sti Jamshid Toshkentdagi Chorsu bozoriga borishadi. Tom Angliyadan. U til maktabida o'qituvchi."
+    },
+    {
+      "en": "The bazaar is very big and there are a lot of people. There are fruits, vegetables, bread, spices and sweets. Tom loves the colours and the smells.",
+      "uz": "Bozor juda katta va odam ko'p. U yerda mevalar, sabzavotlar, non, ziravorlar va shirinliklar bor. Tom ranglar va hidlarni juda yaxshi ko'radi."
+    },
+    {
+      "en": "\"How much are these melons?\" Tom asks in Uzbek. The man smiles. \"Twenty thousand,\" he says. \"That's expensive!\" says Jamshid. \"Fifteen?\" The man laughs. \"OK, fifteen for you.\"",
+      "uz": "\"Bu qovunlar qancha?\" — so'raydi Tom o'zbekcha. Sotuvchi jilmayadi. \"Yigirma ming,\" deydi u. \"Qimmat-ku!\" — deydi Jamshid. \"O'n besh?\" Sotuvchi kuladi. \"Xo'p, sizga o'n besh.\""
+    },
+    {
+      "en": "Then they buy hot bread — non — and some grapes. Tom's bag is very heavy now. They sit in a small café and drink green tea.",
+      "uz": "Keyin ular issiq non va biroz uzum sotib olishadi. Tomning sumkasi endi juda og'ir. Ular kichkina choyxonada o'tirib, ko'k choy ichishadi."
+    },
+    {
+      "en": "\"I love Saturdays,\" Tom says. \"Me too,\" says Jamshid. \"See you next week!\"",
+      "uz": "\"Shanbalarni yaxshi ko'raman,\" deydi Tom. \"Men ham,\" deydi Jamshid. \"Kelasi hafta ko'rishamiz!\""
+    }
+  ],
+  "glossary": {
+    "spices": "ziravorlar",
+    "sweets": "shirinliklar",
+    "smells": "hidlar",
+    "smiles": "jilmayadi",
+    "melons": "qovunlar",
+    "laughs": "kuladi",
+    "grapes": "uzum",
+    "heavy": "og'ir"
+  },
+  "questions": [
+    {
+      "q": "What is Tom's job?",
+      "q_uz": "Tomning kasbi nima?",
+      "options": [
+        "He's a doctor.",
+        "He's a teacher.",
+        "He's a student."
+      ],
+      "answer": 1
+    },
+    {
+      "q": "How much do they pay for the melons?",
+      "q_uz": "Qovun uchun qancha to'lashadi?",
+      "options": [
+        "20,000",
+        "15,000",
+        "50,000"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What do they drink in the café?",
+      "q_uz": "Choyxonada nima ichishadi?",
+      "options": [
+        "Coffee",
+        "Black tea",
+        "Green tea"
+      ],
+      "answer": 2
+    }
+  ]
+}

@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ story.title }} - AbExam{% endblock %}
+{% block page_title %}{{ story.level }} · Hikoya{% endblock %}
+
+{% block extra_css %}
+<style>
+    .sr { max-width: 720px; width: 100%; margin: 0 auto; }
+    .sr-top { display: flex; align-items: center; gap: 8px; margin-bottom: 18px; }
+    .sr-top a, .sr-btn { color: var(--text-muted); display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 999px; text-decoration: none; background: var(--tint-a); border: 1px solid var(--border-color); font-size: .82rem; cursor: pointer; }
+    .sr-btn.on { color: #3b82f6; border-color: #3b82f6; }
+    .sr-btn i, .sr-top a i { width: 16px; }
+    .sr-title { text-align: center; margin: 10px 0 24px; }
+    .sr-title .e { font-size: 3rem; }
+    .sr-title h1 { font-size: 1.7rem; font-weight: 600; margin-top: 6px; }
+    .sr-title p { color: var(--text-muted); }
+    .sr-p { position: relative; font-size: 1.12rem; line-height: 1.9; padding: 12px 44px 12px 14px; border-radius: 12px; margin-bottom: 6px; transition: background .2s; }
+    .sr-p.playing { background: rgba(59,130,246,0.08); }
+    .sr-p .uz { display: none; font-size: .9rem; color: var(--text-muted); line-height: 1.6; margin-top: 6px; border-top: 1px dashed var(--border-color); padding-top: 6px; }
+    .sr-p.show-uz .uz { display: block; }
+    .sr-p-tools { position: absolute; right: 6px; top: 10px; display: flex; flex-direction: column; gap: 2px; }
+    .sr-p-tools button { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 5px; border-radius: 8px; display: flex; }
+    .sr-p-tools button:hover { background: var(--tint-a); color: var(--primary-color); }
+    .sr-p-tools i { width: 17px; height: 17px; }
+    .sr-gl { border-bottom: 2px dotted var(--primary-color); cursor: pointer; }
+    .sr-pop { position: absolute; z-index: 50; background: var(--text-color); color: var(--bg-color); border-radius: 10px; padding: 8px 10px; font-size: .85rem; display: none; align-items: center; gap: 10px; box-shadow: var(--shadow); }
+    .sr-pop button { background: #22c55e; color: #fff; border: none; border-radius: 6px; padding: 3px 8px; font-size: .75rem; font-weight: 700; cursor: pointer; }
+    .sr-q { margin-top: 30px; border-top: 2px solid var(--border-color); padding-top: 24px; display: none; }
+    .sr-q h2 { font-size: 1.15rem; margin-bottom: 14px; }
+    .sr-item { margin-bottom: 18px; }
+    .sr-item b { display: block; margin-bottom: 8px; line-height: 1.5; }
+    .sr-item small { display: block; color: var(--text-muted); margin: -4px 0 8px; }
+    .sr-opts { display: grid; gap: 8px; }
+    .sr-opt { text-align: left; background: var(--card-bg); border: 2px solid var(--border-color); border-radius: 12px; padding: 11px 14px; color: var(--text-color); cursor: pointer; font-size: .95rem; }
+    .sr-opt.ok { border-color: #22c55e; background: rgba(34,197,94,.12); }
+    .sr-opt.bad { border-color: #ef4444; background: rgba(239,68,68,.1); }
+    .sr-why { font-size: .85rem; color: var(--text-muted); margin-top: 6px; }
+    .sr-main { display: block; width: 100%; margin: 26px 0 10px; padding: 15px; border-radius: 14px; border: none; background: #22c55e; color: #fff; font-weight: 700; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 0 #15803d; text-align: center; text-decoration: none; }
+    .sr-result { text-align: center; padding: 20px 0; display: none; }
+    .sr-result .big { font-size: 3.4rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="sr">
+    <div class="sr-top">
+        <a href="{% url 'learn:stories' %}"><i data-lucide="arrow-left"></i> Hikoyalar</a>
+        <span style="flex:1"></span>
+        <button class="sr-btn" id="playAll"><i data-lucide="play"></i> Tinglash</button>
+        <button class="sr-btn" id="slow"><i data-lucide="snail"></i> Sekin</button>
+        <button class="sr-btn" id="uzAll"><i data-lucide="languages"></i> Tarjima</button>
+    </div>
+    <div class="sr-title">
+        <div class="e">{{ story.emoji }}</div>
+        <h1>{{ story.title }}</h1>
+        <p>{{ story.title_uz }} · {{ story.minutes }} daqiqa</p>
+    </div>
+    <div id="text"></div>
+    <div class="sr-pop" id="pop"><span id="popText"></span><button id="popAdd">+ Lug'at</button></div>
+    <button class="sr-main" id="toQuestions">O'qib bo'ldim — savollarga o'tish</button>
+    <section class="sr-q" id="questions"><h2>Tushundingizmi?</h2><div id="qList"></div><button class="sr-main" id="check">Tekshirish</button></section>
+    <div class="sr-result" id="result"></div>
+</div>
+{{ story|json_script:"story-data" }}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+    const S = JSON.parse(document.getElementById('story-data').textContent);
+    const CSRF = '{{ csrf_token }}';
+    const $ = id => document.getElementById(id);
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    let slow = false;
+    try { slow = JSON.parse(localStorage.getItem('lp-slow') || 'false'); } catch (e) {}
+    $('slow').classList.toggle('on', slow);
+    $('slow').onclick = () => { slow = !slow; $('slow').classList.toggle('on', slow); try { localStorage.setItem('lp-slow', JSON.stringify(slow)); } catch (e) {} };
+
+    let voice = null;
+    const pick = () => { const v = speechSynthesis.getVoices(); voice = v.find(x => /en-GB/i.test(x.lang)) || v.find(x => /^en/i.test(x.lang)) || null; };
+    if (window.speechSynthesis) { pick(); speechSynthesis.onvoiceschanged = pick; }
+    const speak = (t, onend) => { if (!window.speechSynthesis) return; speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = 'en-GB'; u.rate = slow ? .7 : .92; if (voice) u.voice = voice; if (onend) u.onend = onend; speechSynthesis.speak(u); };
+
+    // Paragraphs with glossary words marked once each.
+    const keys = Object.keys(S.glossary || {}).sort((a, b) => b.length - a.length);
+    const used = new Set();
+    const mark = html => {
+        keys.forEach(k => {
+            if (used.has(k)) return;
+            const re = new RegExp(`(?<![\\p{L}])(${esc(k).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})(?![\\p{L}])(?![^<]*>)`, 'iu');
+            if (re.test(html)) { used.add(k); html = html.replace(re, `<span class="sr-gl" data-k="${esc(k)}">$1</span>`); }
+        });
+        return html;
+    };
+    $('text').innerHTML = S.paragraphs.map((p, i) => `<div class="sr-p" data-i="${i}">${mark(esc(p.en))}
+        <div class="uz">${esc(p.uz || '')}</div>
+        <div class="sr-p-tools"><button data-play="${i}" aria-label="Tinglash"><i data-lucide="volume-2"></i></button>${p.uz ? `<button data-uz="${i}" aria-label="Tarjima"><i data-lucide="languages"></i></button>` : ''}</div></div>`).join('');
+    lucide.createIcons();
+    const paras = [...document.querySelectorAll('.sr-p')];
+    const hi = i => paras.forEach((p, j) => p.classList.toggle('playing', j === i));
+    let token = 0;
+
+    const pop = $('pop');
+    let popWord = null;
+    document.addEventListener('click', e => {
+        const g = e.target.closest('.sr-gl');
+        if (g) {
+            popWord = g.dataset.k;
+            $('popText').textContent = `${popWord} — ${S.glossary[popWord]}`;
+            const r = g.getBoundingClientRect(), host = document.querySelector('.sr').getBoundingClientRect();
+            pop.style.display = 'flex';
+            pop.style.left = Math.max(0, Math.min(r.left - host.left, host.width - pop.offsetWidth)) + 'px';
+            pop.style.top = (r.bottom - host.top + 6) + 'px';
+            $('popAdd').disabled = false; $('popAdd').textContent = "+ Lug'at";
+            speak(popWord);
+            return;
+        }
+        if (!e.target.closest('#pop')) pop.style.display = 'none';
+        const pb = e.target.closest('[data-play]');
+        if (pb) { const i = +pb.dataset.play; token++; hi(i); speak(S.paragraphs[i].en, () => hi(-1)); }
+        const ub = e.target.closest('[data-uz]');
+        if (ub) paras[+ub.dataset.uz].classList.toggle('show-uz');
+    });
+    document.querySelector('.sr').style.position = 'relative';
+    $('popAdd').onclick = async () => {
+        const fd = new FormData();
+        fd.append('english', popWord); fd.append('translation', S.glossary[popWord]); fd.append('csrfmiddlewaretoken', CSRF);
+        try { await fetch('{% url "vocabulary" %}', { method: 'POST', body: fd }); $('popAdd').textContent = "✓ qo'shildi"; $('popAdd').disabled = true; } catch (e) {}
+    };
+    $('playAll').onclick = () => {
+        const my = ++token; let i = 0;
+        const go = () => { if (my !== token) return; if (i >= paras.length) return hi(-1); hi(i); paras[i].scrollIntoView({ block: 'center', behavior: 'smooth' }); speak(S.paragraphs[i].en, () => { i++; setTimeout(go, 400); }); };
+        go();
+    };
+    $('uzAll').onclick = () => { const on = !paras[0].classList.contains('show-uz'); paras.forEach(p => p.classList.toggle('show-uz', on)); };
+
+    // Comprehension questions
+    const answers = {};
+    $('toQuestions').onclick = () => {
+        token++; window.speechSynthesis && speechSynthesis.cancel(); hi(-1);
+        $('toQuestions').style.display = 'none';
+        $('questions').style.display = 'block';
+        $('qList').innerHTML = S.questions.map((q, i) => `<div class="sr-item" data-q="${i}"><b>${i + 1}. ${esc(q.q)}</b>${q.q_uz ? `<small>${esc(q.q_uz)}</small>` : ''}
+            <div class="sr-opts">${q.options.map((o, j) => `<button class="sr-opt" data-q="${i}" data-o="${j}">${esc(o)}</button>`).join('')}</div><div class="sr-why"></div></div>`).join('');
+        $('questions').scrollIntoView({ behavior: 'smooth' });
+    };
+    $('qList').addEventListener('click', e => {
+        const b = e.target.closest('.sr-opt'); if (!b || b.disabled) return;
+        const q = +b.dataset.q;
+        document.querySelectorAll(`.sr-opt[data-q="${q}"]`).forEach(x => x.style.borderColor = '');
+        b.style.borderColor = '#3b82f6';
+        answers[q] = +b.dataset.o;
+    });
+    $('check').onclick = async () => {
+        if (Object.keys(answers).length < S.questions.length) { $('check').textContent = 'Barcha savollarga javob bering'; return; }
+        let right = 0;
+        S.questions.forEach((q, i) => {
+            const opts = document.querySelectorAll(`.sr-opt[data-q="${i}"]`);
+            opts.forEach(o => { o.disabled = true; o.style.borderColor = ''; });
+            opts[q.answer].classList.add('ok');
+            if (answers[i] === q.answer) right++; else opts[answers[i]].classList.add('bad');
+            const why = document.querySelector(`.sr-item[data-q="${i}"] .sr-why`);
+            if (q.explain_uz) why.textContent = q.explain_uz;
+        });
+        const score = Math.round(right * 100 / S.questions.length);
+        $('check').style.display = 'none';
+        let d = {};
+        try {
+            const r = await fetch('{% url "learn:story_complete" story.slug %}', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF }, body: JSON.stringify({ score }) });
+            d = await r.json();
+        } catch (e) {}
+        const res = $('result');
+        res.style.display = 'block';
+        res.innerHTML = `<div class="big">${score >= 75 ? '🎉' : '📖'}</div>
+            <h2 style="margin:8px 0 4px">${right} / ${S.questions.length} to'g'ri</h2>
+            <p style="color:var(--text-muted)">${score >= 75 ? "Ajoyib tushunish!" : "Hikoyani yana bir bor tinglab o'qing — ikkinchi o'qishda ko'proq tushunasiz."} ${d.xp ? `+${d.xp} XP` : ''}</p>
+            <a class="sr-main" href="{% url 'learn:stories' %}" style="max-width:320px;margin:20px auto 0">Boshqa hikoyalar</a>`;
+        res.scrollIntoView({ behavior: 'smooth' });
+    };
+})();
+</script>
+{% endblock %}

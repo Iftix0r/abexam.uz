@@ -65,3 +65,22 @@ class LessonProgress(models.Model):
 
     def __str__(self):
         return f"{self.user} · {self.lesson_slug} · {self.best_score}%"
+
+
+class Mistake(models.Model):
+    """An exercise the learner got wrong — served again in mixed practice
+    until they answer it right twice in a row."""
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='learn_mistakes')
+    lesson_slug = models.CharField(max_length=100)
+    step_index = models.PositiveSmallIntegerField()
+    wrong_count = models.PositiveIntegerField(default=1)
+    right_streak = models.PositiveSmallIntegerField(default=0)
+    last_wrong_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        unique_together = ('user', 'lesson_slug', 'step_index')
+        verbose_name = 'Xato mashq'
+        verbose_name_plural = 'Xato mashqlar'
+
+    def __str__(self):
+        return f"{self.user} · {self.lesson_slug}#{self.step_index}"

@@ -9,9 +9,12 @@ from django.utils import timezone
 
 from users.models import User, Vocabulary
 from . import srs
-from .content import answer_matches, get_course, get_lesson, get_placement, placement_level, validate_course
-from .models import DailyXP, LearnerProfile, LessonProgress
-from .services import award_xp, complete_lesson
+from .content import (
+    answer_matches, get_course, get_lesson, get_placement, get_stories, placement_level, validate_course,
+    validate_stories,
+)
+from .models import DailyXP, LearnerProfile, LessonProgress, Mistake
+from .services import apply_practice, award_xp, build_practice, complete_lesson, leaderboard, record_mistakes
 
 
 class ContentTests(TestCase):
@@ -31,6 +34,54 @@ class ContentTests(TestCase):
         self.assertTrue(answer_matches('I’m fine', "I'm fine"))
         self.assertFalse(answer_matches('', ['am']))
         self.assertFalse(answer_matches('is', ['am', "'m"]))
+
+
+class StoryContentTests(TestCase):
+    def test_stories_are_valid_and_cover_every_level(self):
+        self.assertEqual(validate_stories(), [])
+        self.assertEqual({s['level'] for s in get_stories().values()}, {'A1', 'A2', 'B1', 'B2'})
+
+
+class PracticeTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user('p', password='pw')
+        self.lesson = get_lesson('a1-hello')
+        self.gap = next(i for i, s in enumerate(self.lesson['steps']) if s['type'] == 'gap')
+
+    def test_text_questions_and_speaking_are_not_recorded(self):
+        steps = self.lesson['steps']
+        speak = next(i for i, s in enumerate(steps) if s['type'] == 'speak')
+        record_mistakes(self.user, self.lesson, [self.gap, speak, 999, 'x'])
+        self.assertEqual(list(Mistake.objects.values_list('step_index', flat=True)), [self.gap])
+        family = get_lesson('a1-family')
+        comprehension = next(i for i, s in enumerate(family['steps']) if s.get('needs_text'))
+        record_mistakes(self.user, family, [comprehension])
+        self.assertEqual(Mistake.objects.count(), 1)
+
+    def test_mistake_is_mastered_after_two_right_answers(self):
+        record_mistakes(self.user, self.lesson, [self.gap])
+        LessonProgress.objects.create(user=self.user, lesson_slug='a1-hello', best_score=50)
+        steps, words = build_practice(self.user)
+        mine = [s for s in steps if s['_src'] == {'slug': 'a1-hello', 'idx': self.gap, 'mistake': True}]
+        self.assertEqual(len(mine), 1)
+        self.assertTrue(words)
+        self.assertTrue(all(not s.get('needs_text') and s['type'] != 'speak' for s in steps))
+        res = {'slug': 'a1-hello', 'step': self.gap, 'ok': True}
+        apply_practice(self.user, [res])
+        self.assertEqual(Mistake.objects.get().right_streak, 1)
+        apply_practice(self.user, [dict(res, ok=False)])
+        self.assertEqual(Mistake.objects.get().right_streak, 0)
+        apply_practice(self.user, [res])
+        out = apply_practice(self.user, [res])
+        self.assertEqual(out['mistakes_left'], 0)
+
+    def test_leaderboard_ranks_this_week(self):
+        other = User.objects.create_user('o', password='pw', first_name='Ali', last_name='Valiyev')
+        award_xp(other, 30)
+        award_xp(self.user, 10)
+        board = leaderboard(self.user)
+        self.assertEqual([r['name'] for r in board['rows']], ['Ali V.', 'p'])
+        self.assertEqual(board['me'], {'rank': 2, 'xp': 10})
 
 
 class PlacementTests(TestCase):
@@ -140,6 +191,22 @@ class EndpointTests(TestCase):
         self.assertEqual(mine.reps, 1)
         self.assertIsNotNone(mine.due_at)
 
+    def test_lesson_completion_records_mistakes(self):
+        lesson = get_lesson('a1-hello')
+        gap = next(i for i, st in enumerate(lesson['steps']) if st['type'] == 'gap')
+        self._post('learn:lesson_complete', {'score': 50, 'mistakes': [gap]}, 'a1-hello')
+        self.assertTrue(Mistake.objects.filter(user=self.user, step_index=gap).exists())
+        resp = self._post('learn:practice_complete', {'results': [{'slug': 'a1-hello', 'step': gap, 'ok': True}]})
+        self.assertEqual(resp.json()['right'], 1)
+
+    def test_story_completion_pays_once(self):
+        first = self._post('learn:story_complete', {'score': 75}, 'a1-malikas-cat').json()
+        again = self._post('learn:story_complete', {'score': 100}, 'a1-malikas-cat').json()
+        self.assertEqual((first['xp'], again['xp']), (8, 2))
+        self.assertEqual(LessonProgress.objects.get(lesson_slug='story:a1-malikas-cat').best_score, 100)
+        # A read story doesn't count as a finished lesson (no lesson unlocks, placement still offered).
+        self.assertEqual(self._post('learn:lesson_complete', {'score': 1}, 'a1-family').status_code, 403)
+
     def test_placement_sets_level(self):
         test = get_placement()
         answers = {'0': [q['answer'] for q in test['blocks'][0]['questions']]}
@@ -188,6 +255,13 @@ class PageTests(TestCase):
         # Only lessons the learner has unlocked get a link from the reference.
         self.assertContains(grammar, reverse('learn:lesson', args=['b2-trends']))
         self.assertNotContains(grammar, reverse('learn:lesson', args=['b2-linking']))
+
+    def test_new_pages_render(self):
+        self.assertContains(self.client.get(reverse('learn:stories')), 'Malika')
+        self.assertContains(self.client.get(reverse('learn:story', args=['b1-wrong-train'])), 'story-data')
+        self.assertEqual(self.client.get(reverse('learn:story', args=['nope'])).status_code, 404)
+        self.assertContains(self.client.get(reverse('learn:leaderboard')), 'Haftaning')
+        self.assertContains(self.client.get(reverse('learn:practice')), '"mode": "practice"')
 
     def test_new_learner_is_offered_the_placement_test(self):
         self.assertContains(self.client.get(reverse('learn:hub')), reverse('learn:placement') + '" class="ln-btn')

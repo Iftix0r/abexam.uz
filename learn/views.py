@@ -11,11 +11,11 @@ from django.views.generic import TemplateView
 from core.utils import parse_json_body
 from users.models import Vocabulary
 from . import ai, srs
-from .content import LEVELS, get_course, get_lesson, get_placement, placement_level
-from .models import LessonProgress
+from .content import LEVELS, get_course, get_lesson, get_placement, get_stories, placement_level
+from .models import LessonProgress, Mistake
 from .services import (
-    REVIEW_XP, TUTOR_XP, award_xp, complete_lesson, get_profile,
-    recommended_level, today_xp, week_activity,
+    REVIEW_XP, TUTOR_XP, apply_practice, award_xp, build_practice, complete_lesson, get_profile,
+    leaderboard, recommended_level, record_mistakes, today_xp, week_activity,
 )
 
 TUTOR_DAILY_LIMIT = 60
@@ -34,7 +34,8 @@ def _ai_quota_left(user, kind, limit):
 
 
 def _done_map(user):
-    return dict(LessonProgress.objects.filter(user=user).values_list('lesson_slug', 'best_score'))
+    return dict(LessonProgress.objects.filter(user=user).exclude(lesson_slug__startswith='story:')
+                .values_list('lesson_slug', 'best_score'))
 
 
 def _is_unlocked(lesson, done):
@@ -108,6 +109,10 @@ class HubView(LoginRequiredMixin, TemplateView):
             'daily_goals': DAILY_GOALS,
             'scenarios': ai.SCENARIOS,
             'show_placement': not profile.level and not done,
+            'mistake_count': Mistake.objects.filter(user=user).count(),
+            'can_practice': bool(done),
+            'board': leaderboard(user, limit=5),
+            'story_count': sum(1 for st in get_stories().values() if st['level'] == level_code),
         })
         return ctx
 
@@ -146,6 +151,8 @@ class LessonView(LoginRequiredMixin, TemplateView):
             'slug': lesson['slug'], 'level': lesson['level'], 'title': lesson['title'],
             'title_uz': lesson['title_uz'], 'words': lesson['words'], 'steps': lesson['steps'],
             'next_slug': lesson.get('next_slug'),
+            'mode': 'lesson',
+            'complete_url': reverse('learn:lesson_complete', args=[lesson['slug']]),
         }
         ctx['progress'] = LessonProgress.objects.filter(user=self.request.user, lesson_slug=lesson['slug']).first()
         return ctx
@@ -165,7 +172,11 @@ class LessonCompleteView(LoginRequiredMixin, View):
             score = int(data.get('score', 0))
         except (TypeError, ValueError):
             score = 0
-        return JsonResponse({'ok': True, **complete_lesson(request.user, lesson, score)})
+        result = complete_lesson(request.user, lesson, score)
+        mistakes = data.get('mistakes')
+        if isinstance(mistakes, list):
+            record_mistakes(request.user, lesson, mistakes[:50])
+        return JsonResponse({'ok': True, **result})
 
 
 class WriteCheckView(LoginRequiredMixin, View):
@@ -202,6 +213,9 @@ class ReviewView(LoginRequiredMixin, TemplateView):
             'new': c.due_at is None, 'reps': c.reps,
         } for c in cards]
         ctx['review'] = srs.review_counts(self.request.user)
+        # Wrong options for the multiple-choice cards shown to new words.
+        ctx['pool'] = list(Vocabulary.objects.filter(user=self.request.user).order_by('?')
+                           .values_list('translation', flat=True)[:40])
         return ctx
 
 
@@ -296,4 +310,96 @@ class GrammarView(LoginRequiredMixin, TemplateView):
             if items:
                 levels.append({'code': code, 'name': course['levels'][code]['name'], 'items': items})
         ctx['levels'] = levels
+        return ctx
+
+
+class PracticeView(LoginRequiredMixin, TemplateView):
+    """Mixed review session built from past mistakes — rendered by the lesson player."""
+    template_name = 'learn/lesson.html'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        profile = get_profile(self.request.user)
+        steps, words = build_practice(self.request.user)
+        level = profile.level or 'A1'
+        ctx['lesson'] = {'slug': 'practice', 'level': level, 'title_uz': 'Aralash mashq'}
+        ctx['lesson_data'] = {
+            'slug': 'practice', 'level': level, 'title': 'Mixed practice', 'title_uz': 'Aralash mashq',
+            'words': words, 'steps': steps, 'next_slug': None, 'mode': 'practice',
+            'complete_url': reverse('learn:practice_complete'),
+        }
+        return ctx
+
+
+class PracticeCompleteView(LoginRequiredMixin, View):
+    def post(self, request):
+        data, err = parse_json_body(request)
+        if err:
+            return err
+        return JsonResponse({'ok': True, **apply_practice(request.user, data.get('results'))})
+
+
+STORY_XP_FIRST = 8
+STORY_XP_REPEAT = 2
+
+
+class StoriesView(LoginRequiredMixin, TemplateView):
+    template_name = 'learn/stories.html'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        read = dict(LessonProgress.objects.filter(user=self.request.user, lesson_slug__startswith='story:')
+                    .values_list('lesson_slug', 'best_score'))
+        groups = []
+        for code in LEVELS:
+            items = [{'story': st, 'score': read.get('story:' + st['slug'])}
+                     for st in get_stories().values() if st['level'] == code]
+            if items:
+                groups.append({'code': code, 'items': items})
+        ctx['groups'] = groups
+        ctx['level_code'] = get_profile(self.request.user).level
+        return ctx
+
+
+class StoryView(LoginRequiredMixin, TemplateView):
+    template_name = 'learn/story.html'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        story = get_stories().get(kwargs['slug'])
+        if not story:
+            raise Http404
+        ctx['story'] = story
+        return ctx
+
+
+class StoryCompleteView(LoginRequiredMixin, View):
+    def post(self, request, slug):
+        story = get_stories().get(slug)
+        if not story:
+            return JsonResponse({'error': 'Hikoya topilmadi'}, status=404)
+        data, err = parse_json_body(request)
+        if err:
+            return err
+        try:
+            score = max(0, min(100, int(data.get('score', 0))))
+        except (TypeError, ValueError):
+            score = 0
+        progress, created = LessonProgress.objects.get_or_create(
+            user=request.user, lesson_slug='story:' + slug, defaults={'best_score': score, 'attempts': 1})
+        if not created:
+            progress.attempts += 1
+            progress.best_score = max(progress.best_score, score)
+            progress.save(update_fields=['attempts', 'best_score'])
+        xp = STORY_XP_FIRST if created else STORY_XP_REPEAT
+        profile = award_xp(request.user, xp)
+        return JsonResponse({'ok': True, 'xp': xp, 'streak': profile.streak})
+
+
+class LeaderboardView(LoginRequiredMixin, TemplateView):
+    template_name = 'learn/leaderboard.html'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['board'] = leaderboard(self.request.user, limit=50)
         return ctx

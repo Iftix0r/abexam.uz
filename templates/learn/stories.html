@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}Hikoyalar - AbExam{% endblock %}
+{% block page_title %}Hikoyalar{% endblock %}
+
+{% block extra_css %}
+<style>
+    .st-head h1 { font-size: 1.7rem; font-weight: 600; }
+    .st-head p { color: var(--text-muted); margin: 4px 0 24px; max-width: 640px; line-height: 1.6; }
+    .st-level { margin-bottom: 26px; }
+    .st-level h2 { font-size: 1rem; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .st-level h2 span { background: var(--primary-color); color: #fff; border-radius: 8px; padding: 2px 8px; font-size: .85rem; }
+    .st-level h2 small { color: var(--text-muted); font-weight: 400; font-size: .8rem; }
+    .st-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+    .st-card { display: flex; gap: 14px; align-items: center; text-decoration: none; color: var(--text-color); background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 16px; transition: var(--transition); }
+    .st-card:hover { border-color: var(--primary-color); transform: translateY(-2px); }
+    .st-emoji { font-size: 2rem; width: 54px; height: 54px; border-radius: 14px; background: var(--tint-b); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .st-card b { display: block; font-size: .98rem; }
+    .st-card span { color: var(--text-muted); font-size: .8rem; }
+    .st-done { margin-left: auto; color: var(--success-color); font-weight: 700; font-size: .85rem; white-space: nowrap; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="st-head">
+    <h1>📚 Hikoyalar kutubxonasi</h1>
+    <p>Darajangizga mos qisqa hikoyalar. Eng yaxshi usul: avval tarjimasiz o'qing va tinglang, notanish so'zni bosing, oxirida savollarga javob bering. Ko'p o'qish — lug'atni oshirishning eng tabiiy yo'li.</p>
+</div>
+{% for g in groups %}
+<section class="st-level">
+    <h2><span>{{ g.code }}</span>{% if g.code == level_code %}<small>· sizning darajangiz</small>{% endif %}</h2>
+    <div class="st-grid">
+        {% for it in g.items %}
+        <a class="st-card" href="{% url 'learn:story' it.story.slug %}">
+            <div class="st-emoji">{{ it.story.emoji }}</div>
+            <div>
+                <b>{{ it.story.title }}</b>
+                <span>{{ it.story.title_uz }} · {{ it.story.minutes }} daq</span>
+            </div>
+            {% if it.score is not None %}<div class="st-done">✓ {{ it.score }}%</div>{% endif %}
+        </a>
+        {% endfor %}
+    </div>
+</section>
+{% endfor %}
+{% endblock %}

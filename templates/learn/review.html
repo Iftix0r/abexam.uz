@@ -53,12 +53,15 @@
     <div id="rvStage"></div>
 </div>
 {{ cards|json_script:"cards-data" }}
+{{ pool|json_script:"pool-data" }}
 {% endblock %}
 
 {% block extra_js %}
 <script>
 (function () {
     const cards = JSON.parse(document.getElementById('cards-data').textContent);
+    const POOL = [...new Set(JSON.parse(document.getElementById('pool-data').textContent).concat(cards.map(c => c.uz)))];
+    const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
     const CSRF = '{{ csrf_token }}';
     const GRADE_URL = '{% url "learn:review_grade" %}';
     const stage = document.getElementById('rvStage');
@@ -83,9 +86,12 @@
         if (!queue.length) return done();
         current = queue.shift();
         typedOk = null;
-        // Well-known cards switch from recognition (EN→UZ) to recall (UZ→type EN),
-        // which is harder and builds the active vocabulary needed for speaking.
-        const recall = current.reps >= 2;
+        // Difficulty grows with the card: new words are a 4-option quiz (by
+        // ear on the second review), then recognition, then active recall
+        // (UZ → type EN), which builds the vocabulary needed for speaking.
+        const recall = current.reps >= 3;
+        const wrong = shuffle(POOL.filter(t => t !== current.uz)).slice(0, 3);
+        if (current.reps < 2 && wrong.length >= 2) return showChoice(current.reps === 1);
         stage.innerHTML = `
             <div class="rv-card" id="card">
                 <span class="rv-tag ${current.new ? 'new' : ''}">${current.new ? 'Yangi so\'z' : recall ? 'Inglizchasini yozing' : 'Takrorlash'}</span>
@@ -117,6 +123,45 @@
         document.getElementById('reveal').onclick = reveal;
         stage.querySelectorAll('.rv-g').forEach(b => b.onclick = () => grade(+b.dataset.g));
     }
+
+    function showChoice(byEar) {
+        const opts = shuffle(wrong3().concat(current.uz));
+        stage.innerHTML = `
+            <div class="rv-card" id="card">
+                <span class="rv-tag new">${byEar ? 'Tinglang va ma\'nosini tanlang' : 'Ma\'nosini tanlang'}</span>
+                ${byEar ? `<button class="rv-say" data-say="1" style="width:76px;height:76px;border-radius:20px" aria-label="Tinglash"><i data-lucide="volume-2" style="width:30px"></i></button>`
+                        : `<div class="rv-front">${esc(current.en)}</div><button class="rv-say" data-say="1" aria-label="Tinglash"><i data-lucide="volume-2" style="width:20px"></i></button>`}
+                <div class="rv-back">${byEar ? `<div class="rv-front" style="font-size:1.6rem">${esc(current.en)}</div>` : ''}${current.ex ? `<div class="ex">${esc(current.ex)}</div>` : ''}</div>
+            </div>
+            <div class="rv-actions"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px" id="mc">
+                ${opts.map(o => `<button class="rv-g" data-t="${esc(o)}">${esc(o)}</button>`).join('')}</div>
+                <button class="rv-g" id="dunno" style="width:100%;margin-top:8px;color:var(--text-muted)">Bilmayman</button>
+                <button class="rv-reveal" id="next" style="display:none;margin-top:12px">Davom etish</button></div>
+            <p class="rv-help">Bilmasangiz, taxmin qilmang — "Bilmayman"ni bosing: so'z shu mashg'ulotda yana chiqadi.</p>`;
+        lucide.createIcons();
+        stage.querySelectorAll('[data-say]').forEach(b => b.onclick = () => speak(current.en));
+        setTimeout(() => speak(current.en), 250);
+        document.getElementById('dunno').onclick = () => {
+            if (document.getElementById('card').classList.contains('rv-shown')) return;
+            stage.querySelectorAll('#mc .rv-g').forEach(x => { if (x.dataset.t === current.uz) x.classList.add('good'); else x.style.opacity = .45; });
+            document.getElementById('card').classList.add('rv-shown');
+            document.getElementById('dunno').style.display = 'none';
+            speak(current.en);
+            const n = document.getElementById('next'); n.style.display = 'block'; n.onclick = () => grade(0); n.focus();
+        };
+        stage.querySelectorAll('#mc .rv-g').forEach(b => b.onclick = () => {
+            if (document.getElementById('card').classList.contains('rv-shown')) return;
+            const ok = b.dataset.t === current.uz;
+            stage.querySelectorAll('#mc .rv-g').forEach(x => { if (x.dataset.t === current.uz) x.classList.add('good'); else x.style.opacity = .45; });
+            b.style.opacity = 1;
+            if (!ok) b.classList.add('again');
+            document.getElementById('dunno').style.display = 'none';
+            document.getElementById('card').classList.add('rv-shown');
+            if (ok) setTimeout(() => grade(2), 900);
+            else { const n = document.getElementById('next'); n.style.display = 'block'; n.onclick = () => grade(0); n.focus(); }
+        });
+    }
+    function wrong3() { return shuffle(POOL.filter(t => t !== current.uz)).slice(0, 3); }
 
     function reveal() {
         const card = document.getElementById('card');
@@ -163,6 +208,12 @@
         if (e.target.tagName === 'INPUT') return;
         const card = document.getElementById('card');
         if (!card) return;
+        const mc = document.querySelectorAll('#mc .rv-g');
+        if (mc.length) {
+            if (['1', '2', '3', '4'].includes(e.key) && mc[+e.key - 1]) mc[+e.key - 1].click();
+            else if (e.key === 'Enter' && document.getElementById('next').style.display === 'block') document.getElementById('next').click();
+            return;
+        }
         if (e.code === 'Space' && !card.classList.contains('rv-shown')) { e.preventDefault(); reveal(); }
         else if (card.classList.contains('rv-shown') && ['1', '2', '3', '4'].includes(e.key)) grade(+e.key - 1);
     });

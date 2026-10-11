@@ -1,0 +1,84 @@
+{
+  "slug": "b2-village-online",
+  "level": "B2",
+  "order": 1,
+  "emoji": "🌐",
+  "minutes": 7,
+  "title": "The village that went online",
+  "title_uz": "Internetga chiqqan qishloq",
+  "paragraphs": [
+    {
+      "en": "Until 2019, the small mountain village of Yashilsoy was known mainly for its ancient plane trees and its apricots. Young people tended to leave for the cities as soon as they finished school, and the population had been declining steadily for decades.",
+      "uz": "2019-yilgacha kichik tog'li Yashilsoy qishlog'i asosan qadimiy chinorlari va o'riklari bilan tanilgan edi. Yoshlar odatda maktabni bitirishi bilan shaharlarga ketishardi va aholi o'nlab yillar davomida barqaror kamayib borardi."
+    },
+    {
+      "en": "Everything began to change when a high-speed internet connection reached the village. A local teacher, Zarina, started an online shop selling dried apricots and handmade textiles. Within a year, her orders had increased dramatically, and she was shipping products as far as Germany and South Korea.",
+      "uz": "Qishloqqa yuqori tezlikdagi internet yetib kelganida hammasi o'zgara boshladi. Mahalliy o'qituvchi Zarina quritilgan o'rik va qo'lda to'qilgan matolar sotadigan onlayn do'kon ochdi. Bir yil ichida uning buyurtmalari keskin oshdi va u mahsulotlarni Germaniya va Janubiy Koreyagacha jo'nata boshladi."
+    },
+    {
+      "en": "Moreover, her success inspired others. Several families converted spare rooms into guesthouses and advertised them on international booking websites. As a result, the number of foreign visitors rose from almost zero to over three thousand a year.",
+      "uz": "Bundan tashqari, uning muvaffaqiyati boshqalarni ilhomlantirdi. Bir necha oila bo'sh xonalarini mehmon uylariga aylantirib, xalqaro bron qilish saytlarida e'lon berdi. Natijada xorijiy sayyohlar soni deyarli noldan yiliga uch mingdan oshdi."
+    },
+    {
+      "en": "However, the changes have not been entirely positive. Some older residents complain that the village is losing its quiet character, and prices for basic goods have risen. Others worry that young people now spend more time on their phones than with their families.",
+      "uz": "Biroq o'zgarishlar butunlay ijobiy bo'lmadi. Ba'zi keksa aholi qishloq o'zining sokin qiyofasini yo'qotayotganidan shikoyat qiladi, asosiy mahsulotlar narxi ham oshgan. Boshqalari yoshlar endi oilasidan ko'ra telefonida ko'proq vaqt o'tkazayotganidan xavotirda."
+    },
+    {
+      "en": "Nevertheless, most people agree that the benefits outweigh the drawbacks. For the first time in decades, the population has started to grow, and several young graduates have returned home to start businesses. Yashilsoy's story suggests that technology, if used wisely, can breathe new life into rural communities.",
+      "uz": "Shunga qaramay, ko'pchilik afzalliklar kamchiliklardan ustun ekaniga qo'shiladi. O'nlab yillar ichida birinchi marta aholi o'sa boshladi va bir nechta yosh bitiruvchilar biznes boshlash uchun uyga qaytdi. Yashilsoy tarixi texnologiya oqilona ishlatilsa, qishloq jamoalariga yangi hayot baxsh eta olishini ko'rsatadi."
+    }
+  ],
+  "glossary": {
+    "plane trees": "chinor daraxtlari",
+    "declining steadily": "barqaror kamaymoqda",
+    "dried apricots": "quritilgan o'rik",
+    "handmade textiles": "qo'lda to'qilgan matolar",
+    "shipping": "jo'natmoq",
+    "inspired": "ilhomlantirdi",
+    "converted": "aylantirdi",
+    "residents": "aholi, yashovchilar",
+    "nevertheless": "shunga qaramay",
+    "rural communities": "qishloq jamoalari"
+  },
+  "questions": [
+    {
+      "q": "What started the changes in Yashilsoy?",
+      "options": [
+        "A new road",
+        "A high-speed internet connection",
+        "A government grant"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "\"The number of foreign visitors increased significantly.\" — TRUE, FALSE or NOT GIVEN?",
+      "options": [
+        "TRUE",
+        "FALSE",
+        "NOT GIVEN"
+      ],
+      "answer": 0,
+      "explain_uz": "\"rose from almost zero to over three thousand\" — sezilarli oshish."
+    },
+    {
+      "q": "\"All residents are happy with the changes.\" — TRUE, FALSE or NOT GIVEN?",
+      "options": [
+        "TRUE",
+        "FALSE",
+        "NOT GIVEN"
+      ],
+      "answer": 1,
+      "explain_uz": "\"Some older residents complain...\" — demak hammasi emas."
+    },
+    {
+      "q": "\"Zarina's online shop now employs twenty people.\" — TRUE, FALSE or NOT GIVEN?",
+      "options": [
+        "TRUE",
+        "FALSE",
+        "NOT GIVEN"
+      ],
+      "answer": 2,
+      "explain_uz": "Xodimlar soni haqida matnda hech narsa yo'q."
+    }
+  ]
+}

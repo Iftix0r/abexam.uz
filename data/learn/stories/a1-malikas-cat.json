@@ -1,0 +1,83 @@
+{
+  "slug": "a1-malikas-cat",
+  "level": "A1",
+  "order": 1,
+  "emoji": "🐱",
+  "minutes": 4,
+  "title": "Malika's new cat",
+  "title_uz": "Malikaning yangi mushugi",
+  "paragraphs": [
+    {
+      "en": "Malika is twelve years old. She lives with her parents and her little brother in a flat in Bukhara.",
+      "uz": "Malika o'n ikki yoshda. U ota-onasi va ukasi bilan Buxorodagi kvartirada yashaydi."
+    },
+    {
+      "en": "Last week, her father came home with a small box. In the box there was a little grey cat. \"Is it for me?\" Malika asked. \"Yes, it's for you and your brother,\" her father said.",
+      "uz": "O'tgan hafta otasi uyga kichkina quti bilan keldi. Qutida kichkina kulrang mushuk bor edi. \"Bu menga-mi?\" — so'radi Malika. \"Ha, senga va ukangga,\" — dedi otasi."
+    },
+    {
+      "en": "The cat's name is Paxta, because she is soft and white on her face. Paxta likes milk and fish. She doesn't like water!",
+      "uz": "Mushukning ismi Paxta, chunki u yumshoq va yuzi oppoq. Paxta sut va baliqni yaxshi ko'radi. Suvni yoqtirmaydi!"
+    },
+    {
+      "en": "Every morning, Paxta sleeps on Malika's bed. In the afternoon, she plays with a ball under the table. In the evening, she sits next to the window and looks at the birds.",
+      "uz": "Har kuni ertalab Paxta Malikaning karavotida uxlaydi. Tushdan keyin stol ostida koptok bilan o'ynaydi. Kechqurun deraza yonida o'tirib, qushlarga qaraydi."
+    },
+    {
+      "en": "Malika loves her cat. \"Paxta is my best friend,\" she says.",
+      "uz": "Malika mushugini juda yaxshi ko'radi. \"Paxta — mening eng yaqin do'stim,\" deydi u."
+    }
+  ],
+  "glossary": {
+    "parents": "ota-ona",
+    "little brother": "uka",
+    "box": "quti",
+    "grey": "kulrang",
+    "soft": "yumshoq",
+    "face": "yuz",
+    "birds": "qushlar",
+    "best friend": "eng yaqin do'st"
+  },
+  "questions": [
+    {
+      "q": "Where does Malika live?",
+      "q_uz": "Malika qayerda yashaydi?",
+      "options": [
+        "In Tashkent",
+        "In Bukhara",
+        "In Samarkand"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What colour is the cat?",
+      "q_uz": "Mushuk qanday rangda?",
+      "options": [
+        "Black",
+        "Grey",
+        "Orange"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What doesn't Paxta like?",
+      "q_uz": "Paxta nimani yoqtirmaydi?",
+      "options": [
+        "Milk",
+        "Fish",
+        "Water"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Where does Paxta sleep in the morning?",
+      "q_uz": "Paxta ertalab qayerda uxlaydi?",
+      "options": [
+        "On Malika's bed",
+        "Under the table",
+        "Next to the window"
+      ],
+      "answer": 0
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "slug": "a2-lost-phone",
+  "level": "A2",
+  "order": 1,
+  "emoji": "📱",
+  "minutes": 5,
+  "title": "The lost phone",
+  "title_uz": "Yo'qolgan telefon",
+  "paragraphs": [
+    {
+      "en": "Last Friday was a terrible day for Dilshod. He woke up late, so he didn't have breakfast. He ran to the bus stop and caught the bus just in time.",
+      "uz": "O'tgan juma Dilshod uchun dahshatli kun bo'ldi. U kech uyg'ondi, shuning uchun nonushta qilmadi. Bekatga yugurdi va avtobusga zo'rg'a ulgurdi."
+    },
+    {
+      "en": "At university, he wanted to call his mother, but his phone wasn't in his pocket. It wasn't in his bag either. \"Oh no! I left it on the bus!\" he thought.",
+      "uz": "Universitetda u onasiga qo'ng'iroq qilmoqchi bo'ldi, lekin telefoni cho'ntagida yo'q edi. Sumkasida ham yo'q edi. \"Voy! Uni avtobusda qoldirdim!\" deb o'yladi u."
+    },
+    {
+      "en": "He borrowed his friend's phone and called his own number. Nobody answered. He felt very worried — all his photos and notes were on that phone.",
+      "uz": "U do'stining telefonini olib, o'z raqamiga qo'ng'iroq qildi. Hech kim javob bermadi. U juda xavotirlandi — barcha suratlari va yozuvlari o'sha telefonda edi."
+    },
+    {
+      "en": "In the evening, he called again. This time, a woman answered. \"Hello! I found this phone on bus number 51,\" she said. \"I'm a nurse at the city hospital. You can come and get it tomorrow.\"",
+      "uz": "Kechqurun u yana qo'ng'iroq qildi. Bu safar bir ayol javob berdi. \"Salom! Men bu telefonni 51-avtobusda topdim,\" dedi u. \"Men shahar kasalxonasida hamshiraman. Ertaga kelib olib ketishingiz mumkin.\""
+    },
+    {
+      "en": "The next morning, Dilshod went to the hospital with a big box of chocolates. He thanked the nurse many times. \"There are still good people in the world,\" he told his mother later.",
+      "uz": "Ertasi kuni ertalab Dilshod katta quti shokolad bilan kasalxonaga bordi. Hamshiraga ko'p marta rahmat aytdi. \"Dunyoda hali ham yaxshi odamlar bor,\" dedi u keyinroq onasiga."
+    }
+  ],
+  "glossary": {
+    "terrible": "dahshatli",
+    "woke up": "uyg'ondi",
+    "caught": "ulgurdi (avtobusga)",
+    "just in time": "zo'rg'a o'z vaqtida",
+    "pocket": "cho'ntak",
+    "either": "ham (inkorda)",
+    "borrowed": "qarzga oldi",
+    "worried": "xavotirda",
+    "nurse": "hamshira",
+    "thanked": "rahmat aytdi"
+  },
+  "questions": [
+    {
+      "q": "Why didn't Dilshod have breakfast?",
+      "options": [
+        "He wasn't hungry.",
+        "He woke up late.",
+        "There was no food."
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Where did he leave his phone?",
+      "options": [
+        "At university",
+        "At home",
+        "On the bus"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Who found the phone?",
+      "options": [
+        "A bus driver",
+        "A nurse",
+        "His friend"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What did Dilshod give the woman?",
+      "options": [
+        "Money",
+        "Flowers",
+        "Chocolates"
+      ],
+      "answer": 2
+    }
+  ]
+}

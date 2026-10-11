@@ -1,11 +1,13 @@
+import random
 from datetime import timedelta
 
 from django.db import transaction
-from django.db.models import Avg, F
+from django.db.models import Avg, F, Sum
 from django.utils import timezone
 
 from users.models import Vocabulary
-from .models import DailyXP, LearnerProfile, LessonProgress
+from .content import EXERCISE_STEPS, get_lesson
+from .models import DailyXP, LearnerProfile, LessonProgress, Mistake
 
 LESSON_XP_FIRST = 10       # + up to 10 more for accuracy, first completion only
 LESSON_XP_REPEAT = 5
@@ -102,3 +104,117 @@ def recommended_level(user):
     else:
         level = 'B2'
     return level, round(avg, 1)
+
+
+# ── Mixed practice from past mistakes ───────────────────────────────────
+# Speaking needs a microphone and a supporting browser, so it never comes
+# back as a "mistake" to fix.
+PRACTICE_TYPES = EXERCISE_STEPS - {'speak'}
+PRACTICE_SIZE = 10
+PRACTICE_MISTAKES = 7
+
+
+def _practice_step(slug, idx):
+    lesson = get_lesson(slug)
+    if not lesson or not 0 <= idx < len(lesson['steps']):
+        return None, None
+    step = lesson['steps'][idx]
+    ok = step.get('type') in PRACTICE_TYPES and not step.get('needs_text')
+    return (step, lesson) if ok else (None, None)
+
+
+def record_mistakes(user, lesson, indexes):
+    now = timezone.now()
+    for idx in {i for i in indexes if isinstance(i, int)}:
+        if not _practice_step(lesson['slug'], idx)[0]:
+            continue
+        m, created = Mistake.objects.get_or_create(user=user, lesson_slug=lesson['slug'], step_index=idx)
+        if not created:
+            m.wrong_count += 1
+            m.right_streak = 0
+            m.last_wrong_at = now
+            m.save()
+
+
+def build_practice(user):
+    """Up to 10 exercises: weakest past mistakes first, topped up with random
+    exercises from finished lessons, then shuffled (interleaved practice)."""
+    picked, seen = [], set()
+    for m in Mistake.objects.filter(user=user).order_by('-wrong_count', 'last_wrong_at')[:30]:
+        step, lesson = _practice_step(m.lesson_slug, m.step_index)
+        if step and len(picked) < PRACTICE_MISTAKES:
+            picked.append((lesson, m.step_index, True))
+            seen.add((m.lesson_slug, m.step_index))
+    pool = []
+    for slug in LessonProgress.objects.filter(user=user).values_list('lesson_slug', flat=True):
+        lesson = get_lesson(slug)
+        if lesson:
+            pool += [(lesson, i, False) for i, st in enumerate(lesson['steps'])
+                     if st.get('type') in PRACTICE_TYPES and (slug, i) not in seen]
+    random.shuffle(pool)
+    picked += pool[:PRACTICE_SIZE - len(picked)]
+    random.shuffle(picked)
+
+    steps, words, seen_words = [], [], set()
+    for lesson, idx, was_wrong in picked:
+        steps.append(dict(lesson['steps'][idx], _src={'slug': lesson['slug'], 'idx': idx, 'mistake': was_wrong}))
+        for w in lesson['words']:
+            if w['en'] not in seen_words:
+                seen_words.add(w['en'])
+                words.append(w)
+    return steps, words
+
+
+def apply_practice(user, results):
+    now = timezone.now()
+    right = 0
+    for r in results if isinstance(results, list) else []:
+        if not isinstance(r, dict) or not isinstance(r.get('step'), int):
+            continue
+        slug, idx, ok = str(r.get('slug', '')), r['step'], bool(r.get('ok'))
+        if not _practice_step(slug, idx)[0]:
+            continue
+        m = Mistake.objects.filter(user=user, lesson_slug=slug, step_index=idx).first()
+        if ok:
+            right += 1
+            if m:
+                m.right_streak += 1
+                if m.right_streak >= 2:
+                    m.delete()
+                else:
+                    m.save()
+        elif m:
+            m.wrong_count += 1
+            m.right_streak = 0
+            m.last_wrong_at = now
+            m.save()
+        else:
+            Mistake.objects.create(user=user, lesson_slug=slug, step_index=idx)
+    xp = 3 + min(right, 12)
+    profile = award_xp(user, xp)
+    return {'xp': xp, 'streak': profile.streak, 'right': right,
+            'mistakes_left': Mistake.objects.filter(user=user).count()}
+
+
+# ── Weekly leaderboard ──────────────────────────────────────────────────
+def leaderboard(user, limit=20):
+    today = timezone.localdate()
+    start = today - timedelta(days=today.weekday())
+    rows = list(DailyXP.objects.filter(date__gte=start).values('user').annotate(total=Sum('xp'))
+                .filter(total__gt=0).order_by('-total', 'user'))
+    from users.models import User
+    names = {u.pk: u for u in User.objects.filter(pk__in=[r['user'] for r in rows[:limit]] + [user.pk])}
+    board = []
+    for rank, r in enumerate(rows, 1):
+        if rank <= limit:
+            u = names[r['user']]
+            board.append({'rank': rank, 'name': _display_name(u), 'xp': r['total'], 'me': u.pk == user.pk})
+    my = next(({'rank': i, 'xp': r['total']} for i, r in enumerate(rows, 1) if r['user'] == user.pk), None)
+    return {'rows': board, 'me': my, 'total': len(rows), 'start': start, 'end': start + timedelta(days=6)}
+
+
+def _display_name(u):
+    # First name + last initial: recognisable to classmates, not a full name list.
+    if u.first_name:
+        return f"{u.first_name} {u.last_name[:1]}." if u.last_name else u.first_name
+    return u.username

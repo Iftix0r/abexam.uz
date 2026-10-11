@@ -17,4 +17,10 @@ urlpatterns = [
     path('placement/', views.PlacementView.as_view(), name='placement'),
     path('placement/save/', views.PlacementSaveView.as_view(), name='placement_save'),
     path('grammar/', views.GrammarView.as_view(), name='grammar'),
+    path('practice/', views.PracticeView.as_view(), name='practice'),
+    path('practice/complete/', views.PracticeCompleteView.as_view(), name='practice_complete'),
+    path('stories/', views.StoriesView.as_view(), name='stories'),
+    path('stories/<slug:slug>/', views.StoryView.as_view(), name='story'),
+    path('stories/<slug:slug>/complete/', views.StoryCompleteView.as_view(), name='story_complete'),
+    path('leaderboard/', views.LeaderboardView.as_view(), name='leaderboard'),
 ]
