@@ -4,6 +4,25 @@
 {% block nav_live %}active{% endblock %}
 
 {% block content %}
+<div class="stat-grid">
+  <div class="stat-card">
+    <div class="stat-icon" style="background:#6366f118"><svg fill="none" stroke="#6366f1" viewBox="0 0 24 24"><path stroke-width="1.8" d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4" stroke-width="1.8"/></svg></div>
+    <div><div class="stat-val">{{ counts.started }}</div><div class="stat-label">Boshladi (24 soat)</div></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon" style="background:#3b82f618"><svg fill="none" stroke="#3b82f6" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" stroke-width="1.8"/><path stroke-width="1.8" d="M6.3 6.3a8 8 0 0 0 0 11.4M17.7 6.3a8 8 0 0 1 0 11.4"/></svg></div>
+    <div><div class="stat-val">{{ counts.active }}</div><div class="stat-label">Hozir yozmoqda</div></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon" style="background:#22c55e18"><svg fill="none" stroke="#22c55e" viewBox="0 0 24 24"><polyline points="20,6 9,17 4,12" stroke-width="2"/></svg></div>
+    <div><div class="stat-val">{{ counts.submitted }}</div><div class="stat-label">Yubordi (24 soat)</div></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon" style="background:#ef444418"><svg fill="none" stroke="#ef4444" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke-width="1.8"/><line x1="12" y1="8" x2="12" y2="12" stroke-width="2"/><line x1="12" y1="16" x2="12" y2="16" stroke-width="2"/></svg></div>
+    <div><div class="stat-val">{{ counts.unsent }}</div><div class="stat-label">Yuborilmagan</div></div>
+  </div>
+</div>
+
 <div class="section-header">
   <form method="get" style="display:flex;gap:10px;max-width:100%;flex-wrap:wrap;align-items:center">
     <a href="?tab=all{% if exam_id %}&exam={{ exam_id }}{% endif %}" class="btn btn-sm {% if tab == 'all' %}btn-primary{% else %}btn-ghost{% endif %}">Oxirgi 24 soat</a>
@@ -21,32 +40,37 @@
       {% endfor %}
     </select>
   </form>
-  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-    <label style="font-size:13px;color:var(--muted);display:flex;gap:6px;align-items:center;cursor:pointer">
-      <input type="checkbox" id="autoRefresh"> Har 20 soniyada yangilash
-    </label>
-    <button id="bulkFinalizeBtn" onclick="bulkFinalize()" class="btn btn-primary btn-sm" style="display:none">Tanlanganlardan natija yaratish (<span id="bulkCount">0</span>)</button>
-  </div>
+  <label style="font-size:13px;color:var(--muted);display:flex;gap:6px;align-items:center;cursor:pointer">
+    <input type="checkbox" id="autoRefresh"> Har 20 soniyada yangilash
+  </label>
 </div>
 
-<p style="font-size:13px;color:var(--muted);margin:0 0 14px">
-  Test sahifasi javoblarni har 20 soniyada serverga saqlab boradi. O'quvchi «Yakunlash»ni bosgan-u, natija yetib bormagan bo'lsa,
-  u <b>Yuborilmagan</b> bo'limida chiqadi — saqlangan javoblardan natijani shu yerda yaratish mumkin.
-</p>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+  <button onclick="messageAll()" class="btn btn-ghost btn-sm">📢 Hammaga xabar</button>
+  <button onclick="extraTimeAll()" class="btn btn-ghost btn-sm">⏱ Hammaga qo'shimcha vaqt</button>
+  <button onclick="finishAll()" class="btn btn-danger btn-sm" title="Tanlangan imtihonning barcha yuborilmagan urinishlaridan natija yaratadi">⏹ Hammasini yakunlash</button>
+  <span id="bulkBar" style="display:none;gap:8px;align-items:center">
+    <span style="color:var(--muted);font-size:13px">Tanlangan: <b id="bulkCount">0</b></span>
+    <button onclick="messageSelected()" class="btn btn-ghost btn-sm">✉ Xabar</button>
+    <button onclick="extraTimeSelected()" class="btn btn-ghost btn-sm">+ Vaqt</button>
+    <button onclick="bulkFinalize()" class="btn btn-primary btn-sm">Natija yaratish</button>
+  </span>
+</div>
 
 <div class="card" style="padding:0">
   <div class="table-wrap">
     <table>
       <thead><tr>
         <th style="width:32px"><input type="checkbox" id="selectAll" onchange="toggleAll(this)"></th>
-        <th>Foydalanuvchi</th><th>Imtihon</th><th>Holat</th><th>Bo'lim</th><th>Javoblar</th><th>Boshlagan</th><th>Oxirgi faollik</th><th></th>
+        <th>Foydalanuvchi</th><th>Imtihon</th><th>Holat</th><th>Bo'lim / vaqt</th><th>Javoblar</th><th>Nazorat</th><th>Oxirgi faollik</th><th></th>
       </tr></thead>
       <tbody>
         {% for a in attempts %}
         <tr id="attempt-row-{{ a.pk }}">
-          <td>{% if not a.is_submitted and a.answered_count %}<input type="checkbox" class="attempt-checkbox" value="{{ a.pk }}" onchange="updateBulkBtn()">{% endif %}</td>
+          <td>{% if not a.is_submitted %}<input type="checkbox" class="attempt-checkbox" value="{{ a.pk }}" data-answered="{{ a.answered_count }}" onchange="updateBulk()">{% endif %}</td>
           <td><a href="{% url 'panel:user_detail' a.user.pk %}" style="color:var(--primary);font-weight:500">{{ a.user.username }}</a>
-            {% if a.user.get_full_name %}<div style="font-size:12px;color:var(--muted)">{{ a.user.get_full_name }}</div>{% endif %}</td>
+            {% if a.user.get_full_name %}<div style="font-size:12px;color:var(--muted)">{{ a.user.get_full_name }}</div>{% endif %}
+            {% if a.multi_device %}<div><span class="badge badge-red" title="Shu akkaunt hozir boshqa kompyuterda ham test yozmoqda">⚠ 2 qurilma</span></div>{% endif %}</td>
           <td style="color:var(--muted)">{{ a.exam.title|truncatechars:28 }}</td>
           <td>
             {% if a.state == 'submitted' %}<span class="badge badge-green">✓ Yuborildi</span>
@@ -55,17 +79,32 @@
             {% else %}<span class="badge badge-gray">Tashlab ketilgan</span>{% endif %}
             {% if a.last_error and not a.is_submitted %}<div style="font-size:11px;color:var(--red);margin-top:4px;max-width:220px" title="{{ a.last_error }}">Xato: {{ a.last_error|truncatechars:60 }}</div>{% endif %}
           </td>
-          <td style="color:var(--muted)">{{ a.section_label }}</td>
-          <td><b>{{ a.answered_count }}</b><span style="color:var(--muted)"> / {{ a.total_questions }}</span></td>
-          <td style="color:var(--muted);font-size:12px">{{ a.started_at|date:"d M, H:i" }}</td>
-          <td style="color:var(--muted);font-size:12px" title="{{ a.last_seen_at|date:'d M Y, H:i:s' }}">{{ a.seen_ago }}</td>
+          <td>
+            <div style="color:var(--muted)">{{ a.section_label }}</div>
+            {% if a.time_left_label %}<div style="font-weight:600;font-variant-numeric:tabular-nums">⏱ {{ a.time_left_label }}</div>{% endif %}
+          </td>
+          <td>
+            <b>{{ a.answered_count }}</b><span style="color:var(--muted)"> / {{ a.total_questions }}</span>
+            {% if a.writing_words %}<div style="font-size:12px;color:var(--muted)">{% for w in a.writing_words %}T{{ forloop.counter }}: {{ w }} so'z{% if not forloop.last %} · {% endif %}{% endfor %}</div>{% endif %}
+          </td>
+          <td style="font-size:12px;{% if a.suspicious %}color:var(--red);font-weight:600{% else %}color:var(--muted){% endif %}">
+            {% if a.leave_count %}<div title="Test oynasidan chiqishlar soni va jami vaqti">↗ {{ a.leave_count }} marta, {{ a.away_seconds }} s</div>{% endif %}
+            {% if a.pasted_chars %}<div title="Writing'ga joylangan (paste) belgilar">📋 {{ a.pasted_chars }} belgi</div>{% endif %}
+            {% if not a.leave_count and not a.pasted_chars %}—{% endif %}
+          </td>
+          <td style="color:var(--muted);font-size:12px" title="{{ a.last_seen_at|date:'d M Y, H:i:s' }}{% if a.ip %} · IP {{ a.ip }}{% endif %}">{{ a.seen_ago }}</td>
           <td style="white-space:nowrap">
+            <a href="{% url 'panel:attempt_detail' a.pk %}" class="btn btn-ghost btn-sm" title="Javoblarni ko'rish">👁</a>
             {% if a.is_submitted %}
               {% if a.result_id %}<a href="{% url 'exams:result_detail' a.result_id %}" target="_blank" class="btn btn-ghost btn-sm">Natija</a>{% endif %}
-            {% elif a.answered_count %}
-              <button onclick="finalizeAttempt({{ a.pk }}, '{{ a.state }}')" class="btn btn-primary btn-sm">Natija yaratish</button>
+            {% else %}
+              {% if a.state == 'active' %}
+              <button onclick="sendCommand({ids:[{{ a.pk }}]}, 'message')" class="btn btn-ghost btn-sm" title="Xabar yuborish">✉</button>
+              <button onclick="sendCommand({ids:[{{ a.pk }}]}, 'extra_time')" class="btn btn-ghost btn-sm" title="Qo'shimcha vaqt">+⏱</button>
+              {% endif %}
+              {% if a.answered_count %}<button onclick="finalizeAttempt({{ a.pk }}, '{{ a.state }}')" class="btn btn-primary btn-sm">Natija yaratish</button>{% endif %}
+              <button onclick="deleteAttempt({{ a.pk }})" class="btn btn-danger btn-sm" title="Urinishni o'chirish">✕</button>
             {% endif %}
-            {% if not a.is_submitted %}<button onclick="deleteAttempt({{ a.pk }})" class="btn btn-danger btn-sm" title="Urinishni o'chirish">✕</button>{% endif %}
           </td>
         </tr>
         {% empty %}
@@ -75,10 +114,17 @@
     </table>
   </div>
 </div>
+
+<p style="font-size:12px;color:var(--muted);margin-top:12px;line-height:1.6">
+  Test sahifasi har 20 soniyada javoblar va holatni serverga yuboradi; xabar va qo'shimcha vaqt o'quvchiga shu orqali ~20 soniyada yetadi.
+  <b>Nazorat</b> ustuni: test oynasidan chiqishlar (boshqa tab/dastur) va Writing'ga joylangan matn — 3+ chiqish yoki 100+ belgi qizil bilan belgilanadi.
+  «Hammasini yakunlash» tanlangan imtihonning barcha yuborilmagan urinishlaridan natija yaratadi; ochiq turgan test sahifalari to'xtaydi.
+</p>
 {% endblock %}
 
 {% block extra_js %}
 <script>
+const EXAM_ID = "{{ exam_id }}";
 const REFRESH_KEY = 'panel_live_autorefresh';
 const autoRefresh = document.getElementById('autoRefresh');
 try { autoRefresh.checked = localStorage.getItem(REFRESH_KEY) === '1'; } catch(e) {}
@@ -88,41 +134,70 @@ setInterval(() => {
   if (autoRefresh.checked && !document.querySelector('.attempt-checkbox:checked')) location.reload();
 }, 20000);
 
+function selectedIds(){ return Array.from(document.querySelectorAll('.attempt-checkbox:checked')).map(cb => Number(cb.value)); }
 function toggleAll(master){
   document.querySelectorAll('.attempt-checkbox').forEach(cb => cb.checked = master.checked);
-  updateBulkBtn();
+  updateBulk();
 }
-function updateBulkBtn(){
-  const n = document.querySelectorAll('.attempt-checkbox:checked').length;
+function updateBulk(){
+  const n = selectedIds().length;
   document.getElementById('bulkCount').textContent = n;
-  document.getElementById('bulkFinalizeBtn').style.display = n ? 'inline-flex' : 'none';
+  document.getElementById('bulkBar').style.display = n ? 'inline-flex' : 'none';
+}
+async function postJSON(url, body){
+  const r = await fetch(url, {method:'POST', headers:{'X-CSRFToken':csrf, 'Content-Type':'application/json'}, body: JSON.stringify(body || {})});
+  return r.json().catch(() => ({}));
+}
+
+async function sendCommand(target, type){
+  const body = {...target, type};
+  if (type === 'message') {
+    const text = prompt('O\'quvchi(lar) ekranida chiqadigan xabar:');
+    if (!text || !text.trim()) return;
+    body.text = text.trim();
+  } else {
+    const minutes = prompt('Necha daqiqa qo\'shilsin? (joriy bo\'lim taymeriga)', '5');
+    if (!minutes) return;
+    body.minutes = Number(minutes);
+  }
+  const d = await postJSON('/panel/live/command/', body);
+  if (d.ok) toast(d.sent ? `${d.sent} ta o'quvchiga yuborildi (~20 soniyada yetadi)` : 'Hozir test yozayotgan o\'quvchi yo\'q', d.sent ? '#22c55e' : '#eab308');
+  else toast(d.error || 'Xatolik yuz berdi', '#ef4444');
+}
+function messageAll(){ sendCommand({all_active: true, exam: EXAM_ID || null}, 'message'); }
+function extraTimeAll(){ sendCommand({all_active: true, exam: EXAM_ID || null}, 'extra_time'); }
+function messageSelected(){ sendCommand({ids: selectedIds()}, 'message'); }
+function extraTimeSelected(){ sendCommand({ids: selectedIds()}, 'extra_time'); }
+
+async function finishAll(){
+  if (!EXAM_ID) { toast('Avval yuqoridan imtihonni tanlang', '#eab308'); return; }
+  if (!confirm("Shu imtihonning BARCHA yuborilmagan urinishlaridan (hozir yozayotganlar ham) natija yaratilsinmi? Ochiq test sahifalari to'xtaydi.")) return;
+  const d = await postJSON('/panel/live/finish-all/', {exam: EXAM_ID});
+  if (d.ok) { toast(`${d.done} ta natija yaratildi`); setTimeout(() => location.reload(), 700); }
+  else toast(d.error || 'Xatolik yuz berdi', '#ef4444');
 }
 async function finalizeAttempt(pk, state){
   const warn = state === 'active'
-    ? "Bu o'quvchi hozir ham test yozmoqda! Baribir hozirgi javoblaridan natija yaratilsinmi?"
+    ? "Bu o'quvchi hozir ham test yozmoqda! Hozirgi javoblaridan natija yaratilsinmi? Uning test sahifasi to'xtaydi."
     : "Saqlangan javoblardan natija yaratilsinmi?";
-  if(!confirm(warn)) return;
-  const r = await fetch(`/panel/live/${pk}/finalize/`, {method:'POST', headers:{'X-CSRFToken':csrf}});
-  const d = await r.json().catch(() => ({}));
-  if(d.ok){ toast('Natija yaratildi'); setTimeout(() => location.reload(), 600); }
+  if (!confirm(warn)) return;
+  const d = await postJSON(`/panel/live/${pk}/finalize/`);
+  if (d.ok) { toast('Natija yaratildi'); setTimeout(() => location.reload(), 600); }
   else toast(d.error || 'Xatolik yuz berdi', '#ef4444');
 }
 async function bulkFinalize(){
-  const ids = Array.from(document.querySelectorAll('.attempt-checkbox:checked')).map(cb => Number(cb.value));
-  if(!ids.length) return;
-  if(!confirm(`${ids.length} ta urinishning saqlangan javoblaridan natija yaratilsinmi?`)) return;
-  const r = await fetch('/panel/live/bulk-finalize/', {
-    method:'POST', headers:{'X-CSRFToken':csrf, 'Content-Type':'application/json'}, body: JSON.stringify({ids}),
-  });
-  const d = await r.json().catch(() => ({}));
-  if(d.ok){ toast(`${d.done} ta natija yaratildi`); setTimeout(() => location.reload(), 600); }
+  const ids = Array.from(document.querySelectorAll('.attempt-checkbox:checked'))
+    .filter(cb => Number(cb.dataset.answered) > 0).map(cb => Number(cb.value));
+  if (!ids.length) { toast("Tanlanganlarda javob yo'q", '#eab308'); return; }
+  if (!confirm(`${ids.length} ta urinishning saqlangan javoblaridan natija yaratilsinmi?`)) return;
+  const d = await postJSON('/panel/live/bulk-finalize/', {ids});
+  if (d.ok) { toast(`${d.done} ta natija yaratildi`); setTimeout(() => location.reload(), 600); }
   else toast('Xatolik yuz berdi', '#ef4444');
 }
 async function deleteAttempt(pk){
-  if(!confirm("Bu urinish va uning saqlangan javoblari o'chirilsinmi?")) return;
-  const r = await fetch(`/panel/live/${pk}/delete/`, {method:'POST', headers:{'X-CSRFToken':csrf}});
-  const d = await r.json().catch(() => ({}));
-  if(d.ok){ document.getElementById('attempt-row-'+pk).remove(); toast("O'chirildi", '#ef4444'); }
+  if (!confirm("Bu urinish va uning saqlangan javoblari o'chirilsinmi?")) return;
+  const d = await postJSON(`/panel/live/${pk}/delete/`);
+  if (d.ok) { document.getElementById('attempt-row-'+pk).remove(); toast("O'chirildi", '#ef4444'); }
 }
 </script>
 {% endblock %}

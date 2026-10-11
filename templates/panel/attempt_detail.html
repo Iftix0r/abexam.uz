@@ -1,0 +1,56 @@
+{% extends 'panel/base.html' %}
+{% block title %}Urinish — {{ attempt.user.username }}{% endblock %}
+{% block page_title %}Urinish: {{ attempt.user.username }}{% endblock %}
+{% block nav_live %}active{% endblock %}
+
+{% block content %}
+<div class="section-header">
+  <a href="{% url 'panel:attempts_live' %}?exam={{ attempt.exam_id }}" class="btn btn-ghost btn-sm">← Jonli imtihon</a>
+  {% if attempt.result_id %}<a href="{% url 'exams:result_detail' attempt.result_id %}" target="_blank" class="btn btn-primary btn-sm">Natijani ko'rish</a>{% endif %}
+</div>
+
+<div class="card" style="margin-bottom:16px">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;font-size:13px">
+    <div><div style="color:var(--muted)">O'quvchi</div><b>{{ attempt.user.get_full_name|default:attempt.user.username }}</b></div>
+    <div><div style="color:var(--muted)">Imtihon</div><b>{{ attempt.exam.title }}</b></div>
+    <div><div style="color:var(--muted)">Holat</div>
+      {% if attempt.is_submitted %}<span class="badge badge-green">✓ Yuborildi {{ attempt.submitted_at|date:"H:i" }}</span>{% else %}<span class="badge badge-yellow">Yuborilmagan</span>{% endif %}</div>
+    <div><div style="color:var(--muted)">Bo'lim</div><b>{{ section_label }}</b></div>
+    <div><div style="color:var(--muted)">Boshlagan</div><b>{{ attempt.started_at|date:"d M, H:i" }}</b></div>
+    <div><div style="color:var(--muted)">Oxirgi faollik</div><b>{{ seen_ago }}</b></div>
+    <div><div style="color:var(--muted)">Oynadan chiqishlar</div><b>{{ attempt.leave_count }} marta, {{ attempt.away_seconds }} s</b></div>
+    <div><div style="color:var(--muted)">Writing'ga joylangan</div><b>{{ attempt.pasted_chars }} belgi</b></div>
+    <div><div style="color:var(--muted)">IP</div><b>{{ attempt.ip|default:"—" }}</b></div>
+  </div>
+  {% if attempt.last_error %}<div style="margin-top:12px;color:var(--red);font-size:12px">Topshirishdagi xato: {{ attempt.last_error }}</div>{% endif %}
+</div>
+
+{% for row in rows %}
+<div class="card" style="padding:0;margin-bottom:16px">
+  <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;gap:10px">
+    <b>{{ row.section.title }}</b>
+    <span style="color:var(--muted);font-size:13px">{{ row.answered }} / {{ row.items|length }} javob</span>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <tbody>
+        {% for item in row.items %}
+        <tr>
+          <td style="width:44px;color:var(--muted)">{{ item.number }}</td>
+          {% if item.is_writing %}
+          <td colspan="2">
+            <div style="color:var(--muted);font-size:12px;margin-bottom:6px">{{ item.question.text|striptags|truncatechars:140 }} — <b>{{ item.words }} so'z</b></div>
+            <div style="white-space:pre-wrap;line-height:1.6">{{ item.answer|default:"—" }}</div>
+          </td>
+          {% else %}
+          <td style="color:var(--muted)">{{ item.question.text|striptags|truncatechars:90 }}</td>
+          <td style="font-weight:600;white-space:nowrap">{% if item.answer == '__audio__' %}🎤 audio{% else %}{{ item.answer|default:"—" }}{% endif %}</td>
+          {% endif %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endfor %}
+{% endblock %}

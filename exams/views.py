@@ -14,7 +14,7 @@ from django.utils import timezone
 from django.views import View
 from django.views.generic import DetailView
 
-from core.utils import parse_json_body
+from core.utils import get_client_ip, parse_json_body
 from .models import Exam, ExamAttempt, UserAnswer, UserResult, Question
 from users.models import User
 
@@ -442,20 +442,46 @@ def _count_answered(answers):
     return sum(1 for v in answers.values() if str(v).strip())
 
 
-def save_attempt(user, exam, client_id, answers, section=''):
-    """Upserts the server-side copy of an attempt. A submitted attempt is
-    never overwritten — a late autosave must not clobber what was graded."""
-    attempt, created = ExamAttempt.objects.get_or_create(
-        user=user, exam=exam, client_id=client_id,
-        defaults={'answers': answers, 'answered_count': _count_answered(answers), 'current_section': section},
-    )
-    if not created and not attempt.is_submitted:
+def _int(value, low=0, high=10**7):
+    try:
+        return max(low, min(high, int(value)))
+    except (TypeError, ValueError):
+        return None
+
+
+def save_attempt(user, exam, client_id, answers=None, section='', meta=None, ip=None):
+    """Upserts the server-side copy of an attempt. `answers=None` is a
+    heartbeat (nothing changed). `meta` carries the page's live details
+    (time_left, leave_count, away_seconds, pasted_chars). A submitted
+    attempt is never overwritten — a late autosave must not clobber what
+    was graded."""
+    attempt, created = ExamAttempt.objects.get_or_create(user=user, exam=exam, client_id=client_id)
+    if attempt.is_submitted:
+        return attempt
+    fields = ['last_seen_at']
+    attempt.last_seen_at = timezone.now()
+    if answers is not None:
         attempt.answers = answers
         attempt.answered_count = _count_answered(answers)
-        if section:
-            attempt.current_section = section
-        attempt.last_seen_at = timezone.now()
-        attempt.save(update_fields=['answers', 'answered_count', 'current_section', 'last_seen_at'])
+        fields += ['answers', 'answered_count']
+    if section:
+        attempt.current_section = section
+        fields.append('current_section')
+    if ip:
+        attempt.ip = ip
+        fields.append('ip')
+    meta = meta or {}
+    if 'time_left' in meta:
+        attempt.time_left = _int(meta['time_left'])
+        fields.append('time_left')
+    # Counters only grow: a reload that lost the page's local copy must not
+    # wipe what was already reported.
+    for name in ('leave_count', 'away_seconds', 'pasted_chars'):
+        value = _int(meta.get(name))
+        if value is not None and value > getattr(attempt, name):
+            setattr(attempt, name, value)
+            fields.append(name)
+    attempt.save(update_fields=fields)
     return attempt
 
 
@@ -471,8 +497,10 @@ def finalize_attempt(attempt):
 
 
 class ExamAutosaveView(LoginRequiredMixin, View):
-    """Periodic copy of the exam page's answers, so they survive a failed
-    submit or a cleared browser and staff can follow the exam live."""
+    """Periodic copy of the exam page's answers and live details, so they
+    survive a failed submit or a cleared browser and staff can follow the
+    exam live. The reply carries staff commands (messages, extra time) and
+    tells the page if staff already finalized the attempt."""
 
     def post(self, request, *args, **kwargs):
         exam = get_object_or_404(Exam, pk=kwargs['pk'])
@@ -481,10 +509,17 @@ class ExamAutosaveView(LoginRequiredMixin, View):
             return err
         client_id = str(data.get('attempt_id') or '')[:64]
         answers = data.get('answers')
-        if not client_id or not isinstance(answers, dict):
+        if not client_id or not (answers is None or isinstance(answers, dict)):
             return JsonResponse({'error': "Noto'g'ri so'rov"}, status=400)
-        attempt = save_attempt(request.user, exam, client_id, answers, str(data.get('section') or '')[:20])
-        return JsonResponse({'ok': True, 'submitted': attempt.is_submitted})
+        meta = data.get('meta') if isinstance(data.get('meta'), dict) else {}
+        attempt = save_attempt(request.user, exam, client_id, answers, str(data.get('section') or '')[:20],
+                               meta, get_client_ip(request))
+        return JsonResponse({
+            'ok': True,
+            'submitted': attempt.is_submitted,
+            'result_id': attempt.result_id,
+            'commands': attempt.commands,
+        })
 
 
 class SubmitExamView(LoginRequiredMixin, View):

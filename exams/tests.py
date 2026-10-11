@@ -338,3 +338,68 @@ class ExamAttemptTests(TestCase):
         data = self._post('submit_exam', attempt_id='a1', answers=self.answers).json()
         self.assertEqual(data['result_id'], result.pk)
         self.assertEqual(UserResult.objects.count(), 1)
+
+
+class LiveMonitoringTests(TestCase):
+    """Jonli imtihon: nazorat ma'lumotlari, admin xabari/qo'shimcha vaqti, hammasini yakunlash."""
+
+    def setUp(self):
+        self.student = User.objects.create_user('student', password='pw')
+        self.admin = User.objects.create_user('admin', password='pw', is_staff=True)
+        self.exam = Exam.objects.create(title='Live test', price=0)
+        section = Section.objects.create(exam=self.exam, title='Writing', section_type='writing', order=1)
+        self.w = Question.objects.create(section=section, text='Task 1', question_type='writing_task', order=1)
+
+    def _autosave(self, **payload):
+        self.client.force_login(self.student)
+        return self.client.post(reverse('exams:autosave', args=[self.exam.pk]),
+                                data=json.dumps({'attempt_id': 'a1', **payload}),
+                                content_type='application/json').json()
+
+    def test_meta_counters_only_grow_and_heartbeat_keeps_answers(self):
+        self._autosave(answers={str(self.w.id): 'one two three'}, meta={'leave_count': 4, 'pasted_chars': 300, 'time_left': 600})
+        self._autosave(meta={'leave_count': 1, 'time_left': 580})  # reloaded page, heartbeat without answers
+        attempt = ExamAttempt.objects.get()
+        self.assertEqual(attempt.leave_count, 4)
+        self.assertEqual(attempt.pasted_chars, 300)
+        self.assertEqual(attempt.time_left, 580)
+        self.assertEqual(attempt.answers, {str(self.w.id): 'one two three'})
+
+        self.client.force_login(self.admin)
+        page = self.client.get(reverse('panel:attempts_live'))
+        self.assertContains(page, 'T1: 3 so')
+        self.assertContains(page, '4 marta')
+        detail = self.client.get(reverse('panel:attempt_detail', args=[attempt.pk]))
+        self.assertContains(detail, 'one two three')
+
+    def test_staff_commands_reach_the_page(self):
+        self._autosave(answers={})
+        self.client.force_login(self.admin)
+        url = reverse('panel:attempts_command')
+        self.client.post(url, data=json.dumps({'all_active': True, 'type': 'message', 'text': '10 daqiqa qoldi'}),
+                         content_type='application/json')
+        self.client.post(url, data=json.dumps({'all_active': True, 'type': 'extra_time', 'minutes': 5}),
+                         content_type='application/json')
+        commands = self._autosave()['commands']
+        self.assertEqual([c['type'] for c in commands], ['message', 'extra_time'])
+        self.assertEqual(commands[0]['text'], '10 daqiqa qoldi')
+        self.assertEqual(commands[1]['seconds'], 300)
+        self.assertLess(commands[0]['id'], commands[1]['id'])
+
+    def test_finish_all_stops_open_pages(self):
+        self._autosave(answers={str(self.w.id): 'essay'})
+        self.client.force_login(self.admin)
+        resp = self.client.post(reverse('panel:attempts_finish_all'), data=json.dumps({'exam': self.exam.pk}),
+                                content_type='application/json').json()
+        self.assertEqual(resp['done'], 1)
+        reply = self._autosave(answers={str(self.w.id): 'essay plus more'})
+        self.assertTrue(reply['submitted'])
+        self.assertEqual(UserResult.objects.get().pk, reply['result_id'])
+        self.assertEqual(ExamAttempt.objects.get().answers, {str(self.w.id): 'essay'})
+
+    def test_two_devices_flagged(self):
+        self._autosave(answers={})
+        self.client.post(reverse('exams:autosave', args=[self.exam.pk]),
+                         data=json.dumps({'attempt_id': 'other-pc', 'answers': {}}), content_type='application/json')
+        self.client.force_login(self.admin)
+        self.assertContains(self.client.get(reverse('panel:attempts_live')), '2 qurilma', count=2)

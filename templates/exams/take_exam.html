@@ -942,6 +942,15 @@
     </div>
 </div>
 
+<!-- ─── STAFF MESSAGE BANNER ───────────────────────────── -->
+<div id="staffBanner" style="display:none; position:fixed; top:12px; left:50%; transform:translateX(-50%); z-index:3000;
+     max-width:min(560px, calc(100% - 32px)); background:#1565c0; color:#fff; padding:12px 44px 12px 16px; border-radius:10px;
+     box-shadow:0 10px 30px rgba(0,0,0,.3); font-size:14px; font-weight:600; line-height:1.45; white-space:pre-line;">
+    <span id="staffBannerText"></span>
+    <button onclick="document.getElementById('staffBanner').style.display='none'" aria-label="Yopish"
+            style="position:absolute; top:8px; right:10px; background:none; border:none; color:#fff; font-size:18px; cursor:pointer;">×</button>
+</div>
+
 <!-- ─── SUBMITTING OVERLAY ─────────────────────────────── -->
 <div class="overlay-modal" id="submittingOverlay" style="z-index:2600;">
     <div class="result-card" style="max-width:320px;">
@@ -1379,7 +1388,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // the autosaved server copy to this attempt and makes submit retries
     // idempotent (the server hands back the same result).
     const ATTEMPT_KEY = DRAFT_KEY + '_attempt';
-    let serverDirty = false, examStarted = false, lastServerSync = 0, serverSyncBusy = false;
+    let serverDirty = false, examStarted = false, serverSyncBusy = false;
+    // Reported to staff in the live panel; kept in localStorage so a reload
+    // doesn't reset them.
+    const PROCTOR_KEY = DRAFT_KEY + '_proctor';
+    const COMMAND_KEY = DRAFT_KEY + '_cmd';
+    let proctor = { leave_count: 0, away_seconds: 0, pasted_chars: 0 };
+    try { Object.assign(proctor, JSON.parse(localStorage.getItem(PROCTOR_KEY) || '{}')); } catch(e) {}
 
     // Collect all question IDs per section
     const sectionQuestions = {}; // { sectionId: [{ id, type }] }
@@ -1916,31 +1931,122 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ─── SERVER COPY ──────────────────────────────────────
-    // Besides localStorage, the answers go to the server every 20s when
-    // they changed (plus a heartbeat each minute), so they survive a failed
-    // submit or a cleared browser and staff can follow the exam live in the
-    // panel. Failures are ignored — the next tick just tries again.
+    // Every 20s the page reports to the server: the answers when they
+    // changed (so they survive a failed submit or a cleared browser), plus
+    // live details for the staff panel. The reply brings staff messages and
+    // extra time, and says if staff already finished the attempt.
+    // Failures are ignored — the next tick just tries again.
     async function syncToServer(force) {
         if (examSubmitted || !examStarted || serverSyncBusy) return;
-        if (!force && !serverDirty && Date.now() - lastServerSync < 60000) return;
         serverSyncBusy = true;
+        const sendAnswers = force || serverDirty;
         serverDirty = false;
+        const instr = document.getElementById('sectionInstrOverlay');
+        const payload = {
+            attempt_id: attemptId(),
+            section: sectionOrder[currentSectionIdx] || 'finished',
+            meta: { ...proctor, time_left: instr && instr.style.display === 'none' ? timeLeft : null },
+        };
+        if (sendAnswers) payload.answers = answers;
         try {
             const r = await fetch("{% url 'exams:autosave' exam.id %}", {
                 method: 'POST',
                 credentials: 'same-origin',
                 headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken() },
-                body: JSON.stringify({ attempt_id: attemptId(), answers, section: sectionOrder[currentSectionIdx] || 'finished' }),
+                body: JSON.stringify(payload),
             });
-            if (!r.ok) serverDirty = true;
-            lastServerSync = Date.now();
+            if (!r.ok) { if (sendAnswers) serverDirty = true; return; }
+            handleServerReply(await r.json());
         } catch(e) {
-            serverDirty = true;
+            if (sendAnswers) serverDirty = true;
         } finally {
             serverSyncBusy = false;
         }
     }
     setInterval(() => syncToServer(false), 20000);
+
+    function showStaffBanner(text, color) {
+        document.getElementById('staffBannerText').innerText = text;
+        const banner = document.getElementById('staffBanner');
+        banner.style.background = color || '#1565c0';
+        banner.style.display = 'block';
+    }
+
+    function handleServerReply(data) {
+        if (data.submitted && data.result_id && !examSubmitted) {
+            finishedByStaff(data.result_id);
+            return;
+        }
+        let lastCmd = 0;
+        try { lastCmd = Number(localStorage.getItem(COMMAND_KEY)) || 0; } catch(e) {}
+        const lines = [];
+        let hasMessage = false;
+        (data.commands || []).filter(c => c.id > lastCmd).forEach(c => {
+            if (c.type === 'message') {
+                lines.push('📢 Administrator: ' + c.text);
+                hasMessage = true;
+            } else if (c.type === 'extra_time') {
+                timeLeft += Number(c.seconds) || 0;
+                lines.push(`⏱ Sizga qo'shimcha ${Math.round((Number(c.seconds) || 0) / 60)} daqiqa berildi.`);
+            }
+            lastCmd = Math.max(lastCmd, c.id);
+        });
+        if (lines.length) showStaffBanner(lines.join('\n'), hasMessage ? '#1565c0' : '#2e7d32');
+        try { localStorage.setItem(COMMAND_KEY, String(lastCmd)); } catch(e) {}
+    }
+
+    // Staff turned this attempt into a result from the panel (e.g. "finish
+    // everyone" when time ran out): stop here — anything typed from now on
+    // wouldn't count.
+    function finishedByStaff(resultId) {
+        examSubmitted = true;
+        clearInterval(timerInterval);
+        stopSpeaking();
+        pauseAllListeningAudio();
+        clearExamStorage();
+        document.getElementById('sectionInstrOverlay').style.display = 'none';
+        document.getElementById('resultScore').innerText = '✓';
+        const bl = document.getElementById('bandLabel');
+        if (bl) bl.innerText = "Test administrator tomonidan yakunlandi. Javoblaringiz qabul qilindi.";
+        document.getElementById('sectionScores').innerHTML = '';
+        const link = document.getElementById('resultDetailLink');
+        link.href = `/exams/result/${resultId}/`;
+        link.innerText = "Natija holatini ko'rish";
+        document.getElementById('resultModal').classList.add('active');
+    }
+
+    function clearExamStorage() {
+        [DRAFT_KEY, ATTEMPT_KEY, PROCTOR_KEY, COMMAND_KEY].forEach(k => { try { localStorage.removeItem(k); } catch(e) {} });
+    }
+
+    // ─── PROCTORING ───────────────────────────────────────
+    // Leaving the exam window (other tab/app) and pasting into Writing are
+    // only counted and shown to staff — nothing is blocked.
+    function saveProctor() {
+        try { localStorage.setItem(PROCTOR_KEY, JSON.stringify(proctor)); } catch(e) {}
+    }
+    let awaySince = null;
+    function markAway() {
+        if (!examStarted || examSubmitted || awaySince !== null) return;
+        awaySince = Date.now();
+        proctor.leave_count++;
+        saveProctor();
+    }
+    function markBack() {
+        if (awaySince === null) return;
+        proctor.away_seconds += Math.round((Date.now() - awaySince) / 1000);
+        awaySince = null;
+        saveProctor();
+        syncToServer(false);
+    }
+    window.addEventListener('blur', markAway);
+    window.addEventListener('focus', markBack);
+    document.addEventListener('visibilitychange', () => document.hidden ? markAway() : markBack());
+    document.addEventListener('paste', e => {
+        if (!examStarted || examSubmitted || e.target.tagName !== 'TEXTAREA') return;
+        proctor.pasted_chars += ((e.clipboardData && e.clipboardData.getData('text')) || '').length;
+        saveProctor();
+    });
 
     // ─── ANSWER SAVING ────────────────────────────────────
     window.saveAnswer = function(qid, value) {
@@ -2569,7 +2675,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         const data = outcome.data;
-        try { localStorage.removeItem(DRAFT_KEY); localStorage.removeItem(ATTEMPT_KEY); } catch(e) {}
+        clearExamStorage();
         document.getElementById('resultModal').classList.add('active');
         if (window.lucide) lucide.createIcons();
 

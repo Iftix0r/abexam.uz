@@ -937,9 +937,18 @@ def _attempt_filters(now):
     }
 
 
+def _clock(seconds):
+    return f'{seconds // 60}:{seconds % 60:02d}'
+
+
+def _words(text):
+    return len(str(text).split())
+
+
 @panel_required
 def attempts_live(request):
     now = timezone.now()
+    online_since = now - ATTEMPT_ONLINE_WINDOW
     tab = request.GET.get('tab', 'all')
     exam_id = request.GET.get('exam', '')
     filters = _attempt_filters(now)
@@ -947,27 +956,48 @@ def attempts_live(request):
     qs = ExamAttempt.objects.select_related('user', 'exam')
     if exam_id:
         qs = qs.filter(exam_id=exam_id)
+    recent = qs.filter(last_seen_at__gte=now - timedelta(hours=24))
     counts = {name: qs.filter(q).count() for name, q in filters.items()}
+    counts['started'] = recent.count()
+    counts['submitted'] = recent.filter(submitted_at__isnull=False).count()
     if tab in filters:
         qs = qs.filter(filters[tab])
     else:
         tab = 'all'
-        qs = qs.filter(last_seen_at__gte=now - timedelta(hours=24))
-    attempts = list(qs.defer('answers')[:200])
+        qs = recent
+    attempts = list(qs[:200])
 
-    questions = Question.objects.filter(section__exam__in={a.exam_id for a in attempts})
+    exam_ids = {a.exam_id for a in attempts}
+    questions = Question.objects.filter(section__exam__in=exam_ids)
     if not settings.SPEAKING_ENABLED:
         questions = questions.exclude(section__section_type='speaking')
     totals = dict(questions.values_list('section__exam').annotate(n=Count('id')))
-    online_since = now - ATTEMPT_ONLINE_WINDOW
+    writing_ids = {}
+    for exam_pk, qid in (questions.filter(question_type='writing_task')
+                         .order_by('section__order', 'order').values_list('section__exam', 'id')):
+        writing_ids.setdefault(exam_pk, []).append(str(qid))
+    # The same account writing from two computers at once usually means
+    # someone else is sitting the test for them.
+    multi_device = set(
+        ExamAttempt.objects.filter(submitted_at__isnull=True, last_seen_at__gte=online_since)
+        .values('user').annotate(n=Count('id')).filter(n__gt=1).values_list('user', flat=True)
+    )
+
     for a in attempts:
         a.total_questions = totals.get(a.exam_id, 0)
         a.section_label = _SECTION_LABELS.get(a.current_section, a.current_section or '—')
         a.seen_ago = _ago(now, a.last_seen_at)
+        a.writing_words = [_words(a.answers.get(qid, '')) for qid in writing_ids.get(a.exam_id, [])]
+        a.suspicious = a.leave_count >= 3 or a.pasted_chars >= 100
+        a.multi_device = a.user_id in multi_device and not a.is_submitted
+        a.time_left_label = ''
         if a.is_submitted:
             a.state = 'submitted'
         elif a.last_seen_at >= online_since:
             a.state = 'active'
+            if a.time_left is not None:
+                elapsed = int((now - a.last_seen_at).total_seconds())
+                a.time_left_label = _clock(max(0, a.time_left - elapsed))
         elif a.answered_count:
             a.state = 'unsent'
         else:
@@ -977,6 +1007,86 @@ def attempts_live(request):
         'attempts': attempts, 'tab': tab, 'counts': counts,
         'exam_id': exam_id, 'exams': Exam.objects.order_by('-created_at'),
     })
+
+
+@panel_required
+def attempt_detail(request, pk):
+    attempt = get_object_or_404(ExamAttempt.objects.select_related('user', 'exam', 'result'), pk=pk)
+    sections = list(attempt.exam.sections.prefetch_related('questions').order_by('order'))
+    if not settings.SPEAKING_ENABLED:
+        sections = [s for s in sections if s.section_type != 'speaking']
+    rows = []
+    for section in sections:
+        items = []
+        for number, q in enumerate(section.questions.all(), 1):
+            answer = str(attempt.answers.get(str(q.id), '')).strip()
+            items.append({
+                'number': number, 'question': q, 'answer': answer,
+                'is_writing': q.question_type == 'writing_task',
+                'words': _words(answer) if q.question_type == 'writing_task' else None,
+            })
+        rows.append({'section': section, 'items': items,
+                     'answered': sum(1 for i in items if i['answer'])})
+    return render(request, 'panel/attempt_detail.html', {
+        'attempt': attempt, 'rows': rows,
+        'section_label': _SECTION_LABELS.get(attempt.current_section, attempt.current_section or '—'),
+        'seen_ago': _ago(timezone.now(), attempt.last_seen_at),
+    })
+
+
+@panel_required
+@require_POST
+def attempts_command(request):
+    """Message or extra time for chosen attempts, or for everyone currently
+    writing (optionally one exam). Delivered on the page's next autosave."""
+    data, err = parse_json_body(request)
+    if err:
+        return err
+    kind = data.get('type')
+    if kind == 'message':
+        text = str(data.get('text') or '').strip()[:500]
+        if not text:
+            return JsonResponse({'ok': False, 'error': "Xabar matni bo'sh"})
+        command = {'type': 'message', 'text': text}
+    elif kind == 'extra_time':
+        try:
+            minutes = int(data.get('minutes'))
+        except (TypeError, ValueError):
+            minutes = 0
+        if not 1 <= minutes <= 60:
+            return JsonResponse({'ok': False, 'error': "Daqiqa 1 dan 60 gacha bo'lishi kerak"})
+        command = {'type': 'extra_time', 'seconds': minutes * 60}
+    else:
+        return JsonResponse({'ok': False, 'error': "Noma'lum buyruq"})
+
+    attempts = ExamAttempt.objects.filter(submitted_at__isnull=True)
+    if data.get('all_active'):
+        attempts = attempts.filter(last_seen_at__gte=timezone.now() - ATTEMPT_ONLINE_WINDOW)
+        if data.get('exam'):
+            attempts = attempts.filter(exam_id=data['exam'])
+    else:
+        attempts = attempts.filter(pk__in=data.get('ids', []))
+    sent = 0
+    for attempt in attempts:
+        attempt.add_command(**command)
+        attempt.save(update_fields=['commands'])
+        sent += 1
+    return JsonResponse({'ok': True, 'sent': sent})
+
+
+@panel_required
+@require_POST
+def attempts_finish_all(request):
+    """Time's up: turn every unsent attempt of one exam with answers into a
+    result. Pages still open see it on their next autosave and stop."""
+    data, err = parse_json_body(request)
+    if err:
+        return err
+    if not data.get('exam'):
+        return JsonResponse({'ok': False, 'error': 'Avval imtihonni tanlang'})
+    attempts = ExamAttempt.objects.select_related('user', 'exam').filter(
+        exam_id=data['exam'], submitted_at__isnull=True, answered_count__gt=0)
+    return JsonResponse({'ok': True, 'done': _finalize_many(attempts)})
 
 
 def _finalize(attempt):
@@ -1010,6 +1120,10 @@ def attempts_bulk_finalize(request):
         return err
     attempts = ExamAttempt.objects.select_related('user', 'exam').filter(
         pk__in=data.get('ids', []), submitted_at__isnull=True)
+    return JsonResponse({'ok': True, 'done': _finalize_many(attempts)})
+
+
+def _finalize_many(attempts):
     done = 0
     for attempt in attempts:
         try:
@@ -1017,7 +1131,7 @@ def attempts_bulk_finalize(request):
             done += 1
         except Exception:
             logger.exception('Finalizing attempt %s failed', attempt.pk)
-    return JsonResponse({'ok': True, 'done': done})
+    return done
 
 
 @panel_required

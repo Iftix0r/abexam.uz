@@ -185,6 +185,15 @@ class ExamAttempt(models.Model):
     result = models.ForeignKey(UserResult, on_delete=models.SET_NULL, null=True, blank=True, related_name='attempts')
     submitted_at = models.DateTimeField(null=True, blank=True)
     last_error = models.TextField(blank=True)
+    # Live-monitoring details reported by the exam page.
+    time_left = models.IntegerField(null=True, blank=True, help_text="Joriy bo'lim taymeridagi soniyalar")
+    leave_count = models.IntegerField(default=0, help_text='Test oynasidan necha marta chiqqan')
+    away_seconds = models.IntegerField(default=0)
+    pasted_chars = models.IntegerField(default=0, help_text="Writing'ga joylangan (paste) belgilar")
+    ip = models.GenericIPAddressField(null=True, blank=True)
+    # Staff → student messages / extra time, picked up by the page on its
+    # next autosave: [{"id": n, "type": "message"|"extra_time", ...}].
+    commands = models.JSONField(default=list, blank=True)
     started_at = models.DateTimeField(auto_now_add=True)
     last_seen_at = models.DateTimeField(default=timezone.now, db_index=True)
 
@@ -200,6 +209,12 @@ class ExamAttempt(models.Model):
     @property
     def is_submitted(self):
         return self.submitted_at is not None
+
+    def add_command(self, **command):
+        """Queues a command for the exam page; ids only grow, so the page
+        applies each one exactly once. Only the latest few are kept."""
+        command['id'] = max((c['id'] for c in self.commands), default=0) + 1
+        self.commands = (self.commands + [command])[-10:]
 
 
 def _delete_file(path):
