@@ -1,0 +1,186 @@
+{
+  "level": "B1",
+  "units": [
+    {
+      "slug": "b1-health",
+      "title": "Health and well-being",
+      "title_uz": "Salomatlik",
+      "icon": "heart-pulse",
+      "lessons": [
+        {
+          "slug": "b1-health-habits",
+          "title": "Healthy habits",
+          "title_uz": "Sog'lom odatlar va maslahat berish",
+          "goal_uz": "Sog'lom turmush tarzi haqida gapirasiz va should / shouldn't / ought to bilan maslahat berasiz.",
+          "minutes": 12,
+          "words": [
+            {"en": "habit", "uz": "odat", "ipa": "/ˈhæbɪt/", "ex": "Drinking water in the morning is a good habit."},
+            {"en": "diet", "uz": "ovqatlanish tartibi, parhez", "ipa": "/ˈdaɪət/", "ex": "A balanced diet includes fruit and vegetables."},
+            {"en": "junk food", "uz": "zararli tez tayyor ovqat", "ipa": "/ˈdʒʌŋk fuːd/", "ex": "Teenagers often eat too much junk food."},
+            {"en": "get enough sleep", "uz": "yetarlicha uxlamoq", "ipa": "/ɡet ɪˈnʌf sliːp/", "ex": "You should get enough sleep before an exam."},
+            {"en": "stressed", "uz": "asabiy, stressda", "ipa": "/strest/", "ex": "I feel stressed when I have too much work."},
+            {"en": "cut down on", "uz": "kamaytirmoq", "ipa": "/kʌt daʊn ɒn/", "ex": "I'm trying to cut down on sugar."},
+            {"en": "work out", "uz": "sport bilan shug'ullanmoq", "ipa": "/wɜːk aʊt/", "ex": "She works out three times a week."},
+            {"en": "screen time", "uz": "ekran oldida o'tkazilgan vaqt", "ipa": "/skriːn taɪm/", "ex": "Too much screen time is bad for your eyes."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "dialogue",
+              "title": "I'm always tired!",
+              "context_uz": "Diyora doim charchaganidan shikoyat qiladi, dugonasi Emma unga maslahat bermoqda.",
+              "lines": [
+                {"who": "Diyora", "en": "I don't know what's wrong with me. I'm always tired these days.", "uz": "Menga nima bo'lganini bilmayman. Shu kunlarda doim charchaganman."},
+                {"who": "Emma", "en": "How much sleep do you usually get?", "uz": "Odatda qancha uxlaysan?"},
+                {"who": "Diyora", "en": "About five hours. I watch videos on my phone until two in the morning.", "uz": "Taxminan besh soat. Tungi soat ikkigacha telefonda video ko'raman."},
+                {"who": "Emma", "en": "Well, that's the problem! You should put your phone away an hour before bed.", "uz": "Mana muammo! Uxlashdan bir soat oldin telefoningni chetga qo'yishing kerak."},
+                {"who": "Diyora", "en": "You're right. I also drink a lot of coffee to stay awake.", "uz": "To'g'ri aytasan. Uyg'oq turish uchun ko'p qahva ham ichaman."},
+                {"who": "Emma", "en": "You shouldn't drink coffee after lunch. And maybe you ought to work out a bit — exercise gives you energy.", "uz": "Tushlikdan keyin qahva ichmaganing ma'qul. Balki biroz sport bilan shug'ullanishing kerakdir — mashq quvvat beradi."},
+                {"who": "Diyora", "en": "OK, I'll try. Thanks for the advice!", "uz": "Xo'p, harakat qilaman. Maslahating uchun rahmat!"}
+              ]
+            },
+            {"type": "choice", "q": "Why is Diyora always tired?", "options": ["She works too much.", "She doesn't sleep enough because of her phone.", "She is ill."], "answer": 1, "explain_uz": "U tungi soat ikkigacha telefonda video ko'radi va atigi 5 soat uxlaydi."},
+            {"type": "choice", "q": "What does Emma say about coffee?", "options": ["Diyora shouldn't drink it after lunch.", "Diyora should drink more.", "Coffee gives you energy."], "answer": 0, "explain_uz": "\"You shouldn't drink coffee after lunch.\""},
+            {
+              "type": "grammar",
+              "title_uz": "Maslahat: should / shouldn't / ought to",
+              "body_uz": "Maslahat berish uchun: **should + fe'l** (kerak, ma'qul) · **shouldn't + fe'l** (kerak emas) · **ought to + fe'l** (should bilan bir xil, biroz rasmiyroq).\nshould'dan keyin **to qo'yilmaydi** va fe'lga **-s qo'shilmaydi**: She **should sleep** more. (\"She should to sleep\" / \"She should sleeps\" — xato!)\nSo'rash: **Should I** see a doctor? · **What should I do?**\nYumshoq maslahat: **Why don't you** go for a walk? · **If I were you, I'd** eat less sugar.",
+              "examples": [
+                {"en": "You should drink more water.", "uz": "Ko'proq suv ichishingiz kerak."},
+                {"en": "He shouldn't eat so much junk food.", "uz": "U buncha ko'p fast-fud yemasligi kerak."},
+                {"en": "Should I take a break?", "uz": "Tanaffus qilsam bo'ladimi / kerakmi?"},
+                {"en": "If I were you, I'd go to bed earlier.", "uz": "Sizning o'rningizda bo'lsam, ertaroq yotardim."}
+              ]
+            },
+            {"type": "choice", "q": "Which sentence is correct?", "options": ["She should to eat more fruit.", "She should eats more fruit.", "She should eat more fruit."], "answer": 2, "explain_uz": "should + fe'l (to'siz va -s'siz)."},
+            {"type": "choice", "q": "\"I've got a terrible toothache.\" — \"You ___ see a dentist.\"", "options": ["should", "shouldn't", "don't"], "answer": 0, "explain_uz": "Maslahat: tish shifokoriga borish **kerak** → should."},
+            {"type": "gap", "text": "You ___ use your phone in bed. It's bad for your sleep.", "answer": ["shouldn't", "should not"], "uz": "To'shakda telefon ishlatmaslik kerak. Bu uyquga zarar.", "explain_uz": "Salbiy maslahat → **shouldn't**."},
+            {"type": "gap", "text": "You ought ___ cut down on sugar.", "answer": ["to"], "uz": "Shakarni kamaytirishingiz kerak.", "explain_uz": "**ought to** — har doim to bilan."},
+            {"type": "gap", "text": "Why ___ you go for a walk? It will help you relax.", "answer": ["don't"], "uz": "Nega sayr qilib kelmaysiz? Bu bo'shashishga yordam beradi.", "explain_uz": "Yumshoq maslahat: **Why don't you...?**"},
+            {"type": "match", "pairs": [["habit", "odat"], ["diet", "ovqatlanish tartibi"], ["work out", "sport qilmoq"], ["cut down on", "kamaytirmoq"], ["stressed", "asabiy"]]},
+            {"type": "order", "uz": "Imtihondan oldin yetarlicha uxlashingiz kerak.", "words": ["You", "should", "get", "enough", "sleep", "before", "the", "exam"], "answer": "You should get enough sleep before the exam"},
+            {"type": "choice", "audio": true, "q": "What is the doctor's main advice?", "say": "Your blood pressure is a little high. You should walk for thirty minutes every day and eat less salt.", "options": ["Take more medicine", "Walk every day and eat less salt", "Stop working"], "answer": 1, "explain_uz": "\"walk for thirty minutes every day and eat less salt\"."},
+            {"type": "listen", "answer": ["Too much screen time is bad for your eyes.", "Too much screen time is bad for your eyes"], "uz": "Eshiting va yozing"},
+            {"type": "translate", "uz": "Sizning o'rningizda bo'lsam, ko'proq suv ichardim.", "answer": ["If I were you, I'd drink more water", "If I were you, I would drink more water", "If I were you I'd drink more water", "If I was you, I'd drink more water"], "explain_uz": "**If I were you, I'd** + fe'l."},
+            {"type": "speak", "text": "If I were you, I'd put my phone away and go to bed earlier.", "uz": "Maslahat bering — ovoz chiqarib"},
+            {"type": "write", "prompt_uz": "Do'stingiz imtihon oldidan juda stressda va yaxshi uxlay olmayapti. Unga 5–6 gapda maslahat yozing (should, shouldn't, ought to, Why don't you...).", "prompt": "Your friend is stressed before an exam and can't sleep well. Write some advice.", "min_words": 45, "example": "I'm sorry you feel so stressed. First, you shouldn't study late at night — your brain needs rest. You should go to bed at the same time every day. Why don't you go for a short walk after dinner? It really helps me relax. You also ought to cut down on coffee. And if I were you, I'd make a simple study plan, so you don't worry about everything at once."}
+          ]
+        },
+        {
+          "slug": "b1-doctor",
+          "title": "At the doctor's",
+          "title_uz": "Shifokor qabulida",
+          "goal_uz": "Kasallik belgilaringizni tushuntirasiz va for / since bilan qancha vaqtdan beri davom etayotganini aytasiz.",
+          "minutes": 12,
+          "words": [
+            {"en": "symptom", "uz": "belgi (kasallik)", "ipa": "/ˈsɪmptəm/", "ex": "What are your symptoms?"},
+            {"en": "headache", "uz": "bosh og'rig'i", "ipa": "/ˈhedeɪk/", "ex": "I've got a terrible headache."},
+            {"en": "sore throat", "uz": "tomoq og'rig'i", "ipa": "/sɔː θrəʊt/", "ex": "She has a sore throat and a cough."},
+            {"en": "temperature", "uz": "harorat (isitma)", "ipa": "/ˈtemprətʃə/", "ex": "He's got a high temperature."},
+            {"en": "cough", "uz": "yo'tal", "ipa": "/kɒf/", "ex": "This cough is keeping me awake at night."},
+            {"en": "prescription", "uz": "retsept", "ipa": "/prɪˈskrɪpʃn/", "ex": "Take this prescription to the pharmacy."},
+            {"en": "appointment", "uz": "qabulga yozilish", "ipa": "/əˈpɔɪntmənt/", "ex": "I'd like to make an appointment with Dr Smith."},
+            {"en": "hurt", "uz": "og'rimoq", "ipa": "/hɜːt/", "ex": "My back hurts when I sit for a long time."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "dialogue",
+              "title": "A visit to the GP",
+              "context_uz": "Bekzod Londonda o'qiydi va umumiy amaliyot shifokoriga (GP) murojaat qildi.",
+              "lines": [
+                {"who": "Doctor", "en": "Good morning. Please take a seat. What seems to be the problem?", "uz": "Xayrli tong. O'tiring. Sizni nima bezovta qilyapti?"},
+                {"who": "Bekzod", "en": "I've got a sore throat and a bad cough.", "uz": "Tomog'im og'riyapti va qattiq yo'talyapman."},
+                {"who": "Doctor", "en": "I see. How long have you had these symptoms?", "uz": "Tushunarli. Bu belgilar qachondan beri bor?"},
+                {"who": "Bekzod", "en": "I've had the cough for about a week, and my throat has hurt since Monday.", "uz": "Yo'tal taxminan bir haftadan beri, tomog'im esa dushanbadan beri og'riyapti."},
+                {"who": "Doctor", "en": "Have you got a temperature?", "uz": "Isitmangiz bormi?"},
+                {"who": "Bekzod", "en": "Yes, a little. It was thirty-seven point eight last night.", "uz": "Ha, biroz. Kecha kechqurun 37,8 edi."},
+                {"who": "Doctor", "en": "It looks like a throat infection. I'll give you a prescription. Take one tablet twice a day, and drink plenty of warm liquids.", "uz": "Tomoq infeksiyasiga o'xshaydi. Sizga retsept yozib beraman. Kuniga ikki marta bittadan tabletka iching va ko'p iliq suyuqlik iching."},
+                {"who": "Bekzod", "en": "Thank you, doctor. Should I stay at home?", "uz": "Rahmat, doktor. Uyda qolishim kerakmi?"},
+                {"who": "Doctor", "en": "Yes, rest for two or three days. If you don't feel better, make another appointment.", "uz": "Ha, ikki-uch kun dam oling. Yaxshi bo'lmasangiz, yana qabulga yoziling."}
+              ]
+            },
+            {"type": "choice", "q": "How long has Bekzod had the cough?", "options": ["Since Monday", "For about a week", "For two days"], "answer": 1, "explain_uz": "\"I've had the cough for about a week\"."},
+            {"type": "choice", "q": "How often should he take the tablets?", "options": ["Once a day", "Twice a day", "Three times a day"], "answer": 1, "explain_uz": "\"Take one tablet twice a day\"."},
+            {
+              "type": "grammar",
+              "title_uz": "Qancha vaqtdan beri? Present Perfect + for / since",
+              "body_uz": "O'tmishda boshlanib, **hozir ham davom etayotgan** holat uchun o'zbekcha \"...dan beri og'riyapti\" deymiz. Ingliz tilida bu yerda Present Simple emas, **Present Perfect** ishlatiladi:\nI **have had** a headache **for** two days. (\"I have a headache since two days\" — o'zbeklarning eng ko'p xatosi!)\n**for** + davomiylik: for two days, for a week, for ages.\n**since** + boshlanish nuqtasi: since Monday, since 2020, since I was a child.\nSo'roq: **How long have you had** this pain?\nKasallikni aytish: I**'ve got** a cold / a headache / a temperature · My leg **hurts**.",
+              "examples": [
+                {"en": "I've had this cough for ten days.", "uz": "Bu yo'tal o'n kundan beri bor."},
+                {"en": "My knee has hurt since the football match.", "uz": "Futbol o'yinidan beri tizzam og'riyapti."},
+                {"en": "How long have you felt like this?", "uz": "Qachondan beri o'zingizni shunday his qilyapsiz?"},
+                {"en": "She's had a temperature since yesterday.", "uz": "Kechadan beri uning isitmasi bor."}
+              ]
+            },
+            {"type": "choice", "q": "Which sentence is correct?", "options": ["I have a headache since Monday.", "I've had a headache since Monday.", "I had a headache since Monday."], "answer": 1, "explain_uz": "Hozirgacha davom etmoqda → Present Perfect: **I've had**."},
+            {"type": "choice", "q": "She's been ill ___ three days.", "options": ["since", "for", "from"], "answer": 1, "explain_uz": "Davomiylik (three days) → **for**."},
+            {"type": "gap", "text": "I've had a sore throat ___ Saturday.", "answer": ["since"], "uz": "Shanbadan beri tomog'im og'riyapti.", "explain_uz": "Boshlanish nuqtasi (Saturday) → **since**."},
+            {"type": "gap", "text": "How long ___ you had this pain?", "answer": ["have"], "uz": "Bu og'riq qachondan beri bor?", "explain_uz": "How long **have** you + V3?"},
+            {"type": "gap", "text": "My back ___ when I sit for a long time.", "answer": ["hurts"], "uz": "Uzoq o'tirsam belim og'riydi.", "explain_uz": "my back = it → hurt**s**."},
+            {"type": "match", "pairs": [["headache", "bosh og'rig'i"], ["cough", "yo'tal"], ["temperature", "isitma"], ["prescription", "retsept"], ["appointment", "qabulga yozilish"]]},
+            {"type": "order", "uz": "Men bir haftadan beri yo'talyapman (yo'talim bor).", "words": ["I've", "had", "a", "cough", "for", "a", "week"], "answer": "I've had a cough for a week"},
+            {"type": "choice", "audio": true, "q": "When can the patient see the doctor?", "say": "I'm afraid Dr Lee is busy this morning, but she can see you at quarter past three this afternoon.", "options": ["This morning", "At 3:15 this afternoon", "At 3:45 this afternoon"], "answer": 1, "explain_uz": "\"quarter past three\" = 3:15."},
+            {"type": "listen", "answer": ["I'd like to make an appointment, please.", "I'd like to make an appointment please", "I would like to make an appointment, please"], "uz": "Eshiting va yozing"},
+            {"type": "translate", "uz": "Ikki kundan beri boshim og'riyapti.", "answer": ["I've had a headache for two days", "I have had a headache for two days", "I've had a headache for 2 days", "My head has hurt for two days"], "explain_uz": "**I've had** a headache **for** two days."},
+            {"type": "speak", "text": "I've had a sore throat since Monday, and I've got a slight temperature.", "uz": "Shifokorga ayting — ovoz chiqarib"},
+            {"type": "write", "prompt_uz": "Shifokorga yoki o'qituvchingizga xat yozing (5–6 gap): qanday belgilaringiz bor, qachondan beri, va bugun darsga kela olmasligingizni tushuntiring.", "prompt": "Write a short message explaining your symptoms, how long you have had them, and why you can't come to class today.", "min_words": 45, "example": "Dear Ms Karimova, I'm sorry, but I can't come to class today. I've had a bad cough and a sore throat since Tuesday, and last night I had a high temperature. I went to the doctor this morning and she gave me a prescription. She told me to stay at home for two days. I'll do the homework as soon as I feel better. Best wishes, Sanjar"}
+          ]
+        },
+        {
+          "slug": "b1-fitness",
+          "title": "Getting fit",
+          "title_uz": "Sport va jismoniy faollik",
+          "goal_uz": "Sport odatlaringiz haqida gapirasiz: enjoy doing / decide to do va used to bilan oldin va hozirni solishtirasiz.",
+          "minutes": 12,
+          "words": [
+            {"en": "get fit", "uz": "jismonan chiniqmoq", "ipa": "/ɡet fɪt/", "ex": "I want to get fit before the summer."},
+            {"en": "gym", "uz": "sport zali", "ipa": "/dʒɪm/", "ex": "She goes to the gym after work."},
+            {"en": "used to", "uz": "ilgari ... edi (odat)", "ipa": "/ˈjuːst tə/", "ex": "I used to play football every day."},
+            {"en": "give up", "uz": "tashlamoq, voz kechmoq", "ipa": "/ɡɪv ʌp/", "ex": "He gave up smoking last year."},
+            {"en": "take up", "uz": "(yangi mashg'ulot) boshlamoq", "ipa": "/teɪk ʌp/", "ex": "My dad took up swimming at fifty."},
+            {"en": "muscle", "uz": "mushak", "ipa": "/ˈmʌsl/", "ex": "Swimming is good for all your muscles."},
+            {"en": "lose weight", "uz": "vazn yo'qotmoq", "ipa": "/luːz weɪt/", "ex": "She lost five kilos in two months."},
+            {"en": "motivated", "uz": "ishtiyoqli, rag'batli", "ipa": "/ˈməʊtɪveɪtɪd/", "ex": "It's easier to stay motivated with a friend."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "reading",
+              "title": "From sofa to 10K",
+              "text": "Two years ago, I was not a sporty person at all. I used to spend every evening on the sofa, and I didn't use to walk anywhere — I took a taxi even for short distances. Then one day I couldn't climb the stairs to my office without stopping, and I decided to change. I took up running with an app for beginners. At first, I hated running for more than two minutes! But I kept going, and slowly I started to enjoy being outside. A friend joined me, which helped me stay motivated. Last month I finished my first ten-kilometre race. I've lost eight kilos, I sleep better, and I've given up fizzy drinks completely.",
+              "glossary": {"sporty": "sportchi, sportni yaxshi ko'radigan", "distances": "masofalar", "climb the stairs": "zinadan chiqmoq", "beginners": "yangi boshlovchilar", "kept going": "davom etaverdim", "race": "poyga, yugurish musobaqasi", "fizzy drinks": "gazli ichimliklar"},
+              "uz": "Ikki yil oldin men umuman sportchi emas edim. Har kechqurunni divanda o'tkazardim va hech qayerga piyoda yurmasdim — yaqin masofaga ham taksi olardim. Keyin bir kuni ofisimga zinadan to'xtamay chiqa olmadim va o'zgarishga qaror qildim. Yangi boshlovchilar uchun ilova bilan yugurishni boshladim. Avvaliga ikki daqiqadan ko'p yugurishni yomon ko'rardim! Lekin davom etaverdim va asta-sekin tashqarida bo'lish menga yoqa boshladi. Bir do'stim menga qo'shildi, bu ishtiyoqimni saqlashga yordam berdi. O'tgan oy birinchi o'n kilometrlik yugurishimni tugatdim. Sakkiz kilo vazn yo'qotdim, yaxshiroq uxlayman va gazli ichimliklarni butunlay tashladim."
+            },
+            {"type": "choice", "q": "What made the writer decide to change?", "options": ["A doctor told him to.", "He couldn't climb the stairs without stopping.", "His friend started running."], "answer": 1, "explain_uz": "\"I couldn't climb the stairs to my office without stopping, and I decided to change.\""},
+            {"type": "choice", "q": "What helped him stay motivated?", "options": ["A friend joined him.", "He joined a gym.", "He watched videos."], "answer": 0, "explain_uz": "\"A friend joined me, which helped me stay motivated.\""},
+            {
+              "type": "grammar",
+              "title_uz": "used to · -ing yoki to + fe'l?",
+              "body_uz": "**used to + fe'l** — ilgari odat bo'lgan, hozir esa yo'q: I **used to play** football. (Hozir o'ynamayman.)\nInkor/so'roq: I **didn't use to** walk. · **Did** you **use to** do sport? (did'dan keyin **use**, \"used\" emas!)\n**Ba'zi fe'llardan keyin -ing keladi:** enjoy, like/love, hate, finish, give up, keep, stop + **doing**: I enjoy **running**. He gave up **smoking**.\n**Ba'zilaridan keyin to + fe'l:** decide, want, hope, plan, try, learn + **to do**: I decided **to change**. She wants **to lose** weight.\nPredlogdan keyin har doim **-ing**: I'm good at **swimming**. · Thanks for **helping**.",
+              "examples": [
+                {"en": "I used to hate sport, but now I love it.", "uz": "Ilgari sportni yomon ko'rardim, hozir esa yaxshi ko'raman."},
+                {"en": "She enjoys swimming in the sea.", "uz": "U dengizda suzishni yaxshi ko'radi."},
+                {"en": "We decided to join a gym.", "uz": "Sport zaliga a'zo bo'lishga qaror qildik."},
+                {"en": "Did you use to play any sports at school?", "uz": "Maktabda biror sport bilan shug'ullanarmidingiz?"}
+              ]
+            },
+            {"type": "choice", "q": "I enjoy ___ in the morning.", "options": ["run", "to run", "running"], "answer": 2, "explain_uz": "enjoy + **-ing**."},
+            {"type": "choice", "q": "He decided ___ a gym.", "options": ["joining", "to join", "join"], "answer": 1, "explain_uz": "decide + **to** + fe'l."},
+            {"type": "choice", "q": "Which sentence is correct?", "options": ["I didn't used to like vegetables.", "I didn't use to like vegetables.", "I wasn't use to like vegetables."], "answer": 1, "explain_uz": "didn't'dan keyin **use to** (d'siz)."},
+            {"type": "gap", "text": "My grandfather ___ to swim in the river every summer.", "answer": ["used"], "uz": "Bobom har yozda daryoda suzardi.", "explain_uz": "O'tmishdagi odat → **used to**."},
+            {"type": "gap", "text": "She gave up ___ (eat) sweets last year.", "answer": ["eating"], "uz": "U o'tgan yili shirinlik yeyishni tashladi.", "explain_uz": "give up + **-ing**."},
+            {"type": "gap", "text": "I want ___ lose weight before the wedding.", "answer": ["to"], "uz": "To'ydan oldin vazn yo'qotmoqchiman.", "explain_uz": "want + **to** + fe'l."},
+            {"type": "match", "pairs": [["take up", "boshlamoq"], ["give up", "tashlamoq"], ["get fit", "chiniqmoq"], ["lose weight", "vazn yo'qotmoq"], ["muscle", "mushak"]]},
+            {"type": "order", "uz": "Ilgari men har kuni futbol o'ynardim.", "words": ["I", "used", "to", "play", "football", "every", "day"], "answer": "I used to play football every day"},
+            {"type": "choice", "audio": true, "q": "What sport does the speaker do now?", "say": "I used to play basketball at university, but now I mostly do yoga because it's better for my back.", "options": ["Basketball", "Yoga", "Running"], "answer": 1, "explain_uz": "\"now I mostly do yoga\"."},
+            {"type": "listen", "answer": ["It's easier to stay motivated with a friend.", "It's easier to stay motivated with a friend", "It is easier to stay motivated with a friend"], "uz": "Eshiting va yozing"},
+            {"type": "translate", "uz": "Men suzishni boshlashga qaror qildim.", "answer": ["I decided to take up swimming", "I've decided to take up swimming", "I decided to start swimming", "I have decided to take up swimming", "I decided to start going swimming"], "explain_uz": "decide **to** + take up **swimming**."},
+            {"type": "speak", "text": "I used to spend every evening on the sofa, but now I enjoy running in the park.", "uz": "Ovoz chiqarib ayting"},
+            {"type": "write", "prompt_uz": "Sport yoki sog'lom turmush bo'yicha hayotingizdagi o'zgarish haqida yozing (6–7 gap): ilgari qanday edi (used to), nimaga qaror qildingiz (decided to), hozir nimani yoqtirasiz (enjoy -ing).", "prompt": "Write about a change in your lifestyle: what you used to do, what you decided to do, and what you enjoy now.", "min_words": 55, "example": "I used to eat a lot of fast food and I didn't use to do any sport. Last year I felt tired all the time, so I decided to change my habits. First, I gave up fizzy drinks. Then I took up swimming with my cousin. Now I go to the pool three times a week and I really enjoy being in the water. I've lost four kilos and I feel much more energetic."}
+          ]
+        }
+      ]
+    }
+  ]
+}

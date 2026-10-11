@@ -566,8 +566,13 @@
                     mainBtn.disabled = false; mainBtn.textContent = 'Davom etish';
                     skipBtn.style.display = 'none';
                 } catch (err) {
-                    setFoot('bad', err.message, "Bu qadamni o'tkazib yuborishingiz mumkin.");
-                    mainBtn.disabled = false; mainBtn.textContent = 'Qayta urinish';
+                    // Without AI the task still has value: compare with the model answer yourself.
+                    const m = document.getElementById('model');
+                    if (m && s.example) m.style.display = 'block';
+                    state.answered = true; inp.disabled = true;
+                    setFoot('bad', err.message, s.example ? "Matningizni yuqoridagi namuna javob bilan solishtiring." : '');
+                    mainBtn.disabled = false; mainBtn.textContent = 'Davom etish';
+                    skipBtn.style.display = 'none';
                 }
             };
         },
