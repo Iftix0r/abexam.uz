@@ -1375,6 +1375,11 @@ document.addEventListener('DOMContentLoaded', () => {
     window.allQuestions = [];
 
     const DRAFT_KEY = 'exam_draft_{{ exam.pk }}_{{ request.user.pk }}';
+    // One id per attempt, kept until the server confirms the submit: it ties
+    // the autosaved server copy to this attempt and makes submit retries
+    // idempotent (the server hands back the same result).
+    const ATTEMPT_KEY = DRAFT_KEY + '_attempt';
+    let serverDirty = false, examStarted = false, lastServerSync = 0, serverSyncBusy = false;
 
     // Collect all question IDs per section
     const sectionQuestions = {}; // { sectionId: [{ id, type }] }
@@ -1788,6 +1793,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.closeInstructionAndStart = function() {
         document.getElementById('sectionInstrOverlay').style.display = 'none';
+        examStarted = true;
         if (pendingSectionId) {
             _doShowSection(pendingSectionId, pendingTabEl);
             startSectionTimer(pendingDurationMinutes, pendingSectionId);
@@ -1904,9 +1910,37 @@ document.addEventListener('DOMContentLoaded', () => {
     let savedTimer;
     function autosave() {
         try { localStorage.setItem(DRAFT_KEY, JSON.stringify(answers)); } catch(e) {}
+        serverDirty = true;
         const ind = document.getElementById('autosave-indicator');
         if (ind) { ind.style.opacity = '1'; clearTimeout(savedTimer); savedTimer = setTimeout(() => ind.style.opacity = '0', 1800); }
     }
+
+    // ─── SERVER COPY ──────────────────────────────────────
+    // Besides localStorage, the answers go to the server every 20s when
+    // they changed (plus a heartbeat each minute), so they survive a failed
+    // submit or a cleared browser and staff can follow the exam live in the
+    // panel. Failures are ignored — the next tick just tries again.
+    async function syncToServer(force) {
+        if (examSubmitted || !examStarted || serverSyncBusy) return;
+        if (!force && !serverDirty && Date.now() - lastServerSync < 60000) return;
+        serverSyncBusy = true;
+        serverDirty = false;
+        try {
+            const r = await fetch("{% url 'exams:autosave' exam.id %}", {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken() },
+                body: JSON.stringify({ attempt_id: attemptId(), answers, section: sectionOrder[currentSectionIdx] || 'finished' }),
+            });
+            if (!r.ok) serverDirty = true;
+            lastServerSync = Date.now();
+        } catch(e) {
+            serverDirty = true;
+        } finally {
+            serverSyncBusy = false;
+        }
+    }
+    setInterval(() => syncToServer(false), 20000);
 
     // ─── ANSWER SAVING ────────────────────────────────────
     window.saveAnswer = function(qid, value) {
@@ -2428,11 +2462,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // ─── SUBMIT ───────────────────────────────────────────
     // Submit is retried with backoff because a whole room usually finishes
     // (or times out) in the same second and the shared host answers the
-    // overflow with a non-JSON error page. The submission_id lets the
-    // server replay its first answer if only the reply got lost, so a
-    // retry never creates a second result. The draft stays in
-    // localStorage until the server has confirmed it.
-    const SUBMIT_KEY = DRAFT_KEY + '_submit';
+    // overflow with a non-JSON error page. The attempt id lets the server
+    // replay its first answer if only the reply got lost, so a retry never
+    // creates a second result. The draft stays in localStorage until the
+    // server has confirmed it.
     const SUBMIT_TRIES = 6;
 
     function csrfToken() {
@@ -2442,19 +2475,19 @@ document.addEventListener('DOMContentLoaded', () => {
         return m ? decodeURIComponent(m[1]) : '{{ csrf_token }}';
     }
 
-    function submissionId() {
+    function attemptId() {
         let id = null;
-        try { id = localStorage.getItem(SUBMIT_KEY); } catch(e) {}
+        try { id = localStorage.getItem(ATTEMPT_KEY); } catch(e) {}
         if (!id) {
             id = (window.crypto && crypto.randomUUID) ? crypto.randomUUID()
                 : Date.now().toString(36) + Math.random().toString(36).slice(2);
-            try { localStorage.setItem(SUBMIT_KEY, id); } catch(e) {}
+            try { localStorage.setItem(ATTEMPT_KEY, id); } catch(e) {}
         }
         return id;
     }
 
     async function postSubmission() {
-        const body = JSON.stringify({ answers, submission_id: submissionId() });
+        const body = JSON.stringify({ answers, attempt_id: attemptId() });
         let lastError = '';
         for (let attempt = 1; attempt <= SUBMIT_TRIES; attempt++) {
             if (attempt > 1) {
@@ -2536,7 +2569,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         const data = outcome.data;
-        try { localStorage.removeItem(DRAFT_KEY); localStorage.removeItem(SUBMIT_KEY); } catch(e) {}
+        try { localStorage.removeItem(DRAFT_KEY); localStorage.removeItem(ATTEMPT_KEY); } catch(e) {}
         document.getElementById('resultModal').classList.add('active');
         if (window.lucide) lucide.createIcons();
 
@@ -2760,6 +2793,10 @@ document.addEventListener('DOMContentLoaded', () => {
     (function offerUnsentAnswers() {
         const count = answeredCount();
         if (!count) return;
+        // Get the saved answers onto the server right away, so staff can
+        // finalize them from the panel even if the student never resubmits.
+        examStarted = true;
+        syncToServer(true);
         showRecoverModal("Yuborilmagan javoblar topildi",
             `<p style="font-weight:600; margin-bottom:8px;">Oldingi urinishingizdagi ${count} ta javob serverga yetib bormagan, lekin shu brauzerda saqlangan.</p>
              <p style="font-size:13px; color:#555;">Ularni hozir yuborib natijani olishingiz yoki testni davom ettirishingiz mumkin.</p>`,

@@ -1,0 +1,128 @@
+{% extends 'panel/base.html' %}
+{% block title %}Jonli imtihon{% endblock %}
+{% block page_title %}Jonli imtihon{% endblock %}
+{% block nav_live %}active{% endblock %}
+
+{% block content %}
+<div class="section-header">
+  <form method="get" style="display:flex;gap:10px;max-width:100%;flex-wrap:wrap;align-items:center">
+    <a href="?tab=all{% if exam_id %}&exam={{ exam_id }}{% endif %}" class="btn btn-sm {% if tab == 'all' %}btn-primary{% else %}btn-ghost{% endif %}">Oxirgi 24 soat</a>
+    <a href="?tab=active{% if exam_id %}&exam={{ exam_id }}{% endif %}" class="btn btn-sm {% if tab == 'active' %}btn-primary{% else %}btn-ghost{% endif %}">
+      Hozir yozmoqda{% if counts.active %} <span class="nav-badge" style="margin-left:4px;background:var(--blue)">{{ counts.active }}</span>{% endif %}
+    </a>
+    <a href="?tab=unsent{% if exam_id %}&exam={{ exam_id }}{% endif %}" class="btn btn-sm {% if tab == 'unsent' %}btn-primary{% else %}btn-ghost{% endif %}">
+      Yuborilmagan{% if counts.unsent %} <span class="nav-badge" style="margin-left:4px">{{ counts.unsent }}</span>{% endif %}
+    </a>
+    <input type="hidden" name="tab" value="{{ tab }}">
+    <select name="exam" class="form-input" style="width:auto;max-width:100%" onchange="this.form.submit()">
+      <option value="">Barcha imtihonlar</option>
+      {% for e in exams %}
+      <option value="{{ e.pk }}" {% if exam_id == e.pk|stringformat:"s" %}selected{% endif %}>{{ e.title }}</option>
+      {% endfor %}
+    </select>
+  </form>
+  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+    <label style="font-size:13px;color:var(--muted);display:flex;gap:6px;align-items:center;cursor:pointer">
+      <input type="checkbox" id="autoRefresh"> Har 20 soniyada yangilash
+    </label>
+    <button id="bulkFinalizeBtn" onclick="bulkFinalize()" class="btn btn-primary btn-sm" style="display:none">Tanlanganlardan natija yaratish (<span id="bulkCount">0</span>)</button>
+  </div>
+</div>
+
+<p style="font-size:13px;color:var(--muted);margin:0 0 14px">
+  Test sahifasi javoblarni har 20 soniyada serverga saqlab boradi. O'quvchi «Yakunlash»ni bosgan-u, natija yetib bormagan bo'lsa,
+  u <b>Yuborilmagan</b> bo'limida chiqadi — saqlangan javoblardan natijani shu yerda yaratish mumkin.
+</p>
+
+<div class="card" style="padding:0">
+  <div class="table-wrap">
+    <table>
+      <thead><tr>
+        <th style="width:32px"><input type="checkbox" id="selectAll" onchange="toggleAll(this)"></th>
+        <th>Foydalanuvchi</th><th>Imtihon</th><th>Holat</th><th>Bo'lim</th><th>Javoblar</th><th>Boshlagan</th><th>Oxirgi faollik</th><th></th>
+      </tr></thead>
+      <tbody>
+        {% for a in attempts %}
+        <tr id="attempt-row-{{ a.pk }}">
+          <td>{% if not a.is_submitted and a.answered_count %}<input type="checkbox" class="attempt-checkbox" value="{{ a.pk }}" onchange="updateBulkBtn()">{% endif %}</td>
+          <td><a href="{% url 'panel:user_detail' a.user.pk %}" style="color:var(--primary);font-weight:500">{{ a.user.username }}</a>
+            {% if a.user.get_full_name %}<div style="font-size:12px;color:var(--muted)">{{ a.user.get_full_name }}</div>{% endif %}</td>
+          <td style="color:var(--muted)">{{ a.exam.title|truncatechars:28 }}</td>
+          <td>
+            {% if a.state == 'submitted' %}<span class="badge badge-green">✓ Yuborildi</span>
+            {% elif a.state == 'active' %}<span class="badge badge-blue">● Yozmoqda</span>
+            {% elif a.state == 'unsent' %}<span class="badge badge-red">Yuborilmagan</span>
+            {% else %}<span class="badge badge-gray">Tashlab ketilgan</span>{% endif %}
+            {% if a.last_error and not a.is_submitted %}<div style="font-size:11px;color:var(--red);margin-top:4px;max-width:220px" title="{{ a.last_error }}">Xato: {{ a.last_error|truncatechars:60 }}</div>{% endif %}
+          </td>
+          <td style="color:var(--muted)">{{ a.section_label }}</td>
+          <td><b>{{ a.answered_count }}</b><span style="color:var(--muted)"> / {{ a.total_questions }}</span></td>
+          <td style="color:var(--muted);font-size:12px">{{ a.started_at|date:"d M, H:i" }}</td>
+          <td style="color:var(--muted);font-size:12px" title="{{ a.last_seen_at|date:'d M Y, H:i:s' }}">{{ a.seen_ago }}</td>
+          <td style="white-space:nowrap">
+            {% if a.is_submitted %}
+              {% if a.result_id %}<a href="{% url 'exams:result_detail' a.result_id %}" target="_blank" class="btn btn-ghost btn-sm">Natija</a>{% endif %}
+            {% elif a.answered_count %}
+              <button onclick="finalizeAttempt({{ a.pk }}, '{{ a.state }}')" class="btn btn-primary btn-sm">Natija yaratish</button>
+            {% endif %}
+            {% if not a.is_submitted %}<button onclick="deleteAttempt({{ a.pk }})" class="btn btn-danger btn-sm" title="Urinishni o'chirish">✕</button>{% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="9" style="text-align:center;padding:32px;color:var(--muted)">{% if tab == 'unsent' %}Yuborilmagan urinish yo'q 🎉{% elif tab == 'active' %}Hozir hech kim test yozmayapti{% else %}Oxirgi 24 soatda urinish yo'q{% endif %}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const REFRESH_KEY = 'panel_live_autorefresh';
+const autoRefresh = document.getElementById('autoRefresh');
+try { autoRefresh.checked = localStorage.getItem(REFRESH_KEY) === '1'; } catch(e) {}
+autoRefresh.addEventListener('change', () => { try { localStorage.setItem(REFRESH_KEY, autoRefresh.checked ? '1' : '0'); } catch(e) {} });
+setInterval(() => {
+  // Don't reload away a selection the admin is in the middle of making.
+  if (autoRefresh.checked && !document.querySelector('.attempt-checkbox:checked')) location.reload();
+}, 20000);
+
+function toggleAll(master){
+  document.querySelectorAll('.attempt-checkbox').forEach(cb => cb.checked = master.checked);
+  updateBulkBtn();
+}
+function updateBulkBtn(){
+  const n = document.querySelectorAll('.attempt-checkbox:checked').length;
+  document.getElementById('bulkCount').textContent = n;
+  document.getElementById('bulkFinalizeBtn').style.display = n ? 'inline-flex' : 'none';
+}
+async function finalizeAttempt(pk, state){
+  const warn = state === 'active'
+    ? "Bu o'quvchi hozir ham test yozmoqda! Baribir hozirgi javoblaridan natija yaratilsinmi?"
+    : "Saqlangan javoblardan natija yaratilsinmi?";
+  if(!confirm(warn)) return;
+  const r = await fetch(`/panel/live/${pk}/finalize/`, {method:'POST', headers:{'X-CSRFToken':csrf}});
+  const d = await r.json().catch(() => ({}));
+  if(d.ok){ toast('Natija yaratildi'); setTimeout(() => location.reload(), 600); }
+  else toast(d.error || 'Xatolik yuz berdi', '#ef4444');
+}
+async function bulkFinalize(){
+  const ids = Array.from(document.querySelectorAll('.attempt-checkbox:checked')).map(cb => Number(cb.value));
+  if(!ids.length) return;
+  if(!confirm(`${ids.length} ta urinishning saqlangan javoblaridan natija yaratilsinmi?`)) return;
+  const r = await fetch('/panel/live/bulk-finalize/', {
+    method:'POST', headers:{'X-CSRFToken':csrf, 'Content-Type':'application/json'}, body: JSON.stringify({ids}),
+  });
+  const d = await r.json().catch(() => ({}));
+  if(d.ok){ toast(`${d.done} ta natija yaratildi`); setTimeout(() => location.reload(), 600); }
+  else toast('Xatolik yuz berdi', '#ef4444');
+}
+async function deleteAttempt(pk){
+  if(!confirm("Bu urinish va uning saqlangan javoblari o'chirilsinmi?")) return;
+  const r = await fetch(`/panel/live/${pk}/delete/`, {method:'POST', headers:{'X-CSRFToken':csrf}});
+  const d = await r.json().catch(() => ({}));
+  if(d.ok){ document.getElementById('attempt-row-'+pk).remove(); toast("O'chirildi", '#ef4444'); }
+}
+</script>
+{% endblock %}

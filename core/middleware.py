@@ -51,6 +51,11 @@ class PanelBadgeMiddleware:
             request.pending_tx_count = Transaction.objects.filter(status='pending').count()
             from exams.models import UserResult
             request.pending_results_count = UserResult.objects.pending().count()
+            from django.utils import timezone
+            from exams.models import ATTEMPT_ONLINE_WINDOW, ExamAttempt
+            request.active_attempts_count = ExamAttempt.objects.filter(
+                submitted_at__isnull=True, last_seen_at__gte=timezone.now() - ATTEMPT_ONLINE_WINDOW,
+            ).count()
         return self.get_response(request)
 
 

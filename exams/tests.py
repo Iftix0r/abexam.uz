@@ -1,12 +1,13 @@
 import io
 import json
+from datetime import timedelta
 
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
 from core.models import Notification
 from users.models import User
-from .models import Exam, Question, Section, UserResult
+from .models import Exam, ExamAttempt, Question, Section, UserResult
 from .views import calc_writing_band, round_band
 
 
@@ -260,34 +261,80 @@ class ChooseTwoGradingTests(TestCase):
         self.assertEqual(self._correct_count('A', 'e'), 1)
 
 
-@override_settings(CACHES={'default': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'}})
-class SubmitRetryTests(TestCase):
-    """Qayta yuborilgan (retry) topshiriq ikkinchi natija yaratmaydi."""
+class ExamAttemptTests(TestCase):
+    """Javoblar serverga autosave qilinadi, retry ikkinchi natija yaratmaydi,
+    yuborilmagan urinishdan admin natija yarata oladi."""
 
     def setUp(self):
-        from django.core.cache import cache
-        cache.clear()
         self.user = User.objects.create_user('student', password='pw')
-        self.exam = Exam.objects.create(title='Retry test', price=0)
+        self.admin = User.objects.create_user('admin', password='pw', is_staff=True)
+        self.exam = Exam.objects.create(title='Attempt test', price=0)
         section = Section.objects.create(exam=self.exam, title='Reading', section_type='reading', order=1)
         self.q = Question.objects.create(section=section, text='q', question_type='gap_fill',
                                          correct_answer='paris', order=1)
+        self.answers = {str(self.q.id): 'paris'}
         self.client.force_login(self.user)
 
-    def _submit(self, submission_id):
-        return self.client.post(
-            reverse('exams:submit_exam', args=[self.exam.pk]),
-            data=json.dumps({'answers': {str(self.q.id): 'paris'}, 'submission_id': submission_id}),
-            content_type='application/json',
-        ).json()
+    def _post(self, name, **payload):
+        return self.client.post(reverse(f'exams:{name}', args=[self.exam.pk]),
+                                data=json.dumps(payload), content_type='application/json')
 
-    def test_same_submission_id_replays_first_result(self):
-        first = self._submit('abc')
-        again = self._submit('abc')
+    def test_autosave_keeps_latest_answers(self):
+        self._post('autosave', attempt_id='a1', answers={str(self.q.id): 'lon'}, section='reading')
+        self._post('autosave', attempt_id='a1', answers=self.answers, section='reading')
+        attempt = ExamAttempt.objects.get()
+        self.assertEqual(attempt.answers, self.answers)
+        self.assertEqual(attempt.answered_count, 1)
+        self.assertFalse(attempt.is_submitted)
+
+    def test_retry_with_same_attempt_replays_first_result(self):
+        first = self._post('submit_exam', attempt_id='a1', answers=self.answers).json()
+        again = self._post('submit_exam', attempt_id='a1', answers=self.answers).json()
         self.assertEqual(first, again)
         self.assertEqual(UserResult.objects.filter(user=self.user).count(), 1)
+        attempt = ExamAttempt.objects.get()
+        self.assertEqual(attempt.result_id, first['result_id'])
+        # a late autosave doesn't overwrite what was graded
+        self._post('autosave', attempt_id='a1', answers={str(self.q.id): 'x'})
+        attempt.refresh_from_db()
+        self.assertEqual(attempt.answers, self.answers)
 
     def test_new_attempt_gets_new_result(self):
-        self._submit('abc')
-        self._submit('def')
+        self._post('submit_exam', attempt_id='a1', answers=self.answers)
+        self._post('submit_exam', attempt_id='a2', answers=self.answers)
         self.assertEqual(UserResult.objects.filter(user=self.user).count(), 2)
+
+    def test_failed_submit_keeps_answers_on_server(self):
+        from unittest import mock
+        with mock.patch('exams.views.create_result', side_effect=RuntimeError('boom')), \
+                self.assertLogs('exams.submit', level='ERROR'):
+            resp = self._post('submit_exam', attempt_id='a1', answers=self.answers)
+        self.assertEqual(resp.status_code, 500)
+        attempt = ExamAttempt.objects.get()
+        self.assertEqual(attempt.answers, self.answers)
+        self.assertFalse(attempt.is_submitted)
+        self.assertIn('boom', attempt.last_error)
+        self.assertFalse(UserResult.objects.exists())
+
+    def test_admin_finalizes_unsent_attempt(self):
+        self._post('autosave', attempt_id='a1', answers=self.answers, section='reading')
+        attempt = ExamAttempt.objects.get()
+        ExamAttempt.objects.filter(pk=attempt.pk).update(last_seen_at=attempt.last_seen_at - timedelta(minutes=10))
+
+        self.client.force_login(self.admin)
+        page = self.client.get(reverse('panel:attempts_live') + '?tab=unsent')
+        self.assertContains(page, 'Natija yaratish')
+        resp = self.client.post(reverse('panel:attempt_finalize', args=[attempt.pk])).json()
+        self.assertTrue(resp['ok'])
+        result = UserResult.objects.get(pk=resp['result_id'])
+        self.assertEqual(result.user, self.user)
+        self.assertEqual(result.reading_score, 9.0)
+        self.assertTrue(Notification.objects.filter(user=self.user, title='Javoblaringiz qabul qilindi').exists())
+        # finalizing twice is refused
+        self.assertFalse(self.client.post(reverse('panel:attempt_finalize', args=[attempt.pk])).json()['ok'])
+
+        # the student's own later resubmit gets that same result back
+        self.client.force_login(self.user)
+        data = self._post('submit_exam', attempt_id='a1', answers=self.answers).json()
+        self.assertEqual(data['result_id'], result.pk)
+        self.assertEqual(UserResult.objects.count(), 1)

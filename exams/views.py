@@ -10,11 +10,12 @@ from django.core.files.storage import default_storage
 from django.db import transaction
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
+from django.utils import timezone
 from django.views import View
 from django.views.generic import DetailView
 
 from core.utils import parse_json_body
-from .models import Exam, UserAnswer, UserResult, Question
+from .models import Exam, ExamAttempt, UserAnswer, UserResult, Question
 from users.models import User
 
 submit_logger = logging.getLogger('exams.submit')
@@ -338,24 +339,168 @@ class DemoAnswersView(LoginRequiredMixin, View):
         return JsonResponse(answers)
 
 
-class SubmitExamView(LoginRequiredMixin, View):
-    # The client retries a failed submit and re-sends the same
-    # submission_id; replaying the stored response keeps a retry whose
-    # first attempt actually went through (only the reply got lost) from
-    # creating a second result — or hitting the paid check, since the
-    # first attempt already cleared the paid flag.
-    _REPLAY_TTL = 7 * 24 * 3600
+def create_result(user, exam, answers):
+    """Grades `answers` ({question_id: raw answer}) and saves them as a new
+    UserResult. Used by the student's own submit and by staff turning an
+    unsent autosaved attempt into a result."""
+    section_stats = {}
+    # writing_tasks: list of (order, text) — preserves Task1/Task2 order
+    writing_tasks = []
+    total_correct = 0
+    total_questions = 0
 
+    # Fetch sections once and reuse
+    sections = list(exam.sections.prefetch_related('questions').order_by('order'))
+    if not settings.SPEAKING_ENABLED:
+        sections = [s for s in sections if s.section_type != 'speaking']
+
+    # (question, user_answer, is_correct) captured here so the second
+    # pass building UserAnswer rows can reuse it instead of recomputing
+    # _fuzzy_match for every question again.
+    answer_records = []
+
+    for section in sections:
+        s_correct = 0
+        s_total = 0
+        questions = list(section.questions.all())
+        verdicts = grade_answers(questions, lambda q: answers.get(str(q.id), ''))
+        for question in questions:
+            user_ans = str(answers.get(str(question.id), '')).strip()
+            if question.question_type == 'writing_task':
+                writing_tasks.append({
+                    'order': section.order,
+                    'section_title': section.title,
+                    'text': user_ans,
+                })
+                answer_records.append((question, user_ans, False))
+                continue
+            s_total += 1
+            total_questions += 1
+            is_correct = verdicts[question.id]
+            answer_records.append((question, user_ans, is_correct))
+            if is_correct:
+                s_correct += 1
+                total_correct += 1
+        prev_c, prev_t = section_stats.get(section.section_type, (0, 0))
+        section_stats[section.section_type] = (prev_c + s_correct, prev_t + s_total)
+
+    def get_band(stype):
+        c, t = section_stats.get(stype, (0, 0))
+        return calc_band(c, t)
+
+    l_band = get_band('listening')
+    r_band = get_band('reading')
+    s_band = get_band('speaking')
+
+    # Writing is graded by staff by hand (panel → Natijalar → Baholash),
+    # so the overall band can't exist yet: the result is held back as
+    # "pending" and only released once the writing band is filled in.
+    pending = bool(writing_tasks)
+    if pending:
+        overall = 0.0
+    else:
+        band_by_type = {'listening': l_band, 'reading': r_band, 'writing': 0.0, 'speaking': s_band}
+        overall = compute_overall_band(band_by_type, present_section_types(exam))
+
+    result = UserResult.objects.create(
+        user=user,
+        exam=exam,
+        score=overall,
+        listening_score=l_band,
+        reading_score=r_band,
+        writing_score=0.0,
+        speaking_score=s_band,
+        status=UserResult.STATUS_PENDING if pending else UserResult.STATUS_GRADED,
+    )
+
+    answer_objs = [
+        UserAnswer(result=result, question=question, user_answer=user_ans, is_correct=is_correct)
+        for question, user_ans, is_correct in answer_records
+    ]
+    UserAnswer.objects.bulk_create(answer_objs, ignore_conflicts=True)
+
+    return result
+
+
+def submit_payload(result):
+    if result.is_pending:
+        # No bands in the response — they'd leak the partial result
+        # before the writing is graded.
+        return {'status': 'success', 'result_id': result.id, 'pending': True}
+    return {
+        'status': 'success',
+        'result_id': result.id,
+        'score': result.score,
+        'listening': result.listening_score,
+        'reading': result.reading_score,
+        'writing': result.writing_score,
+        'speaking': result.speaking_score,
+    }
+
+
+def _count_answered(answers):
+    return sum(1 for v in answers.values() if str(v).strip())
+
+
+def save_attempt(user, exam, client_id, answers, section=''):
+    """Upserts the server-side copy of an attempt. A submitted attempt is
+    never overwritten — a late autosave must not clobber what was graded."""
+    attempt, created = ExamAttempt.objects.get_or_create(
+        user=user, exam=exam, client_id=client_id,
+        defaults={'answers': answers, 'answered_count': _count_answered(answers), 'current_section': section},
+    )
+    if not created and not attempt.is_submitted:
+        attempt.answers = answers
+        attempt.answered_count = _count_answered(answers)
+        if section:
+            attempt.current_section = section
+        attempt.last_seen_at = timezone.now()
+        attempt.save(update_fields=['answers', 'answered_count', 'current_section', 'last_seen_at'])
+    return attempt
+
+
+def finalize_attempt(attempt):
+    """Grades an attempt's answers into a result and marks it submitted."""
+    with transaction.atomic():
+        result = create_result(attempt.user, attempt.exam, attempt.answers)
+        attempt.result = result
+        attempt.submitted_at = timezone.now()
+        attempt.last_error = ''
+        attempt.save(update_fields=['result', 'submitted_at', 'last_error'])
+    return result
+
+
+class ExamAutosaveView(LoginRequiredMixin, View):
+    """Periodic copy of the exam page's answers, so they survive a failed
+    submit or a cleared browser and staff can follow the exam live."""
+
+    def post(self, request, *args, **kwargs):
+        exam = get_object_or_404(Exam, pk=kwargs['pk'])
+        data, err = parse_json_body(request)
+        if err:
+            return err
+        client_id = str(data.get('attempt_id') or '')[:64]
+        answers = data.get('answers')
+        if not client_id or not isinstance(answers, dict):
+            return JsonResponse({'error': "Noto'g'ri so'rov"}, status=400)
+        attempt = save_attempt(request.user, exam, client_id, answers, str(data.get('section') or '')[:20])
+        return JsonResponse({'ok': True, 'submitted': attempt.is_submitted})
+
+
+class SubmitExamView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         try:
             return self._post(request, *args, **kwargs)
-        except Exception:
+        except Exception as e:
             # The answers go into logs/errors.log too, so a submit that keeps
             # failing can still be recovered by hand from the server side.
             submit_logger.exception(
                 'Exam submit failed: user=%s exam=%s body=%s',
                 request.user.pk, kwargs.get('pk'), request.body[:200_000].decode('utf-8', 'replace'),
             )
+            attempt = getattr(request, '_exam_attempt', None)
+            if attempt is not None:
+                ExamAttempt.objects.filter(pk=attempt.pk).update(last_error=f'{type(e).__name__}: {e}'[:1000])
             if request.user.is_superuser:
                 import traceback
                 return JsonResponse({'error': traceback.format_exc()}, status=500)
@@ -366,116 +511,32 @@ class SubmitExamView(LoginRequiredMixin, View):
         data, err = parse_json_body(request)
         if err:
             return err
+        answers = data.get('answers', {})
 
-        submission_id = str(data.get('submission_id') or '')[:64]
-        replay_key = f'exam_submit_{request.user.pk}_{exam.pk}_{submission_id}' if submission_id else None
-        if replay_key:
-            replay = cache.get(replay_key)
-            if replay:
-                return JsonResponse(replay)
+        # The answers are stored before grading (outside its transaction),
+        # so they're on the server even if grading below blows up.
+        attempt = None
+        client_id = str(data.get('attempt_id') or '')[:64]
+        if client_id and isinstance(answers, dict):
+            attempt = save_attempt(request.user, exam, client_id, answers, 'finished')
+            request._exam_attempt = attempt
+            # A retry whose first try went through (only the reply got lost),
+            # or an attempt staff already finalized from the panel: hand back
+            # that result instead of creating a second one — or hitting the
+            # paid check, which the first submit already cleared.
+            if attempt.is_submitted and attempt.result_id:
+                return JsonResponse(submit_payload(attempt.result))
 
         if exam.price > 0 and not exam_is_paid(request.user.pk, exam.pk):
             return JsonResponse({'error': "Bu imtihon uchun to'lov amalga oshirilmagan"}, status=402)
 
-        with transaction.atomic():
-            payload = self._grade_and_save(request, exam, data)
-        clear_exam_paid(request.user.pk, exam.pk)
-        if replay_key:
-            cache.set(replay_key, payload, timeout=self._REPLAY_TTL)
-        return JsonResponse(payload)
-
-    def _grade_and_save(self, request, exam, data):
-        answers = data.get('answers', {})
-        section_stats = {}
-        # writing_tasks: list of (order, text) — preserves Task1/Task2 order
-        writing_tasks = []
-        total_correct = 0
-        total_questions = 0
-
-        # Fetch sections once and reuse
-        sections = list(exam.sections.prefetch_related('questions').order_by('order'))
-        if not settings.SPEAKING_ENABLED:
-            sections = [s for s in sections if s.section_type != 'speaking']
-
-        # (question, user_answer, is_correct) captured here so the second
-        # pass building UserAnswer rows can reuse it instead of recomputing
-        # _fuzzy_match for every question again.
-        answer_records = []
-
-        for section in sections:
-            s_correct = 0
-            s_total = 0
-            questions = list(section.questions.all())
-            verdicts = grade_answers(questions, lambda q: answers.get(str(q.id), ''))
-            for question in questions:
-                user_ans = str(answers.get(str(question.id), '')).strip()
-                if question.question_type == 'writing_task':
-                    writing_tasks.append({
-                        'order': section.order,
-                        'section_title': section.title,
-                        'text': user_ans,
-                    })
-                    answer_records.append((question, user_ans, False))
-                    continue
-                s_total += 1
-                total_questions += 1
-                is_correct = verdicts[question.id]
-                answer_records.append((question, user_ans, is_correct))
-                if is_correct:
-                    s_correct += 1
-                    total_correct += 1
-            prev_c, prev_t = section_stats.get(section.section_type, (0, 0))
-            section_stats[section.section_type] = (prev_c + s_correct, prev_t + s_total)
-
-        def get_band(stype):
-            c, t = section_stats.get(stype, (0, 0))
-            return calc_band(c, t)
-
-        l_band = get_band('listening')
-        r_band = get_band('reading')
-        s_band = get_band('speaking')
-
-        # Writing is graded by staff by hand (panel → Natijalar → Baholash),
-        # so the overall band can't exist yet: the result is held back as
-        # "pending" and only released once the writing band is filled in.
-        pending = bool(writing_tasks)
-        if pending:
-            overall = 0.0
+        if attempt is not None:
+            result = finalize_attempt(attempt)
         else:
-            band_by_type = {'listening': l_band, 'reading': r_band, 'writing': 0.0, 'speaking': s_band}
-            overall = compute_overall_band(band_by_type, present_section_types(exam))
-
-        result = UserResult.objects.create(
-            user=request.user,
-            exam=exam,
-            score=overall,
-            listening_score=l_band,
-            reading_score=r_band,
-            writing_score=0.0,
-            speaking_score=s_band,
-            status=UserResult.STATUS_PENDING if pending else UserResult.STATUS_GRADED,
-        )
-
-        answer_objs = [
-            UserAnswer(result=result, question=question, user_answer=user_ans, is_correct=is_correct)
-            for question, user_ans, is_correct in answer_records
-        ]
-        UserAnswer.objects.bulk_create(answer_objs, ignore_conflicts=True)
-
-        if pending:
-            # No bands in the response — they'd leak the partial result
-            # before the writing is graded.
-            return {'status': 'success', 'result_id': result.id, 'pending': True}
-
-        return {
-            'status': 'success',
-            'result_id': result.id,
-            'score': result.score,
-            'listening': result.listening_score,
-            'reading': result.reading_score,
-            'writing': result.writing_score,
-            'speaking': result.speaking_score,
-        }
+            with transaction.atomic():
+                result = create_result(request.user, exam, answers)
+        clear_exam_paid(request.user.pk, exam.pk)
+        return JsonResponse(submit_payload(result))
 
 
 class ResultDetailView(LoginRequiredMixin, DetailView):

@@ -7,7 +7,8 @@ from itertools import groupby
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db import IntegrityError, transaction as db_transaction
-from django.db.models import Avg, Count, F, Max, Sum
+from django.conf import settings
+from django.db.models import Avg, Count, F, Max, Q, Sum
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -19,7 +20,8 @@ from core.utils import (
     daily_series, html_paragraphs_to_text, monthly_series, parse_json_body,
     text_to_html_paragraphs, validate_audio_upload, validate_image_upload,
 )
-from exams.models import Exam, Question, Section, UserResult
+from exams.models import ATTEMPT_ONLINE_WINDOW, Exam, ExamAttempt, Question, Section, UserResult
+from exams.views import finalize_attempt
 from payments.models import Transaction
 from users.models import LoginLog, User, Vocabulary
 
@@ -907,6 +909,122 @@ def results_bulk_delete(request):
     deleted = qs.count()
     qs.delete()
     return JsonResponse({'ok': True, 'deleted': deleted})
+
+
+# ── Live exam monitoring ───────────────────────────────────────────────────────
+_SECTION_LABELS = {
+    'listening': 'Listening', 'reading': 'Reading', 'writing': 'Writing',
+    'speaking': 'Speaking', 'finished': 'Yakunlash bosildi',
+}
+
+
+def _ago(now, moment):
+    secs = max(0, int((now - moment).total_seconds()))
+    if secs < 60:
+        return f'{secs} soniya oldin'
+    if secs < 3600:
+        return f'{secs // 60} daqiqa oldin'
+    if secs < 86400:
+        return f'{secs // 3600} soat oldin'
+    return f'{secs // 86400} kun oldin'
+
+
+def _attempt_filters(now):
+    online_since = now - ATTEMPT_ONLINE_WINDOW
+    return {
+        'active': Q(submitted_at__isnull=True, last_seen_at__gte=online_since),
+        'unsent': Q(submitted_at__isnull=True, last_seen_at__lt=online_since, answered_count__gt=0),
+    }
+
+
+@panel_required
+def attempts_live(request):
+    now = timezone.now()
+    tab = request.GET.get('tab', 'all')
+    exam_id = request.GET.get('exam', '')
+    filters = _attempt_filters(now)
+
+    qs = ExamAttempt.objects.select_related('user', 'exam')
+    if exam_id:
+        qs = qs.filter(exam_id=exam_id)
+    counts = {name: qs.filter(q).count() for name, q in filters.items()}
+    if tab in filters:
+        qs = qs.filter(filters[tab])
+    else:
+        tab = 'all'
+        qs = qs.filter(last_seen_at__gte=now - timedelta(hours=24))
+    attempts = list(qs.defer('answers')[:200])
+
+    questions = Question.objects.filter(section__exam__in={a.exam_id for a in attempts})
+    if not settings.SPEAKING_ENABLED:
+        questions = questions.exclude(section__section_type='speaking')
+    totals = dict(questions.values_list('section__exam').annotate(n=Count('id')))
+    online_since = now - ATTEMPT_ONLINE_WINDOW
+    for a in attempts:
+        a.total_questions = totals.get(a.exam_id, 0)
+        a.section_label = _SECTION_LABELS.get(a.current_section, a.current_section or '—')
+        a.seen_ago = _ago(now, a.last_seen_at)
+        if a.is_submitted:
+            a.state = 'submitted'
+        elif a.last_seen_at >= online_since:
+            a.state = 'active'
+        elif a.answered_count:
+            a.state = 'unsent'
+        else:
+            a.state = 'abandoned'
+
+    return render(request, 'panel/attempts_live.html', {
+        'attempts': attempts, 'tab': tab, 'counts': counts,
+        'exam_id': exam_id, 'exams': Exam.objects.order_by('-created_at'),
+    })
+
+
+def _finalize(attempt):
+    result = finalize_attempt(attempt)
+    Notification.objects.create(
+        user=attempt.user,
+        title="Javoblaringiz qabul qilindi",
+        message=f"«{attempt.exam.title}» imtihonidagi javoblaringiz saqlangan nusxadan qabul qilindi. "
+                f"Natijani «Natijalar» bo'limida ko'rishingiz mumkin.",
+        type='success',
+    )
+    return result
+
+
+@panel_required
+@require_POST
+def attempt_finalize(request, pk):
+    attempt = get_object_or_404(ExamAttempt.objects.select_related('user', 'exam'), pk=pk)
+    if attempt.is_submitted:
+        return JsonResponse({'ok': False, 'error': "Bu urinish allaqachon yuborilgan"})
+    result = _finalize(attempt)
+    return JsonResponse({'ok': True, 'result_id': result.pk,
+                         'url': reverse('exams:result_detail', args=[result.pk])})
+
+
+@panel_required
+@require_POST
+def attempts_bulk_finalize(request):
+    data, err = parse_json_body(request)
+    if err:
+        return err
+    attempts = ExamAttempt.objects.select_related('user', 'exam').filter(
+        pk__in=data.get('ids', []), submitted_at__isnull=True)
+    done = 0
+    for attempt in attempts:
+        try:
+            _finalize(attempt)
+            done += 1
+        except Exception:
+            logger.exception('Finalizing attempt %s failed', attempt.pk)
+    return JsonResponse({'ok': True, 'done': done})
+
+
+@panel_required
+@require_POST
+def attempt_delete(request, pk):
+    get_object_or_404(ExamAttempt, pk=pk).delete()
+    return JsonResponse({'ok': True})
 
 
 # ── AI Exam Generator ──────────────────────────────────────────────────────────
