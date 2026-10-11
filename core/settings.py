@@ -185,6 +185,9 @@ SLOW_QUERY_THRESHOLD = float(os.getenv('SLOW_QUERY_THRESHOLD', '0.5'))
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'timestamped': {'format': '[%(asctime)s] %(levelname)s %(name)s: %(message)s'},
+    },
     'handlers': {
         'slow_queries_file': {
             'class': 'logging.handlers.RotatingFileHandler',
@@ -198,6 +201,7 @@ LOGGING = {
         'errors_file': {
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': LOGS_DIR / 'errors.log',
+            'formatter': 'timestamped',
             'maxBytes': 10 * 1024 * 1024,
             'backupCount': 5,
         },
