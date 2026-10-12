@@ -1,0 +1,50 @@
+{
+  "slug": "c1-mahalla",
+  "level": "C1",
+  "order": 2,
+  "emoji": "🏘️",
+  "minutes": 8,
+  "title": "What the mahalla knew",
+  "title_uz": "Mahalla nimani bilardi",
+  "paragraphs": [
+    {
+      "en": "When Jamshid returned to Tashkent after eight years in Berlin, he brought with him a doctorate in urban planning and a quiet conviction that his hometown had a great deal to learn from Europe. His first project at the city planning office seemed straightforward: to redesign an old mahalla in the city centre, replacing its narrow lanes and single-storey houses with modern apartment blocks.",
+      "uz": "Jamshid Berlinda sakkiz yil yashab Toshkentga qaytganida, o'zi bilan shaharsozlik bo'yicha doktorlik darajasi va ona shahri Yevropadan ko'p narsa o'rganishi kerak, degan sokin ishonchni olib keldi. Shaharsozlik idorasidagi birinchi loyihasi oddiydek tuyuldi: shahar markazidagi eski mahallani qayta loyihalash, uning tor ko'chalari va bir qavatli uylarini zamonaviy ko'p qavatli binolar bilan almashtirish."
+    },
+    {
+      "en": "On paper, the case was compelling. The houses were ageing, the plumbing was unreliable, and the land could accommodate four times as many residents. Yet when Jamshid began interviewing families, he encountered a resistance that no spreadsheet had prepared him for. It was not that people opposed change; most of them wanted better homes. What they feared was losing something they found difficult to name.",
+      "uz": "Qog'ozda dalillar ishonarli edi. Uylar eskirgan, suv quvurlari ishonchsiz, yer esa to'rt barobar ko'p aholini sig'dira olardi. Biroq Jamshid oilalar bilan suhbatlasha boshlaganida, hech qanday jadval uni tayyorlamagan qarshilikka duch keldi. Gap odamlar o'zgarishga qarshi ekanida emas edi; ularning aksariyati yaxshiroq uyni xohlardi. Ular nomini aytish qiyin bo'lgan bir narsani yo'qotishdan qo'rqishardi."
+    },
+    {
+      "en": "An elderly woman named Oydin opa eventually put it into words. \"In this street,\" she told him, \"if my light is not on by seven, someone knocks on my door. When my husband died, the neighbours cooked for forty days. Tell me — in your tower, who will notice if I don't come down?\" Jamshid had no answer. In Berlin, he realised, he had not known the name of a single neighbour.",
+      "uz": "Oxir-oqibat Oydin opa ismli keksa ayol buni so'z bilan ifodaladi. \"Bu ko'chada,\" dedi u, \"agar soat yettigacha chirog'im yonmasa, kimdir eshigimni taqillatadi. Erim vafot etganida, qo'shnilar qirq kun ovqat pishirib berishdi. Ayting-chi — sizning minorangizda pastga tushmasam, kim payqaydi?\" Jamshidning javobi yo'q edi. Berlinda, deb angladi u, bitta qo'shnisining ham ismini bilmagan ekan."
+    },
+    {
+      "en": "Over the following year, he quietly rewrote the plan. Rather than demolishing the mahalla, the new design renovated most of the existing houses and added low-rise buildings arranged around shared courtyards, deliberately preserving the lanes where children played and elders gathered. Fewer residents could be housed, and the project cost more. His superiors were far from convinced.",
+      "uz": "Keyingi bir yil davomida u rejani jimgina qayta yozdi. Mahallani buzish o'rniga, yangi loyiha mavjud uylarning aksariyatini ta'mirlab, umumiy hovlilar atrofida joylashgan past qavatli binolarni qo'shdi va bolalar o'ynaydigan, keksalar yig'iladigan ko'chalarni ataylab saqlab qoldi. Kamroq aholi joylashtirilardi va loyiha qimmatroq edi. Rahbarlari bunga sira ishonch hosil qilmagan edi."
+    },
+    {
+      "en": "The plan was approved only after a delegation of residents, led by Oydin opa, attended a public hearing. Today, visiting planners from abroad come to study the project, and Jamshid is often asked what he learned in Europe. His answer surprises them. \"I learned how to build cities,\" he says. \"It was my grandmother's neighbours who taught me how to build communities.\"",
+      "uz": "Reja faqat Oydin opa boshchiligidagi aholi delegatsiyasi ochiq tinglovda qatnashganidan keyingina tasdiqlandi. Bugun xorijdan kelgan shaharsozlar loyihani o'rganish uchun keladi va Jamshiddan Yevropada nima o'rganganini tez-tez so'rashadi. Uning javobi ularni hayratga soladi. \"Men shahar qurishni o'rgandim,\" deydi u. \"Jamiyat qurishni esa menga buvimning qo'shnilari o'rgatgan.\""
+    }
+  ],
+  "glossary": {
+    "doctorate": "doktorlik darajasi",
+    "conviction": "ishonch, e'tiqod",
+    "straightforward": "oddiy, murakkab emas",
+    "accommodate": "sig'dirmoq, joylashtirmoq",
+    "resistance": "qarshilik",
+    "spreadsheet": "jadval (Excel)",
+    "demolishing": "buzish",
+    "renovated": "ta'mirladi",
+    "courtyards": "hovlilar",
+    "deliberately": "ataylab",
+    "public hearing": "ochiq tinglov"
+  },
+  "questions": [
+    {"q": "What was Jamshid's original plan?", "options": ["To renovate the old houses", "To replace the mahalla with apartment blocks", "To move residents to Berlin"], "answer": 1},
+    {"q": "Why did residents resist the plan?", "options": ["They didn't want better homes.", "They feared losing their close community.", "The new flats were too expensive."], "answer": 1},
+    {"q": "What did Oydin opa's words make Jamshid realise?", "options": ["He had never known his neighbours in Berlin.", "His plan was too cheap.", "Tower blocks are dangerous."], "answer": 0},
+    {"q": "What is the main idea of Jamshid's final quote?", "options": ["Europe has nothing to teach Uzbekistan.", "Building a community is different from building a city.", "Planners should not study abroad."], "answer": 1}
+  ]
+}

@@ -1,0 +1,199 @@
+{
+  "level": "C1",
+  "title_uz": "Ilg'or daraja",
+  "order": 5,
+  "units": [
+    {
+      "slug": "c1-advanced-grammar",
+      "title": "Advanced grammar for band 7+",
+      "title_uz": "7+ ball uchun ilg'or grammatika",
+      "icon": "sparkles",
+      "lessons": [
+        {
+          "slug": "c1-inversion",
+          "title": "Never have I seen...",
+          "title_uz": "Inversiya: urg'uli gap tuzilmasi",
+          "goal_uz": "Not only, Rarely, Under no circumstances, Had I known kabi inversiya tuzilmalari bilan fikrni kuchli va rasmiy ifodalaysiz.",
+          "minutes": 14,
+          "words": [
+            {"en": "unprecedented", "uz": "misli ko'rilmagan", "ipa": "/ʌnˈpresɪdentɪd/", "ex": "The city has seen unprecedented growth."},
+            {"en": "under no circumstances", "uz": "hech qanday holatda", "ipa": "/ˈʌndə nəʊ ˈsɜːkəmstænsɪz/", "ex": "Under no circumstances should you share your password."},
+            {"en": "seldom", "uz": "kamdan-kam", "ipa": "/ˈseldəm/", "ex": "Seldom do we see such talent."},
+            {"en": "scarcely", "uz": "zo'rg'a, endigina", "ipa": "/ˈskeəsli/", "ex": "Scarcely had we arrived when it started to rain."},
+            {"en": "remarkable", "uz": "ajoyib, e'tiborga loyiq", "ipa": "/rɪˈmɑːkəbl/", "ex": "It was a remarkable achievement."},
+            {"en": "breathtaking", "uz": "nafasni rostlatadigan, hayratlanarli", "ipa": "/ˈbreθteɪkɪŋ/", "ex": "The view from the mountain was breathtaking."},
+            {"en": "emphasis", "uz": "urg'u, ta'kid", "ipa": "/ˈemfəsɪs/", "ex": "Inversion adds emphasis to a sentence."},
+            {"en": "in hindsight", "uz": "endi o'ylasam", "ipa": "/ɪn ˈhaɪndsaɪt/", "ex": "In hindsight, it was the right decision."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "reading",
+              "title": "A speech at graduation",
+              "text": "Never have I felt so proud to stand in front of a group of students. Four years ago, few of you could have imagined where you would be today. Not only have you completed one of the most demanding programmes in the country, but you have also done it during a period of unprecedented change. Rarely does a class face so many challenges — online lectures, closed libraries, uncertain futures — and still achieve such remarkable results. Had you given up in that difficult second year, none of us would be here celebrating. So, as you leave, remember this: under no circumstances should you stop asking questions. Only by staying curious will you continue to grow.",
+              "glossary": {"demanding": "talabchan, og'ir", "period": "davr", "challenges": "qiyinchiliklar", "uncertain": "noaniq", "celebrating": "nishonlamoq", "curious": "qiziquvchan"},
+              "uz": "Hech qachon bir guruh talabalar oldida turib bunchalik faxrlanmaganman. To'rt yil oldin orangizdan kamdan-kam kishi bugun qayerda bo'lishini tasavvur qila olardi. Siz nafaqat mamlakatdagi eng og'ir dasturlardan birini tugatdingiz, balki buni misli ko'rilmagan o'zgarishlar davrida qildingiz. Kamdan-kam guruh shuncha qiyinchilikka — onlayn ma'ruzalar, yopiq kutubxonalar, noaniq kelajak — duch kelib, shunday ajoyib natijalarga erishadi. Agar o'sha qiyin ikkinchi kursda taslim bo'lganingizda, hech birimiz bu yerda nishonlamayotgan bo'lardik. Shuning uchun ketar ekansiz, buni yodda tuting: hech qanday holatda savol berishdan to'xtamang. Faqat qiziquvchan bo'lib qolsangizgina o'sishda davom etasiz."
+            },
+            {"type": "choice", "q": "What does the speaker say about the students' second year?", "options": ["It was easy.", "It was difficult, but they didn't give up.", "Many students left."], "answer": 1, "explain_uz": "\"Had you given up in that difficult second year...\" — taslim bo'lishmagan."},
+            {"type": "choice", "q": "What is the speaker's final advice?", "options": ["Never stop asking questions.", "Work in a library.", "Study online."], "answer": 0, "explain_uz": "\"under no circumstances should you stop asking questions\"."},
+            {
+              "type": "grammar",
+              "title_uz": "Inversiya — ega va yordamchi fe'l o'rin almashadi",
+              "body_uz": "Gap **inkor yoki cheklovchi ravish** bilan boshlansa, keyingi qism **savol tartibida** bo'ladi: **ravish + yordamchi fe'l + ega + fe'l**.\nI have **never** seen... → **Never have I** seen...\nHe **rarely** calls. → **Rarely does he** call. (yordamchi fe'l yo'q bo'lsa — **do / does / did** qo'shiladi)\nAsosiy iboralar: **Never / Rarely / Seldom** · **Not only ... but (also)** · **Under no circumstances** · **No sooner had ... than** · **Hardly / Scarcely had ... when** · **Only by / Only when / Only after** · **Little did I know**.\n**if** siz shart: **Had I known** = If I had known · **Should you need** = If you need · **Were I you** = If I were you.\nXato: \"Not only he arrived late...\" — inversiya yo'q! To'g'ri: Not only **did he arrive** late...\nMaslahat: IELTS Writing/Speaking'da 1–2 marta ishlating — ortiqchasi sun'iy eshitiladi.",
+              "examples": [
+                {"en": "Not only is the city crowded, but it is also expensive.", "uz": "Shahar nafaqat gavjum, balki qimmat ham."},
+                {"en": "Little did I know that this trip would change my life.", "uz": "Bu sayohat hayotimni o'zgartirishini sira bilmagan edim."},
+                {"en": "No sooner had we sat down than the lights went out.", "uz": "Endigina o'tirgan edikki, chiroq o'chib qoldi."},
+                {"en": "Should you have any questions, please contact us.", "uz": "Savollaringiz bo'lsa, biz bilan bog'laning."}
+              ]
+            },
+            {"type": "choice", "q": "Rarely ___ such a beautiful sunset.", "options": ["I have seen", "have I seen", "I saw"], "answer": 1, "explain_uz": "Rarely + yordamchi fe'l + ega: **have I seen**."},
+            {"type": "choice", "q": "___ I known about the traffic, I would have left earlier.", "options": ["If", "Had", "Were"], "answer": 1, "explain_uz": "If I had known = **Had I known**."},
+            {"type": "gap", "text": "Not only ___ she speak French, but she also speaks Arabic.", "answer": ["does"], "uz": "U nafaqat fransuzcha, balki arabcha ham gapiradi.", "explain_uz": "Present Simple → **does** she speak."},
+            {"type": "gap", "text": "Under no circumstances ___ you leave the building during the exam.", "answer": ["should", "may", "can", "must"], "uz": "Imtihon paytida hech qanday holatda binodan chiqmasligingiz kerak.", "explain_uz": "Under no circumstances + **should** + you."},
+            {"type": "gap", "text": "No sooner had I arrived ___ the phone rang.", "answer": ["than"], "uz": "Endigina kelgan edimki, telefon jiringladi.", "explain_uz": "No sooner ... **than** (Hardly/Scarcely ... **when**)."},
+            {"type": "choice", "q": "Which sentence is correct?", "options": ["Only by working hard you will succeed.", "Only by working hard will you succeed.", "Only by working hard you succeed will."], "answer": 1, "explain_uz": "Only by... + **will you** succeed."},
+            {"type": "choice", "q": "Should you need help, ... — what does this mean?", "options": ["You must need help.", "If you need help", "You should help."], "answer": 1, "explain_uz": "**Should** you need = **If** you need (rasmiy)."},
+            {"type": "match", "pairs": [["seldom", "kamdan-kam"], ["unprecedented", "misli ko'rilmagan"], ["remarkable", "ajoyib"], ["emphasis", "urg'u"], ["breathtaking", "hayratlanarli"]]},
+            {"type": "order", "uz": "Bunday chiroyli manzarani hech qachon ko'rmaganman.", "words": ["Never", "have", "I", "seen", "such", "a", "beautiful", "view"], "answer": "Never have I seen such a beautiful view"},
+            {"type": "choice", "audio": true, "q": "What surprised the speaker?", "say": "Little did I realise how competitive the programme would be. Not only were there thousands of applicants, but most of them already had work experience.", "options": ["How easy the programme was", "How competitive the programme was", "How few applicants there were"], "answer": 1, "explain_uz": "\"Little did I realise how competitive the programme would be.\""},
+            {"type": "listen", "answer": ["Never have I felt so proud.", "Never have I felt so proud"], "uz": "Eshiting va yozing"},
+            {"type": "translate", "uz": "Men buni bilganimda, sizga aytgan bo'lardim. (Had bilan boshlang)", "answer": ["Had I known I would have told you", "Had I known this I would have told you", "Had I known that I would have told you", "Had I known, I would have told you", "Had I known about it I would have told you"], "explain_uz": "**Had I known**, I would have told you."},
+            {"type": "speak", "text": "Not only has technology changed the way we work, but it has also transformed the way we learn.", "uz": "Ovoz chiqarib ayting"},
+            {
+              "type": "write",
+              "prompt_uz": "Hayotingizdagi muhim voqea yoki yutuq haqida yozing (100+ so'z). Kamida 3 xil inversiya ishlating (Never have I..., Not only..., Little did I know..., Had I...).",
+              "prompt": "Describe an important moment or achievement in your life. Use at least three different inverted structures.",
+              "min_words": 100,
+              "example": "The day I received my university acceptance letter is one I will never forget. Little did I know, when I first started learning English at the age of fifteen, that it would one day take me abroad. Not only did I have to prepare for IELTS, but I also had to write essays and attend an online interview. There were moments when I almost gave up. Had my teacher not encouraged me, I would probably have stopped after my first disappointing score. When the email finally arrived, I read it three times. Never have I felt such a mixture of relief and excitement. Only then did I realise how much those two years of hard work had been worth."
+            }
+          ]
+        },
+        {
+          "slug": "c1-cleft",
+          "title": "What really matters is...",
+          "title_uz": "Cleft sentences: diqqatni bir joyga qaratish",
+          "goal_uz": "\"What I need is...\", \"It was ... that...\" tuzilmalari bilan gapdagi eng muhim qismni ajratib ko'rsatasiz — Speaking'da ravonlik va aniqlik uchun.",
+          "minutes": 13,
+          "words": [
+            {"en": "crucial", "uz": "hal qiluvchi, juda muhim", "ipa": "/ˈkruːʃl/", "ex": "Sleep is crucial for memory."},
+            {"en": "frustrating", "uz": "asabga tegadigan, umidsizlantiradigan", "ipa": "/frʌˈstreɪtɪŋ/", "ex": "Waiting in long queues is frustrating."},
+            {"en": "genuinely", "uz": "chin dildan, haqiqatan", "ipa": "/ˈdʒenjuɪnli/", "ex": "I'm genuinely interested in history."},
+            {"en": "motivation", "uz": "motivatsiya, ishtiyoq", "ipa": "/ˌməʊtɪˈveɪʃn/", "ex": "What keeps your motivation high?"},
+            {"en": "consistency", "uz": "izchillik, muntazamlik", "ipa": "/kənˈsɪstənsi/", "ex": "Consistency matters more than talent."},
+            {"en": "overwhelming", "uz": "bosib ketadigan, haddan ziyod", "ipa": "/ˌəʊvəˈwelmɪŋ/", "ex": "The amount of homework was overwhelming."},
+            {"en": "spark", "uz": "uchqun; qo'zg'atmoq", "ipa": "/spɑːk/", "ex": "A good teacher can spark your interest."},
+            {"en": "point out", "uz": "ta'kidlab o'tmoq, ko'rsatmoq", "ipa": "/pɔɪnt aʊt/", "ex": "She pointed out a mistake in my essay."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "dialogue",
+              "title": "Speaking Part 3: learning languages",
+              "context_uz": "IELTS imtihonchisi nomzoddan til o'rganish haqida chuqurroq so'rayapti.",
+              "lines": [
+                {"who": "Examiner", "en": "What do you think is the most important factor in learning a language?", "uz": "Sizningcha, til o'rganishda eng muhim omil nima?"},
+                {"who": "Candidate", "en": "Well, what most people assume is that talent matters most. But what really makes the difference, in my view, is consistency.", "uz": "Ko'pchilik iste'dod eng muhim deb o'ylaydi. Lekin menimcha, haqiqiy farqni izchillik yaratadi."},
+                {"who": "Examiner", "en": "Can you give an example?", "uz": "Misol keltira olasizmi?"},
+                {"who": "Candidate", "en": "Sure. It was my cousin who taught me this. She studied for just twenty minutes a day, but she never skipped a day. What impressed me was that she reached band seven in a year.", "uz": "Albatta. Buni menga xolamning qizi o'rgatgan. U kuniga atigi yigirma daqiqa o'qirdi, lekin bir kunni ham qoldirmasdi. Meni hayratga solgani — u bir yilda 7 ballga erishdi."},
+                {"who": "Examiner", "en": "And what about motivation?", "uz": "Motivatsiya-chi?"},
+                {"who": "Candidate", "en": "The thing about motivation is that it comes and goes. What keeps you going on difficult days is habit, not feelings.", "uz": "Motivatsiyaning o'ziga xosligi shundaki, u keladi-yu ketadi. Qiyin kunlarda sizni olg'a yetaklaydigan narsa — his-tuyg'u emas, odat."}
+              ]
+            },
+            {"type": "choice", "q": "According to the candidate, what matters most?", "options": ["Talent", "Consistency", "Motivation"], "answer": 1, "explain_uz": "\"what really makes the difference... is consistency\"."},
+            {"type": "choice", "q": "Why does the candidate mention their cousin?", "options": ["As an example of consistent study", "Because she was very talented", "Because she studied for hours every day"], "answer": 0, "explain_uz": "Kuniga 20 daqiqa, lekin har kuni — izchillik misoli."},
+            {
+              "type": "grammar",
+              "title_uz": "Cleft sentences — gapni \"bo'lib\" urg'u berish",
+              "body_uz": "Oddiy gapni ikki qismga bo'lib, **eng muhim ma'lumotni** ajratib ko'rsatamiz.\n**1. What-cleft**: **What + ega + fe'l + is/was + urg'uli qism**.\nI need a holiday. → **What I need is** a holiday.\nConsistency makes the difference. → **What makes the difference is** consistency.\n**2. It-cleft**: **It is/was + urg'uli qism + that/who + qolgan qism**.\nMy cousin taught me this. → **It was my cousin who** taught me this.\nI met her in Bukhara. → **It was in Bukhara that** I met her.\n**3. Boshqa shakllar**: **The thing (that) I like is...** · **The reason why... is that...** · **All I want is...** · **What happened was (that)...**\nHarakatga urg'u: **What I did was (to)** + fe'l — What I did was (to) call my teacher. Voqeaga urg'u: **What happened was (that)** I lost my keys.\nSpeaking'da bu tuzilmalar o'ylash uchun tabiiy vaqt beradi va Fluency/Grammar ballini oshiradi.",
+              "examples": [
+                {"en": "What I love about Samarkand is its history.", "uz": "Samarqandda menga yoqadigan narsa — uning tarixi."},
+                {"en": "It was the teacher who noticed the problem.", "uz": "Muammoni aynan o'qituvchi payqadi."},
+                {"en": "The reason why I chose medicine is that I want to help people.", "uz": "Tibbiyotni tanlaganimning sababi — odamlarga yordam berishni xohlayman."},
+                {"en": "All I need is a quiet place to study.", "uz": "Menga kerak bo'lgan yagona narsa — o'qish uchun tinch joy."}
+              ]
+            },
+            {"type": "choice", "q": "\"I need more practice.\" → What I need ___ more practice.", "options": ["are", "is", "it is"], "answer": 1, "explain_uz": "What-cleft'da odatda **is**."},
+            {"type": "choice", "q": "\"My father taught me to drive.\" — which cleft emphasises the person?", "options": ["What my father taught me was to drive.", "It was my father who taught me to drive.", "The thing was my father taught me."], "answer": 1, "explain_uz": "Shaxsga urg'u → **It was ... who**."},
+            {"type": "gap", "text": "It was in 2019 ___ I first visited London.", "answer": ["that", "when"], "uz": "Londonga birinchi marta aynan 2019-yilda borganman.", "explain_uz": "It was + vaqt + **that**."},
+            {"type": "gap", "text": "___ I find frustrating is the traffic in the city centre.", "answer": ["What"], "uz": "Meni asabiylashtiradigan narsa — shahar markazidagi tirbandlik.", "explain_uz": "**What** + ega + fe'l + is..."},
+            {"type": "gap", "text": "The reason ___ I study English is that I want to work abroad.", "answer": ["why"], "uz": "Ingliz tilini o'rganishimning sababi — chet elda ishlashni xohlayman.", "explain_uz": "The reason **why** ... is that..."},
+            {"type": "choice", "q": "Which sentence is correct?", "options": ["What I want it is a quiet life.", "What I want is a quiet life.", "What want I is a quiet life."], "answer": 1, "explain_uz": "What I want **is** — ortiqcha \"it\" yo'q."},
+            {"type": "match", "pairs": [["crucial", "hal qiluvchi"], ["consistency", "izchillik"], ["frustrating", "asabga tegadigan"], ["overwhelming", "haddan ziyod"], ["genuinely", "chin dildan"]]},
+            {"type": "order", "uz": "Menga kerak bo'lgan narsa — ko'proq uyqu.", "words": ["What", "I", "need", "is", "more", "sleep"], "answer": "What I need is more sleep"},
+            {"type": "choice", "audio": true, "q": "What does the speaker like most about their job?", "say": "People assume the salary is what keeps me in this job, but actually what I enjoy most is working with young people.", "options": ["The salary", "Working with young people", "The location"], "answer": 1, "explain_uz": "\"what I enjoy most is working with young people\"."},
+            {"type": "listen", "answer": ["What really matters is consistency.", "What really matters is consistency"], "uz": "Eshiting va yozing"},
+            {"type": "translate", "uz": "Meni hayratga solgan narsa — odamlarning mehmondo'stligi edi.", "answer": ["What surprised me was the hospitality of the people", "What surprised me was people's hospitality", "What impressed me was the hospitality of the people", "What amazed me was the hospitality of the people", "What surprised me was how hospitable the people were"], "explain_uz": "What + fe'l + **was** ..."},
+            {"type": "speak", "text": "What I find most interesting about my city is the way old and new buildings sit side by side.", "uz": "Ovoz chiqarib ayting"},
+            {
+              "type": "write",
+              "prompt_uz": "Speaking Part 3 savoliga yozma javob bering (100+ so'z): \"What makes a good teacher?\" Kamida 3 ta cleft sentence ishlating.",
+              "prompt": "What makes a good teacher? Answer as you would in Speaking Part 3, using at least three cleft sentences.",
+              "min_words": 100,
+              "example": "That's an interesting question. What many people think is that a good teacher simply needs deep knowledge of their subject. Knowledge is obviously important, but what really distinguishes a great teacher, in my opinion, is the ability to spark curiosity. It was my history teacher at school who showed me this. She rarely lectured; instead, she asked questions that made us argue and think. The reason why her lessons stayed with me is that she treated us as people with ideas, not as empty containers. All a student really needs, I think, is someone who believes they can improve."
+            }
+          ]
+        },
+        {
+          "slug": "c1-nominalisation",
+          "title": "The growth of cities",
+          "title_uz": "Nominalizatsiya: akademik uslub",
+          "goal_uz": "Fe'l va sifatlarni otga aylantirib (grow → growth), Writing Task 2 gaplarini qisqa, aniq va akademik qilasiz.",
+          "minutes": 14,
+          "words": [
+            {"en": "urbanisation", "uz": "urbanizatsiya, shaharlashuv", "ipa": "/ˌɜːbənaɪˈzeɪʃn/", "ex": "Rapid urbanisation creates new problems."},
+            {"en": "reliance", "uz": "tayanish, bog'liqlik", "ipa": "/rɪˈlaɪəns/", "ex": "Our reliance on cars is increasing."},
+            {"en": "deterioration", "uz": "yomonlashuv", "ipa": "/dɪˌtɪəriəˈreɪʃn/", "ex": "There has been a deterioration in air quality."},
+            {"en": "availability", "uz": "mavjudlik, foydalanish imkoniyati", "ipa": "/əˌveɪləˈbɪləti/", "ex": "The availability of cheap flights has changed tourism."},
+            {"en": "implementation", "uz": "amalga oshirish, joriy etish", "ipa": "/ˌɪmplɪmenˈteɪʃn/", "ex": "The implementation of the new law took two years."},
+            {"en": "detrimental", "uz": "zararli", "ipa": "/ˌdetrɪˈmentl/", "ex": "Smoking is detrimental to health."},
+            {"en": "consequence", "uz": "oqibat", "ipa": "/ˈkɒnsɪkwəns/", "ex": "Pollution is a consequence of rapid growth."},
+            {"en": "accessibility", "uz": "qulaylik, erishish imkoniyati", "ipa": "/əkˌsesəˈbɪləti/", "ex": "The accessibility of online courses has improved."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "reading",
+              "title": "Two versions of the same paragraph",
+              "text": "Version A (B1): Cities are growing very fast, and because of this, people are using cars more and more. When more people drive, the air gets worse, and many people get ill because they breathe dirty air.\n\nVersion B (C1): The rapid growth of cities has led to an increasing reliance on private vehicles. This rise in car use has, in turn, resulted in a serious deterioration in air quality, with a corresponding increase in respiratory illness among urban residents.",
+              "glossary": {"in turn": "o'z navbatida", "corresponding": "tegishli, mos ravishda", "respiratory illness": "nafas yo'li kasalligi", "residents": "aholi, yashovchilar", "private vehicles": "shaxsiy transport vositalari"},
+              "uz": "A varianti (B1): Shaharlar juda tez o'smoqda va shu sababli odamlar mashinadan tobora ko'proq foydalanmoqda. Ko'proq odam mashina haydasa, havo yomonlashadi va ko'p odamlar iflos havodan nafas olgani uchun kasal bo'ladi.\n\nB varianti (C1): Shaharlarning tez o'sishi shaxsiy transport vositalariga tayanishning ortishiga olib keldi. Avtomobildan foydalanishning bu o'sishi, o'z navbatida, havo sifatining jiddiy yomonlashuviga va shu bilan birga shahar aholisi orasida nafas yo'li kasalliklarining ko'payishiga sabab bo'ldi."
+            },
+            {"type": "choice", "q": "What is the main difference between Version A and Version B?", "options": ["B has different ideas.", "B expresses the same ideas using nouns instead of verbs.", "B is longer and more informal."], "answer": 1, "explain_uz": "G'oya bir xil — B'da fe'llar otlarga aylangan: growing → **growth**, gets worse → **deterioration**."},
+            {"type": "choice", "q": "Which phrase in Version B replaces \"people are using cars more and more\"?", "options": ["the rapid growth of cities", "an increasing reliance on private vehicles", "a corresponding increase"], "answer": 1, "explain_uz": "\"an increasing **reliance on** private vehicles\"."},
+            {
+              "type": "grammar",
+              "title_uz": "Nominalizatsiya — fe'ldan otga",
+              "body_uz": "Akademik ingliz tilida harakat ko'pincha **ot** bilan ifodalanadi. Bu gapni qisqa, ob'ektiv va zich qiladi.\n**Fe'l → ot**: grow → **growth** · increase → **an increase** · rely on → **reliance on** · develop → **development** · fail → **failure** · decide → **decision** · implement → **implementation**\n**Sifat → ot**: available → **availability** · important → **importance** · difficult → **difficulty** · accessible → **accessibility**\nTuzilma: **sifat + ot + of + ot**: Prices rose sharply. → **a sharp rise in prices**. The government decided quickly. → **the government's swift decision**.\nOt guruhi gapning **egasi** bo'ladi va keyin bog'lovchi fe'l keladi: **The rapid growth of cities has led to...** / **...has resulted in...** / **...is a major cause of...**\nEhtiyot bo'ling: har bir gapni nominalizatsiya qilmang — 1–2 abzatsda bir necha marta yetarli, aks holda matn og'ir o'qiladi.",
+              "examples": [
+                {"en": "Unemployment rose sharply. → There was a sharp rise in unemployment.", "uz": "Ishsizlik keskin oshdi."},
+                {"en": "People can easily access the internet. → The easy accessibility of the internet...", "uz": "Internetdan oson foydalanish imkoniyati..."},
+                {"en": "The government failed to act, which caused the crisis. → The government's failure to act caused the crisis.", "uz": "Hukumatning harakat qilmagani inqirozga sabab bo'ldi."},
+                {"en": "The introduction of fees has reduced the number of applicants.", "uz": "To'lovlarning joriy etilishi abituriyentlar sonini kamaytirdi."}
+              ]
+            },
+            {"type": "choice", "q": "develop → ?", "options": ["developing", "development", "developer"], "answer": 1, "explain_uz": "Jarayon oti: **development**."},
+            {"type": "choice", "q": "Which is the most academic?", "options": ["Because people rely on phones, they sleep less.", "Reliance on smartphones has been linked to reduced sleep.", "People use phones a lot so they don't sleep."], "answer": 1, "explain_uz": "Ot guruhi (**Reliance on smartphones**) ega bo'lgan, ob'ektiv uslub."},
+            {"type": "gap", "text": "There has been a sharp ___ in house prices. (rise)", "answer": ["rise", "increase"], "uz": "Uy narxlarida keskin o'sish kuzatildi.", "explain_uz": "a sharp **rise in** + ot."},
+            {"type": "gap", "text": "The ___ of the new law took three years. (implement)", "answer": ["implementation"], "uz": "Yangi qonunni joriy etish uch yil davom etdi.", "explain_uz": "implement → **implementation**."},
+            {"type": "gap", "text": "Our increasing ___ on technology is a cause for concern. (rely)", "answer": ["reliance", "dependence"], "uz": "Texnologiyaga tobora ko'proq tayanishimiz xavotirga sabab bo'lmoqda.", "explain_uz": "rely on → **reliance on**."},
+            {"type": "choice", "q": "\"Air quality has got much worse.\" — best academic version:", "options": ["Air quality has deteriorated significantly.", "Air quality is very bad now.", "The air is getting worse and worse."], "answer": 0, "explain_uz": "**deteriorate** / **a significant deterioration in** air quality."},
+            {"type": "match", "pairs": [["reliance", "tayanish"], ["deterioration", "yomonlashuv"], ["consequence", "oqibat"], ["detrimental", "zararli"], ["availability", "mavjudlik"]]},
+            {"type": "order", "uz": "Shaharlarning tez o'sishi tirbandlikka olib keldi.", "words": ["The", "rapid", "growth", "of", "cities", "has", "led", "to", "congestion"], "answer": "The rapid growth of cities has led to congestion"},
+            {"type": "choice", "audio": true, "q": "What has caused the decline in local shops?", "say": "The widespread availability of online shopping has been a major factor in the decline of small local shops.", "options": ["High rents", "Online shopping", "Lack of customers' money"], "answer": 1, "explain_uz": "\"The widespread availability of online shopping\"."},
+            {"type": "listen", "answer": ["This has resulted in a deterioration in air quality.", "This has resulted in a deterioration in air quality"], "uz": "Eshiting va yozing"},
+            {"type": "translate", "uz": "Ishsizlikning ortishi jinoyatchilikning ko'payishiga olib keldi.", "answer": ["The rise in unemployment has led to an increase in crime", "The increase in unemployment has led to a rise in crime", "The rise in unemployment led to an increase in crime", "The growth in unemployment has led to an increase in crime", "Rising unemployment has led to an increase in crime"], "explain_uz": "**The rise in** unemployment + **has led to** + **an increase in** crime."},
+            {"type": "speak", "text": "The widespread availability of smartphones has had a significant impact on the way young people communicate.", "uz": "Ovoz chiqarib ayting"},
+            {
+              "type": "write",
+              "prompt_uz": "Quyidagi oddiy matnni nominalizatsiya yordamida akademik uslubda qayta yozing (80+ so'z): \"Lots of young people are moving to big cities because they want jobs. Because of this, villages are getting smaller and older people live alone. Also, cities are getting very crowded and houses cost a lot.\"",
+              "prompt": "Rewrite the paragraph in an academic style using nominalisation.",
+              "min_words": 80,
+              "example": "The migration of young people to large cities in search of employment has had significant consequences for both rural and urban areas. In the countryside, this movement has resulted in a steady decline in village populations and an increase in the number of elderly people living alone. In cities, meanwhile, the rapid growth of the population has led to severe overcrowding and a sharp rise in the cost of housing. The lack of affordable accommodation is now a major concern for many urban residents."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -39,7 +39,7 @@ class ContentTests(TestCase):
 class StoryContentTests(TestCase):
     def test_stories_are_valid_and_cover_every_level(self):
         self.assertEqual(validate_stories(), [])
-        self.assertEqual({s['level'] for s in get_stories().values()}, {'A1', 'A2', 'B1', 'B2'})
+        self.assertEqual({s['level'] for s in get_stories().values()}, {'A1', 'A2', 'B1', 'B2', 'C1'})
 
 
 class PracticeTests(TestCase):
@@ -87,7 +87,7 @@ class PracticeTests(TestCase):
 class PlacementTests(TestCase):
     def test_placement_file_is_well_formed(self):
         test = get_placement()
-        self.assertEqual([b['level'] for b in test['blocks']], ['A1', 'A2', 'B1', 'B2'])
+        self.assertEqual([b['level'] for b in test['blocks']], ['A1', 'A2', 'B1', 'B2', 'C1'])
         for block in test['blocks']:
             for q in block['questions']:
                 self.assertTrue(0 <= q['answer'] < len(q['options']), q['q'])
@@ -98,7 +98,8 @@ class PlacementTests(TestCase):
         self.assertEqual(placement_level(test, {}), 'A1')
         self.assertEqual(placement_level(test, {'0': right['0']}), 'A2')
         self.assertEqual(placement_level(test, {'0': right['0'], '1': right['1'], '2': [-1] * 6}), 'B1')
-        self.assertEqual(placement_level(test, right), 'B2')
+        self.assertEqual(placement_level(test, {**right, '3': [-1] * 6}), 'B2')
+        self.assertEqual(placement_level(test, right), 'C1')
 
 
 class SrsTests(TestCase):

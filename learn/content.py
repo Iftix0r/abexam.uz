@@ -19,12 +19,13 @@ from pathlib import Path
 
 from django.conf import settings
 
-LEVELS = ['A1', 'A2', 'B1', 'B2']
+LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1']
 LEVEL_INFO = {
     'A1': {'name': "Boshlang'ich", 'ielts': '—', 'desc': "Salomlashish, o'zingiz haqingizda, kundalik oddiy gaplar."},
     'A2': {'name': "Elementar", 'ielts': '3.0–3.5', 'desc': "Kundalik hayot, xarid, sayohat, o'tgan voqealar."},
     'B1': {'name': "O'rta", 'ielts': '4.0–5.0', 'desc': "Fikr bildirish, tajriba, rejalar, ish va o'qish."},
     'B2': {'name': "O'rtadan yuqori", 'ielts': '5.5–6.5', 'desc': "IELTS uchun akademik lug'at, bog'lovchilar, grafik tasvirlash."},
+    'C1': {'name': "Ilg'or", 'ielts': '7.0–8.0', 'desc': "IELTS 7+ uchun: murakkab grammatika, akademik uslub, nozik ma'no farqlari va idiomalar."},
 }
 
 # Steps the player can render. Exercise steps count toward the lesson score.

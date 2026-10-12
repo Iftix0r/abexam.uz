@@ -1,0 +1,197 @@
+{
+  "level": "C1",
+  "units": [
+    {
+      "slug": "c1-ielts-seven-plus",
+      "title": "IELTS 7+ skills",
+      "title_uz": "IELTS 7+ ko'nikmalari",
+      "icon": "trophy",
+      "lessons": [
+        {
+          "slug": "c1-tfng",
+          "title": "True, False or Not Given?",
+          "title_uz": "Reading: True / False / Not Given",
+          "goal_uz": "IELTS Reading'ning eng qiyin savol turini yechasiz: cheklovchi so'zlar (some, most, always, may) ma'noni qanday o'zgartirishini sezasiz.",
+          "minutes": 15,
+          "words": [
+            {"en": "claim", "uz": "da'vo; da'vo qilmoq", "ipa": "/kleɪm/", "ex": "The writer claims that sleep improves memory."},
+            {"en": "contradict", "uz": "zid kelmoq, inkor qilmoq", "ipa": "/ˌkɒntrəˈdɪkt/", "ex": "The results contradict earlier studies."},
+            {"en": "evidence", "uz": "dalil", "ipa": "/ˈevɪdəns/", "ex": "There is no evidence for this theory."},
+            {"en": "participant", "uz": "ishtirokchi", "ipa": "/pɑːˈtɪsɪpənt/", "ex": "Over two hundred participants took part."},
+            {"en": "significantly", "uz": "sezilarli darajada", "ipa": "/sɪɡˈnɪfɪkəntli/", "ex": "Scores improved significantly."},
+            {"en": "assume", "uz": "faraz qilmoq, deb hisoblamoq", "ipa": "/əˈsjuːm/", "ex": "Don't assume — check the text."},
+            {"en": "exclusively", "uz": "faqat, mutlaqo", "ipa": "/ɪkˈskluːsɪvli/", "ex": "The course is exclusively online."},
+            {"en": "slightly", "uz": "biroz, ozgina", "ipa": "/ˈslaɪtli/", "ex": "Prices rose slightly."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "reading",
+              "title": "Sleep and learning",
+              "text": "For decades, teachers have assumed that students who stay up late to revise perform better in exams. A recent study at a university in Finland suggests the opposite. Researchers followed 240 first-year students over one academic year. Participants who slept at least seven hours a night achieved significantly higher marks than those who regularly slept less than six. Interestingly, the effect was strongest in mathematics and slightly weaker in language subjects. The researchers do not claim that sleep alone guarantees success; students who slept well also tended to have more regular study habits. However, they argue that the common practice of sacrificing sleep before exams may do more harm than good.",
+              "glossary": {"stay up late": "kech yotmoq", "revise": "takrorlamoq (imtihonga)", "the opposite": "aksi", "academic year": "o'quv yili", "guarantees": "kafolatlaydi", "tended to": "... ga moyil edi", "sacrificing": "qurbon qilish", "do more harm than good": "foydadan ko'ra zarari ko'p"},
+              "uz": "O'n yillar davomida o'qituvchilar imtihonga kech yotib tayyorlanadigan talabalar yaxshiroq natija ko'rsatadi deb hisoblab kelgan. Finlandiyadagi universitetda o'tkazilgan yaqindagi tadqiqot buning aksini ko'rsatmoqda. Tadqiqotchilar bir o'quv yili davomida 240 nafar birinchi kurs talabasini kuzatdi. Kechasi kamida yetti soat uxlagan ishtirokchilar muntazam olti soatdan kam uxlaganlarga qaraganda sezilarli darajada yuqori baho oldi. Qizig'i shundaki, ta'sir matematikada eng kuchli, til fanlarida esa biroz zaifroq bo'ldi. Tadqiqotchilar faqat uyquning o'zi muvaffaqiyatni kafolatlaydi deb da'vo qilishmaydi; yaxshi uxlagan talabalarning o'qish odatlari ham ko'proq muntazam bo'lgan. Biroq ular imtihon oldidan uyquni qurbon qilish odati foydadan ko'ra ko'proq zarar keltirishi mumkinligini ta'kidlaydi."
+            },
+            {"type": "choice", "q": "The study took place over one academic year.", "options": ["True", "False", "Not Given"], "answer": 0, "explain_uz": "\"over one academic year\" — matn bilan aynan mos → **True**."},
+            {"type": "choice", "q": "The effect of sleep was strongest in language subjects.", "options": ["True", "False", "Not Given"], "answer": 1, "explain_uz": "Matnda: eng kuchli — **matematikada**, tilda esa zaifroq. Matnga zid → **False**."},
+            {
+              "type": "grammar",
+              "title_uz": "T / F / NG: cheklovchi so'zlarga e'tibor",
+              "body_uz": "**True** — matn bir xil ma'noni aytadi (ko'pincha boshqa so'zlar bilan — parafraz).\n**False** — matn **teskarisini** aytadi. Matnda zid dalil bor.\n**Not Given** — matnda bu haqda **ma'lumot yo'q**: tasdiqlab ham, inkor qilib ham bo'lmaydi.\nEng ko'p tuzoq — **cheklovchi so'zlar**. Bitta so'z javobni o'zgartiradi:\n**all / every** ≠ **most / many** ≠ **some** · **always** ≠ **often** ≠ **sometimes** · **will / proves** ≠ **may / suggests** · **only / exclusively** ≠ **mainly**\nMatn: \"Most students improved.\" Savol: \"**All** students improved.\" → **False**.\nMatn: \"Sleep **may** help.\" Savol: \"Sleep **guarantees** success.\" → **False** (yoki matnda inkor bo'lsa).\nO'z bilimingizdan foydalanmang! Faqat matnda yozilganga tayaning.\nFalse va Not Given farqi: \"Matnda bunga **qarshi** gap bormi?\" Bor → False. Yo'q → Not Given.",
+              "examples": [
+                {"en": "Text: Many visitors come in summer. Statement: Most visitors come in summer. → Not Given", "uz": "\"ko'p\" ≠ \"ko'pchilik\" — matn yetarli ma'lumot bermaydi."},
+                {"en": "Text: The bridge was completed in 1998. Statement: The bridge was finished before 2000. → True", "uz": "Parafraz: completed = finished, 1998 < 2000."},
+                {"en": "Text: The drug may reduce pain. Statement: The drug always reduces pain. → False", "uz": "may ≠ always — matn kafolat bermaydi."},
+                {"en": "Text: The museum is open daily. Statement: The museum is free. → Not Given", "uz": "Narx haqida ma'lumot yo'q."}
+              ]
+            },
+            {"type": "choice", "needs_text": true, "q": "All the students in the study slept at least seven hours a night.", "options": ["True", "False", "Not Given"], "answer": 1, "explain_uz": "Matnda olti soatdan kam uxlaganlar ham bor → **False**."},
+            {"type": "choice", "needs_text": true, "q": "The study was paid for by the Finnish government.", "options": ["True", "False", "Not Given"], "answer": 2, "explain_uz": "Moliyalashtirish haqida hech narsa yo'q → **Not Given**."},
+            {"type": "choice", "needs_text": true, "q": "The researchers believe sleep alone guarantees success.", "options": ["True", "False", "Not Given"], "answer": 1, "explain_uz": "\"The researchers do not claim that sleep alone guarantees success\" → **False**."},
+            {"type": "choice", "needs_text": true, "q": "Students who slept well tended to study more regularly.", "options": ["True", "False", "Not Given"], "answer": 0, "explain_uz": "\"also tended to have more regular study habits\" → **True** (parafraz)."},
+            {"type": "choice", "q": "Text: \"Some experts disagree.\" Statement: \"Experts all agree.\"", "options": ["True", "False", "Not Given"], "answer": 1, "explain_uz": "some disagree ↔ all agree — zid → **False**."},
+            {"type": "gap", "text": "If the text says nothing about the statement, the answer is ___ Given.", "answer": ["Not"], "uz": "Matnda ma'lumot bo'lmasa, javob — Not Given.", "explain_uz": "**Not** Given."},
+            {"type": "gap", "text": "Text: \"Prices rose slightly.\" Statement: \"Prices rose dramatically.\" → ___", "answer": ["False"], "uz": "slightly ≠ dramatically.", "explain_uz": "Zid ma'no → **False**."},
+            {"type": "match", "pairs": [["contradict", "zid kelmoq"], ["evidence", "dalil"], ["assume", "faraz qilmoq"], ["exclusively", "faqat"], ["slightly", "biroz"]]},
+            {"type": "order", "uz": "Matnda bu haqda hech qanday ma'lumot yo'q.", "words": ["The", "text", "gives", "no", "information", "about", "this"], "answer": "The text gives no information about this"},
+            {"type": "choice", "audio": true, "q": "Statement: \"The library is open every day.\" Is it True, False or Not Given?", "say": "The library is open from Monday to Saturday, from nine in the morning until eight in the evening.", "options": ["True", "False", "Not Given"], "answer": 1, "explain_uz": "Yakshanba kuni yopiq → \"every day\" noto'g'ri → **False**."},
+            {"type": "listen", "answer": ["The results contradict earlier studies.", "The results contradict earlier studies"], "uz": "Eshiting va yozing"},
+            {"type": "translate", "uz": "Tadqiqot uyqu xotirani yaxshilashi mumkinligini ko'rsatadi.", "answer": ["The study suggests that sleep may improve memory", "The study shows that sleep may improve memory", "The research suggests that sleep may improve memory", "The study suggests sleep may improve memory", "The study shows that sleep can improve memory"], "explain_uz": "**suggests** + **may** — ehtiyotkor akademik ifoda."},
+            {"type": "speak", "text": "The researchers do not claim that sleep alone guarantees success.", "uz": "Ovoz chiqarib ayting"},
+            {
+              "type": "write",
+              "prompt_uz": "Yuqoridagi matn asosida o'zingiz 4 ta T/F/NG gap tuzing (har biridan kamida bittadan) va har birining javobini matndan dalil bilan tushuntiring.",
+              "prompt": "Write four True/False/Not Given statements about the text and explain each answer with evidence from the text.",
+              "min_words": 80,
+              "example": "1. The researchers studied first-year students. — True, because the text says they followed 240 first-year students. 2. Teachers have always believed that sleep is more important than revision. — False, because the text says teachers assumed that staying up late to revise was better. 3. The students who slept less than six hours failed their exams. — Not Given, because the text only says their marks were lower, not that they failed. 4. Most of the students were studying mathematics. — Not Given, because the text does not say which subjects the students studied."
+            }
+          ]
+        },
+        {
+          "slug": "c1-concession",
+          "title": "While it is true that...",
+          "title_uz": "Writing: qarshi fikrni tan olib, rad etish",
+          "goal_uz": "Inshoda qarshi fikrni tan olib (concession), keyin uni ishonarli rad etasiz — Task Response va Coherence uchun 7+ darajadagi uslub.",
+          "minutes": 15,
+          "words": [
+            {"en": "admittedly", "uz": "tan olish kerakki", "ipa": "/ədˈmɪtɪdli/", "ex": "Admittedly, the plan is expensive."},
+            {"en": "nevertheless", "uz": "shunga qaramay", "ipa": "/ˌnevəðəˈles/", "ex": "It was raining. Nevertheless, we went out."},
+            {"en": "outweigh", "uz": "ustun kelmoq (og'irroq bo'lmoq)", "ipa": "/ˌaʊtˈweɪ/", "ex": "The benefits outweigh the costs."},
+            {"en": "valid", "uz": "asosli, o'rinli", "ipa": "/ˈvælɪd/", "ex": "That is a valid point."},
+            {"en": "drawback", "uz": "kamchilik", "ipa": "/ˈdrɔːbæk/", "ex": "The main drawback is the cost."},
+            {"en": "overstate", "uz": "bo'rttirmoq", "ipa": "/ˌəʊvəˈsteɪt/", "ex": "The risks are often overstated."},
+            {"en": "compelling", "uz": "ishonarli, kuchli", "ipa": "/kəmˈpelɪŋ/", "ex": "There is compelling evidence for this."},
+            {"en": "notwithstanding", "uz": "... ga qaramay", "ipa": "/ˌnɒtwɪθˈstændɪŋ/", "ex": "Notwithstanding the cost, the project was approved."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "reading",
+              "title": "Model paragraph: should university be free?",
+              "text": "Opponents of free university education argue that it places an unfair burden on taxpayers, many of whom never attended university themselves. Admittedly, this is a valid concern: funding higher education for everyone would require significant public spending. Nevertheless, I would argue that the long-term benefits far outweigh this drawback. Graduates typically earn higher salaries and therefore pay considerably more in taxes over their lifetimes, which means that much of the initial investment is eventually returned. Moreover, a better-educated workforce attracts foreign investment and drives innovation, benefiting even those who did not study themselves. While it is true that free education is expensive in the short term, it is, in my view, one of the most effective investments a country can make.",
+              "glossary": {"opponents": "raqiblar, qarshi chiquvchilar", "burden": "yuk", "taxpayers": "soliq to'lovchilar", "public spending": "davlat xarajatlari", "lifetimes": "umr davomida", "initial investment": "dastlabki sarmoya", "workforce": "ishchi kuchi", "drives innovation": "innovatsiyani harakatlantiradi"},
+              "uz": "Bepul oliy ta'limga qarshi chiquvchilar bu soliq to'lovchilarga — ularning ko'pchiligi o'zi universitetda o'qimagan — adolatsiz yuk bo'ladi, deb ta'kidlaydi. Tan olish kerakki, bu asosli xavotir: hamma uchun oliy ta'limni moliyalashtirish katta davlat xarajatlarini talab qiladi. Shunga qaramay, menimcha, uzoq muddatli foydalar bu kamchilikdan ancha ustun. Bitiruvchilar odatda ko'proq maosh oladi va shu sababli umr davomida ancha ko'p soliq to'laydi, demak dastlabki sarmoyaning katta qismi oxir-oqibat qaytadi. Bundan tashqari, yaxshi ta'lim olgan ishchi kuchi xorijiy sarmoyani jalb qiladi va innovatsiyani harakatlantiradi — bu hatto o'zi o'qimaganlarga ham foyda keltiradi. Bepul ta'lim qisqa muddatda qimmat ekani rost bo'lsa-da, menimcha, bu mamlakat qila oladigan eng samarali sarmoyalardan biridir."
+            },
+            {"type": "choice", "q": "What is the writer's position?", "options": ["University should not be free.", "University should be free.", "The writer has no clear opinion."], "answer": 1, "explain_uz": "\"the long-term benefits far outweigh this drawback\" — yozuvchi bepul ta'lim tarafdori."},
+            {"type": "choice", "q": "Why does the writer mention the taxpayers' argument?", "options": ["To agree with it completely", "To acknowledge it and then argue against it", "To change the topic"], "answer": 1, "explain_uz": "Bu — **concession**: qarshi fikrni tan olib, keyin rad etish."},
+            {
+              "type": "grammar",
+              "title_uz": "Concession + rebuttal — tan olish va rad etish",
+              "body_uz": "7+ ball inshoda faqat o'z fikringizni emas, **qarshi fikrni ham ko'rib chiqasiz** va nega u kuchsizroq ekanini ko'rsatasiz.\nTuzilma: **1) qarshi fikr → 2) tan olish → 3) rad etish (o'z fikringiz + dalil)**.\n**Bitta gap ichida** (+ vergul): **While / Although / Even though** it is true that X, Y. · **Despite / In spite of / Notwithstanding** + **ot / -ing**: Despite **the cost**... (\"Despite it is expensive\" — xato!)\n**Ikki gap orqali**: **Admittedly, / It is true that / Granted,** X. **Nevertheless, / However, / Even so,** Y.\nRad etish iboralari: **the benefits outweigh the drawbacks** · **this argument overlooks the fact that...** · **this concern is somewhat overstated**.\nMaslahat: qarshi fikrni hurmat bilan bering (\"a valid concern\") — bu yozuvchini ob'ektiv ko'rsatadi.",
+              "examples": [
+                {"en": "While it is true that online learning is flexible, it cannot fully replace face-to-face interaction.", "uz": "Onlayn ta'lim moslashuvchan ekani rost bo'lsa-da, u yuzma-yuz muloqotni to'liq almashtira olmaydi."},
+                {"en": "Admittedly, nuclear power is risky. Nevertheless, it produces almost no carbon emissions.", "uz": "Tan olish kerakki, atom energiyasi xavfli. Shunga qaramay, u deyarli karbonat chiqindisi chiqarmaydi."},
+                {"en": "Despite the high initial cost, solar panels save money in the long run.", "uz": "Dastlabki narxi baland bo'lishiga qaramay, quyosh panellari uzoq muddatda pul tejaydi."},
+                {"en": "This argument, however, overlooks the fact that most crime is committed by repeat offenders.", "uz": "Biroq bu dalil ko'p jinoyatlarni takroriy jinoyatchilar sodir etishini e'tiborsiz qoldiradi."}
+              ]
+            },
+            {"type": "choice", "q": "___ the high cost, the project was a success.", "options": ["Although", "Despite", "Nevertheless"], "answer": 1, "explain_uz": "the high cost — ot → **Despite**."},
+            {"type": "choice", "q": "Which sentence is correct?", "options": ["Despite it was cold, we swam.", "Although it was cold, we swam.", "Nevertheless it was cold, we swam."], "answer": 1, "explain_uz": "To'liq gap (ega + fe'l) → **Although**."},
+            {"type": "gap", "text": "___, the plan has some drawbacks. Nevertheless, it is worth trying.", "answer": ["Admittedly", "Granted", "Of course", "Undoubtedly"], "uz": "Tan olish kerakki, rejaning ba'zi kamchiliklari bor. Shunga qaramay, sinab ko'rishga arziydi.", "explain_uz": "Gap boshida tan olish: **Admittedly,**"},
+            {"type": "gap", "text": "In my view, the benefits of tourism far ___ the disadvantages.", "answer": ["outweigh"], "uz": "Menimcha, turizmning foydalari kamchiliklaridan ancha ustun.", "explain_uz": "benefits **outweigh** drawbacks."},
+            {"type": "gap", "text": "___ it is true that cars are convenient, they are a major source of pollution.", "answer": ["While", "Although", "Though", "Whilst"], "uz": "Mashinalar qulay ekani rost bo'lsa-da, ular ifloslanishning asosiy manbai.", "explain_uz": "**While** it is true that..., ..."},
+            {"type": "choice", "q": "Which is the best rebuttal?", "options": ["This is wrong and stupid.", "This argument, however, overlooks the long-term savings.", "I don't like this idea."], "answer": 1, "explain_uz": "Akademik, hurmatli va dalilga asoslangan."},
+            {"type": "match", "pairs": [["admittedly", "tan olish kerakki"], ["nevertheless", "shunga qaramay"], ["outweigh", "ustun kelmoq"], ["drawback", "kamchilik"], ["compelling", "ishonarli"]]},
+            {"type": "order", "uz": "Foydalar kamchiliklardan ancha ustun.", "words": ["The", "benefits", "far", "outweigh", "the", "drawbacks"], "answer": "The benefits far outweigh the drawbacks"},
+            {"type": "choice", "audio": true, "q": "What is the speaker's final opinion about homework?", "say": "Admittedly, too much homework can cause stress. Even so, I believe a reasonable amount helps children develop independence and good study habits.", "options": ["Homework should be banned.", "A reasonable amount of homework is useful.", "Children need much more homework."], "answer": 1, "explain_uz": "\"Even so, I believe a reasonable amount helps...\""},
+            {"type": "listen", "answer": ["Admittedly, this is a valid concern.", "Admittedly this is a valid concern", "Admittedly, this is a valid concern"], "uz": "Eshiting va yozing"},
+            {"type": "translate", "uz": "Narxi baland bo'lishiga qaramay, ko'p odamlar elektromobil sotib olmoqda.", "answer": ["Despite the high price many people are buying electric cars", "Despite the high cost many people are buying electric cars", "Despite the high price, many people are buying electric cars", "In spite of the high price many people are buying electric cars", "Although the price is high many people are buying electric cars"], "explain_uz": "**Despite** + ot (the high price)."},
+            {"type": "speak", "text": "While it is true that technology can be distracting, the benefits for education clearly outweigh the drawbacks.", "uz": "Ovoz chiqarib ayting"},
+            {
+              "type": "write",
+              "prompt_uz": "Task 2 uchun bitta asosiy paragraf yozing (130+ so'z): \"Some people think that children should not use smartphones until they are 14. To what extent do you agree?\" Qarshi fikrni tan oling (Admittedly / While it is true that) va uni rad eting.",
+              "prompt": "Some people think that children should not be allowed to use smartphones until they are 14. To what extent do you agree or disagree? Write one body paragraph with a concession and a rebuttal.",
+              "min_words": 130,
+              "example": "Those who support a ban argue that smartphones expose children to harmful content and reduce the time they spend playing outside. Admittedly, these are valid concerns, and there is compelling evidence that excessive screen time can affect sleep and concentration. Nevertheless, I would argue that a complete ban is neither realistic nor desirable. In today's world, smartphones are essential tools for communication and learning; a child without one may feel excluded from classmates and miss out on valuable educational apps. Moreover, a ban simply delays the problem: a fourteen-year-old who receives a phone with no prior guidance is arguably more vulnerable than a younger child who has learned to use it responsibly under parental supervision. While it is true that unlimited access is harmful, the solution lies in sensible limits and digital education rather than prohibition."
+            }
+          ]
+        },
+        {
+          "slug": "c1-idioms",
+          "title": "Speaking naturally: idioms",
+          "title_uz": "Speaking: idiomalar va tabiiy iboralar",
+          "goal_uz": "Speaking'da Lexical Resource ballini oshiradigan, tabiiy eshitiladigan idiomalarni o'rganasiz va ularni o'rinli ishlatishni bilib olasiz.",
+          "minutes": 13,
+          "words": [
+            {"en": "a piece of cake", "uz": "juda oson (narsa)", "ipa": "/ə piːs əv keɪk/", "ex": "The first part of the test was a piece of cake."},
+            {"en": "once in a blue moon", "uz": "juda kam, yilda bir marta", "ipa": "/wʌns ɪn ə bluː muːn/", "ex": "I eat fast food once in a blue moon."},
+            {"en": "hit the books", "uz": "jiddiy o'qishga kirishmoq", "ipa": "/hɪt ðə bʊks/", "ex": "I need to hit the books before my exam."},
+            {"en": "get the hang of", "uz": "ko'nikib olmoq, eplab qolmoq", "ipa": "/ɡet ðə hæŋ əv/", "ex": "Driving was hard at first, but I got the hang of it."},
+            {"en": "a blessing in disguise", "uz": "yomonlikda yaxshilik bor", "ipa": "/ə ˈblesɪŋ ɪn dɪsˈɡaɪz/", "ex": "Losing that job was a blessing in disguise."},
+            {"en": "on the same page", "uz": "bir fikrda, bir xil tushunchada", "ipa": "/ɒn ðə seɪm peɪdʒ/", "ex": "Let's make sure we're on the same page."},
+            {"en": "the tip of the iceberg", "uz": "muammoning ko'rinib turgan kichik qismi", "ipa": "/ðə tɪp əv ðiː ˈaɪsbɜːɡ/", "ex": "These problems are just the tip of the iceberg."},
+            {"en": "go the extra mile", "uz": "kutilganidan ham ko'proq harakat qilmoq", "ipa": "/ɡəʊ ðiː ˈekstrə maɪl/", "ex": "Good teachers always go the extra mile."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "dialogue",
+              "title": "Speaking Part 1 & 2: studies and work",
+              "context_uz": "Nomzod imtihonchiga o'qishi va birinchi ish tajribasi haqida gapirib beryapti.",
+              "lines": [
+                {"who": "Examiner", "en": "Do you find your studies easy?", "uz": "O'qishingiz sizga osonmi?"},
+                {"who": "Candidate", "en": "Not exactly. Some subjects are a piece of cake, but statistics is a different story. Before exams I really have to hit the books.", "uz": "Unchalik emas. Ba'zi fanlar juda oson, lekin statistika boshqa gap. Imtihon oldidan jiddiy o'qishga majbur bo'laman."},
+                {"who": "Examiner", "en": "Do you often go to the cinema?", "uz": "Kinoga tez-tez borasizmi?"},
+                {"who": "Candidate", "en": "Only once in a blue moon, to be honest. I usually watch films at home.", "uz": "Rostini aytsam, juda kam. Odatda filmlarni uyda ko'raman."},
+                {"who": "Examiner", "en": "Tell me about your first job.", "uz": "Birinchi ishingiz haqida gapirib bering."},
+                {"who": "Candidate", "en": "I worked in a call centre. At first it was overwhelming, but after a couple of weeks I got the hang of it. Actually, being rejected by my dream company the month before turned out to be a blessing in disguise, because my manager there went the extra mile to train me.", "uz": "Men qo'ng'iroqlar markazida ishlaganman. Avvaliga juda og'ir edi, lekin bir-ikki haftadan keyin ko'nikib oldim. Aslida, bir oy oldin orzuimdagi kompaniya meni rad etgani yaxshilikka bo'ldi, chunki u yerdagi rahbarim meni o'rgatish uchun kutilganidan ham ko'proq harakat qildi."}
+              ]
+            },
+            {"type": "choice", "q": "How often does the candidate go to the cinema?", "options": ["Very often", "Very rarely", "Every weekend"], "answer": 1, "explain_uz": "\"once in a blue moon\" = juda kam."},
+            {"type": "choice", "q": "Why was the rejection \"a blessing in disguise\"?", "options": ["Because the candidate got more money", "Because it led to a job with a very helpful manager", "Because the candidate stopped working"], "answer": 1, "explain_uz": "Rad etilish yomon edi, lekin yaxshi rahbarli ishga olib keldi."},
+            {
+              "type": "grammar",
+              "title_uz": "Idiomalarni to'g'ri ishlatish qoidalari",
+              "body_uz": "IELTS Speaking'da **Lexical Resource** 7+ uchun \"less common and idiomatic vocabulary\" kerak — lekin **o'rinli** bo'lishi shart.\n**1. Aniq shaklda ishlating**: idiomalar o'zgarmaydi. \"a piece of **a** cake\", \"once in a **blue** moons\" — xato!\n**2. Faqat Speaking'da**: Writing Task 2 rasmiy — u yerda \"a piece of cake\" emas, **straightforward** yozing.\n**3. Ko'p emas**: bitta javobda 1–2 ta yetarli. Har gapda idioma — sun'iy va ball pasayadi.\n**4. Klişelardan qoching**: \"It's raining cats and dogs\" — imtihonchilar buni yodlangan deb biladi.\n**5. Fe'lni zamon bo'yicha o'zgartiring**: I **got** the hang of it · She **went** the extra mile · I'**m hitting** the books.\nBog'lash uchun: **to be honest**, **as they say**, **actually** — idiomani tabiiy kiritadi.",
+              "examples": [
+                {"en": "To be honest, the interview was a piece of cake.", "uz": "Rostini aytsam, suhbat juda oson o'tdi."},
+                {"en": "It took me a while, but I eventually got the hang of cooking.", "uz": "Biroz vaqt oldi, lekin oxiri ovqat pishirishga ko'nikdim."},
+                {"en": "Traffic jams are just the tip of the iceberg.", "uz": "Tirbandlik — muammoning faqat ko'rinib turgan qismi."},
+                {"en": "Before we start, let's make sure we're all on the same page.", "uz": "Boshlashdan oldin, hammamiz bir fikrda ekanimizga ishonch hosil qilaylik."}
+              ]
+            },
+            {"type": "choice", "q": "Which sentence uses the idiom correctly?", "options": ["The exam was a piece of a cake.", "The exam was a piece of cake.", "The exam was piece of cakes."], "answer": 1, "explain_uz": "Aniq shakl: **a piece of cake**."},
+            {"type": "choice", "q": "Where should you NOT use \"a piece of cake\"?", "options": ["In Speaking Part 1", "In an informal chat", "In a Writing Task 2 essay"], "answer": 2, "explain_uz": "Writing Task 2 — rasmiy uslub."},
+            {"type": "gap", "text": "I didn't understand chess at first, but now I've got the ___ of it.", "answer": ["hang"], "uz": "Avval shaxmatni tushunmasdim, lekin endi ko'nikib oldim.", "explain_uz": "get the **hang** of."},
+            {"type": "gap", "text": "I only visit my hometown once in a blue ___.", "answer": ["moon"], "uz": "Ona shahrimga juda kam boraman.", "explain_uz": "once in a blue **moon**."},
+            {"type": "gap", "text": "Our teacher always goes the extra ___ to help us.", "answer": ["mile"], "uz": "O'qituvchimiz bizga yordam berish uchun doim kutilganidan ham ko'p harakat qiladi.", "explain_uz": "go the extra **mile**."},
+            {"type": "choice", "q": "\"The problems you can see are just the tip of the iceberg.\" This means:", "options": ["The problems are small and unimportant.", "There are much bigger hidden problems.", "The problems are about ice."], "answer": 1, "explain_uz": "Ko'rinib turgani — kichik qism, asosiysi yashirin."},
+            {"type": "match", "pairs": [["a piece of cake", "juda oson"], ["hit the books", "jiddiy o'qimoq"], ["on the same page", "bir fikrda"], ["a blessing in disguise", "yomonlikda yaxshilik"], ["once in a blue moon", "juda kam"]]},
+            {"type": "order", "uz": "Imtihon oldidan jiddiy o'qishim kerak.", "words": ["I", "need", "to", "hit", "the", "books", "before", "the", "exam"], "answer": "I need to hit the books before the exam"},
+            {"type": "choice", "audio": true, "q": "How did the speaker feel about missing the flight in the end?", "say": "Missing that flight was a blessing in disguise. I met my future business partner while I was waiting at the airport.", "options": ["It was a disaster.", "It turned out to be a good thing.", "It didn't matter."], "answer": 1, "explain_uz": "\"a blessing in disguise\" — oxiri yaxshi bo'ldi."},
+            {"type": "listen", "answer": ["It was a blessing in disguise.", "It was a blessing in disguise"], "uz": "Eshiting va yozing"},
+            {"type": "translate", "uz": "Avvaliga qiyin edi, lekin tez orada ko'nikib oldim.", "answer": ["It was difficult at first but I soon got the hang of it", "It was hard at first but I soon got the hang of it", "At first it was difficult but I soon got the hang of it", "It was difficult at first, but I soon got the hang of it", "At first it was hard but I soon got the hang of it"], "explain_uz": "**got the hang of it** (o'tgan zamon)."},
+            {"type": "speak", "text": "To be honest, learning to drive wasn't a piece of cake, but I got the hang of it after a few weeks.", "uz": "Ovoz chiqarib ayting"},
+            {
+              "type": "write",
+              "prompt_uz": "Speaking Part 2 uchun javob tayyorlang (120+ so'z): \"Describe a skill that was difficult to learn.\" 3–4 ta idiomani o'rinli ishlating.",
+              "prompt": "Describe a skill that was difficult for you to learn. Say what it was, why you learned it, how you learned it, and how you feel about it now.",
+              "min_words": 120,
+              "example": "I'd like to talk about learning to touch-type, which means typing without looking at the keyboard. I decided to learn it in my first year at university because I was spending hours typing essays with two fingers. Honestly, I assumed it would be a piece of cake, but the first two weeks were incredibly frustrating — I was actually slower than before. I used a free website and practised for fifteen minutes every evening, even when I didn't feel like it. After about a month, I finally got the hang of it. Looking back, the slow start was a blessing in disguise, because it forced me to build a daily habit. Now I can type about sixty words a minute, and it saves me so much time when I have to hit the books before deadlines."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,34 +1,40 @@
 # Session state (auto-saved — last known reality)
 
-_Updated: 2026-10-12 13:24:08_  ·  branch: `main`
+_Updated: 2026-10-12 13:39:22_  ·  branch: `main`
 
 ## Uncommitted changes
 ```
  M .anchor/session-state.md
- M templates/learn/lesson.html
-?? data/learn/A1-03-daily-life.json
-?? data/learn/A2-03-shopping-home.json
-?? data/learn/B1-04-world-today.json
-?? data/learn/B2-03-academic-english.json
-?? data/learn/stories/a1-birthday-cake.json
-?? data/learn/stories/a1-first-day.json
-?? data/learn/stories/a2-samarkand-trip.json
-?? data/learn/stories/a2-snow-day.json
-?? data/learn/stories/b1-app-idea.json
-?? data/learn/stories/b1-marathon.json
-?? data/learn/stories/b2-aral-sea.json
-?? data/learn/stories/b2-band-seven.json
+ M data/learn/placement/test.json
+ M learn/content.py
+ M learn/models.py
+ M learn/services.py
+ M learn/tests.py
+ M templates/learn/hub.html
+ M templates/learn/placement.html
+?? data/learn/C1-02-ielts-seven-plus.json
+?? data/learn/C1.json
+?? data/learn/stories/c1-mahalla.json
+?? data/learn/stories/c1-translator.json
+?? learn/migrations/0003_c1_level.py
 ```
 
 Diff stat:
 ```
- .anchor/session-state.md    | 34 +++++++++++++---------------------
- templates/learn/lesson.html |  4 ++--
- 2 files changed, 15 insertions(+), 23 deletions(-)
+ .anchor/session-state.md       | 47 ++++++++++++------------------------------
+ data/learn/placement/test.json | 11 ++++++++++
+ learn/content.py               |  3 ++-
+ learn/models.py                |  2 +-
+ learn/services.py              |  4 +++-
+ learn/tests.py                 |  7 ++++---
+ templates/learn/hub.html       |  4 ++--
+ templates/learn/placement.html |  3 ++-
+ 8 files changed, 38 insertions(+), 43 deletions(-)
 ```
 
 ## Recent commits
 ```
+14e1cfb 2qwged
 5dde6ac 1234sdd
 44c4316 dwaff
 cf65399 asffsev
@@ -36,7 +42,6 @@ cf65399 asffsev
 e20eefd dwqawf
 2ec2bee wefgeg
 c07d6d8 wfesgrh
-46dbc03 efskfsj i ho
 ```
 
 ## Resume

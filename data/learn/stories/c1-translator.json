@@ -1,0 +1,50 @@
+{
+  "slug": "c1-translator",
+  "level": "C1",
+  "order": 1,
+  "emoji": "🖋️",
+  "minutes": 8,
+  "title": "The last translator",
+  "title_uz": "So'nggi tarjimon",
+  "paragraphs": [
+    {
+      "en": "For thirty years, Dilorom Saidova had translated novels from English into Uzbek. She was, by most accounts, one of the finest literary translators in the country, and her version of a well-known American novel had been read by an entire generation of students. So when her publisher called to say that the next book would be translated \"with the help of software\", she assumed there had been a misunderstanding.",
+      "uz": "O'ttiz yil davomida Dilorom Saidova ingliz tilidan o'zbek tiliga romanlar tarjima qilgan edi. Ko'pchilikning fikricha, u mamlakatdagi eng mohir badiiy tarjimonlardan biri edi, uning mashhur bir Amerika romani tarjimasini esa butun bir avlod talabalari o'qigan. Shu sababli nashriyot qo'ng'iroq qilib, keyingi kitob \"dastur yordamida\" tarjima qilinishini aytganida, u nimadir noto'g'ri tushunilgan deb o'yladi."
+    },
+    {
+      "en": "There had not. The plan, the editor explained apologetically, was for a machine to produce a first draft in a matter of hours, which Dilorom would then \"polish\". She would be paid a third of her usual fee. What hurt her most was not the money, but the word polish — as though the soul of a book were a layer of dust that could simply be wiped away.",
+      "uz": "Yo'q, noto'g'ri tushunilmagan edi. Muharrir uzr so'ragan ohangda tushuntirganidek, reja bo'yicha mashina bir necha soat ichida dastlabki qoralamani tayyorlaydi, Dilorom esa uni \"sayqallaydi\". Unga odatdagi haqining uchdan biri to'lanadi. Uni eng ko'p og'ritgan narsa pul emas, \"sayqallash\" so'zi edi — go'yo kitobning ruhi shunchaki artib tashlash mumkin bo'lgan chang qatlamidek."
+    },
+    {
+      "en": "Reluctantly, she agreed to look at the draft. To her surprise, it was not bad. The grammar was flawless and the meaning was, for the most part, accurate. Yet something was missing. When a character in the novel said, \"I'm fine,\" in a way that clearly meant she was falling apart, the machine translated the words perfectly and missed the woman entirely.",
+      "uz": "U istamaygina qoralamani ko'rib chiqishga rozi bo'ldi. Hayratlanarlisi, u yomon emas edi. Grammatika benuqson, ma'no esa asosan to'g'ri edi. Shunga qaramay, nimadir yetishmasdi. Romandagi bir qahramon \"Men yaxshiman\" deb, aslida ichdan sinayotganini aniq ko'rsatib aytganida, mashina so'zlarni mukammal tarjima qildi-yu, ayolning o'zini butunlay boy berdi."
+    },
+    {
+      "en": "Dilorom spent four months on the book — exactly as long as she would have spent translating it from scratch. Line by line, she restored the hesitations, the humour, the silences between words. When the editor complained about the delay, she replied that she had not polished the translation; she had rewritten it, because a book is not a list of sentences but a voice.",
+      "uz": "Dilorom kitob ustida to'rt oy ishladi — xuddi uni noldan tarjima qilganida qancha vaqt sarflasa, shuncha. Satrma-satr u ikkilanishlarni, hazilni, so'zlar orasidagi sukutni qayta tikladi. Muharrir kechikishdan shikoyat qilganida, u tarjimani sayqallamaganini, balki qayta yozganini aytdi, chunki kitob — gaplar ro'yxati emas, balki ovozdir."
+    },
+    {
+      "en": "The novel was a success, and reviewers praised the \"warmth\" of the translation. Not one of them mentioned the machine. Dilorom still uses the software today — for checking terminology and saving time on dull technical passages. \"It's a remarkable tool,\" she says. \"But a tool is only as good as the hand that holds it. The day we forget that is the day literature becomes merely text.\"",
+      "uz": "Roman muvaffaqiyat qozondi, taqrizchilar tarjimaning \"iliqligini\" maqtashdi. Ularning birortasi ham mashinani tilga olmadi. Dilorom bugun ham dasturdan foydalanadi — atamalarni tekshirish va zerikarli texnik parchalarda vaqt tejash uchun. \"Bu ajoyib vosita,\" deydi u. \"Lekin vosita uni ushlab turgan qo'l qanchalik yaxshi bo'lsa, shunchalik yaxshi. Buni unutgan kunimiz adabiyot shunchaki matnga aylanadi.\""
+    }
+  ],
+  "glossary": {
+    "by most accounts": "ko'pchilikning fikricha",
+    "literary": "badiiy, adabiy",
+    "apologetically": "uzr so'ragan holda",
+    "draft": "qoralama",
+    "polish": "sayqallamoq",
+    "reluctantly": "istamaygina",
+    "flawless": "benuqson",
+    "falling apart": "ichdan sinmoq, buzilmoq",
+    "from scratch": "noldan",
+    "hesitations": "ikkilanishlar",
+    "merely": "shunchaki, faqat"
+  },
+  "questions": [
+    {"q": "What upset Dilorom most about the publisher's plan?", "options": ["The lower fee", "The suggestion that her work was just \"polishing\"", "The short deadline"], "answer": 1},
+    {"q": "What was the main weakness of the machine translation?", "options": ["Grammar mistakes", "Wrong meanings of words", "It lost the emotion and voice behind the words"], "answer": 2},
+    {"q": "Why did the book take four months?", "options": ["She rewrote the translation rather than just correcting it.", "The software kept crashing.", "She was ill."], "answer": 0},
+    {"q": "What is Dilorom's attitude to the software now?", "options": ["She refuses to use it.", "She uses it as a tool for limited tasks.", "She believes it can replace translators."], "answer": 1}
+  ]
+}

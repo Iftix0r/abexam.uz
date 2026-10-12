@@ -24,7 +24,7 @@
     .ln-btn-ghost { background: var(--tint-a); color: var(--text-color); border: 1px solid var(--border-color); }
     .ln-btn:hover { filter: brightness(1.05); }
 
-    .ln-levels { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 22px; }
+    .ln-levels { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 22px; }
     .ln-level { position: relative; display: block; text-decoration: none; color: var(--text-color); background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; padding: 12px 14px; transition: var(--transition); }
     .ln-level:hover { border-color: var(--primary-color); }
     .ln-level.active { border: 2px solid var(--primary-color); padding: 11px 13px; }
@@ -102,7 +102,7 @@
         .ln-side { position: static; }
     }
     @media (max-width: 600px) {
-        .ln-levels { grid-template-columns: repeat(2, 1fr); }
+        .ln-levels { grid-template-columns: repeat(3, 1fr); }
         .ln-duo { grid-template-columns: 1fr; }
         .ln-continue { flex-direction: column; align-items: flex-start; }
         .ln-hero h1 { font-size: 1.5rem; }

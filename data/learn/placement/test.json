@@ -44,6 +44,17 @@
         {"audio": true, "say": "Overall, unemployment fell steadily over the decade, despite a slight rise in 2015.", "q": "What happened to unemployment in 2015?", "options": ["It fell sharply.", "It rose slightly.", "It remained stable."], "answer": 1},
         {"q": "If I ___ more time, I would learn another language.", "options": ["have", "had", "will have"], "answer": 1}
       ]
+    },
+    {
+      "level": "C1",
+      "questions": [
+        {"q": "Not only ___ late, but he also forgot the documents.", "options": ["he arrived", "did he arrive", "he did arrive"], "answer": 1},
+        {"q": "___ I known about the problem, I would have helped.", "options": ["If", "Had", "Should"], "answer": 1},
+        {"q": "The government has introduced measures to ___ the impact of air pollution.", "options": ["mitigate", "militate", "mediate"], "answer": 0},
+        {"q": "Which sentence is the most formal and academic?", "options": ["Lots of people think cars are bad.", "It is widely believed that private vehicles have a detrimental effect on the environment.", "People think cars are really, really bad for nature."], "answer": 1},
+        {"audio": true, "say": "While the policy was initially welcomed, critics have since argued that its benefits were somewhat overstated.", "q": "What do critics now say about the policy?", "options": ["It was a complete failure.", "Its benefits were exaggerated.", "It was never welcomed."], "answer": 1},
+        {"q": "What I find most surprising ___ how quickly the city has changed.", "options": ["are", "is", "being"], "answer": 1}
+      ]
     }
   ]
 }
