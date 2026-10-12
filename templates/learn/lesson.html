@@ -317,14 +317,35 @@
         const vs = window.speechSynthesis ? speechSynthesis.getVoices() : [];
         voice = vs.find(v => /en-GB/i.test(v.lang) && /female|Google UK English Female|Libby|Sonia/i.test(v.name))
              || vs.find(v => /en-GB/i.test(v.lang)) || vs.find(v => /^en/i.test(v.lang)) || null;
+        return vs.length > 0;
     }
     if (window.speechSynthesis) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
-    function speak(text, rate, onend) {
-        if (!window.speechSynthesis) { onend && onend(); return; }
-        speechSynthesis.cancel();
+    let noAudioHinted = false;
+    function noAudioHint() {
+        if (noAudioHinted) return;
+        noAudioHinted = true;
+        const anchor = body.querySelector('.lp-big-play');
+        if (anchor && !body.querySelector('.lp-no-audio')) {
+            const note = document.createElement('p');
+            note.className = 'lp-hint lp-no-audio';
+            note.textContent = "Qurilmangiz ovozli o'qishni qo'llamayapti. \"Yordam\" tugmasi orqali davom eting.";
+            anchor.insertAdjacentElement('afterend', note);
+        }
+    }
+    function speak(text, rate, onend, _retried) {
+        if (!window.speechSynthesis) { onend && onend(); noAudioHint(); return; }
+        // Voices can still be loading right after page load; give pickVoice one retry.
+        if (!_retried && speechSynthesis.getVoices().length === 0 && !pickVoice()) {
+            setTimeout(() => speak(text, rate, onend, true), 300);
+            return;
+        }
+        // Calling cancel() unconditionally right before speak() can silently drop
+        // the utterance on some Chrome builds; only cancel an utterance in flight.
+        if (speechSynthesis.speaking || speechSynthesis.pending) speechSynthesis.cancel();
         const u = new SpeechSynthesisUtterance(text);
         u.lang = 'en-GB'; u.rate = (rate || 0.95) * (slow ? 0.75 : 1); if (voice) u.voice = voice;
         if (onend) u.onend = onend;
+        u.onerror = () => { onend && onend(); noAudioHint(); };
         speechSynthesis.speak(u);
     }
 
