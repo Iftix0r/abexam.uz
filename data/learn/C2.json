@@ -1,0 +1,198 @@
+{
+  "level": "C2",
+  "title_uz": "Mukammal daraja",
+  "order": 6,
+  "units": [
+    {
+      "slug": "c2-mastery",
+      "title": "Precision and style",
+      "title_uz": "Aniqlik va uslub",
+      "icon": "crown",
+      "lessons": [
+        {
+          "slug": "c2-past-deduction",
+          "title": "It must have been...",
+          "title_uz": "O'tmish haqida taxmin: must have, can't have, needn't have",
+          "goal_uz": "O'tmishdagi voqealar haqida aniq darajadagi ishonch bilan taxmin qilasiz (must / might / can't have + V3) va keraksiz qilingan ishni needn't have bilan ifodalaysiz.",
+          "minutes": 14,
+          "words": [
+            {"en": "speculate", "uz": "taxmin qilmoq, faraz yuritmoq", "ipa": "/ˈspekjuleɪt/", "ex": "Historians can only speculate about why the city was abandoned."},
+            {"en": "abandon", "uz": "tashlab ketmoq", "ipa": "/əˈbændən/", "ex": "The village was abandoned in the 1950s."},
+            {"en": "plausible", "uz": "ishonarli, ehtimolga yaqin", "ipa": "/ˈplɔːzəbl/", "ex": "That's a plausible explanation."},
+            {"en": "far-fetched", "uz": "aqlga sig'maydigan, uzoqdan olib kelingan", "ipa": "/ˌfɑː ˈfetʃt/", "ex": "The theory sounds far-fetched."},
+            {"en": "conclusive", "uz": "qat'iy, shubhasiz (dalil)", "ipa": "/kənˈkluːsɪv/", "ex": "There is no conclusive evidence."},
+            {"en": "excavation", "uz": "qazishma", "ipa": "/ˌekskəˈveɪʃn/", "ex": "The excavation revealed ancient coins."},
+            {"en": "in all likelihood", "uz": "katta ehtimol bilan", "ipa": "/ɪn ɔːl ˈlaɪklihʊd/", "ex": "In all likelihood, the fire was an accident."},
+            {"en": "rule out", "uz": "istisno qilmoq", "ipa": "/ruːl aʊt/", "ex": "We can't rule out the possibility of an earthquake."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "reading",
+              "title": "The mystery of the abandoned city",
+              "text": "When archaeologists began excavating the ruins near the Amu Darya, they found something puzzling: the houses were full of everyday objects — pots, tools, even jewellery. The inhabitants must have left in a hurry; people who move away gradually take their valuables with them. But why? Some researchers have suggested that an invading army might have attacked the city. However, there is no sign of fire or violence, so a military attack can't have been the cause. A more plausible theory is that the river changed its course. If that was the case, the fields would have dried up within a single season, and the people may well have had no choice but to leave. Without written records, nothing is conclusive. In all likelihood, though, it was water — not war — that emptied the city.",
+              "glossary": {"puzzling": "jumboqli, tushunarsiz", "inhabitants": "aholi, yashovchilar", "in a hurry": "shoshilib", "gradually": "asta-sekin", "valuables": "qimmatbaho buyumlar", "invading": "bostirib kirgan", "changed its course": "o'zanini o'zgartirdi", "no choice but to": "... dan boshqa iloji yo'q"},
+              "uz": "Arxeologlar Amudaryo yaqinidagi xarobalarni qazishni boshlaganlarida, jumboqli narsaga duch kelishdi: uylar kundalik buyumlar — idishlar, asboblar, hatto zargarlik buyumlariga to'la edi. Aholi shoshilib ketgan bo'lsa kerak; asta-sekin ko'chib ketadigan odamlar qimmatbaho narsalarini olib ketadi. Lekin nega? Ba'zi tadqiqotchilar shaharga bosqinchi qo'shin hujum qilgan bo'lishi mumkin, deb taxmin qilgan. Biroq yong'in yoki zo'ravonlik izi yo'q, demak harbiy hujum sabab bo'lgan bo'lishi mumkin emas. Ishonarliroq nazariya — daryo o'zanini o'zgartirgan. Agar shunday bo'lgan bo'lsa, dalalar bir mavsum ichida qurib qolgan va odamlarning ketishdan boshqa iloji qolmagan bo'lishi juda mumkin. Yozma manbalarsiz hech narsa qat'iy emas. Ammo katta ehtimol bilan shaharni urush emas, suv bo'shatgan."
+            },
+            {"type": "choice", "q": "Why do researchers believe the inhabitants left in a hurry?", "options": ["The houses were burnt.", "They left their valuables behind.", "Written records say so."], "answer": 1, "explain_uz": "\"people who move away gradually take their valuables with them\"."},
+            {"type": "choice", "q": "Why does the writer reject the theory of an attack?", "options": ["There is no sign of fire or violence.", "The city had a strong army.", "The river protected the city."], "answer": 0, "explain_uz": "\"there is no sign of fire or violence, so a military attack can't have been the cause\"."},
+            {
+              "type": "grammar",
+              "title_uz": "Modal + have + V3: ishonch darajasi",
+              "body_uz": "O'tmish haqida taxmin: **modal + have + V3**. Modal tanlovi — **qanchalik ishonchingiz** borligini ko'rsatadi.\n**must have** (~95%, mantiqiy xulosa): They **must have left** in a hurry.\n**may well have / probably** (~70%): They **may well have had** no choice.\n**might / may / could have** (~40%, imkoniyat): An army **might have attacked**.\n**can't / couldn't have** (~0%, mantiqan imkonsiz): It **can't have been** an attack.\nXato: \"mustn't have\" taxmin uchun ishlatilmaydi — inkor mantiqiy xulosa **can't have**!\n**could have** yana bir ma'no: amalga oshmagan imkoniyat — You **could have told** me! (Aytsangiz bo'lardi-ku!)\n**needn't have + V3** — ish **qilingan**, lekin keraksiz edi: I **needn't have brought** an umbrella (olib keldim, yomg'ir yog'madi).\n**didn't need to + fe'l** — kerak emas edi (ko'pincha qilinmagan): I **didn't need to** bring one, so I didn't.",
+              "examples": [
+                {"en": "You must have been exhausted after such a long flight.", "uz": "Shunday uzoq parvozdan keyin juda charchagan bo'lsangiz kerak."},
+                {"en": "She can't have seen my message — she would have replied.", "uz": "U xabarimni ko'rgan bo'lishi mumkin emas — aks holda javob yozardi."},
+                {"en": "The letter might have been lost in the post.", "uz": "Xat pochtada yo'qolgan bo'lishi mumkin."},
+                {"en": "We needn't have cooked so much — half the guests didn't come.", "uz": "Shuncha ko'p ovqat pishirmasak ham bo'lardi — mehmonlarning yarmi kelmadi."}
+              ]
+            },
+            {"type": "choice", "q": "His car isn't here. He ___ already.", "options": ["must have left", "mustn't have left", "can have left"], "answer": 0, "explain_uz": "Mantiqiy xulosa → **must have left**."},
+            {"type": "choice", "q": "Ali's eyes are red and he keeps yawning. He ___ well last night.", "options": ["can't have slept", "must have slept", "needn't have slept"], "answer": 0, "explain_uz": "Dalillar yaxshi uxlamaganini ko'rsatadi → **can't have slept**."},
+            {"type": "gap", "text": "Tom can't ___ been at the party — he was in London that night.", "answer": ["have"], "uz": "Tom ziyofatda bo'lishi mumkin emas — o'sha kecha Londonda edi.", "explain_uz": "can't **have** + V3."},
+            {"type": "gap", "text": "We ___ have taken a taxi — the station was only five minutes away.", "answer": ["needn't", "need not", "didn't need to"], "uz": "Taksi olmasak ham bo'lardi — vokzal atigi besh daqiqalik yo'l ekan.", "explain_uz": "Qilingan, lekin keraksiz → **needn't have** taken."},
+            {"type": "gap", "text": "The window is broken. Someone must have ___ it. (break)", "answer": ["broken"], "uz": "Deraza singan. Kimdir uni sindirgan bo'lsa kerak.", "explain_uz": "break → broke → **broken**."},
+            {"type": "choice", "q": "Which sentence expresses criticism of a missed opportunity?", "options": ["You could have told me you were coming!", "You must have told me.", "You can't have told me."], "answer": 0, "explain_uz": "**could have** + V3 = qilish mumkin edi, lekin qilinmadi (tanqid)."},
+            {"type": "choice", "q": "Which is the most cautious (least certain)?", "options": ["It must have been an accident.", "It might have been an accident.", "It can't have been an accident."], "answer": 1, "explain_uz": "**might have** — eng past ishonch."},
+            {"type": "match", "pairs": [["plausible", "ishonarli"], ["far-fetched", "aqlga sig'maydigan"], ["conclusive", "qat'iy"], ["rule out", "istisno qilmoq"], ["speculate", "taxmin qilmoq"]]},
+            {"type": "order", "uz": "Ular shoshilib ketgan bo'lsa kerak.", "words": ["They", "must", "have", "left", "in", "a", "hurry"], "answer": "They must have left in a hurry"},
+            {"type": "choice", "audio": true, "q": "What does the speaker conclude about the keys?", "say": "I can't have left the keys in the car, because I remember locking it. I might have dropped them at the café, though.", "options": ["They are definitely in the car.", "They are not in the car; maybe at the café.", "They are definitely at the café."], "answer": 1, "explain_uz": "\"can't have left... in the car\" + \"might have dropped them at the café\"."},
+            {"type": "listen", "answer": ["It can't have been an accident.", "It can't have been an accident", "It cannot have been an accident"], "uz": "Eshiting va yozing"},
+            {"type": "translate", "uz": "U xabarimni ko'rmagan bo'lsa kerak.", "answer": ["She can't have seen my message", "He can't have seen my message", "She must not have seen my message", "She couldn't have seen my message", "He couldn't have seen my message", "He must not have seen my message"], "explain_uz": "Ingliz (British) tilida tabiiy shakl: **can't have seen**."},
+            {"type": "speak", "text": "In all likelihood, the river changed its course, and the people must have had no choice but to leave.", "uz": "Ovoz chiqarib ayting"},
+            {
+              "type": "write",
+              "prompt_uz": "Sirli bir vaziyatni tasavvur qiling (masalan: ertalab ofisga keldingiz — eshik ochiq, kompyuter yoniq, hech kim yo'q). Nima bo'lgan bo'lishi mumkinligi haqida 120+ so'z yozing: must / might / may well / can't have va kamida bitta needn't have ishlating.",
+              "prompt": "You arrive at the office one morning: the door is open, a computer is on, and a cup of coffee is still warm, but nobody is there. Speculate about what might have happened.",
+              "min_words": 120,
+              "example": "When I arrived at the office this morning, the door was wide open and the lights were on, but there was nobody inside. Someone must have been there very recently, because a cup of coffee on Aziz's desk was still warm. It can't have been a burglar — nothing was missing, and a thief would hardly have stopped to make coffee. In all likelihood, Aziz had come in early and then rushed out for some reason. He may well have received an urgent call; his phone charger was still plugged in, which suggests he left in a hurry. He might even have gone to help his sister, who is expecting a baby. Twenty minutes later he walked in, smiling, with a box of pastries — he had simply popped out to the bakery. I needn't have worried at all."
+            }
+          ]
+        },
+        {
+          "slug": "c2-register",
+          "title": "Formal or informal?",
+          "title_uz": "Register: rasmiy va norasmiy uslub",
+          "goal_uz": "Bir xil fikrni vaziyatga qarab rasmiy yoki norasmiy uslubda ifodalaysiz: frazali fe'l ↔ lotincha fe'l, to'g'ridan-to'g'ri ↔ yumshatilgan so'rov.",
+          "minutes": 14,
+          "words": [
+            {"en": "register", "uz": "uslub darajasi (rasmiy/norasmiy)", "ipa": "/ˈredʒɪstə/", "ex": "The register of an email depends on the reader."},
+            {"en": "enquire", "uz": "so'rab bilmoq (rasmiy)", "ipa": "/ɪnˈkwaɪə/", "ex": "I am writing to enquire about the position."},
+            {"en": "postpone", "uz": "keyinga qoldirmoq", "ipa": "/pəˈspəʊn/", "ex": "The meeting has been postponed."},
+            {"en": "commence", "uz": "boshlamoq (rasmiy)", "ipa": "/kəˈmens/", "ex": "The ceremony will commence at noon."},
+            {"en": "regrettably", "uz": "afsuski (rasmiy)", "ipa": "/rɪˈɡretəbli/", "ex": "Regrettably, we are unable to offer you a place."},
+            {"en": "convey", "uz": "yetkazmoq, ifodalamoq", "ipa": "/kənˈveɪ/", "ex": "Please convey my thanks to your team."},
+            {"en": "colloquial", "uz": "so'zlashuv uslubidagi", "ipa": "/kəˈləʊkwiəl/", "ex": "\"Gonna\" is too colloquial for an essay."},
+            {"en": "at your earliest convenience", "uz": "imkon qadar tezroq (rasmiy)", "ipa": "/ət jɔːr ˈɜːliɪst kənˈviːniəns/", "ex": "Please reply at your earliest convenience."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "reading",
+              "title": "One message, two registers",
+              "text": "Message to a friend:\nHey Sam! Bad news — they've put off the conference till March, so I won't be coming over next week after all. Gutted! Can you let the others know? I'll sort out a new date once I hear back from them. Speak soon!\n\nEmail to a conference organiser:\nDear Ms Clarke,\nThank you for informing me that the conference has been postponed until March. Regrettably, this means I will no longer be able to travel to London next week as planned. I would be grateful if you could convey my apologies to the panel. I will confirm my availability for the new date as soon as I receive further details.\nYours sincerely,\nNodira Yusupova",
+              "glossary": {"put off": "keyinga qoldirmoq (norasmiy)", "after all": "oxir-oqibat, axir", "gutted": "juda xafa (so'zlashuv)", "let ... know": "xabar bermoq", "sort out": "hal qilmoq, tartibga solmoq", "hear back": "javob olmoq", "availability": "bo'sh vaqt, imkoniyat"},
+              "uz": "Do'stga xabar:\nSalom, Sem! Yomon xabar — konferensiyani martga qoldirishibdi, demak keyingi hafta kelolmayman. Juda xafaman! Boshqalarga aytib qo'ya olasanmi? Ulardan javob olishim bilan yangi sanani hal qilaman. Gaplashamiz!\n\nKonferensiya tashkilotchisiga xat:\nHurmatli Klark xonim,\nKonferensiya martga ko'chirilgani haqida xabar berganingiz uchun rahmat. Afsuski, bu rejalashtirilganidek keyingi hafta Londonga bora olmasligimni anglatadi. Hay'atga uzrlarimni yetkazsangiz, minnatdor bo'lardim. Yangi sana bo'yicha batafsil ma'lumot olishim bilan bo'sh vaqtimni tasdiqlayman.\nHurmat bilan,\nNodira Yusupova"
+            },
+            {"type": "choice", "q": "Which formal word in the email replaces \"put off\"?", "options": ["postponed", "informed", "planned"], "answer": 0, "explain_uz": "put off (norasmiy) = **postpone** (rasmiy)."},
+            {"type": "choice", "q": "In the email, \"I would be grateful if you could convey my apologies\" is the formal version of:", "options": ["Gutted!", "Can you let the others know?", "Speak soon!"], "answer": 1, "explain_uz": "To'g'ridan-to'g'ri so'rov → yumshatilgan rasmiy so'rov."},
+            {
+              "type": "grammar",
+              "title_uz": "Register'ni boshqarish",
+              "body_uz": "C2 darajasining belgisi — grammatik to'g'rilik emas, **vaziyatga mos uslub**.\n**1. Frazali fe'l → bir so'zli (lotincha) fe'l**: put off → **postpone** · find out → **discover / ascertain** · set up → **establish** · go up → **increase** · look into → **investigate** · ask about → **enquire about** · start → **commence**.\n**2. So'rovni yumshatish**: Can you...? → **Could you possibly...?** → **I would be grateful if you could...** → **I would appreciate it if...**\n**3. Shaxssiz tuzilmalar**: We made a mistake. → **An error was made.** · You haven't paid. → **Payment has not yet been received.**\n**4. Qisqartmalardan qoching**: won't → **will not**, can't → **cannot** (rasmiy yozuvda).\n**5. So'zlashuv so'zlari** (gutted, gonna, stuff, a bit, really) rasmiy matnga kirmaydi.\nAksincha ham xato: do'stga \"I am writing to enquire...\" deb yozish — g'alati va sovuq eshitiladi. IELTS General Task 1'da register alohida baholanadi!",
+              "examples": [
+                {"en": "We need to look into the problem. → The matter requires investigation.", "uz": "Muammoni o'rganib chiqishimiz kerak."},
+                {"en": "Prices went up a lot. → Prices increased considerably.", "uz": "Narxlar ancha oshdi."},
+                {"en": "Send it to me ASAP. → Please send it at your earliest convenience.", "uz": "Imkon qadar tezroq yuboring."},
+                {"en": "Sorry, but we can't help. → Regrettably, we are unable to assist on this occasion.", "uz": "Afsuski, bu safar yordam bera olmaymiz."}
+              ]
+            },
+            {"type": "choice", "q": "Formal equivalent of \"find out\":", "options": ["ascertain", "look up", "sort out"], "answer": 0, "explain_uz": "find out → **ascertain / discover** (rasmiy)."},
+            {"type": "choice", "q": "Which sentence is appropriate in a formal complaint?", "options": ["Your staff were really rude and stuff.", "I was extremely disappointed by the attitude of your staff.", "Your staff were a bit rubbish, to be honest."], "answer": 1, "explain_uz": "Rasmiy, aniq, so'zlashuv so'zlarisiz."},
+            {"type": "gap", "text": "I am writing to ___ about the vacancy advertised on your website.", "answer": ["enquire", "inquire"], "uz": "Saytingizda e'lon qilingan bo'sh ish o'rni haqida so'rash uchun yozyapman.", "explain_uz": "ask → **enquire** (rasmiy)."},
+            {"type": "gap", "text": "The ceremony will ___ at 10 a.m. sharp.", "answer": ["commence", "begin", "start"], "uz": "Marosim roppa-rosa soat 10 da boshlanadi.", "explain_uz": "Rasmiy e'lon: **commence**."},
+            {"type": "gap", "text": "I would be ___ if you could send me the documents.", "answer": ["grateful"], "uz": "Hujjatlarni yuborsangiz, minnatdor bo'lardim.", "explain_uz": "I would be **grateful** if you could..."},
+            {"type": "choice", "q": "\"We lost your parcel.\" — most formal, impersonal version:", "options": ["We kind of lost your parcel.", "Unfortunately, your parcel appears to have been mislaid.", "Your parcel is gone, sorry!"], "answer": 1, "explain_uz": "Shaxssiz passiv + yumshatish (**appears to have been**)."},
+            {"type": "match", "pairs": [["put off", "postpone"], ["go up", "increase"], ["set up", "establish"], ["look into", "investigate"], ["start", "commence"]]},
+            {"type": "order", "uz": "Iltimos, imkon qadar tezroq javob bering.", "words": ["Please", "reply", "at", "your", "earliest", "convenience"], "answer": "Please reply at your earliest convenience"},
+            {"type": "choice", "audio": true, "q": "Who is the speaker most likely talking to?", "say": "Good afternoon. I'm calling to enquire whether it would be possible to reschedule my appointment to a later date.", "options": ["A close friend", "A receptionist or official", "A family member"], "answer": 1, "explain_uz": "\"I'm calling to enquire whether it would be possible...\" — rasmiy uslub."},
+            {"type": "listen", "answer": ["Regrettably, we are unable to offer you a place.", "Regrettably we are unable to offer you a place", "Regrettably, we are unable to offer you a place"], "uz": "Eshiting va yozing"},
+            {"type": "translate", "uz": "Uchrashuv keyingi haftaga qoldirildi. (rasmiy)", "answer": ["The meeting has been postponed until next week", "The meeting has been postponed to next week", "The meeting has been postponed until the following week", "The meeting was postponed until next week", "The meeting has been rescheduled for next week"], "explain_uz": "Rasmiy: **postponed** (put off emas)."},
+            {"type": "speak", "text": "I would be grateful if you could confirm the new date at your earliest convenience.", "uz": "Ovoz chiqarib ayting"},
+            {
+              "type": "write",
+              "prompt_uz": "Bir xil vaziyat haqida ikki xil xat yozing (jami 120+ so'z): 1) do'stingizga — sayohatingiz bekor bo'lgani haqida (norasmiy); 2) mehmonxona menejeriga — bronni bekor qilish va pulni qaytarishni so'rab (rasmiy).",
+              "prompt": "Write two short messages about a cancelled trip: one informal message to a friend, and one formal email to a hotel manager asking to cancel your booking and request a refund.",
+              "min_words": 120,
+              "example": "Hi Dilshod! You won't believe it — my boss has just told me I have to go to Samarkand for work next week, so I can't come to Bukhara with you guys. I'm so annoyed! Could you tell the others? Let's sort out another trip in May. Have fun without me!\n\nDear Sir or Madam,\nI am writing regarding my reservation (booking reference BK2047) for a double room from 14 to 17 April. Regrettably, due to unforeseen work commitments, I will be unable to travel on these dates and must therefore cancel the booking. As the cancellation is being made more than seven days in advance, I would be grateful if you could arrange a full refund in accordance with your policy. I would appreciate confirmation of the cancellation at your earliest convenience.\nYours faithfully,\nKamola Rakhimova"
+            }
+          ]
+        },
+        {
+          "slug": "c2-connotation",
+          "title": "Slim or skinny?",
+          "title_uz": "Konnotatsiya: so'zlarning nozik ma'nosi",
+          "goal_uz": "Ma'nodosh so'zlarning ijobiy, neytral va salbiy ohangini (connotation) farqlaysiz va fikringizni aynan kerakli ohangda ifodalaysiz.",
+          "minutes": 13,
+          "words": [
+            {"en": "connotation", "uz": "qo'shimcha ma'no, ohang", "ipa": "/ˌkɒnəˈteɪʃn/", "ex": "\"Cheap\" often has a negative connotation."},
+            {"en": "frugal", "uz": "tejamkor (ijobiy)", "ipa": "/ˈfruːɡl/", "ex": "My grandparents lived a frugal life."},
+            {"en": "stingy", "uz": "xasis (salbiy)", "ipa": "/ˈstɪndʒi/", "ex": "He's too stingy to buy anyone a coffee."},
+            {"en": "assertive", "uz": "o'ziga ishongan, qat'iyatli (ijobiy)", "ipa": "/əˈsɜːtɪv/", "ex": "Good managers are assertive but fair."},
+            {"en": "pushy", "uz": "surbet, haddan tashqari tazyiq qiladigan", "ipa": "/ˈpʊʃi/", "ex": "The salesman was really pushy."},
+            {"en": "inquisitive", "uz": "qiziquvchan (ijobiy)", "ipa": "/ɪnˈkwɪzətɪv/", "ex": "Inquisitive children ask lots of questions."},
+            {"en": "nosy", "uz": "boshqalarning ishiga burnini suqadigan", "ipa": "/ˈnəʊzi/", "ex": "Our nosy neighbour always watches us."},
+            {"en": "euphemism", "uz": "yumshoq ifoda (evfemizm)", "ipa": "/ˈjuːfəmɪzəm/", "ex": "\"Passed away\" is a euphemism for \"died\"."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "dialogue",
+              "title": "Two descriptions of the same person",
+              "context_uz": "Ikki hamkasb yangi bo'lim boshlig'i haqida gaplashyapti. Ikkalasi bir xil xususiyatlarni ko'rgan, lekin turli so'zlar tanlagan.",
+              "lines": [
+                {"who": "Laylo", "en": "I really like the new manager. She's confident, assertive, and very economical with the budget.", "uz": "Yangi boshliq menga juda yoqdi. U o'ziga ishongan, qat'iyatli va byudjetni juda tejamkorlik bilan sarflaydi."},
+                {"who": "Rustam", "en": "Really? I find her arrogant and pushy. And she's stingy — she cancelled the team dinner to save money.", "uz": "Rostdanmi? Menimcha, u takabbur va surbet. Yana xasis — pul tejash uchun jamoaviy kechki ovqatni bekor qildi."},
+                {"who": "Laylo", "en": "Well, she asks a lot of questions about our projects. I think that shows she's inquisitive.", "uz": "Lekin u loyihalarimiz haqida ko'p savol beradi. Menimcha, bu uning qiziquvchanligini ko'rsatadi."},
+                {"who": "Rustam", "en": "Or nosy! She wanted to know why I left early on Friday.", "uz": "Yoki burnini suqadigan! Juma kuni nega erta ketganimni bilmoqchi bo'ldi."},
+                {"who": "Laylo", "en": "Funny, isn't it? We're describing exactly the same behaviour.", "uz": "Qiziq-a? Biz aynan bir xil xatti-harakatni tasvirlayapmiz."}
+              ]
+            },
+            {"type": "choice", "q": "What is Rustam's attitude towards the new manager?", "options": ["Positive", "Negative", "Neutral"], "answer": 1, "explain_uz": "arrogant, pushy, stingy, nosy — hammasi salbiy so'zlar."},
+            {"type": "choice", "q": "What is Laylo's main point at the end?", "options": ["Rustam is wrong about the facts.", "They see the same behaviour but describe it with different words.", "The manager should be replaced."], "answer": 1, "explain_uz": "\"We're describing exactly the same behaviour.\""},
+            {
+              "type": "grammar",
+              "title_uz": "Ijobiy · neytral · salbiy — so'z tanlash",
+              "body_uz": "Ko'p ma'nodosh so'zlarning **asosiy ma'nosi bir xil**, lekin **ohangi** (connotation) turlicha. C2 da noto'g'ri ohang — xuddi grammatik xatodek seziladi.\n**ijobiy → neytral → salbiy**:\nslim → thin → **skinny**\nfrugal / economical → careful with money → **stingy / mean**\nassertive / confident → direct → **pushy / bossy / arrogant**\ninquisitive / curious → interested → **nosy**\ndetermined → persistent → **stubborn / obstinate**\nyouthful → young → **childish / immature**\nfamous → well-known → **notorious** (yomon ishi bilan mashhur)\n**Evfemizmlar** — yoqimsiz narsani yumshatish: died → **passed away** · fired → **let go** · old → **elderly** · poor → **disadvantaged** · fat → **overweight**.\nMaslahat: inshoda kimnidir tanqid qilmoqchi bo'lmasangiz, **neytral** so'zni tanlang.",
+              "examples": [
+                {"en": "She's not stubborn — she's determined.", "uz": "U o'jar emas — u qat'iyatli."},
+                {"en": "The town is notorious for its traffic jams.", "uz": "Shahar tirbandliklari bilan nom chiqargan (yomon ma'noda)."},
+                {"en": "His grandmother passed away last year.", "uz": "Uning buvisi o'tgan yili olamdan o'tdi."},
+                {"en": "Elderly residents may need extra support.", "uz": "Keksa aholi qo'shimcha yordamga muhtoj bo'lishi mumkin."}
+              ]
+            },
+            {"type": "choice", "q": "Which word is a compliment?", "options": ["skinny", "slim", "bony"], "answer": 1, "explain_uz": "**slim** — ijobiy; skinny/bony — salbiy."},
+            {"type": "choice", "q": "\"The city is ___ for pickpockets.\" (bad reputation)", "options": ["famous", "notorious", "well-known"], "answer": 1, "explain_uz": "Yomon ish bilan mashhur → **notorious**."},
+            {"type": "gap", "text": "My grandfather is very ___ — he never wastes anything. (positive: f____)", "answer": ["frugal", "economical", "thrifty"], "uz": "Bobom juda tejamkor — hech narsani isrof qilmaydi.", "explain_uz": "Ijobiy: **frugal / thrifty**."},
+            {"type": "gap", "text": "Children are naturally ___ — they want to know how everything works. (positive: i__________)", "answer": ["inquisitive", "curious"], "uz": "Bolalar tabiatan qiziquvchan — hamma narsa qanday ishlashini bilishni xohlaydi.", "explain_uz": "Ijobiy: **inquisitive / curious** (nosy emas!)."},
+            {"type": "gap", "text": "\"Died\" → \"passed ___\" (euphemism)", "answer": ["away"], "uz": "vafot etdi → olamdan o'tdi", "explain_uz": "passed **away**."},
+            {"type": "choice", "q": "Which is the most neutral word for an essay?", "options": ["stubborn", "determined", "persistent"], "answer": 2, "explain_uz": "determined — ijobiy, stubborn — salbiy, **persistent** — eng neytral."},
+            {"type": "match", "pairs": [["frugal", "stingy"], ["assertive", "pushy"], ["inquisitive", "nosy"], ["determined", "stubborn"], ["slim", "skinny"]]},
+            {"type": "order", "uz": "U o'jar emas, shunchaki qat'iyatli.", "words": ["She", "isn't", "stubborn", "she's", "just", "determined"], "answer": "She isn't stubborn she's just determined"},
+            {"type": "choice", "audio": true, "q": "How does the speaker feel about their neighbour?", "say": "Our neighbour is lovely, but she's a bit nosy. Every time a car stops outside, she's at the window.", "options": ["Completely positive", "Mostly positive, but slightly critical", "Very angry"], "answer": 1, "explain_uz": "\"lovely, but... a bit nosy\" — ijobiy, ozgina tanqid."},
+            {"type": "listen", "answer": ["The city is notorious for its traffic.", "The city is notorious for its traffic"], "uz": "Eshiting va yozing"},
+            {"type": "translate", "uz": "Bobom tejamkor edi, lekin hech qachon xasis emasdi.", "answer": ["My grandfather was frugal but he was never stingy", "My grandfather was frugal but never stingy", "My grandfather was thrifty but he was never stingy", "My grandfather was economical but never stingy", "My grandfather was frugal, but he was never stingy", "My grandfather was frugal but he was never mean"], "explain_uz": "frugal (ijobiy) ↔ **stingy** (salbiy)."},
+            {"type": "speak", "text": "She isn't pushy at all; she's simply assertive and knows exactly what she wants.", "uz": "Ovoz chiqarib ayting"},
+            {
+              "type": "write",
+              "prompt_uz": "Bir odamni ikki marta tasvirlang (jami 120+ so'z): avval uni yaxshi ko'radigan kishi nuqtai nazaridan (ijobiy so'zlar), keyin uni yoqtirmaydigan kishi nuqtai nazaridan (salbiy so'zlar). Faktlar bir xil qolsin — faqat so'zlar o'zgarsin.",
+              "prompt": "Describe the same person twice: first from the point of view of someone who admires them, then from the point of view of someone who dislikes them. Keep the facts the same and change only the vocabulary.",
+              "min_words": 120,
+              "example": "An admirer: My uncle Botir is a remarkable man. He is slim and energetic, and although he is in his sixties, he has a youthful sense of humour. He is frugal — he has driven the same car for twenty years — and he is admirably determined: once he decides to do something, nothing stops him. He is inquisitive, too, always asking guests about their lives.\n\nA critic: Botir is a strange character. He is skinny and restless, and at sixty he still tells childish jokes. He is stingy — he refuses to replace his ancient car — and incredibly stubborn: you can never change his mind. He is also nosy, constantly questioning visitors about their private affairs."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

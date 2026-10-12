@@ -103,8 +103,10 @@ def recommended_level(user):
         level = 'B1'
     elif avg < 7.0:
         level = 'B2'
-    else:
+    elif avg < 8.5:
         level = 'C1'
+    else:
+        level = 'C2'
     return level, round(avg, 1)
 
 

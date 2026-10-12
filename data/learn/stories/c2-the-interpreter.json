@@ -1,0 +1,50 @@
+{
+  "slug": "c2-the-interpreter",
+  "level": "C2",
+  "order": 1,
+  "emoji": "🎧",
+  "minutes": 9,
+  "title": "Between the lines",
+  "title_uz": "Satrlar orasida",
+  "paragraphs": [
+    {
+      "en": "Interpreters are trained to be invisible. For eleven years, Feruza had sat in glass booths at international conferences, rendering other people's words into English with such fluency that delegates frequently forgot she existed. It was a point of professional pride: the better she did her job, the less anyone noticed her.",
+      "uz": "Tarjimonlar ko'rinmas bo'lishga o'rgatiladi. O'n bir yil davomida Feruza xalqaro konferensiyalarda shisha kabinalarda o'tirib, boshqalarning so'zlarini ingliz tiliga shunchalik ravon o'girganki, delegatlar ko'pincha uning mavjudligini unutib qo'yishardi. Bu kasbiy g'urur masalasi edi: ishini qanchalik yaxshi qilsa, uni shunchalik kam odam payqardi."
+    },
+    {
+      "en": "The negotiation in Geneva was, on the face of it, routine: two neighbouring countries discussing the shared use of a river. Yet within minutes Feruza sensed that the real conversation was taking place beneath the official one. When the senior delegate said, \"We are, of course, open to all proposals,\" his tone made it abundantly clear that he was open to none of them.",
+      "uz": "Jenevadagi muzokaralar tashqi tomondan oddiy edi: ikki qo'shni davlat daryodan birgalikda foydalanishni muhokama qilardi. Biroq bir necha daqiqa ichida Feruza haqiqiy suhbat rasmiy suhbat ostida ketayotganini sezdi. Katta delegat \"Biz, albatta, barcha takliflarga ochiqmiz\" deganida, uning ohangi hech biriga ochiq emasligini juda aniq ko'rsatib turardi."
+    },
+    {
+      "en": "Herein lay the dilemma. A literal translation would convey the words but betray the meaning; the other side, hearing only polite openness, might well make concessions they would later regret. Yet to interpret the subtext — to say, in effect, \"he doesn't mean this\" — would be to step out of the booth and into the negotiation itself, something no interpreter is permitted to do.",
+      "uz": "Muammo aynan shunda edi. So'zma-so'z tarjima so'zlarni yetkazardi, lekin ma'noga xiyonat qilardi; ikkinchi tomon faqat xushmuomala ochiqlikni eshitib, keyin afsuslanadigan yon berishlarga borishi juda mumkin edi. Biroq yashirin ma'noni tarjima qilish — aslida \"u buni nazarda tutmayapti\" deyish — kabinadan chiqib, muzokaraning o'ziga aralashish bo'lardi, bunga esa hech bir tarjimonga ruxsat berilmaydi."
+    },
+    {
+      "en": "She settled on a compromise so subtle that it might have passed unnoticed. She translated every word faithfully, but she reproduced the delegate's tone with equal precision: the slight pause before \"of course\", the faint coolness in \"all proposals\". She added nothing and omitted nothing. The meaning, she reasoned, was in the voice as much as in the vocabulary.",
+      "uz": "U shu qadar nozik murosaga keldiki, buni hech kim payqamasligi ham mumkin edi. U har bir so'zni sodiqlik bilan tarjima qildi, lekin delegatning ohangini ham xuddi shunday aniqlik bilan qayta yaratdi: \"albatta\" oldidagi kichik pauza, \"barcha takliflar\"dagi sezilar-sezilmas sovuqlik. U hech narsa qo'shmadi va hech narsa tushirib qoldirmadi. Ma'no, deb o'yladi u, lug'atda bo'lgani kabi ovozda ham bor."
+    },
+    {
+      "en": "At the coffee break, a member of the other delegation approached her booth. \"Thank you,\" he said quietly. \"We understood.\" Nothing more was said, and the talks went on for another three days. Feruza never learned how they ended. But she has since come to believe that invisibility, in her profession, is not the absence of a voice — it is the discipline of knowing exactly how much of one to use.",
+      "uz": "Qahva tanaffusida boshqa delegatsiya a'zolaridan biri uning kabinasiga yaqinlashdi. \"Rahmat,\" dedi u sekin. \"Biz tushundik.\" Boshqa hech narsa aytilmadi va muzokaralar yana uch kun davom etdi. Feruza ular qanday tugaganini hech qachon bilmadi. Lekin o'shandan beri u o'z kasbida ko'rinmaslik ovozning yo'qligi emas, balki undan aynan qanchalik foydalanishni bilish intizomi ekaniga ishonib keladi."
+    }
+  ],
+  "glossary": {
+    "rendering": "o'girish, ifodalash",
+    "delegates": "delegatlar, vakillar",
+    "on the face of it": "tashqi tomondan, bir qarashda",
+    "abundantly clear": "juda aniq",
+    "herein lay": "aynan shunda edi",
+    "betray": "xiyonat qilmoq",
+    "concessions": "yon berishlar",
+    "subtext": "yashirin ma'no",
+    "faithfully": "sodiqlik bilan, aniq",
+    "omitted": "tushirib qoldirdi",
+    "discipline": "intizom"
+  },
+  "questions": [
+    {"q": "Why did Feruza take pride in being unnoticed?", "options": ["She was shy.", "It meant she was doing her job well.", "She disliked conferences."], "answer": 1},
+    {"q": "What was the delegate's real message?", "options": ["He welcomed all proposals.", "He was not actually open to the proposals.", "He wanted to end the talks immediately."], "answer": 1},
+    {"q": "How did Feruza solve her dilemma?", "options": ["She explained the hidden meaning to the other side.", "She translated the words and reproduced the tone exactly.", "She refused to translate."], "answer": 1},
+    {"q": "What does the final sentence suggest about her profession?", "options": ["Interpreters should express their opinions.", "Skill lies in controlling, not eliminating, one's voice.", "Interpreters are not important."], "answer": 1}
+  ]
+}

@@ -11,7 +11,7 @@ class LearnerProfile(models.Model):
     Lesson content itself lives in data/learn/*.json (see learn/content.py),
     so only the learner's own state is kept in the database.
     """
-    LEVELS = (('A1', 'A1'), ('A2', 'A2'), ('B1', 'B1'), ('B2', 'B2'), ('C1', 'C1'))
+    LEVELS = (('A1', 'A1'), ('A2', 'A2'), ('B1', 'B1'), ('B2', 'B2'), ('C1', 'C1'), ('C2', 'C2'))
 
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='learner')
     level = models.CharField(max_length=2, choices=LEVELS, blank=True)

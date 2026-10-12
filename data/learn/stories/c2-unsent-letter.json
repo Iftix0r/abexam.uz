@@ -1,0 +1,49 @@
+{
+  "slug": "c2-unsent-letter",
+  "level": "C2",
+  "order": 2,
+  "emoji": "✉️",
+  "minutes": 9,
+  "title": "The unsent letter",
+  "title_uz": "Yuborilmagan maktub",
+  "paragraphs": [
+    {
+      "en": "It was only after his father's funeral, while clearing out the cramped study in the family house in Kokand, that Sherzod found the envelope. It was addressed to him in his father's meticulous handwriting, stamped but never posted, and dated the autumn Sherzod had left for university in Moscow — some twenty-three years earlier.",
+      "uz": "Faqat otasining dafn marosimidan keyin, Qo'qondagi oilaviy uyning tor xonasini yig'ishtirayotganida Sherzod konvertni topdi. U otasining puxta qo'lyozmasida unga atalgan, marka yopishtirilgan, lekin hech qachon jo'natilmagan edi va Sherzod Moskvadagi universitetga ketgan kuzga — taxminan yigirma uch yil avvalga — sanalgan edi."
+    },
+    {
+      "en": "Their relationship had never been easy. His father, an engineer of few words and fewer compliments, had made no secret of his disapproval when Sherzod abandoned physics for literature. The argument on the night before his departure had been the last real conversation they had had for years; thereafter, they spoke politely, briefly, and about nothing that mattered.",
+      "uz": "Ularning munosabatlari hech qachon oson bo'lmagan. Kam gapiradigan va undan ham kam maqtaydigan muhandis otasi Sherzod fizikadan voz kechib adabiyotni tanlaganida noroziligini yashirmagan edi. Jo'nab ketishidan oldingi kechadagi janjal ular yillar davomida qilgan so'nggi chin suhbat bo'ldi; shundan keyin ular xushmuomala, qisqa va hech qanday muhim bo'lmagan narsalar haqida gaplashishardi."
+    },
+    {
+      "en": "Sherzod hesitated before opening the letter, half fearing a final reproach. Instead, he found two pages of something he had never once heard from his father: an apology. \"I was not angry that you chose books,\" it read. \"I was afraid — afraid that the world would not reward you, and that I would have to watch. A braver father would simply have told you he was proud.\"",
+      "uz": "Sherzod maktubni ochishdan oldin ikkilandi, so'nggi ta'nadan yarim qo'rqib. Buning o'rniga u otasidan bir marta ham eshitmagan narsani — kechirim so'rashni o'z ichiga olgan ikki sahifani topdi. \"Kitoblarni tanlaganingdan jahlim chiqmagan edi,\" deb yozilgandi unda. \"Men qo'rqqan edim — dunyo seni taqdirlamasligidan va men buni kuzatib turishga majbur bo'lishimdan. Jasurroq ota senga shunchaki faxrlanishini aytgan bo'lardi.\""
+    },
+    {
+      "en": "Why he had never sent it, Sherzod could only speculate. Pride, perhaps, or the conviction that written words were somehow less binding if they stayed in a drawer. Perhaps he had intended to post it the following morning and had simply lost his nerve. What struck Sherzod most was not the content but the waste: two decades of careful silence, maintained by two men who, it now transpired, had wanted the same thing.",
+      "uz": "Nega uni hech qachon yubormaganini Sherzod faqat taxmin qila olardi. Balki g'urur, yoki yozilgan so'zlar tortmada qolsa, qandaydir majburiyatsizroq bo'ladi degan ishonch. Balki ertasi kuni ertalab jo'natmoqchi bo'lgan-u, shunchaki jur'ati yetmagandir. Sherzodni eng ko'p hayratga solgani mazmun emas, balki isrof edi: yigirma yillik ehtiyotkor sukut — endi ma'lum bo'lishicha, aynan bir narsani xohlagan ikki erkak tomonidan saqlab kelingan sukut."
+    },
+    {
+      "en": "He has since published four novels. The most recent is dedicated to his father, and its final chapter takes the form of a letter that is never sent. Readers often ask whether the story is autobiographical. Sherzod's answer is invariably the same: \"Only the parts that matter.\" He keeps the original envelope on his desk — stamped, unposted, and, at long last, delivered.",
+      "uz": "O'shandan beri u to'rtta roman nashr ettirdi. Eng so'nggisi otasiga bag'ishlangan va uning so'nggi bobi hech qachon yuborilmaydigan maktub shaklida yozilgan. O'quvchilar ko'pincha bu hikoya avtobiografikmi, deb so'rashadi. Sherzodning javobi doim bir xil: \"Faqat muhim qismlari.\" U asl konvertni stolida saqlaydi — marka yopishtirilgan, jo'natilmagan va nihoyat, manziliga yetib kelgan."
+    }
+  ],
+  "glossary": {
+    "cramped": "tor, siqiq",
+    "meticulous": "puxta, sinchkov",
+    "disapproval": "norozilik",
+    "thereafter": "shundan keyin",
+    "reproach": "ta'na, malomat",
+    "binding": "majburiy, bog'lovchi",
+    "lost his nerve": "jur'ati yetmadi",
+    "transpired": "ma'lum bo'ldi",
+    "invariably": "doimo, o'zgarmas tarzda",
+    "at long last": "nihoyat"
+  },
+  "questions": [
+    {"q": "When had the father written the letter?", "options": ["Just before his death", "When Sherzod left for university", "When Sherzod published his first novel"], "answer": 1},
+    {"q": "What was the father's real reason for his disapproval?", "options": ["He disliked literature.", "He feared Sherzod would struggle and he would have to watch.", "He wanted Sherzod to become an engineer like him."], "answer": 1},
+    {"q": "What affected Sherzod most about the letter?", "options": ["Its angry tone", "The years of silence that had been unnecessary", "The beautiful handwriting"], "answer": 1},
+    {"q": "What does \"at long last, delivered\" suggest at the end?", "options": ["The letter was finally posted.", "The father's message has finally reached its reader.", "Sherzod sent the letter to a publisher."], "answer": 1}
+  ]
+}

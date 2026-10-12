@@ -55,6 +55,17 @@
         {"audio": true, "say": "While the policy was initially welcomed, critics have since argued that its benefits were somewhat overstated.", "q": "What do critics now say about the policy?", "options": ["It was a complete failure.", "Its benefits were exaggerated.", "It was never welcomed."], "answer": 1},
         {"q": "What I find most surprising ___ how quickly the city has changed.", "options": ["are", "is", "being"], "answer": 1}
       ]
+    },
+    {
+      "level": "C2",
+      "questions": [
+        {"q": "The lights are off and nobody is answering. They ___ out.", "options": ["must have gone", "should have gone", "can have gone"], "answer": 0},
+        {"q": "Which word has the most negative meaning?", "options": ["determined", "persistent", "obstinate"], "answer": 2},
+        {"q": "Which is the most appropriate in a formal complaint letter?", "options": ["I want my money back right now.", "I would be grateful if you could arrange a full refund.", "Give me a refund, please."], "answer": 1},
+        {"q": "We ___ booked a table — the restaurant was almost empty.", "options": ["mustn't have", "needn't have", "couldn't have"], "answer": 1},
+        {"audio": true, "say": "Far from being a setback, the merger proved to be the making of the company.", "q": "What was the effect of the merger?", "options": ["It damaged the company.", "It made the company successful.", "It had no effect."], "answer": 1},
+        {"q": "The minister's speech was so ___ that nobody could tell what the policy actually was.", "options": ["equivocal", "eloquent", "explicit"], "answer": 0}
+      ]
     }
   ]
 }
