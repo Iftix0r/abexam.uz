@@ -1,0 +1,48 @@
+{
+  "slug": "a1-first-day",
+  "level": "A1",
+  "order": 3,
+  "emoji": "🏫",
+  "minutes": 4,
+  "title": "A new school",
+  "title_uz": "Yangi maktab",
+  "paragraphs": [
+    {
+      "en": "This is Dilnoza. She is eleven years old. Her family is new in Namangan. Today is her first day at a new school, and she is very nervous.",
+      "uz": "Bu Dilnoza. U o'n bir yoshda. Uning oilasi Namanganga yangi ko'chib kelgan. Bugun uning yangi maktabdagi birinchi kuni va u juda hayajonda."
+    },
+    {
+      "en": "Her classroom is big and bright. There are twenty-five students in the class. The teacher's name is Mrs Karimova. She is tall and she has a kind smile.",
+      "uz": "Uning sinfi katta va yorug'. Sinfda yigirma besh nafar o'quvchi bor. O'qituvchining ismi Karimova opa. U baland bo'yli va mehribon tabassumi bor."
+    },
+    {
+      "en": "\"Class, this is Dilnoza,\" says Mrs Karimova. \"Please sit next to Zarina.\" Zarina is a girl with long black hair. She says, \"Hi! Do you like English?\"",
+      "uz": "\"Bolalar, bu Dilnoza,\" deydi Karimova opa. \"Iltimos, Zarinaning yoniga o'tir.\" Zarina — uzun qora sochli qiz. U: \"Salom! Ingliz tilini yaxshi ko'rasanmi?\" deydi."
+    },
+    {
+      "en": "\"Yes, I love English!\" says Dilnoza. \"Me too!\" says Zarina. At lunch, they eat together. Zarina has some apples and Dilnoza has some bread and cheese. They share their food.",
+      "uz": "\"Ha, ingliz tilini juda yaxshi ko'raman!\" deydi Dilnoza. \"Men ham!\" deydi Zarina. Tushlikda ular birga ovqatlanishadi. Zarinada bir nechta olma, Dilnozada esa non va pishloq bor. Ular ovqatlarini baham ko'rishadi."
+    },
+    {
+      "en": "After school, Dilnoza's mother asks, \"How is your new school?\" Dilnoza smiles. \"It's great, Mum. I have a new friend!\"",
+      "uz": "Maktabdan keyin Dilnozaning onasi: \"Yangi maktabing qanday?\" deb so'raydi. Dilnoza jilmayadi. \"Zo'r, oyi. Yangi dugonam bor!\""
+    }
+  ],
+  "glossary": {
+    "nervous": "hayajonda, xavotirda",
+    "first day": "birinchi kun",
+    "bright": "yorug'",
+    "kind": "mehribon",
+    "smile": "tabassum",
+    "next to": "yonida",
+    "together": "birga",
+    "cheese": "pishloq",
+    "share": "baham ko'rmoq"
+  },
+  "questions": [
+    {"q": "How does Dilnoza feel in the morning?", "options": ["Happy", "Nervous", "Tired"], "answer": 1},
+    {"q": "How many students are in the class?", "options": ["Eleven", "Twenty", "Twenty-five"], "answer": 2},
+    {"q": "What does Zarina have for lunch?", "options": ["Apples", "Bread and cheese", "Plov"], "answer": 0},
+    {"q": "Who is Dilnoza's new friend?", "options": ["Mrs Karimova", "Zarina", "Her mother"], "answer": 1}
+  ]
+}

@@ -1,0 +1,207 @@
+{
+  "level": "A1",
+  "units": [
+    {
+      "slug": "a1-daily-life",
+      "title": "Food, skills and right now",
+      "title_uz": "Ovqat, qobiliyat va hozirgi payt",
+      "icon": "utensils",
+      "lessons": [
+        {
+          "slug": "a1-food",
+          "title": "I'd like some tea, please",
+          "title_uz": "Ovqat va ichimliklar",
+          "goal_uz": "Ovqat va ichimliklarni nomlaysiz, a / an / some ni to'g'ri ishlatasiz va \"I'd like...\" bilan buyurtma berasiz.",
+          "minutes": 9,
+          "words": [
+            {"en": "bread", "uz": "non", "ipa": "/bred/", "ex": "We eat bread every day."},
+            {"en": "egg", "uz": "tuxum", "ipa": "/eɡ/", "ex": "I have an egg for breakfast."},
+            {"en": "apple", "uz": "olma", "ipa": "/ˈæpl/", "ex": "Can I have an apple?"},
+            {"en": "rice", "uz": "guruch", "ipa": "/raɪs/", "ex": "Plov is made with rice."},
+            {"en": "meat", "uz": "go'sht", "ipa": "/miːt/", "ex": "I don't eat a lot of meat."},
+            {"en": "water", "uz": "suv", "ipa": "/ˈwɔːtə/", "ex": "A glass of water, please."},
+            {"en": "juice", "uz": "sharbat", "ipa": "/dʒuːs/", "ex": "Orange juice is my favourite."},
+            {"en": "hungry", "uz": "och (qorni och)", "ipa": "/ˈhʌŋɡri/", "ex": "I'm hungry. Let's eat!"}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "dialogue",
+              "title": "Breakfast at a café",
+              "context_uz": "Aziz va Laylo ertalab kafega kirishdi.",
+              "lines": [
+                {"who": "Waiter", "en": "Good morning! What would you like?", "uz": "Xayrli tong! Nima olasiz?"},
+                {"who": "Aziz", "en": "I'd like two eggs and some bread, please.", "uz": "Ikkita tuxum va biroz non, iltimos."},
+                {"who": "Waiter", "en": "And to drink?", "uz": "Ichimlikka-chi?"},
+                {"who": "Aziz", "en": "A cup of tea, please.", "uz": "Bir piyola choy, iltimos."},
+                {"who": "Laylo", "en": "I'm not very hungry. I'd like an apple and some orange juice.", "uz": "Qornim unchalik och emas. Bitta olma va biroz apelsin sharbati olaman."},
+                {"who": "Waiter", "en": "OK. Two eggs, bread, tea, an apple and orange juice.", "uz": "Xo'p. Ikkita tuxum, non, choy, olma va apelsin sharbati."}
+              ]
+            },
+            {"type": "choice", "q": "What does Aziz drink?", "options": ["Coffee", "Tea", "Orange juice"], "answer": 1, "explain_uz": "\"A cup of tea, please.\""},
+            {"type": "choice", "q": "Is Laylo very hungry?", "options": ["Yes, she is.", "No, she isn't."], "answer": 1, "explain_uz": "\"I'm not very hungry.\""},
+            {
+              "type": "grammar",
+              "title_uz": "a / an / some · I'd like",
+              "body_uz": "Sanaladigan otlar birlikda **a** yoki **an** oladi: **a** banana, **an** apple.\n**an** — unli tovush bilan boshlanadigan so'zdan oldin: **an** egg, **an** orange, **an** hour.\nSanalmaydigan otlar (suv, non, guruch, go'sht, choy) **a/an** olmaydi: some water, some bread. (\"a bread\" — xato!)\nKo'plikda va sanalmaydigan otlarda **some** — \"biroz, bir nechta\": some apples, some rice.\nBuyurtma: **I'd like** (= I would like) + ot — \"... olmoqchiman\". Bu \"I want\"dan ancha xushmuomala.",
+              "examples": [
+                {"en": "I'd like an orange, please.", "uz": "Bitta apelsin olmoqchiman, iltimos."},
+                {"en": "Can I have some water?", "uz": "Biroz suv bera olasizmi?"},
+                {"en": "There is some rice in the kitchen.", "uz": "Oshxonada biroz guruch bor."},
+                {"en": "She eats a banana every morning.", "uz": "U har kuni ertalab bitta banan yeydi."}
+              ]
+            },
+            {"type": "choice", "q": "I have ___ egg for breakfast.", "options": ["a", "an", "some"], "answer": 1, "explain_uz": "egg — unli tovush bilan boshlanadi → **an** egg."},
+            {"type": "choice", "q": "Which is correct?", "options": ["a bread", "some bread", "an bread"], "answer": 1, "explain_uz": "bread sanalmaydi → **some** bread."},
+            {"type": "gap", "text": "I'd ___ a cup of coffee, please.", "answer": ["like"], "uz": "Bir chashka qahva olmoqchiman, iltimos.", "explain_uz": "I'd **like** + ot."},
+            {"type": "gap", "text": "Can I have ___ water, please?", "answer": ["some"], "uz": "Biroz suv bera olasizmi?", "explain_uz": "water sanalmaydi → **some**."},
+            {"type": "gap", "text": "She wants ___ banana.", "answer": ["a"], "uz": "U bitta banan xohlaydi.", "explain_uz": "banana — undosh bilan boshlanadi → **a**."},
+            {"type": "match", "pairs": [["bread", "non"], ["meat", "go'sht"], ["rice", "guruch"], ["juice", "sharbat"], ["egg", "tuxum"]]},
+            {"type": "order", "uz": "Bir piyola choy olmoqchiman.", "words": ["I'd", "like", "a", "cup", "of", "tea"], "answer": "I'd like a cup of tea"},
+            {"type": "choice", "audio": true, "q": "What does the man want?", "say": "Hello. I'd like some rice and a glass of water, please.", "options": ["Rice and water", "Bread and tea", "Meat and juice"], "answer": 0, "explain_uz": "\"some rice and a glass of water\"."},
+            {"type": "listen", "answer": ["I'm hungry. Let's eat!", "I'm hungry let's eat", "I am hungry let's eat"], "uz": "Eshiting va yozing"},
+            {"type": "translate", "uz": "Men bitta olma va biroz non olmoqchiman.", "answer": ["I'd like an apple and some bread", "I would like an apple and some bread"], "explain_uz": "**an** apple + **some** bread."},
+            {"type": "speak", "text": "I'd like some bread and a cup of tea, please.", "uz": "Kafeda buyurtma bering — ovoz chiqarib"},
+            {
+              "type": "write",
+              "prompt_uz": "Nonushtada nima yeysiz va ichasiz? 4–5 gap yozing. a / an / some ni ishlating.",
+              "prompt": "What do you eat and drink for breakfast?",
+              "min_words": 25,
+              "example": "For breakfast I usually have some bread and an egg. I drink a cup of green tea. Sometimes I eat an apple or a banana. My father likes some meat in the morning, but I don't."
+            }
+          ]
+        },
+        {
+          "slug": "a1-can",
+          "title": "Can you swim?",
+          "title_uz": "Qila olasizmi? — can / can't",
+          "goal_uz": "Nima qila olishingiz va qila olmasligingizni aytasiz: I can swim, I can't drive. Can you...? savoliga javob berasiz.",
+          "minutes": 9,
+          "words": [
+            {"en": "swim", "uz": "suzmoq", "ipa": "/swɪm/", "ex": "I can swim very well."},
+            {"en": "drive", "uz": "(mashina) haydamoq", "ipa": "/draɪv/", "ex": "My mother can drive."},
+            {"en": "cook", "uz": "ovqat pishirmoq", "ipa": "/kʊk/", "ex": "My father can cook plov."},
+            {"en": "sing", "uz": "qo'shiq aytmoq", "ipa": "/sɪŋ/", "ex": "She sings beautifully."},
+            {"en": "dance", "uz": "raqsga tushmoq", "ipa": "/dɑːns/", "ex": "Can you dance?"},
+            {"en": "ride a bike", "uz": "velosiped haydamoq", "ipa": "/raɪd ə baɪk/", "ex": "My little brother can ride a bike."},
+            {"en": "speak", "uz": "gapirmoq", "ipa": "/spiːk/", "ex": "I can speak three languages."},
+            {"en": "well", "uz": "yaxshi (qilmoq)", "ipa": "/wel/", "ex": "He plays football well."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "dialogue",
+              "title": "A new friend at the summer camp",
+              "context_uz": "Sardor yozgi lagerda yangi do'st Kate bilan tanishdi.",
+              "lines": [
+                {"who": "Kate", "en": "Can you swim, Sardor?", "uz": "Suza olasanmi, Sardor?"},
+                {"who": "Sardor", "en": "Yes, I can. I swim every summer. Can you?", "uz": "Ha, olaman. Har yozda suzaman. Sen-chi?"},
+                {"who": "Kate", "en": "No, I can't. But I can ride a bike very well.", "uz": "Yo'q, olmayman. Lekin velosipedni juda yaxshi hayday olaman."},
+                {"who": "Sardor", "en": "Can you speak Russian?", "uz": "Ruscha gapira olasanmi?"},
+                {"who": "Kate", "en": "A little. I can speak English and French. And you?", "uz": "Ozgina. Inglizcha va fransuzcha gapira olaman. Sen-chi?"},
+                {"who": "Sardor", "en": "I can speak Uzbek, Russian and a little English.", "uz": "O'zbekcha, ruscha va ozgina inglizcha gapira olaman."},
+                {"who": "Kate", "en": "Your English is good!", "uz": "Inglizchang yaxshi-ku!"}
+              ]
+            },
+            {"type": "choice", "q": "Can Kate swim?", "options": ["Yes, she can.", "No, she can't."], "answer": 1, "explain_uz": "\"No, I can't.\""},
+            {"type": "choice", "q": "What can Kate do very well?", "options": ["Swim", "Speak Russian", "Ride a bike"], "answer": 2, "explain_uz": "\"I can ride a bike very well.\""},
+            {
+              "type": "grammar",
+              "title_uz": "can / can't — qobiliyat",
+              "body_uz": "**can** + fe'lning asosiy shakli — \"... qila olaman\". Hamma shaxslarda bir xil: I can, he **can**, they can. (\"he cans\" — xato!)\n**can** dan keyin **to** qo'yilmaydi: I can swim. (\"I can to swim\" — xato!)\nInkor: **can't** (= cannot): I **can't** drive.\nSavol: **Can** you cook? — Yes, I **can**. / No, I **can't**.\nTalaffuz: gapda **can** qisqa aytiladi /kən/, **can't** esa uzun va urg'uli /kɑːnt/ — farqni eshitishga harakat qiling.",
+              "examples": [
+                {"en": "My sister can sing very well.", "uz": "Singlim juda yaxshi qo'shiq ayta oladi."},
+                {"en": "I can't drive a car.", "uz": "Men mashina hayday olmayman."},
+                {"en": "Can your father cook? — Yes, he can.", "uz": "Otangiz ovqat pishira oladimi? — Ha, oladi."},
+                {"en": "We can't speak Chinese.", "uz": "Biz xitoycha gapira olmaymiz."}
+              ]
+            },
+            {"type": "choice", "q": "Which is correct?", "options": ["She cans swim.", "She can swim.", "She can to swim."], "answer": 1, "explain_uz": "can + fe'l, -s va to yo'q."},
+            {"type": "choice", "q": "\"Can you dance?\" — \"No, I ___.\"", "options": ["can", "don't", "can't"], "answer": 2, "explain_uz": "Qisqa javob: No, I **can't**."},
+            {"type": "gap", "text": "My grandmother ___ make very good plov.", "answer": ["can"], "uz": "Buvim juda mazali palov qila oladi.", "explain_uz": "can + make."},
+            {"type": "gap", "text": "I ___ drive. I'm only twelve!", "answer": ["can't", "cannot", "can not"], "uz": "Men mashina hayday olmayman. Atigi o'n ikki yoshdaman!", "explain_uz": "Inkor: **can't**."},
+            {"type": "gap", "text": "___ you speak English?", "answer": ["Can"], "uz": "Inglizcha gapira olasizmi?", "explain_uz": "Savol: **Can** you...?"},
+            {"type": "match", "pairs": [["swim", "suzmoq"], ["cook", "ovqat pishirmoq"], ["sing", "qo'shiq aytmoq"], ["drive", "haydamoq"], ["dance", "raqsga tushmoq"]]},
+            {"type": "order", "uz": "Akam velosiped hayday olmaydi.", "words": ["My", "brother", "can't", "ride", "a", "bike"], "answer": "My brother can't ride a bike"},
+            {"type": "choice", "audio": true, "q": "What can't the girl do?", "say": "I can sing and I can dance, but I can't swim.", "options": ["Sing", "Dance", "Swim"], "answer": 2, "explain_uz": "\"but I can't swim\"."},
+            {"type": "listen", "answer": ["I can speak three languages.", "I can speak three languages", "I can speak 3 languages"], "uz": "Eshiting va yozing"},
+            {"type": "translate", "uz": "Men ovqat pishira olaman, lekin qo'shiq ayta olmayman.", "answer": ["I can cook but I can't sing", "I can cook, but I can't sing", "I can cook but I cannot sing"], "explain_uz": "can cook · **can't** sing."},
+            {"type": "speak", "text": "I can swim and ride a bike, but I can't drive.", "uz": "O'zingiz haqingizda ayting — ovoz chiqarib"},
+            {
+              "type": "write",
+              "prompt_uz": "Nima qila olasiz va nima qila olmaysiz? 5 ta gap yozing (can / can't).",
+              "prompt": "What can you do? What can't you do?",
+              "min_words": 25,
+              "example": "I can speak Uzbek and Russian. I can speak a little English too. I can cook eggs, but I can't cook plov. I can ride a bike, but I can't swim. I want to learn to swim this summer."
+            }
+          ]
+        },
+        {
+          "slug": "a1-right-now",
+          "title": "What are you doing?",
+          "title_uz": "Hozir nima qilyapsiz?",
+          "goal_uz": "Hozir sodir bo'layotgan ishlarni aytasiz: I'm reading. She's cooking. Present Continuous va Present Simple farqini bilib olasiz.",
+          "minutes": 10,
+          "words": [
+            {"en": "now", "uz": "hozir", "ipa": "/naʊ/", "ex": "I'm busy now."},
+            {"en": "busy", "uz": "band", "ipa": "/ˈbɪzi/", "ex": "Sorry, I'm busy. I'm working."},
+            {"en": "wait", "uz": "kutmoq", "ipa": "/weɪt/", "ex": "I'm waiting for the bus."},
+            {"en": "watch TV", "uz": "televizor ko'rmoq", "ipa": "/wɒtʃ ˌtiːˈviː/", "ex": "Dad is watching TV."},
+            {"en": "do homework", "uz": "uy vazifasini qilmoq", "ipa": "/duː ˈhəʊmwɜːk/", "ex": "She is doing her homework."},
+            {"en": "sleep", "uz": "uxlamoq", "ipa": "/sliːp/", "ex": "Shh! The baby is sleeping."},
+            {"en": "rain", "uz": "yomg'ir (yog'moq)", "ipa": "/reɪn/", "ex": "Take an umbrella. It's raining."},
+            {"en": "look for", "uz": "qidirmoq", "ipa": "/lʊk fɔː/", "ex": "I'm looking for my keys."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "dialogue",
+              "title": "A phone call home",
+              "context_uz": "Nodira ishdan uyiga qo'ng'iroq qildi. Telefonni o'g'li Javohir oldi.",
+              "lines": [
+                {"who": "Nodira", "en": "Hi, Javohir! What are you doing?", "uz": "Salom, Javohir! Nima qilyapsan?"},
+                {"who": "Javohir", "en": "I'm doing my homework, Mum.", "uz": "Uy vazifamni qilyapman, oyi."},
+                {"who": "Nodira", "en": "Good boy! Where's your sister?", "uz": "Barakalla! Opang qayerda?"},
+                {"who": "Javohir", "en": "She's in her room. She's sleeping.", "uz": "Xonasida. Uxlayapti."},
+                {"who": "Nodira", "en": "And Dad?", "uz": "Dadang-chi?"},
+                {"who": "Javohir", "en": "He's watching football on TV. Is it raining there?", "uz": "Televizorda futbol ko'ryapti. U yerda yomg'ir yog'yaptimi?"},
+                {"who": "Nodira", "en": "Yes, it is. I'm waiting for a taxi now. See you soon!", "uz": "Ha, yog'yapti. Hozir taksi kutyapman. Tez orada ko'rishamiz!"}
+              ]
+            },
+            {"type": "choice", "q": "What is Javohir's sister doing?", "options": ["She's doing homework.", "She's sleeping.", "She's watching TV."], "answer": 1, "explain_uz": "\"She's sleeping.\""},
+            {"type": "choice", "q": "What is Nodira doing now?", "options": ["She's waiting for a taxi.", "She's working.", "She's cooking."], "answer": 0, "explain_uz": "\"I'm waiting for a taxi now.\""},
+            {
+              "type": "grammar",
+              "title_uz": "Present Continuous — hozir bo'layotgan ish",
+              "body_uz": "Tuzilma: **am / is / are + fe'l-ing** — \"...yapman\".\nI **am** reading. He/She/It **is** sleeping. We/You/They **are** playing.\nInkor: I'm **not** working. She **isn't** cooking.\nSavol: **Are** you listening? — Yes, I am. / **What are** you doing?\nImlo: write → writ**ing** (e tushadi), swim → swi**mm**ing, run → ru**nn**ing.\nFarq: **Present Simple** — odat (I drink tea **every day**). **Present Continuous** — hozir (I'm drinking coffee **now**).",
+              "examples": [
+                {"en": "Look! It's raining.", "uz": "Qarang! Yomg'ir yog'yapti."},
+                {"en": "They aren't watching TV. They're playing.", "uz": "Ular televizor ko'rmayapti. O'ynashyapti."},
+                {"en": "Is your brother sleeping?", "uz": "Ukangiz uxlayaptimi?"},
+                {"en": "I usually walk to school, but today I'm taking a taxi.", "uz": "Odatda maktabga piyoda boraman, lekin bugun taksida ketyapman."}
+              ]
+            },
+            {"type": "choice", "q": "Shh! The baby ___.", "options": ["sleeps", "is sleeping", "sleep"], "answer": 1, "explain_uz": "Hozir bo'lyapti → **is sleeping**."},
+            {"type": "choice", "q": "I ___ tea every morning.", "options": ["drink", "am drinking", "drinking"], "answer": 0, "explain_uz": "every morning — odat → Present Simple: **drink**."},
+            {"type": "gap", "text": "Look! The children ___ playing football.", "answer": ["are"], "uz": "Qarang! Bolalar futbol o'ynashyapti.", "explain_uz": "children (ular) → **are**."},
+            {"type": "gap", "text": "I'm ___ for my keys. (look)", "answer": ["looking"], "uz": "Kalitlarimni qidiryapman.", "explain_uz": "look → **looking**."},
+            {"type": "gap", "text": "What ___ you doing?", "answer": ["are"], "uz": "Nima qilyapsiz?", "explain_uz": "What **are** you doing?"},
+            {"type": "choice", "q": "swim → ?", "options": ["swiming", "swimming", "swimeing"], "answer": 1, "explain_uz": "Qisqa unli + undosh → undosh ikkilanadi: swi**mm**ing."},
+            {"type": "order", "uz": "U hozir uy vazifasini qilmayapti.", "words": ["She", "isn't", "doing", "her", "homework", "now"], "answer": "She isn't doing her homework now"},
+            {"type": "choice", "audio": true, "q": "Where is the speaker?", "say": "I'm standing at the bus stop. It's raining and I'm waiting for bus number twelve.", "options": ["At home", "At the bus stop", "In a taxi"], "answer": 1, "explain_uz": "\"I'm standing at the bus stop.\""},
+            {"type": "listen", "answer": ["Dad is watching TV.", "Dad is watching TV", "Dad's watching TV"], "uz": "Eshiting va yozing"},
+            {"type": "translate", "uz": "Hozir yomg'ir yog'yapti.", "answer": ["It's raining now", "It is raining now", "Now it's raining"], "explain_uz": "Ob-havo uchun **it** ishlatiladi: It's raining."},
+            {"type": "speak", "text": "Right now I'm sitting at home and I'm learning English.", "uz": "Hozir nima qilyapsiz? — ovoz chiqarib"},
+            {
+              "type": "write",
+              "prompt_uz": "Hozir uyingizda (yoki atrofingizda) kim nima qilyapti? 5 ta gap yozing.",
+              "prompt": "What are the people around you doing right now?",
+              "min_words": 25,
+              "example": "Right now I'm sitting in my room and I'm learning English. My mother is cooking dinner in the kitchen. My father isn't at home. He's working. My little sister is watching cartoons. It's raining outside."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

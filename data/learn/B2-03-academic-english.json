@@ -1,0 +1,196 @@
+{
+  "level": "B2",
+  "units": [
+    {
+      "slug": "b2-academic-english",
+      "title": "Processes, problems and regrets",
+      "title_uz": "Jarayon, muammo va afsus",
+      "icon": "pen-tool",
+      "lessons": [
+        {
+          "slug": "b2-process",
+          "title": "Describing a process (Task 1)",
+          "title_uz": "IELTS Task 1: jarayonni tasvirlash",
+          "goal_uz": "IELTS Writing Task 1'dagi jarayon (process) diagrammasini passiv va ketma-ketlik so'zlari bilan tasvirlaysiz.",
+          "minutes": 14,
+          "words": [
+            {"en": "stage", "uz": "bosqich", "ipa": "/steɪdʒ/", "ex": "The process consists of six stages."},
+            {"en": "raw material", "uz": "xomashyo", "ipa": "/ˌrɔː məˈtɪəriəl/", "ex": "Cotton is the main raw material."},
+            {"en": "harvest", "uz": "hosil yig'moq", "ipa": "/ˈhɑːvɪst/", "ex": "Cotton is harvested in autumn."},
+            {"en": "transport", "uz": "tashimoq", "ipa": "/trænˈspɔːt/", "ex": "The bales are transported to a factory."},
+            {"en": "subsequently", "uz": "keyinchalik, so'ngra", "ipa": "/ˈsʌbsɪkwəntli/", "ex": "The fibres are subsequently spun into thread."},
+            {"en": "once", "uz": "... bo'lgach, ... dan so'ng", "ipa": "/wʌns/", "ex": "Once the cloth is dyed, it is dried."},
+            {"en": "dye", "uz": "bo'yamoq", "ipa": "/daɪ/", "ex": "The fabric is dyed in large tanks."},
+            {"en": "distribute", "uz": "tarqatmoq, yetkazib bermoq", "ipa": "/dɪˈstrɪbjuːt/", "ex": "Finally, the products are distributed to shops."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "reading",
+              "title": "Model answer: from cotton to T-shirt",
+              "text": "The diagram illustrates how cotton is turned into T-shirts. Overall, the process consists of six main stages, beginning with the harvesting of raw cotton and ending with the distribution of finished garments to shops. At the first stage, cotton is harvested by machines and packed into large bales. These bales are then transported to a factory, where the fibres are cleaned and separated. Subsequently, the clean fibres are spun into thread, which is woven into cloth. Once the cloth has been produced, it is dyed in large tanks and left to dry. In the final stage, the fabric is cut, sewn into T-shirts and packed, before being distributed to shops.",
+              "glossary": {"illustrates": "tasvirlaydi", "consists of": "... dan iborat", "garments": "kiyimlar", "bales": "toylar", "fibres": "tolalar", "spun": "yigirilgan (spin)", "thread": "ip", "woven": "to'qilgan (weave)", "sewn": "tikilgan (sew)"},
+              "uz": "Diagrammada paxtaning futbolkaga aylanish jarayoni tasvirlangan. Umuman olganda, jarayon olti asosiy bosqichdan iborat: xom paxtani yig'ishdan boshlanib, tayyor kiyimlarni do'konlarga yetkazish bilan tugaydi. Birinchi bosqichda paxta mashinalar yordamida yig'iladi va katta toylarga joylanadi. Keyin bu toylar zavodga tashiladi va u yerda tolalar tozalanadi va ajratiladi. So'ngra toza tolalar ipga yigiriladi, ip esa matoga to'qiladi. Mato tayyor bo'lgach, u katta idishlarda bo'yaladi va quritishga qo'yiladi. Oxirgi bosqichda mato bichiladi, futbolka qilib tikiladi va qadoqlanadi, so'ng do'konlarga tarqatiladi."
+            },
+            {"type": "choice", "q": "How many stages does the process have?", "options": ["Four", "Six", "Eight"], "answer": 1, "explain_uz": "\"the process consists of six main stages\"."},
+            {"type": "choice", "q": "What happens immediately after the cloth is produced?", "options": ["It is cut and sewn.", "It is dyed.", "It is transported to a factory."], "answer": 1, "explain_uz": "\"Once the cloth has been produced, it is dyed\"."},
+            {
+              "type": "grammar",
+              "title_uz": "Process tilining 3 qoidasi",
+              "body_uz": "**1. Passiv (Present Simple)**: jarayonda kim qilgani muhim emas — **is / are + V3**: The cotton **is harvested**. (\"Workers harvest the cotton\" — kamroq akademik.)\n**2. Ketma-ketlik so'zlari** — takrorlamang: **First / At the first stage → Then / Next / After that → Subsequently → Once / After + passiv → Finally / In the final stage**.\n**Once** + Present Perfect passiv: **Once** the cloth **has been produced**, it is dyed.\n**before / after + being + V3**: ...packed, **before being distributed**.\n**3. Overview** — umumiy tasvir majburiy: necha bosqich, nima bilan boshlanib nima bilan tugaydi. Raqamlar yoki shaxsiy fikr yozilmaydi.\nXato: \"The cotton harvested\" — **is** tushib qolgan!",
+              "examples": [
+                {"en": "First, the leaves are picked by hand.", "uz": "Avval barglar qo'lda teriladi."},
+                {"en": "After that, they are dried in the sun for two days.", "uz": "Shundan so'ng ular ikki kun quyoshda quritiladi."},
+                {"en": "Once the mixture has been heated, it is poured into moulds.", "uz": "Aralashma qizdirilgach, qoliplarga quyiladi."},
+                {"en": "Overall, the process involves five stages, beginning with... and ending with...", "uz": "Umuman olganda, jarayon besh bosqichdan iborat, ... bilan boshlanib ... bilan tugaydi."}
+              ]
+            },
+            {"type": "choice", "q": "Which sentence is best for an IELTS process description?", "options": ["Then they put the bottles into a machine.", "Then the bottles are put into a machine.", "Then the bottles put into a machine."], "answer": 1, "explain_uz": "Passiv: are **put** — akademik va to'g'ri."},
+            {"type": "gap", "text": "The sugar cane ___ crushed to extract the juice.", "answer": ["is"], "uz": "Shakarqamish sharbatini ajratish uchun eziladi.", "explain_uz": "Passiv: **is** crushed."},
+            {"type": "gap", "text": "___ the bricks have been shaped, they are placed in an oven.", "answer": ["Once", "After", "When"], "uz": "G'ishtlarga shakl berilgach, ular pechga qo'yiladi.", "explain_uz": "**Once** + has/have been + V3."},
+            {"type": "gap", "text": "The products are packed before ___ sent to shops.", "answer": ["being"], "uz": "Mahsulotlar do'konlarga jo'natilishidan oldin qadoqlanadi.", "explain_uz": "before **being** + V3."},
+            {"type": "choice", "q": "The thread ___ into cloth. (weave)", "options": ["is weaved", "is woven", "is wove"], "answer": 1, "explain_uz": "weave → wove → **woven**."},
+            {"type": "choice", "q": "What must the overview of a process include?", "options": ["Your opinion of the process", "The number of stages, the start and the end", "Exact figures from the diagram"], "answer": 1, "explain_uz": "Overview: nechta bosqich + boshlanishi + oxiri."},
+            {"type": "match", "pairs": [["stage", "bosqich"], ["raw material", "xomashyo"], ["harvest", "hosil yig'moq"], ["dye", "bo'yamoq"], ["distribute", "tarqatmoq"]]},
+            {"type": "order", "uz": "Keyinchalik mahsulot qadoqlanadi va tarqatiladi.", "words": ["The", "product", "is", "subsequently", "packed", "and", "distributed"], "answer": "The product is subsequently packed and distributed"},
+            {"type": "choice", "audio": true, "q": "What is the second stage of the process?", "say": "In the first stage, the clay is dug from the ground. It is then mixed with sand and water, and finally the mixture is shaped into bricks.", "options": ["The clay is dug from the ground.", "The clay is mixed with sand and water.", "The bricks are shaped."], "answer": 1, "explain_uz": "\"It is then mixed with sand and water\"."},
+            {"type": "listen", "answer": ["The process consists of five stages.", "The process consists of five stages", "The process consists of 5 stages"], "uz": "Eshiting va yozing"},
+            {"type": "translate", "uz": "Oxirgi bosqichda shishalar do'konlarga yetkaziladi.", "answer": ["In the final stage the bottles are delivered to shops", "In the final stage, the bottles are delivered to shops", "At the final stage the bottles are delivered to shops", "In the final stage the bottles are distributed to shops", "Finally the bottles are delivered to shops", "In the last stage the bottles are delivered to shops"], "explain_uz": "Passiv: are **delivered / distributed**."},
+            {"type": "speak", "text": "Overall, the process consists of six stages, beginning with harvesting and ending with distribution.", "uz": "Overview'ni ovoz chiqarib ayting"},
+            {
+              "type": "write",
+              "prompt_uz": "Choy ishlab chiqarish jarayonini tasvirlang (Task 1 uslubida, 100+ so'z): 1) barglar teriladi 2) quritiladi 3) eziladi 4) fermentatsiya qilinadi 5) qadoqlanadi 6) do'konlarga jo'natiladi. Overview, passiv va ketma-ketlik so'zlarini ishlating.",
+              "prompt": "The diagram shows how tea is produced. Summarise the information by selecting and reporting the main features.",
+              "min_words": 100,
+              "example": "The diagram illustrates the stages involved in the production of tea. Overall, there are six stages in the process, beginning with the picking of tea leaves and ending with the delivery of the packaged product to shops. At the first stage, fresh green leaves are picked by hand on tea plantations. They are then spread out and dried for several hours to remove moisture. After that, the dried leaves are crushed by rollers, which releases their natural juices. Subsequently, the crushed leaves are left to ferment, during which time they turn dark brown. Once fermentation has been completed, the tea is packed into boxes or bags. In the final stage, the packaged tea is transported to shops and supermarkets."
+            }
+          ]
+        },
+        {
+          "slug": "b2-problem-solution",
+          "title": "Problem and solution essays",
+          "title_uz": "IELTS Task 2: muammo va yechim inshosi",
+          "goal_uz": "Muammo–yechim inshosini rejalashtirasiz va sabab–oqibat iboralari (lead to, result in, due to) bilan fikrni akademik ifodalaysiz.",
+          "minutes": 15,
+          "words": [
+            {"en": "traffic congestion", "uz": "tirbandlik", "ipa": "/ˈtræfɪk kənˈdʒestʃən/", "ex": "Traffic congestion is a serious problem in Tashkent."},
+            {"en": "lead to", "uz": "... ga olib kelmoq", "ipa": "/liːd tuː/", "ex": "Stress can lead to health problems."},
+            {"en": "result in", "uz": "... bilan natijalanmoq", "ipa": "/rɪˈzʌlt ɪn/", "ex": "Heavy rain resulted in floods."},
+            {"en": "due to", "uz": "... tufayli, sababli", "ipa": "/djuː tuː/", "ex": "The flight was delayed due to fog."},
+            {"en": "tackle", "uz": "(muammo) hal qilishga kirishmoq", "ipa": "/ˈtækl/", "ex": "The government must tackle unemployment."},
+            {"en": "measure", "uz": "chora", "ipa": "/ˈmeʒə/", "ex": "Strict measures are needed."},
+            {"en": "incentive", "uz": "rag'bat", "ipa": "/ɪnˈsentɪv/", "ex": "Tax incentives encourage green energy."},
+            {"en": "urban", "uz": "shahar (ga oid)", "ipa": "/ˈɜːbən/", "ex": "Urban areas are growing quickly."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "reading",
+              "title": "Model body paragraphs",
+              "text": "Task: Traffic congestion is a growing problem in many cities. What are the causes, and what measures can be taken to tackle it?\n\nThe main cause of congestion is the rapid increase in private car ownership. As incomes rise, more families buy cars, which inevitably leads to overcrowded roads, particularly during rush hours. This problem is made worse by poor public transport: due to infrequent buses and limited metro lines, many commuters feel they have no alternative to driving.\n\nThere are, however, several effective solutions. Firstly, governments should invest heavily in public transport, as a fast and affordable metro system would encourage people to leave their cars at home. Secondly, financial incentives could be introduced. For instance, cities such as London and Singapore charge drivers to enter the centre at busy times, which has resulted in a significant reduction in traffic.",
+              "glossary": {"rapid": "tez", "ownership": "egalik", "inevitably": "muqarrar ravishda", "rush hours": "tig'iz soatlar", "infrequent": "kam qatnaydigan", "commuters": "ishga qatnovchilar", "invest heavily": "katta sarmoya kiritmoq", "affordable": "hamyonbop", "reduction": "kamayish"},
+              "uz": "Vazifa: Ko'p shaharlarda tirbandlik o'sib borayotgan muammo. Sabablari nimada va unga qarshi qanday choralar ko'rish mumkin?\n\nTirbandlikning asosiy sababi — shaxsiy avtomobillar sonining tez ortishi. Daromad oshgani sari ko'proq oilalar mashina sotib oladi, bu esa muqarrar ravishda, ayniqsa tig'iz soatlarda yo'llarning to'lib ketishiga olib keladi. Jamoat transportining sustligi muammoni yanada kuchaytiradi: avtobuslar kam qatnashi va metro liniyalari cheklangani sababli ko'p odamlar mashinadan boshqa iloj yo'q deb hisoblaydi.\n\nBiroq bir nechta samarali yechim mavjud. Birinchidan, hukumatlar jamoat transportiga katta sarmoya kiritishi kerak, chunki tez va hamyonbop metro odamlarni mashinasini uyda qoldirishga undaydi. Ikkinchidan, moliyaviy rag'batlar joriy etilishi mumkin. Masalan, London va Singapur kabi shaharlar tig'iz vaqtda markazga kirgan haydovchilardan to'lov oladi, bu esa tirbandlikning sezilarli kamayishiga olib kelgan."
+            },
+            {"type": "choice", "q": "According to the essay, what is the main cause of congestion?", "options": ["Bad roads", "More people owning cars", "Expensive petrol"], "answer": 1, "explain_uz": "\"the rapid increase in private car ownership\"."},
+            {"type": "choice", "q": "What is the purpose of the London and Singapore example?", "options": ["To show a problem", "To support a solution with evidence", "To introduce the topic"], "answer": 1, "explain_uz": "Misol yechim samarali ekanini isbotlaydi — bu Task Response ballini oshiradi."},
+            {
+              "type": "grammar",
+              "title_uz": "Sabab va oqibat iboralari",
+              "body_uz": "**Sabab → oqibat** (fe'l): X **leads to / results in / causes** Y. — Car ownership **leads to** congestion.\n**Oqibat ← sabab**: Y **results from / is caused by** X. — Congestion **results from** car ownership.\n**due to / because of / owing to + OT**: **due to** poor transport. (\"due to people drive\" — xato! → **because** people drive)\n**because / as / since + GAP (ega + fe'l)**: **as** incomes rise...\n**, which leads to** — oldingi butun gapga ishora: More people buy cars, **which leads to** traffic jams.\n**so / therefore / as a result** — natija: Buses are slow. **As a result**, people drive.\nYechim uchun: **should / could + be + V3** (passiv): Stricter laws **should be introduced**.",
+              "examples": [
+                {"en": "Poor diet can lead to serious health problems.", "uz": "Noto'g'ri ovqatlanish jiddiy sog'liq muammolariga olib kelishi mumkin."},
+                {"en": "Many flights were cancelled due to the storm.", "uz": "Bo'ron tufayli ko'plab reyslar bekor qilindi."},
+                {"en": "Prices rose sharply, which resulted in protests.", "uz": "Narxlar keskin oshdi, bu esa noroziliklarga sabab bo'ldi."},
+                {"en": "Free bicycles could be provided in city centres.", "uz": "Shahar markazlarida bepul velosipedlar taqdim etilishi mumkin."}
+              ]
+            },
+            {"type": "choice", "q": "The match was cancelled ___ heavy rain.", "options": ["because", "due to", "so"], "answer": 1, "explain_uz": "heavy rain — ot birikmasi → **due to**."},
+            {"type": "choice", "q": "Which sentence is correct?", "options": ["Unemployment results in crime.", "Unemployment results from crime.", "Unemployment is resulted crime."], "answer": 0, "explain_uz": "Sabab **results in** oqibat."},
+            {"type": "gap", "text": "Spending too much time online can ___ to sleep problems.", "answer": ["lead"], "uz": "Internetda juda ko'p vaqt o'tkazish uyqu muammolariga olib kelishi mumkin.", "explain_uz": "**lead to**."},
+            {"type": "gap", "text": "More people moved to cities, ___ led to a housing shortage.", "answer": ["which"], "uz": "Ko'proq odamlar shaharlarga ko'chdi, bu esa uy-joy tanqisligiga olib keldi.", "explain_uz": "Butun gapga ishora → **, which**."},
+            {"type": "gap", "text": "Stricter laws should ___ introduced to reduce pollution.", "answer": ["be"], "uz": "Ifloslanishni kamaytirish uchun qattiqroq qonunlar joriy etilishi kerak.", "explain_uz": "should + **be** + V3."},
+            {"type": "choice", "q": "Which is the best topic sentence for a solutions paragraph?", "options": ["Cars are very popular nowadays.", "There are, however, several measures that could tackle this problem.", "In my country there are many cars."], "answer": 1, "explain_uz": "Topic sentence paragraf nima haqida ekanini aniq aytadi."},
+            {"type": "match", "pairs": [["tackle", "hal qilishga kirishmoq"], ["measure", "chora"], ["incentive", "rag'bat"], ["urban", "shaharga oid"], ["due to", "tufayli"]]},
+            {"type": "order", "uz": "Kam qatnaydigan avtobuslar tufayli ko'p odamlar mashina haydaydi.", "words": ["Due", "to", "infrequent", "buses", "many", "people", "drive"], "answer": "Due to infrequent buses many people drive"},
+            {"type": "choice", "audio": true, "q": "What solution does the speaker suggest?", "say": "In my view, the most effective way to tackle obesity would be to tax sugary drinks and use the money to build sports facilities.", "options": ["Banning fast food", "Taxing sugary drinks", "Closing sports centres"], "answer": 1, "explain_uz": "\"to tax sugary drinks\"."},
+            {"type": "listen", "answer": ["This inevitably leads to overcrowded roads.", "This inevitably leads to overcrowded roads"], "uz": "Eshiting va yozing"},
+            {"type": "translate", "uz": "Hukumat jamoat transportiga sarmoya kiritishi kerak.", "answer": ["The government should invest in public transport", "Governments should invest in public transport", "The government must invest in public transport"], "explain_uz": "invest **in** + ot."},
+            {"type": "speak", "text": "The main cause of this problem is the rapid growth of cities, which leads to overcrowded roads.", "uz": "Ovoz chiqarib ayting"},
+            {
+              "type": "write",
+              "prompt_uz": "Task 2 uchun ikkita asosiy paragraf yozing (150+ so'z): \"Ko'p yoshlar maktabni tugatgach ish topa olmaydi. Sabablari nimada va qanday yechimlar bor?\" Birinchi paragraf — sabablar, ikkinchisi — yechimlar va misol.",
+              "prompt": "Many young people cannot find a job after finishing school. What are the causes of this problem, and what solutions can you suggest?",
+              "min_words": 150,
+              "example": "One of the main causes of youth unemployment is the gap between what schools teach and what employers need. Many graduates have theoretical knowledge but lack practical skills, such as using modern software or working in a team. This mismatch inevitably leads to employers preferring older, experienced candidates. In addition, due to the rapid growth of the population in countries like Uzbekistan, the number of young job seekers is increasing faster than the number of new jobs.\n\nThere are, however, several measures that could tackle this problem. Firstly, schools should work more closely with local businesses, so that students can gain practical experience through internships before they graduate. Secondly, governments could offer financial incentives to companies that hire young people. For example, in Germany, the dual education system combines classroom study with paid work in a company, which has resulted in one of the lowest youth unemployment rates in Europe. Measures like these would help young people move smoothly from education into employment."
+            }
+          ]
+        },
+        {
+          "slug": "b2-regrets",
+          "title": "If only I had known...",
+          "title_uz": "Afsus: Third Conditional va wish",
+          "goal_uz": "O'tmishdagi xayoliy vaziyat va afsuslarni ifodalaysiz: If I had studied, I would have passed. I wish I had... (Speaking Part 2–3 uchun foydali).",
+          "minutes": 13,
+          "words": [
+            {"en": "regret", "uz": "afsus; afsuslanmoq", "ipa": "/rɪˈɡret/", "ex": "I regret not learning English earlier."},
+            {"en": "opportunity", "uz": "imkoniyat", "ipa": "/ˌɒpəˈtjuːnəti/", "ex": "I missed a great opportunity."},
+            {"en": "miss", "uz": "qo'ldan boy bermoq; ulgurmay qolmoq", "ipa": "/mɪs/", "ex": "We missed the last train."},
+            {"en": "turn down", "uz": "rad etmoq", "ipa": "/tɜːn daʊn/", "ex": "She turned down the job offer."},
+            {"en": "in hindsight", "uz": "orqaga qarab, endi o'ylasam", "ipa": "/ɪn ˈhaɪndsaɪt/", "ex": "In hindsight, it was the wrong decision."},
+            {"en": "make a mistake", "uz": "xato qilmoq", "ipa": "/meɪk ə mɪˈsteɪk/", "ex": "Everyone makes mistakes."},
+            {"en": "look back", "uz": "o'tmishga nazar tashlamoq", "ipa": "/lʊk bæk/", "ex": "When I look back, I feel proud."},
+            {"en": "turning point", "uz": "burilish nuqtasi", "ipa": "/ˈtɜːnɪŋ pɔɪnt/", "ex": "That trip was a turning point in my life."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "dialogue",
+              "title": "Speaking Part 3: decisions",
+              "context_uz": "IELTS imtihonchisi nomzoddan hayotdagi qarorlar haqida so'rayapti.",
+              "lines": [
+                {"who": "Examiner", "en": "Have you ever made a decision that you later regretted?", "uz": "Keyin afsuslangan qaroringiz bo'lganmi?"},
+                {"who": "Candidate", "en": "Yes, definitely. When I was seventeen, I was offered a place on a summer programme in Malaysia, but I turned it down because I was nervous.", "uz": "Ha, albatta. O'n yetti yoshimda Malayziyadagi yozgi dasturga taklif qilindim, lekin hayajonlanganim uchun rad etdim."},
+                {"who": "Examiner", "en": "Why do you regret it?", "uz": "Nega afsuslanasiz?"},
+                {"who": "Candidate", "en": "Well, in hindsight, if I had gone, I would have improved my English much faster. I wish I had been braver.", "uz": "Endi o'ylasam, agar borganimda, inglizchamni ancha tezroq yaxshilagan bo'lardim. Qaniydi, jasurroq bo'lganimda."},
+                {"who": "Examiner", "en": "Do you think people learn from their regrets?", "uz": "Sizningcha, odamlar afsuslaridan saboq oladimi?"},
+                {"who": "Candidate", "en": "I think so. If I hadn't missed that opportunity, I might not have applied for this exam so seriously. So in a way, it was a turning point.", "uz": "Menimcha, ha. O'sha imkoniyatni boy bermaganimda, bu imtihonga bunchalik jiddiy tayyorlanmagan bo'lishim mumkin edi. Shu ma'noda bu burilish nuqtasi bo'ldi."}
+              ]
+            },
+            {"type": "choice", "q": "Why did the candidate turn down the programme?", "options": ["It was too expensive.", "The candidate was nervous.", "The candidate had exams."], "answer": 1, "explain_uz": "\"I turned it down because I was nervous\"."},
+            {"type": "choice", "q": "What would have happened if the candidate had gone?", "options": ["Their English would have improved faster.", "They would have found a job.", "They would have stayed in Malaysia."], "answer": 0, "explain_uz": "\"I would have improved my English much faster\"."},
+            {
+              "type": "grammar",
+              "title_uz": "Third Conditional va wish + Past Perfect",
+              "body_uz": "**Third Conditional** — o'tmishdagi **bo'lmagan** voqea va uning xayoliy natijasi (\"...ganimda, ...gan bo'lardim\").\nTuzilma: **If + had + V3, would have + V3**.\nIf I **had studied**, I **would have passed**. (Aslida o'qimadim, o'tmadim.)\nInkor: If she **hadn't missed** the bus, she **wouldn't have been** late.\n**might / could have + V3** — ehtimollik: I **might have won**.\n**I wish / If only + Past Perfect** — o'tmish haqida afsus: I **wish I had listened** to my teacher. **If only** I **hadn't said** that!\nTaqqoslang: I wish I **had** a car (hozir — Past Simple) · I wish I **had had** a car (o'tmishda — Past Perfect).\nXato: \"If I would have known...\" — **if** qismida **would** yo'q!",
+              "examples": [
+                {"en": "If we had left earlier, we wouldn't have missed the flight.", "uz": "Ertaroq chiqqanimizda, reysdan qolib ketmagan bo'lardik."},
+                {"en": "I wish I had studied harder at school.", "uz": "Qaniydi, maktabda qattiqroq o'qiganimda."},
+                {"en": "If she hadn't helped me, I could have failed.", "uz": "U menga yordam bermaganida, yiqilishim mumkin edi."},
+                {"en": "If only I had known about the sale!", "uz": "Qaniydi, chegirma haqida bilganimda!"}
+              ]
+            },
+            {"type": "choice", "q": "If I ___ the alarm, I wouldn't have been late.", "options": ["heard", "had heard", "would have heard"], "answer": 1, "explain_uz": "If + **had + V3**."},
+            {"type": "choice", "q": "Which sentence talks about a regret about the past?", "options": ["I wish I had a bigger flat.", "I wish I had taken that job.", "I wish I could swim."], "answer": 1, "explain_uz": "wish + **had + V3** = o'tmish haqida afsus."},
+            {"type": "gap", "text": "If he had studied, he would ___ passed the exam.", "answer": ["have"], "uz": "U o'qiganida, imtihondan o'tgan bo'lardi.", "explain_uz": "would **have** + V3."},
+            {"type": "gap", "text": "I wish I ___ listened to my parents.", "answer": ["had"], "uz": "Qaniydi, ota-onamning gapiga quloq solganimda.", "explain_uz": "wish + **had** + V3."},
+            {"type": "gap", "text": "If we hadn't ___ the train, we would have arrived on time. (miss)", "answer": ["missed"], "uz": "Poyezddan qolmaganimizda, vaqtida yetib kelgan bo'lardik.", "explain_uz": "hadn't + **missed**."},
+            {"type": "choice", "q": "Which is correct?", "options": ["If I would have known, I would have helped.", "If I had known, I would have helped.", "If I knew, I would have help."], "answer": 1, "explain_uz": "If + had known, would have + helped."},
+            {"type": "match", "pairs": [["regret", "afsus"], ["opportunity", "imkoniyat"], ["turn down", "rad etmoq"], ["in hindsight", "endi o'ylasam"], ["turning point", "burilish nuqtasi"]]},
+            {"type": "order", "uz": "Qaniydi, o'sha imkoniyatni boy bermaganimda.", "words": ["I", "wish", "I", "hadn't", "missed", "that", "opportunity"], "answer": "I wish I hadn't missed that opportunity"},
+            {"type": "choice", "audio": true, "q": "What does the woman regret?", "say": "Looking back, I wish I had chosen medicine instead of law. If I had become a doctor, I would have felt more useful.", "options": ["Studying medicine", "Not studying medicine", "Becoming a doctor"], "answer": 1, "explain_uz": "\"I wish I had chosen medicine instead of law\" — u huquqni tanlagan."},
+            {"type": "listen", "answer": ["If I had known, I would have come earlier.", "If I had known I would have come earlier", "If I'd known, I would have come earlier", "If I had known, I'd have come earlier"], "uz": "Eshiting va yozing"},
+            {"type": "translate", "uz": "Agar men ertaroq turganimda, avtobusga ulgurgan bo'lardim.", "answer": ["If I had got up earlier I would have caught the bus", "If I had woken up earlier I would have caught the bus", "If I had got up earlier, I would have caught the bus", "If I'd got up earlier I would have caught the bus", "If I had woken up earlier, I would have caught the bus"], "explain_uz": "If + had + V3, would have + V3 (catch → **caught**)."},
+            {"type": "speak", "text": "In hindsight, if I had started learning English earlier, I would have had more opportunities.", "uz": "Ovoz chiqarib ayting"},
+            {
+              "type": "write",
+              "prompt_uz": "Speaking Part 2 uchun javob tayyorlang (120+ so'z): \"Describe a decision you made that you later regretted.\" Nima bo'ldi, nega bu qarorni qildingiz, nima o'zgargan bo'lardi (Third Conditional, I wish).",
+              "prompt": "Describe a decision you made that you later regretted. You should say what the decision was, when you made it, why you made it, and explain why you regret it.",
+              "min_words": 120,
+              "example": "I'd like to talk about a decision I made about three years ago, when I was in my final year at school. A friend of mine invited me to join a free robotics club at a local IT centre, but I turned it down because I thought it would take too much time away from my exam preparation. At the time it seemed like a sensible choice. However, in hindsight, it was a mistake. My friend went to the club every week, and by the end of the year he had built his own small robot and won a national competition. If I had joined, I would have learned programming much earlier, and I might have chosen computer science at university. I really wish I had been more open to new experiences. Since then, I've tried to say yes to opportunities, even when they seem difficult."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

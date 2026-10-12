@@ -1,0 +1,49 @@
+{
+  "slug": "a2-samarkand-trip",
+  "level": "A2",
+  "order": 3,
+  "emoji": "🕌",
+  "minutes": 5,
+  "title": "A tourist in Samarkand",
+  "title_uz": "Samarqanddagi sayyoh",
+  "paragraphs": [
+    {
+      "en": "Last spring, Emma, a student from England, visited Samarkand for the first time. She arrived by the fast train from Tashkent. The journey took only two hours, and it was very comfortable.",
+      "uz": "O'tgan bahorda Angliyalik talaba Emma birinchi marta Samarqandga bordi. U Toshkentdan tezyurar poyezdda keldi. Yo'l atigi ikki soat davom etdi va juda qulay edi."
+    },
+    {
+      "en": "On her first morning, she went to the Registan. She couldn't believe her eyes. The blue tiles were more beautiful than in any photo. She took more than a hundred pictures!",
+      "uz": "Birinchi kuni ertalab u Registonga bordi. U ko'zlariga ishonolmadi. Moviy koshinlar har qanday suratdagidan ham chiroyliroq edi. U yuzdan ortiq surat oldi!"
+    },
+    {
+      "en": "Then she got lost in the old streets. She didn't speak Uzbek or Russian, so she showed a map to a young man. His name was Farrukh. He spoke good English and he walked with her to Siyob Bazaar.",
+      "uz": "Keyin u eski ko'chalarda adashib qoldi. U o'zbekcha ham, ruscha ham bilmasdi, shuning uchun bir yigitga xaritani ko'rsatdi. Uning ismi Farrux edi. U inglizchani yaxshi gapirardi va u bilan birga Siyob bozorigacha piyoda bordi."
+    },
+    {
+      "en": "At the bazaar, Farrukh helped her to buy some dried apricots and a round Samarkand bread. \"This bread is famous,\" he said. \"It stays fresh for a long time.\" Emma tried it. It was delicious.",
+      "uz": "Bozorda Farrux unga o'rik qoqi va dumaloq Samarqand nonini sotib olishga yordam berdi. \"Bu non mashhur,\" dedi u. \"U uzoq vaqt yangi turadi.\" Emma tatib ko'rdi. Juda mazali edi."
+    },
+    {
+      "en": "Emma stayed in Samarkand for four days. When she got home, she told her friends, \"The buildings were amazing, but the people were even better. I have to go back!\"",
+      "uz": "Emma Samarqandda to'rt kun qoldi. Uyiga qaytgach, do'stlariga: \"Binolar ajoyib edi, lekin odamlar bundan ham zo'r edi. Albatta qaytib borishim kerak!\" dedi."
+    }
+  ],
+  "glossary": {
+    "journey": "yo'l, safar",
+    "comfortable": "qulay",
+    "believe": "ishonmoq",
+    "tiles": "koshinlar",
+    "got lost": "adashib qoldi",
+    "map": "xarita",
+    "dried apricots": "o'rik qoqi",
+    "famous": "mashhur",
+    "fresh": "yangi (non)",
+    "amazing": "ajoyib"
+  },
+  "questions": [
+    {"q": "How did Emma travel from Tashkent?", "options": ["By plane", "By fast train", "By bus"], "answer": 1},
+    {"q": "Why did she show a map to Farrukh?", "options": ["She got lost.", "She wanted a taxi.", "She was hungry."], "answer": 0},
+    {"q": "What is special about Samarkand bread?", "options": ["It is very cheap.", "It stays fresh for a long time.", "It is sweet."], "answer": 1},
+    {"q": "What did Emma like most?", "options": ["The food", "The train", "The people"], "answer": 2}
+  ]
+}

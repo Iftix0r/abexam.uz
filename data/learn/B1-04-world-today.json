@@ -1,0 +1,203 @@
+{
+  "level": "B1",
+  "units": [
+    {
+      "slug": "b1-world-today",
+      "title": "Technology, news and the planet",
+      "title_uz": "Texnologiya, yangiliklar va sayyora",
+      "icon": "globe",
+      "lessons": [
+        {
+          "slug": "b1-technology",
+          "title": "Made in Uzbekistan",
+          "title_uz": "Texnologiya va Passive Voice",
+          "goal_uz": "Narsalar qanday ishlab chiqarilishi va kim tomonidan yaratilgani haqida gapirasiz: Passive Voice (is made / was invented).",
+          "minutes": 12,
+          "words": [
+            {"en": "invent", "uz": "ixtiro qilmoq", "ipa": "/ɪnˈvent/", "ex": "The telephone was invented in 1876."},
+            {"en": "produce", "uz": "ishlab chiqarmoq", "ipa": "/prəˈdjuːs/", "ex": "Cars are produced in Asaka."},
+            {"en": "device", "uz": "qurilma", "ipa": "/dɪˈvaɪs/", "ex": "Smartphones are useful devices."},
+            {"en": "factory", "uz": "zavod, fabrika", "ipa": "/ˈfæktri/", "ex": "My uncle works in a car factory."},
+            {"en": "develop", "uz": "ishlab chiqmoq, rivojlantirmoq", "ipa": "/dɪˈveləp/", "ex": "The app was developed by students."},
+            {"en": "download", "uz": "yuklab olmoq", "ipa": "/ˌdaʊnˈləʊd/", "ex": "The app has been downloaded a million times."},
+            {"en": "screen", "uz": "ekran", "ipa": "/skriːn/", "ex": "The screen is broken."},
+            {"en": "battery", "uz": "batareya, akkumulyator", "ipa": "/ˈbætri/", "ex": "My phone battery is low."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "reading",
+              "title": "A smartphone's journey",
+              "text": "Have you ever thought about where your phone comes from? Most smartphones are designed in one country, but they are made in many others. The screens are produced in South Korea or Japan, the batteries are often made in China, and the parts are put together in huge factories. Some phones are even assembled in Uzbekistan now. The software is developed by thousands of programmers around the world. When the phone is finished, it is tested, packed in a box and sent to shops. The first mobile phone was invented in 1973 — it weighed more than a kilo! Today, over a billion smartphones are sold every year.",
+              "glossary": {"designed": "loyihalangan", "parts": "qismlar", "put together": "yig'iladi", "huge": "ulkan", "assembled": "yig'ilgan", "software": "dasturiy ta'minot", "tested": "sinovdan o'tkaziladi", "weighed": "og'irligi ... edi", "sold": "sotiladi"},
+              "uz": "Telefoningiz qayerdan kelganini hech o'ylab ko'rganmisiz? Ko'pchilik smartfonlar bir mamlakatda loyihalanadi, lekin boshqa ko'p mamlakatlarda yasaladi. Ekranlar Janubiy Koreya yoki Yaponiyada, batareyalar ko'pincha Xitoyda ishlab chiqariladi, qismlar esa ulkan zavodlarda yig'iladi. Ba'zi telefonlar hozir hatto O'zbekistonda ham yig'ilmoqda. Dasturiy ta'minot butun dunyodagi minglab dasturchilar tomonidan ishlab chiqiladi. Telefon tayyor bo'lgach, u sinovdan o'tkaziladi, qutiga joylanadi va do'konlarga jo'natiladi. Birinchi mobil telefon 1973-yilda ixtiro qilingan — uning og'irligi bir kilodan ortiq edi! Bugun har yili bir milliarddan ortiq smartfon sotiladi."
+            },
+            {"type": "choice", "q": "Where are the screens often produced?", "options": ["In China", "In South Korea or Japan", "In Uzbekistan"], "answer": 1, "explain_uz": "\"The screens are produced in South Korea or Japan\"."},
+            {"type": "choice", "q": "When was the first mobile phone invented?", "options": ["In 1876", "In 1973", "In 2007"], "answer": 1, "explain_uz": "\"was invented in 1973\"."},
+            {
+              "type": "grammar",
+              "title_uz": "Passive Voice — majhul nisbat",
+              "body_uz": "Ish **kim** qilgani emas, **nima** bo'lgani muhim bo'lsa ishlatiladi. O'zbekchadagi **-il / -in** qo'shimchasiga o'xshaydi: yasaladi, ixtiro qilingan.\nTuzilma: **be + V3**.\nHozirgi: **is / are + V3** — Cars **are made** in Asaka.\nO'tgan: **was / were + V3** — The phone **was invented** in 1973.\nKim qilgani kerak bo'lsa — **by**: The app was developed **by** students.\nAktiv → passiv: They **build** houses. → Houses **are built**.\nXato: \"The car made in Japan\" — **be** tushib qolgan! To'g'ri: The car **is / was** made in Japan.",
+              "examples": [
+                {"en": "English is spoken all over the world.", "uz": "Ingliz tilida butun dunyoda gapiriladi."},
+                {"en": "This bridge was built in 1960.", "uz": "Bu ko'prik 1960-yilda qurilgan."},
+                {"en": "The rooms are cleaned every day.", "uz": "Xonalar har kuni tozalanadi."},
+                {"en": "Harry Potter was written by J.K. Rowling.", "uz": "\"Garri Potter\" J.K. Rouling tomonidan yozilgan."}
+              ]
+            },
+            {"type": "choice", "q": "Plov ___ with rice, meat and carrots.", "options": ["makes", "is made", "made"], "answer": 1, "explain_uz": "Palov o'zi qilmaydi → passiv: **is made**."},
+            {"type": "choice", "q": "The Eiffel Tower ___ in 1889.", "options": ["was built", "is built", "built"], "answer": 0, "explain_uz": "O'tgan zamon passiv: **was built**."},
+            {"type": "gap", "text": "These phones are ___ in China. (make)", "answer": ["made"], "uz": "Bu telefonlar Xitoyda yasaladi.", "explain_uz": "are + V3: **made**."},
+            {"type": "gap", "text": "The light bulb ___ invented by Thomas Edison.", "answer": ["was"], "uz": "Lampochka Tomas Edison tomonidan ixtiro qilingan.", "explain_uz": "Birlik, o'tgan → **was**."},
+            {"type": "gap", "text": "The app was developed ___ two students from Tashkent.", "answer": ["by"], "uz": "Ilova Toshkentlik ikki talaba tomonidan ishlab chiqilgan.", "explain_uz": "Bajaruvchi → **by**."},
+            {"type": "choice", "q": "Which sentence is correct?", "options": ["My car was stolen last night.", "My car stolen last night.", "My car was stole last night."], "answer": 0, "explain_uz": "was + V3 (steal → stole → **stolen**)."},
+            {"type": "match", "pairs": [["invent", "ixtiro qilmoq"], ["produce", "ishlab chiqarmoq"], ["device", "qurilma"], ["factory", "zavod"], ["battery", "batareya"]]},
+            {"type": "order", "uz": "Bu mashinalar O'zbekistonda ishlab chiqariladi.", "words": ["These", "cars", "are", "produced", "in", "Uzbekistan"], "answer": "These cars are produced in Uzbekistan"},
+            {"type": "choice", "audio": true, "q": "What happened to the woman's laptop?", "say": "I can't send you the file today. My laptop was stolen from my car yesterday afternoon.", "options": ["It was broken.", "It was stolen.", "It was sold."], "answer": 1, "explain_uz": "\"My laptop was stolen\"."},
+            {"type": "listen", "answer": ["The first phone was invented in 1876.", "The first phone was invented in 1876", "The first telephone was invented in 1876"], "uz": "Eshiting va yozing"},
+            {"type": "translate", "uz": "Bu kitob 1990-yilda yozilgan.", "answer": ["This book was written in 1990", "The book was written in 1990"], "explain_uz": "O'tgan passiv: was + **written**."},
+            {"type": "speak", "text": "Most smartphones are designed in one country but made in many others.", "uz": "Ovoz chiqarib ayting"},
+            {
+              "type": "write",
+              "prompt_uz": "Sevimli qurilmangiz yoki buyumingiz haqida yozing (6–7 gap): u qayerda yasalgan, kim tomonidan ixtiro qilingan, nima uchun ishlatiladi. Passive Voice'dan foydalaning.",
+              "prompt": "Describe a device or object you use every day. Where is it made? When was it invented?",
+              "min_words": 60,
+              "example": "The device I use most is my laptop. It was made in China, but it was designed in the USA. Laptops were invented in the 1980s, and the first ones were very heavy. My laptop is used for studying, watching films and talking to my friends. It was given to me by my parents when I started university. I think it is one of the most useful things I own."
+            }
+          ]
+        },
+        {
+          "slug": "b1-news",
+          "title": "She said that...",
+          "title_uz": "Yangiliklar va ko'chirma gap (Reported Speech)",
+          "goal_uz": "Birovning gapini boshqaga yetkazasiz: He said (that) he was tired. Yangilik va xabarlarni qayta aytib bera olasiz.",
+          "minutes": 12,
+          "words": [
+            {"en": "headline", "uz": "sarlavha (gazetada)", "ipa": "/ˈhedlaɪn/", "ex": "Did you see today's headlines?"},
+            {"en": "announce", "uz": "e'lon qilmoq", "ipa": "/əˈnaʊns/", "ex": "The school announced a new holiday."},
+            {"en": "according to", "uz": "... ga ko'ra", "ipa": "/əˈkɔːdɪŋ tuː/", "ex": "According to the news, it will snow."},
+            {"en": "report", "uz": "xabar bermoq; hisobot", "ipa": "/rɪˈpɔːt/", "ex": "The TV reported a big fire."},
+            {"en": "claim", "uz": "da'vo qilmoq", "ipa": "/kleɪm/", "ex": "He claims he saw a UFO."},
+            {"en": "fake news", "uz": "yolg'on xabar", "ipa": "/feɪk njuːz/", "ex": "Don't share fake news."},
+            {"en": "source", "uz": "manba", "ipa": "/sɔːs/", "ex": "Always check the source."},
+            {"en": "spread", "uz": "tarqalmoq, tarqatmoq", "ipa": "/spred/", "ex": "The news spread very quickly."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "dialogue",
+              "title": "Did you hear the news?",
+              "context_uz": "Ikki talaba Telegram'da o'qigan xabarlarini muhokama qilishyapti.",
+              "lines": [
+                {"who": "Jasur", "en": "Did you hear? Our dean said there would be no classes on Friday!", "uz": "Eshitdingmi? Dekanimiz juma kuni dars bo'lmasligini aytibdi!"},
+                {"who": "Malika", "en": "Really? Who told you that?", "uz": "Rostdanmi? Buni senga kim aytdi?"},
+                {"who": "Jasur", "en": "I saw it in a Telegram group. A student wrote that the university was closing for a holiday.", "uz": "Bir Telegram guruhda ko'rdim. Bir talaba universitet bayram uchun yopilayotganini yozibdi."},
+                {"who": "Malika", "en": "Hmm. I called the office this morning. The secretary told me that classes were normal this week.", "uz": "Hmm. Men bugun ertalab ofisga qo'ng'iroq qildim. Kotiba bu hafta darslar odatdagidek ekanini aytdi."},
+                {"who": "Jasur", "en": "So it's fake news?", "uz": "Demak, bu yolg'on xabarmi?"},
+                {"who": "Malika", "en": "Probably. She said they would announce any changes on the official website.", "uz": "Ehtimol. U har qanday o'zgarishni rasmiy saytda e'lon qilishlarini aytdi."},
+                {"who": "Jasur", "en": "You're right. I should always check the source.", "uz": "Haqsan. Doim manbani tekshirishim kerak."}
+              ]
+            },
+            {"type": "choice", "q": "Where did Jasur read the news?", "options": ["On the official website", "In a Telegram group", "In a newspaper"], "answer": 1, "explain_uz": "\"I saw it in a Telegram group.\""},
+            {"type": "choice", "q": "What did the secretary say?", "options": ["That there were no classes on Friday", "That classes were normal this week", "That the university was closing"], "answer": 1, "explain_uz": "\"classes were normal this week\"."},
+            {
+              "type": "grammar",
+              "title_uz": "Reported Speech — ko'chirma gap",
+              "body_uz": "Birovning gapini yetkazganda zamon odatda **bir qadam orqaga** suriladi:\nam/is → **was** · are → **were** · do/does → **did**\nwill → **would** · can → **could** · Past Simple → **had + V3** (yoki o'zgarmaydi)\n\"I **am** tired,\" he said. → He said (that) he **was** tired.\n\"We **will** call you.\" → They said they **would** call me.\nOlmoshlar ham o'zgaradi: I → he/she, my → his/her.\n**say** va **tell** farqi: **say** (something) — She **said** that... · **tell** + kishi — She **told me** that... (\"She said me\" — xato!)\nVaqt so'zlari: today → that day, tomorrow → the next day, now → then.",
+              "examples": [
+                {"en": "\"I live in Samarkand.\" → She said she lived in Samarkand.", "uz": "U Samarqandda yashashini aytdi."},
+                {"en": "\"I can help you.\" → He told me he could help me.", "uz": "U menga yordam bera olishini aytdi."},
+                {"en": "\"It will rain tomorrow.\" → They said it would rain the next day.", "uz": "Ertasi kuni yomg'ir yog'ishini aytishdi."},
+                {"en": "\"We are busy.\" → They said they were busy.", "uz": "Ular band ekanliklarini aytishdi."}
+              ]
+            },
+            {"type": "choice", "q": "\"I am hungry,\" Ali said. → Ali said he ___ hungry.", "options": ["is", "was", "were"], "answer": 1, "explain_uz": "am → **was**."},
+            {"type": "choice", "q": "Which is correct?", "options": ["She said me that she was busy.", "She told me that she was busy.", "She told that she was busy."], "answer": 1, "explain_uz": "**tell** + kishi: told **me**."},
+            {"type": "gap", "text": "\"I will call you.\" → He said he ___ call me.", "answer": ["would"], "uz": "U menga qo'ng'iroq qilishini aytdi.", "explain_uz": "will → **would**."},
+            {"type": "gap", "text": "\"I can swim.\" → She said she ___ swim.", "answer": ["could"], "uz": "U suza olishini aytdi.", "explain_uz": "can → **could**."},
+            {"type": "gap", "text": "My teacher ___ me that my essay was excellent.", "answer": ["told"], "uz": "O'qituvchim inshoyim a'lo ekanini aytdi.", "explain_uz": "Kishi bor (me) → **told**."},
+            {"type": "choice", "q": "\"We live here now.\" → They said they lived there ___.", "options": ["now", "then", "tomorrow"], "answer": 1, "explain_uz": "now → **then**."},
+            {"type": "match", "pairs": [["headline", "sarlavha"], ["announce", "e'lon qilmoq"], ["source", "manba"], ["claim", "da'vo qilmoq"], ["spread", "tarqalmoq"]]},
+            {"type": "order", "uz": "U menga charchaganini aytdi.", "words": ["She", "told", "me", "that", "she", "was", "tired"], "answer": "She told me that she was tired"},
+            {"type": "choice", "audio": true, "q": "What did the weather forecast say?", "say": "The weather forecast said that it would be sunny in the morning, but it would rain in the evening.", "options": ["Sunny all day", "Rain in the morning, sun in the evening", "Sun in the morning, rain in the evening"], "answer": 2, "explain_uz": "\"sunny in the morning... rain in the evening\"."},
+            {"type": "listen", "answer": ["He said that he was very busy.", "He said that he was very busy", "He said he was very busy"], "uz": "Eshiting va yozing"},
+            {"type": "translate", "uz": "U Toshkentda ishlashini aytdi.", "answer": ["He said that he worked in Tashkent", "He said he worked in Tashkent", "She said that she worked in Tashkent", "She said she worked in Tashkent"], "explain_uz": "works → **worked** (zamon orqaga)."},
+            {"type": "speak", "text": "My friend told me that she was moving to London next year.", "uz": "Ovoz chiqarib ayting"},
+            {
+              "type": "write",
+              "prompt_uz": "Yaqinda eshitgan yangilik yoki do'stingiz aytgan gap haqida yozing (6–7 gap). Kim, nima dedi? Reported Speech'dan foydalaning (said that / told me that).",
+              "prompt": "Report some news you heard recently or something a friend told you.",
+              "min_words": 60,
+              "example": "Last week my best friend Dilnoza called me with some exciting news. She told me that she had got a scholarship to study in Korea. She said that the programme started in September and that she would study computer science. She also said she was a bit nervous because she couldn't speak Korean yet. I told her that she was very clever and that she would learn quickly."
+            }
+          ]
+        },
+        {
+          "slug": "b1-environment",
+          "title": "If I were the mayor...",
+          "title_uz": "Ekologiya va Second Conditional",
+          "goal_uz": "Atrof-muhit muammolari haqida gapirasiz va xayoliy vaziyatlarni Second Conditional (If I had..., I would...) bilan ifodalaysiz.",
+          "minutes": 12,
+          "words": [
+            {"en": "pollution", "uz": "ifloslanish", "ipa": "/pəˈluːʃn/", "ex": "Air pollution is a big problem in big cities."},
+            {"en": "recycle", "uz": "qayta ishlamoq", "ipa": "/ˌriːˈsaɪkl/", "ex": "We should recycle plastic bottles."},
+            {"en": "waste", "uz": "chiqindi; isrof qilmoq", "ipa": "/weɪst/", "ex": "Don't waste water."},
+            {"en": "plant", "uz": "ekmoq; o'simlik", "ipa": "/plɑːnt/", "ex": "Let's plant some trees."},
+            {"en": "public transport", "uz": "jamoat transporti", "ipa": "/ˌpʌblɪk ˈtrænspɔːt/", "ex": "I use public transport every day."},
+            {"en": "drought", "uz": "qurg'oqchilik", "ipa": "/draʊt/", "ex": "The drought destroyed the crops."},
+            {"en": "protect", "uz": "himoya qilmoq", "ipa": "/prəˈtekt/", "ex": "We must protect nature."},
+            {"en": "solution", "uz": "yechim", "ipa": "/səˈluːʃn/", "ex": "We need a solution to this problem."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "dialogue",
+              "title": "A school debate",
+              "context_uz": "Maktabda \"Shahrimizni qanday yashilroq qilamiz?\" mavzusida bahs ketyapti.",
+              "lines": [
+                {"who": "Teacher", "en": "Imagine you were the mayor of Tashkent. What would you change?", "uz": "Tasavvur qiling, siz Toshkent hokimisiz. Nimani o'zgartirgan bo'lardingiz?"},
+                {"who": "Otabek", "en": "If I were the mayor, I would plant a million trees. The air would be much cleaner.", "uz": "Agar men hokim bo'lganimda, million daraxt ekardim. Havo ancha toza bo'lardi."},
+                {"who": "Dilfuza", "en": "I'd build more metro lines. If public transport were better, people wouldn't drive so much.", "uz": "Men ko'proq metro liniyalari qurardim. Jamoat transporti yaxshiroq bo'lsa, odamlar bunchalik ko'p mashina haydamasdi."},
+                {"who": "Teacher", "en": "Good ideas. What about waste?", "uz": "Yaxshi fikrlar. Chiqindi-chi?"},
+                {"who": "Otabek", "en": "If every street had recycling bins, people would recycle more plastic.", "uz": "Har ko'chada qayta ishlash qutilari bo'lsa, odamlar ko'proq plastikni qayta ishlashga berardi."},
+                {"who": "Dilfuza", "en": "And I'd teach children about the Aral Sea. If people knew more, they wouldn't waste so much water.", "uz": "Men bolalarga Orol dengizi haqida o'rgatardim. Odamlar ko'proq bilganida, bunchalik ko'p suv isrof qilishmasdi."}
+              ]
+            },
+            {"type": "choice", "q": "What would Otabek do first?", "options": ["Build metro lines", "Plant trees", "Close factories"], "answer": 1, "explain_uz": "\"I would plant a million trees\"."},
+            {"type": "choice", "q": "According to Dilfuza, why do people drive so much?", "options": ["Public transport isn't good enough.", "Petrol is cheap.", "They like cars."], "answer": 0, "explain_uz": "\"If public transport were better, people wouldn't drive so much.\""},
+            {
+              "type": "grammar",
+              "title_uz": "Second Conditional — xayoliy shart",
+              "body_uz": "Hozirgi yoki kelajakdagi **haqiqiy bo'lmagan, xayoliy** vaziyat uchun (o'zbekcha: \"...sa edi, ...rdi\").\nTuzilma: **If + Past Simple, would + fe'l**.\nIf I **had** more money, I **would buy** an electric car. (Hozir pulim yo'q.)\n**be** — barcha shaxslarda ko'pincha **were**: If I **were** you, I'd recycle more. If it **were** cheaper...\nFirst Conditional bilan farqi: If it **rains**, I **will** stay home (haqiqiy imkoniyat). If I **won** the lottery, I **would** travel (xayol).\nXato: \"If I would have money...\" — **if** qismida **would** ishlatilmaydi!",
+              "examples": [
+                {"en": "If I were you, I would take the bus.", "uz": "Men sizning o'rningizda bo'lsam, avtobusda ketardim."},
+                {"en": "If people recycled more, there would be less waste.", "uz": "Odamlar ko'proq qayta ishlasa, chiqindi kamroq bo'lardi."},
+                {"en": "What would you do if you saw someone dropping litter?", "uz": "Kimdir axlat tashlayotganini ko'rsangiz nima qilardingiz?"},
+                {"en": "We wouldn't have droughts if we used water carefully.", "uz": "Suvni ehtiyotkorlik bilan ishlatganimizda qurg'oqchilik bo'lmasdi."}
+              ]
+            },
+            {"type": "choice", "q": "If I ___ a lot of money, I would build a park.", "options": ["have", "had", "would have"], "answer": 1, "explain_uz": "If + Past Simple: **had**."},
+            {"type": "choice", "q": "If I were you, I ___ use public transport.", "options": ["will", "would", "am"], "answer": 1, "explain_uz": "Natija qismi: **would** + fe'l."},
+            {"type": "gap", "text": "If I ___ the president, I would protect the Aral Sea.", "answer": ["were", "was"], "uz": "Agar men prezident bo'lsam edi, Orol dengizini himoya qilardim.", "explain_uz": "If I **were**..."},
+            {"type": "gap", "text": "If people planted more trees, the air ___ be cleaner.", "answer": ["would"], "uz": "Odamlar ko'proq daraxt eksa, havo tozaroq bo'lardi.", "explain_uz": "**would** + be."},
+            {"type": "choice", "q": "Which is a real possibility (First Conditional)?", "options": ["If it rains tomorrow, I'll take an umbrella.", "If I were a bird, I would fly to Paris.", "If I had wings, I'd fly."], "answer": 0, "explain_uz": "Ertaga yomg'ir yog'ishi — haqiqiy imkoniyat → First Conditional."},
+            {"type": "gap", "text": "We should ___ plastic bottles, not throw them away.", "answer": ["recycle"], "uz": "Plastik shishalarni tashlab yubormasdan, qayta ishlashga berishimiz kerak.", "explain_uz": "**recycle** — qayta ishlamoq."},
+            {"type": "match", "pairs": [["pollution", "ifloslanish"], ["drought", "qurg'oqchilik"], ["waste", "chiqindi"], ["protect", "himoya qilmoq"], ["solution", "yechim"]]},
+            {"type": "order", "uz": "Men sizning o'rningizda bo'lsam, daraxt ekardim.", "words": ["If", "I", "were", "you", "I", "would", "plant", "a", "tree"], "answer": "If I were you I would plant a tree"},
+            {"type": "choice", "audio": true, "q": "What would the speaker do with the money?", "say": "If I won a lot of money, I wouldn't buy a big car. I'd give some to an organisation that cleans rivers.", "options": ["Buy a big car", "Give money to clean rivers", "Travel around the world"], "answer": 1, "explain_uz": "\"I'd give some to an organisation that cleans rivers\"."},
+            {"type": "listen", "answer": ["If I were you, I would recycle more.", "If I were you I would recycle more", "If I were you, I'd recycle more"], "uz": "Eshiting va yozing"},
+            {"type": "translate", "uz": "Agar men hokim bo'lsam, ko'proq park qurardim.", "answer": ["If I were the mayor I would build more parks", "If I were the mayor, I would build more parks", "If I were the mayor I'd build more parks", "If I was the mayor I would build more parks"], "explain_uz": "If + **were**, **would** + build."},
+            {"type": "speak", "text": "If public transport were better, people would drive less and the air would be cleaner.", "uz": "Ovoz chiqarib ayting"},
+            {
+              "type": "write",
+              "prompt_uz": "\"Agar siz shahringiz hokimi bo'lganingizda, ekologiyani yaxshilash uchun nima qilgan bo'lardingiz?\" 6–8 gap yozing, Second Conditional ishlating.",
+              "prompt": "If you were the mayor of your city, what would you do to help the environment?",
+              "min_words": 70,
+              "example": "If I were the mayor of my city, I would do three things to help the environment. First, I would plant trees along every main road, because the air would be cleaner and the streets would be cooler in summer. Second, I would make public transport cheaper. If buses were cheap and fast, fewer people would drive to work. Finally, I would put recycling bins in every neighbourhood. If people had easy ways to recycle, they wouldn't throw plastic in the street. I think these changes would make our city a healthier place to live."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "slug": "a2-snow-day",
+  "level": "A2",
+  "order": 4,
+  "emoji": "❄️",
+  "minutes": 5,
+  "title": "The snow day",
+  "title_uz": "Qorli kun",
+  "paragraphs": [
+    {
+      "en": "When Akmal woke up on Monday, his room was colder than usual. He looked out of the window. Everything was white! It snowed all night, and the snow was almost half a metre deep.",
+      "uz": "Dushanba kuni Akmal uyg'onganida, xonasi odatdagidan sovuqroq edi. U derazadan qaradi. Hamma yoq oppoq! Tun bo'yi qor yog'gan, qor deyarli yarim metr qalinlikda edi."
+    },
+    {
+      "en": "Then his phone rang. It was a message from his teacher: \"No school today because of the snow.\" Akmal jumped out of bed and shouted, \"Yes!\"",
+      "uz": "Shu payt telefoni jiringladi. O'qituvchisidan xabar keldi: \"Qor tufayli bugun dars yo'q.\" Akmal to'shakdan sakrab turdi va \"Ura!\" deb baqirdi."
+    },
+    {
+      "en": "After breakfast, he put on his warmest coat, a hat and gloves, and went outside with his little brother. They built a big snowman and gave it a carrot nose and an old scarf.",
+      "uz": "Nonushtadan keyin u eng issiq paltosi, shapka va qo'lqopini kiyib, ukasi bilan tashqariga chiqdi. Ular katta qorbobo yasashdi va unga sabzidan burun va eski sharf berishdi."
+    },
+    {
+      "en": "Then their neighbour, old Mr Rahimov, came out. He wanted to go to the shop, but he couldn't walk on the snow. \"Don't worry, we'll help you,\" said Akmal. The boys cleaned the path with a shovel and carried his shopping bags.",
+      "uz": "Keyin qo'shnisi, keksa Rahimov aka chiqdi. U do'konga bormoqchi edi, lekin qorda yura olmadi. \"Xavotir olmang, biz yordam beramiz,\" dedi Akmal. Bolalar belkurak bilan yo'lakni tozalashdi va uning xarid sumkalarini ko'tarib berishdi."
+    },
+    {
+      "en": "In the evening, Mr Rahimov knocked on their door with a big plate of hot samsa. \"Thank you, boys,\" he said. \"You are better than a snow plough!\" It was the best day of the winter.",
+      "uz": "Kechqurun Rahimov aka katta likopchada issiq somsa bilan ularning eshigini taqillatdi. \"Rahmat, bolalar,\" dedi u. \"Sizlar qor tozalaydigan mashinadan ham zo'rsiz!\" Bu qishning eng yaxshi kuni bo'ldi."
+    }
+  ],
+  "glossary": {
+    "colder than usual": "odatdagidan sovuqroq",
+    "deep": "chuqur, qalin",
+    "because of": "... tufayli",
+    "gloves": "qo'lqop",
+    "snowman": "qorbobo",
+    "scarf": "sharf",
+    "neighbour": "qo'shni",
+    "path": "yo'lak",
+    "shovel": "belkurak",
+    "knocked": "taqillatdi"
+  },
+  "questions": [
+    {"q": "Why was there no school?", "options": ["It was a holiday.", "Because of the snow.", "The teacher was ill."], "answer": 1},
+    {"q": "What did the boys use for the snowman's nose?", "options": ["A carrot", "A potato", "A scarf"], "answer": 0},
+    {"q": "Why did Mr Rahimov need help?", "options": ["He was lost.", "He couldn't walk on the snow.", "He was cold."], "answer": 1},
+    {"q": "What did Mr Rahimov bring in the evening?", "options": ["Bread", "Tea", "Samsa"], "answer": 2}
+  ]
+}

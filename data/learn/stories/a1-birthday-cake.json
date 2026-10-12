@@ -1,0 +1,48 @@
+{
+  "slug": "a1-birthday-cake",
+  "level": "A1",
+  "order": 4,
+  "emoji": "🎂",
+  "minutes": 4,
+  "title": "Dad's birthday cake",
+  "title_uz": "Dadamning tug'ilgan kun torti",
+  "paragraphs": [
+    {
+      "en": "It's Saturday morning. Today is Dad's birthday. He is at work now. Timur and his sister Sevara want to make a cake for him.",
+      "uz": "Shanba kuni ertalab. Bugun dadasining tug'ilgan kuni. U hozir ishda. Temur va singlisi Sevara unga tort qilishmoqchi."
+    },
+    {
+      "en": "\"Can you cook?\" asks Sevara. \"No, I can't,\" says Timur. \"But Grandma can. Let's call her!\" Grandma lives next door. She comes in five minutes.",
+      "uz": "\"Sen ovqat pishira olasanmi?\" deb so'raydi Sevara. \"Yo'q, olmayman,\" deydi Temur. \"Lekin buvim oladi. Keling, unga qo'ng'iroq qilamiz!\" Buvi qo'shni uyda yashaydi. U besh daqiqada keladi."
+    },
+    {
+      "en": "\"We need some flour, some sugar, four eggs and some butter,\" says Grandma. Timur is putting the eggs in a bowl. Sevara is mixing the flour and sugar. The kitchen is very messy!",
+      "uz": "\"Bizga biroz un, biroz shakar, to'rtta tuxum va biroz sariyog' kerak,\" deydi buvi. Temur tuxumlarni idishga solyapti. Sevara un va shakarni aralashtiryapti. Oshxona juda tartibsiz!"
+    },
+    {
+      "en": "The cake is in the oven for forty minutes. Then they put chocolate on top and write \"Happy Birthday, Dad!\" It looks beautiful.",
+      "uz": "Tort qirq daqiqa pechda turadi. Keyin ular ustiga shokolad surtib, \"Tug'ilgan kuningiz bilan, dada!\" deb yozishadi. Juda chiroyli ko'rinadi."
+    },
+    {
+      "en": "At six o'clock, Dad comes home. \"Surprise!\" shout the children. Dad is very happy. \"This is the best cake in the world!\" he says. Grandma smiles.",
+      "uz": "Soat oltida dadasi uyga keladi. \"Syurpriz!\" deb baqirishadi bolalar. Dadasi juda xursand. \"Bu dunyodagi eng zo'r tort!\" deydi u. Buvi jilmayadi."
+    }
+  ],
+  "glossary": {
+    "birthday": "tug'ilgan kun",
+    "next door": "qo'shni uyda",
+    "flour": "un",
+    "bowl": "chuqur idish, kosa",
+    "mixing": "aralashtirmoq",
+    "messy": "tartibsiz",
+    "oven": "pech, duxovka",
+    "on top": "ustiga",
+    "shout": "baqirmoq"
+  },
+  "questions": [
+    {"q": "Where is Dad in the morning?", "options": ["At home", "At work", "At Grandma's house"], "answer": 1},
+    {"q": "Who can cook?", "options": ["Timur", "Sevara", "Grandma"], "answer": 2},
+    {"q": "How many eggs do they need?", "options": ["Two", "Four", "Six"], "answer": 1},
+    {"q": "What time does Dad come home?", "options": ["At five o'clock", "At six o'clock", "At seven o'clock"], "answer": 1}
+  ]
+}

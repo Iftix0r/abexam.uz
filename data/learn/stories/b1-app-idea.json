@@ -1,0 +1,49 @@
+{
+  "slug": "b1-app-idea",
+  "level": "B1",
+  "order": 4,
+  "emoji": "💡",
+  "minutes": 6,
+  "title": "The app that started in a classroom",
+  "title_uz": "Sinfxonada boshlangan ilova",
+  "paragraphs": [
+    {
+      "en": "In their second year at university in Tashkent, Bobur and Nigora noticed a problem. Every day, students wasted time looking for an empty classroom to study in. The library was always full, and nobody knew which rooms were free.",
+      "uz": "Toshkentdagi universitetning ikkinchi kursida Bobur va Nigora bir muammoni payqashdi. Talabalar har kuni dars qilish uchun bo'sh xona qidirib vaqt yo'qotishardi. Kutubxona doim to'la edi va qaysi xonalar bo'shligini hech kim bilmasdi."
+    },
+    {
+      "en": "\"What if there was an app that showed free rooms in real time?\" Nigora asked one evening. Bobur, who was studying computer science, said he could build a simple version in a week. It actually took him a month.",
+      "uz": "\"Bo'sh xonalarni real vaqtda ko'rsatadigan ilova bo'lsa-chi?\" deb so'radi Nigora bir kuni kechqurun. Kompyuter ilmlarini o'qiyotgan Bobur oddiy versiyasini bir haftada yasay olishini aytdi. Aslida bu bir oy vaqt oldi."
+    },
+    {
+      "en": "The first version had a lot of problems. It crashed often, and the information was sometimes wrong. But students loved the idea. Within two weeks, the app had been downloaded by over a thousand people, and they sent lots of useful suggestions.",
+      "uz": "Birinchi versiyada muammolar ko'p edi. U tez-tez ishdan chiqardi, ma'lumotlar ba'zan noto'g'ri bo'lardi. Lekin talabalarga g'oya yoqdi. Ikki hafta ichida ilovani mingdan ortiq kishi yuklab oldi va ular ko'plab foydali takliflar yuborishdi."
+    },
+    {
+      "en": "Then something unexpected happened. The head of the university saw the app and invited them to a meeting. Bobur was sure they were in trouble. Instead, she told them that the university wanted to use the app officially and would pay them to develop it.",
+      "uz": "Keyin kutilmagan voqea yuz berdi. Universitet rahbari ilovani ko'rib, ularni uchrashuvga taklif qildi. Bobur ular muammoga duch kelishganiga amin edi. Buning o'rniga rahbar universitet ilovadan rasmiy foydalanmoqchi ekanini va uni rivojlantirish uchun ularga pul to'lashini aytdi."
+    },
+    {
+      "en": "Today, the app is used by five universities. Bobur and Nigora have three employees, and they still answer every message from students themselves. \"Don't wait for the perfect idea,\" Nigora advises. \"Look for a small problem that annoys you every day. That's where good ideas come from.\"",
+      "uz": "Bugun ilovadan beshta universitet foydalanadi. Bobur va Nigoraning uchta xodimi bor va ular hali ham talabalarning har bir xabariga o'zlari javob berishadi. \"Mukammal g'oyani kutmang,\" maslahat beradi Nigora. \"Sizni har kuni bezor qiladigan kichik muammoni qidiring. Yaxshi g'oyalar o'sha yerdan chiqadi.\""
+    }
+  ],
+  "glossary": {
+    "noticed": "payqadi",
+    "wasted": "behuda sarfladi",
+    "in real time": "real vaqtda",
+    "crashed": "ishdan chiqdi (dastur)",
+    "suggestions": "takliflar",
+    "unexpected": "kutilmagan",
+    "in trouble": "muammoda, jazoga loyiq",
+    "officially": "rasmiy ravishda",
+    "employees": "xodimlar",
+    "annoys": "bezor qiladi, jahlini chiqaradi"
+  },
+  "questions": [
+    {"q": "What problem did Bobur and Nigora notice?", "options": ["The library was closed.", "Students couldn't find free rooms to study in.", "Classes were too long."], "answer": 1},
+    {"q": "How long did it take Bobur to build the first version?", "options": ["A week", "A month", "A year"], "answer": 1},
+    {"q": "Why did the head of the university invite them?", "options": ["To punish them", "To use the app officially", "To give them a prize"], "answer": 1},
+    {"q": "What is Nigora's advice?", "options": ["Wait for a perfect idea.", "Study computer science.", "Solve a small everyday problem."], "answer": 2}
+  ]
+}

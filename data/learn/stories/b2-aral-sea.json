@@ -1,0 +1,49 @@
+{
+  "slug": "b2-aral-sea",
+  "level": "B2",
+  "order": 3,
+  "emoji": "🌊",
+  "minutes": 7,
+  "title": "A forest where the sea used to be",
+  "title_uz": "Dengiz o'rnidagi o'rmon",
+  "paragraphs": [
+    {
+      "en": "When Ravshan's grandfather was a young fisherman in Moynaq, the waves of the Aral Sea reached the edge of the town. Today, the nearest water is more than a hundred kilometres away, and rusting ships lie in the sand like the skeletons of giant animals.",
+      "uz": "Ravshanning bobosi Mo'ynoqda yosh baliqchi bo'lganida, Orol dengizi to'lqinlari shahar chetiga yetib kelardi. Bugun eng yaqin suv yuz kilometrdan ham uzoqda, zanglagan kemalar esa ulkan hayvonlarning skeletlaridek qumda yotibdi."
+    },
+    {
+      "en": "The disaster had been caused by humans. From the 1960s, the rivers that fed the sea were diverted to irrigate vast cotton fields. Within a few decades, the sea had lost most of its water, and the fishing industry, which had employed tens of thousands of people, collapsed.",
+      "uz": "Bu falokatga insonlar sabab bo'lgan edi. 1960-yillardan boshlab dengizni to'ldiruvchi daryolar ulkan paxta dalalarini sug'orish uchun burib yuborildi. Bir necha o'n yil ichida dengiz suvining katta qismini yo'qotdi va o'n minglab odamlarni ish bilan ta'minlagan baliqchilik sanoati qulab tushdi."
+    },
+    {
+      "en": "Worse still, the exposed seabed turned into a new desert. Strong winds now carry salt and dust hundreds of kilometres, damaging crops and, according to doctors, contributing to breathing problems in the region. For years, Ravshan believed nothing could be done.",
+      "uz": "Bundan ham yomoni, ochilib qolgan dengiz tubi yangi cho'lga aylandi. Kuchli shamollar endi tuz va changni yuzlab kilometrga uchirib, ekinlarga zarar yetkazmoqda va shifokorlarning fikricha, mintaqada nafas olish kasalliklariga sabab bo'lmoqda. Ravshan yillar davomida hech narsa qilib bo'lmaydi deb o'ylardi."
+    },
+    {
+      "en": "Then, in 2019, he joined a project to plant saxaul, a tough desert shrub whose roots can hold the sand in place. The work was exhausting: temperatures reached forty-five degrees in summer, and many young plants died. Had it not been for the older volunteers' patience, he admits, he would have given up in the first month.",
+      "uz": "Keyin, 2019-yilda, u saksovul ekish loyihasiga qo'shildi — bu ildizlari qumni ushlab tura oladigan chidamli cho'l butasi. Ish juda charchatadigan edi: yozda harorat qirq besh darajaga yetardi, ko'plab yosh ko'chatlar nobud bo'ldi. Uning tan olishicha, keksa ko'ngillilarning sabri bo'lmaganida, u birinchi oydayoq taslim bo'lgan bo'lardi."
+    },
+    {
+      "en": "Millions of hectares have since been planted. The sea will probably never return, but in places where only salt used to shine, there is now a thin green line on the horizon. \"We can't undo what was done,\" Ravshan says, \"but we can decide what happens next.\"",
+      "uz": "O'shandan beri millionlab gektar maydonga ko'chat ekildi. Dengiz, ehtimol, hech qachon qaytmaydi, lekin ilgari faqat tuz yaltirab turgan joylarda endi ufqda yupqa yashil chiziq bor. \"Qilingan ishni ortga qaytara olmaymiz,\" deydi Ravshan, \"lekin keyin nima bo'lishini o'zimiz hal qila olamiz.\""
+    }
+  ],
+  "glossary": {
+    "rusting": "zanglayotgan",
+    "diverted": "burib yuborildi",
+    "irrigate": "sug'ormoq",
+    "decades": "o'n yilliklar",
+    "collapsed": "qulab tushdi",
+    "exposed seabed": "ochilib qolgan dengiz tubi",
+    "contributing to": "... ga hissa qo'shib, sabab bo'lib",
+    "shrub": "buta",
+    "exhausting": "juda charchatadigan",
+    "undo": "ortga qaytarmoq, bekor qilmoq"
+  },
+  "questions": [
+    {"q": "What was the main cause of the Aral Sea disaster?", "options": ["Climate change", "Rivers were used to water cotton fields.", "Too much fishing"], "answer": 1},
+    {"q": "Why is the new desert dangerous?", "options": ["It is full of old ships.", "Wind carries salt and dust that harm crops and health.", "It is too hot for tourists."], "answer": 1},
+    {"q": "Why was saxaul chosen for planting?", "options": ["It grows fruit.", "Its roots hold the sand in place.", "It needs a lot of water."], "answer": 1},
+    {"q": "What does Ravshan's final quote suggest?", "options": ["The sea will come back soon.", "Nothing can be done.", "We can't change the past, but we can shape the future."], "answer": 2}
+  ]
+}

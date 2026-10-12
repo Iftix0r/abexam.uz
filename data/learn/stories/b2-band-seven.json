@@ -1,0 +1,49 @@
+{
+  "slug": "b2-band-seven",
+  "level": "B2",
+  "order": 4,
+  "emoji": "🎯",
+  "minutes": 7,
+  "title": "Three attempts at band seven",
+  "title_uz": "7 ball uchun uch urinish",
+  "paragraphs": [
+    {
+      "en": "Kamola needed an overall band of 7.0 to apply for a master's programme in the Netherlands. The first time she took IELTS, she scored 6.0. She was disappointed but not surprised: she had spent most of her preparation doing practice tests, one after another, without really analysing her mistakes.",
+      "uz": "Niderlandiyadagi magistratura dasturiga hujjat topshirish uchun Kamolaga umumiy 7.0 ball kerak edi. IELTS'ni birinchi marta topshirganida, u 6.0 oldi. U hafsalasi pir bo'ldi, lekin hayron bo'lmadi: u tayyorgarlikning katta qismini xatolarini chuqur tahlil qilmasdan, ketma-ket sinov testlarini yechish bilan o'tkazgandi."
+    },
+    {
+      "en": "For her second attempt, she changed her approach. Instead of doing more tests, she kept a \"mistake diary\". Every wrong answer in reading and listening went into it, together with the reason: Did she misread the question? Miss a paraphrase? Run out of time? After a month, a clear pattern emerged — most of her errors came from not recognising synonyms.",
+      "uz": "Ikkinchi urinish uchun u yondashuvini o'zgartirdi. Ko'proq test yechish o'rniga u \"xatolar kundaligi\" yuritdi. Reading va listening'dagi har bir noto'g'ri javob sababi bilan birga unga yozilardi: savolni noto'g'ri o'qidimi? Parafrazni payqamadimi? Vaqti yetmadimi? Bir oydan keyin aniq qonuniyat ko'rindi — xatolarining aksariyati sinonimlarni tanimaslikdan kelib chiqqan edi."
+    },
+    {
+      "en": "Her second result was 6.5, with 7.5 in reading but only 6.0 in writing. The examiner's comments were blunt: her essays were well organised, but her vocabulary was repetitive and her ideas were too general. \"Many people believe that...\" appeared in almost every paragraph.",
+      "uz": "Ikkinchi natijasi 6.5 bo'ldi: reading'dan 7.5, lekin writing'dan atigi 6.0. Imtihonchining izohlari to'g'ridan-to'g'ri edi: inshoalari yaxshi tuzilgan, lekin lug'ati takroriy, g'oyalari esa juda umumiy edi. \"Many people believe that...\" deyarli har bir paragrafda uchrardi."
+    },
+    {
+      "en": "So she spent three months focusing almost entirely on writing. She read opinion articles every morning and noted how journalists supported their arguments with specific examples. She also asked a teacher to mark one essay a week, and rewrote each essay after receiving feedback. Had she not rewritten them, she says, she would have kept making the same mistakes.",
+      "uz": "Shuning uchun u uch oy deyarli faqat writing'ga e'tibor qaratdi. Har kuni ertalab fikr-mulohaza maqolalarini o'qib, jurnalistlar o'z dalillarini aniq misollar bilan qanday qo'llab-quvvatlashini yozib bordi. Shuningdek, u o'qituvchidan haftada bitta inshoni tekshirib berishni so'radi va izoh olgach har bir inshoni qayta yozdi. Uning aytishicha, ularni qayta yozmaganida, bir xil xatolarni takrorlashda davom etgan bo'lardi."
+    },
+    {
+      "en": "On her third attempt, Kamola got 7.5 overall, with 7.0 in writing. Looking back, she thinks the score mattered less than the lesson: \"Doing more isn't the same as improving. You improve when you find out exactly why you're failing — and then work on that one thing.\"",
+      "uz": "Uchinchi urinishda Kamola umumiy 7.5, writing'dan esa 7.0 oldi. O'tmishga nazar tashlab, u balldan ko'ra olingan saboq muhimroq deb hisoblaydi: \"Ko'proq qilish — yaxshilanish degani emas. Nima uchun aynan muvaffaqiyatsizlikka uchrayotganingizni aniqlab, keyin aynan shu narsa ustida ishlaganingizdagina o'sasiz.\""
+    }
+  ],
+  "glossary": {
+    "overall band": "umumiy ball",
+    "disappointed": "hafsalasi pir bo'lgan",
+    "approach": "yondashuv",
+    "misread": "noto'g'ri o'qidi",
+    "pattern": "qonuniyat",
+    "emerged": "paydo bo'ldi, ko'rindi",
+    "blunt": "to'g'ridan-to'g'ri, ochiq",
+    "repetitive": "takroriy",
+    "feedback": "fikr-mulohaza, izoh",
+    "looking back": "o'tmishga nazar tashlab"
+  },
+  "questions": [
+    {"q": "What was wrong with Kamola's first preparation?", "options": ["She didn't do any practice tests.", "She did many tests but didn't analyse her mistakes.", "She studied only writing."], "answer": 1},
+    {"q": "What did her mistake diary show?", "options": ["She often ran out of time.", "Most errors came from not recognising synonyms.", "Listening was her weakest skill."], "answer": 1},
+    {"q": "What did the examiner criticise in her writing?", "options": ["Poor organisation", "Repetitive vocabulary and general ideas", "Too many examples"], "answer": 1},
+    {"q": "Which statement best summarises Kamola's lesson?", "options": ["Take the exam as many times as possible.", "Find the exact cause of your weakness and work on it.", "Writing is the easiest part of IELTS."], "answer": 1}
+  ]
+}

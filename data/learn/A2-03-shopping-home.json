@@ -1,0 +1,208 @@
+{
+  "level": "A2",
+  "units": [
+    {
+      "slug": "a2-shopping-home",
+      "title": "Shopping and home life",
+      "title_uz": "Xarid va uy hayoti",
+      "icon": "shirt",
+      "lessons": [
+        {
+          "slug": "a2-clothes",
+          "title": "It's too small!",
+          "title_uz": "Kiyim xarid qilish",
+          "goal_uz": "Do'konda kiyim tanlaysiz, o'lcham so'raysiz va \"too big / not big enough\" bilan muammoni tushuntirasiz.",
+          "minutes": 10,
+          "words": [
+            {"en": "size", "uz": "o'lcham", "ipa": "/saɪz/", "ex": "What size are you?"},
+            {"en": "try on", "uz": "kiyib ko'rmoq", "ipa": "/traɪ ɒn/", "ex": "Can I try on this jacket?"},
+            {"en": "fitting room", "uz": "kiyinish xonasi", "ipa": "/ˈfɪtɪŋ ruːm/", "ex": "The fitting room is over there."},
+            {"en": "tight", "uz": "tor, siqib turadigan", "ipa": "/taɪt/", "ex": "These jeans are too tight."},
+            {"en": "loose", "uz": "keng, bo'sh", "ipa": "/luːs/", "ex": "I like loose T-shirts."},
+            {"en": "expensive", "uz": "qimmat", "ipa": "/ɪkˈspensɪv/", "ex": "This coat is too expensive."},
+            {"en": "cheap", "uz": "arzon", "ipa": "/tʃiːp/", "ex": "The shoes were really cheap."},
+            {"en": "receipt", "uz": "chek", "ipa": "/rɪˈsiːt/", "ex": "Keep the receipt, please."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "dialogue",
+              "title": "In a clothes shop",
+              "context_uz": "Madina o'ziga kurtka tanlayapti.",
+              "lines": [
+                {"who": "Assistant", "en": "Hello, can I help you?", "uz": "Salom, yordam bera olamanmi?"},
+                {"who": "Madina", "en": "Yes, I'm looking for a winter jacket. Can I try on this one?", "uz": "Ha, qishki kurtka qidiryapman. Mana shunisini kiyib ko'rsam bo'ladimi?"},
+                {"who": "Assistant", "en": "Of course. What size are you?", "uz": "Albatta. O'lchamingiz qanaqa?"},
+                {"who": "Madina", "en": "Medium, I think. Where's the fitting room?", "uz": "Medium, menimcha. Kiyinish xonasi qayerda?"},
+                {"who": "Madina", "en": "Hmm, it's too tight. It isn't big enough. Have you got it in large?", "uz": "Hmm, tor ekan. Yetarlicha katta emas. Large o'lchami bormi?"},
+                {"who": "Assistant", "en": "Yes, here you are. And it's in the sale — only 450,000 som.", "uz": "Ha, marhamat. Va u chegirmada — atigi 450 ming so'm."},
+                {"who": "Madina", "en": "Perfect. It's warm enough for winter, and it isn't too expensive. I'll take it.", "uz": "Zo'r. Qish uchun yetarlicha issiq, juda qimmat ham emas. Olaman."}
+              ]
+            },
+            {"type": "choice", "q": "What was the problem with the first jacket?", "options": ["It was too expensive.", "It was too tight.", "It was too long."], "answer": 1, "explain_uz": "\"it's too tight. It isn't big enough.\""},
+            {"type": "choice", "q": "Why does Madina buy the large jacket?", "options": ["It's warm and not too expensive.", "It's very cheap and red.", "Her friend likes it."], "answer": 0, "explain_uz": "\"warm enough... isn't too expensive\"."},
+            {
+              "type": "grammar",
+              "title_uz": "too va enough",
+              "body_uz": "**too + sifat** — \"haddan tashqari, juda (ortiqcha)\" — salbiy ma'no: It's **too** expensive. (Sotib ololmayman.)\n**very** esa shunchaki \"juda\": It's **very** expensive, but I can buy it.\n**sifat + enough** — \"yetarlicha\". enough sifatdan **keyin** keladi: big **enough**, warm **enough**. (\"enough big\" — xato!)\nInkor: It is**n't** big **enough** = It's too small.\n**enough + ot** — otdan oldin: I haven't got **enough money**.",
+              "examples": [
+                {"en": "These shoes are too small for me.", "uz": "Bu poyabzal menga juda kichik."},
+                {"en": "Is this coat warm enough for winter?", "uz": "Bu palto qish uchun yetarlicha issiqmi?"},
+                {"en": "I can't buy it — I haven't got enough money.", "uz": "Ololmayman — pulim yetmaydi."},
+                {"en": "He isn't old enough to drive.", "uz": "U mashina haydash uchun hali yosh."}
+              ]
+            },
+            {"type": "choice", "q": "Which is correct?", "options": ["It isn't enough big.", "It isn't big enough.", "It isn't big too."], "answer": 1, "explain_uz": "sifat + **enough**: big enough."},
+            {"type": "choice", "q": "I can't wear these jeans. They're ___ long.", "options": ["very", "too", "enough"], "answer": 1, "explain_uz": "Muammo bor (kiya olmayman) → **too** long."},
+            {"type": "gap", "text": "This bag is ___ expensive. I can't buy it.", "answer": ["too"], "uz": "Bu sumka juda qimmat. Uni ololmayman.", "explain_uz": "Salbiy natija → **too**."},
+            {"type": "gap", "text": "Is the room big ___ for four people?", "answer": ["enough"], "uz": "Xona to'rt kishi uchun yetarlicha kattami?", "explain_uz": "big **enough**."},
+            {"type": "gap", "text": "Can I ___ on this shirt, please?", "answer": ["try"], "uz": "Bu ko'ylakni kiyib ko'rsam bo'ladimi?", "explain_uz": "**try on** — kiyib ko'rmoq."},
+            {"type": "match", "pairs": [["tight", "tor"], ["loose", "keng"], ["cheap", "arzon"], ["receipt", "chek"], ["size", "o'lcham"]]},
+            {"type": "order", "uz": "Menda yetarlicha pul yo'q.", "words": ["I", "haven't", "got", "enough", "money"], "answer": "I haven't got enough money"},
+            {"type": "choice", "audio": true, "q": "Why doesn't the man buy the shoes?", "say": "I really like these shoes, but they're too expensive. I'll look for something cheaper.", "options": ["They're too small.", "They're too expensive.", "He doesn't like the colour."], "answer": 1, "explain_uz": "\"they're too expensive\"."},
+            {"type": "listen", "answer": ["Have you got it in a smaller size?", "Have you got it in a smaller size", "Have you got this in a smaller size"], "uz": "Eshiting va yozing"},
+            {"type": "translate", "uz": "Bu ko'ylak menga juda katta.", "answer": ["This shirt is too big for me", "This dress is too big for me", "This shirt is too big for me."], "explain_uz": "Muammo → **too** big."},
+            {"type": "speak", "text": "Excuse me, these jeans are too tight. Have you got them in a bigger size?", "uz": "Sotuvchiga muammoni ayting — ovoz chiqarib"},
+            {
+              "type": "write",
+              "prompt_uz": "Oxirgi marta kiyim sotib olganingiz haqida yozing (5–6 gap): nima qidirdingiz, qanday muammo bo'ldi (too / enough), nima oldingiz.",
+              "prompt": "Write about the last time you bought clothes.",
+              "min_words": 40,
+              "example": "Last month I went to a shopping centre to buy new trainers. I found a nice white pair, but they were too small. The next size was big enough, but it was too expensive. In the end I bought black trainers in the sale. They are comfortable and they were cheap enough for me."
+            }
+          ]
+        },
+        {
+          "slug": "a2-housework",
+          "title": "Have you done the dishes yet?",
+          "title_uz": "Uy ishlari: just / already / yet",
+          "goal_uz": "Uy ishlari haqida gapirasiz va hozirgacha qilingan ishlarni Present Perfect (just, already, yet) bilan aytasiz.",
+          "minutes": 11,
+          "words": [
+            {"en": "do the dishes", "uz": "idish yuvmoq", "ipa": "/duː ðə ˈdɪʃɪz/", "ex": "I always do the dishes after dinner."},
+            {"en": "do the laundry", "uz": "kir yuvmoq", "ipa": "/duː ðə ˈlɔːndri/", "ex": "Mum does the laundry on Sundays."},
+            {"en": "tidy", "uz": "yig'ishtirmoq", "ipa": "/ˈtaɪdi/", "ex": "Please tidy your room."},
+            {"en": "vacuum", "uz": "changyutgich bilan tozalamoq", "ipa": "/ˈvækjuːm/", "ex": "I've vacuumed the carpet."},
+            {"en": "take out the rubbish", "uz": "axlatni chiqarmoq", "ipa": "/teɪk aʊt ðə ˈrʌbɪʃ/", "ex": "Can you take out the rubbish?"},
+            {"en": "iron", "uz": "dazmollamoq", "ipa": "/ˈaɪən/", "ex": "He's ironing his shirt."},
+            {"en": "guest", "uz": "mehmon", "ipa": "/ɡest/", "ex": "Our guests are coming at seven."},
+            {"en": "messy", "uz": "tartibsiz, iflos", "ipa": "/ˈmesi/", "ex": "Your room is very messy!"}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "dialogue",
+              "title": "Guests are coming!",
+              "context_uz": "Kechqurun mehmonlar keladi. Ona bolalaridan ishlar qanday ketayotganini so'rayapti.",
+              "lines": [
+                {"who": "Mum", "en": "The guests are coming at seven! Have you tidied the living room yet?", "uz": "Mehmonlar soat yettida keladi! Mehmonxonani yig'ishtirdingizmi?"},
+                {"who": "Aziza", "en": "Yes, I've already tidied it. And I've just vacuumed the carpet.", "uz": "Ha, allaqachon yig'ishtirdim. Gilamni ham hozirgina changyutgich bilan tozaladim."},
+                {"who": "Mum", "en": "Great! Bekzod, have you done the dishes?", "uz": "Zo'r! Bekzod, idishlarni yuvdingmi?"},
+                {"who": "Bekzod", "en": "Not yet, Mum. I've just finished my homework.", "uz": "Hali yo'q, oyi. Uy vazifamni endigina tugatdim."},
+                {"who": "Mum", "en": "OK, do them now, please. And take out the rubbish.", "uz": "Mayli, hozir yuvib qo'y. Axlatni ham chiqar."},
+                {"who": "Bekzod", "en": "Has Dad bought the bread yet?", "uz": "Dadam nonni oldimi?"},
+                {"who": "Mum", "en": "Yes, he's already bought it. He's just come home.", "uz": "Ha, allaqachon oldi. Hozirgina uyga keldi."}
+              ]
+            },
+            {"type": "choice", "q": "What has Aziza done?", "options": ["She has done the dishes.", "She has tidied and vacuumed.", "She has bought bread."], "answer": 1, "explain_uz": "\"I've already tidied it... I've just vacuumed\"."},
+            {"type": "choice", "q": "Has Bekzod done the dishes?", "options": ["Yes, he has.", "No, not yet."], "answer": 1, "explain_uz": "\"Not yet, Mum.\""},
+            {
+              "type": "grammar",
+              "title_uz": "Present Perfect: just · already · yet",
+              "body_uz": "Tuzilma: **have / has + V3** (3-shakl): I **have** clean**ed**, she **has** do**ne**, he **has** bought.\nNatija hozir muhim, vaqt aytilmaydi (yesterday, last week bilan ishlatilmaydi!).\n**just** — \"hozirgina\": I've **just** finished. (have va V3 orasida)\n**already** — \"allaqachon\" (kutilganidan oldin): She's **already** gone.\n**yet** — \"hali / ...dimi?\" faqat **inkor va savolda**, gap **oxirida**: Have you eaten **yet**? I haven't finished **yet**.\nQisqa javob: Yes, I **have**. / No, I **haven't**. / Not yet.",
+              "examples": [
+                {"en": "I've just made some tea. Do you want some?", "uz": "Hozirgina choy damladim. Ichasizmi?"},
+                {"en": "Have you done the laundry yet?", "uz": "Kir yuvdingizmi?"},
+                {"en": "He hasn't ironed his shirt yet.", "uz": "U hali ko'ylagini dazmollamadi."},
+                {"en": "We've already cleaned the kitchen.", "uz": "Biz oshxonani allaqachon tozalab bo'ldik."}
+              ]
+            },
+            {"type": "choice", "q": "Have you finished your homework ___?", "options": ["already", "yet", "just"], "answer": 1, "explain_uz": "Savolda, gap oxirida → **yet**."},
+            {"type": "choice", "q": "Which is correct?", "options": ["I have cleaned my room yesterday.", "I cleaned my room yesterday.", "I have clean my room."], "answer": 1, "explain_uz": "**yesterday** — aniq vaqt → Past Simple. Present Perfect aniq vaqt bilan ishlatilmaydi."},
+            {"type": "gap", "text": "She ___ just done the dishes.", "answer": ["has", "'s"], "uz": "U hozirgina idishlarni yuvdi.", "explain_uz": "she → **has** + V3."},
+            {"type": "gap", "text": "We haven't had dinner ___.", "answer": ["yet"], "uz": "Biz hali kechki ovqat yemadik.", "explain_uz": "Inkor, gap oxiri → **yet**."},
+            {"type": "gap", "text": "Dad has ___ the bread. (buy)", "answer": ["bought"], "uz": "Dadam non sotib oldi.", "explain_uz": "buy → bought → **bought** (V3)."},
+            {"type": "match", "pairs": [["do the dishes", "idish yuvmoq"], ["do the laundry", "kir yuvmoq"], ["iron", "dazmollamoq"], ["guest", "mehmon"], ["messy", "tartibsiz"]]},
+            {"type": "order", "uz": "Men allaqachon axlatni chiqardim.", "words": ["I've", "already", "taken", "out", "the", "rubbish"], "answer": "I've already taken out the rubbish"},
+            {"type": "choice", "audio": true, "q": "What hasn't the woman done yet?", "say": "I've done the laundry and I've vacuumed the floor, but I haven't ironed the clothes yet.", "options": ["The laundry", "The vacuuming", "The ironing"], "answer": 2, "explain_uz": "\"I haven't ironed the clothes yet\"."},
+            {"type": "listen", "answer": ["Have you tidied your room yet?", "Have you tidied your room yet"], "uz": "Eshiting va yozing"},
+            {"type": "translate", "uz": "Men hozirgina uyga keldim.", "answer": ["I've just come home", "I have just come home", "I've just got home", "I have just got home", "I've just arrived home"], "explain_uz": "**just** — have va V3 orasida."},
+            {"type": "speak", "text": "I've already done the dishes, but I haven't tidied my room yet.", "uz": "Uy ishlaringiz haqida ayting — ovoz chiqarib"},
+            {
+              "type": "write",
+              "prompt_uz": "Bugun qaysi uy ishlarini qildingiz va qaysilarini hali qilmadingiz? 5–6 gap yozing (just, already, yet).",
+              "prompt": "Which housework have you done today, and which haven't you done yet?",
+              "min_words": 35,
+              "example": "Today is Saturday, so I have a lot of housework. I've already tidied my room and I've done the laundry. I've just vacuumed the carpet in the living room. I haven't done the dishes yet, and I haven't taken out the rubbish. My brother hasn't helped me yet!"
+            }
+          ]
+        },
+        {
+          "slug": "a2-quantities",
+          "title": "How much sugar do we need?",
+          "title_uz": "Miqdor: much / many / a few / a little",
+          "goal_uz": "Retsept va xarid ro'yxati haqida gapirasiz: how much / how many, a lot of, a few, a little ni to'g'ri tanlaysiz.",
+          "minutes": 10,
+          "words": [
+            {"en": "recipe", "uz": "retsept", "ipa": "/ˈresəpi/", "ex": "This is my grandma's recipe."},
+            {"en": "flour", "uz": "un", "ipa": "/ˈflaʊə/", "ex": "We need two cups of flour."},
+            {"en": "sugar", "uz": "shakar", "ipa": "/ˈʃʊɡə/", "ex": "I don't take sugar in my tea."},
+            {"en": "butter", "uz": "sariyog'", "ipa": "/ˈbʌtə/", "ex": "Put a little butter in the pan."},
+            {"en": "onion", "uz": "piyoz", "ipa": "/ˈʌnjən/", "ex": "Cut two onions."},
+            {"en": "a bottle of", "uz": "bir shisha ...", "ipa": "/ə ˈbɒtl əv/", "ex": "a bottle of milk"},
+            {"en": "a kilo of", "uz": "bir kilo ...", "ipa": "/ə ˈkiːləʊ əv/", "ex": "a kilo of potatoes"},
+            {"en": "enough", "uz": "yetarli", "ipa": "/ɪˈnʌf/", "ex": "Have we got enough eggs?"}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "dialogue",
+              "title": "Making samsa",
+              "context_uz": "Shahzoda va akasi Ulug'bek samsa qilmoqchi. Avval uyda nima borligini tekshirishyapti.",
+              "lines": [
+                {"who": "Shahzoda", "en": "OK, the recipe says one kilo of flour. How much flour have we got?", "uz": "Xo'sh, retseptda bir kilo un deyilgan. Bizda qancha un bor?"},
+                {"who": "Ulug'bek", "en": "Not much. Only a little — maybe 300 grams.", "uz": "Ko'p emas. Ozgina — balki 300 gramm."},
+                {"who": "Shahzoda", "en": "And how many onions have we got?", "uz": "Piyoz-chi, nechta bor?"},
+                {"who": "Ulug'bek", "en": "Only a few. Three, I think. We need a lot of onions for samsa.", "uz": "Bir nechta xolos. Uchta, menimcha. Samsaga ko'p piyoz kerak."},
+                {"who": "Shahzoda", "en": "Is there any meat?", "uz": "Go'sht bormi?"},
+                {"who": "Ulug'bek", "en": "Yes, there's a lot of meat. Mum bought two kilos yesterday.", "uz": "Ha, go'sht ko'p. Oyim kecha ikki kilo olgandi."},
+                {"who": "Shahzoda", "en": "Good. So we need flour, onions and a little butter. Let's go to the shop!", "uz": "Yaxshi. Demak, un, piyoz va ozgina sariyog' kerak. Do'konga ketdik!"}
+              ]
+            },
+            {"type": "choice", "q": "How much flour have they got?", "options": ["A lot", "A little", "None"], "answer": 1, "explain_uz": "\"Only a little — maybe 300 grams.\""},
+            {"type": "choice", "q": "What don't they need to buy?", "options": ["Flour", "Onions", "Meat"], "answer": 2, "explain_uz": "\"there's a lot of meat\"."},
+            {
+              "type": "grammar",
+              "title_uz": "much / many · a few / a little · a lot of",
+              "body_uz": "**Sanaladigan** otlar (onions, eggs, apples) — **many**, **a few**, How **many**?\n**Sanalmaydigan** otlar (flour, sugar, water, money) — **much**, **a little**, How **much**?\n**a lot of** — ikkalasi bilan ham: a lot of onions, a lot of sugar. Darak gapda odatda **a lot of** ishlatiladi.\n**much / many** asosan inkor va savolda: There isn't **much** milk. Have you got **many** friends?\n**a few / a little** — \"bir oz, bir nechta\" (yetarli): I've got **a few** friends here.\nSanalmaydigan narsani sanash uchun: **a bottle of** water, **a kilo of** rice, **a cup of** tea.",
+              "examples": [
+                {"en": "How many eggs do we need? — Six.", "uz": "Nechta tuxum kerak? — Oltita."},
+                {"en": "How much money have you got?", "uz": "Qancha pulingiz bor?"},
+                {"en": "There isn't much milk in the fridge.", "uz": "Muzlatkichda sut ko'p emas."},
+                {"en": "Add a little salt and a few tomatoes.", "uz": "Ozgina tuz va bir nechta pomidor qo'shing."}
+              ]
+            },
+            {"type": "choice", "q": "How ___ apples do you want?", "options": ["much", "many", "little"], "answer": 1, "explain_uz": "apples — sanaladi → How **many**."},
+            {"type": "choice", "q": "There isn't ___ sugar in my tea.", "options": ["much", "many", "a few"], "answer": 0, "explain_uz": "sugar sanalmaydi + inkor → **much**."},
+            {"type": "gap", "text": "Can I have a ___ butter, please?", "answer": ["little"], "uz": "Ozgina sariyog' bera olasizmi?", "explain_uz": "butter sanalmaydi → a **little**."},
+            {"type": "gap", "text": "I've got a ___ friends in London.", "answer": ["few"], "uz": "Londonda bir nechta do'stim bor.", "explain_uz": "friends — sanaladi → a **few**."},
+            {"type": "gap", "text": "How ___ water do you drink every day?", "answer": ["much"], "uz": "Har kuni qancha suv ichasiz?", "explain_uz": "water sanalmaydi → How **much**."},
+            {"type": "match", "pairs": [["flour", "un"], ["sugar", "shakar"], ["butter", "sariyog'"], ["onion", "piyoz"], ["recipe", "retsept"]]},
+            {"type": "order", "uz": "Bizga bir kilo kartoshka kerak.", "words": ["We", "need", "a", "kilo", "of", "potatoes"], "answer": "We need a kilo of potatoes"},
+            {"type": "choice", "audio": true, "q": "What does the woman want to buy?", "say": "Can I have two bottles of water, a kilo of rice and a few bananas, please?", "options": ["Water, rice and bananas", "Milk, rice and apples", "Water, flour and bananas"], "answer": 0, "explain_uz": "\"two bottles of water, a kilo of rice and a few bananas\"."},
+            {"type": "listen", "answer": ["How many onions have we got?", "How many onions have we got", "How many onions do we have"], "uz": "Eshiting va yozing"},
+            {"type": "translate", "uz": "Muzlatkichda sut ko'p emas.", "answer": ["There isn't much milk in the fridge", "There is not much milk in the fridge"], "explain_uz": "milk sanalmaydi + inkor → **much**."},
+            {"type": "speak", "text": "We need a kilo of flour, a few onions and a little butter.", "uz": "Xarid ro'yxatini ayting — ovoz chiqarib"},
+            {
+              "type": "write",
+              "prompt_uz": "Sevimli taomingiz retseptini qisqacha yozing (5–6 gap): nimalar va qancha kerak (a few, a little, a lot of, a kilo of).",
+              "prompt": "Write a short recipe for your favourite dish.",
+              "min_words": 40,
+              "example": "My favourite dish is plov. For six people you need a kilo of rice, a kilo of meat and a kilo of carrots. You also need two onions and a lot of oil. Add a little salt and a few cloves of garlic. Don't use too much water, or the rice will be soft."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+} 

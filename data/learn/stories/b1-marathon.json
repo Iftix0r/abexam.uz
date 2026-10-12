@@ -1,0 +1,49 @@
+{
+  "slug": "b1-marathon",
+  "level": "B1",
+  "order": 3,
+  "emoji": "🏃",
+  "minutes": 6,
+  "title": "Forty-two kilometres",
+  "title_uz": "Qirq ikki kilometr",
+  "paragraphs": [
+    {
+      "en": "Two years ago, Shoira couldn't run for more than five minutes without stopping. She worked in an office, sat at a desk for nine hours a day and used to eat fast food almost every evening. Then one day her doctor told her that her blood pressure was too high.",
+      "uz": "Ikki yil oldin Shoira to'xtamasdan besh daqiqadan ko'proq yugura olmasdi. U ofisda ishlardi, kuniga to'qqiz soat stol ortida o'tirardi va deyarli har kechqurun fast-fud yerdi. Keyin bir kuni shifokor unga qon bosimi juda baland ekanini aytdi."
+    },
+    {
+      "en": "\"You should start exercising,\" the doctor said. \"Even thirty minutes of walking a day would make a big difference.\" Shoira decided to take his advice seriously. She started walking to work instead of taking a taxi.",
+      "uz": "\"Siz mashq qilishni boshlashingiz kerak,\" dedi shifokor. \"Kuniga hatto o'ttiz daqiqa yurish ham katta farq qiladi.\" Shoira uning maslahatini jiddiy qabul qilishga qaror qildi. U taksida emas, ishga piyoda borishni boshladi."
+    },
+    {
+      "en": "After a few months, walking became too easy, so she joined a free running club in the park. The other runners were friendly and encouraged her. Slowly, five minutes became twenty, then an hour. She also gave up fast food and learned to cook healthy meals.",
+      "uz": "Bir necha oydan keyin yurish juda oson bo'lib qoldi, shuning uchun u parkdagi bepul yugurish klubiga qo'shildi. Boshqa yuguruvchilar do'stona edi va uni ruhlantirishdi. Asta-sekin besh daqiqa yigirma daqiqaga, keyin bir soatga aylandi. U fast-fuddan ham voz kechdi va sog'lom taomlar tayyorlashni o'rgandi."
+    },
+    {
+      "en": "Last October, Shoira ran the Tashkent Marathon. At kilometre thirty, her legs hurt so much that she almost gave up. But then she heard someone shouting her name — it was her whole running club, standing by the road with a big sign.",
+      "uz": "O'tgan oktyabrda Shoira Toshkent marafonida yugurdi. O'ttizinchi kilometrda oyoqlari shunchalik og'ridiki, u deyarli taslim bo'ldi. Lekin keyin kimdir uning ismini baqirayotganini eshitdi — bu yo'l chetida katta plakat ko'tarib turgan butun yugurish klubi edi."
+    },
+    {
+      "en": "She finished in four hours and fifty minutes. It wasn't a fast time, but it was the proudest moment of her life. \"If I can do it, anyone can,\" she says now. \"You don't have to be an athlete. You just have to start.\"",
+      "uz": "U marrani to'rt soat ellik daqiqada kesib o'tdi. Bu tez natija emas edi, lekin hayotidagi eng faxrli lahza bo'ldi. \"Agar men qila olgan bo'lsam, har kim qila oladi,\" deydi u hozir. \"Sportchi bo'lish shart emas. Shunchaki boshlash kerak.\""
+    }
+  ],
+  "glossary": {
+    "blood pressure": "qon bosimi",
+    "take advice": "maslahatga amal qilmoq",
+    "instead of": "... o'rniga",
+    "joined": "qo'shildi",
+    "encouraged": "ruhlantirdi",
+    "gave up": "voz kechdi; taslim bo'ldi",
+    "hurt": "og'ridi",
+    "sign": "plakat, yozuv",
+    "proudest": "eng faxrli",
+    "athlete": "sportchi"
+  },
+  "questions": [
+    {"q": "Why did Shoira start exercising?", "options": ["She wanted to win a race.", "Her doctor said her blood pressure was too high.", "Her friends asked her to."], "answer": 1},
+    {"q": "What was the first change she made?", "options": ["She joined a gym.", "She walked to work.", "She stopped working."], "answer": 1},
+    {"q": "What helped her at kilometre thirty?", "options": ["Her running club cheering for her", "A drink of water", "Her doctor"], "answer": 0},
+    {"q": "What is the main message of the story?", "options": ["Marathons are dangerous.", "Only athletes can run marathons.", "Anyone can change if they start."], "answer": 2}
+  ]
+}
