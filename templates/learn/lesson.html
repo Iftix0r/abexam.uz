@@ -214,9 +214,13 @@
 (function () {
     const L = JSON.parse(document.getElementById('lesson-data').textContent);
     const CSRF = '{{ csrf_token }}';
+    const SR_API = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const CAN_RECORD = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder);
+    const SR = SR_API || CAN_RECORD;
     const URLS = {
         complete: L.complete_url,
         write: '{% url "learn:write_check" %}',
+        transcribe: '{% url "learn:transcribe" %}',
         hub: '{% url "learn:hub" %}?level=' + L.level,
         review: '{% url "learn:review" %}',
         next: L.next_slug ? '{% url "learn:lesson" "__s__" %}'.replace('__s__', L.next_slug) : null,
@@ -551,7 +555,6 @@
 
         dialogue(s) {
             const speakers = [...new Set(s.lines.map(l => l.who))];
-            const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
             body.innerHTML = `<div class="lp-kicker">${icon('messages-square')} Dialog</div>
                 <h2 class="lp-h">${esc(s.title || '')}</h2>
                 ${s.context_uz ? `<p class="lp-sub">${esc(s.context_uz)}</p>` : ''}
@@ -782,7 +785,6 @@
         },
 
         speak(s) {
-            const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
             body.innerHTML = `<div class="lp-kicker">${icon('mic')} Gapirish</div>
                 <h2 class="lp-h">${esc(s.uz || 'Ovoz chiqarib ayting')}</h2>
                 <div class="lp-speak-text" id="spText">${esc(s.text)} ${sayBtn(s.text)}</div>
@@ -852,28 +854,89 @@
     };
 
     // Speech recognition shared by "speak" steps and dialogue role-play.
-    function listen(target, btn, done) {
-        const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-        const rec = new SR();
-        rec.lang = 'en-GB'; rec.interimResults = false; rec.maxAlternatives = 3;
-        abSpeech.stop();
-        btn.classList.add('rec');
-        const heard = $('heard'); if (heard) heard.textContent = 'Eshityapman...';
+    // Browser recognizers (Chrome's sends audio to Google) often exist but can't
+    // work — Chromium/Brave/Linux builds fail with "network" — so fall back to
+    // recording the clip and transcribing it on the server.
+    let useServerSR = !SR_API;
+    let recording = null;
+    function status(text) { const h = $('heard') || $('tRes'); if (h) h.textContent = text; }
+    function scoreAlts(target, alts) {
         const want = norm(target).split(' ');
+        let best = { score: -1, hits: [], t: '' };
+        alts.forEach(t => {
+            const got = norm(t).split(' ');
+            // A word counts if heard exactly or with one sound off (accents).
+            const hits = want.map(w => got.some(g => g === w || (w.length > 3 && lev(g, w) <= 1)));
+            const score = hits.filter(Boolean).length / want.length;
+            if (score > best.score) best = { score, hits, t };
+        });
+        return best;
+    }
+    const SR_ERRORS = {
+        'not-allowed': "Mikrofonga ruxsat berilmagan. Manzil satridagi 🔒 belgisidan ruxsat bering.",
+        'audio-capture': "Mikrofon topilmadi. Ulanganini tekshiring.",
+        'no-speech': "Ovoz eshitilmadi. Mikrofonni bosib, balandroq ayting.",
+    };
+    function listen(target, btn, done) {
+        abSpeech.stop();
+        if (useServerSR) return listenServer(target, btn, done);
+        const rec = new SR_API();
+        rec.lang = 'en-GB'; rec.interimResults = false; rec.maxAlternatives = 3;
+        let handedOff = false;
+        btn.classList.add('rec');
+        status('Eshityapman...');
         rec.onresult = ev => {
-            let best = { score: -1, hits: [], t: '' };
-            [...ev.results[0]].forEach(r => {
-                const got = norm(r.transcript).split(' ');
-                // A word counts if heard exactly or with one sound off (accents).
-                const hits = want.map(w => got.some(g => g === w || (w.length > 3 && lev(g, w) <= 1)));
-                const score = hits.filter(Boolean).length / want.length;
-                if (score > best.score) best = { score, hits, t: r.transcript };
-            });
+            const best = scoreAlts(target, [...ev.results[0]].map(r => r.transcript));
             done(best.score, best.hits, best.t);
         };
-        rec.onerror = () => { const h = $('heard'); if (h) h.textContent = "Ovoz eshitilmadi. Mikrofonga ruxsat berilganini tekshiring."; };
-        rec.onend = () => btn.classList.remove('rec');
+        rec.onerror = e => {
+            if (!SR_ERRORS[e.error] && e.error !== 'aborted' && CAN_RECORD) {
+                useServerSR = handedOff = true;
+                return listenServer(target, btn, done);
+            }
+            status(SR_ERRORS[e.error] || "Ovozni tanib bo'lmadi. Qayta urinib ko'ring.");
+        };
+        rec.onend = () => { if (!handedOff) btn.classList.remove('rec'); };
         rec.start();
+    }
+    async function listenServer(target, btn, done) {
+        if (recording) return recording.stop();
+        let stream;
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        } catch (e) {
+            btn.classList.remove('rec');
+            return status(e.name === 'NotFoundError' ? SR_ERRORS['audio-capture'] : SR_ERRORS['not-allowed']);
+        }
+        const mr = new MediaRecorder(stream), chunks = [];
+        recording = mr;
+        mr.ondataavailable = e => e.data.size && chunks.push(e.data);
+        mr.onstop = async () => {
+            recording = null;
+            clearTimeout(limit);
+            stream.getTracks().forEach(t => t.stop());
+            btn.classList.remove('rec');
+            const blob = new Blob(chunks, { type: mr.mimeType || 'audio/webm' });
+            if (blob.size < 1500) return status(SR_ERRORS['no-speech']);
+            status('Tekshirilmoqda...');
+            const fd = new FormData();
+            fd.append('audio', blob, /mp4|m4a/.test(blob.type) ? 'speech.mp4' : /ogg/.test(blob.type) ? 'speech.ogg' : 'speech.webm');
+            try {
+                const r = await fetch(URLS.transcribe, { method: 'POST', headers: { 'X-CSRFToken': CSRF }, body: fd });
+                const d = await r.json();
+                if (!r.ok) return status(d.error || "Ovozni tanib bo'lmadi.");
+                if (!d.text) return status(SR_ERRORS['no-speech']);
+                const best = scoreAlts(target, [d.text]);
+                done(best.score, best.hits, best.t);
+            } catch (e) {
+                status("Internet bilan muammo. Qayta urinib ko'ring.");
+            }
+        };
+        // Stop on a second tap, or automatically once the sentence surely ended.
+        const limit = setTimeout(() => mr.state === 'recording' && mr.stop(), Math.min(15000, 2500 + target.split(/\s+/).length * 600));
+        mr.start();
+        btn.classList.add('rec');
+        status('Gapiring... tugatgach mikrofonni yana bosing');
     }
 
     function grammarCard(s) {

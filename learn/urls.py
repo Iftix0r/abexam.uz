@@ -11,6 +11,7 @@ urlpatterns = [
     path('lesson/<slug:slug>/complete/', views.LessonCompleteView.as_view(), name='lesson_complete'),
     path('write-check/', views.WriteCheckView.as_view(), name='write_check'),
     path('tts/', views.TtsView.as_view(), name='tts'),
+    path('transcribe/', views.TranscribeView.as_view(), name='transcribe'),
     path('review/', views.ReviewView.as_view(), name='review'),
     path('review/grade/', views.ReviewGradeView.as_view(), name='review_grade'),
     path('tutor/', views.TutorView.as_view(), name='tutor'),

@@ -27,6 +27,8 @@ TUTOR_DAILY_LIMIT = 60
 WRITE_DAILY_LIMIT = 30
 TTS_DAILY_LIMIT = 500
 TTS_MAX_CHARS = 1500
+TRANSCRIBE_DAILY_LIMIT = 300
+TRANSCRIBE_MAX_BYTES = 2 * 1024 * 1024
 DAILY_GOALS = (10, 20, 30, 50)
 
 
@@ -230,6 +232,21 @@ class TtsView(LoginRequiredMixin, View):
         response = FileResponse(path.open('rb'), content_type='audio/mpeg')
         response['Cache-Control'] = 'private, max-age=2592000'
         return response
+
+
+class TranscribeView(LoginRequiredMixin, View):
+    """Speech-to-text for pronunciation practice when the browser has no working recognizer."""
+
+    def post(self, request):
+        audio = request.FILES.get('audio')
+        if not audio or audio.size > TRANSCRIBE_MAX_BYTES:
+            return JsonResponse({'error': "Audio topilmadi"}, status=400)
+        if not _ai_quota_left(request.user, 'transcribe', TRANSCRIBE_DAILY_LIMIT):
+            return JsonResponse({'error': "Bugungi limit tugadi. Ertaga davom eting!"}, status=429)
+        text = ai.transcribe(audio.read(), audio.name or 'speech.webm')
+        if text is None:
+            return JsonResponse({'error': "Ovozni tanib bo'lmadi. Keyinroq urinib ko'ring."}, status=503)
+        return JsonResponse({'text': text})
 
 
 class ReviewView(LoginRequiredMixin, TemplateView):

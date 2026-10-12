@@ -1,4 +1,5 @@
 """AI helpers for the English course: conversation tutor and short-writing feedback."""
+import io
 import json
 import logging
 import re
@@ -164,6 +165,20 @@ def synthesize_speech(text):
         return _google_tts(text)
     except Exception:
         logger.exception('synthesize_speech failed')
+        return None
+
+
+def transcribe(audio_bytes, filename):
+    """English transcript of a short practice clip, or None on failure."""
+    f = io.BytesIO(audio_bytes)
+    f.name = filename
+    try:
+        result = client.with_options(max_retries=0).audio.transcriptions.create(
+            model='whisper-1', file=f, language='en', timeout=20,
+        )
+        return (result.text or '').strip()
+    except Exception:
+        logger.exception('transcribe failed')
         return None
 
 
