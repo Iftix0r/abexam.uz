@@ -1,22 +1,23 @@
 # Session state (auto-saved — last known reality)
 
-_Updated: 2026-10-12 08:59:40_  ·  branch: `main`
+_Updated: 2026-10-12 09:01:33_  ·  branch: `main`
 
 ## Uncommitted changes
 ```
  M .anchor/session-state.md
- M templates/learn/lesson.html
+ M templates/learn/review.html
 ```
 
 Diff stat:
 ```
- .anchor/session-state.md    | 46 +--------------------------------------------
- templates/learn/lesson.html | 27 +++++++++++++++++++++++---
- 2 files changed, 25 insertions(+), 48 deletions(-)
+ .anchor/session-state.md    | 24 ++----------------------
+ templates/learn/review.html | 27 +++++++++++++++++++++++++--
+ 2 files changed, 27 insertions(+), 24 deletions(-)
 ```
 
 ## Recent commits
 ```
+e20eefd dwqawf
 2ec2bee wefgeg
 c07d6d8 wfesgrh
 46dbc03 efskfsj i ho
@@ -24,7 +25,6 @@ c07d6d8 wfesgrh
 f4c347e cvsb
 0535fd4 afsfa
 9ee6dab jefwe
-01fe7a2 qa
 ```
 
 ## Resume

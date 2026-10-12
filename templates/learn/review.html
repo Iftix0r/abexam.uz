@@ -72,9 +72,32 @@
     const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const norm = s => String(s || '').toLowerCase().replace(/[’‘]/g, "'").replace(/[^\p{L}\p{N}\s']/gu, ' ').replace(/\s+/g, ' ').trim();
     let voice = null;
-    const pick = () => { const v = speechSynthesis.getVoices(); voice = v.find(x => /en-GB/i.test(x.lang)) || v.find(x => /^en/i.test(x.lang)) || null; };
+    const pick = () => { const v = speechSynthesis.getVoices(); voice = v.find(x => /en-GB/i.test(x.lang)) || v.find(x => /^en/i.test(x.lang)) || null; return v.length > 0; };
     if (window.speechSynthesis) { pick(); speechSynthesis.onvoiceschanged = pick; }
-    const speak = t => { if (!window.speechSynthesis) return; speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = 'en-GB'; u.rate = .9; if (voice) u.voice = voice; speechSynthesis.speak(u); };
+    let noAudioHinted = false;
+    function noAudioHint() {
+        if (noAudioHinted) return;
+        noAudioHinted = true;
+        const card = document.getElementById('card');
+        if (card && !document.querySelector('.rv-no-audio')) {
+            const note = document.createElement('p');
+            note.className = 'rv-help rv-no-audio';
+            note.textContent = "Qurilmangiz ovozli o'qishni qo'llamayapti.";
+            card.insertAdjacentElement('afterend', note);
+        }
+    }
+    const speak = (t, _retried) => {
+        if (!window.speechSynthesis) { noAudioHint(); return; }
+        // Voices can still be loading right after page load; give pick() one retry.
+        if (!_retried && speechSynthesis.getVoices().length === 0 && !pick()) { setTimeout(() => speak(t, true), 300); return; }
+        // Calling cancel() unconditionally right before speak() can silently drop
+        // the utterance on some Chrome builds; only cancel an utterance in flight.
+        if (speechSynthesis.speaking || speechSynthesis.pending) speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(t);
+        u.lang = 'en-GB'; u.rate = .9; if (voice) u.voice = voice;
+        u.onerror = noAudioHint;
+        speechSynthesis.speak(u);
+    };
 
     function progress() {
         document.getElementById('rvBar').style.width = (finished / Math.max(total, 1) * 100) + '%';
