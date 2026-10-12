@@ -266,11 +266,7 @@ function closePractice() {
 }
 
 function speak(text) {
-    const msg = new SpeechSynthesisUtterance();
-    msg.text = text;
-    msg.lang = 'en-US';
-    msg.rate = 0.9;
-    window.speechSynthesis.speak(msg);
+    abSpeech.speak(text, { rate: 0.9 });
 }
 
 function filterWords() {

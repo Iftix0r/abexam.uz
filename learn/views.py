@@ -1,7 +1,12 @@
+import hashlib
+import os
+from pathlib import Path
+
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.cache import cache
-from django.http import Http404, JsonResponse
+from django.http import FileResponse, Http404, HttpResponse, HttpResponseBadRequest, JsonResponse
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils import timezone
@@ -20,6 +25,8 @@ from .services import (
 
 TUTOR_DAILY_LIMIT = 60
 WRITE_DAILY_LIMIT = 30
+TTS_DAILY_LIMIT = 500
+TTS_MAX_CHARS = 1500
 DAILY_GOALS = (10, 20, 30, 50)
 
 
@@ -200,6 +207,29 @@ class WriteCheckView(LoginRequiredMixin, View):
         if result is None:
             return JsonResponse({'error': "AI hozir javob bermadi. Keyinroq urinib ko'ring."}, status=503)
         return JsonResponse({'ok': True, **result})
+
+
+class TtsView(LoginRequiredMixin, View):
+    """Server-side speech for browsers with no English speechSynthesis voice; cached on disk."""
+
+    def get(self, request):
+        text = ' '.join(request.GET.get('t', '').split())
+        if not text or len(text) > TTS_MAX_CHARS:
+            return HttpResponseBadRequest()
+        path = Path(settings.MEDIA_ROOT) / 'tts' / f'{hashlib.sha256(text.encode()).hexdigest()[:40]}.mp3'
+        if not path.exists():
+            if not _ai_quota_left(request.user, 'tts', TTS_DAILY_LIMIT):
+                return HttpResponse(status=429)
+            audio = ai.synthesize_speech(text)
+            if not audio:
+                return HttpResponse(status=503)
+            path.parent.mkdir(parents=True, exist_ok=True)
+            tmp = path.with_suffix(f'.{os.getpid()}.tmp')
+            tmp.write_bytes(audio)
+            os.replace(tmp, path)
+        response = FileResponse(path.open('rb'), content_type='audio/mpeg')
+        response['Cache-Control'] = 'private, max-age=2592000'
+        return response
 
 
 class ReviewView(LoginRequiredMixin, TemplateView):

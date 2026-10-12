@@ -48,10 +48,7 @@
     const answers = {};
     let b = 0, q = 0, asked = 0;
 
-    let voice = null;
-    const pick = () => { const v = speechSynthesis.getVoices(); voice = v.find(x => /en-GB/i.test(x.lang)) || v.find(x => /^en/i.test(x.lang)) || null; };
-    if (window.speechSynthesis) { pick(); speechSynthesis.onvoiceschanged = pick; }
-    const speak = t => { if (!window.speechSynthesis) return; speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = 'en-GB'; u.rate = .9; if (voice) u.voice = voice; speechSynthesis.speak(u); };
+    const speak = t => abSpeech.speak(t, { rate: 0.9 });
 
     function intro() {
         stage.innerHTML = `<div class="pt-center"><div class="big">🧭</div>

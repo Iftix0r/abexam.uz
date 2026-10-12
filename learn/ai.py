@@ -1,6 +1,11 @@
 """AI helpers for the English course: conversation tutor and short-writing feedback."""
 import json
 import logging
+import re
+
+import openai
+import requests
+from django.core.cache import cache
 
 from core.ai_utils import _HOT_PATH_TIMEOUT, client
 
@@ -108,6 +113,58 @@ def tutor_reply(scenario_key, level, message, history):
         'correction': correction if correction and correction.get('corrected') else None,
         'tip': tip if tip and tip.get('phrase') else None,
     }
+
+
+def _google_tts(text):
+    # Unofficial Translate endpoint caps each request at ~200 chars; MP3 frames
+    # concatenate cleanly, so read it in chunks split on sentence/word boundaries.
+    chunks, cur = [], ''
+    for word in re.findall(r'\S+', text):
+        if cur and len(cur) + 1 + len(word) > 180:
+            chunks.append(cur)
+            cur = word
+        else:
+            cur = f'{cur} {word}' if cur else word
+        if cur.endswith(('.', '!', '?')) and len(cur) > 60:
+            chunks.append(cur)
+            cur = ''
+    if cur:
+        chunks.append(cur)
+    audio = b''
+    for i, chunk in enumerate(chunks):
+        r = requests.get(
+            'https://translate.google.co.uk/translate_tts',
+            params={'ie': 'UTF-8', 'client': 'tw-ob', 'tl': 'en', 'q': chunk, 'total': len(chunks), 'idx': i},
+            headers={'User-Agent': 'Mozilla/5.0'}, timeout=10,
+        )
+        r.raise_for_status()
+        if not r.headers.get('Content-Type', '').startswith('audio/'):
+            raise ValueError('unexpected TTS response')
+        audio += r.content
+    return audio
+
+
+def synthesize_speech(text):
+    """MP3 bytes of `text` read in a British voice, or None on failure."""
+    if not cache.get('tts_openai_off'):
+        try:
+            response = client.with_options(max_retries=0).audio.speech.create(
+                model='gpt-4o-mini-tts', voice='coral', input=text,
+                instructions="Speak with a clear, natural British English accent at a calm pace for language learners.",
+                response_format='mp3', timeout=20,
+            )
+            return response.content
+        except (openai.AuthenticationError, openai.PermissionDeniedError, openai.RateLimitError):
+            # Bad key / no quota won't fix itself per request; stop paying the round trip.
+            cache.set('tts_openai_off', True, 60 * 60)
+            logger.warning('OpenAI TTS unavailable, using Google for the next hour', exc_info=True)
+        except Exception:
+            logger.warning('OpenAI TTS failed, falling back to Google', exc_info=True)
+    try:
+        return _google_tts(text)
+    except Exception:
+        logger.exception('synthesize_speech failed')
+        return None
 
 
 def check_writing(task, text, level):

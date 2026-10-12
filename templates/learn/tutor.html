@@ -101,10 +101,7 @@
     const history = [{ role: 'assistant', content: OPENER }];
 
     const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    let voice = null;
-    const pick = () => { const v = speechSynthesis.getVoices(); voice = v.find(x => /en-GB/i.test(x.lang)) || v.find(x => /^en/i.test(x.lang)) || null; };
-    if (window.speechSynthesis) { pick(); speechSynthesis.onvoiceschanged = pick; }
-    const speak = t => { if (!window.speechSynthesis) return; speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = 'en-GB'; u.rate = .95; if (voice) u.voice = voice; speechSynthesis.speak(u); };
+    const speak = t => abSpeech.speak(t, { rate: 0.95 });
 
     function add(html, cls) {
         const d = document.createElement('div');
@@ -165,7 +162,7 @@
         const rec = new SR();
         rec.lang = 'en-GB'; rec.interimResults = true;
         mic.classList.add('rec');
-        speechSynthesis && speechSynthesis.cancel();
+        abSpeech.stop();
         rec.onresult = ev => { inp.value = [...ev.results].map(r => r[0].transcript).join(' '); autoGrow(); };
         rec.onend = () => { mic.classList.remove('rec'); if (inp.value.trim()) inp.focus(); };
         rec.start();

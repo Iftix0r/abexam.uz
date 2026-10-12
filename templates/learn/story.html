@@ -76,10 +76,7 @@
     $('slow').classList.toggle('on', slow);
     $('slow').onclick = () => { slow = !slow; $('slow').classList.toggle('on', slow); try { localStorage.setItem('lp-slow', JSON.stringify(slow)); } catch (e) {} };
 
-    let voice = null;
-    const pick = () => { const v = speechSynthesis.getVoices(); voice = v.find(x => /en-GB/i.test(x.lang)) || v.find(x => /^en/i.test(x.lang)) || null; };
-    if (window.speechSynthesis) { pick(); speechSynthesis.onvoiceschanged = pick; }
-    const speak = (t, onend) => { if (!window.speechSynthesis) return; speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = 'en-GB'; u.rate = slow ? .7 : .92; if (voice) u.voice = voice; if (onend) u.onend = onend; speechSynthesis.speak(u); };
+    const speak = (t, onend) => abSpeech.speak(t, { rate: slow ? .7 : .92, onend });
 
     // Paragraphs with glossary words marked once each.
     const keys = Object.keys(S.glossary || {}).sort((a, b) => b.length - a.length);
@@ -137,7 +134,7 @@
     // Comprehension questions
     const answers = {};
     $('toQuestions').onclick = () => {
-        token++; window.speechSynthesis && speechSynthesis.cancel(); hi(-1);
+        token++; abSpeech.stop(); hi(-1);
         $('toQuestions').style.display = 'none';
         $('questions').style.display = 'block';
         $('qList').innerHTML = S.questions.map((q, i) => `<div class="sr-item" data-q="${i}"><b>${i + 1}. ${esc(q.q)}</b>${q.q_uz ? `<small>${esc(q.q_uz)}</small>` : ''}

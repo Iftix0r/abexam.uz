@@ -69,10 +69,8 @@
         el.innerHTML = el.dataset.md.split('\n').map(p => `<p>${esc(p).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')}</p>`).join('');
     });
     document.addEventListener('click', e => {
-        const b = e.target.closest('[data-say]'); if (!b || !window.speechSynthesis) return;
-        speechSynthesis.cancel();
-        const u = new SpeechSynthesisUtterance(b.dataset.say); u.lang = 'en-GB'; u.rate = .9;
-        speechSynthesis.speak(u);
+        const b = e.target.closest('[data-say]'); if (!b) return;
+        abSpeech.speak(b.dataset.say, { rate: 0.9 });
     });
     document.getElementById('q').addEventListener('input', e => {
         const q = e.target.value.trim().toLowerCase();
