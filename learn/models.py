@@ -84,3 +84,23 @@ class Mistake(models.Model):
 
     def __str__(self):
         return f"{self.user} · {self.lesson_slug}#{self.step_index}"
+
+
+class ApiToken(models.Model):
+    """Bearer token for the mobile app (see learn/api.py).
+
+    Only a SHA-256 of the key is stored, so a database leak doesn't hand out
+    working tokens; the plain key is shown to the app once, at login.
+    """
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='learn_api_tokens')
+    key_hash = models.CharField(max_length=64, unique=True)
+    device = models.CharField(max_length=100, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_used_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = 'Ilova tokeni'
+        verbose_name_plural = 'Ilova tokenlari'
+
+    def __str__(self):
+        return f"{self.user} · {self.device or 'ilova'}"

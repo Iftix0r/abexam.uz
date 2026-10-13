@@ -310,3 +310,86 @@ class PageTests(TestCase):
 
     def test_new_learner_is_offered_the_placement_test(self):
         self.assertContains(self.client.get(reverse('learn:hub')), reverse('learn:placement') + '" class="ln-btn')
+
+
+class ApiTests(TestCase):
+    """The mobile app's JSON API (learn/api.py)."""
+
+    def setUp(self):
+        cache.clear()
+        self.user = User.objects.create_user('learner', password='pw-Secret-123')
+        resp = self._call('post', 'learn_api:login', {'username': 'learner', 'password': 'pw-Secret-123'}, token=None)
+        self.assertEqual(resp.status_code, 200)
+        self.token = resp.json()['token']
+
+    def _call(self, method, name, payload=None, *args, token='own', query=''):
+        headers = {}
+        token = self.token if token == 'own' else token
+        if token:
+            headers['HTTP_AUTHORIZATION'] = f'Bearer {token}'
+        url = reverse(name, args=args) + query
+        if method == 'get':
+            return self.client.get(url, **headers)
+        return self.client.post(url, data=json.dumps(payload or {}), content_type='application/json', **headers)
+
+    def test_requests_without_a_valid_token_are_refused(self):
+        self.assertEqual(self._call('get', 'learn_api:me', token=None).status_code, 401)
+        self.assertEqual(self._call('get', 'learn_api:me', token='nope').status_code, 401)
+        self.assertEqual(self._call('get', 'learn_api:me').status_code, 200)
+
+    def test_wrong_password_and_logout(self):
+        bad = self._call('post', 'learn_api:login', {'username': 'learner', 'password': 'x'}, token=None)
+        self.assertEqual(bad.status_code, 400)
+        self.assertEqual(self._call('post', 'learn_api:logout').status_code, 200)
+        self.assertEqual(self._call('get', 'learn_api:me').status_code, 401)
+
+    def test_register_returns_a_working_token(self):
+        resp = self._call('post', 'learn_api:register', {
+            'username': 'newbie', 'first_name': 'Ali', 'password': 'Very-Strong-77', 'confirm_password': 'Very-Strong-77',
+        }, token=None)
+        self.assertEqual(resp.status_code, 200, resp.content)
+        me = self._call('get', 'learn_api:me', token=resp.json()['token']).json()
+        self.assertEqual(me['user']['username'], 'newbie')
+        dup = self._call('post', 'learn_api:register', {
+            'username': 'newbie', 'password': 'Very-Strong-77', 'confirm_password': 'Very-Strong-77'}, token=None)
+        self.assertEqual(dup.status_code, 400)
+
+    def test_course_lesson_and_completion(self):
+        course = self._call('get', 'learn_api:course', query='?level=A1').json()
+        self.assertEqual(course['current'], 'a1-hello')
+        states = [l['state'] for u in course['units'] for l in u['lessons']]
+        self.assertEqual(states[:2], ['current', 'locked'])
+        self.assertEqual(self._call('get', 'learn_api:lesson', None, 'a1-family').status_code, 403)
+        lesson = self._call('get', 'learn_api:lesson', None, 'a1-hello').json()
+        self.assertTrue(lesson['steps'] and lesson['words'])
+        done = self._call('post', 'learn_api:lesson_complete', {'score': 90}, 'a1-hello').json()
+        self.assertEqual(done['xp'], 19)
+        self.assertEqual(self._call('get', 'learn_api:lesson', None, 'a1-family').status_code, 200)
+        me = self._call('get', 'learn_api:me').json()
+        self.assertEqual((me['xp'], me['streak'], me['review']['new']), (19, 1, len(lesson['words'])))
+
+    def test_practice_id_is_single_use(self):
+        self._call('post', 'learn_api:lesson_complete', {'score': 50}, 'a1-hello')
+        session = self._call('get', 'learn_api:practice').json()
+        self.assertTrue(session['steps'])
+        results = [{'slug': s['_src']['slug'], 'step': s['_src']['idx'], 'ok': True} for s in session['steps']]
+        first = self._call('post', 'learn_api:practice_complete', {'id': session['id'], 'results': results})
+        self.assertEqual(first.json()['right'], len(results))
+        again = self._call('post', 'learn_api:practice_complete', {'id': session['id'], 'results': results})
+        self.assertEqual(again.status_code, 400)
+
+    def test_review_stories_and_placement(self):
+        self._call('post', 'learn_api:lesson_complete', {'score': 100}, 'a1-hello')
+        cards = self._call('get', 'learn_api:review').json()['cards']
+        graded = self._call('post', 'learn_api:review_grade', {'id': cards[0]['id'], 'grade': 2})
+        self.assertEqual(graded.status_code, 200)
+        listing = self._call('get', 'learn_api:stories').json()['stories']
+        slug = listing[0]['slug']
+        self.assertTrue(self._call('get', 'learn_api:story', None, slug).json()['paragraphs'])
+        self.assertEqual(self._call('post', 'learn_api:story_complete', {'score': 80}, slug).json()['xp'], 8)
+        test = self._call('get', 'learn_api:placement').json()
+        answers = {'0': [q['answer'] for q in test['blocks'][0]['questions']]}
+        self.assertEqual(self._call('post', 'learn_api:placement', {'answers': answers}).json()['level'], 'A2')
+        board = self._call('get', 'learn_api:leaderboard').json()
+        self.assertEqual(board['me']['rank'], 1)
+        self.assertTrue(self._call('get', 'learn_api:grammar').json()['levels'])

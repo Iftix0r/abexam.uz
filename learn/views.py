@@ -19,8 +19,8 @@ from . import ai, srs
 from .content import LEVELS, get_course, get_lesson, get_placement, get_stories, placement_level
 from .models import LessonProgress, Mistake
 from .services import (
-    REVIEW_XP, TUTOR_XP, apply_practice, award_xp, build_practice, complete_lesson, get_profile,
-    leaderboard, recommended_level, record_mistakes, repeat_pays, today_xp, week_activity,
+    TUTOR_XP, apply_practice, award_xp, build_practice, complete_lesson, complete_story, get_profile,
+    grade_review, leaderboard, recommended_level, record_mistakes, today_xp, week_activity,
 )
 
 TUTOR_DAILY_LIMIT = 60
@@ -278,14 +278,7 @@ class ReviewGradeView(LoginRequiredMixin, View):
             grade = int(data.get('grade'))
         except (Vocabulary.DoesNotExist, TypeError, ValueError):
             return JsonResponse({'error': "So'z topilmadi"}, status=404)
-        # Only a card that was actually up for review pays, so re-grading the
-        # same card in a loop earns nothing.
-        was_due = card.due_at is None or card.due_at <= timezone.now()
-        srs.schedule(card, grade).save(update_fields=['due_at', 'interval_days', 'ease', 'reps', 'lapses'])
-        if was_due:
-            award_xp(request.user, REVIEW_XP)
-        return JsonResponse({'ok': True, 'interval_days': card.interval_days,
-                             'again': grade == srs.AGAIN})
+        return JsonResponse({'ok': True, **grade_review(card, grade)})
 
 
 class TutorView(LoginRequiredMixin, TemplateView):
@@ -399,10 +392,6 @@ class PracticeCompleteView(LoginRequiredMixin, View):
         return JsonResponse({'ok': True, **apply_practice(request.user, data.get('results'), served, pay)})
 
 
-STORY_XP_FIRST = 8
-STORY_XP_REPEAT = 2
-
-
 class StoriesView(LoginRequiredMixin, TemplateView):
     template_name = 'learn/stories.html'
 
@@ -442,21 +431,10 @@ class StoryCompleteView(LoginRequiredMixin, View):
         if err:
             return err
         try:
-            score = max(0, min(100, int(data.get('score', 0))))
+            score = int(data.get('score', 0))
         except (TypeError, ValueError):
             score = 0
-        progress, created = LessonProgress.objects.get_or_create(
-            user=request.user, lesson_slug='story:' + slug, defaults={'best_score': score, 'attempts': 1})
-        if created:
-            xp = STORY_XP_FIRST
-        else:
-            xp = STORY_XP_REPEAT if repeat_pays(progress) else 0
-            progress.attempts += 1
-            progress.best_score = max(progress.best_score, score)
-            progress.completed_at = timezone.now()
-            progress.save(update_fields=['attempts', 'best_score', 'completed_at'])
-        profile = award_xp(request.user, xp)
-        return JsonResponse({'ok': True, 'xp': xp, 'streak': profile.streak})
+        return JsonResponse({'ok': True, **complete_story(request.user, slug, score)})
 
 
 class LeaderboardView(LoginRequiredMixin, TemplateView):

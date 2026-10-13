@@ -98,6 +98,38 @@ def complete_lesson(user, lesson, score):
             'total_xp': profile.xp, 'streak': profile.streak, 'best_score': progress.best_score}
 
 
+STORY_XP_FIRST = 8
+STORY_XP_REPEAT = 2
+
+
+@transaction.atomic
+def complete_story(user, slug, score):
+    score = max(0, min(100, int(score)))
+    progress, created = LessonProgress.objects.select_for_update().get_or_create(
+        user=user, lesson_slug='story:' + slug, defaults={'best_score': score, 'attempts': 1})
+    if created:
+        xp = STORY_XP_FIRST
+    else:
+        xp = STORY_XP_REPEAT if repeat_pays(progress) else 0
+        progress.attempts += 1
+        progress.best_score = max(progress.best_score, score)
+        progress.completed_at = timezone.now()
+        progress.save(update_fields=['attempts', 'best_score', 'completed_at'])
+    profile = award_xp(user, xp)
+    return {'xp': xp, 'streak': profile.streak}
+
+
+def grade_review(card, grade):
+    """Schedule a vocabulary card. Only a card that was actually up for review
+    pays, so re-grading the same card in a loop earns nothing."""
+    from . import srs
+    was_due = card.due_at is None or card.due_at <= timezone.now()
+    srs.schedule(card, grade).save(update_fields=['due_at', 'interval_days', 'ease', 'reps', 'lapses'])
+    if was_due:
+        award_xp(card.user, REVIEW_XP)
+    return {'interval_days': card.interval_days, 'again': int(grade) == srs.AGAIN}
+
+
 def recommended_level(user):
     """Map the learner's IELTS mock average to a starting CEFR level."""
     from exams.models import UserResult

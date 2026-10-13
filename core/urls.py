@@ -72,6 +72,7 @@ urlpatterns = [
     path('exams/', include('exams.urls', namespace='exams')),
     path('payments/', include('payments.urls', namespace='payments')),
     path('learn/', include('learn.urls', namespace='learn')),
+    path('api/learn/', include('learn.api')),
 ]
 
 if settings.DEBUG:
