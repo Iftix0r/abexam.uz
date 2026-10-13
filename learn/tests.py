@@ -336,6 +336,8 @@ class ApiTests(TestCase):
         self.assertEqual(self._call('get', 'learn_api:me', token=None).status_code, 401)
         self.assertEqual(self._call('get', 'learn_api:me', token='nope').status_code, 401)
         self.assertEqual(self._call('get', 'learn_api:me').status_code, 200)
+        fallback = self.client.get(reverse('learn_api:me'), HTTP_X_API_TOKEN=self.token)
+        self.assertEqual(fallback.status_code, 200)
 
     def test_wrong_password_and_logout(self):
         bad = self._call('post', 'learn_api:login', {'username': 'learner', 'password': 'x'}, token=None)

@@ -52,8 +52,12 @@ def _issue_token(user, device):
 
 
 def _bearer(request):
+    # Some Apache setups drop the Authorization header before it reaches
+    # Django, so the app sends the token in X-Api-Token as well.
     header = request.headers.get('Authorization', '')
-    return header[7:].strip() if header.startswith('Bearer ') else ''
+    if header.startswith('Bearer '):
+        return header[7:].strip()
+    return request.headers.get('X-Api-Token', '').strip()
 
 
 def api(methods=('GET',), auth=True):

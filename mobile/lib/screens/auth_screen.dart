@@ -90,8 +90,8 @@ class _AuthScreenState extends State<AuthScreen> {
                         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
                           SegmentedButton<bool>(
                             segments: const [
-                              ButtonSegment(value: false, label: Text('Kirish'), icon: Icon(Icons.login_rounded)),
-                              ButtonSegment(value: true, label: Text("Ro'yxatdan o'tish"), icon: Icon(Icons.person_add_rounded)),
+                              ButtonSegment(value: false, label: Text('Kirish', maxLines: 1)),
+                              ButtonSegment(value: true, label: Text("Ro'yxatdan o'tish", maxLines: 1, softWrap: false)),
                             ],
                             selected: {_register},
                             showSelectedIcon: false,

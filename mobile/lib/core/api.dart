@@ -8,6 +8,10 @@ import 'package:http/http.dart' as http;
 ///   flutter run --dart-define=API_BASE=http://10.0.2.2:8000
 const String apiBase = String.fromEnvironment('API_BASE', defaultValue: 'https://abexam.uz');
 
+/// Fixed, recognisable User-Agent so the hosting firewall (Imunify360) can
+/// whitelist the app instead of treating it as a bot.
+const String appUserAgent = 'AbExamEnglish/1.0 (Flutter; mobile app)';
+
 class ApiException implements Exception {
   ApiException(this.message, {this.status = 0});
 
@@ -36,7 +40,9 @@ class Api {
   Map<String, String> get _headers => {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
+        'User-Agent': appUserAgent,
         if (token != null) 'Authorization': 'Bearer $token',
+        'X-Api-Token': ?token,
       };
 
   Future<Map<String, dynamic>> get(String path, {Map<String, String>? query}) =>
@@ -56,9 +62,18 @@ class Api {
     } on http.ClientException {
       throw ApiException("Server bilan aloqa uzildi.");
     }
+    final body = utf8.decode(resp.bodyBytes, allowMalformed: true);
+    // The hosting firewall answers before Django does: a JSON "Imunify360"
+    // denial or an HTML "One moment, please..." browser challenge.
+    if (body.contains('Imunify360') || body.contains('One moment, please')) {
+      throw ApiException(
+        "Hosting himoyasi (Imunify360) ilovani bloklayapti. Administrator /api/learn/ manzilini oq ro'yxatga qo'shishi kerak.",
+        status: resp.statusCode,
+      );
+    }
     Map<String, dynamic> data;
     try {
-      final decoded = jsonDecode(utf8.decode(resp.bodyBytes));
+      final decoded = jsonDecode(body);
       data = decoded is Map<String, dynamic> ? decoded : {'data': decoded};
     } catch (_) {
       throw ApiException('Serverda xatolik (${resp.statusCode}).', status: resp.statusCode);
