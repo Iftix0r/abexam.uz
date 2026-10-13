@@ -219,6 +219,103 @@ class _DialogueStepState extends State<DialogueStep> {
   }
 }
 
+// ── tap-to-translate text ───────────────────────────────────────────────
+/// Text whose known words (lesson words, glossary) are underlined; tapping
+/// one shows its Uzbek meaning under the text. [segments] are Strings to
+/// gloss or ready-made InlineSpans (e.g. the gap in a gap-fill sentence).
+class GlossText extends StatefulWidget {
+  GlossText(String text, {super.key, required this.dict, required this.style}) : segments = [text];
+
+  const GlossText.segments(this.segments, {super.key, required this.dict, required this.style});
+
+  final List<Object> segments;
+  final Map<String, String> dict;
+  final TextStyle style;
+
+  @override
+  State<GlossText> createState() => _GlossTextState();
+}
+
+class _GlossTextState extends State<GlossText> {
+  String? _shown;
+  final _recognizers = <TapGestureRecognizer>[];
+
+  @override
+  void dispose() {
+    for (final r in _recognizers) {
+      r.dispose();
+    }
+    super.dispose();
+  }
+
+  List<InlineSpan> _gloss(String text, Set<String> used, Color color) {
+    final taken = <(int, int, String)>[];
+    final keys = widget.dict.keys.where((k) => !used.contains(k)).toList()..sort((a, b) => b.length.compareTo(a.length));
+    final lower = text.toLowerCase();
+    for (final k in keys) {
+      final re = RegExp(r"(?<![\p{L}'])" + RegExp.escape(k) + r'(?![\p{L}])', unicode: true);
+      final m = re.firstMatch(lower);
+      if (m == null || taken.any((t) => m.start < t.$2 && m.end > t.$1)) continue;
+      taken.add((m.start, m.end, k));
+      used.add(k);
+    }
+    taken.sort((a, b) => a.$1.compareTo(b.$1));
+    final spans = <InlineSpan>[];
+    var last = 0;
+    for (final t in taken) {
+      if (t.$1 > last) spans.add(TextSpan(text: text.substring(last, t.$1)));
+      final word = text.substring(t.$1, t.$2);
+      final rec = TapGestureRecognizer()..onTap = () => setState(() => _shown = '$word — ${widget.dict[t.$3]}');
+      _recognizers.add(rec);
+      spans.add(TextSpan(
+        text: word,
+        recognizer: rec,
+        style: TextStyle(decoration: TextDecoration.underline, decorationStyle: TextDecorationStyle.dotted, decorationColor: color),
+      ));
+      last = t.$2;
+    }
+    if (last < text.length) spans.add(TextSpan(text: text.substring(last)));
+    return spans;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    for (final r in _recognizers) {
+      r.dispose();
+    }
+    _recognizers.clear();
+    final used = <String>{};
+    final children = <InlineSpan>[
+      for (final s in widget.segments)
+        if (s is String) ..._gloss(s, used, scheme.primary) else s as InlineSpan,
+    ];
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Text.rich(TextSpan(style: widget.style, children: children)),
+      AnimatedSize(
+        duration: const Duration(milliseconds: 200),
+        child: _shown == null
+            ? const SizedBox(width: double.infinity)
+            : GestureDetector(
+                onTap: () => setState(() => _shown = null),
+                child: Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.only(top: 10),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(color: scheme.primary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
+                  child: Row(children: [
+                    Icon(Icons.translate_rounded, color: scheme.primary, size: 18),
+                    const SizedBox(width: 8),
+                    Expanded(child: Text(_shown!, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15))),
+                    Icon(Icons.close_rounded, size: 16, color: scheme.outline),
+                  ]),
+                ),
+              ),
+      ),
+    ]);
+  }
+}
+
 // ── reading ──────────────────────────────────────────────────────────────
 class ReadingStep extends StatefulWidget {
   const ReadingStep({super.key, required this.step});
@@ -231,63 +328,12 @@ class ReadingStep extends StatefulWidget {
 
 class _ReadingStepState extends State<ReadingStep> {
   bool _uz = false;
-  String? _gloss;
-  final _recognizers = <TapGestureRecognizer>[];
-
-  @override
-  void dispose() {
-    for (final r in _recognizers) {
-      r.dispose();
-    }
-    super.dispose();
-  }
-
-  /// Text with glossary words underlined and tappable (first occurrence each).
-  List<InlineSpan> _spans(String text, Map<String, String> glossary, Color color) {
-    final taken = <(int, int, String)>[];
-    final keys = glossary.keys.toList()..sort((a, b) => b.length.compareTo(a.length));
-    final lower = text.toLowerCase();
-    for (final k in keys) {
-      final re = RegExp(r'(?<![\p{L}])' + RegExp.escape(k.toLowerCase()) + r'(?![\p{L}])', unicode: true);
-      for (final m in re.allMatches(lower)) {
-        if (taken.any((t) => m.start < t.$2 && m.end > t.$1)) continue;
-        taken.add((m.start, m.end, k));
-        break;
-      }
-    }
-    taken.sort((a, b) => a.$1.compareTo(b.$1));
-    for (final r in _recognizers) {
-      r.dispose();
-    }
-    _recognizers.clear();
-    final spans = <InlineSpan>[];
-    var last = 0;
-    for (final t in taken) {
-      if (t.$1 > last) spans.add(TextSpan(text: text.substring(last, t.$1)));
-      final rec = TapGestureRecognizer()..onTap = () => setState(() => _gloss = '${t.$3} — ${glossary[t.$3]}');
-      _recognizers.add(rec);
-      spans.add(TextSpan(
-        text: text.substring(t.$1, t.$2),
-        recognizer: rec,
-        style: TextStyle(
-          decoration: TextDecoration.underline,
-          decorationStyle: TextDecorationStyle.dotted,
-          decorationColor: color,
-          color: color,
-          fontWeight: FontWeight.w600,
-        ),
-      ));
-      last = t.$2;
-    }
-    if (last < text.length) spans.add(TextSpan(text: text.substring(last)));
-    return spans;
-  }
 
   @override
   Widget build(BuildContext context) {
     final s = widget.step;
     final scheme = Theme.of(context).colorScheme;
-    final glossary = ((s['glossary'] as Map?) ?? {}).map((k, v) => MapEntry('$k', '$v'));
+    final glossary = ((s['glossary'] as Map?) ?? {}).map((k, v) => MapEntry('$k'.toLowerCase(), '$v'));
     final text = '${s['text'] ?? ''}';
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       const Kicker(Icons.menu_book_rounded, "O'qish"),
@@ -300,26 +346,8 @@ class _ReadingStepState extends State<ReadingStep> {
       Card(
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: Text.rich(
-            TextSpan(style: TextStyle(fontSize: 17, height: 1.6, color: scheme.onSurface), children: _spans(text, glossary, scheme.primary)),
-          ),
+          child: GlossText(text, dict: glossary, style: TextStyle(fontSize: 17, height: 1.6, color: scheme.onSurface)),
         ),
-      ),
-      AnimatedSize(
-        duration: const Duration(milliseconds: 200),
-        child: _gloss == null
-            ? const SizedBox(width: double.infinity)
-            : Container(
-                width: double.infinity,
-                margin: const EdgeInsets.only(top: 10),
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(color: scheme.primary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
-                child: Row(children: [
-                  Icon(Icons.translate_rounded, color: scheme.primary, size: 18),
-                  const SizedBox(width: 8),
-                  Expanded(child: Text(_gloss!, style: const TextStyle(fontWeight: FontWeight.w600))),
-                ]),
-              ),
       ),
       if (_uz)
         Padding(
@@ -327,7 +355,7 @@ class _ReadingStepState extends State<ReadingStep> {
           child: Text('${s['uz']}', style: TextStyle(color: scheme.outline, height: 1.5)),
         ),
       const SizedBox(height: 10),
-      const StepSub("Rangli so'zlarni bosing — tarjimasi chiqadi. Asosiy ma'noni tushunsangiz yetarli."),
+      const StepSub("Chizilgan so'zlarni bosing — tarjimasi chiqadi. Asosiy ma'noni tushunsangiz yetarli."),
     ]);
   }
 }

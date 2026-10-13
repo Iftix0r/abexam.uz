@@ -38,6 +38,9 @@ class StepCtl extends ChangeNotifier {
   String? hintLabel;
   bool skippable = false;
 
+  /// Keyboard "Done": check the answer if it's ready (set by the player).
+  VoidCallback? submit;
+
   bool get isExercise => check != null;
 
   void setReady(bool v) {
@@ -73,6 +76,7 @@ class StepEnv {
     required this.stepIndex,
     required this.wordPool,
     required this.slowSpeech,
+    this.dict = const {},
   });
 
   final Api api;
@@ -84,6 +88,9 @@ class StepEnv {
   /// Words from the lesson used as wrong choices in word banks.
   final List<String> wordPool;
   final bool slowSpeech;
+
+  /// Lower-case English word/phrase → Uzbek, for tap-to-translate.
+  final Map<String, String> dict;
 
   bool get beginner => level == 'A1' || level == 'A2';
 }

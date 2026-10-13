@@ -12,10 +12,11 @@ import 'step_ctl.dart';
 
 // ── choice ───────────────────────────────────────────────────────────────
 class ChoiceStep extends StatefulWidget {
-  const ChoiceStep({super.key, required this.step, required this.ctl});
+  const ChoiceStep({super.key, required this.step, required this.ctl, required this.env});
 
   final Map<String, dynamic> step;
   final StepCtl ctl;
+  final StepEnv env;
 
   @override
   State<ChoiceStep> createState() => _ChoiceStepState();
@@ -67,7 +68,15 @@ class _ChoiceStepState extends State<ChoiceStep> {
       Kicker(_say != null ? Icons.headphones_rounded : Icons.checklist_rounded,
           _say != null ? 'Tinglab tushunish' : "To'g'ri javobni tanlang"),
       if (_say != null) ...[const SizedBox(height: 6), PlayButtons(_say!), const SizedBox(height: 20)],
-      StepTitle('${s['q'] ?? ''}'),
+      if ('${s['q']}'.contains('**'))
+        StepTitle('${s['q'] ?? ''}')
+      else
+        Padding(
+          padding: const EdgeInsets.only(bottom: 8),
+          child: GlossText('${s['q'] ?? ''}',
+              dict: widget.env.dict,
+              style: TextStyle(fontSize: 21, fontWeight: FontWeight.w800, height: 1.3, color: scheme.onSurface)),
+        ),
       if (s['q_uz'] != null)
         TextButton(
           onPressed: () => setState(() => _quz = true),
@@ -161,10 +170,11 @@ class _OptionTile extends StatelessWidget {
 
 // ── gap ──────────────────────────────────────────────────────────────────
 class GapStep extends StatefulWidget {
-  const GapStep({super.key, required this.step, required this.ctl});
+  const GapStep({super.key, required this.step, required this.ctl, required this.env});
 
   final Map<String, dynamic> step;
   final StepCtl ctl;
+  final StepEnv env;
 
   @override
   State<GapStep> createState() => _GapStepState();
@@ -215,14 +225,14 @@ class _GapStepState extends State<GapStep> {
       const Kicker(Icons.edit_rounded, "Bo'sh joyni to'ldiring"),
       Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Expanded(
-          child: Text.rich(TextSpan(style: base, children: [
-            TextSpan(text: parts.first),
+          child: GlossText.segments([
+            parts.first,
             TextSpan(
               text: filled.isEmpty ? ' ______ ' : ' $filled ',
               style: TextStyle(color: scheme.primary, fontWeight: FontWeight.w800, decoration: TextDecoration.underline),
             ),
-            if (parts.length > 1) TextSpan(text: parts.sublist(1).join('___')),
-          ])),
+            if (parts.length > 1) parts.sublist(1).join('___'),
+          ], dict: widget.env.dict, style: base),
         ),
         SayButton('${s['text']}'.replaceAll('___', '...')),
       ]),
@@ -235,6 +245,8 @@ class _GapStepState extends State<GapStep> {
         autocorrect: false,
         enableSuggestions: false,
         textCapitalization: TextCapitalization.none,
+        textInputAction: TextInputAction.done,
+        onSubmitted: (_) => widget.ctl.submit?.call(),
         style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
         decoration: const InputDecoration(hintText: 'Javobni yozing...'),
       ),
@@ -420,10 +432,13 @@ class _TypedStepState extends State<TypedStep> {
           controller: _input,
           enabled: !widget.ctl.answered,
           autofocus: true,
-          minLines: 3,
+          minLines: 2,
           maxLines: 5,
           autocorrect: false,
           enableSuggestions: false,
+          keyboardType: TextInputType.text,
+          textInputAction: TextInputAction.done,
+          onSubmitted: (_) => widget.ctl.submit?.call(),
           style: const TextStyle(fontSize: 18),
           decoration: InputDecoration(hintText: widget.dictation ? 'Eshitganingizni inglizcha yozing...' : 'Inglizcha yozing...'),
         ),

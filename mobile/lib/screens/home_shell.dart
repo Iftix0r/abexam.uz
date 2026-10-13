@@ -37,25 +37,47 @@ class _HomeShellState extends State<HomeShell> {
       const TutorTab(),
       const ProfileTab(),
     ];
-    return Scaffold(
-      body: IndexedStack(index: _tab, children: pages),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _tab,
-        onDestinationSelected: (i) {
-          if (i == 0 && _tab == 0) _learnKey.currentState?.reload();
-          goTo(i);
-        },
-        destinations: [
-          const NavigationDestination(icon: Icon(Icons.school_outlined), selectedIcon: Icon(Icons.school_rounded), label: 'Darslar'),
-          NavigationDestination(
-            icon: Badge(isLabelVisible: due > 0, label: Text('$due'), child: const Icon(Icons.style_outlined)),
-            selectedIcon: const Icon(Icons.style_rounded),
-            label: "So'zlar",
-          ),
-          const NavigationDestination(icon: Icon(Icons.auto_stories_outlined), selectedIcon: Icon(Icons.auto_stories_rounded), label: 'Hikoyalar'),
-          const NavigationDestination(icon: Icon(Icons.forum_outlined), selectedIcon: Icon(Icons.forum_rounded), label: 'AI suhbat'),
-          const NavigationDestination(icon: Icon(Icons.person_outline_rounded), selectedIcon: Icon(Icons.person_rounded), label: 'Profil'),
-        ],
+    return PopScope(
+      canPop: _tab == 0,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) goTo(0);
+      },
+      child: Scaffold(
+        body: IndexedStack(index: _tab, children: pages),
+        bottomNavigationBar: NavigationBar(
+          selectedIndex: _tab,
+          onDestinationSelected: (i) {
+            if (i == 0 && _tab == 0) _learnKey.currentState?.reload();
+            goTo(i);
+          },
+          destinations: [
+            const NavigationDestination(
+              icon: Icon(Icons.school_outlined),
+              selectedIcon: Icon(Icons.school_rounded),
+              label: 'Darslar',
+            ),
+            NavigationDestination(
+              icon: Badge(isLabelVisible: due > 0, label: Text('$due'), child: const Icon(Icons.style_outlined)),
+              selectedIcon: const Icon(Icons.style_rounded),
+              label: "So'zlar",
+            ),
+            const NavigationDestination(
+              icon: Icon(Icons.auto_stories_outlined),
+              selectedIcon: Icon(Icons.auto_stories_rounded),
+              label: 'Hikoyalar',
+            ),
+            const NavigationDestination(
+              icon: Icon(Icons.forum_outlined),
+              selectedIcon: Icon(Icons.forum_rounded),
+              label: 'AI suhbat',
+            ),
+            const NavigationDestination(
+              icon: Icon(Icons.person_outline_rounded),
+              selectedIcon: Icon(Icons.person_rounded),
+              label: 'Profil',
+            ),
+          ],
+        ),
       ),
     );
   }

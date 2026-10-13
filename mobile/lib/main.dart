@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import 'core/api.dart';
 import 'core/app_state.dart';
+import 'core/sfx.dart';
 import 'core/speech.dart';
 import 'core/theme.dart';
 import 'core/web_bridge.dart';
@@ -14,6 +15,8 @@ Future<void> main() async {
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
   final state = await AppState.load();
   Speech.instance.slow = state.slowSpeech;
+  Sfx.enabled = state.sounds;
+  Sfx.init();
   runApp(AbExamApp(state: state));
 }
 

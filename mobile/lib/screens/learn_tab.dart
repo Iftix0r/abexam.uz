@@ -65,7 +65,7 @@ class LearnTabState extends State<LearnTab> {
     final state = AppScope.of(context);
     if (_course == null) {
       return SafeArea(
-        child: _error != null ? ErrorView(error: _error!, onRetry: reload) : const Center(child: CircularProgressIndicator()),
+        child: _error != null ? ErrorView(error: _error!, onRetry: reload) : const LoadingView(slow: true),
       );
     }
     final course = _course!;

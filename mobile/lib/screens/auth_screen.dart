@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../core/api.dart';
 import '../core/app_state.dart';
@@ -123,7 +124,12 @@ class _AuthScreenState extends State<AuthScreen> {
                                 ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.5))
                                 : Text(_register ? "Ro'yxatdan o'tish" : 'Kirish'),
                           ),
-                          const SizedBox(height: 12),
+                          if (!_register)
+                            TextButton(
+                              onPressed: () => launchUrl(Uri.parse('$apiBase/password-reset/'), mode: LaunchMode.externalApplication),
+                              child: const Text('Parolni unutdingizmi?'),
+                            ),
+                          const SizedBox(height: 4),
                           Text(
                             "abexam.uz saytidagi login va parolingiz bilan kiring — natijalaringiz sayt bilan umumiy.",
                             textAlign: TextAlign.center,

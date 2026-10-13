@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -14,6 +16,7 @@ class AppState extends ChangeNotifier {
   static const _tokenKey = 'token';
   static const _slowKey = 'slow_speech';
   static const _soundKey = 'haptics';
+  static const _sfxKey = 'sfx';
 
   static Future<AppState> load() async => AppState._(await SharedPreferences.getInstance());
 
@@ -26,6 +29,7 @@ class AppState extends ChangeNotifier {
   bool get signedIn => api.token != null;
   bool get slowSpeech => _prefs.getBool(_slowKey) ?? false;
   bool get haptics => _prefs.getBool(_soundKey) ?? true;
+  bool get sounds => _prefs.getBool(_sfxKey) ?? true;
 
   String get levelCode => (me?['level_code'] as String?) ?? 'A1';
   String get displayName {
@@ -85,6 +89,25 @@ class AppState extends ChangeNotifier {
     _prefs.setBool(_soundKey, v);
     notifyListeners();
   }
+
+  void setSounds(bool v) {
+    _prefs.setBool(_sfxKey, v);
+    notifyListeners();
+  }
+
+  /// Small local JSON store (e.g. a half-finished lesson to resume).
+  Map<String, dynamic>? readJson(String key) {
+    final raw = _prefs.getString(key);
+    if (raw == null) return null;
+    try {
+      return jsonDecode(raw) as Map<String, dynamic>;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<void> writeJson(String key, Map<String, dynamic>? value) =>
+      value == null ? _prefs.remove(key) : _prefs.setString(key, jsonEncode(value));
 }
 
 /// Gives every screen access to [AppState] and rebuilds dependents on change.

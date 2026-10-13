@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../core/app_state.dart';
+import '../core/sfx.dart';
 import '../core/speech.dart';
 import '../core/theme.dart';
 import '../widgets/common.dart';
@@ -78,6 +79,16 @@ class ProfileTab extends StatelessWidget {
                 onChanged: (v) {
                   Speech.instance.slow = v;
                   state.setSlowSpeech(v);
+                },
+              ),
+              SwitchListTile(
+                secondary: const Icon(Icons.music_note_rounded),
+                title: const Text('Ovoz effektlari'),
+                subtitle: const Text("To'g'ri / xato javob tovushi"),
+                value: state.sounds,
+                onChanged: (v) {
+                  Sfx.enabled = v;
+                  state.setSounds(v);
                 },
               ),
               SwitchListTile(

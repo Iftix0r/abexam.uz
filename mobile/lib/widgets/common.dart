@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../core/api.dart';
@@ -20,6 +22,8 @@ class _LoaderState<T> extends State<Loader<T>> {
   T? _data;
   Object? _error;
   bool _loading = true;
+  bool _slow = false;
+  Timer? _slowTimer;
 
   @override
   void initState() {
@@ -27,10 +31,21 @@ class _LoaderState<T> extends State<Loader<T>> {
     _reload();
   }
 
+  @override
+  void dispose() {
+    _slowTimer?.cancel();
+    super.dispose();
+  }
+
   Future<void> _reload() async {
     setState(() {
       _loading = _data == null;
       _error = null;
+      _slow = false;
+    });
+    _slowTimer?.cancel();
+    _slowTimer = Timer(const Duration(seconds: 4), () {
+      if (mounted) setState(() => _slow = true);
     });
     try {
       final data = await widget.load();
@@ -38,15 +53,41 @@ class _LoaderState<T> extends State<Loader<T>> {
     } catch (e) {
       if (mounted) setState(() => _error = e);
     } finally {
+      _slowTimer?.cancel();
       if (mounted) setState(() => _loading = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_loading) return const Center(child: CircularProgressIndicator());
+    if (_loading) return LoadingView(slow: _slow);
     if (_error != null && _data == null) return ErrorView(error: _error!, onRetry: _reload);
     return widget.builder(context, _data as T, _reload);
+  }
+}
+
+class LoadingView extends StatelessWidget {
+  const LoadingView({super.key, this.slow = false});
+
+  /// After a few seconds, explain the wait (first connection passes the hosting check).
+  final bool slow;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(mainAxisSize: MainAxisSize.min, children: [
+        const CircularProgressIndicator(),
+        AnimatedOpacity(
+          opacity: slow ? 1 : 0,
+          duration: const Duration(milliseconds: 400),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Text('Serverga ulanmoqda...\nBirinchi ulanish bir necha soniya olishi mumkin.',
+                textAlign: TextAlign.center, style: TextStyle(color: Theme.of(context).colorScheme.outline)),
+          ),
+        ),
+      ]),
+    );
   }
 }
 

@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 
 import '../../core/api.dart';
 import '../../core/app_state.dart';
+import '../../core/sfx.dart';
 import '../../core/speech.dart';
 import '../../core/text.dart';
 import '../../core/theme.dart';
@@ -85,6 +86,8 @@ class _PlayerState extends State<_Player> {
   late final List<Map<String, dynamic>> _words = ((widget.data['words'] as List?) ?? []).cast<Map<String, dynamic>>();
   late final List<int> _queue = List.generate(_steps.length, (i) => i);
   late final List<String> _pool = _buildPool();
+  late final Map<String, String> _dict = _buildDict();
+  late final List<Map<String, dynamic>> _grammar = _steps.where((s) => s['type'] == 'grammar').toList();
   late StepCtl _ctl;
 
   int _pos = 0;
@@ -100,10 +103,90 @@ class _PlayerState extends State<_Player> {
 
   String get _level => (widget.data['level'] as String?) ?? AppScope.read(context).levelCode;
 
+  // A half-finished lesson is kept on the phone and offered on the next open.
+  String get _saveKey => 'lesson-progress-${widget.data['slug']}';
+  String get _sig => '${_steps.length}:${_words.length}';
+
   @override
   void initState() {
     super.initState();
     _ctl = _newCtl();
+    if (!widget.practice) WidgetsBinding.instance.addPostFrameCallback((_) => _offerResume());
+  }
+
+  Future<void> _offerResume() async {
+    final state = AppScope.read(context);
+    final saved = state.readJson(_saveKey);
+    if (saved == null) return;
+    final age = DateTime.now().millisecondsSinceEpoch - ((saved['at'] as num?) ?? 0);
+    final queue = ((saved['queue'] as List?) ?? []).cast<int>();
+    final pos = (saved['pos'] as int?) ?? 0;
+    if (saved['sig'] != _sig || pos <= 0 || pos >= queue.length || age > const Duration(days: 7).inMilliseconds) {
+      state.writeJson(_saveKey, null);
+      return;
+    }
+    final resume = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (c) => AlertDialog(
+        title: const Text('Davom ettirasizmi?'),
+        content: Text('Bu darsni oldin boshlagan edingiz: ${pos + 1} / ${queue.length}-qadam.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('Boshidan')),
+          FilledButton(onPressed: () => Navigator.pop(c, true), child: const Text('Davom etish')),
+        ],
+      ),
+    );
+    if (!mounted) return;
+    if (resume != true) {
+      state.writeJson(_saveKey, null);
+      return;
+    }
+    setState(() {
+      _queue
+        ..clear()
+        ..addAll(queue);
+      _pos = pos;
+      _firstTry
+        ..clear()
+        ..addAll({for (final e in ((saved['firstTry'] as Map?) ?? {}).entries) int.parse('${e.key}'): e.value == true});
+      _retried
+        ..clear()
+        ..addAll(((saved['retried'] as List?) ?? []).cast<int>());
+      _mistakes
+        ..clear()
+        ..addAll({for (final e in ((saved['mistakes'] as Map?) ?? {}).entries) int.parse('${e.key}'): '${e.value}'});
+      _ctl.removeListener(_redraw);
+      _ctl.dispose();
+      _ctl = _newCtl();
+    });
+  }
+
+  void _saveProgress() {
+    if (widget.practice) return;
+    AppScope.read(context).writeJson(_saveKey, {
+      'sig': _sig,
+      'queue': _queue,
+      'pos': _pos,
+      'firstTry': {for (final e in _firstTry.entries) '${e.key}': e.value},
+      'retried': _retried.toList(),
+      'mistakes': {for (final e in _mistakes.entries) '${e.key}': e.value},
+      'at': DateTime.now().millisecondsSinceEpoch,
+    });
+  }
+
+  Map<String, String> _buildDict() {
+    final dict = <String, String>{};
+    for (final w in _words) {
+      for (var k in '${w['en']}'.split(' / ')) {
+        k = k.replaceAll(RegExp(r'[?!.]+$'), '').trim().toLowerCase();
+        if (k.isNotEmpty) dict[k] = '${w['uz']}';
+      }
+    }
+    for (final s in _steps) {
+      ((s['glossary'] as Map?) ?? {}).forEach((k, v) => dict['$k'.toLowerCase()] = '$v');
+    }
+    return dict;
   }
 
   @override
@@ -128,6 +211,9 @@ class _PlayerState extends State<_Player> {
 
   StepCtl _newCtl() {
     final ctl = StepCtl(onResolve: _resolve)..addListener(_redraw);
+    ctl.submit = () {
+      if (ctl.ready && !ctl.answered && !_checking) _check();
+    };
     // Steps configure the controller while building; show their buttons next frame.
     WidgetsBinding.instance.addPostFrameCallback((_) => _redraw());
     return ctl;
@@ -166,6 +252,7 @@ class _PlayerState extends State<_Player> {
         _combo++;
       }
       _haptic(o.ok);
+      o.ok ? Sfx.ok() : Sfx.bad();
     }
     setState(() => _feedback = o);
   }
@@ -180,7 +267,11 @@ class _PlayerState extends State<_Player> {
       _ctl.dispose();
       _ctl = _newCtl();
     });
-    if (_pos >= _queue.length) _finish();
+    if (_pos >= _queue.length) {
+      _finish();
+    } else {
+      _saveProgress();
+    }
   }
 
   int get _score {
@@ -212,7 +303,10 @@ class _PlayerState extends State<_Player> {
       }
       if (!mounted) return;
       setState(() => _result = r);
-      AppScope.read(context).refresh().catchError((_) {});
+      Sfx.win();
+      final state = AppScope.read(context);
+      if (!widget.practice) state.writeJson(_saveKey, null);
+      state.refresh().catchError((_) {});
     } catch (e) {
       if (mounted) setState(() => _saveError = e);
     } finally {
@@ -226,7 +320,7 @@ class _PlayerState extends State<_Player> {
       context: context,
       builder: (c) => AlertDialog(
         title: const Text('Darsni tark etasizmi?'),
-        content: const Text('Natija saqlanmaydi.'),
+        content: Text(widget.practice ? 'Natija saqlanmaydi.' : "Keyingi safar shu joydan davom ettirishingiz mumkin."),
         actions: [
           TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('Davom etish')),
           TextButton(onPressed: () => Navigator.pop(c, true), child: const Text('Chiqish', style: TextStyle(color: Brand.bad))),
@@ -247,6 +341,7 @@ class _PlayerState extends State<_Player> {
       stepIndex: (step['_src']?['idx'] as int?) ?? idx,
       wordPool: _pool,
       slowSpeech: Speech.instance.slow,
+      dict: _dict,
     );
     switch (step['type']) {
       case 'words':
@@ -258,9 +353,9 @@ class _PlayerState extends State<_Player> {
       case 'grammar':
         return GrammarStep(key: key, step: step);
       case 'choice':
-        return ChoiceStep(key: key, step: step, ctl: _ctl);
+        return ChoiceStep(key: key, step: step, ctl: _ctl, env: env);
       case 'gap':
-        return GapStep(key: key, step: step, ctl: _ctl);
+        return GapStep(key: key, step: step, ctl: _ctl, env: env);
       case 'translate':
         return TypedStep(key: key, step: step, ctl: _ctl, env: env, dictation: false);
       case 'listen':
@@ -321,6 +416,12 @@ class _PlayerState extends State<_Player> {
             ),
           ),
           if (_combo >= 3) ...[const SizedBox(width: 8), Pill(label: '$_combo', icon: Icons.local_fire_department_rounded, color: Brand.flame)],
+          if (_grammar.isNotEmpty && step['type'] != 'grammar')
+            IconButton(
+              tooltip: 'Dars qoidasi',
+              icon: Icon(Icons.menu_book_rounded, color: scheme.primary),
+              onPressed: _showGrammar,
+            ),
           IconButton(
             tooltip: 'Sekin talaffuz',
             icon: Icon(Icons.speed_rounded, color: slow ? scheme.primary : scheme.outline),
@@ -360,6 +461,26 @@ class _PlayerState extends State<_Player> {
       ),
       _bottomBar(),
     ]);
+  }
+
+  void _showGrammar() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (_) => DraggableScrollableSheet(
+        expand: false,
+        initialChildSize: 0.7,
+        maxChildSize: 0.95,
+        builder: (_, scroll) => ListView(
+          controller: scroll,
+          padding: const EdgeInsets.fromLTRB(18, 0, 18, 32),
+          children: [
+            for (final g in _grammar) ...[StepTitle('${g['title_uz'] ?? ''}'), GrammarCard(step: g), const SizedBox(height: 16)],
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _bottomBar() {
