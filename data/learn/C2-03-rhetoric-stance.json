@@ -1,0 +1,525 @@
+{
+  "level": "C2",
+  "units": [
+    {
+      "slug": "c2-rhetoric-stance",
+      "title": "Rhetoric and stance",
+      "title_uz": "Ritorika va muallif pozitsiyasi",
+      "icon": "feather",
+      "lessons": [
+        {
+          "slug": "c2-fronting",
+          "title": "Such was the demand that...",
+          "title_uz": "Fronting: Such was..., So great was..., Strange as it may seem",
+          "goal_uz": "Gapning muhim qismini boshiga chiqarib (fronting), ta'kid va kontrastni kuchaytirasiz: Such was the demand that..., Much as I admire..., Try as I might... — badiiy va publitsistik uslub uchun.",
+          "minutes": 14,
+          "words": [
+            {"en": "overwhelming", "uz": "juda katta, bosib ketadigan", "ipa": "/ˌəʊvəˈwelmɪŋ/", "ex": "The response from readers was overwhelming."},
+            {"en": "sell out", "uz": "to'liq sotilib ketmoq", "ipa": "/sel aʊt/", "ex": "The concert sold out in ten minutes."},
+            {"en": "manuscript", "uz": "qo'lyozma", "ipa": "/ˈmænjuskrɪpt/", "ex": "She sent the manuscript to twelve publishers."},
+            {"en": "persevere", "uz": "qat'iyat bilan davom etmoq", "ipa": "/ˌpɜːsɪˈvɪə/", "ex": "If you persevere, you will succeed."},
+            {"en": "reservations", "uz": "shubhalar, e'tirozlar", "ipa": "/ˌrezəˈveɪʃnz/", "ex": "I have some reservations about the plan."},
+            {"en": "resilience", "uz": "chidamlilik, tez o'nglanish", "ipa": "/rɪˈzɪliəns/", "ex": "Her resilience after the accident was remarkable."},
+            {"en": "in vain", "uz": "behuda", "ipa": "/ɪn veɪn/", "ex": "They searched in vain for the keys."},
+            {"en": "acclaim", "uz": "olqish, e'tirof", "ipa": "/əˈkleɪm/", "ex": "The film received international acclaim."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "reading",
+              "title": "The novel nobody wanted",
+              "text": "Such was the demand for Malika Karimova's debut novel that the first print run sold out within a week. Few had expected it. Rejected by eleven publishers, the manuscript had spent three years in a drawer. \"Try as I might, I couldn't find anyone who believed in it,\" she recalls. So overwhelming was the response from readers, however, that the book has now been translated into six languages and has won international acclaim. Much as critics admire her style, some have reservations about the ending, which they describe as rushed. Karimova is unconcerned. \"Strange as it may seem, I never wrote for critics. I wrote for my grandmother, who never learned to read.\" Whatever the critics say, her resilience is a lesson to every young writer who has searched in vain for a publisher.",
+              "glossary": {
+                "debut novel": "birinchi roman",
+                "print run": "nashr adadi",
+                "within a week": "bir hafta ichida",
+                "drawer": "tortma",
+                "recalls": "eslaydi",
+                "rushed": "shoshilinch yozilgan",
+                "unconcerned": "parvo qilmaydi, xotirjam"
+              },
+              "uz": "Malika Karimovaning birinchi romaniga talab shunchalik katta ediki, birinchi adadi bir hafta ichida sotilib ketdi. Buni kam odam kutgan edi. O'n bitta nashriyot rad etgan qo'lyozma uch yil tortmada yotgan edi. \"Qanchalik urinmay, unga ishonadigan odam topolmadim\", — deb eslaydi u. Biroq o'quvchilarning munosabati shunchalik kuchli bo'ldiki, kitob hozir oltita tilga tarjima qilingan va xalqaro e'tirofga sazovor bo'lgan. Tanqidchilar uning uslubiga qanchalik qoyil qolmasin, ba'zilari yakuniga nisbatan e'tirozlarini bildirib, uni shoshilinch yozilgan deb ta'riflaydi. Karimova esa xotirjam. \"G'alati tuyulishi mumkin, lekin men hech qachon tanqidchilar uchun yozmaganman. Men o'qishni o'rganmagan buvim uchun yozganman.\" Tanqidchilar nima demasin, uning chidamliligi nashriyot izlab behuda yurgan har bir yosh yozuvchi uchun saboqdir."
+            },
+            {
+              "type": "choice",
+              "q": "What happened to the manuscript before it was published?",
+              "options": ["It was lost for three years.", "Many publishers rejected it.", "Her grandmother rewrote it."],
+              "answer": 1,
+              "explain_uz": "\"Rejected by eleven publishers, the manuscript had spent three years in a drawer.\""
+            },
+            {
+              "type": "choice",
+              "q": "What do some critics NOT like about the novel?",
+              "options": ["Her style", "The ending", "The translation"],
+              "answer": 1,
+              "explain_uz": "\"some have reservations about the ending, which they describe as rushed\""
+            },
+            {
+              "type": "grammar",
+              "title_uz": "Fronting — muhim qismni gap boshiga chiqarish",
+              "body_uz": "C2 darajasida ta'kid uchun gapning bir qismini **boshiga chiqaramiz**. Bu badiiy matn, nutq va publitsistikada juda ko'p uchraydi.\n**1) Such + be + ot + that** (= shunchalik katta ediki): The demand was so great that... → **Such was the demand that** the book sold out.\n**2) So + sifat + be + ega + that**: The response was so overwhelming that... → **So overwhelming was the response that**...\n**3) Sifat / ravish + as + ega + fe'l** (= although, qanchalik ... bo'lmasin): Although it may seem strange → **Strange as it may seem**, ... · **Tired as she was**, she kept working.\n**4) Much as + ega + fe'l** (= although ... very much): **Much as I admire** him, I can't agree.\n**5) Try as + ega + might** (= qanchalik urinmasin): **Try as I might**, I couldn't open it.\nTayyor iboralar: **Come what may** (nima bo'lsa ham) · **Be that as it may** (shunday bo'lsa ham).\n⚠️ \"Such was **a** demand\" — xato (artikl yo'q). \"So **the response was** overwhelming that\" — xato: so + sifat + **be + ega**.",
+              "examples": [
+                {"en": "Such was the noise that we couldn't hear each other.", "uz": "Shovqin shunchalik kuchli ediki, bir-birimizni eshitolmadik."},
+                {"en": "So severe was the storm that all flights were cancelled.", "uz": "Bo'ron shunchalik kuchli ediki, barcha reyslar bekor qilindi."},
+                {"en": "Much as I love my job, I need a holiday.", "uz": "Ishimni qanchalik yaxshi ko'rmay, menga ta'til kerak."},
+                {"en": "Talented as he is, he still practises every day.", "uz": "U qanchalik iqtidorli bo'lmasin, baribir har kuni mashq qiladi."}
+              ]
+            },
+            {
+              "type": "choice",
+              "q": "___ was the heat that the streets were completely empty.",
+              "options": ["So", "Such", "Such a"],
+              "answer": 1,
+              "explain_uz": "the heat — ot → **Such** was the heat (artiklsiz)."
+            },
+            {
+              "type": "choice",
+              "q": "So ___ that nobody could climb it.",
+              "options": ["steep was the hill", "the hill was steep", "was steep the hill"],
+              "answer": 0,
+              "explain_uz": "**So + sifat + be + ega**: So steep was the hill..."
+            },
+            {
+              "type": "gap",
+              "text": "___ as I admire his talent, I cannot accept his behaviour.",
+              "answer": ["Much"],
+              "uz": "Uning iqtidoriga qanchalik qoyil qolmay, xatti-harakatini qabul qila olmayman.",
+              "explain_uz": "**Much as** + ega + fe'l = although I admire... very much."
+            },
+            {
+              "type": "gap",
+              "text": "Try as she ___, she couldn't open the jar.",
+              "answer": ["might"],
+              "uz": "Qanchalik urinmasin, u bankani ocholmadi.",
+              "explain_uz": "Tayyor ibora: **Try as + ega + might**."
+            },
+            {
+              "type": "gap",
+              "text": "___ as it may sound, I have never tried plov.",
+              "answer": ["Strange", "Odd", "Surprising", "Incredible", "Unbelievable", "Weird"],
+              "uz": "G'alati eshitilishi mumkin, lekin men hech qachon palov tatib ko'rmaganman.",
+              "explain_uz": "**Sifat + as + it may sound/seem** = Although it may sound strange..."
+            },
+            {
+              "type": "choice",
+              "q": "Which sentence means \"Although the plan is good, it is too expensive\"?",
+              "options": [
+                "Good as the plan is, it is too expensive.",
+                "So good is the plan that it is too expensive.",
+                "Such was the plan that it is too expensive."
+              ],
+              "answer": 0,
+              "explain_uz": "**Sifat + as** — qarama-qarshilik (although). So/Such ... that — natija bildiradi."
+            },
+            {
+              "type": "match",
+              "pairs": [
+                ["overwhelming", "juda katta, kuchli"],
+                ["persevere", "qat'iyat bilan davom etmoq"],
+                ["reservations", "e'tirozlar, shubhalar"],
+                ["resilience", "chidamlilik"],
+                ["in vain", "behuda"]
+              ]
+            },
+            {
+              "type": "order",
+              "uz": "Uning iqtidori shunchalik ediki, hamma uni payqadi.",
+              "words": ["Such", "was", "her", "talent", "that", "everyone", "noticed", "her"],
+              "answer": "Such was her talent that everyone noticed her"
+            },
+            {
+              "type": "choice",
+              "audio": true,
+              "q": "Why is the speaker moving to the village?",
+              "say": "Much as I love living in the city, I'm moving to my grandparents' village next month. Such is the noise in my street that I haven't slept properly for weeks.",
+              "options": ["She hates the city.", "The noise stops her sleeping.", "Her grandparents are ill."],
+              "answer": 1,
+              "explain_uz": "\"Such is the noise... that I haven't slept properly for weeks.\" \"Much as I love the city\" — u shaharni yaxshi ko'radi."
+            },
+            {
+              "type": "listen",
+              "answer": [
+                "So great was the demand that the tickets sold out in an hour.",
+                "So great was the demand that the tickets sold out in an hour",
+                "So great was the demand that the tickets sold out in one hour"
+              ],
+              "uz": "Eshiting va yozing"
+            },
+            {
+              "type": "translate",
+              "uz": "Biletlarga talab shunchalik katta ediki, ular bir soatda sotilib ketdi.",
+              "answer": [
+                "Such was the demand for tickets that they sold out in an hour",
+                "Such was the demand for the tickets that they sold out in an hour",
+                "Such was the demand for tickets that they sold out in one hour",
+                "Such was the demand for tickets that they sold out within an hour",
+                "Such was the demand for tickets that they were sold out in an hour",
+                "So great was the demand for tickets that they sold out in an hour",
+                "So great was the demand for the tickets that they sold out in an hour",
+                "So high was the demand for tickets that they sold out in an hour",
+                "The demand for tickets was so great that they sold out in an hour",
+                "The demand for tickets was so high that they sold out in an hour"
+              ],
+              "explain_uz": "**Such was the demand** that... yoki **So great was the demand** that..."
+            },
+            {
+              "type": "speak",
+              "text": "Much as I appreciate the benefits of technology, I believe we have become far too dependent on it.",
+              "uz": "Ovoz chiqarib ayting"
+            },
+            {
+              "type": "write",
+              "prompt_uz": "Siz bilgan biror insonning (yoki o'zingizning) qiyinchilikni yengib, muvaffaqiyatga erishgani haqida qisqa hikoya yozing (100+ so'z). Kamida uchta fronting tuzilmasi ishlating: Such was..., So ... was..., Much as..., Try as ... might, ... as it may seem.",
+              "prompt": "Write a short story about someone who overcame a difficulty and succeeded. Use at least three fronted structures (Such was..., So ... was..., Much as..., Try as ... might, Strange as it may seem).",
+              "min_words": 100,
+              "example": "When my cousin Bekzod decided to become a programmer at the age of thirty-five, most of our family laughed. Much as they loved him, they thought he was far too old to start again. Try as he might, he could not find a course that fitted around his job at the bazaar, so he taught himself at night using free online lessons. Such was his determination that he practised for three hours every evening, even during Ramadan. The first year was exhausting, and so many were his failed applications that he almost gave up. Strange as it may seem, it was a rejection email with detailed feedback that changed everything. Six months later, he was hired by a start-up in Tashkent, and he now leads a small team of developers."
+            }
+          ]
+        },
+        {
+          "slug": "c2-stance",
+          "title": "It would appear that...",
+          "title_uz": "Muallif pozitsiyasi: hedging va boosting",
+          "goal_uz": "Da'voning kuchini aniq o'lchab berasiz: isbotlanganini kuchaytirasiz (undeniably, there is little doubt), taxminni yumshatasiz (it would appear, may well) — akademik Writing va Reading'da muallif fikrini tanish uchun.",
+          "minutes": 14,
+          "words": [
+            {"en": "ostensibly", "uz": "zohiran, go'yoki (aslida boshqacha bo'lishi mumkin)", "ipa": "/ɒˈstensəbli/", "ex": "The trip was ostensibly for business."},
+            {"en": "presumably", "uz": "ehtimol, taxminimcha", "ipa": "/prɪˈzjuːməbli/", "ex": "Presumably, the meeting has been cancelled."},
+            {"en": "undeniably", "uz": "shubhasiz, inkor etib bo'lmas darajada", "ipa": "/ˌʌndɪˈnaɪəbli/", "ex": "The results are undeniably impressive."},
+            {"en": "tentative", "uz": "dastlabki, taxminiy", "ipa": "/ˈtentətɪv/", "ex": "These are only tentative conclusions."},
+            {"en": "correlation", "uz": "o'zaro bog'liqlik", "ipa": "/ˌkɒrəˈleɪʃn/", "ex": "There is a correlation between income and health."},
+            {"en": "causation", "uz": "sababiyat (biri ikkinchisini keltirib chiqarishi)", "ipa": "/kɔːˈzeɪʃn/", "ex": "Correlation does not prove causation."},
+            {"en": "substantiate", "uz": "dalil bilan asoslamoq", "ipa": "/səbˈstænʃieɪt/", "ex": "He could not substantiate his claims."},
+            {"en": "caveat", "uz": "ogohlantirish, istisno sharti", "ipa": "/ˈkæviæt/", "ex": "There is one important caveat."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "reading",
+              "title": "Does coffee help you live longer?",
+              "text": "A large new study would appear to suggest that people who drink two or three cups of coffee a day live longer than those who drink none. Undeniably, the correlation is striking, and the sample of over 400,000 adults is impressive. However, correlation does not necessarily imply causation. Coffee drinkers may well differ from non-drinkers in other important ways: they are presumably more likely to have office jobs, regular routines and higher incomes, all of which tend to be associated with better health. The authors themselves acknowledge this caveat, describing their findings as tentative. This is not to say that the results are meaningless; rather, they point to an area that merits further research. Newspaper headlines announcing that \"coffee makes you live longer\", by contrast, go far beyond what the evidence can substantiate.",
+              "glossary": {
+                "striking": "ko'zga tashlanadigan, hayratlanarli",
+                "sample": "tanlanma (tadqiqot ishtirokchilari)",
+                "routines": "kun tartibi",
+                "be associated with": "bilan bog'liq bo'lmoq",
+                "acknowledge": "tan olmoq",
+                "merits": "...ga arziydi",
+                "go far beyond": "...dan ancha oshib ketmoq"
+              },
+              "uz": "Yangi katta tadqiqot ko'rinishidan, kuniga ikki-uch chashka qahva ichadigan odamlar umuman ichmaydiganlarga qaraganda uzoqroq yashashini ko'rsatayotganga o'xshaydi. Shubhasiz, bu bog'liqlik hayratlanarli, 400 000 dan ortiq kattalardan iborat tanlanma ham ta'sirli. Biroq o'zaro bog'liqlik har doim ham sababiyatni anglatmaydi. Qahva ichuvchilar ichmaydiganlardan boshqa muhim jihatlarda ham farq qilishi mumkin: ehtimol, ular ofisda ishlashi, muntazam kun tartibiga va yuqoriroq daromadga ega bo'lishi ehtimoli ko'proq — bularning barchasi odatda yaxshi sog'liq bilan bog'liq. Mualliflarning o'zlari bu ogohlantirishni tan olib, natijalarini dastlabki deb ta'riflashadi. Bu natijalar ma'nosiz degani emas; aksincha, ular qo'shimcha tadqiqotga arziydigan sohani ko'rsatadi. \"Qahva umrni uzaytiradi\" degan gazeta sarlavhalari esa dalillar asoslay oladigan narsadan ancha oshib ketadi."
+            },
+            {
+              "type": "choice",
+              "q": "What is the writer's view of the newspaper headlines?",
+              "options": ["They are accurate.", "They exaggerate the evidence.", "They are too cautious."],
+              "answer": 1,
+              "explain_uz": "\"go far beyond what the evidence can substantiate\" — dalildan oshirib yuborilgan."
+            },
+            {
+              "type": "choice",
+              "q": "Why do the authors describe their findings as \"tentative\"?",
+              "options": [
+                "Because the study was very small",
+                "Because other factors might explain the link",
+                "Because coffee is bad for health"
+              ],
+              "answer": 1,
+              "explain_uz": "Qahva ichuvchilar boshqa jihatlarda ham farq qilishi mumkin (daromad, ish, kun tartibi) — bu **caveat**."
+            },
+            {
+              "type": "grammar",
+              "title_uz": "Stance — da'voning kuchini boshqarish",
+              "body_uz": "C2 darajasidagi yozuvchi har bir da'voning **qanchalik ishonchli** ekanini aniq ko'rsatadi.\n**Hedging (yumshatish)** — taxmin va talqinlar uchun: **It would appear / seem that...** · X **would appear to** suggest... · X **may well** be... · **tend to** · **There is some evidence to suggest that...** · **to a certain extent** · **presumably** (mantiqan taxmin qilsak).\n**Boosting (kuchaytirish)** — isbotlangan faktlar uchun: **undeniably** · **clearly** · **There is little doubt that...** · **It is beyond dispute that...**\n**Distancing (masofa saqlash)** — o'zingiz rozi bo'lmagan da'volar uchun: **ostensibly** (zohiran, lekin aslida...) · **allegedly** · **It is claimed that...**\n**Balanslash**: **This is not to say that** X; **rather**, Y.\n⚠️ Xato: hamma narsani yumshatish (\"It may possibly perhaps seem...\") — fikr yo'qolib qoladi. Ham xato: taxminni fakt sifatida berish (\"Coffee makes you live longer.\")",
+              "examples": [
+                {"en": "It would appear that the policy has had little effect.", "uz": "Ko'rinishidan, siyosat deyarli ta'sir qilmagan."},
+                {"en": "There is little doubt that climate change is accelerating.", "uz": "Iqlim o'zgarishi tezlashayotganiga shubha yo'q."},
+                {"en": "The reform was ostensibly aimed at reducing costs.", "uz": "Islohot zohiran xarajatlarni kamaytirishga qaratilgan edi."},
+                {"en": "This is not to say that exams are useless; rather, they measure only part of a student's ability.", "uz": "Bu imtihonlar foydasiz degani emas; aksincha, ular talaba qobiliyatining faqat bir qismini o'lchaydi."}
+              ]
+            },
+            {
+              "type": "choice",
+              "q": "The new policy was ___ designed to help the poor, but in reality it mainly benefits the rich.",
+              "options": ["undeniably", "ostensibly", "presumably"],
+              "answer": 1,
+              "explain_uz": "**ostensibly** — zohiran shunday, lekin aslida boshqacha."
+            },
+            {
+              "type": "choice",
+              "q": "Which claim is most appropriate for an academic essay?",
+              "options": [
+                "Social media destroys teenagers' mental health.",
+                "Social media would appear to have a negative effect on some teenagers' mental health.",
+                "Everybody knows social media is bad for teenagers."
+              ],
+              "answer": 1,
+              "explain_uz": "Ehtiyotkor (would appear) va aniq chegaralangan (some teenagers)."
+            },
+            {
+              "type": "gap",
+              "text": "There is little ___ that smoking causes lung cancer.",
+              "answer": ["doubt"],
+              "uz": "Chekish o'pka saratoniga sabab bo'lishiga shubha yo'q.",
+              "explain_uz": "Boosting: **There is little doubt that**..."
+            },
+            {
+              "type": "gap",
+              "text": "The fall in crime may ___ be explained by other factors, such as better street lighting.",
+              "answer": ["well"],
+              "uz": "Jinoyatning kamayishi boshqa omillar, masalan, yaxshiroq ko'cha yoritilishi bilan izohlanishi ham mumkin.",
+              "explain_uz": "**may well** — \"anchagina ehtimoli bor\"."
+            },
+            {
+              "type": "gap",
+              "text": "This is not to ___ that tourism is harmful; rather, it needs careful management.",
+              "answer": ["say", "suggest"],
+              "uz": "Bu turizm zararli degani emas; aksincha, uni ehtiyotkorlik bilan boshqarish kerak.",
+              "explain_uz": "**This is not to say that** X; **rather**, Y."
+            },
+            {
+              "type": "choice",
+              "q": "He still hasn't replied. ___ he's still on the plane.",
+              "options": ["Ostensibly", "Presumably", "Undeniably"],
+              "answer": 1,
+              "explain_uz": "**Presumably** — mantiqiy taxmin: \"ehtimol, hali samolyotdadir\"."
+            },
+            {
+              "type": "match",
+              "pairs": [
+                ["ostensibly", "zohiran"],
+                ["presumably", "ehtimol"],
+                ["tentative", "dastlabki, taxminiy"],
+                ["caveat", "ogohlantirish, istisno"],
+                ["substantiate", "dalil bilan asoslamoq"]
+              ]
+            },
+            {
+              "type": "order",
+              "uz": "O'zaro bog'liqlik har doim ham sababiyatni anglatmaydi.",
+              "words": ["Correlation", "does", "not", "necessarily", "imply", "causation"],
+              "answer": "Correlation does not necessarily imply causation"
+            },
+            {
+              "type": "choice",
+              "audio": true,
+              "q": "What is the speaker's attitude to the new teaching method?",
+              "say": "The data would seem to suggest that the new teaching method improves exam results. That said, the sample was quite small, so I'd be cautious about drawing any firm conclusions at this stage.",
+              "options": ["Completely convinced", "Cautiously positive", "Strongly against it"],
+              "answer": 1,
+              "explain_uz": "\"would seem to suggest\" + \"I'd be cautious\" — ijobiy, lekin ehtiyotkor."
+            },
+            {
+              "type": "listen",
+              "answer": [
+                "There is some evidence to suggest that this is the case.",
+                "There is some evidence to suggest that this is the case",
+                "There's some evidence to suggest that this is the case"
+              ],
+              "uz": "Eshiting va yozing"
+            },
+            {
+              "type": "translate",
+              "uz": "Ko'rinishidan, muammo kutilganidan jiddiyroq.",
+              "answer": [
+                "It would appear that the problem is more serious than expected",
+                "It would appear that the problem is more serious than was expected",
+                "The problem would appear to be more serious than expected",
+                "It would seem that the problem is more serious than expected",
+                "The problem would seem to be more serious than expected",
+                "It appears that the problem is more serious than expected",
+                "The problem appears to be more serious than expected",
+                "It seems that the problem is more serious than expected",
+                "The problem seems to be more serious than expected",
+                "Apparently the problem is more serious than expected"
+              ],
+              "explain_uz": "**It would appear that...** / **The problem would appear to be...**"
+            },
+            {
+              "type": "speak",
+              "text": "While the findings are undeniably interesting, they should be treated with a degree of caution.",
+              "uz": "Ovoz chiqarib ayting"
+            },
+            {
+              "type": "write",
+              "prompt_uz": "Quyidagi da'vo haqida bitta akademik paragraf yozing (120+ so'z): \"Video games make children violent.\" Isbotlangan narsani kuchaytiring (undeniably, there is little doubt), taxminlarni yumshating (it would appear, may well) va \"This is not to say that... ; rather, ...\" ishlating.",
+              "prompt": "Write one academic paragraph evaluating the claim \"Video games make children violent.\" Use boosting, hedging and \"This is not to say that...; rather, ...\".",
+              "min_words": 120,
+              "example": "It is frequently claimed that violent video games turn children into aggressive adults. There is little doubt that many popular games contain disturbing images, and some studies have found a correlation between heavy gaming and short-term aggressive behaviour. However, it would appear that this link is considerably weaker than headlines suggest. Children who play violent games for many hours may well differ from their peers in other respects, such as the amount of parental supervision they receive or the stress they experience at home, and these factors could presumably explain much of the difference. Moreover, crime among young people has fallen in many countries during the same decades in which gaming has grown. This is not to say that parents should ignore what their children play; rather, the evidence suggests that games are one factor among many and are unlikely, on their own, to cause violence."
+            }
+          ]
+        },
+        {
+          "slug": "c2-metaphor",
+          "title": "A double-edged sword",
+          "title_uz": "Rasmiy matndagi obrazli iboralar",
+          "goal_uz": "Publitsistika va inshoda ishlatsa bo'ladigan obrazli iboralarni (pave the way, a watershed moment, a drop in the ocean) o'rganasiz va metaforalarni aralashtirib yuborish xatosidan qochasiz.",
+          "minutes": 13,
+          "words": [
+            {"en": "a double-edged sword", "uz": "ikki tig'li qilich (ham foyda, ham zarar)", "ipa": "/ə ˌdʌbl edʒd ˈsɔːd/", "ex": "Fame is a double-edged sword."},
+            {"en": "pave the way for", "uz": "...ga yo'l ochmoq", "ipa": "/peɪv ðə weɪ fɔː/", "ex": "The discovery paved the way for new vaccines."},
+            {"en": "at a crossroads", "uz": "hal qiluvchi tanlov oldida", "ipa": "/ət ə ˈkrɒsrəʊdz/", "ex": "The industry is at a crossroads."},
+            {"en": "a drop in the ocean", "uz": "dengizdan bir tomchi (kerakli miqdorga nisbatan juda oz)", "ipa": "/ə drɒp ɪn ði ˈəʊʃn/", "ex": "The donation was a drop in the ocean."},
+            {"en": "a watershed moment", "uz": "burilish nuqtasi", "ipa": "/ə ˈwɔːtəʃed ˈməʊmənt/", "ex": "The election was a watershed moment for the country."},
+            {"en": "bear fruit", "uz": "samara bermoq", "ipa": "/beə fruːt/", "ex": "Our efforts finally bore fruit."},
+            {"en": "a slippery slope", "uz": "sirpanchiq yo'l (kichik qadam katta muammoga olib boradi)", "ipa": "/ə ˈslɪpəri sləʊp/", "ex": "Borrowing to pay debts is a slippery slope."},
+            {"en": "stem the tide of", "uz": "...oqimini to'xtatmoq", "ipa": "/stem ðə taɪd ɒv/", "ex": "New laws failed to stem the tide of fake news."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "reading",
+              "title": "Editorial: AI in the classroom",
+              "text": "Artificial intelligence in education is a double-edged sword. On the one hand, it has paved the way for genuinely personalised learning: a student in a remote village can now receive instant feedback on an essay at midnight. On the other hand, critics warn that allowing students to use chatbots for homework is a slippery slope — today an essay outline, tomorrow the entire essay. Attempts to stem the tide of AI-written assignments through bans have so far proved largely futile, since students can access the technology on their phones. Schools, in short, are at a crossroads. Many educators regard this as a watershed moment, comparable to the arrival of the calculator. Yet the government's recent investment in teacher training, though welcome, is a drop in the ocean compared with what is needed. Whether the current experiments will bear fruit remains to be seen.",
+              "glossary": {
+                "genuinely": "chinakam, haqiqatan",
+                "remote": "olis, chekka",
+                "instant feedback": "darhol javob, baho",
+                "outline": "reja, konspekt",
+                "assignments": "topshiriqlar",
+                "futile": "befoyda",
+                "comparable to": "...bilan qiyoslasa bo'ladigan",
+                "remains to be seen": "hali ma'lum emas"
+              },
+              "uz": "Ta'limdagi sun'iy intellekt — ikki tig'li qilich. Bir tomondan, u chinakam shaxsiylashtirilgan ta'limga yo'l ochdi: olis qishloqdagi talaba endi yarim tunda inshosiga darhol fikr-mulohaza olishi mumkin. Boshqa tomondan, tanqidchilar talabalarga uy vazifasi uchun chatbotlardan foydalanishga ruxsat berish — sirpanchiq yo'l, deb ogohlantiradi: bugun insho rejasi, ertaga butun insho. Taqiqlar orqali sun'iy intellekt yozgan topshiriqlar oqimini to'xtatishga urinishlar hozircha deyarli befoyda bo'ldi, chunki talabalar bu texnologiyadan telefonlarida foydalana oladi. Qisqasi, maktablar hal qiluvchi tanlov oldida turibdi. Ko'plab pedagoglar buni kalkulyator paydo bo'lishi bilan qiyoslasa bo'ladigan burilish nuqtasi deb hisoblaydi. Biroq hukumatning o'qituvchilarni tayyorlashga yaqinda kiritgan sarmoyasi, garchi ijobiy bo'lsa-da, kerakli miqdorga nisbatan dengizdan bir tomchi. Hozirgi tajribalar samara beradimi-yo'qmi — buni vaqt ko'rsatadi."
+            },
+            {
+              "type": "choice",
+              "q": "Why does the writer call AI in education \"a double-edged sword\"?",
+              "options": ["It is only dangerous.", "It has both advantages and disadvantages.", "It is very expensive."],
+              "answer": 1,
+              "explain_uz": "\"On the one hand... On the other hand...\" — ham foyda, ham xavf."
+            },
+            {
+              "type": "choice",
+              "q": "What does the writer think about the government's investment in teacher training?",
+              "options": ["It is far too small.", "It has solved the problem.", "It was a waste of money."],
+              "answer": 0,
+              "explain_uz": "\"a drop in the ocean compared with what is needed\" — kerakli miqdorga nisbatan juda oz."
+            },
+            {
+              "type": "grammar",
+              "title_uz": "Obrazli iboralar rasmiy yozuvda",
+              "body_uz": "C1 darajasidagi Speaking idiomalari (a piece of cake, hit the books) Writing'da norasmiy eshitiladi. Lekin **publitsistik metaforalar** gazeta tahririyati, ma'ruza va inshoda keng ishlatiladi.\n**Ma'nosi va ishlatilishi:**\n**a double-edged sword** — ham foyda, ham zarar · **pave the way for** + ot — yo'l ochmoq · **at a crossroads** — muhim tanlov oldida · **a drop in the ocean** — kerakliga nisbatan juda oz · **a watershed moment** — tarixiy burilish · **bear fruit** — samara bermoq (o'tgan zamon: **bore**) · **a slippery slope** — bitta kichik qadam boshqarib bo'lmas jarayonni boshlaydi · **stem the tide of** — kuchli oqimni to'xtatmoq.\n**Qoidalar:** 1) Ibora shakli o'zgarmaydi, faqat fe'l zamoni o'zgaradi: paved the way, **bore** fruit. 2) Bir inshoda 2–3 tadan ko'p emas. 3) ⚠️ **Mixed metaphor** — ikkita metaforani aralashtirmang: \"We must stem the tide before it bears fruit\" — kulgili va mantiqsiz.",
+              "examples": [
+                {"en": "The internet is a double-edged sword: it informs, but it also misleads.", "uz": "Internet — ikki tig'li qilich: u xabardor qiladi, lekin chalg'itadi ham."},
+                {"en": "Independence was a watershed moment in the nation's history.", "uz": "Mustaqillik xalq tarixidagi burilish nuqtasi bo'ldi."},
+                {"en": "Years of negotiation finally bore fruit.", "uz": "Yillar davom etgan muzokaralar nihoyat samara berdi."},
+                {"en": "Ten new teachers are a drop in the ocean for a region of two million people.", "uz": "Ikki million aholili viloyat uchun o'nta yangi o'qituvchi — dengizdan bir tomchi."}
+              ]
+            },
+            {
+              "type": "choice",
+              "q": "The invention of the printing press was ___ in the history of education.",
+              "options": ["a watershed moment", "a drop in the ocean", "a slippery slope"],
+              "answer": 0,
+              "explain_uz": "Tarixiy burilish → **a watershed moment**."
+            },
+            {
+              "type": "choice",
+              "q": "Years of hard work finally ___ when she won the scholarship.",
+              "options": ["paved the way", "bore fruit", "stemmed the tide"],
+              "answer": 1,
+              "explain_uz": "Mehnat samara berdi → **bore fruit** (bear — bore — borne)."
+            },
+            {
+              "type": "gap",
+              "text": "Social media is a ___-edged sword: it connects people but also spreads misinformation.",
+              "answer": ["double"],
+              "uz": "Ijtimoiy tarmoqlar — ikki tig'li qilich: odamlarni bog'laydi, lekin yolg'on ma'lumot ham tarqatadi.",
+              "explain_uz": "**a double-edged sword**"
+            },
+            {
+              "type": "gap",
+              "text": "The discovery ___ the way for new cancer treatments.",
+              "answer": ["paved", "has paved"],
+              "uz": "Bu kashfiyot saraton kasalligini davolashning yangi usullariga yo'l ochdi.",
+              "explain_uz": "**pave the way for** — o'tgan zamonda: **paved**."
+            },
+            {
+              "type": "gap",
+              "text": "Making one exception could be a slippery ___ — soon everyone will want special treatment.",
+              "answer": ["slope"],
+              "uz": "Bitta istisno qilish sirpanchiq yo'l bo'lishi mumkin — tez orada hamma alohida munosabat istaydi.",
+              "explain_uz": "**a slippery slope**"
+            },
+            {
+              "type": "choice",
+              "q": "Which sentence contains a mixed (badly combined) metaphor?",
+              "options": [
+                "This decision paved the way for reform.",
+                "We must stem the tide before it bears fruit.",
+                "The new scheme is a drop in the ocean."
+              ],
+              "answer": 1,
+              "explain_uz": "Oqim (tide) meva bermaydi — ikki metafora aralashib, mantiqsiz bo'lib qolgan."
+            },
+            {
+              "type": "match",
+              "pairs": [
+                ["at a crossroads", "hal qiluvchi tanlov oldida"],
+                ["a drop in the ocean", "kerakliga nisbatan juda oz"],
+                ["stem the tide", "oqimni to'xtatmoq"],
+                ["bear fruit", "samara bermoq"],
+                ["a watershed moment", "burilish nuqtasi"]
+              ]
+            },
+            {
+              "type": "order",
+              "uz": "Bu islohotlar iqtisodiy o'sishga yo'l ochdi.",
+              "words": ["These", "reforms", "paved", "the", "way", "for", "economic", "growth"],
+              "answer": "These reforms paved the way for economic growth"
+            },
+            {
+              "type": "choice",
+              "audio": true,
+              "q": "What is the speaker's opinion about the ten thousand new trees?",
+              "say": "The city has planted ten thousand trees this year. That sounds impressive, but frankly it's a drop in the ocean. Experts say we need at least half a million to make a real difference to air quality.",
+              "options": ["It is enough.", "It is far too few.", "Trees are unnecessary."],
+              "answer": 1,
+              "explain_uz": "\"a drop in the ocean... we need at least half a million\""
+            },
+            {
+              "type": "listen",
+              "answer": [
+                "The internet is a double-edged sword.",
+                "The internet is a double-edged sword",
+                "The internet is a double edged sword"
+              ],
+              "uz": "Eshiting va yozing"
+            },
+            {
+              "type": "translate",
+              "uz": "Bu kashfiyot yangi davolash usullariga yo'l ochdi.",
+              "answer": [
+                "This discovery paved the way for new treatments",
+                "This discovery paved the way for new methods of treatment",
+                "This discovery paved the way for new treatment methods",
+                "This discovery has paved the way for new treatments",
+                "This discovery has paved the way for new methods of treatment",
+                "This discovery has paved the way for new treatment methods",
+                "The discovery paved the way for new treatments",
+                "The discovery has paved the way for new treatments",
+                "This discovery opened the way for new treatments",
+                "This discovery opened the door to new treatments"
+              ],
+              "explain_uz": "**pave the way for** + ot."
+            },
+            {
+              "type": "speak",
+              "text": "Tourism is a double-edged sword: it creates jobs, but it can also damage the very places people come to see.",
+              "uz": "Ovoz chiqarib ayting"
+            },
+            {
+              "type": "write",
+              "prompt_uz": "Gazeta tahririyati (editorial) uslubida qisqa matn yozing (120+ so'z): \"Should cities ban cars from their centres?\" Darsdagi kamida uchta obrazli iborani o'rinli ishlating va metaforalarni aralashtirmang.",
+              "prompt": "Write a short newspaper editorial: \"Should cities ban cars from their centres?\" Use at least three expressions from the lesson correctly, without mixing metaphors.",
+              "min_words": 120,
+              "example": "Banning cars from city centres is, in many ways, a double-edged sword. Supporters point to cities such as Oslo, where restrictions on traffic have paved the way for quieter streets, cleaner air and busier cafés. Opponents, however, argue that such bans hit small businesses and elderly residents hardest, and they fear that closing one street is a slippery slope towards punishing anyone who needs to drive. Tashkent now finds itself at a crossroads. The handful of pedestrian streets created so far are welcome, but they are a drop in the ocean in a city of three million people and hundreds of thousands of cars. If the authorities are serious about stemming the tide of congestion, they must combine restrictions with reliable, affordable public transport. Only then will this policy bear fruit."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
