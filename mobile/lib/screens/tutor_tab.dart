@@ -147,14 +147,14 @@ class _TutorChatState extends State<TutorChat> {
       return;
     }
     setState(() => _listening = true);
-    final alts = await Speech.instance.listen();
+    final heard = await Speech.instance.listen();
     if (!mounted) return;
     setState(() => _listening = false);
-    if (alts != null) {
-      _input.text = alts.first;
+    if (heard.ok) {
+      _input.text = heard.alternatives.first;
       _input.selection = TextSelection.collapsed(offset: _input.text.length);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Ovoz eshitilmadi. Qayta urinib ko'ring.")));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(heard.error ?? "Ovoz eshitilmadi.")));
     }
   }
 

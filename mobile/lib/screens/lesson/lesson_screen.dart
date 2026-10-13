@@ -557,7 +557,7 @@ class _PlayerState extends State<_Player> {
           ],
           Expanded(
             child: FilledButton(
-              onPressed: _checking || (isExercise && !ctl.ready) ? null : _check,
+              onPressed: _checking || (isExercise && !ctl.ready) || (ctl.skippable && !isExercise) ? null : _check,
               child: _checking
                   ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.5))
                   : Text(isExercise ? 'Tekshirish' : 'Davom etish'),

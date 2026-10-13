@@ -641,15 +641,16 @@ class _SpeakStepState extends State<SpeakStep> {
     }
     setState(() {
       _listening = true;
-      _status = 'Eshityapman... gapiring';
+      _status = 'Eshityapman... gapiring, tugatgach biroz jim turing';
     });
-    final alts = await Speech.instance.listen();
+    final heard = await Speech.instance.listen();
     if (!mounted) return;
     setState(() => _listening = false);
-    if (alts == null) {
-      setState(() => _status = "Ovoz eshitilmadi. Mikrofonni bosib, aniqroq ayting.");
+    if (!heard.ok) {
+      setState(() => _status = heard.error);
       return;
     }
+    final alts = heard.alternatives;
     final r = speechScore(_text, alts);
     _tries++;
     setState(() {
