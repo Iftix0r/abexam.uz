@@ -96,6 +96,13 @@ def _user_json(user):
     return {'id': user.pk, 'username': user.username, 'first_name': user.first_name, 'last_name': user.last_name}
 
 
+@api(auth=False)
+def health(request):
+    # The app's hidden WebView opens this page to get past the hosting's
+    # browser check (Imunify360); the marker tells it the real API answered.
+    return JsonResponse({'ok': True, 'app': 'abexam-api'})
+
+
 @api(methods=('POST',), auth=False)
 def login(request):
     data, err = _body(request)
@@ -450,6 +457,7 @@ def tutor_send(request):
 app_name = 'learn_api'
 
 urlpatterns = [
+    path('health/', health, name='health'),
     path('auth/login/', login, name='login'),
     path('auth/register/', register, name='register'),
     path('auth/logout/', logout, name='logout'),

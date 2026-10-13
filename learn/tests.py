@@ -332,6 +332,9 @@ class ApiTests(TestCase):
             return self.client.get(url, **headers)
         return self.client.post(url, data=json.dumps(payload or {}), content_type='application/json', **headers)
 
+    def test_health_needs_no_token(self):
+        self.assertEqual(self._call('get', 'learn_api:health', token=None).json()['app'], 'abexam-api')
+
     def test_requests_without_a_valid_token_are_refused(self):
         self.assertEqual(self._call('get', 'learn_api:me', token=None).status_code, 401)
         self.assertEqual(self._call('get', 'learn_api:me', token='nope').status_code, 401)
