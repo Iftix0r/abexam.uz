@@ -1,0 +1,191 @@
+{
+  "level": "C2",
+  "units": [
+    {
+      "slug": "c2-academic-precision",
+      "title": "Academic precision",
+      "title_uz": "Akademik aniqlik",
+      "icon": "book-marked",
+      "lessons": [
+        {
+          "slug": "c2-subjunctive",
+          "title": "It is essential that he be informed",
+          "title_uz": "Subjunctive va rasmiy shart: were to, should, it is vital that",
+          "goal_uz": "Rasmiy hujjat va inshoda ishlatiladigan subjunctive (It is essential that she be...) va \"were to / should\" bilan gipotetik shartlarni qo'llaysiz.",
+          "minutes": 14,
+          "words": [
+            {"en": "imperative", "uz": "o'ta zarur", "ipa": "/ɪmˈperətɪv/", "ex": "It is imperative that we act now."},
+            {"en": "stipulate", "uz": "shart qilib qo'ymoq", "ipa": "/ˈstɪpjuleɪt/", "ex": "The contract stipulates that payment be made monthly."},
+            {"en": "recommend", "uz": "tavsiya qilmoq", "ipa": "/ˌrekəˈmend/", "ex": "The doctor recommended that he rest."},
+            {"en": "insist", "uz": "talab qilmoq, turib olmoq", "ipa": "/ɪnˈsɪst/", "ex": "She insisted that the meeting be recorded."},
+            {"en": "provision", "uz": "qoida, band (hujjatda)", "ipa": "/prəˈvɪʒn/", "ex": "The law contains a provision for emergencies."},
+            {"en": "comply with", "uz": "... ga rioya qilmoq", "ipa": "/kəmˈplaɪ wɪð/", "ex": "All staff must comply with the rules."},
+            {"en": "in the event of", "uz": "... yuz bergan taqdirda", "ipa": "/ɪn ði ɪˈvent əv/", "ex": "In the event of fire, use the stairs."},
+            {"en": "hypothetical", "uz": "faraziy", "ipa": "/ˌhaɪpəˈθetɪkl/", "ex": "Let's consider a hypothetical situation."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "reading",
+              "title": "Extract from a university regulation",
+              "text": "Section 4: Academic integrity\n4.1 It is essential that every student be familiar with the university's policy on plagiarism before submitting any assessed work.\n4.2 The Examination Board recommends that suspected cases be reported to the Head of Department within five working days.\n4.3 Should a student be found to have submitted work that is not their own, the work will be awarded a mark of zero.\n4.4 Were the university to discover a second offence, it would reserve the right to suspend the student for up to one academic year.\n4.5 The regulations stipulate that any student facing such action be given the opportunity to present their case in person.",
+              "glossary": {"integrity": "halollik", "familiar with": "... bilan tanish", "plagiarism": "plagiat, ko'chirmachilik", "assessed": "baholanadigan", "suspected": "shubha qilingan", "offence": "qoidabuzarlik", "reserve the right": "huquqini saqlab qolmoq", "suspend": "vaqtincha chetlatmoq"},
+              "uz": "4-bo'lim: Akademik halollik\n4.1 Har bir talaba baholanadigan ishni topshirishdan oldin universitetning plagiat bo'yicha siyosati bilan tanish bo'lishi shart.\n4.2 Imtihon kengashi shubhali holatlar besh ish kuni ichida kafedra mudiriga xabar qilinishini tavsiya etadi.\n4.3 Agar talaba o'ziga tegishli bo'lmagan ishni topshirgani aniqlansa, ishga nol ball qo'yiladi.\n4.4 Agar universitet ikkinchi qoidabuzarlikni aniqlasa, talabani bir o'quv yiligacha chetlatish huquqini o'zida saqlab qoladi.\n4.5 Qoidalarga ko'ra, bunday chora ko'rilayotgan har qanday talabaga o'z pozitsiyasini shaxsan bayon qilish imkoniyati berilishi shart."
+            },
+            {"type": "choice", "q": "What happens after a first case of plagiarism?", "options": ["The student is suspended.", "The work receives zero.", "Nothing happens."], "answer": 1, "explain_uz": "4.3: \"the work will be awarded a mark of zero\"."},
+            {"type": "choice", "q": "What right does every accused student have?", "options": ["To resubmit the work", "To present their case in person", "To change department"], "answer": 1, "explain_uz": "4.5: \"be given the opportunity to present their case in person\"."},
+            {
+              "type": "grammar",
+              "title_uz": "Subjunctive va inversiyali shart",
+              "body_uz": "**1. Mandative subjunctive** — talab, tavsiya, zarurat ifodalovchi so'zlardan keyin **that + ega + fe'lning asosiy shakli** (barcha shaxslarda bir xil, -s yo'q!):\n**recommend / insist / demand / suggest / propose / stipulate + that**: The board recommends that he **be** informed. She insisted that he **leave**. (\"he leaves\" emas!)\n**It is essential / vital / imperative / crucial that** + ega + asosiy fe'l: It is vital that every student **attend**.\nInkor: that he **not be** told (do ishlatilmaydi).\nBritaniya ingliz tilida **should** bilan ham bo'ladi: ...that he **should be** informed.\n**2. Rasmiy shart (inversiya)**:\n**Should + ega + fe'l** = If (ehtimoli kam): **Should** you require assistance, ... \n**Were + ega + to + fe'l** = If (gipotetik): **Were** the price **to** rise, demand would fall.\n**Were + ega** (+ ot/sifat): **Were** I in your position, I would resign.",
+              "examples": [
+                {"en": "The committee demanded that the report be published immediately.", "uz": "Qo'mita hisobot zudlik bilan e'lon qilinishini talab qildi."},
+                {"en": "It is crucial that the patient not eat before the operation.", "uz": "Bemorning operatsiyadan oldin ovqat yemasligi juda muhim."},
+                {"en": "Should you have any further questions, please do not hesitate to contact me.", "uz": "Qo'shimcha savollaringiz bo'lsa, bemalol murojaat qiling."},
+                {"en": "Were the government to raise taxes, there would be protests.", "uz": "Agar hukumat soliqlarni oshiradigan bo'lsa, noroziliklar bo'lardi."}
+              ]
+            },
+            {"type": "choice", "q": "The doctor recommended that she ___ more slowly.", "options": ["eats", "eat", "eating"], "answer": 1, "explain_uz": "recommend that + asosiy shakl: she **eat** (-s yo'q)."},
+            {"type": "choice", "q": "It is imperative that the documents ___ signed today.", "options": ["are", "be", "will be"], "answer": 1, "explain_uz": "It is imperative that ... **be** signed."},
+            {"type": "gap", "text": "___ you need any help, please call reception.", "answer": ["Should"], "uz": "Yordam kerak bo'lsa, qabulxonaga qo'ng'iroq qiling.", "explain_uz": "If you need → **Should** you need."},
+            {"type": "gap", "text": "___ the company to close, two thousand people would lose their jobs.", "answer": ["Were"], "uz": "Agar kompaniya yopiladigan bo'lsa, ikki ming kishi ishsiz qolardi.", "explain_uz": "**Were** + ega + **to** + fe'l."},
+            {"type": "gap", "text": "They insisted that he ___ be allowed to speak. (inkor)", "answer": ["not"], "uz": "Ular unga gapirishga ruxsat berilmasligini talab qilishdi.", "explain_uz": "Subjunctive inkori: that he **not** be..."},
+            {"type": "choice", "q": "Which sentence is correct in formal English?", "options": ["The law requires that every driver carries a licence.", "The law requires that every driver carry a licence.", "The law requires that every driver to carry a licence."], "answer": 1, "explain_uz": "require that + asosiy shakl: **carry**."},
+            {"type": "choice", "q": "\"Were I in your position...\" means:", "options": ["When I was in your position", "If I were in your position", "Because I am in your position"], "answer": 1, "explain_uz": "**Were I** = If I were."},
+            {"type": "match", "pairs": [["imperative", "o'ta zarur"], ["stipulate", "shart qilib qo'ymoq"], ["comply with", "rioya qilmoq"], ["provision", "band, qoida"], ["hypothetical", "faraziy"]]},
+            {"type": "order", "uz": "Har bir talabaning qatnashishi juda muhim.", "words": ["It", "is", "vital", "that", "every", "student", "attend"], "answer": "It is vital that every student attend"},
+            {"type": "choice", "audio": true, "q": "What will happen if the flight is cancelled?", "say": "Should your flight be cancelled, the airline will provide accommodation and a seat on the next available departure.", "options": ["You will get a full refund only.", "You will get a hotel and the next available flight.", "You must buy a new ticket."], "answer": 1, "explain_uz": "\"provide accommodation and a seat on the next available departure\"."},
+            {"type": "listen", "answer": ["It is essential that everyone be informed.", "It is essential that everyone be informed", "It's essential that everyone be informed"], "uz": "Eshiting va yozing"},
+            {"type": "translate", "uz": "Agar savollaringiz bo'lsa, menga murojaat qiling. (Should bilan)", "answer": ["Should you have any questions please contact me", "Should you have any questions, please contact me", "Should you have questions please contact me", "Should you have any questions contact me", "Should you have any questions please do not hesitate to contact me"], "explain_uz": "**Should you have** any questions, ..."},
+            {"type": "speak", "text": "Were the government to invest more in public transport, congestion would fall significantly.", "uz": "Ovoz chiqarib ayting"},
+            {
+              "type": "write",
+              "prompt_uz": "Maktab yoki ish joyingiz uchun 5–6 banddan iborat rasmiy qoidalar ro'yxatini yozing (100+ so'z). Subjunctive (It is essential that..., recommends that...) va Should / Were to tuzilmalaridan foydalaning.",
+              "prompt": "Write a short set of formal regulations (5–6 points) for a library, school or workplace, using the subjunctive and formal conditionals.",
+              "min_words": 100,
+              "example": "Library regulations\n1. It is essential that every visitor present a valid membership card at the entrance.\n2. The management requests that mobile phones be switched to silent mode at all times.\n3. Should a book be returned more than seven days late, a fine of 5,000 som will be charged.\n4. It is vital that rare manuscripts not be removed from the reading room under any circumstances.\n5. Were a member to damage library property, they would be required to cover the full cost of repair or replacement.\n6. The regulations stipulate that any member facing suspension be informed in writing."
+            }
+          ]
+        },
+        {
+          "slug": "c2-collocations",
+          "title": "Conduct research, pose a threat",
+          "title_uz": "Akademik kollokatsiyalar",
+          "goal_uz": "Ingliz tilida qaysi so'zlar birga ishlatilishini (do research emas, conduct research) o'rganasiz — bu Writing'da Lexical Resource 8+ ning kaliti.",
+          "minutes": 13,
+          "words": [
+            {"en": "conduct research", "uz": "tadqiqot o'tkazmoq", "ipa": "/kənˈdʌkt rɪˈsɜːtʃ/", "ex": "The team conducted research in five countries."},
+            {"en": "pose a threat", "uz": "xavf tug'dirmoq", "ipa": "/pəʊz ə θret/", "ex": "Plastic waste poses a serious threat to marine life."},
+            {"en": "draw a conclusion", "uz": "xulosa chiqarmoq", "ipa": "/drɔː ə kənˈkluːʒn/", "ex": "It is too early to draw any conclusions."},
+            {"en": "bear responsibility", "uz": "javobgar bo'lmoq", "ipa": "/beə rɪˌspɒnsəˈbɪləti/", "ex": "Parents bear responsibility for their children's safety."},
+            {"en": "play a pivotal role", "uz": "hal qiluvchi rol o'ynamoq", "ipa": "/pleɪ ə ˈpɪvətl rəʊl/", "ex": "Teachers play a pivotal role in society."},
+            {"en": "raise awareness", "uz": "xabardorlikni oshirmoq", "ipa": "/reɪz əˈweənəs/", "ex": "The campaign aims to raise awareness of diabetes."},
+            {"en": "address an issue", "uz": "muammoni hal qilishga kirishmoq", "ipa": "/əˈdres ən ˈɪʃuː/", "ex": "The government must address the issue of housing."},
+            {"en": "widespread", "uz": "keng tarqalgan", "ipa": "/ˈwaɪdspred/", "ex": "There is widespread concern about the economy."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "reading",
+              "title": "Same ideas, stronger collocations",
+              "text": "Version A (band 6): Scientists did a lot of research about plastic in the ocean. They found that plastic makes a big danger for fish. Governments have a big responsibility to do something about this problem, and we need to make people know more about it.\n\nVersion B (band 8+): Scientists have conducted extensive research into plastic pollution in the oceans. Their findings suggest that plastic poses a severe threat to marine ecosystems. Governments bear considerable responsibility for addressing this issue, and public campaigns could play a pivotal role in raising awareness of its consequences.",
+              "glossary": {"extensive": "keng ko'lamli", "findings": "natijalar, topilmalar", "severe": "jiddiy, og'ir", "marine ecosystems": "dengiz ekotizimlari", "considerable": "katta, sezilarli", "campaigns": "kampaniyalar"},
+              "uz": "A varianti (6 ball): Olimlar okeandagi plastik haqida ko'p tadqiqot qilishdi. Ular plastik baliqlar uchun katta xavf yaratishini topishdi. Hukumatlarning bu muammo bo'yicha nimadir qilish uchun katta javobgarligi bor va biz odamlarga bu haqda ko'proq bildirishimiz kerak.\n\nB varianti (8+ ball): Olimlar okeanlardagi plastik ifloslanish bo'yicha keng ko'lamli tadqiqotlar o'tkazgan. Ularning natijalari plastik dengiz ekotizimlariga jiddiy xavf tug'dirishini ko'rsatadi. Hukumatlar bu muammoni hal qilishda katta mas'uliyat zimmasida va jamoatchilik kampaniyalari uning oqibatlari haqida xabardorlikni oshirishda hal qiluvchi rol o'ynashi mumkin."
+            },
+            {"type": "choice", "q": "Which collocation in Version B replaces \"makes a big danger\"?", "options": ["poses a severe threat", "plays a pivotal role", "bears responsibility"], "answer": 0, "explain_uz": "make a danger ✗ → **pose a threat** ✓."},
+            {"type": "choice", "q": "What is the main difference between A and B?", "options": ["B has completely different ideas.", "B uses precise, natural word combinations.", "B is shorter and simpler."], "answer": 1, "explain_uz": "G'oyalar bir xil — B'da to'g'ri kollokatsiyalar."},
+            {
+              "type": "grammar",
+              "title_uz": "Kollokatsiya — so'zlarning \"do'stligi\"",
+              "body_uz": "Kollokatsiya — ona tilida so'zlashuvchilar **odatda birga ishlatadigan** so'z juftliklari. Grammatik qoida yo'q — ularni **yodlash** kerak.\nO'zbekchadan to'g'ridan-to'g'ri tarjima ko'pincha xato beradi:\n**tadqiqot qilmoq** → do research ✗ (norasmiy) → **conduct / carry out research** ✓\n**xulosa qilmoq** → make a conclusion ✗ → **draw / reach a conclusion** ✓\n**xavf tug'dirmoq** → make a danger ✗ → **pose a threat / risk** ✓\n**qaror qabul qilmoq** → take/make a decision ✓ (**reach** a decision — uzoq muhokamadan keyin)\n**Fe'l + ot**: address / tackle an issue · meet a need / demand · exert pressure · undergo changes · reach a consensus\n**Sifat + ot**: heavy traffic (strong traffic ✗) · strong evidence · widespread concern · a sharp decline · a vital role · high unemployment (big unemployment ✗)\n**Ravish + sifat**: highly unlikely · deeply concerned · bitterly disappointed · widely accepted\nMaslahat: yangi so'zni yolg'iz emas, **sherigi bilan** yozib oling.",
+              "examples": [
+                {"en": "The study reached a surprising conclusion.", "uz": "Tadqiqot kutilmagan xulosaga keldi."},
+                {"en": "It is highly unlikely that prices will fall.", "uz": "Narxlar tushishi ehtimoldan juda uzoq."},
+                {"en": "There is strong evidence that exercise improves mood.", "uz": "Jismoniy mashq kayfiyatni yaxshilashiga kuchli dalillar bor."},
+                {"en": "The country has undergone rapid changes.", "uz": "Mamlakat tez o'zgarishlarni boshdan kechirdi."}
+              ]
+            },
+            {"type": "choice", "q": "The police are ___ an investigation into the accident.", "options": ["making", "conducting", "doing"], "answer": 1, "explain_uz": "**conduct** an investigation."},
+            {"type": "choice", "q": "There was ___ traffic on the way to work.", "options": ["strong", "heavy", "big"], "answer": 1, "explain_uz": "**heavy** traffic."},
+            {"type": "gap", "text": "After hours of discussion, the committee finally ___ a decision.", "answer": ["reached", "made", "took"], "uz": "Soatlab muhokamadan so'ng qo'mita nihoyat qarorga keldi.", "explain_uz": "**reach** a decision (uzoq muhokamadan keyin)."},
+            {"type": "gap", "text": "Climate change ___ a serious threat to coastal cities.", "answer": ["poses"], "uz": "Iqlim o'zgarishi qirg'oq shaharlariga jiddiy xavf tug'diradi.", "explain_uz": "**pose** a threat."},
+            {"type": "gap", "text": "It is ___ unlikely that the project will finish on time.", "answer": ["highly"], "uz": "Loyihaning o'z vaqtida tugashi ehtimoldan juda uzoq.", "explain_uz": "**highly** unlikely."},
+            {"type": "choice", "q": "Which collocation is NOT natural?", "options": ["draw a conclusion", "make a conclusion", "reach a conclusion"], "answer": 1, "explain_uz": "make a conclusion — tabiiy emas."},
+            {"type": "match", "pairs": [["conduct", "research"], ["pose", "a threat"], ["raise", "awareness"], ["draw", "a conclusion"], ["meet", "a demand"]]},
+            {"type": "order", "uz": "O'qituvchilar jamiyatda hal qiluvchi rol o'ynaydi.", "words": ["Teachers", "play", "a", "pivotal", "role", "in", "society"], "answer": "Teachers play a pivotal role in society"},
+            {"type": "choice", "audio": true, "q": "What is the purpose of the campaign?", "say": "The new campaign aims to raise awareness of the dangers of using a mobile phone while driving.", "options": ["To sell mobile phones", "To make people more aware of a danger", "To teach people to drive"], "answer": 1, "explain_uz": "\"raise awareness of the dangers\"."},
+            {"type": "listen", "answer": ["Plastic poses a serious threat to marine life.", "Plastic poses a serious threat to marine life"], "uz": "Eshiting va yozing"},
+            {"type": "translate", "uz": "Olimlar bu mavzu bo'yicha keng ko'lamli tadqiqot o'tkazishgan.", "answer": ["Scientists have conducted extensive research on this topic", "Scientists have conducted extensive research into this topic", "Scientists have carried out extensive research on this topic", "Scientists have carried out extensive research into this topic", "Scientists conducted extensive research on this topic"], "explain_uz": "**conduct / carry out** research **into / on**."},
+            {"type": "speak", "text": "Public campaigns could play a pivotal role in raising awareness of the issue.", "uz": "Ovoz chiqarib ayting"},
+            {
+              "type": "write",
+              "prompt_uz": "\"Ijtimoiy tarmoqlarning yoshlarga ta'siri\" mavzusida Task 2 paragrafi yozing (120+ so'z). Kamida 6 ta kollokatsiyadan foydalaning va ularning tagiga chizish uchun **...** bilan belgilang.",
+              "prompt": "Write a Task 2 body paragraph about the impact of social media on young people. Use at least six strong collocations and mark them with **...**.",
+              "min_words": 120,
+              "example": "Social media undoubtedly **plays a pivotal role** in the lives of young people today, but there is **widespread concern** about its effects on mental health. Researchers have **conducted extensive research** into this area, and many have **drawn the conclusion** that excessive use is linked to anxiety and low self-esteem. There is **strong evidence**, for instance, that constant comparison with idealised images **poses a serious threat** to teenagers' confidence. Nevertheless, it would be simplistic to blame technology alone. Schools and parents **bear considerable responsibility** for teaching young people to use these platforms wisely, and well-designed campaigns could help **raise awareness** of the risks without denying the genuine benefits of online connection."
+            }
+          ]
+        },
+        {
+          "slug": "c2-cohesion",
+          "title": "So do I, if not",
+          "title_uz": "Bog'liqlik: substitution va ellipsis",
+          "goal_uz": "Takrorlardan qochib, matnni silliq bog'laysiz: do so, so / not, one(s), that of, ellipsis — Coherence and Cohesion 8+ uchun.",
+          "minutes": 13,
+          "words": [
+            {"en": "cohesion", "uz": "matnning bog'liqligi", "ipa": "/kəʊˈhiːʒn/", "ex": "Good cohesion makes an essay easy to follow."},
+            {"en": "repetition", "uz": "takror", "ipa": "/ˌrepəˈtɪʃn/", "ex": "Avoid unnecessary repetition."},
+            {"en": "the former", "uz": "birinchisi (ikkitadan)", "ipa": "/ðə ˈfɔːmə/", "ex": "Of tea and coffee, I prefer the former."},
+            {"en": "the latter", "uz": "ikkinchisi (ikkitadan)", "ipa": "/ðə ˈlætə/", "ex": "Of tea and coffee, I prefer the latter."},
+            {"en": "respectively", "uz": "mos ravishda", "ipa": "/rɪˈspektɪvli/", "ex": "Ali and Vali are 20 and 22, respectively."},
+            {"en": "the case", "uz": "holat, haqiqat", "ipa": "/ðə keɪs/", "ex": "This is not always the case."},
+            {"en": "likewise", "uz": "xuddi shunday", "ipa": "/ˈlaɪkwaɪz/", "ex": "He apologised, and she did likewise."},
+            {"en": "the same applies to", "uz": "xuddi shu narsa ... ga ham tegishli", "ipa": "/ðə seɪm əˈplaɪz tuː/", "ex": "The same applies to younger children."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "reading",
+              "title": "Before and after editing",
+              "text": "Before: Some people think that governments should fund the arts. Other people think that governments should not fund the arts. People who think governments should fund the arts argue that the arts improve quality of life. I agree that the arts improve quality of life, but I do not think governments should spend more money on the arts than governments spend on healthcare.\n\nAfter: Some people believe that governments should fund the arts, while others believe they should not. Those in favour argue that the arts improve quality of life. I agree that this is the case, but I do not think governments should spend more on culture than they do on healthcare.",
+              "glossary": {"fund": "moliyalashtirmoq", "the arts": "san'at", "quality of life": "hayot sifati", "in favour": "tarafdor", "culture": "madaniyat"},
+              "uz": "Tahrirdan oldin: Ba'zi odamlar hukumatlar san'atni moliyalashtirishi kerak deb o'ylashadi. Boshqa odamlar hukumatlar san'atni moliyalashtirmasligi kerak deb o'ylashadi. Hukumatlar san'atni moliyalashtirishi kerak deb o'ylaydigan odamlar san'at hayot sifatini yaxshilaydi deb ta'kidlaydi...\n\nTahrirdan keyin: Ba'zilar hukumatlar san'atni moliyalashtirishi kerak deb hisoblasa, boshqalar kerak emas deb hisoblaydi. Tarafdorlar san'at hayot sifatini yaxshilaydi deb ta'kidlaydi. Men bu haqiqat ekaniga qo'shilaman, lekin hukumatlar madaniyatga sog'liqni saqlashdan ko'ra ko'proq pul sarflashi kerak deb o'ylamayman."
+            },
+            {"type": "choice", "q": "In the edited version, what does \"they should not\" replace?", "options": ["governments should not fund the arts", "people should not believe", "the arts should not improve"], "answer": 0, "explain_uz": "Ellipsis: \"should not [fund the arts]\" — takrorlanmaydi."},
+            {"type": "choice", "q": "What does \"this is the case\" refer to?", "options": ["Governments spend on healthcare.", "The arts improve quality of life.", "Some people disagree."], "answer": 1, "explain_uz": "this is the case = **the arts improve quality of life**."},
+            {
+              "type": "grammar",
+              "title_uz": "Takrordan qochish: substitution va ellipsis",
+              "body_uz": "**1. Fe'l iborasi o'rniga**: **do so / do the same / do likewise**: Many students want to study abroad, but few can afford **to do so**.\n**2. Gap o'rniga — so / not**: Will prices rise? — I think **so**. / I hope **not**. (\"I don't hope\" ✗) · **If so, ... / If not, ...**\n**3. Ot o'rniga — one / ones**: This essay is better than the previous **one**.\n**4. Qiyoslashda — that of / those of**: The population of Tashkent is larger than **that of** Samarkand. (\"than Samarkand\" — mantiqan xato: aholini shahar bilan solishtirib bo'lmaydi!)\n**5. Ellipsis — yordamchi fe'lda to'xtash**: She can speak Arabic, but I **can't**. · Some agree, while others **do not**.\n**6. Ikki narsaga ishora**: **the former** (birinchisi) / **the latter** (ikkinchisi); **respectively** — mos ravishda.\n**this / such + umumlovchi ot**: **This trend**, **Such measures**, **This approach** — oldingi butun g'oyani bog'laydi.",
+              "examples": [
+                {"en": "The salaries of doctors are higher than those of teachers.", "uz": "Shifokorlarning maoshi o'qituvchilarnikidan yuqori."},
+                {"en": "Is the museum open on Mondays? If not, we'll go on Tuesday.", "uz": "Muzey dushanba kunlari ochiqmi? Agar yo'q bo'lsa, seshanba boramiz."},
+                {"en": "Cities and villages face different problems; the former suffer from congestion, the latter from depopulation.", "uz": "Shahar va qishloqlar turli muammolarga duch keladi: birinchisi tirbandlikdan, ikkinchisi aholining kamayishidan aziyat chekadi."},
+                {"en": "The government promised to cut taxes but has yet to do so.", "uz": "Hukumat soliqlarni kamaytirishni va'da qildi, lekin hali buni qilmadi."}
+              ]
+            },
+            {"type": "choice", "q": "The climate of Uzbekistan is drier than ___ of Georgia.", "options": ["it", "that", "those"], "answer": 1, "explain_uz": "the climate (birlik) → **that of**."},
+            {"type": "choice", "q": "\"Will it rain tomorrow?\" — \"I hope ___.\"", "options": ["not", "don't", "no"], "answer": 0, "explain_uz": "I hope **not** (\"I don't hope so\" ✗)."},
+            {"type": "gap", "text": "Many people want to start a business, but few actually do ___.", "answer": ["so"], "uz": "Ko'pchilik biznes boshlashni xohlaydi, lekin kamdan-kam odam buni amalga oshiradi.", "explain_uz": "do **so** = start a business."},
+            {"type": "gap", "text": "Prices in London are higher than ___ in Manchester.", "answer": ["those"], "uz": "Londondagi narxlar Manchesterdagidan yuqori.", "explain_uz": "prices (ko'plik) → **those**."},
+            {"type": "gap", "text": "Is the ticket refundable? If ___, I'll buy it now.", "answer": ["so"], "uz": "Chipta pulini qaytarib olsa bo'ladimi? Agar shunday bo'lsa, hozir olaman.", "explain_uz": "If **so** = if it is refundable."},
+            {"type": "choice", "q": "\"Tea and coffee are both popular, but the latter contains more caffeine.\" — What contains more caffeine?", "options": ["Tea", "Coffee", "Both"], "answer": 1, "explain_uz": "**the latter** = ikkinchisi = coffee."},
+            {"type": "match", "pairs": [["the former", "birinchisi"], ["the latter", "ikkinchisi"], ["respectively", "mos ravishda"], ["likewise", "xuddi shunday"], ["cohesion", "bog'liqlik"]]},
+            {"type": "order", "uz": "Ko'pchilik chet elda o'qishni xohlaydi, lekin kam odam bunga qodir.", "words": ["Many", "want", "to", "study", "abroad", "but", "few", "can", "afford", "to", "do", "so"], "answer": "Many want to study abroad but few can afford to do so"},
+            {"type": "choice", "audio": true, "q": "Which city has the larger population, according to the speaker?", "say": "The population of Tashkent is roughly three times that of Samarkand.", "options": ["Samarkand", "Tashkent", "They are the same."], "answer": 1, "explain_uz": "\"three times that of Samarkand\" — Toshkent kattaroq."},
+            {"type": "listen", "answer": ["Some agree, while others do not.", "Some agree while others do not", "Some agree, while others don't"], "uz": "Eshiting va yozing"},
+            {"type": "translate", "uz": "Shifokorlarning maoshi o'qituvchilarnikidan yuqori.", "answer": ["The salaries of doctors are higher than those of teachers", "Doctors' salaries are higher than those of teachers", "The salaries of doctors are higher than teachers' salaries", "Doctors' salaries are higher than teachers'"], "explain_uz": "Takrorni **those of** bilan almashtiring."},
+            {"type": "speak", "text": "Some argue that the arts deserve public funding, while others do not; I believe the former are right.", "uz": "Ovoz chiqarib ayting"},
+            {
+              "type": "write",
+              "prompt_uz": "Quyidagi takrorga to'la matnni substitution va ellipsis yordamida qayta yozing (80+ so'z): \"Some students prefer studying alone. Other students prefer studying in groups. Students who prefer studying alone say that studying alone helps them concentrate. Students who prefer studying in groups say that studying in groups is more motivating. I think studying in groups is more motivating, but I think studying alone is better before exams.\"",
+              "prompt": "Rewrite the repetitive paragraph using substitution, ellipsis and reference words.",
+              "min_words": 80,
+              "example": "Some students prefer to study alone, while others prefer to work in groups. The former claim that solitude helps them concentrate, whereas the latter find collaboration more motivating. In my experience, both views have some merit. I agree that group study is more stimulating, particularly when tackling difficult concepts; however, I believe that studying independently is more effective in the final days before an exam, when concentration matters more than discussion. Students would therefore benefit from combining the two approaches rather than relying exclusively on either."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

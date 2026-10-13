@@ -1,38 +1,23 @@
 # Session state (auto-saved — last known reality)
 
-_Updated: 2026-10-12 13:45:06_  ·  branch: `main`
+_Updated: 2026-10-13 10:42:41_  ·  branch: `main`
 
 ## Uncommitted changes
 ```
  M .anchor/session-state.md
- M data/learn/placement/test.json
- M learn/content.py
- M learn/models.py
- M learn/services.py
- M learn/tests.py
- M templates/learn/hub.html
- M templates/learn/placement.html
-?? data/learn/C2.json
-?? data/learn/stories/c2-the-interpreter.json
-?? data/learn/stories/c2-unsent-letter.json
-?? learn/migrations/0004_c2_level.py
+?? data/learn/C1-03-complex-sentences.json
+?? data/learn/C2-02-academic-precision.json
 ```
 
 Diff stat:
 ```
- .anchor/session-state.md       | 37 +++++--------------------------------
- data/learn/placement/test.json | 11 +++++++++++
- learn/content.py               |  5 +++--
- learn/models.py                |  2 +-
- learn/services.py              |  4 +++-
- learn/tests.py                 |  7 ++++---
- templates/learn/hub.html       |  3 ++-
- templates/learn/placement.html |  3 ++-
- 8 files changed, 31 insertions(+), 41 deletions(-)
+ .anchor/session-state.md | 41 +++--------------------------------------
+ 1 file changed, 3 insertions(+), 38 deletions(-)
 ```
 
 ## Recent commits
 ```
+1a3ea21 sfgdhes
 135d194 sgrdhtd
 14e1cfb 2qwged
 5dde6ac 1234sdd
@@ -40,7 +25,6 @@ Diff stat:
 cf65399 asffsev
 9b5b205 12dqa
 e20eefd dwqawf
-2ec2bee wefgeg
 ```
 
 ## Resume

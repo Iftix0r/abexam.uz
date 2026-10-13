@@ -1,0 +1,530 @@
+{
+  "level": "C1",
+  "units": [
+    {
+      "slug": "c1-complex-sentences",
+      "title": "Complex sentences",
+      "title_uz": "Murakkab gaplar: qisqa, aniq, ehtiyotkor",
+      "icon": "layers",
+      "lessons": [
+        {
+          "slug": "c1-participle-clauses",
+          "title": "Having finished the exam...",
+          "title_uz": "Participle clauses: -ing, V3 va Having + V3",
+          "goal_uz": "Ikki gapni bitta qisqa va ravon gapga birlashtirasiz: Built in 1428, the observatory... / Having finished, she left. Writing'da Grammatical Range 7+ uchun.",
+          "minutes": 14,
+          "words": [
+            {"en": "observatory", "uz": "rasadxona", "ipa": "/əbˈzɜːvətri/", "ex": "Ulugh Beg built an observatory in Samarkand."},
+            {"en": "compile", "uz": "to'plamoq, tuzmoq (ro'yxat, katalog)", "ipa": "/kəmˈpaɪl/", "ex": "They compiled a list of all the stars."},
+            {"en": "accuracy", "uz": "aniqlik", "ipa": "/ˈækjərəsi/", "ex": "The measurements were made with great accuracy."},
+            {"en": "renowned", "uz": "mashhur, taniqli", "ipa": "/rɪˈnaʊnd/", "ex": "Samarkand is renowned for its architecture."},
+            {"en": "determined", "uz": "qat'iyatli", "ipa": "/dɪˈtɜːmɪnd/", "ex": "Determined to succeed, she studied every day."},
+            {"en": "remains", "uz": "qoldiqlar, xarobalar", "ipa": "/rɪˈmeɪnz/", "ex": "The remains of the wall can still be seen."},
+            {"en": "rediscover", "uz": "qayta kashf etmoq", "ipa": "/ˌriːdɪˈskʌvə/", "ex": "The site was rediscovered in 1908."},
+            {"en": "legacy", "uz": "meros", "ipa": "/ˈleɡəsi/", "ex": "His scientific legacy is still important today."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "reading",
+              "title": "The observatory of Ulugh Beg",
+              "text": "Built in the late 1420s, Ulugh Beg's observatory in Samarkand was one of the finest in the medieval world. Its founder, the grandson of Amir Temur, was not only a ruler but also a renowned scientist. Having studied mathematics and astronomy from an early age, he was determined to measure the sky more precisely than anyone before him. Working with a team of talented astronomers, he compiled a catalogue listing more than a thousand stars and calculated the length of the year with remarkable accuracy. After Ulugh Beg was murdered in 1449, the observatory was destroyed and gradually forgotten. Rediscovered in 1908 by the archaeologist Vasily Vyatkin, its remains now attract visitors from all over the world, reminding them of a scientific legacy that shaped astronomy for centuries.",
+              "glossary": {
+                "medieval": "o'rta asrlarga oid",
+                "founder": "asoschi",
+                "grandson": "nevara",
+                "precisely": "aniq",
+                "catalogue": "katalog, ro'yxat",
+                "murdered": "o'ldirilgan",
+                "gradually": "asta-sekin",
+                "shaped": "shakllantirgan"
+              },
+              "uz": "1420-yillarning oxirida qurilgan Samarqanddagi Ulug'bek rasadxonasi o'rta asrlardagi eng zo'rlaridan biri edi. Uning asoschisi — Amir Temurning nevarasi — nafaqat hukmdor, balki taniqli olim ham edi. Yoshligidan matematika va astronomiyani o'rgangan Ulug'bek osmonni o'zidan oldingi har kimdan aniqroq o'lchashga qat'iy qaror qilgan edi. Iqtidorli astronomlar jamoasi bilan ishlab, u mingdan ortiq yulduzni o'z ichiga olgan katalog tuzdi va yil uzunligini ajoyib aniqlikda hisobladi. 1449-yilda Ulug'bek o'ldirilgach, rasadxona vayron qilindi va asta-sekin unutildi. 1908-yilda arxeolog Vasiliy Vyatkin tomonidan qayta kashf etilgan uning qoldiqlari bugun butun dunyodan sayyohlarni jalb qiladi va asrlar davomida astronomiyani shakllantirgan ilmiy merosni eslatadi."
+            },
+            {
+              "type": "choice",
+              "q": "What did Ulugh Beg and his team produce?",
+              "options": ["A map of the Silk Road", "A catalogue of more than a thousand stars", "A new calendar for the whole world"],
+              "answer": 1,
+              "explain_uz": "\"he compiled a catalogue listing more than a thousand stars\""
+            },
+            {
+              "type": "choice",
+              "q": "In \"Rediscovered in 1908, its remains now attract visitors\", who or what was rediscovered?",
+              "options": ["The visitors", "Vyatkin", "The remains of the observatory"],
+              "answer": 2,
+              "explain_uz": "Participle clause'ning egasi asosiy gapning egasi bilan bir xil: **its remains** were rediscovered."
+            },
+            {
+              "type": "grammar",
+              "title_uz": "Participle clauses — sifatdosh oborotlari",
+              "body_uz": "Ikki gapning **egasi bir xil** bo'lsa, bittasini qisqartirib, gapni ixcham va akademik qilish mumkin.\n**1) -ing (faol, bir vaqtda yoki sabab)**: Ulugh Beg worked with a team. He compiled a catalogue. → **Working** with a team, he compiled a catalogue. · **Feeling** tired, I went to bed. (= Because I felt tired)\n**2) V3 (majhul / passiv)**: The observatory was built in the 1420s. It was... → **Built** in the 1420s, the observatory was...\n**3) Having + V3 (avval tugagan harakat)**: He had studied maths. Then he... → **Having studied** maths, he... · Majhul: **Having been** told the news, she cried.\n**4) Qisqartirilgan aniqlovchi gap**: a catalogue **which lists** stars → a catalogue **listing** stars · cotton **which is grown** here → cotton **grown** here.\n⚠️ **Dangling participle**: \"Walking into the room, the lights went off\" — xato! Chiroqlar xonaga kirmaydi. To'g'ri: \"Walking into the room, **I** noticed the lights were off.\"",
+              "examples": [
+                {"en": "Having finished the report, she sent it to her manager.", "uz": "Hisobotni tugatgach, u uni rahbariga yubordi."},
+                {"en": "Built in 1909, the bridge is still in use today.", "uz": "1909-yilda qurilgan bu ko'prik bugun ham ishlatilmoqda."},
+                {"en": "Not knowing what to say, he remained silent.", "uz": "Nima deyishni bilmay, u jim qoldi."},
+                {"en": "Students living on campus pay lower rent.", "uz": "Kampusda yashaydigan talabalar kamroq ijara to'laydi."}
+              ]
+            },
+            {
+              "type": "choice",
+              "q": "___ in 1428, the observatory was one of the largest in the world.",
+              "options": ["Building", "Built", "Having built"],
+              "answer": 1,
+              "explain_uz": "Rasadxona **qurilgan** (majhul) → **Built**."
+            },
+            {
+              "type": "choice",
+              "q": "___ her homework, she went out with her friends.",
+              "options": ["Having finished", "Finished", "Having been finished"],
+              "answer": 0,
+              "explain_uz": "Avval vazifani tugatdi, keyin chiqdi; u o'zi tugatdi (faol) → **Having finished**."
+            },
+            {
+              "type": "gap",
+              "text": "___ tired after the long journey, I went straight to bed. (feel)",
+              "answer": ["Feeling"],
+              "uz": "Uzoq yo'ldan keyin charchaganim uchun to'g'ri yotib qoldim.",
+              "explain_uz": "Sabab, faol → **Feeling**."
+            },
+            {
+              "type": "gap",
+              "text": "The man ___ next to me on the bus was reading a book in Korean. (sit)",
+              "answer": ["sitting"],
+              "uz": "Avtobusda yonimda o'tirgan odam koreys tilida kitob o'qiyotgan edi.",
+              "explain_uz": "the man who was sitting → the man **sitting**."
+            },
+            {
+              "type": "gap",
+              "text": "Most of the cotton ___ in Uzbekistan is now processed inside the country. (grow)",
+              "answer": ["grown"],
+              "uz": "O'zbekistonda yetishtiriladigan paxtaning katta qismi endi mamlakat ichida qayta ishlanadi.",
+              "explain_uz": "cotton which is grown → cotton **grown** (majhul)."
+            },
+            {
+              "type": "choice",
+              "q": "Which sentence is correct?",
+              "options": [
+                "Walking into the classroom, the lights suddenly went off.",
+                "Walking into the classroom, I noticed that the lights were off.",
+                "Walked into the classroom, I noticed that the lights were off."
+              ],
+              "answer": 1,
+              "explain_uz": "Xonaga **men** kirdim → asosiy gap egasi ham **I** bo'lishi kerak. Birinchisi — dangling participle."
+            },
+            {
+              "type": "match",
+              "pairs": [
+                ["observatory", "rasadxona"],
+                ["compile", "tuzmoq, to'plamoq"],
+                ["renowned", "taniqli"],
+                ["remains", "qoldiqlar"],
+                ["legacy", "meros"]
+              ]
+            },
+            {
+              "type": "order",
+              "uz": "Yonimda o'tirgan odam mashhur yozuvchi edi.",
+              "words": ["The", "man", "sitting", "next", "to", "me", "was", "a", "famous", "writer"],
+              "answer": "The man sitting next to me was a famous writer"
+            },
+            {
+              "type": "choice",
+              "audio": true,
+              "q": "Why did the speaker's sister come back to Uzbekistan?",
+              "say": "Having lived in London for five years, my sister finally decided to come home last spring. Missing her family more and more, she found a job in Tashkent and moved back in April.",
+              "options": ["She lost her job in London.", "She missed her family.", "Her visa expired."],
+              "answer": 1,
+              "explain_uz": "\"Missing her family more and more...\" — -ing bu yerda sababni bildiradi."
+            },
+            {
+              "type": "listen",
+              "answer": [
+                "Built in the fifteenth century, the observatory is still impressive.",
+                "Built in the fifteenth century the observatory is still impressive",
+                "Built in the 15th century, the observatory is still impressive"
+              ],
+              "uz": "Eshiting va yozing"
+            },
+            {
+              "type": "translate",
+              "uz": "Universitetni tugatgach, u Toshkentga qaytdi.",
+              "answer": [
+                "Having graduated from university he returned to Tashkent",
+                "Having graduated from university he went back to Tashkent",
+                "Having graduated from university he came back to Tashkent",
+                "Having finished university he returned to Tashkent",
+                "Having finished university he went back to Tashkent",
+                "Having finished university he came back to Tashkent",
+                "Having graduated from university she returned to Tashkent",
+                "Having finished university she returned to Tashkent",
+                "After graduating from university he returned to Tashkent",
+                "After finishing university he returned to Tashkent"
+              ],
+              "explain_uz": "Avval tugagan harakat → **Having + V3**: Having graduated..."
+            },
+            {
+              "type": "speak",
+              "text": "Having considered both points of view, I believe that the advantages clearly outweigh the disadvantages.",
+              "uz": "Ovoz chiqarib ayting"
+            },
+            {
+              "type": "write",
+              "prompt_uz": "O'zbekistondagi biror tarixiy joy (masalan, Registon, Ichan qal'a, Shahrisabz) haqida qisqa matn yozing (100+ so'z). Kamida uchta participle clause ishlating: Built in..., Having..., ... -ing.",
+              "prompt": "Write a short description of a historical place in Uzbekistan. Use at least three participle clauses (Built in..., Having..., -ing).",
+              "min_words": 100,
+              "example": "Located in the heart of Samarkand, the Registan is one of the most famous squares in Central Asia. Surrounded by three magnificent madrasahs, it was once the centre of the city's commercial and religious life. The oldest of these buildings, constructed by Ulugh Beg in the 1410s, served as a university attracting scholars from across the Islamic world. Having been damaged by earthquakes over the centuries, the madrasahs were carefully restored in the twentieth century. Today, visitors walking across the square can admire the intricate blue tilework and the enormous domes. Having visited the Registan twice, I can honestly say that photographs do not capture its true scale and beauty."
+            }
+          ]
+        },
+        {
+          "slug": "c1-mixed-conditionals",
+          "title": "If I had listened, I would be...",
+          "title_uz": "Mixed conditionals: o'tmish va hozirni bog'lash",
+          "goal_uz": "O'tmishdagi qaror hozirga qanday ta'sir qilganini (If I had studied medicine, I would be a doctor now) va hozirgi xususiyat o'tmishni qanday o'zgartirganini ifodalaysiz.",
+          "minutes": 14,
+          "words": [
+            {"en": "turn down", "uz": "rad etmoq (taklifni)", "ipa": "/tɜːn daʊn/", "ex": "She turned down a job in Dubai."},
+            {"en": "take up", "uz": "boshlamoq (mashg'ulot, ish)", "ipa": "/teɪk ʌp/", "ex": "He took up programming at university."},
+            {"en": "in hindsight", "uz": "orqaga qarab, hozir o'ylasam", "ipa": "/ɪn ˈhaɪndsaɪt/", "ex": "In hindsight, it was the right decision."},
+            {"en": "settle", "uz": "joylashib qolmoq, o'rnashmoq", "ipa": "/ˈsetl/", "ex": "They settled in Bukhara after the war."},
+            {"en": "fluent", "uz": "ravon (tilda)", "ipa": "/ˈfluːənt/", "ex": "She is fluent in three languages."},
+            {"en": "regret", "uz": "afsuslanmoq; afsus", "ipa": "/rɪˈɡret/", "ex": "I don't regret anything."},
+            {"en": "career path", "uz": "kasb yo'li", "ipa": "/kəˈrɪə pɑːθ/", "ex": "Choosing a career path is not easy."},
+            {"en": "end up", "uz": "oxir-oqibat ... bo'lib qolmoq", "ipa": "/end ʌp/", "ex": "We ended up staying at home."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "dialogue",
+              "title": "Looking back",
+              "context_uz": "Ikki eski sinfdosh — Jasur va Dilnoza — o'n yildan keyin uchrashib, hayotlarini eslashmoqda.",
+              "lines": [
+                {"who": "Jasur", "en": "I can't believe you're a doctor now. At school you hated biology!", "uz": "Hozir shifokor ekaningizga ishonolmayman. Maktabda biologiyani yomon ko'rardingiz-ku!"},
+                {"who": "Dilnoza", "en": "I know! If my aunt hadn't taken me to her hospital that summer, I wouldn't be a doctor today.", "uz": "Bilaman! O'sha yozi xolam meni kasalxonasiga olib bormaganida, bugun shifokor bo'lmasdim."},
+                {"who": "Jasur", "en": "For me it was the opposite. I turned down a place at medical school and took up programming instead.", "uz": "Menda teskarisi bo'ldi. Tibbiyot institutidagi o'rinni rad etib, o'rniga dasturlashni boshladim."},
+                {"who": "Dilnoza", "en": "Do you ever regret it?", "uz": "Hech afsuslanasizmi?"},
+                {"who": "Jasur", "en": "Not really. If I had become a doctor, I would still be working night shifts. Now I work from home.", "uz": "Unchalik emas. Shifokor bo'lganimda, hozir ham tungi smenada ishlayotgan bo'lardim. Hozir uydan ishlayman."},
+                {"who": "Dilnoza", "en": "And your English is excellent. If you weren't so fluent, you wouldn't have got that job in Berlin.", "uz": "Ingliz tilingiz ham a'lo. Agar shunchalik ravon bo'lmaganingizda, Berlindagi o'sha ishni ololmagan bo'lardingiz."},
+                {"who": "Jasur", "en": "True. In hindsight, those evening English classes changed everything.", "uz": "To'g'ri. Hozir o'ylasam, o'sha kechki ingliz tili darslari hamma narsani o'zgartirdi."}
+              ]
+            },
+            {
+              "type": "choice",
+              "q": "Why did Dilnoza become a doctor?",
+              "options": ["She always loved biology.", "Her aunt took her to a hospital one summer.", "Jasur advised her to."],
+              "answer": 1,
+              "explain_uz": "\"If my aunt hadn't taken me to her hospital that summer, I wouldn't be a doctor today.\""
+            },
+            {
+              "type": "choice",
+              "q": "Why does Jasur NOT regret his decision?",
+              "options": ["He earns more than doctors.", "He doesn't have to work night shifts.", "He hates hospitals."],
+              "answer": 1,
+              "explain_uz": "\"If I had become a doctor, I would still be working night shifts.\""
+            },
+            {
+              "type": "grammar",
+              "title_uz": "Mixed conditionals — aralash shart gaplar",
+              "body_uz": "Ba'zan sabab va natija **turli zamonda** bo'ladi. Shunda ikki xil shart gapni aralashtiramiz.\n**1) O'tmish sabab → hozirgi natija** (eng ko'p ishlatiladi):\n**If + had + V3, ... would + V1 (now)** — If I **had studied** medicine, I **would be** a doctor now. · If she **hadn't missed** the flight, she **would be** here now.\n**2) Hozirgi (doimiy) holat → o'tmishdagi natija**:\n**If + Past Simple, ... would have + V3** — If I **weren't** so shy, I **would have spoken** to her yesterday. · If he **spoke** English, he **would have got** the job.\nTaqqoslang: Third conditional — ikkalasi ham o'tmishda: If I had studied, I **would have passed**.\n**Inversion** (rasmiy): **Had** I studied medicine, I would be a doctor now.\nMaslahat: \"now\", \"today\", \"still\" — 1-tur belgisi; \"yesterday\", \"last year\" — natija o'tmishda.",
+              "examples": [
+                {"en": "If I had saved more money, I would be travelling now.", "uz": "Ko'proq pul jamg'arganimda, hozir sayohat qilayotgan bo'lardim."},
+                {"en": "If she weren't afraid of flying, she would have come to the wedding.", "uz": "U uchishdan qo'rqmaganida, to'yga kelgan bo'lardi."},
+                {"en": "If we hadn't moved to Tashkent, I wouldn't know my best friend.", "uz": "Toshkentga ko'chib kelmaganimizda, eng yaqin do'stimni tanimasdim."},
+                {"en": "Had I listened to my teacher, I would be fluent by now.", "uz": "O'qituvchimga quloq solganimda, hozirgacha ravon gapirardim."}
+              ]
+            },
+            {
+              "type": "choice",
+              "q": "If I had taken the job in Seoul, I ___ in Korea now.",
+              "options": ["would have lived", "would live", "will live"],
+              "answer": 1,
+              "explain_uz": "O'tmish sabab (had taken) → **hozirgi** natija (now) → **would live**."
+            },
+            {
+              "type": "choice",
+              "q": "If he ___ so lazy, he would have finished the project last week.",
+              "options": ["weren't", "won't be", "isn't"],
+              "answer": 0,
+              "explain_uz": "Dangasalik — **doimiy xususiyat** (hozir ham dangasa) → Past Simple: If he **weren't** so lazy..."
+            },
+            {
+              "type": "gap",
+              "text": "If I ___ breakfast this morning, I wouldn't be so hungry now. (have)",
+              "answer": ["had had", "had eaten"],
+              "uz": "Bugun ertalab nonushta qilganimda, hozir bunchalik och bo'lmasdim.",
+              "explain_uz": "O'tmish sabab (ertalab) → hozirgi natija (now): If I **had had** breakfast..."
+            },
+            {
+              "type": "gap",
+              "text": "If she hadn't missed the train, she ___ be here with us now.",
+              "answer": ["would", "could"],
+              "uz": "Poyezdga kech qolmaganida, hozir biz bilan shu yerda bo'lardi.",
+              "explain_uz": "had + V3 → **would** + V1 (now)."
+            },
+            {
+              "type": "gap",
+              "text": "___ I known about the scholarship, I would be studying in Japan now.",
+              "answer": ["Had"],
+              "uz": "Grant haqida bilganimda, hozir Yaponiyada o'qiyotgan bo'lardim.",
+              "explain_uz": "Inversion: If I had known → **Had** I known."
+            },
+            {
+              "type": "choice",
+              "q": "\"If I didn't have a car, I would have missed the meeting.\" What does this mean?",
+              "options": [
+                "I don't have a car, so I missed the meeting.",
+                "I have a car, so I didn't miss the meeting.",
+                "I had a car once, but I sold it."
+              ],
+              "answer": 1,
+              "explain_uz": "Shart gap teskari ma'no beradi: haqiqatda mashinam **bor**, shuning uchun uchrashuvga **kech qolmadim**."
+            },
+            {
+              "type": "match",
+              "pairs": [
+                ["turn down", "rad etmoq"],
+                ["take up", "boshlamoq"],
+                ["in hindsight", "orqaga qarab"],
+                ["fluent", "ravon"],
+                ["end up", "oxir-oqibat bo'lib qolmoq"]
+              ]
+            },
+            {
+              "type": "order",
+              "uz": "Agar o'shanda ko'proq o'qiganimda, hozir ravon bo'lardim.",
+              "words": ["If", "I", "had", "studied", "harder", "I", "would", "be", "fluent", "now"],
+              "answer": "If I had studied harder I would be fluent now"
+            },
+            {
+              "type": "choice",
+              "audio": true,
+              "q": "Where is the speaker now?",
+              "say": "If I hadn't lost my passport at the airport last night, I would be lying on a beach in Antalya right now. Instead, I'm sitting in the embassy, waiting for new documents.",
+              "options": ["On a beach in Antalya", "At the embassy", "At the airport"],
+              "answer": 1,
+              "explain_uz": "\"Instead, I'm sitting in the embassy...\""
+            },
+            {
+              "type": "listen",
+              "answer": [
+                "If I had taken that job, I would be living in Dubai now.",
+                "If I had taken that job I would be living in Dubai now",
+                "If I'd taken that job, I'd be living in Dubai now"
+              ],
+              "uz": "Eshiting va yozing"
+            },
+            {
+              "type": "translate",
+              "uz": "Agar o'shanda IELTS topshirganimda, hozir chet elda o'qiyotgan bo'lardim.",
+              "answer": [
+                "If I had taken IELTS then I would be studying abroad now",
+                "If I had taken the IELTS then I would be studying abroad now",
+                "If I had taken IELTS I would be studying abroad now",
+                "If I had taken the IELTS I would be studying abroad now",
+                "If I had taken IELTS back then I would be studying abroad now",
+                "If I had taken IELTS at that time I would be studying abroad now",
+                "If I had sat IELTS then I would be studying abroad now",
+                "If I'd taken IELTS then I'd be studying abroad now",
+                "If I'd taken IELTS I'd be studying abroad now",
+                "Had I taken IELTS then I would be studying abroad now"
+              ],
+              "explain_uz": "O'tmish sabab (**had taken**) → hozirgi natija (**would be studying** now)."
+            },
+            {
+              "type": "speak",
+              "text": "If I hadn't started learning English at school, I wouldn't have so many opportunities today.",
+              "uz": "Ovoz chiqarib ayting"
+            },
+            {
+              "type": "write",
+              "prompt_uz": "Speaking Part 2 uslubida yozing (100+ so'z): \"Describe an important decision you made in the past.\" Bu qaror hozirgi hayotingizga qanday ta'sir qilganini kamida ikkita mixed conditional bilan tushuntiring.",
+              "prompt": "Describe an important decision you made in the past and explain how it affects your life now. Use at least two mixed conditionals.",
+              "min_words": 100,
+              "example": "One of the most important decisions I have ever made was to move from my small town to Tashkent to attend a private English course. At the time, my parents were worried because it was expensive and I was only sixteen. However, in hindsight, it completely changed my life. If I hadn't taken that course, I wouldn't be studying at an international university now, and I certainly wouldn't have the confidence to speak to foreigners. I also met my closest friends there; if I had stayed at home, I would probably be working in my uncle's shop today. Of course, if I weren't so stubborn, I would have given up during the first difficult months, but I didn't, and I have never regretted it."
+            }
+          ]
+        },
+        {
+          "slug": "c1-reporting-passive",
+          "title": "It is believed that...",
+          "title_uz": "Reporting passive: It is said that / is thought to have",
+          "goal_uz": "Ma'lumotni manbaga havola qilib, ehtiyotkorlik bilan yetkazasiz: It is estimated that... / The city is thought to have been... — yangilik, Reading va Writing uchun akademik uslub.",
+          "minutes": 14,
+          "words": [
+            {"en": "estimate", "uz": "taxminan hisoblamoq; taxmin", "ipa": "/ˈestɪmeɪt/", "ex": "It is estimated that 3,000 people live there."},
+            {"en": "flourish", "uz": "gullab-yashnamoq", "ipa": "/ˈflʌrɪʃ/", "ex": "Trade flourished along the Silk Road."},
+            {"en": "abandon", "uz": "tashlab ketmoq", "ipa": "/əˈbændən/", "ex": "The village was abandoned in the 1970s."},
+            {"en": "altitude", "uz": "balandlik (dengiz sathidan)", "ipa": "/ˈæltɪtjuːd/", "ex": "The city lies at an altitude of 2,000 metres."},
+            {"en": "allegedly", "uz": "go'yoki, aytilishicha", "ipa": "/əˈledʒɪdli/", "ex": "He allegedly stole the money."},
+            {"en": "settlement", "uz": "aholi punkti, manzilgoh", "ipa": "/ˈsetlmənt/", "ex": "It was a small mountain settlement."},
+            {"en": "survey", "uz": "o'rganish, tadqiqot (hududni)", "ipa": "/ˈsɜːveɪ/", "ex": "The team carried out a survey of the area."},
+            {"en": "reveal", "uz": "oshkor qilmoq, ko'rsatib bermoq", "ipa": "/rɪˈviːl/", "ex": "The scans revealed hidden walls."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "reading",
+              "title": "Lost cities in the mountains",
+              "text": "Two medieval cities have been identified high in the mountains of eastern Uzbekistan, in an area once crossed by the Silk Road. Using drones and laser scanning technology, archaeologists carried out a detailed survey of the region, which revealed walls, towers and buildings hidden beneath the soil. The larger city, Tugunbulak, is estimated to have covered around 120 hectares and lies at an altitude of over 2,000 metres. It is thought to have flourished between the sixth and eleventh centuries, and the settlement is believed to have been an important centre of metalworking. Why the cities were eventually abandoned is still unclear. It has been suggested that changes in trade routes may have played a role, but researchers stress that more excavation is needed before firm conclusions can be drawn.",
+              "glossary": {
+                "identified": "aniqlangan",
+                "laser scanning": "lazer bilan skanerlash",
+                "beneath the soil": "tuproq ostida",
+                "hectares": "gektar",
+                "metalworking": "metallga ishlov berish",
+                "trade routes": "savdo yo'llari",
+                "excavation": "qazish ishlari",
+                "firm conclusions": "qat'iy xulosalar"
+              },
+              "uz": "O'zbekiston sharqidagi tog'larda, bir paytlar Buyuk Ipak yo'li o'tgan hududda, ikkita o'rta asr shahri aniqlandi. Dron va lazer skanerlash texnologiyasidan foydalanib, arxeologlar hududni batafsil o'rganishdi va bu tuproq ostida yashiringan devorlar, minoralar va binolarni ko'rsatib berdi. Kattaroq shahar — Tugunbuloq — taxminan 120 gektarni egallagan deb hisoblanadi va dengiz sathidan 2000 metrdan baland joyda joylashgan. U VI–XI asrlarda gullab-yashnagan deb o'ylanadi va bu manzilgoh metallga ishlov berishning muhim markazi bo'lgan deb taxmin qilinadi. Shaharlar nega oxir-oqibat tashlab ketilgani hali ham noma'lum. Savdo yo'llaridagi o'zgarishlar rol o'ynagan bo'lishi mumkin, degan fikr aytilgan, ammo tadqiqotchilar qat'iy xulosa chiqarishdan oldin ko'proq qazish ishlari kerakligini ta'kidlashadi."
+            },
+            {
+              "type": "choice",
+              "q": "How did the archaeologists find the cities?",
+              "options": ["By digging the whole area", "With drones and laser scanning", "Local farmers showed them"],
+              "answer": 1,
+              "explain_uz": "\"Using drones and laser scanning technology...\""
+            },
+            {
+              "type": "choice",
+              "q": "Why does the writer use phrases like \"is thought to\" and \"is believed to\"?",
+              "options": [
+                "Because the facts are completely certain",
+                "To show that the information comes from researchers and is not 100% certain",
+                "To make the text informal"
+              ],
+              "answer": 1,
+              "explain_uz": "Reporting passive — ma'lumotni **manbaga havola qilib** va **ehtiyotkorlik bilan** berish usuli."
+            },
+            {
+              "type": "grammar",
+              "title_uz": "Reporting passive — \"aytilishicha, deb hisoblanadi\"",
+              "body_uz": "Kim aytgani muhim bo'lmasa yoki ma'lumot aniq bo'lmasa, **say, think, believe, know, report, estimate, expect, consider, claim** fe'llari passivda ishlatiladi.\n**1) It + is + V3 + that ...**: **It is believed that** the city was abandoned. · **It is estimated that** 2 million people visit each year.\n**2) Ega + is + V3 + to + infinitiv** (hozirgi/kelasi): Tugunbulak **is said to be** the largest site. · Prices **are expected to rise**.\n**3) Ega + is + V3 + to have + V3** (o'tmish): The city **is thought to have flourished** in the 9th century. · He **is reported to have left** the country.\nDavomli: She **is believed to be living** in London.\nMaslahat: Writing Task 2'da \"Everybody knows...\" o'rniga **\"It is widely believed that...\"** — akademik va ehtiyotkor.",
+              "examples": [
+                {"en": "It is widely believed that exercise improves memory.", "uz": "Jismoniy mashq xotirani yaxshilaydi, deb keng hisoblanadi."},
+                {"en": "The painting is said to be worth millions.", "uz": "Aytishlaricha, rasm millionlab turadi."},
+                {"en": "The fire is thought to have started in the kitchen.", "uz": "Yong'in oshxonada boshlangan, deb taxmin qilinmoqda."},
+                {"en": "Unemployment is expected to fall next year.", "uz": "Kelasi yili ishsizlik kamayishi kutilmoqda."}
+              ]
+            },
+            {
+              "type": "choice",
+              "q": "The castle is said ___ in the 12th century.",
+              "options": ["to build", "to have been built", "to be building"],
+              "answer": 1,
+              "explain_uz": "O'tmish + majhul (qal'a qurilgan) → **to have been built**."
+            },
+            {
+              "type": "choice",
+              "q": "___ that the new metro line will open next year.",
+              "options": ["It is expected", "It expects", "It is expecting"],
+              "answer": 0,
+              "explain_uz": "**It is** + V3 + **that** ... → It is expected that..."
+            },
+            {
+              "type": "gap",
+              "text": "The thief is believed ___ escaped through the window.",
+              "answer": ["to have"],
+              "uz": "O'g'ri derazadan qochgan, deb taxmin qilinmoqda.",
+              "explain_uz": "O'tmishdagi harakat → is believed **to have** + V3."
+            },
+            {
+              "type": "gap",
+              "text": "It is ___ that around 30% of food is wasted worldwide. (estimate)",
+              "answer": ["estimated"],
+              "uz": "Dunyo bo'yicha oziq-ovqatning taxminan 30% isrof qilinadi, deb hisoblanadi.",
+              "explain_uz": "It is **estimated** that... — raqamlar bilan juda ko'p ishlatiladi."
+            },
+            {
+              "type": "gap",
+              "text": "The president is reported ___ arrived in Samarkand this morning.",
+              "answer": ["to have"],
+              "uz": "Xabar qilinishicha, prezident bugun ertalab Samarqandga yetib kelgan.",
+              "explain_uz": "is reported **to have** arrived."
+            },
+            {
+              "type": "choice",
+              "q": "\"People think that the city was destroyed by an earthquake.\" Which sentence has the same meaning?",
+              "options": [
+                "The city is thought to be destroyed by an earthquake.",
+                "The city is thought to have been destroyed by an earthquake.",
+                "The city thinks it was destroyed by an earthquake."
+              ],
+              "answer": 1,
+              "explain_uz": "O'tmish (was destroyed) → **to have been destroyed**."
+            },
+            {
+              "type": "match",
+              "pairs": [
+                ["estimate", "taxminan hisoblamoq"],
+                ["flourish", "gullab-yashnamoq"],
+                ["abandon", "tashlab ketmoq"],
+                ["settlement", "manzilgoh"],
+                ["reveal", "ko'rsatib bermoq"]
+              ]
+            },
+            {
+              "type": "order",
+              "uz": "Shahar tashlab ketilgan, deb taxmin qilinadi.",
+              "words": ["The", "city", "is", "believed", "to", "have", "been", "abandoned"],
+              "answer": "The city is believed to have been abandoned"
+            },
+            {
+              "type": "choice",
+              "audio": true,
+              "q": "What is certain about the missing painting, according to the report?",
+              "say": "The painting is believed to have been stolen on Saturday night. It is thought that the thieves entered through the roof, but police have only confirmed that the alarm was switched off at midnight.",
+              "options": [
+                "The thieves entered through the roof.",
+                "The alarm was switched off at midnight.",
+                "The painting was stolen by museum staff."
+              ],
+              "answer": 1,
+              "explain_uz": "Faqat shu tasdiqlangan: \"police have only **confirmed** that the alarm was switched off\". Qolganlari — \"is believed / is thought\"."
+            },
+            {
+              "type": "listen",
+              "answer": [
+                "It is estimated that the city covered 120 hectares.",
+                "It is estimated that the city covered 120 hectares",
+                "It's estimated that the city covered 120 hectares",
+                "It is estimated that the city covered one hundred and twenty hectares"
+              ],
+              "uz": "Eshiting va yozing"
+            },
+            {
+              "type": "translate",
+              "uz": "Bu masjid XV asrda qurilgan, deb hisoblanadi.",
+              "answer": [
+                "This mosque is believed to have been built in the 15th century",
+                "This mosque is believed to have been built in the fifteenth century",
+                "This mosque is thought to have been built in the 15th century",
+                "This mosque is thought to have been built in the fifteenth century",
+                "This mosque is said to have been built in the 15th century",
+                "This mosque is said to have been built in the fifteenth century",
+                "It is believed that this mosque was built in the 15th century",
+                "It is believed that this mosque was built in the fifteenth century",
+                "It is thought that this mosque was built in the 15th century",
+                "It is thought that this mosque was built in the fifteenth century"
+              ],
+              "explain_uz": "is believed **to have been built** yoki **It is believed that** ... was built."
+            },
+            {
+              "type": "speak",
+              "text": "It is widely believed that learning a second language improves memory and concentration.",
+              "uz": "Ovoz chiqarib ayting"
+            },
+            {
+              "type": "write",
+              "prompt_uz": "Qisqa yangilik maqolasi yozing (100+ so'z): shaharingizda topilgan qadimiy buyum yoki yangi kashfiyot haqida (o'ylab topishingiz mumkin). Kamida to'rtta reporting passive ishlating: It is believed that..., is thought to have..., It is estimated that...",
+              "prompt": "Write a short news report about an (imaginary) discovery in your city. Use at least four reporting passive structures.",
+              "min_words": 100,
+              "example": "Workers building a new metro station in central Tashkent have discovered the remains of an ancient house. The building is thought to date from the tenth century, and it is believed to have belonged to a wealthy merchant. Several ceramic bowls and a number of coins were found inside, some of which are said to have come from as far away as China. It is estimated that the house was occupied for around two hundred years before being abandoned. Construction work has been stopped, and archaeologists are expected to spend at least six months examining the site. It is hoped that the most important objects will eventually be displayed in the city's history museum."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
