@@ -7,12 +7,15 @@ from django.utils import timezone
 
 from users.models import Vocabulary
 from .content import EXERCISE_STEPS, get_lesson
+from .gamification import bump, check_badges
 from .models import DailyXP, LearnerProfile, LessonDraft, LessonProgress, Mistake
 
 LESSON_XP_FIRST = 10       # + up to 10 more for accuracy, first completion only
 LESSON_XP_REPEAT = 5       # once per lesson per day, so replays can't farm the leaderboard
 REVIEW_XP = 1
 TUTOR_XP = 2
+FREEZE_EVERY = 7           # a streak freeze is earned every 7 days of streak...
+MAX_FREEZES = 2            # ...and at most this many are kept
 
 
 def repeat_pays(progress):
@@ -35,10 +38,17 @@ def award_xp(user, amount):
     today = timezone.localdate()
     profile = LearnerProfile.objects.select_for_update().get_or_create(user=user)[0]
     if profile.last_active != today:
-        if profile.last_active == today - timedelta(days=1):
+        missed = (today - profile.last_active).days - 1 if profile.last_active else None
+        if missed == 0:
+            profile.streak += 1
+        elif missed and profile.streak and missed <= profile.streak_freezes:
+            # Freezes cover the missed days, so the streak survives.
+            profile.streak_freezes -= missed
             profile.streak += 1
         else:
             profile.streak = 1
+        if profile.streak % FREEZE_EVERY == 0 and profile.streak_freezes < MAX_FREEZES:
+            profile.streak_freezes += 1
         profile.best_streak = max(profile.best_streak, profile.streak)
         profile.last_active = today
     profile.xp += amount
@@ -95,8 +105,12 @@ def complete_lesson(user, lesson, score):
     words_added = add_lesson_words(user, lesson)
     LessonDraft.objects.filter(user=user, lesson_slug=lesson['slug']).delete()
     profile = award_xp(user, xp)
+    bump(user, 'lessons')
+    if score >= 90:
+        bump(user, 'perfect')
     return {'xp': xp, 'words_added': words_added, 'first_time': created,
-            'total_xp': profile.xp, 'streak': profile.streak, 'best_score': progress.best_score}
+            'total_xp': profile.xp, 'streak': profile.streak, 'best_score': progress.best_score,
+            'streak_freezes': profile.streak_freezes, 'new_badges': check_badges(user)}
 
 
 # ── Resume a lesson on another device ───────────────────────────────────
@@ -151,7 +165,8 @@ def complete_story(user, slug, score):
         progress.completed_at = timezone.now()
         progress.save(update_fields=['attempts', 'best_score', 'completed_at'])
     profile = award_xp(user, xp)
-    return {'xp': xp, 'streak': profile.streak}
+    bump(user, 'stories')
+    return {'xp': xp, 'streak': profile.streak, 'new_badges': check_badges(user)}
 
 
 def grade_review(card, grade):
@@ -162,6 +177,7 @@ def grade_review(card, grade):
     srs.schedule(card, grade).save(update_fields=['due_at', 'interval_days', 'ease', 'reps', 'lapses'])
     if was_due:
         award_xp(card.user, REVIEW_XP)
+        bump(card.user, 'reviews')
     return {'interval_days': card.interval_days, 'again': int(grade) == srs.AGAIN}
 
 
@@ -280,6 +296,7 @@ def apply_practice(user, results, served=None, pay=True):
             Mistake.objects.create(user=user, lesson_slug=slug, step_index=idx)
     xp = 3 + min(right, 12) if pay else 0
     profile = award_xp(user, xp)
+    bump(user, 'practice')
     return {'xp': xp, 'streak': profile.streak, 'right': right,
             'mistakes_left': Mistake.objects.filter(user=user).count()}
 

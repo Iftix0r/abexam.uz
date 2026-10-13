@@ -22,6 +22,7 @@ from users.forms import RegisterForm
 from users.models import LoginLog, Vocabulary
 from users.views import _MAX_FAILS_PER_IP, _MAX_FAILS_PER_USER, _bump, _fail_keys, _login_blocked
 from . import ai, srs
+from .gamification import badges, bump, daily_quests, open_chest
 from .content import LEVEL_INFO, LEVELS, get_course, get_lesson, get_placement, get_stories, placement_level
 from .models import ApiToken, AppRelease, LessonProgress, Mistake
 from .services import (
@@ -210,7 +211,22 @@ def me(request):
         'review': srs.review_counts(user),
         'mistakes': Mistake.objects.filter(user=user).count(),
         'show_placement': not profile.level and not _done_map(user),
+        'streak_freezes': profile.streak_freezes,
+        'daily': daily_quests(user, profile),
     })
+
+
+@api()
+def achievements(request):
+    return JsonResponse({'badges': badges(request.user)})
+
+
+@api(methods=('POST',))
+def chest(request):
+    xp = open_chest(request.user)
+    if xp is None:
+        return JsonResponse({'error': "Avval bugungi barcha topshiriqlarni bajaring"}, status=400)
+    return JsonResponse({'ok': True, 'xp': xp})
 
 
 @api()
@@ -488,6 +504,7 @@ def tutor_send(request):
     if not result or not result['reply']:
         return JsonResponse({'error': "AI hozir javob bermadi. Qayta urinib ko'ring."}, status=503)
     award_xp(request.user, TUTOR_XP)
+    bump(request.user, 'tutor')
     return JsonResponse({'ok': True, **result})
 
 
@@ -499,6 +516,8 @@ urlpatterns = [
     path('auth/register/', register, name='register'),
     path('auth/logout/', logout, name='logout'),
     path('me/', me, name='me'),
+    path('achievements/', achievements, name='achievements'),
+    path('quests/chest/', chest, name='chest'),
     path('course/', course, name='course'),
     path('lessons/<slug:slug>/', lesson_detail, name='lesson'),
     path('lessons/<slug:slug>/complete/', lesson_complete, name='lesson_complete'),

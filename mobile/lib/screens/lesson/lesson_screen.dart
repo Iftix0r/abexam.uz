@@ -137,8 +137,12 @@ class _PlayerState extends State<_Player> {
   Future<void> _offerResume() async {
     final state = AppScope.read(context);
     // Newest of the phone's copy and the server's (e.g. started on the website).
-    final candidates = [state.readJson(_saveKey), widget.data['draft'] as Map<String, dynamic>?].whereType<Map<String, dynamic>>().toList()
-      ..sort((a, b) => ((b['at'] as num?) ?? 0).compareTo((a['at'] as num?) ?? 0));
+    final candidates =
+        [
+            state.readJson(_saveKey),
+            widget.data['draft'] as Map<String, dynamic>?,
+          ].whereType<Map<String, dynamic>>().toList()
+          ..sort((a, b) => ((b['at'] as num?) ?? 0).compareTo((a['at'] as num?) ?? 0));
     if (candidates.isEmpty) return;
     final saved = candidates.first;
     final age = DateTime.now().millisecondsSinceEpoch - ((saved['at'] as num?) ?? 0);
@@ -206,7 +210,9 @@ class _PlayerState extends State<_Player> {
       'pos': _pos,
       'firstTry': {for (final e in _firstTry.entries) '${e.key}': e.value},
       'retried': _retried.toList(),
-      'mistakes': [for (final e in _mistakes.entries) {'idx': e.key, 'right': e.value}],
+      'mistakes': [
+        for (final e in _mistakes.entries) {'idx': e.key, 'right': e.value},
+      ],
       'at': DateTime.now().millisecondsSinceEpoch,
     };
     state.writeJson(_saveKey, data);
@@ -748,6 +754,28 @@ class _PlayerState extends State<_Player> {
                 style: const TextStyle(fontWeight: FontWeight.w800, color: Brand.flame),
               ),
             ),
+          if (r != null)
+            for (final b in ((r['new_badges'] as List?) ?? []).cast<Map>())
+              Container(
+                margin: const EdgeInsets.only(top: 12),
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(colors: [Color(0xFFF59E0B), Color(0xFFF97316)]),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Row(
+                  children: [
+                    const Text('🏅', style: TextStyle(fontSize: 28)),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        "Yangi yutuq: ${b['title_uz']} · ${b['tier']}-daraja",
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 15),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
           if (_saving)
             const Padding(
               padding: EdgeInsets.all(16),

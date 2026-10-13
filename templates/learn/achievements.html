@@ -1,0 +1,72 @@
+{% extends 'learn/base.html' %}
+
+{% block title %}Yutuqlar — AbExam English{% endblock %}
+
+{% block extra_css %}
+<style>
+    .ac-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 22px; }
+    .ac-head h1 { font-size: 1.7rem; font-weight: 800; letter-spacing: -0.02em; }
+    .ac-head p { color: var(--text-muted); margin-top: 4px; }
+    .ac-sum { display: flex; gap: 10px; flex-wrap: wrap; }
+    .ac-sum div { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; padding: 10px 16px; font-size: .85rem; color: var(--text-muted); }
+    .ac-sum b { display: block; font-size: 1.3rem; color: var(--text-color); }
+    .ac-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+    .ac-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 18px; padding: 20px; display: flex; gap: 16px; align-items: flex-start; }
+    .ac-ic { width: 64px; height: 64px; border-radius: 20px; display: grid; place-items: center; flex-shrink: 0; position: relative; background: var(--tint-a); color: var(--text-muted); }
+    .ac-ic i { width: 30px; height: 30px; }
+    .ac-ic.t1, .ac-ic.t2 { background: rgba(99,102,241,.14); color: var(--primary-color); }
+    .ac-ic.t3, .ac-ic.t4, .ac-ic.t5 { background: linear-gradient(135deg, #fbbf24, #f97316); color: #fff; box-shadow: 0 6px 16px rgba(249,115,22,.35); }
+    .ac-lvl { position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); background: var(--primary-color); color: #fff; font-size: .68rem; font-weight: 800; border-radius: 8px; padding: 1px 7px; white-space: nowrap; }
+    .ac-body { flex: 1; min-width: 0; }
+    .ac-body b { font-size: 1rem; }
+    .ac-body p { color: var(--text-muted); font-size: .85rem; margin: 3px 0 10px; }
+    .ac-bar { height: 8px; border-radius: 4px; background: var(--tint-b); overflow: hidden; }
+    .ac-bar div { height: 100%; border-radius: 4px; background: linear-gradient(90deg, #6366f1, #8b5cf6); }
+    .ac-meta { display: flex; justify-content: space-between; font-size: .75rem; color: var(--text-muted); margin-top: 6px; }
+    .ac-dots { display: flex; gap: 4px; margin-top: 10px; }
+    .ac-dots span { width: 18px; height: 5px; border-radius: 3px; background: var(--tint-b); }
+    .ac-dots span.on { background: #f59e0b; }
+    .ac-freeze { margin-top: 22px; display: flex; gap: 14px; align-items: center; background: rgba(56,189,248,.08); border: 1px solid rgba(56,189,248,.25); border-radius: 18px; padding: 16px 20px; }
+    .ac-freeze p { color: var(--text-muted); font-size: .88rem; margin-top: 2px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ac-head">
+    <div>
+        <h1>🏅 Yutuqlar</h1>
+        <p>Har bir nishonning bir necha darajasi bor — o'qishda davom eting va oltin darajaga yeting.</p>
+    </div>
+    <div class="ac-sum">
+        <div><b>{{ unlocked }} / {{ total }}</b>daraja ochilgan</div>
+        <div><b>🔥 {{ profile.current_streak }}</b>kunlik seriya</div>
+        <div><b>❄️ {{ profile.streak_freezes }}</b>muzlatgich</div>
+    </div>
+</div>
+
+<div class="ac-grid">
+    {% for b in badges %}
+    <div class="ac-card">
+        <div class="ac-ic t{{ b.tier }}">
+            <i data-lucide="{{ b.icon }}"></i>
+            {% if b.tier %}<span class="ac-lvl">{{ b.tier }}-daraja</span>{% endif %}
+        </div>
+        <div class="ac-body">
+            <b>{{ b.title_uz }}</b>
+            <p>{% if b.next %}Keyingi daraja: {{ b.desc_uz }}{% else %}Eng yuqori daraja olingan! 🎉{% endif %}</p>
+            <div class="ac-bar"><div style="width:{% if b.pct > 100 %}100{% else %}{{ b.pct }}{% endif %}%"></div></div>
+            <div class="ac-meta"><span>{{ b.value }}{% if b.next %} / {{ b.next }}{% endif %}</span><span>{{ b.tier }}/{{ b.tiers }}</span></div>
+            <div class="ac-dots">{% for i in "12345"|make_list|slice:b.tiers %}<span class="{% if forloop.counter <= b.tier %}on{% endif %}"></span>{% endfor %}</div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="ac-freeze">
+    <i data-lucide="snowflake" style="width:30px;height:30px;color:#0ea5e9;flex-shrink:0"></i>
+    <div>
+        <b>Seriya muzlatgichi</b>
+        <p>Har 7 kunlik seriyada bitta muzlatgich beriladi (ko'pi bilan 2 ta). Bir kun dars qilmasangiz, u avtomatik ishlatiladi va seriyangiz uzilmaydi.</p>
+    </div>
+</div>
+{% endblock %}

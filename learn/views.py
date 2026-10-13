@@ -17,6 +17,7 @@ from django.views.generic import TemplateView
 from core.utils import parse_json_body
 from users.models import Vocabulary
 from . import ai, srs
+from .gamification import badges, bump, daily_quests, open_chest
 from .content import LEVELS, get_course, get_lesson, get_placement, get_stories, placement_level
 from .models import AppRelease, LessonProgress, Mistake
 from .services import (
@@ -127,8 +128,31 @@ class HubView(LoginRequiredMixin, TemplateView):
             'board': leaderboard(user, limit=5),
             'story_count': sum(1 for st in get_stories().values() if st['level'] == level_code),
             'app_release': AppRelease.latest(),
+            'daily': daily_quests(user, profile),
+            'badges': badges(user, profile),
         })
         return ctx
+
+
+class AchievementsView(LoginRequiredMixin, TemplateView):
+    template_name = 'learn/achievements.html'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        profile = get_profile(self.request.user)
+        ctx['badges'] = badges(self.request.user, profile)
+        ctx['profile'] = profile
+        ctx['unlocked'] = sum(b['tier'] for b in ctx['badges'])
+        ctx['total'] = sum(b['tiers'] for b in ctx['badges'])
+        return ctx
+
+
+class ChestView(LoginRequiredMixin, View):
+    def post(self, request):
+        xp = open_chest(request.user)
+        if xp is None:
+            return JsonResponse({'error': "Avval bugungi barcha topshiriqlarni bajaring"}, status=400)
+        return JsonResponse({'ok': True, 'xp': xp})
 
 
 class GoalView(LoginRequiredMixin, View):
@@ -360,6 +384,7 @@ class TutorSendView(LoginRequiredMixin, View):
         if not result or not result['reply']:
             return JsonResponse({'error': "AI hozir javob bermadi. Qayta urinib ko'ring."}, status=503)
         award_xp(request.user, TUTOR_XP)
+        bump(request.user, 'tutor')
         return JsonResponse({'ok': True, **result})
 
 

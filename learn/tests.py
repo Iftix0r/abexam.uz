@@ -440,3 +440,54 @@ class DraftAndAppTests(TestCase):
         self.assertRedirects(resp, 'https://example.com/app.apk', fetch_redirect_response=False)
         self.assertEqual(AppRelease.objects.get(build=6).downloads, 1)
         self.assertContains(self.client.get(reverse('learn:app')), '1.4.0')
+
+
+class GamificationTests(TestCase):
+    """Duolingo-style quests, chest, badges and streak freezes."""
+
+    def setUp(self):
+        cache.clear()
+        self.user = User.objects.create_user('learner', password='pw')
+        self.client.force_login(self.user)
+
+    def test_freeze_is_earned_every_seven_days_and_saves_a_missed_day(self):
+        today = timezone.localdate()
+        LearnerProfile.objects.create(user=self.user, streak=6, best_streak=6, last_active=today - timedelta(days=1))
+        self.assertEqual(award_xp(self.user, 5).streak_freezes, 1)        # day 7 → one freeze
+        LearnerProfile.objects.filter(user=self.user).update(last_active=today - timedelta(days=2))
+        p = LearnerProfile.objects.get(user=self.user)
+        self.assertEqual(p.current_streak, 7)                             # missed yesterday, freeze covers it
+        p = award_xp(self.user, 5)
+        self.assertEqual((p.streak, p.streak_freezes), (8, 0))
+        LearnerProfile.objects.filter(user=self.user).update(last_active=today - timedelta(days=3))
+        self.assertEqual(award_xp(self.user, 5).streak, 1)               # no freeze left → reset
+
+    def test_quests_fill_up_and_the_chest_opens_once(self):
+        from .gamification import daily_quests, open_chest
+        info = daily_quests(self.user)
+        self.assertEqual(len(info['quests']), 3)
+        self.assertIsNone(open_chest(self.user))
+        DailyXP.objects.create(user=self.user, date=timezone.localdate(), xp=100, lessons=5, perfect=5, reviews=50,
+                               stories=5, practice=5, tutor=10)
+        self.assertTrue(daily_quests(self.user)['all_done'])
+        resp = self.client.post(reverse('learn:chest'))
+        self.assertEqual(resp.json()['xp'], 15)
+        self.assertEqual(self.client.post(reverse('learn:chest')).status_code, 400)
+
+    def test_lesson_completion_counts_for_quests_and_unlocks_a_badge_once(self):
+        first = complete_lesson(self.user, get_lesson('a1-hello'), 100)
+        self.assertIn('lessons', [b['key'] for b in first['new_badges']])
+        day = DailyXP.objects.get(user=self.user)
+        self.assertEqual((day.lessons, day.perfect), (1, 1))
+        again = complete_lesson(self.user, get_lesson('a1-hello'), 100)
+        self.assertNotIn('lessons', [b['key'] for b in again['new_badges']])
+
+    def test_api_exposes_quests_and_achievements(self):
+        token = self.client.post(reverse('learn_api:login'), data=json.dumps({'username': 'learner', 'password': 'pw'}),
+                                 content_type='application/json').json()['token']
+        auth = {'HTTP_AUTHORIZATION': f'Bearer {token}'}
+        me = self.client.get(reverse('learn_api:me'), **auth).json()
+        self.assertEqual(len(me['daily']['quests']), 3)
+        badges = self.client.get(reverse('learn_api:achievements'), **auth).json()['badges']
+        self.assertEqual({b['key'] for b in badges}, {'lessons', 'streak', 'perfect', 'words', 'stories', 'xp'})
+        self.assertEqual(self.client.post(reverse('learn_api:chest'), **auth).status_code, 400)

@@ -195,6 +195,7 @@
                     </button>
                     <div class="lb-menu" id="lbMenu">
                         <div class="who"><b>{{ user.get_full_name|default:user.username }}</b><small>@{{ user.username }}</small></div>
+                        <a href="{% url 'learn:achievements' %}"><i data-lucide="award"></i>Yutuqlar</a>
                         <a href="{% url 'learn:placement' %}"><i data-lucide="target"></i>Darajani aniqlash</a>
                         <a href="{% url 'dashboard' %}"><i data-lucide="layout-grid"></i>IELTS platforma</a>
                         <a href="{% url 'profile' %}"><i data-lucide="user"></i>Profil</a>

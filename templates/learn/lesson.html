@@ -163,6 +163,7 @@
     .lp-review div { padding: 8px 0; border-top: 1px dashed var(--border-color); font-size: 0.88rem; }
     .lp-review div span { color: var(--text-muted); display: block; }
     .lp-review div b { color: #16a34a; }
+    .lp-badge { display: block; margin: 10px auto 0; max-width: 420px; padding: 12px 16px; border-radius: 14px; text-decoration: none; color: #fff; font-size: .92rem; background: linear-gradient(135deg, #f59e0b, #f97316); box-shadow: 0 6px 18px rgba(249,115,22,.35); animation: lpIn .4s ease; }
     .lp-confetti { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 300; }
     .lp-confetti i { position: absolute; top: -12px; width: 9px; height: 14px; border-radius: 2px; animation: lpFall linear forwards; }
     @keyframes lpFall { to { transform: translateY(105vh) rotate(720deg); } }
@@ -224,6 +225,7 @@
         transcribe: '{% url "learn:transcribe" %}',
         hub: '{% url "learn:hub" %}?level=' + L.level,
         review: '{% url "learn:review" %}',
+        achievements: '{% url "learn:achievements" %}',
         next: L.next_slug ? '{% url "learn:lesson" "__s__" %}'.replace('__s__', L.next_slug) : null,
     };
     const BEGINNER = L.level === 'A1' || L.level === 'A2';
@@ -1073,6 +1075,7 @@
             ${d.words_added ? `<p class="lp-hint" style="margin-bottom:20px">📚 ${d.words_added} ta yangi so'z lug'atingizga qo'shildi — ertaga takrorlash uchun tayyor bo'ladi.</p>` : ''}
             ${review.length ? `<div class="lp-review"><h4>📝 Xatolar ustida ishlash</h4>${review.map(m => `<div><span>${esc(describe(L.steps[m.idx]))}</span>${m.right ? `<b>${esc(m.right)}</b>` : ''}${L.steps[m.idx].explain_uz ? ` — ${md(L.steps[m.idx].explain_uz)}` : ''}</div>`).join('')}</div>` : ''}
             ${d.error ? `<p class="lp-hint" style="color:#ef4444">Natijani saqlab bo'lmadi — internetni tekshiring.</p>` : ''}
+            ${(d.new_badges || []).map(b => `<a href="${URLS.achievements}" class="lp-badge">🏅 Yangi yutuq: <b>${esc(b.title_uz)}</b> · ${b.tier}-daraja</a>`).join('')}
             <div class="lp-actions">
                 ${URLS.next ? `<a href="${URLS.next}" class="lp-main-btn" style="text-transform:none">Keyingi dars →</a>` : ''}
                 ${PRACTICE ? `<a href="" class="lp-main-btn" style="text-transform:none">Yana mashq qilish ↻</a>` : ''}

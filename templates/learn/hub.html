@@ -77,6 +77,28 @@
     .ln-review-num { font-size: 2rem; font-weight: 700; line-height: 1; }
     .ln-side-link { display: flex; align-items: center; gap: 12px; padding: 10px; margin: 0 -10px; border-radius: 10px; text-decoration: none; color: var(--text-color); font-size: 0.86rem; }
     .ln-side-link:hover { background: var(--tint-a); }
+
+    .ln-quest { display: flex; align-items: center; gap: 10px; padding: 8px 0; }
+    .ln-quest-ic { width: 32px; height: 32px; border-radius: 10px; background: rgba(139,92,246,.12); color: #8b5cf6; display: grid; place-items: center; flex-shrink: 0; }
+    .ln-quest-ic i { width: 16px; }
+    .ln-quest.done .ln-quest-ic { background: var(--success-color); color: #fff; }
+    .ln-quest-body { flex: 1; min-width: 0; }
+    .ln-quest-t { font-size: .84rem; font-weight: 600; margin-bottom: 5px; }
+    .ln-quest-bar { height: 7px; border-radius: 4px; background: var(--tint-b); overflow: hidden; }
+    .ln-quest-bar div { height: 100%; border-radius: 4px; background: linear-gradient(90deg, #8b5cf6, #6366f1); transition: width .6s ease; }
+    .ln-quest.done .ln-quest-bar div { background: var(--success-color); }
+    .ln-quest-n { font-size: .75rem; color: var(--text-muted); font-weight: 600; min-width: 34px; text-align: right; }
+    .ln-chest { margin-top: 10px; padding: 10px 12px; border-radius: 12px; font-size: .82rem; font-weight: 600; text-align: center; background: var(--tint-a); color: var(--text-muted); border: 1px dashed var(--border-color); width: 100%; }
+    .ln-chest.ready { background: linear-gradient(135deg, #f59e0b, #f97316); color: #fff; border: none; cursor: pointer; font-size: .9rem; animation: lnPulse 1.6s ease infinite; }
+    .ln-chest.opened { background: rgba(34,197,94,.1); color: var(--success-color); border-color: rgba(34,197,94,.3); }
+    @keyframes lnPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.03); } }
+
+    .ln-badges { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+    .ln-badge { position: relative; aspect-ratio: 1; border-radius: 14px; display: grid; place-items: center; background: var(--tint-a); color: var(--text-muted); opacity: .55; text-decoration: none; }
+    .ln-badge i { width: 20px; }
+    .ln-badge b { position: absolute; right: -4px; bottom: -4px; background: var(--primary-color); color: #fff; font-size: .62rem; border-radius: 8px; padding: 1px 5px; }
+    .ln-badge.t1, .ln-badge.t2 { opacity: 1; background: rgba(99,102,241,.14); color: var(--primary-color); }
+    .ln-badge.t3, .ln-badge.t4, .ln-badge.t5 { opacity: 1; background: linear-gradient(135deg, #fbbf24, #f97316); color: #fff; }
     .ln-side-link i { width: 18px; color: var(--primary-color); flex-shrink: 0; }
 
     .ln-duo { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
@@ -150,6 +172,7 @@
     </div>
     <div class="ln-chips">
         <div class="ln-chip" title="Ketma-ket kunlar"><i data-lucide="flame" style="color:#f97316"></i>{{ profile.current_streak }} <small>kun</small></div>
+        {% if profile.streak_freezes %}<div class="ln-chip" title="Seriya muzlatgichi: bir kun o'tkazib yuborsangiz, seriya uzilmaydi. Har 7 kunlik seriyada bittadan beriladi (ko'pi bilan 2 ta)."><i data-lucide="snowflake" style="color:#38bdf8"></i>{{ profile.streak_freezes }} <small>muzlatgich</small></div>{% endif %}
         <div class="ln-chip" title="Jami tajriba ballari"><i data-lucide="zap" style="color:#eab308"></i>{{ profile.xp }} <small>XP</small></div>
         <div class="ln-chip" title="Lug'atdagi so'zlar"><i data-lucide="book-marked" style="color:#22c55e"></i>{{ review.total }} <small>so'z</small></div>
     </div>
@@ -296,6 +319,55 @@
                 <button name="goal" value="{{ g }}" class="{% if g == profile.daily_goal %}on{% endif %}" title="Kunlik maqsad">{{ g }} XP</button>
                 {% endfor %}
             </form>
+        </div>
+
+        <div class="ln-card" id="quests">
+            <h4><i data-lucide="scroll-text" style="width:16px;color:#8b5cf6"></i> Bugungi topshiriqlar
+                <span style="margin-left:auto;font-size:.75rem;color:var(--text-muted)">{% for q in daily.quests %}{% if q.done %}●{% else %}○{% endif %}{% endfor %}</span></h4>
+            {% for q in daily.quests %}
+            <div class="ln-quest {% if q.done %}done{% endif %}">
+                <span class="ln-quest-ic"><i data-lucide="{% if q.done %}check{% else %}{{ q.icon }}{% endif %}"></i></span>
+                <div class="ln-quest-body">
+                    <div class="ln-quest-t">{{ q.title_uz }}</div>
+                    <div class="ln-quest-bar"><div style="width:{% widthratio q.progress q.target 100 %}%"></div></div>
+                </div>
+                <span class="ln-quest-n">{{ q.progress }}/{{ q.target }}</span>
+            </div>
+            {% endfor %}
+            {% if daily.chest_opened %}
+            <div class="ln-chest opened">🎁 Sandiq ochildi: +{{ daily.chest_xp }} XP. Ertaga yangi topshiriqlar!</div>
+            {% elif daily.all_done %}
+            <button class="ln-chest ready" id="chestBtn">🎁 Sandiqni ochish (+{{ daily.chest_xp }} XP)</button>
+            {% else %}
+            <div class="ln-chest">🎁 Hammasini bajaring — sandiqda +{{ daily.chest_xp }} XP</div>
+            {% endif %}
+            {% if daily.all_done and not daily.chest_opened %}
+            <script>
+                document.getElementById('chestBtn').addEventListener('click', async e => {
+                    const btn = e.currentTarget;
+                    btn.disabled = true;
+                    try {
+                        const r = await fetch('{% url "learn:chest" %}', { method: 'POST', headers: { 'X-CSRFToken': '{{ csrf_token }}' } });
+                        const d = await r.json();
+                        btn.outerHTML = r.ok
+                            ? `<div class="ln-chest opened">🎉 +${d.xp} XP! Ertaga yangi topshiriqlar.</div>`
+                            : `<div class="ln-chest">${d.error || 'Xatolik'}</div>`;
+                    } catch (err) { btn.disabled = false; }
+                });
+            </script>
+            {% endif %}
+        </div>
+
+        <div class="ln-card">
+            <h4><i data-lucide="award" style="width:16px;color:#eab308"></i> Yutuqlar
+                <a href="{% url 'learn:achievements' %}" style="margin-left:auto;font-size:.78rem;color:var(--primary-color);text-decoration:none;font-weight:600">Barchasi →</a></h4>
+            <div class="ln-badges">
+                {% for b in badges %}
+                <a href="{% url 'learn:achievements' %}" class="ln-badge t{{ b.tier }}" title="{{ b.title_uz }} — {{ b.tier }}/{{ b.tiers }}">
+                    <i data-lucide="{{ b.icon }}"></i>{% if b.tier %}<b>{{ b.tier }}</b>{% endif %}
+                </a>
+                {% endfor %}
+            </div>
         </div>
 
         <div class="ln-card">

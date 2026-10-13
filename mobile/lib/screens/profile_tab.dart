@@ -8,6 +8,7 @@ import '../core/sfx.dart';
 import '../core/speech.dart';
 import '../core/theme.dart';
 import '../widgets/common.dart';
+import 'achievements_screen.dart';
 import 'grammar_screen.dart';
 import 'placement_screen.dart';
 
@@ -155,6 +156,13 @@ class ProfileTab extends StatelessWidget {
           const SizedBox(height: 12),
           Card(
             child: Column(children: [
+              ListTile(
+                leading: const Icon(Icons.military_tech_rounded, color: Brand.flame),
+                title: const Text('Yutuqlar'),
+                subtitle: Text("❄️ ${me['streak_freezes'] ?? 0} ta seriya muzlatgichi"),
+                trailing: const Icon(Icons.chevron_right_rounded),
+                onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AchievementsScreen())),
+              ),
               ListTile(
                 leading: const Icon(Icons.leaderboard_rounded, color: Brand.warn),
                 title: const Text('Haftalik reyting'),

@@ -20,6 +20,11 @@ class LearnerProfile(models.Model):
     best_streak = models.PositiveIntegerField(default=0)
     last_active = models.DateField(null=True, blank=True)
     daily_goal = models.PositiveSmallIntegerField(default=30, help_text='Kunlik XP maqsadi')
+    # Duolingo-style "streak freeze": one is earned every 7 days of streak
+    # (max 2) and spent automatically on a missed day.
+    streak_freezes = models.PositiveSmallIntegerField(default=0)
+    # Unlocked achievement tiers, e.g. ["lessons:1", "streak:7"] (see gamification.py).
+    badges = models.JSONField(default=list, blank=True)
 
     class Meta:
         verbose_name = "O'quvchi profili"
@@ -31,18 +36,26 @@ class LearnerProfile(models.Model):
     @property
     def current_streak(self):
         # A streak shown on the page must already be broken if the learner
-        # skipped yesterday — it's only reset in the DB on the next activity.
+        # skipped more days than their freezes cover — it's only updated in
+        # the DB on the next activity.
         if not self.last_active:
             return 0
-        if self.last_active >= timezone.localdate() - timedelta(days=1):
-            return self.streak
-        return 0
+        missed = (timezone.localdate() - self.last_active).days - 1
+        return self.streak if missed <= self.streak_freezes else 0
 
 
 class DailyXP(models.Model):
+    """One learner's day: XP plus the counters behind the daily quests."""
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='daily_xp')
     date = models.DateField()
     xp = models.PositiveIntegerField(default=0)
+    lessons = models.PositiveSmallIntegerField(default=0)
+    perfect = models.PositiveSmallIntegerField(default=0, help_text='90%+ natijali darslar')
+    reviews = models.PositiveSmallIntegerField(default=0)
+    stories = models.PositiveSmallIntegerField(default=0)
+    practice = models.PositiveSmallIntegerField(default=0)
+    tutor = models.PositiveSmallIntegerField(default=0)
+    chest = models.BooleanField(default=False, help_text="Kunlik topshiriqlar sandig'i ochilganmi")
 
     class Meta:
         unique_together = ('user', 'date')
