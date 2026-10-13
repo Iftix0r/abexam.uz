@@ -93,6 +93,51 @@
   <!-- Right col -->
   <div style="display:flex;flex-direction:column;gap:16px">
 
+    <!-- Ingliz tili kursi -->
+    {% if learner or app_tokens %}
+    <div class="card">
+      <div class="section-header">
+        <span class="section-title">🇬🇧 Ingliz tili kursi</span>
+        <a href="{% url 'panel:english_learners' %}?q={{ obj.username|urlencode }}" class="btn btn-ghost btn-sm">O'quvchilar ro'yxati</a>
+      </div>
+      {% if learner %}
+      <div class="grid-6-stat" style="margin-bottom:{% if app_tokens %}16px{% else %}0{% endif %}">
+        <div style="background:var(--surface2);border-radius:8px;padding:12px;text-align:center"><div style="font-size:18px;font-weight:700;color:var(--primary)">{{ learner.level|default:"—" }}</div><div style="font-size:11px;color:var(--muted)">Daraja</div></div>
+        <div style="background:var(--surface2);border-radius:8px;padding:12px;text-align:center"><div style="font-size:18px;font-weight:700;color:var(--yellow)">{{ learner.xp }}</div><div style="font-size:11px;color:var(--muted)">XP</div></div>
+        <div style="background:var(--surface2);border-radius:8px;padding:12px;text-align:center"><div style="font-size:18px;font-weight:700;color:#f97316">🔥 {{ learner.current_streak }}</div><div style="font-size:11px;color:var(--muted)">Seriya (eng uzun {{ learner.best_streak }})</div></div>
+        <div style="background:var(--surface2);border-radius:8px;padding:12px;text-align:center"><div style="font-size:18px;font-weight:700;color:var(--green)">{{ learn_stats.done }}</div><div style="font-size:11px;color:var(--muted)">Darslar</div></div>
+        <div style="background:var(--surface2);border-radius:8px;padding:12px;text-align:center"><div style="font-size:18px;font-weight:700">{{ learn_stats.avg|floatformat:0|default:"—" }}%</div><div style="font-size:11px;color:var(--muted)">O'rtacha ball</div></div>
+        <div style="background:var(--surface2);border-radius:8px;padding:12px;text-align:center"><div style="font-size:18px;font-weight:700;color:var(--blue)">{{ learn_words }}</div><div style="font-size:11px;color:var(--muted)">So'zlar</div></div>
+      </div>
+      {% endif %}
+      {% if app_tokens %}
+      <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">📱 Ilova qurilmalari</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Qurilma</th><th>Tizim</th><th>IP</th><th>Kirgan</th><th>Oxirgi faollik</th><th></th></tr></thead>
+          <tbody>
+            {% for t in app_tokens %}
+            <tr>
+              <td style="font-weight:600">{{ t.device|default:"Noma'lum" }}{% if t.app_version %} <span class="badge badge-gray">v{{ t.app_version }}</span>{% endif %}</td>
+              <td>{{ t.platform|default:"—" }}</td>
+              <td style="font-family:monospace;font-size:12px">{{ t.ip|default:"—" }}</td>
+              <td style="color:var(--muted);font-size:12px">{{ t.created_at|date:"d M Y, H:i" }}</td>
+              <td style="color:var(--muted);font-size:12px">{{ t.last_used_at|date:"d M Y, H:i"|default:"—" }}</td>
+              <td>
+                <form method="post" action="{% url 'panel:english_device_revoke' t.pk %}" onsubmit="return confirm('Bu qurilmani ilovadan chiqarasizmi?')">
+                  {% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+                  <button class="btn btn-danger btn-sm">Chiqarish</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
+
     <!-- Natijalar -->
     <div class="card">
       <div class="section-header">

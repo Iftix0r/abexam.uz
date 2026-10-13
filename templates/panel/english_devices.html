@@ -1,0 +1,58 @@
+{% extends 'panel/base.html' %}
+{% block title %}Ilova qurilmalari{% endblock %}
+{% block page_title %}Mobil ilova qurilmalari{% endblock %}
+{% block nav_english_devices %}active{% endblock %}
+
+{% block content %}
+<div class="grid-6-stat" style="margin-bottom:20px">
+  <div class="card" style="text-align:center"><div style="font-size:22px;font-weight:700;color:var(--primary)">{{ stats.users }}</div><div style="font-size:12px;color:var(--muted)">Foydalanuvchi</div></div>
+  <div class="card" style="text-align:center"><div style="font-size:22px;font-weight:700">{{ stats.sessions }}</div><div style="font-size:12px;color:var(--muted)">Qurilma (sessiya)</div></div>
+  <div class="card" style="text-align:center"><div style="font-size:22px;font-weight:700;color:var(--green)">{{ stats.active_24h }}</div><div style="font-size:12px;color:var(--muted)">24 soatda faol</div></div>
+  <div class="card" style="text-align:center"><div style="font-size:22px;font-weight:700;color:var(--blue)">{{ stats.active_7d }}</div><div style="font-size:12px;color:var(--muted)">7 kunda faol</div></div>
+  <div class="card" style="text-align:center"><div style="font-size:22px;font-weight:700;color:#22c55e">{{ stats.android }}</div><div style="font-size:12px;color:var(--muted)">Android</div></div>
+  <div class="card" style="text-align:center"><div style="font-size:22px;font-weight:700">{{ stats.ios }}</div><div style="font-size:12px;color:var(--muted)">iOS</div></div>
+</div>
+
+<form method="get" class="card" style="margin-bottom:16px;display:flex;gap:10px;align-items:center">
+  <input class="form-input" name="q" value="{{ q }}" placeholder="Username, telefon modeli yoki IP..." style="flex:1">
+  <button class="btn btn-primary btn-sm">Qidirish</button>
+</form>
+
+<div class="card" style="padding:0">
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Foydalanuvchi</th><th>Qurilma</th><th>Tizim</th><th>Ilova</th><th>IP</th><th>Kirgan</th><th>Oxirgi faollik</th><th></th></tr></thead>
+      <tbody>
+        {% for t in page %}
+        <tr>
+          <td><a href="{% url 'panel:user_detail' t.user.pk %}" style="color:var(--primary);font-weight:600">{{ t.user.username }}</a></td>
+          <td style="font-weight:500" title="{{ t.user_agent }}">📱 {{ t.device|default:"Noma'lum" }}</td>
+          <td>{% if t.platform %}<span class="badge {% if 'ndroid' in t.platform %}badge-green{% else %}badge-gray{% endif %}">{{ t.platform }}</span>{% else %}—{% endif %}</td>
+          <td style="font-size:12px">{{ t.app_version|default:"—" }}</td>
+          <td style="font-family:monospace;font-size:12px">{{ t.ip|default:"—" }}</td>
+          <td style="color:var(--muted);font-size:12px">{{ t.created_at|date:"d M Y, H:i" }}</td>
+          <td style="font-size:12px">{% if t.last_used_at %}{{ t.last_used_at|timesince }} oldin{% else %}<span style="color:var(--muted)">—</span>{% endif %}</td>
+          <td>
+            <form method="post" action="{% url 'panel:english_device_revoke' t.pk %}" onsubmit="return confirm('{{ t.user.username }} ni bu qurilmadan chiqarasizmi?')">
+              {% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+              <button class="btn btn-danger btn-sm">Chiqarish</button>
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="8" style="text-align:center;padding:32px;color:var(--muted)">Hali hech kim ilovadan kirmagan</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% if page.has_other_pages %}
+<div style="display:flex;gap:8px;justify-content:center;align-items:center;margin-top:16px">
+  {% if page.has_previous %}<a class="btn btn-ghost btn-sm" href="?q={{ q|urlencode }}&page={{ page.previous_page_number }}">← Oldingi</a>{% endif %}
+  <span style="font-size:12px;color:var(--muted)">{{ page.number }} / {{ page.paginator.num_pages }}</span>
+  {% if page.has_next %}<a class="btn btn-ghost btn-sm" href="?q={{ q|urlencode }}&page={{ page.next_page_number }}">Keyingi →</a>{% endif %}
+</div>
+{% endif %}
+<p style="font-size:12px;color:var(--muted);margin-top:12px">"Chiqarish" — o'sha telefondagi ilova keyingi so'rovda login oynasiga qaytadi. Hisob bloklanmaydi.</p>
+{% endblock %}

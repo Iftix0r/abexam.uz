@@ -94,7 +94,11 @@ class ApiToken(models.Model):
     """
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='learn_api_tokens')
     key_hash = models.CharField(max_length=64, unique=True)
-    device = models.CharField(max_length=100, blank=True)
+    device = models.CharField(max_length=100, blank=True, help_text='Telefon modeli, masalan: Samsung SM-A515F')
+    platform = models.CharField(max_length=40, blank=True, help_text='Android 14 / iOS 17.4')
+    app_version = models.CharField(max_length=20, blank=True)
+    ip = models.GenericIPAddressField(null=True, blank=True)
+    user_agent = models.CharField(max_length=300, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     last_used_at = models.DateTimeField(null=True, blank=True)
 

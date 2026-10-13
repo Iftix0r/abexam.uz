@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'api.dart';
+import 'device.dart';
 
 /// Signed-in user, profile summary and a few local preferences.
 class AppState extends ChangeNotifier {
@@ -39,12 +40,12 @@ class AppState extends ChangeNotifier {
   }
 
   Future<void> signIn(String username, String password) async {
-    final data = await Api(null).post('auth/login/', {'username': username, 'password': password, 'device': 'mobile'});
+    final data = await Api(null).post('auth/login/', {'username': username, 'password': password, ...await deviceInfo()});
     await _saveToken(data['token'] as String);
   }
 
   Future<void> register(Map<String, String> fields) async {
-    final data = await Api(null).post('auth/register/', {...fields, 'device': 'mobile'});
+    final data = await Api(null).post('auth/register/', {...fields, ...await deviceInfo()});
     await _saveToken(data['token'] as String);
   }
 

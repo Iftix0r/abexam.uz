@@ -6,6 +6,7 @@ from itertools import groupby
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.core.paginator import Paginator
 from django.db import IntegrityError, transaction as db_transaction
 from django.conf import settings
 from django.db.models import Avg, Count, F, Max, Q, Sum
@@ -13,6 +14,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
 
 from core.models import SiteSettings, Notification, PromoCode
@@ -22,6 +24,8 @@ from core.utils import (
 )
 from exams.models import ATTEMPT_ONLINE_WINDOW, Exam, ExamAttempt, Question, Section, UserResult
 from exams.views import finalize_attempt
+from learn.content import LEVEL_INFO, LEVELS, get_course, get_stories, validate_course
+from learn.models import ApiToken, DailyXP, LearnerProfile, LessonProgress, Mistake
 from payments.models import Transaction
 from users.models import LoginLog, User, Vocabulary
 
@@ -105,8 +109,13 @@ def user_detail(request, pk):
     results = UserResult.objects.filter(user=user).select_related('exam').order_by('-completed_at')
     transactions = Transaction.objects.filter(user=user).order_by('-created_at')[:10]
     stats = results.graded().aggregate(avg=Avg('score'), total=Count('id'))
+    learn_done = LessonProgress.objects.filter(user=user).exclude(lesson_slug__startswith='story:')
     return render(request, 'panel/user_detail.html', {
-        'obj': user, 'results': results, 'transactions': transactions, 'stats': stats
+        'obj': user, 'results': results, 'transactions': transactions, 'stats': stats,
+        'learner': LearnerProfile.objects.filter(user=user).first(),
+        'learn_stats': learn_done.aggregate(done=Count('id'), avg=Avg('best_score')),
+        'learn_words': Vocabulary.objects.filter(user=user).count(),
+        'app_tokens': ApiToken.objects.filter(user=user).order_by(F('last_used_at').desc(nulls_last=True)),
     })
 
 
@@ -1610,3 +1619,176 @@ def promocode_toggle(request, pk):
 def promocode_delete(request, pk):
     get_object_or_404(PromoCode, pk=pk).delete()
     return JsonResponse({'ok': True})
+
+
+# ── Ingliz tili kursi (learn/) ─────────────────────────────────────────────────
+def _step_preview(step):
+    """Short text of an exercise for tables (question, sentence or prompt)."""
+    text = step.get('q') or step.get('text') or step.get('uz') or step.get('prompt_uz') or step.get('type', '')
+    return str(text).replace('**', '')[:120]
+
+
+@panel_required
+def english_overview(request):
+    now = timezone.now()
+    today = timezone.localdate()
+    week_start = today - timedelta(days=6)
+    course = get_course()
+    lessons = course['lessons']
+    progress = LessonProgress.objects.exclude(lesson_slug__startswith='story:')
+
+    def active_since(day):
+        return DailyXP.objects.filter(date__gte=day, xp__gt=0).values('user').distinct().count()
+
+    stats = {
+        'learners': LearnerProfile.objects.count(),
+        'active_today': DailyXP.objects.filter(date=today, xp__gt=0).count(),
+        'active_7': active_since(week_start),
+        'active_30': active_since(today - timedelta(days=29)),
+        'completions': progress.count(),
+        'avg_score': progress.aggregate(a=Avg('best_score'))['a'] or 0,
+        'stories_read': LessonProgress.objects.filter(lesson_slug__startswith='story:').count(),
+        'xp_week': DailyXP.objects.filter(date__gte=week_start).aggregate(s=Sum('xp'))['s'] or 0,
+        'app_users': ApiToken.objects.values('user').distinct().count(),
+        'app_active_7': ApiToken.objects.filter(last_used_at__gte=now - timedelta(days=7)).values('user').distinct().count(),
+        'mistakes_open': Mistake.objects.count(),
+    }
+
+    # Last 14 days: learners with XP and total XP per day.
+    start = today - timedelta(days=13)
+    by_day = {r['date']: r for r in DailyXP.objects.filter(date__gte=start).values('date')
+              .annotate(users=Count('user', filter=Q(xp__gt=0)), xp=Sum('xp'))}
+    days = [start + timedelta(days=i) for i in range(14)]
+    chart = {
+        'labels': [d.strftime('%d %b') for d in days],
+        'users': [by_day.get(d, {}).get('users', 0) for d in days],
+        'xp': [by_day.get(d, {}).get('xp', 0) or 0 for d in days],
+    }
+
+    level_counts = dict(LearnerProfile.objects.values_list('level').annotate(c=Count('id')))
+    done_by_slug = dict(progress.values_list('lesson_slug').annotate(c=Count('id')))
+    stories = list(get_stories().values())
+    levels = []
+    for code in LEVELS:
+        lv = course['levels'][code]
+        slugs = [l['slug'] for u in lv['units'] for l in u['lessons']]
+        levels.append({
+            'code': code, 'name': LEVEL_INFO[code]['name'],
+            'learners': level_counts.get(code, 0),
+            'units': len(lv['units']), 'lessons': len(slugs),
+            'words': sum(len(lessons[s]['words']) for s in slugs),
+            'stories': sum(1 for st in stories if st['level'] == code),
+            'completions': sum(done_by_slug.get(s, 0) for s in slugs),
+        })
+    unset_level = level_counts.get('', 0)
+
+    top_lessons = []
+    for row in (progress.values('lesson_slug').annotate(c=Count('id'), avg=Avg('best_score'), tries=Sum('attempts'))
+                .order_by('-c')[:10]):
+        lesson = lessons.get(row['lesson_slug'])
+        top_lessons.append({**row, 'title': lesson['title'] if lesson else row['lesson_slug'],
+                            'level': lesson['level'] if lesson else '—'})
+
+    # Where learners struggle: exercises most people got wrong.
+    hardest = []
+    for row in (Mistake.objects.values('lesson_slug', 'step_index')
+                .annotate(users=Count('user'), wrongs=Sum('wrong_count')).order_by('-users', '-wrongs')[:10]):
+        lesson = lessons.get(row['lesson_slug'])
+        step = lesson['steps'][row['step_index']] if lesson and row['step_index'] < len(lesson['steps']) else {}
+        answer = step.get('answer')
+        if step.get('type') == 'choice' and isinstance(answer, int) and answer < len(step.get('options', [])):
+            answer = step['options'][answer]
+        elif isinstance(answer, list):
+            answer = answer[0] if answer else ''
+        hardest.append({**row, 'lesson': lesson['title'] if lesson else row['lesson_slug'],
+                        'type': step.get('type', '?'), 'text': _step_preview(step), 'answer': answer or ''})
+
+    week_rows = list(DailyXP.objects.filter(date__gte=week_start).values('user')
+                     .annotate(total=Sum('xp')).filter(total__gt=0).order_by('-total')[:10])
+    week_users = User.objects.in_bulk([r['user'] for r in week_rows])
+    top_week = [{'user': week_users.get(r['user']), 'xp': r['total']} for r in week_rows]
+
+    recent = []
+    for p in LessonProgress.objects.select_related('user').order_by('-completed_at')[:15]:
+        is_story = p.lesson_slug.startswith('story:')
+        item = get_stories().get(p.lesson_slug[6:]) if is_story else lessons.get(p.lesson_slug)
+        recent.append({'p': p, 'story': is_story, 'title': item['title'] if item else p.lesson_slug})
+
+    return render(request, 'panel/english.html', {
+        'stats': stats, 'levels': levels, 'unset_level': unset_level,
+        'top_lessons': top_lessons, 'hardest': hardest, 'top_week': top_week, 'recent': recent,
+        'content_errors': validate_course()[:20],
+        'chart_labels': json.dumps(chart['labels']), 'chart_users': json.dumps(chart['users']),
+        'chart_xp': json.dumps(chart['xp']),
+    })
+
+
+@panel_required
+def english_learners(request):
+    q = request.GET.get('q', '').strip()
+    level = request.GET.get('level', '')
+    sort = request.GET.get('sort', 'active')
+    profiles = LearnerProfile.objects.select_related('user')
+    if q:
+        profiles = profiles.filter(Q(user__username__icontains=q) | Q(user__first_name__icontains=q)
+                                   | Q(user__last_name__icontains=q))
+    if level in LEVELS:
+        profiles = profiles.filter(level=level)
+    elif level == 'none':
+        profiles = profiles.filter(level='')
+    order = {'xp': ['-xp'], 'streak': ['-streak', '-xp'], 'new': ['-pk']}.get(sort, ['-last_active', '-xp'])
+    page = Paginator(profiles.order_by(*order), 50).get_page(request.GET.get('page'))
+
+    ids = [p.user_id for p in page]
+    lesson_stats = {r['user']: r for r in LessonProgress.objects.filter(user__in=ids)
+                    .exclude(lesson_slug__startswith='story:').values('user')
+                    .annotate(done=Count('id'), avg=Avg('best_score'))}
+    stories = dict(LessonProgress.objects.filter(user__in=ids, lesson_slug__startswith='story:')
+                   .values_list('user').annotate(c=Count('id')))
+    words = dict(Vocabulary.objects.filter(user__in=ids).values_list('user').annotate(c=Count('id')))
+    mistakes = dict(Mistake.objects.filter(user__in=ids).values_list('user').annotate(c=Count('id')))
+    devices = {}
+    for t in ApiToken.objects.filter(user__in=ids).order_by('-last_used_at', '-created_at'):
+        devices.setdefault(t.user_id, t)
+    rows = [{
+        'p': p, 'done': lesson_stats.get(p.user_id, {}).get('done', 0),
+        'avg': lesson_stats.get(p.user_id, {}).get('avg'),
+        'stories': stories.get(p.user_id, 0), 'words': words.get(p.user_id, 0),
+        'mistakes': mistakes.get(p.user_id, 0), 'device': devices.get(p.user_id),
+    } for p in page]
+    return render(request, 'panel/english_learners.html', {
+        'rows': rows, 'page': page, 'q': q, 'level': level, 'sort': sort, 'levels': LEVELS,
+        'total': profiles.count(),
+    })
+
+
+@panel_required
+def english_devices(request):
+    q = request.GET.get('q', '').strip()
+    now = timezone.now()
+    tokens = ApiToken.objects.select_related('user').order_by(F('last_used_at').desc(nulls_last=True), '-created_at')
+    if q:
+        tokens = tokens.filter(Q(user__username__icontains=q) | Q(device__icontains=q) | Q(ip__icontains=q))
+    all_tokens = ApiToken.objects.all()
+    stats = {
+        'sessions': all_tokens.count(),
+        'users': all_tokens.values('user').distinct().count(),
+        'active_24h': all_tokens.filter(last_used_at__gte=now - timedelta(hours=24)).count(),
+        'active_7d': all_tokens.filter(last_used_at__gte=now - timedelta(days=7)).count(),
+        'android': all_tokens.filter(platform__istartswith='android').count(),
+        'ios': all_tokens.filter(platform__istartswith='ios').count(),
+    }
+    page = Paginator(tokens, 50).get_page(request.GET.get('page'))
+    return render(request, 'panel/english_devices.html', {'page': page, 'q': q, 'stats': stats})
+
+
+@panel_required
+@require_POST
+def english_device_revoke(request, pk):
+    token = get_object_or_404(ApiToken.objects.select_related('user'), pk=pk)
+    token.delete()
+    messages.success(request, f"{token.user.username} — {token.device or 'qurilma'} ilovadan chiqarildi")
+    nxt = request.POST.get('next', '')
+    if not url_has_allowed_host_and_scheme(nxt, allowed_hosts={request.get_host()}):
+        nxt = reverse('panel:english_devices')
+    return redirect(nxt)

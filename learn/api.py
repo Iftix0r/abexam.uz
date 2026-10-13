@@ -43,9 +43,16 @@ def _hash(key):
     return hashlib.sha256(key.encode()).hexdigest()
 
 
-def _issue_token(user, device):
+def _issue_token(user, request, data):
     key = secrets.token_urlsafe(32)
-    ApiToken.objects.create(user=user, key_hash=_hash(key), device=device[:100])
+    ApiToken.objects.create(
+        user=user, key_hash=_hash(key),
+        device=str(data.get('device', ''))[:100],
+        platform=str(data.get('platform', ''))[:40],
+        app_version=str(data.get('app_version', ''))[:20],
+        ip=get_client_ip(request),
+        user_agent=request.headers.get('User-Agent', '')[:300],
+    )
     stale = ApiToken.objects.filter(user=user).order_by('-created_at').values_list('pk', flat=True)[MAX_TOKENS_PER_USER:]
     ApiToken.objects.filter(pk__in=list(stale)).delete()
     return key
@@ -75,7 +82,7 @@ def api(methods=('GET',), auth=True):
                     return JsonResponse({'error': "Qaytadan kiring"}, status=401)
                 now = timezone.now()
                 if not token.last_used_at or now - token.last_used_at > timedelta(hours=1):
-                    ApiToken.objects.filter(pk=token.pk).update(last_used_at=now)
+                    ApiToken.objects.filter(pk=token.pk).update(last_used_at=now, ip=get_client_ip(request))
                 request.user = token.user
                 request.api_token = token
             return view(request, *args, **kwargs)
@@ -128,7 +135,7 @@ def login(request):
     user.save(update_fields=['last_ip'])
     LoginLog.objects.create(user=user, username_attempt=username[:150], ip=ip, user_agent=ua, status='success')
     notify_admin_telegram(f"📱 <b>Ilovaga kirish</b>\n👤 {user.get_full_name() or user.username} (@{user.username})\n🌐 IP: {ip}")
-    return JsonResponse({'token': _issue_token(user, str(data.get('device', ''))), 'user': _user_json(user)})
+    return JsonResponse({'token': _issue_token(user, request, data), 'user': _user_json(user)})
 
 
 @api(methods=('POST',), auth=False)
@@ -153,7 +160,7 @@ def register(request):
     notify_admin_telegram(
         f"🆕 <b>Ilovada ro'yxatdan o'tish</b>\n👤 {user.get_full_name() or '—'} (@{user.username})\n"
         f"📞 {user.phone_number or '—'}\n🌐 IP: {ip}")
-    return JsonResponse({'token': _issue_token(user, str(data.get('device', ''))), 'user': _user_json(user)})
+    return JsonResponse({'token': _issue_token(user, request, data), 'user': _user_json(user)})
 
 
 @api(methods=('POST',))

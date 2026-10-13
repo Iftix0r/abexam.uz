@@ -1,0 +1,207 @@
+{% extends 'panel/base.html' %}
+{% block title %}Ingliz tili kursi{% endblock %}
+{% block page_title %}Ingliz tili kursi{% endblock %}
+{% block nav_english %}active{% endblock %}
+
+{% block content %}
+<div class="stat-grid">
+  <div class="stat-card">
+    <div class="stat-icon" style="background:#6366f118">
+      <svg fill="none" stroke="#6366f1" viewBox="0 0 24 24"><path stroke-width="1.8" d="M22 10 12 5 2 10l10 5 10-5z"/><path stroke-width="1.8" d="M6 12v5c3 2 9 2 12 0v-5"/></svg>
+    </div>
+    <div>
+      <div class="stat-val">{{ stats.learners }}</div>
+      <div class="stat-label">O'quvchilar</div>
+      <div class="stat-change" style="color:var(--green)">{{ stats.active_7 }} ta — so'nggi 7 kunda faol</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon" style="background:#f9731618">
+      <svg fill="none" stroke="#f97316" viewBox="0 0 24 24"><path stroke-width="1.8" d="M12 2c1 4 5 6 5 11a5 5 0 0 1-10 0c0-2 1-4 2-5 0 2 1 3 2 3 0-3-1-6 1-9z"/></svg>
+    </div>
+    <div>
+      <div class="stat-val">{{ stats.active_today }}</div>
+      <div class="stat-label">Bugun o'qiganlar</div>
+      <div class="stat-change" style="color:var(--muted)">30 kunda: {{ stats.active_30 }} ta</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon" style="background:#22c55e18">
+      <svg fill="none" stroke="#22c55e" viewBox="0 0 24 24"><polyline points="20,6 9,17 4,12" stroke-width="2"/></svg>
+    </div>
+    <div>
+      <div class="stat-val">{{ stats.completions }}</div>
+      <div class="stat-label">Tugallangan darslar</div>
+      <div class="stat-change" style="color:var(--muted)">O'rtacha ball: {{ stats.avg_score|floatformat:0 }}% · hikoyalar: {{ stats.stories_read }}</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon" style="background:#3b82f618">
+      <svg fill="none" stroke="#3b82f6" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" stroke-width="1.8"/><line x1="12" y1="18" x2="12.01" y2="18" stroke-width="2"/></svg>
+    </div>
+    <div>
+      <div class="stat-val">{{ stats.app_users }}</div>
+      <div class="stat-label">Mobil ilova foydalanuvchilari</div>
+      <div class="stat-change" style="color:var(--muted)">7 kunda faol: {{ stats.app_active_7 }} · <a href="{% url 'panel:english_devices' %}" style="color:var(--primary)">qurilmalar →</a></div>
+    </div>
+  </div>
+</div>
+
+{% if content_errors %}
+<div style="background:#ef444412;border:1px solid #ef444430;border-radius:10px;padding:12px 18px;margin-bottom:20px">
+  <div style="color:var(--red);font-size:13px;font-weight:700;margin-bottom:6px">⚠ Kurs fayllarida xato bor (data/learn/)</div>
+  {% for e in content_errors %}<div style="font-size:12px;font-family:monospace;color:var(--muted)">{{ e }}</div>{% endfor %}
+</div>
+{% endif %}
+
+<div class="card" style="margin-bottom:20px">
+  <div class="section-header">
+    <span class="section-title">So'nggi 14 kun: faol o'quvchilar va XP</span>
+    <span class="badge badge-yellow">Bu hafta: {{ stats.xp_week }} XP</span>
+  </div>
+  <div class="chart-wrap"><canvas id="learnChart"></canvas></div>
+</div>
+
+<div class="card" style="margin-bottom:20px;padding:0">
+  <div class="section-header" style="padding:20px 20px 0"><span class="section-title">Darajalar bo'yicha</span></div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Daraja</th><th>O'quvchilar</th><th>Bo'limlar</th><th>Darslar</th><th>So'zlar</th><th>Hikoyalar</th><th>Tugallangan</th></tr></thead>
+      <tbody>
+        {% for lv in levels %}
+        <tr>
+          <td><a href="{% url 'panel:english_learners' %}?level={{ lv.code }}" style="font-weight:700;color:var(--primary)">{{ lv.code }}</a> <span style="color:var(--muted);font-size:12px">{{ lv.name }}</span></td>
+          <td>{{ lv.learners }}</td>
+          <td>{{ lv.units }}</td>
+          <td>{{ lv.lessons }}</td>
+          <td>{{ lv.words }}</td>
+          <td>{{ lv.stories }}</td>
+          <td><span class="badge badge-green">{{ lv.completions }}</span></td>
+        </tr>
+        {% endfor %}
+        {% if unset_level %}
+        <tr><td style="color:var(--muted)">Daraja tanlanmagan</td><td><a href="{% url 'panel:english_learners' %}?level=none" style="color:var(--primary)">{{ unset_level }}</a></td><td colspan="5"></td></tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="grid-2-eq" style="margin-bottom:20px">
+  <div class="card" style="padding:0">
+    <div class="section-header" style="padding:20px 20px 0"><span class="section-title">🏆 Haftaning eng faollari</span></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Foydalanuvchi</th><th>XP</th></tr></thead>
+        <tbody>
+          {% for r in top_week %}
+          <tr>
+            <td style="font-weight:700">{{ forloop.counter }}</td>
+            <td>{% if r.user %}<a href="{% url 'panel:user_detail' r.user.pk %}" style="color:var(--primary)">{{ r.user.get_full_name|default:r.user.username }}</a>{% endif %}</td>
+            <td><span class="badge badge-yellow">{{ r.xp }}</span></td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="3" style="text-align:center;padding:24px;color:var(--muted)">Bu hafta hali faollik yo'q</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card" style="padding:0">
+    <div class="section-header" style="padding:20px 20px 0"><span class="section-title">🕒 So'nggi faollik</span></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Foydalanuvchi</th><th>Dars / hikoya</th><th>Ball</th><th>Vaqt</th></tr></thead>
+        <tbody>
+          {% for r in recent %}
+          <tr>
+            <td><a href="{% url 'panel:user_detail' r.p.user.pk %}" style="color:var(--primary)">{{ r.p.user.username }}</a></td>
+            <td style="font-size:12px">{% if r.story %}📖 {% endif %}{{ r.title|truncatechars:40 }}</td>
+            <td><span class="badge {% if r.p.best_score >= 80 %}badge-green{% elif r.p.best_score >= 50 %}badge-yellow{% else %}badge-red{% endif %}">{{ r.p.best_score }}%</span></td>
+            <td style="color:var(--muted);font-size:12px">{{ r.p.completed_at|date:"d M, H:i" }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="4" style="text-align:center;padding:24px;color:var(--muted)">Hali dars o'tilmagan</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom:20px;padding:0">
+  <div class="section-header" style="padding:20px 20px 0"><span class="section-title">📚 Eng ko'p o'tilgan darslar</span></div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Dars</th><th>Daraja</th><th>O'quvchilar</th><th>Urinishlar</th><th>O'rtacha ball</th></tr></thead>
+      <tbody>
+        {% for l in top_lessons %}
+        <tr>
+          <td style="font-weight:500">{{ l.title }} <span style="color:var(--muted);font-size:11px;font-family:monospace">{{ l.lesson_slug }}</span></td>
+          <td><span class="badge badge-blue">{{ l.level }}</span></td>
+          <td>{{ l.c }}</td>
+          <td>{{ l.tries }}</td>
+          <td><span class="badge {% if l.avg >= 80 %}badge-green{% elif l.avg >= 60 %}badge-yellow{% else %}badge-red{% endif %}">{{ l.avg|floatformat:0 }}%</span></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" style="text-align:center;padding:24px;color:var(--muted)">Ma'lumot yo'q</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card" style="padding:0">
+  <div class="section-header" style="padding:20px 20px 0">
+    <span class="section-title">🎯 Eng qiyin mashqlar</span>
+    <span style="font-size:12px;color:var(--muted)">Ko'p o'quvchi xato qilgan va hali tuzatmagan mashqlar ({{ stats.mistakes_open }} ta ochiq xato)</span>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Dars</th><th>Tur</th><th>Mashq</th><th>To'g'ri javob</th><th>O'quvchilar</th><th>Xatolar</th></tr></thead>
+      <tbody>
+        {% for h in hardest %}
+        <tr>
+          <td style="font-size:12px">{{ h.lesson }} <span style="color:var(--muted);font-family:monospace">#{{ h.step_index }}</span></td>
+          <td><span class="badge badge-gray">{{ h.type }}</span></td>
+          <td style="font-size:12px;max-width:320px">{{ h.text }}</td>
+          <td style="font-size:12px;color:var(--green)">{{ h.answer|truncatechars:50 }}</td>
+          <td><span class="badge badge-red">{{ h.users }}</span></td>
+          <td>{{ h.wrongs }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" style="text-align:center;padding:24px;color:var(--muted)">Ochiq xatolar yo'q</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<script>
+function learnChartOptions(){
+  const C = panelChartColors();
+  return {
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{labels:{color:C.tick,font:{size:12}}},tooltip:{backgroundColor:C.surface,borderColor:C.grid,borderWidth:1,titleColor:C.text,bodyColor:C.tick}},
+    scales:{
+      x:{grid:{color:C.grid},ticks:{color:C.tick,font:{size:11}}},
+      y:{grid:{color:C.grid},ticks:{color:C.tick,font:{size:11}},beginAtZero:true,precision:0,position:'left'},
+      y2:{grid:{display:false},ticks:{color:C.tick,font:{size:11}},beginAtZero:true,position:'right'}
+    }
+  };
+}
+const learnChart = new Chart(document.getElementById('learnChart').getContext('2d'), {
+  data:{
+    labels:{{ chart_labels|safe }},
+    datasets:[
+      {type:'line',label:"Faol o'quvchilar",data:{{ chart_users|safe }},borderColor:'#6366f1',backgroundColor:'#6366f115',tension:.4,fill:true,pointRadius:3,yAxisID:'y'},
+      {type:'bar',label:'XP',data:{{ chart_xp|safe }},backgroundColor:'#eab30855',borderRadius:4,yAxisID:'y2'},
+    ]
+  },
+  options:learnChartOptions()
+});
+window.addEventListener('panelthemechange',()=>{ Object.assign(learnChart.options, learnChartOptions()); learnChart.update(); });
+</script>
+{% endblock %}

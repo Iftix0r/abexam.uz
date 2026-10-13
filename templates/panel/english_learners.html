@@ -1,0 +1,63 @@
+{% extends 'panel/base.html' %}
+{% block title %}O'quvchilar — ingliz tili{% endblock %}
+{% block page_title %}Ingliz tili o'quvchilari{% endblock %}
+{% block nav_english_learners %}active{% endblock %}
+
+{% block content %}
+<form method="get" class="card" style="margin-bottom:16px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+  <input class="form-input" name="q" value="{{ q }}" placeholder="Username yoki ism..." style="flex:1;min-width:180px">
+  <select class="form-input" name="level" style="width:auto" onchange="this.form.submit()">
+    <option value="">Barcha darajalar</option>
+    {% for code in levels %}<option value="{{ code }}" {% if level == code %}selected{% endif %}>{{ code }}</option>{% endfor %}
+    <option value="none" {% if level == 'none' %}selected{% endif %}>Tanlanmagan</option>
+  </select>
+  <select class="form-input" name="sort" style="width:auto" onchange="this.form.submit()">
+    <option value="active" {% if sort == 'active' %}selected{% endif %}>Oxirgi faollik</option>
+    <option value="xp" {% if sort == 'xp' %}selected{% endif %}>XP bo'yicha</option>
+    <option value="streak" {% if sort == 'streak' %}selected{% endif %}>Seriya bo'yicha</option>
+    <option value="new" {% if sort == 'new' %}selected{% endif %}>Yangilar</option>
+  </select>
+  <button class="btn btn-primary btn-sm">Qidirish</button>
+  <span style="font-size:12px;color:var(--muted)">Jami: {{ total }}</span>
+</form>
+
+<div class="card" style="padding:0">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>O'quvchi</th><th>Daraja</th><th>XP</th><th>Seriya</th><th>Darslar</th><th>O'rt. ball</th><th>Hikoya</th><th>So'zlar</th><th>Xatolar</th><th>Ilova</th><th>Oxirgi faollik</th></tr>
+      </thead>
+      <tbody>
+        {% for r in rows %}
+        <tr>
+          <td>
+            <a href="{% url 'panel:user_detail' r.p.user.pk %}" style="color:var(--primary);font-weight:600">{{ r.p.user.get_full_name|default:r.p.user.username }}</a>
+            <div style="font-size:11px;color:var(--muted)">@{{ r.p.user.username }}</div>
+          </td>
+          <td>{% if r.p.level %}<span class="badge badge-blue">{{ r.p.level }}</span>{% else %}<span style="color:var(--muted)">—</span>{% endif %}</td>
+          <td style="font-weight:700;color:var(--yellow)">{{ r.p.xp }}</td>
+          <td>{% if r.p.current_streak %}🔥 {{ r.p.current_streak }}{% else %}<span style="color:var(--muted)">0</span>{% endif %} <span style="color:var(--muted);font-size:11px">/ {{ r.p.best_streak }}</span></td>
+          <td>{{ r.done }}</td>
+          <td>{% if r.avg is not None %}<span class="badge {% if r.avg >= 80 %}badge-green{% elif r.avg >= 60 %}badge-yellow{% else %}badge-red{% endif %}">{{ r.avg|floatformat:0 }}%</span>{% else %}—{% endif %}</td>
+          <td>{{ r.stories }}</td>
+          <td>{{ r.words }}</td>
+          <td>{% if r.mistakes %}<span class="badge badge-red">{{ r.mistakes }}</span>{% else %}0{% endif %}</td>
+          <td style="font-size:12px">{% if r.device %}📱 {{ r.device.device|default:"Ilova"|truncatechars:22 }}{% else %}<span style="color:var(--muted)">Sayt</span>{% endif %}</td>
+          <td style="color:var(--muted);font-size:12px">{{ r.p.last_active|date:"d M Y"|default:"—" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="11" style="text-align:center;padding:32px;color:var(--muted)">O'quvchi topilmadi</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% if page.has_other_pages %}
+<div style="display:flex;gap:8px;justify-content:center;align-items:center;margin-top:16px">
+  {% if page.has_previous %}<a class="btn btn-ghost btn-sm" href="?q={{ q|urlencode }}&level={{ level }}&sort={{ sort }}&page={{ page.previous_page_number }}">← Oldingi</a>{% endif %}
+  <span style="font-size:12px;color:var(--muted)">{{ page.number }} / {{ page.paginator.num_pages }}</span>
+  {% if page.has_next %}<a class="btn btn-ghost btn-sm" href="?q={{ q|urlencode }}&level={{ level }}&sort={{ sort }}&page={{ page.next_page_number }}">Keyingi →</a>{% endif %}
+</div>
+{% endif %}
+{% endblock %}

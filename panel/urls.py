@@ -66,6 +66,11 @@ urlpatterns = [
     path('notifications/', views.panel_notifications, name='notifications'),
     path('notifications/<int:pk>/delete/', views.notification_delete, name='notification_delete'),
 
+    path('english/', views.english_overview, name='english'),
+    path('english/learners/', views.english_learners, name='english_learners'),
+    path('english/devices/', views.english_devices, name='english_devices'),
+    path('english/devices/<int:pk>/revoke/', views.english_device_revoke, name='english_device_revoke'),
+
     path('promocodes/', views.promocodes_list, name='promocodes'),
     path('promocodes/<int:pk>/toggle/', views.promocode_toggle, name='promocode_toggle'),
     path('promocodes/<int:pk>/delete/', views.promocode_delete, name='promocode_delete'),
