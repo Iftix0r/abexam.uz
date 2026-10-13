@@ -1,0 +1,495 @@
+{
+  "level": "A2",
+  "units": [
+    {
+      "slug": "a2-time-habits",
+      "title": "Time and habits",
+      "title_uz": "Vaqt va odatlar",
+      "icon": "calendar",
+      "lessons": [
+        {
+          "slug": "a2-time-prepositions",
+          "title": "See you on Sunday at six!",
+          "title_uz": "Vaqt predloglari: in / on / at",
+          "goal_uz": "Do'stingiz bilan uchrashuv vaqtini kelishasiz va vaqt predloglarini (at six, on Sunday, in the morning) to'g'ri ishlatasiz.",
+          "minutes": 11,
+          "words": [
+            {"en": "free", "uz": "bo'sh (vaqt)", "ipa": "/friː/", "ex": "Are you free on Saturday?"},
+            {"en": "busy", "uz": "band", "ipa": "/ˈbɪzi/", "ex": "I'm busy in the morning."},
+            {"en": "weekend", "uz": "dam olish kunlari", "ipa": "/ˌwiːkˈend/", "ex": "What do you do at the weekend?"},
+            {"en": "early", "uz": "erta", "ipa": "/ˈɜːli/", "ex": "I get up early on Mondays."},
+            {"en": "late", "uz": "kech", "ipa": "/leɪt/", "ex": "Nine o'clock is too late for me."},
+            {"en": "appointment", "uz": "belgilangan uchrashuv (shifokor va h.k.)", "ipa": "/əˈpɔɪntmənt/", "ex": "I have a doctor's appointment at ten."},
+            {"en": "midnight", "uz": "yarim tun", "ipa": "/ˈmɪdnaɪt/", "ex": "The shop closes at midnight."},
+            {"en": "timetable", "uz": "jadval (dars, transport)", "ipa": "/ˈtaɪmteɪbl/", "ex": "Let's look at the bus timetable."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "dialogue",
+              "title": "Let's go to the cinema",
+              "context_uz": "Sardor do'sti Malikani kinoga taklif qilyapti va ular vaqtni kelishyapti.",
+              "lines": [
+                {"who": "Sardor", "en": "Are you free on Saturday? Let's go to the cinema.", "uz": "Shanba kuni bo'shmisan? Kinoga boraylik."},
+                {"who": "Malika", "en": "Sorry, I'm busy on Saturday. I have an English lesson in the morning, and I visit my grandmother in the afternoon.", "uz": "Kechirasan, shanba kuni bandman. Ertalab ingliz tili darsim bor, tushdan keyin esa buvimnikiga boraman."},
+                {"who": "Sardor", "en": "What about Sunday?", "uz": "Yakshanba-chi?"},
+                {"who": "Malika", "en": "Sunday is fine. What time does the film start?", "uz": "Yakshanba bo'ladi. Film soat nechada boshlanadi?"},
+                {"who": "Sardor", "en": "There's a film at six o'clock and another one at nine.", "uz": "Soat oltida bitta film bor, to'qqizda yana bittasi."},
+                {"who": "Malika", "en": "Nine is too late for me. I get up early on Mondays. Let's go at six.", "uz": "To'qqiz men uchun juda kech. Dushanba kunlari erta turaman. Oltida boraylik."},
+                {"who": "Sardor", "en": "OK. See you on Sunday at half past five, in front of the cinema!", "uz": "Xo'p. Yakshanba kuni besh yarimda kinoteatr oldida ko'rishamiz!"}
+              ]
+            },
+            {
+              "type": "choice",
+              "q": "When is Malika busy?",
+              "options": ["On Saturday", "On Sunday", "On Monday evening"],
+              "answer": 0,
+              "explain_uz": "\"Sorry, I'm busy on Saturday.\""
+            },
+            {
+              "type": "choice",
+              "q": "What time will they watch the film?",
+              "options": ["At half past five", "At six o'clock", "At nine o'clock"],
+              "answer": 1,
+              "explain_uz": "\"Let's go at six.\" Besh yarimda esa uchrashadilar."
+            },
+            {
+              "type": "grammar",
+              "title_uz": "Vaqt predloglari: at · on · in",
+              "body_uz": "O'zbek tilida \"soat oltida\", \"shanba kuni\", \"iyulda\" deymiz. Ingliz tilida esa vaqt turiga qarab uch xil predlog bor:\n**at** — aniq vaqt: **at** six o'clock, **at** half past five, **at** midnight, **at** night, **at** the weekend\n**on** — kun va sana: **on** Monday, **on** Sunday morning, **on** 5 May, **on** my birthday\n**in** — uzunroq vaqt: **in** the morning / afternoon / evening, **in** July, **in** winter, **in** 2025\n⚠️ **this, next, last, every, tomorrow, yesterday** oldidan predlog **qo'yilmaydi**: See you **next Monday**. (\"on next Monday\" — xato!)",
+              "examples": [
+                {"en": "The lesson starts at nine o'clock.", "uz": "Dars soat to'qqizda boshlanadi."},
+                {"en": "I don't work on Sundays.", "uz": "Yakshanba kunlari ishlamayman."},
+                {"en": "We go to the mountains in summer.", "uz": "Yozda tog'ga boramiz."},
+                {"en": "See you next week!", "uz": "Keyingi hafta ko'rishamiz!"}
+              ]
+            },
+            {
+              "type": "choice",
+              "q": "My birthday is ___ June.",
+              "options": ["in", "on", "at"],
+              "answer": 0,
+              "explain_uz": "Oy → **in** June."
+            },
+            {
+              "type": "choice",
+              "q": "The lesson starts ___ 9 o'clock.",
+              "options": ["in", "on", "at"],
+              "answer": 2,
+              "explain_uz": "Aniq soat → **at**."
+            },
+            {
+              "type": "gap",
+              "text": "I don't work ___ Sundays.",
+              "answer": ["on"],
+              "uz": "Yakshanba kunlari ishlamayman.",
+              "explain_uz": "Hafta kuni → **on**."
+            },
+            {
+              "type": "gap",
+              "text": "We usually go to the mountains ___ summer.",
+              "answer": ["in"],
+              "uz": "Odatda yozda tog'ga boramiz.",
+              "explain_uz": "Fasl → **in**."
+            },
+            {
+              "type": "gap",
+              "text": "I'll see you ___ Friday evening.",
+              "answer": ["on"],
+              "uz": "Juma kuni kechqurun ko'rishamiz.",
+              "explain_uz": "Kun + qism (Friday evening) → **on**."
+            },
+            {
+              "type": "choice",
+              "q": "Which is correct?",
+              "options": ["See you on next Monday.", "See you next Monday.", "See you at next Monday."],
+              "answer": 1,
+              "explain_uz": "**next** oldidan predlog qo'yilmaydi."
+            },
+            {
+              "type": "match",
+              "pairs": [
+                ["free", "bo'sh"],
+                ["busy", "band"],
+                ["early", "erta"],
+                ["late", "kech"],
+                ["midnight", "yarim tun"]
+              ]
+            },
+            {
+              "type": "order",
+              "uz": "Film soat oltida boshlanadi.",
+              "words": ["The", "film", "starts", "at", "six", "o'clock"],
+              "answer": "The film starts at six o'clock"
+            },
+            {
+              "type": "choice",
+              "audio": true,
+              "q": "When is the appointment?",
+              "say": "Hello, this is the clinic. The doctor can see you on Thursday at half past ten in the morning.",
+              "options": ["Tuesday, 10:30", "Thursday, 10:30", "Thursday, 3:30"],
+              "answer": 1,
+              "explain_uz": "\"on Thursday at half past ten in the morning\""
+            },
+            {
+              "type": "listen",
+              "answer": ["See you on Sunday at five.", "See you on Sunday at five", "See you on Sunday at 5"],
+              "uz": "Eshiting va yozing"
+            },
+            {
+              "type": "translate",
+              "uz": "Dars dushanba kuni soat to'qqizda boshlanadi.",
+              "answer": [
+                "The lesson starts on Monday at nine",
+                "The lesson starts at nine on Monday",
+                "The lesson starts on Monday at nine o'clock",
+                "The lesson starts at nine o'clock on Monday",
+                "The lesson starts on Monday at 9",
+                "The lesson starts at 9 on Monday",
+                "The lesson begins on Monday at nine",
+                "The lesson begins at nine on Monday",
+                "The class starts on Monday at nine",
+                "The class starts at nine on Monday"
+              ],
+              "explain_uz": "Kun → **on** Monday, soat → **at** nine."
+            },
+            {
+              "type": "speak",
+              "text": "I'm free on Sunday afternoon. Let's meet at four.",
+              "uz": "Ovoz chiqarib ayting"
+            },
+            {
+              "type": "write",
+              "prompt_uz": "Haftangiz haqida yozing: qaysi kuni, soat nechada nima qilasiz? 5–6 gap (in / on / at).",
+              "prompt": "Describe your week. What do you do on different days and at what time?",
+              "min_words": 40,
+              "example": "I'm a student, so I'm busy from Monday to Friday. My lessons start at eight o'clock in the morning. On Tuesdays and Thursdays I have English at four in the afternoon. In the evening I usually do my homework. At the weekend I'm free. On Saturday I play football with my friends, and on Sunday I visit my grandparents."
+            }
+          ]
+        },
+        {
+          "slug": "a2-how-often",
+          "title": "I usually get up at seven",
+          "title_uz": "Qanchalik tez-tez? always / usually / never",
+          "goal_uz": "Odatlaringiz haqida gapirasiz: always, usually, sometimes, never va once a week, twice a month iboralarini to'g'ri joyga qo'yasiz.",
+          "minutes": 11,
+          "words": [
+            {"en": "always", "uz": "doim, har doim", "ipa": "/ˈɔːlweɪz/", "ex": "I always drink tea in the morning."},
+            {"en": "usually", "uz": "odatda", "ipa": "/ˈjuːʒuəli/", "ex": "We usually have dinner at seven."},
+            {"en": "often", "uz": "tez-tez, ko'pincha", "ipa": "/ˈɒfn/", "ex": "He often studies in the library."},
+            {"en": "sometimes", "uz": "ba'zan", "ipa": "/ˈsʌmtaɪmz/", "ex": "I sometimes play football."},
+            {"en": "hardly ever", "uz": "deyarli hech qachon", "ipa": "/ˈhɑːdli ˈevə/", "ex": "She hardly ever watches TV."},
+            {"en": "never", "uz": "hech qachon", "ipa": "/ˈnevə/", "ex": "I never drink coffee."},
+            {"en": "once", "uz": "bir marta", "ipa": "/wʌns/", "ex": "I visit my family once a month."},
+            {"en": "twice", "uz": "ikki marta", "ipa": "/twaɪs/", "ex": "We go swimming twice a week."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "reading",
+              "title": "Dilshod's week",
+              "text": "Dilshod is a university student in Samarkand. He always gets up at half past six, because his classes start at eight. He usually has bread and tea for breakfast, but he never drinks coffee. He goes to the gym three times a week — on Monday, Wednesday and Friday. He often studies in the library in the evening. At the weekend he sometimes plays football with his friends, and once a month he visits his family in Urgut. He is hardly ever late for his classes!",
+              "glossary": {
+                "university student": "talaba",
+                "classes": "darslar",
+                "breakfast": "nonushta",
+                "gym": "sport zali",
+                "three times a week": "haftada uch marta",
+                "library": "kutubxona",
+                "late for": "...ga kech qolgan"
+              },
+              "uz": "Dilshod — Samarqanddagi talaba. U har doim olti yarimda turadi, chunki darslari sakkizda boshlanadi. Nonushtaga odatda non va choy ichadi, lekin hech qachon qahva ichmaydi. U haftada uch marta — dushanba, chorshanba va juma kunlari sport zaliga boradi. Kechqurunlari ko'pincha kutubxonada o'qiydi. Dam olish kunlari ba'zan do'stlari bilan futbol o'ynaydi, oyda bir marta esa Urgutdagi oilasini ko'rgani boradi. U darslariga deyarli hech qachon kech qolmaydi!"
+            },
+            {
+              "type": "choice",
+              "q": "How often does Dilshod go to the gym?",
+              "options": ["Once a week", "Three times a week", "Every day"],
+              "answer": 1,
+              "explain_uz": "\"He goes to the gym three times a week\"."
+            },
+            {
+              "type": "choice",
+              "q": "What does Dilshod never drink?",
+              "options": ["Tea", "Coffee", "Water"],
+              "answer": 1,
+              "explain_uz": "\"he never drinks coffee\"."
+            },
+            {
+              "type": "grammar",
+              "title_uz": "Chastota ravishlari va How often...?",
+              "body_uz": "**always** 100% → **usually** → **often** → **sometimes** → **hardly ever** → **never** 0%\n**Joyi:** asosiy fe'ldan **oldin**: He **usually gets** up at 7. I **never drink** coffee.\nLekin **be** fe'lidan **keyin**: She **is always** late. We **are never** bored.\n**How often...?** — \"Qanchalik tez-tez?\" Javob: **every day**, **once a week** (haftada bir marta), **twice a month** (oyda ikki marta), **three times a year** (yilda uch marta). Bu iboralar odatda gap **oxirida** keladi.\n⚠️ \"I go usually to school\" — xato. To'g'ri: I **usually go** to school.",
+              "examples": [
+                {"en": "I always have breakfast at home.", "uz": "Men doim uyda nonushta qilaman."},
+                {"en": "She is never late.", "uz": "U hech qachon kech qolmaydi."},
+                {"en": "How often do you go to the cinema? — About once a month.", "uz": "Kinoga qanchalik tez-tez borasiz? — Taxminan oyda bir marta."},
+                {"en": "We play tennis twice a week.", "uz": "Biz haftada ikki marta tennis o'ynaymiz."}
+              ]
+            },
+            {
+              "type": "choice",
+              "q": "She ___ late for work.",
+              "options": ["is never", "never is", "never"],
+              "answer": 0,
+              "explain_uz": "**be** fe'lidan keyin: is **never**."
+            },
+            {
+              "type": "choice",
+              "q": "How often do you go to the cinema?",
+              "options": ["Yes, I do.", "About once a month.", "At seven o'clock."],
+              "answer": 1,
+              "explain_uz": "How often → necha marta: **once a month**."
+            },
+            {
+              "type": "gap",
+              "text": "I ___ drink tea in the morning — every day! (100%)",
+              "answer": ["always"],
+              "uz": "Men ertalab doim choy ichaman — har kuni!",
+              "explain_uz": "100% → **always**."
+            },
+            {
+              "type": "gap",
+              "text": "We go swimming ___ a week — on Tuesdays and Saturdays.",
+              "answer": ["twice"],
+              "uz": "Biz haftada ikki marta — seshanba va shanba kunlari suzishga boramiz.",
+              "explain_uz": "2 marta → **twice**."
+            },
+            {
+              "type": "gap",
+              "text": "He ___ eats meat. He's a vegetarian. (0%)",
+              "answer": ["never"],
+              "uz": "U hech qachon go'sht yemaydi. U vegetarian.",
+              "explain_uz": "0% → **never** (gap tasdiq shaklida qoladi: never eats)."
+            },
+            {
+              "type": "choice",
+              "q": "Which is correct?",
+              "options": ["I go usually to bed at eleven.", "I usually go to bed at eleven.", "I usually am go to bed at eleven."],
+              "answer": 1,
+              "explain_uz": "Ravish asosiy fe'ldan oldin: **usually go**."
+            },
+            {
+              "type": "match",
+              "pairs": [
+                ["always", "doim"],
+                ["usually", "odatda"],
+                ["sometimes", "ba'zan"],
+                ["never", "hech qachon"],
+                ["twice", "ikki marta"]
+              ]
+            },
+            {
+              "type": "order",
+              "uz": "Men odatda nonushtaga choy ichaman.",
+              "words": ["I", "usually", "have", "tea", "for", "breakfast"],
+              "answer": "I usually have tea for breakfast"
+            },
+            {
+              "type": "choice",
+              "audio": true,
+              "q": "How often does the man usually go to the gym?",
+              "say": "I go to the gym twice a week, on Tuesdays and Thursdays. I sometimes go on Saturdays too, but not often.",
+              "options": ["Once a week", "Twice a week", "Every day"],
+              "answer": 1,
+              "explain_uz": "\"I go to the gym twice a week\"."
+            },
+            {
+              "type": "listen",
+              "answer": ["How often do you go to the gym?", "How often do you go to the gym"],
+              "uz": "Eshiting va yozing"
+            },
+            {
+              "type": "translate",
+              "uz": "Men haftada bir marta buvimnikiga boraman.",
+              "answer": [
+                "I visit my grandmother once a week",
+                "I visit my grandma once a week",
+                "I visit my granny once a week",
+                "I go to my grandmother's once a week",
+                "I go to my grandma's once a week",
+                "I go to my grandmother's house once a week",
+                "I go to see my grandmother once a week",
+                "I see my grandmother once a week",
+                "Once a week I visit my grandmother",
+                "Once a week I go to my grandmother's"
+              ],
+              "explain_uz": "**once a week** — gap oxirida."
+            },
+            {
+              "type": "speak",
+              "text": "I always get up early, but I hardly ever have breakfast.",
+              "uz": "Ovoz chiqarib ayting"
+            },
+            {
+              "type": "write",
+              "prompt_uz": "Odatlaringiz haqida yozing: nimani doim, odatda, ba'zan va hech qachon qilasiz? 5–6 gap.",
+              "prompt": "Write about your habits. What do you always, usually, sometimes and never do?",
+              "min_words": 40,
+              "example": "I always get up at seven o'clock and I usually have eggs and tea for breakfast. I go to English classes three times a week. I often read books in the evening, but I hardly ever watch TV. At the weekend I sometimes go to the park with my friends. I never eat fast food, because I want to be healthy."
+            }
+          ]
+        },
+        {
+          "slug": "a2-dates",
+          "title": "When is your birthday?",
+          "title_uz": "Sanalar va tartib sonlar",
+          "goal_uz": "Sanani to'g'ri aytasiz va yozasiz (the twenty-first of March), tug'ilgan kun va bayramlar haqida so'raysiz.",
+          "minutes": 11,
+          "words": [
+            {"en": "date", "uz": "sana", "ipa": "/deɪt/", "ex": "What's the date today?"},
+            {"en": "month", "uz": "oy", "ipa": "/mʌnθ/", "ex": "March is my favourite month."},
+            {"en": "calendar", "uz": "taqvim, kalendar", "ipa": "/ˈkælɪndə/", "ex": "Write the date in your calendar."},
+            {"en": "celebrate", "uz": "nishonlamoq", "ipa": "/ˈselɪbreɪt/", "ex": "We celebrate Navruz in March."},
+            {"en": "holiday", "uz": "bayram; ta'til", "ipa": "/ˈhɒlədeɪ/", "ex": "Independence Day is a big holiday."},
+            {"en": "first", "uz": "birinchi", "ipa": "/fɜːst/", "ex": "My birthday is on the first of May."},
+            {"en": "third", "uz": "uchinchi", "ipa": "/θɜːd/", "ex": "Today is the third of June."},
+            {"en": "be born", "uz": "tug'ilmoq", "ipa": "/biː bɔːn/", "ex": "I was born in 2006."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "dialogue",
+              "title": "Birthdays and holidays",
+              "context_uz": "Kamola britaniyalik do'sti Emma bilan tug'ilgan kunlar va bayramlar haqida gaplashyapti.",
+              "lines": [
+                {"who": "Emma", "en": "When is your birthday, Kamola?", "uz": "Tug'ilgan kuning qachon, Kamola?"},
+                {"who": "Kamola", "en": "It's on the twenty-first of March — the same day as Navruz!", "uz": "Yigirma birinchi martda — Navro'z bilan bir kunda!"},
+                {"who": "Emma", "en": "Wow! So everyone celebrates on your birthday!", "uz": "Voy! Demak, tug'ilgan kuningda hamma bayram qiladi!"},
+                {"who": "Kamola", "en": "Yes! What about you? When were you born?", "uz": "Ha! Sen-chi? Qachon tug'ilgansan?"},
+                {"who": "Emma", "en": "I was born on the third of December, two thousand and five.", "uz": "Men ikki ming beshinchi yil uchinchi dekabrda tug'ilganman."},
+                {"who": "Kamola", "en": "What's the date today?", "uz": "Bugun nechanchi sana?"},
+                {"who": "Emma", "en": "It's the fifteenth of October. Why?", "uz": "O'n beshinchi oktabr. Nimaydi?"},
+                {"who": "Kamola", "en": "Teachers' Day was on the first of October, and I forgot to call my teacher!", "uz": "O'qituvchilar kuni birinchi oktabrda edi, men esa ustozimga qo'ng'iroq qilishni unutibman!"}
+              ]
+            },
+            {
+              "type": "choice",
+              "q": "When is Kamola's birthday?",
+              "options": ["On 1 October", "On 21 March", "On 3 December"],
+              "answer": 1,
+              "explain_uz": "\"It's on the twenty-first of March\"."
+            },
+            {
+              "type": "choice",
+              "q": "When was Emma born?",
+              "options": ["In 2005", "In 2015", "In 1995"],
+              "answer": 0,
+              "explain_uz": "\"two thousand and five\" = 2005."
+            },
+            {
+              "type": "grammar",
+              "title_uz": "Tartib sonlar va sanalar",
+              "body_uz": "Sanada **tartib son** ishlatiladi (birinchi, ikkinchi...):\n1st **first** · 2nd **second** · 3rd **third** · 4th fourth · 5th **fifth** · 8th **eighth** · 9th **ninth** · 12th **twelfth** · 20th **twentieth** · 21st **twenty-first** · 22nd twenty-second · 30th **thirtieth**\nKo'pchiligi: son + **th**. Qoida buzadiganlar qalin yozilgan.\n**Yozamiz:** 21 March · **Aytamiz:** **the twenty-first of March** yoki March the twenty-first.\n**Yillar:** 1998 — **nineteen ninety-eight** · 2005 — **two thousand and five** · 2025 — **twenty twenty-five**.\n**Predloglar:** **on** 21 March (sana) · **in** March (oy) · **in** 2005 (yil).\nSavollar: **What's the date today?** · **When's your birthday?** · **When were you born?** — I was born **in** 2006 / **on** 3 December.",
+              "examples": [
+                {"en": "Navruz is on the twenty-first of March.", "uz": "Navro'z yigirma birinchi martda."},
+                {"en": "Today is the second of September.", "uz": "Bugun ikkinchi sentabr."},
+                {"en": "I was born in two thousand and seven.", "uz": "Men ikki ming yettinchi yilda tug'ilganman."},
+                {"en": "Our exam is on the twelfth of June.", "uz": "Imtihonimiz o'n ikkinchi iyunda."}
+              ]
+            },
+            {
+              "type": "choice",
+              "q": "How do you say \"22nd\"?",
+              "options": ["twenty-two", "twenty-second", "twenty-twoth"],
+              "answer": 1,
+              "explain_uz": "2 → **second**: twenty-**second**."
+            },
+            {
+              "type": "choice",
+              "q": "I was born ___ 2004.",
+              "options": ["in", "on", "at"],
+              "answer": 0,
+              "explain_uz": "Yil → **in**."
+            },
+            {
+              "type": "gap",
+              "text": "Navruz is on the twenty-___ of March. (21st)",
+              "answer": ["first"],
+              "uz": "Navro'z yigirma birinchi martda.",
+              "explain_uz": "21st → twenty-**first**."
+            },
+            {
+              "type": "gap",
+              "text": "My birthday is on the ___ of May. (3rd)",
+              "answer": ["third"],
+              "uz": "Tug'ilgan kunim uchinchi mayda.",
+              "explain_uz": "3rd → **third**."
+            },
+            {
+              "type": "gap",
+              "text": "When ___ you born?",
+              "answer": ["were"],
+              "uz": "Qachon tug'ilgansiz?",
+              "explain_uz": "be born — o'tgan zamonda: **were** you born? / I **was** born."
+            },
+            {
+              "type": "choice",
+              "q": "How do people usually say the year 2025?",
+              "options": ["twenty twenty-five", "two hundred twenty-five", "twenty-five"],
+              "answer": 0,
+              "explain_uz": "**twenty twenty-five** (yoki two thousand and twenty-five)."
+            },
+            {
+              "type": "match",
+              "pairs": [
+                ["date", "sana"],
+                ["first", "birinchi"],
+                ["third", "uchinchi"],
+                ["celebrate", "nishonlamoq"],
+                ["calendar", "taqvim"]
+              ]
+            },
+            {
+              "type": "order",
+              "uz": "Tug'ilgan kunim o'n ikkinchi mayda.",
+              "words": ["My", "birthday", "is", "on", "the", "twelfth", "of", "May"],
+              "answer": "My birthday is on the twelfth of May"
+            },
+            {
+              "type": "choice",
+              "audio": true,
+              "q": "When is the exam?",
+              "say": "My sister's wedding is on the fifth of August, and my exam is on the twenty-third of July.",
+              "options": ["On 5 August", "On 23 July", "On 25 July"],
+              "answer": 1,
+              "explain_uz": "\"my exam is on the twenty-third of July\"."
+            },
+            {
+              "type": "listen",
+              "answer": ["I was born on the third of December.", "I was born on the third of December", "I was born on 3 December", "I was born on the 3rd of December"],
+              "uz": "Eshiting va yozing"
+            },
+            {
+              "type": "translate",
+              "uz": "Mening tug'ilgan kunim ikkinchi aprelda.",
+              "answer": [
+                "My birthday is on the second of April",
+                "My birthday's on the second of April",
+                "My birthday is on April the second",
+                "My birthday is on 2 April",
+                "My birthday is on 2nd April",
+                "My birthday is on the 2nd of April",
+                "My birthday is on April second",
+                "My birthday is on April 2",
+                "My birthday is on April 2nd",
+                "My birthday is the second of April"
+              ],
+              "explain_uz": "Sana → **on** the second of April."
+            },
+            {
+              "type": "speak",
+              "text": "I was born on the fourteenth of February, two thousand and six.",
+              "uz": "Ovoz chiqarib ayting"
+            },
+            {
+              "type": "write",
+              "prompt_uz": "Oilangizdagi muhim sanalar yoki sevimli bayramingiz haqida yozing: qachon va qanday nishonlaysiz? 5–6 gap.",
+              "prompt": "Write about important dates in your family or your favourite holiday. When is it and how do you celebrate it?",
+              "min_words": 40,
+              "example": "My favourite holiday is Navruz. It is on the twenty-first of March, at the beginning of spring. We always celebrate it with my whole family. My grandmother cooks sumalak and we eat it together. My birthday is on the ninth of May, and my brother's birthday is on the thirtieth of November. I was born in two thousand and seven."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

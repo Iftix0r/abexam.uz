@@ -1,0 +1,498 @@
+{
+  "level": "A2",
+  "units": [
+    {
+      "slug": "a2-past-stories",
+      "title": "Past stories",
+      "title_uz": "O'tmishdagi voqealar",
+      "icon": "history",
+      "lessons": [
+        {
+          "slug": "a2-was-doing",
+          "title": "What were you doing at nine?",
+          "title_uz": "Past Continuous: was / were + -ing",
+          "goal_uz": "O'tmishdagi aniq bir paytda nima qilayotganingizni aytasiz: At nine o'clock I was watching a film.",
+          "minutes": 11,
+          "words": [
+            {"en": "power cut", "uz": "elektr (svet) o'chishi", "ipa": "/ˈpaʊə kʌt/", "ex": "There was a power cut last night."},
+            {"en": "candle", "uz": "sham", "ipa": "/ˈkændl/", "ex": "We lit a candle."},
+            {"en": "dark", "uz": "qorong'i", "ipa": "/dɑːk/", "ex": "It was very dark in the room."},
+            {"en": "neighbour", "uz": "qo'shni", "ipa": "/ˈneɪbə/", "ex": "Our neighbour knocked on the door."},
+            {"en": "exciting", "uz": "qiziqarli, hayajonli", "ipa": "/ɪkˈsaɪtɪŋ/", "ex": "The film was really exciting."},
+            {"en": "scary", "uz": "qo'rqinchli", "ipa": "/ˈskeəri/", "ex": "He told us a scary story."},
+            {"en": "light", "uz": "yoqmoq (olov, sham)", "ipa": "/laɪt/", "ex": "Can you light the candles? (lit — o'tgan zamon)"},
+            {"en": "news", "uz": "yangiliklar", "ipa": "/njuːz/", "ex": "Dad was reading the news."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "dialogue",
+              "title": "After the power cut",
+              "context_uz": "Kecha kechqurun mahallada svet o'chdi. Ertasi kuni qo'shnilar Aziz va Nodira suhbatlashyapti.",
+              "lines": [
+                {"who": "Aziz", "en": "There was a power cut last night. What were you doing at nine o'clock?", "uz": "Kecha kechqurun svet o'chdi. Soat to'qqizda nima qilayotgan eding?"},
+                {"who": "Nodira", "en": "I was watching a film with my sister. It was really exciting!", "uz": "Singlim bilan film ko'rayotgan edim. Juda qiziq edi!"},
+                {"who": "Aziz", "en": "Oh no! We were having dinner. My mum was cooking plov and Dad was reading the news.", "uz": "Voy! Biz kechki ovqat qilayotgan edik. Oyim palov pishirayotgan edi, dadam yangiliklarni o'qiyotgan edi."},
+                {"who": "Nodira", "en": "What did you do in the dark?", "uz": "Qorong'ida nima qildinglar?"},
+                {"who": "Aziz", "en": "We lit some candles and finished dinner. Then my little brother told us a scary story!", "uz": "Sham yoqib, ovqatni tugatdik. Keyin ukam bizga qo'rqinchli hikoya aytib berdi!"},
+                {"who": "Nodira", "en": "Ha! At ten o'clock we weren't doing anything. We were sleeping!", "uz": "Ha-ha! Soat o'nda biz hech narsa qilmayotgan edik. Uxlayotgan edik!"}
+              ]
+            },
+            {
+              "type": "choice",
+              "q": "What was Nodira doing at nine o'clock?",
+              "options": ["She was having dinner.", "She was watching a film.", "She was sleeping."],
+              "answer": 1,
+              "explain_uz": "\"I was watching a film with my sister.\""
+            },
+            {
+              "type": "choice",
+              "q": "Who was cooking plov?",
+              "options": ["Aziz's mum", "Aziz's dad", "Nodira's sister"],
+              "answer": 0,
+              "explain_uz": "\"My mum was cooking plov\"."
+            },
+            {
+              "type": "grammar",
+              "title_uz": "Past Continuous — \"...yotgan edim\"",
+              "body_uz": "O'tmishdagi **aniq bir paytda davom etayotgan** ish uchun: \"soat to'qqizda film ko'rayotgan edim\".\nTuzilma: **was / were + fe'l-ing**\n**I / he / she / it — was**: I **was watching**. She **was cooking**.\n**you / we / they — were**: We **were having** dinner.\nInkor: **wasn't / weren't**: He **wasn't sleeping**.\nSavol: **What were you doing** at 9? · **Was** she **working**? — Yes, she **was**. / No, she **wasn't**.\nTaqqoslang: Past Simple — **tugagan** ish: I **watched** a film yesterday. Past Continuous — **o'sha paytda davom etayotgan**: At 9 I **was watching** a film.\n⚠️ know, like, want, need bilan -ing ishlatilmaydi: \"I was knowing\" — xato, **I knew**.",
+              "examples": [
+                {"en": "At seven o'clock I was having breakfast.", "uz": "Soat yettida nonushta qilayotgan edim."},
+                {"en": "They were playing football in the park.", "uz": "Ular parkda futbol o'ynayotgan edi."},
+                {"en": "She wasn't listening to the teacher.", "uz": "U o'qituvchini tinglamayotgan edi."},
+                {"en": "What were you doing yesterday at five?", "uz": "Kecha soat beshda nima qilayotgan edingiz?"}
+              ]
+            },
+            {
+              "type": "choice",
+              "q": "At 7 o'clock yesterday, I ___ breakfast.",
+              "options": ["have", "was having", "were having"],
+              "answer": 1,
+              "explain_uz": "I → **was** + -ing."
+            },
+            {
+              "type": "choice",
+              "q": "What ___ they doing at midnight?",
+              "options": ["was", "were", "did"],
+              "answer": 1,
+              "explain_uz": "they → **were**."
+            },
+            {
+              "type": "gap",
+              "text": "At ten last night, we ___ watching TV.",
+              "answer": ["were"],
+              "uz": "Kecha soat o'nda televizor ko'rayotgan edik.",
+              "explain_uz": "we → **were**."
+            },
+            {
+              "type": "gap",
+              "text": "She ___ sleeping at six in the morning. She was already at work. (inkor)",
+              "answer": ["wasn't", "was not"],
+              "uz": "U ertalab soat oltida uxlamayotgan edi. U allaqachon ishda edi.",
+              "explain_uz": "she → **wasn't** + -ing."
+            },
+            {
+              "type": "gap",
+              "text": "It ___ raining all morning, so we stayed at home.",
+              "answer": ["was"],
+              "uz": "Ertalabdan beri yomg'ir yog'ayotgan edi, shuning uchun uyda qoldik.",
+              "explain_uz": "it → **was** raining."
+            },
+            {
+              "type": "choice",
+              "q": "Which is correct?",
+              "options": ["I was knowing the answer.", "I knew the answer.", "I were knowing the answer."],
+              "answer": 1,
+              "explain_uz": "**know** davomli shaklda ishlatilmaydi → **I knew**."
+            },
+            {
+              "type": "match",
+              "pairs": [
+                ["power cut", "svet o'chishi"],
+                ["candle", "sham"],
+                ["dark", "qorong'i"],
+                ["neighbour", "qo'shni"],
+                ["scary", "qo'rqinchli"]
+              ]
+            },
+            {
+              "type": "order",
+              "uz": "Soat to'qqizda nima qilayotgan edingiz?",
+              "words": ["What", "were", "you", "doing", "at", "nine", "o'clock"],
+              "answer": "What were you doing at nine o'clock"
+            },
+            {
+              "type": "choice",
+              "audio": true,
+              "q": "What was the speaker doing?",
+              "say": "Yesterday at five o'clock, my brother was playing football and my sister was doing her homework. I was helping my mum in the kitchen.",
+              "options": ["Playing football", "Doing homework", "Helping in the kitchen"],
+              "answer": 2,
+              "explain_uz": "\"I was helping my mum in the kitchen.\""
+            },
+            {
+              "type": "listen",
+              "answer": ["We were having dinner at eight o'clock.", "We were having dinner at eight o'clock", "We were having dinner at 8 o'clock", "We were having dinner at eight"],
+              "uz": "Eshiting va yozing"
+            },
+            {
+              "type": "translate",
+              "uz": "Kecha soat o'nda men kitob o'qiyotgan edim.",
+              "answer": [
+                "I was reading a book at ten o'clock yesterday",
+                "I was reading a book at ten yesterday",
+                "I was reading a book yesterday at ten o'clock",
+                "I was reading a book yesterday at ten",
+                "At ten o'clock yesterday I was reading a book",
+                "At ten yesterday I was reading a book",
+                "Yesterday at ten o'clock I was reading a book",
+                "Yesterday at ten I was reading a book",
+                "I was reading a book at 10 yesterday",
+                "Yesterday at 10 I was reading a book"
+              ],
+              "explain_uz": "I → **was reading**."
+            },
+            {
+              "type": "speak",
+              "text": "At eight o'clock last night, I was doing my homework.",
+              "uz": "Ovoz chiqarib ayting"
+            },
+            {
+              "type": "write",
+              "prompt_uz": "Kecha soat 20:00 da siz va oilangiz a'zolari nima qilayotgan edingiz? 5–6 gap yozing (was / were + -ing).",
+              "prompt": "What were you and your family doing yesterday at 8 pm?",
+              "min_words": 40,
+              "example": "Yesterday at eight o'clock in the evening, my family was at home. My mother was cooking dinner in the kitchen, and my father was watching the news on TV. My little sister was drawing a picture. My brother wasn't at home — he was playing football with his friends. I was doing my English homework in my room."
+            }
+          ]
+        },
+        {
+          "slug": "a2-when-while",
+          "title": "I was walking home when it started to rain",
+          "title_uz": "Voqea hikoya qilish: when / while",
+          "goal_uz": "Kichik voqeani hikoya qilasiz: davom etayotgan ish (was walking) va uni to'xtatgan qisqa voqea (when it started to rain).",
+          "minutes": 12,
+          "words": [
+            {"en": "suddenly", "uz": "birdan, to'satdan", "ipa": "/ˈsʌdənli/", "ex": "Suddenly, the lights went out."},
+            {"en": "slip", "uz": "sirpanib ketmoq", "ipa": "/slɪp/", "ex": "Be careful! Don't slip on the ice."},
+            {"en": "fall over", "uz": "yiqilib tushmoq", "ipa": "/fɔːl ˈəʊvə/", "ex": "He slipped and fell over. (fell — o'tgan zamon)"},
+            {"en": "drop", "uz": "tushirib yubormoq", "ipa": "/drɒp/", "ex": "I dropped my phone."},
+            {"en": "break", "uz": "sinmoq, sindirmoq", "ipa": "/breɪk/", "ex": "The screen broke."},
+            {"en": "happen", "uz": "sodir bo'lmoq", "ipa": "/ˈhæpən/", "ex": "What happened?"},
+            {"en": "icy", "uz": "muzlagan, toyg'oq", "ipa": "/ˈaɪsi/", "ex": "The roads were icy."},
+            {"en": "luckily", "uz": "baxtimga, xayriyat", "ipa": "/ˈlʌkɪli/", "ex": "Luckily, nobody was hurt."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "reading",
+              "title": "A bad morning",
+              "text": "Last winter, I was walking to school when it started to snow. Soon the streets were very icy. While I was crossing the road, I saw my friend Jamshid on the other side. I waved to him, and suddenly I slipped and fell over! My phone fell out of my pocket and the screen broke. Luckily, I didn't hurt myself. Jamshid was laughing while he was helping me up. \"What happened?\" he asked. \"I was looking at you, not at the road!\" I said.",
+              "glossary": {
+                "last winter": "o'tgan qish",
+                "started to snow": "qor yog'a boshladi",
+                "crossing the road": "yo'ldan o'tayotgan",
+                "on the other side": "narigi tomonda",
+                "waved": "qo'l silkidim",
+                "pocket": "cho'ntak",
+                "hurt myself": "o'zimni lat yedirdim",
+                "helping me up": "turishimga yordam berib"
+              },
+              "uz": "O'tgan qishda maktabga ketayotganimda qor yog'a boshladi. Tez orada ko'chalar juda toyg'oq bo'lib qoldi. Yo'ldan o'tayotganimda narigi tomonda do'stim Jamshidni ko'rdim. Unga qo'l silkidim va birdan sirpanib yiqildim! Telefonim cho'ntagimdan tushib ketdi va ekrani sindi. Xayriyat, o'zim lat yemadim. Jamshid turishimga yordam berar ekan, kulayotgan edi. \"Nima bo'ldi?\" — deb so'radi u. \"Men yo'lga emas, senga qarayotgan edim!\" — dedim."
+            },
+            {
+              "type": "choice",
+              "q": "What happened to the phone?",
+              "options": ["The writer lost it.", "The screen broke.", "Jamshid took it."],
+              "answer": 1,
+              "explain_uz": "\"the screen broke\"."
+            },
+            {
+              "type": "choice",
+              "q": "Why did the writer fall over?",
+              "options": ["He was running.", "He was looking at Jamshid, not the road.", "A car hit him."],
+              "answer": 1,
+              "explain_uz": "\"I was looking at you, not at the road!\""
+            },
+            {
+              "type": "grammar",
+              "title_uz": "when va while bilan hikoya",
+              "body_uz": "Hikoyada ikki xil o'tgan zamon birga ishlatiladi:\n**Past Continuous** — uzoqroq, fon ish (davom etayotgan edi)\n**Past Simple** — qisqa voqea, fonni \"bo'lib qo'yadi\"\n**... when + Past Simple**: I **was walking** home **when** it **started** to rain.\n**While + Past Continuous, ...**: **While** I **was crossing** the road, I **saw** my friend.\nIkki uzun ish bir vaqtda: **While** I **was cooking**, my brother **was cleaning**.\nTinish belgisi: when / while qismi **boshida** kelsa — vergul qo'yiladi: When the phone rang**,** I was sleeping.",
+              "examples": [
+                {"en": "I was having a shower when the phone rang.", "uz": "Dush qabul qilayotganimda telefon jiringladi."},
+                {"en": "While we were playing football, it started to rain.", "uz": "Futbol o'ynayotganimizda yomg'ir yog'a boshladi."},
+                {"en": "She dropped her bag while she was running for the bus.", "uz": "Avtobusga yugurayotganda sumkasini tushirib yubordi."},
+                {"en": "While I was studying, my sister was watching TV.", "uz": "Men dars qilayotganimda singlim televizor ko'rayotgan edi."}
+              ]
+            },
+            {
+              "type": "choice",
+              "q": "I ___ a shower when the phone rang.",
+              "options": ["had", "was having", "have"],
+              "answer": 1,
+              "explain_uz": "Davom etayotgan fon ish → **was having**; qisqa voqea → rang."
+            },
+            {
+              "type": "choice",
+              "q": "While she was cooking, she ___ her finger.",
+              "options": ["was cutting", "cut", "cuts"],
+              "answer": 1,
+              "explain_uz": "Qisqa voqea → Past Simple: **cut** (cut — cut — cut)."
+            },
+            {
+              "type": "gap",
+              "text": "We were playing football ___ it started to rain.",
+              "answer": ["when"],
+              "uz": "Yomg'ir yog'a boshlaganida biz futbol o'ynayotgan edik.",
+              "explain_uz": "... **when** + qisqa voqea (Past Simple)."
+            },
+            {
+              "type": "gap",
+              "text": "___ I was walking home, I met my teacher.",
+              "answer": ["While", "When", "As"],
+              "uz": "Uyga ketayotganimda o'qituvchimni uchratdim.",
+              "explain_uz": "**While** + Past Continuous."
+            },
+            {
+              "type": "gap",
+              "text": "He ___ to work when he saw the accident. (drive)",
+              "answer": ["was driving"],
+              "uz": "U baxtsiz hodisani ko'rganida ishga mashina haydab ketayotgan edi.",
+              "explain_uz": "Fon ish → **was driving**."
+            },
+            {
+              "type": "choice",
+              "q": "Which sentence is correct?",
+              "options": [
+                "While I was waiting for the bus, I saw an accident.",
+                "While I waited for the bus, I was seeing an accident.",
+                "While I was wait for the bus, I saw an accident."
+              ],
+              "answer": 0,
+              "explain_uz": "Uzun ish — **was waiting**, qisqa voqea — **saw**."
+            },
+            {
+              "type": "match",
+              "pairs": [
+                ["suddenly", "birdan"],
+                ["slip", "sirpanib ketmoq"],
+                ["drop", "tushirib yubormoq"],
+                ["happen", "sodir bo'lmoq"],
+                ["luckily", "xayriyat, baxtimga"]
+              ]
+            },
+            {
+              "type": "order",
+              "uz": "Yomg'ir yog'a boshlaganida uyga ketayotgan edim.",
+              "words": ["I", "was", "walking", "home", "when", "it", "started", "to", "rain"],
+              "answer": "I was walking home when it started to rain"
+            },
+            {
+              "type": "choice",
+              "audio": true,
+              "q": "What happened to the food?",
+              "say": "I was cooking dinner when my friend called. While we were talking, I forgot about the food, and it burnt!",
+              "options": ["It was delicious.", "It burnt.", "The friend ate it."],
+              "answer": 1,
+              "explain_uz": "\"I forgot about the food, and it burnt!\""
+            },
+            {
+              "type": "listen",
+              "answer": ["While I was crossing the road, I saw my friend.", "While I was crossing the road I saw my friend"],
+              "uz": "Eshiting va yozing"
+            },
+            {
+              "type": "translate",
+              "uz": "Men televizor ko'rayotganimda svet o'chib qoldi.",
+              "answer": [
+                "The lights went out while I was watching TV",
+                "The lights went off while I was watching TV",
+                "While I was watching TV the lights went out",
+                "While I was watching TV the lights went off",
+                "I was watching TV when the lights went out",
+                "I was watching TV when the lights went off",
+                "The power went off while I was watching TV",
+                "While I was watching TV the power went off",
+                "I was watching TV when the power went off",
+                "There was a power cut while I was watching TV"
+              ],
+              "explain_uz": "Fon — **was watching**, qisqa voqea — **went out / went off**."
+            },
+            {
+              "type": "speak",
+              "text": "I was walking to school when I saw an old friend.",
+              "uz": "Ovoz chiqarib ayting"
+            },
+            {
+              "type": "write",
+              "prompt_uz": "Boshingizdan o'tgan kichik voqea yoki kutilmagan holatni hikoya qiling: u sodir bo'lganda nima qilayotgan edingiz? 6–8 gap (when / while).",
+              "prompt": "Tell the story of a small accident or a surprising moment. What were you doing when it happened?",
+              "min_words": 50,
+              "example": "Last summer, my family and I were driving to Chimgan when something strange happened. We were listening to music and my sister was sleeping. Suddenly, a big dog ran into the road! My father stopped the car very quickly. Luckily, the dog was OK. While we were looking at it, a little boy ran to us and said, \"Thank you! That's my dog!\" He was crying, but then he started to laugh. We all laughed too."
+            }
+          ]
+        },
+        {
+          "slug": "a2-could",
+          "title": "When I was a child, I could...",
+          "title_uz": "O'tmish: could / couldn't · there was / were",
+          "goal_uz": "Bolaligingiz va o'tmish haqida gapirasiz: nimani qila olardingiz (could) va qayerda nima bor edi (there was / there were).",
+          "minutes": 11,
+          "words": [
+            {"en": "childhood", "uz": "bolalik", "ipa": "/ˈtʃaɪldhʊd/", "ex": "I had a happy childhood."},
+            {"en": "village", "uz": "qishloq", "ipa": "/ˈvɪlɪdʒ/", "ex": "My grandparents live in a village."},
+            {"en": "grow up", "uz": "ulg'aymoq, katta bo'lmoq", "ipa": "/ɡrəʊ ʌp/", "ex": "I grew up in Namangan."},
+            {"en": "climb", "uz": "tirmashib chiqmoq", "ipa": "/klaɪm/", "ex": "We climbed the tall trees."},
+            {"en": "field", "uz": "dala", "ipa": "/fiːld/", "ex": "The children played in the fields."},
+            {"en": "ride", "uz": "minmoq (ot, velosiped)", "ipa": "/raɪd/", "ex": "He could ride a horse at six."},
+            {"en": "toy", "uz": "o'yinchoq", "ipa": "/tɔɪ/", "ex": "We didn't have many toys."},
+            {"en": "bored", "uz": "zerikkan", "ipa": "/bɔːd/", "ex": "We were never bored."}
+          ],
+          "steps": [
+            {"type": "words"},
+            {
+              "type": "reading",
+              "title": "My grandfather's childhood",
+              "text": "My grandfather grew up in a small village near Bukhara. There wasn't a TV in his house until he was twelve, and there weren't any shops in the village — only a small bazaar on Fridays. There was one school, and there were only twelve children in his class. He couldn't watch cartoons, but he could ride a horse when he was six! He and his friends could climb the tallest trees in the fields. \"We didn't have many toys,\" he says, \"but we were never bored.\"",
+              "glossary": {
+                "near": "yaqinida",
+                "until he was twelve": "o'n ikki yoshga to'lguncha",
+                "only": "faqat",
+                "on Fridays": "juma kunlari",
+                "cartoons": "multfilmlar",
+                "the tallest": "eng baland"
+              },
+              "uz": "Bobom Buxoro yaqinidagi kichik qishloqda ulg'aygan. U o'n ikki yoshga to'lguncha uyida televizor yo'q edi, qishloqda esa birorta ham do'kon yo'q edi — faqat juma kunlari kichik bozor bo'lardi. Bitta maktab bor edi, uning sinfida esa atigi o'n ikki bola bor edi. U multfilm ko'ra olmasdi, lekin olti yoshida ot mina olardi! U do'stlari bilan daladagi eng baland daraxtlarga chiqa olardi. \"O'yinchoqlarimiz ko'p emas edi, — deydi u, — lekin hech qachon zerikmasdik.\""
+            },
+            {
+              "type": "choice",
+              "q": "What could the grandfather do when he was six?",
+              "options": ["Watch cartoons", "Ride a horse", "Drive a car"],
+              "answer": 1,
+              "explain_uz": "\"he could ride a horse when he was six\"."
+            },
+            {
+              "type": "choice",
+              "q": "How many children were in his class?",
+              "options": ["Six", "Ten", "Twelve"],
+              "answer": 2,
+              "explain_uz": "\"there were only twelve children in his class\"."
+            },
+            {
+              "type": "grammar",
+              "title_uz": "could / couldn't va there was / there were",
+              "body_uz": "**could + fe'l** — o'tmishdagi qobiliyat (\"qila olardim\"). **can** ning o'tgan zamoni.\nI **could** swim when I was five. · She **couldn't** read at four.\nSavol: **Could** you swim? — Yes, I **could**. / No, I **couldn't**.\n(⚠️ **Could you help me?** — bu esa xushmuomala iltimos, o'tmish emas.)\n**there was / there were** — \"... bor edi\" (**there is / are** ning o'tgan zamoni):\n**There was** + bitta: There **was** a school.\n**There were** + ko'p: There **were** twelve children.\nInkor: There **wasn't** a TV. · There **weren't any** shops.\nSavol: **Was there** a park? · **Were there** any shops?",
+              "examples": [
+                {"en": "When I was six, I could ride a bike.", "uz": "Olti yoshimda velosiped hayday olardim."},
+                {"en": "I couldn't sleep last night because of the noise.", "uz": "Kecha shovqin sababli uxlay olmadim."},
+                {"en": "There was a big garden behind our house.", "uz": "Uyimiz ortida katta bog' bor edi."},
+                {"en": "There weren't any computers in our school.", "uz": "Maktabimizda birorta ham kompyuter yo'q edi."}
+              ]
+            },
+            {
+              "type": "choice",
+              "q": "When I was five, I ___ read.",
+              "options": ["can", "could", "could to"],
+              "answer": 1,
+              "explain_uz": "O'tmish → **could** (to qo'yilmaydi)."
+            },
+            {
+              "type": "choice",
+              "q": "There ___ any cars in the village fifty years ago.",
+              "options": ["wasn't", "weren't", "didn't"],
+              "answer": 1,
+              "explain_uz": "cars — ko'plik → there **weren't** any."
+            },
+            {
+              "type": "gap",
+              "text": "My grandmother ___ speak three languages when she was young.",
+              "answer": ["could"],
+              "uz": "Buvim yoshligida uch tilda gapira olardi.",
+              "explain_uz": "O'tmishdagi qobiliyat → **could**."
+            },
+            {
+              "type": "gap",
+              "text": "I ___ sleep last night because of the noise. (inkor)",
+              "answer": ["couldn't", "could not"],
+              "uz": "Kecha shovqin sababli uxlay olmadim.",
+              "explain_uz": "**couldn't** + fe'l."
+            },
+            {
+              "type": "gap",
+              "text": "___ there a park near your old house?",
+              "answer": ["Was"],
+              "uz": "Eski uyingiz yaqinida park bormidi?",
+              "explain_uz": "a park — bitta → **Was** there...?"
+            },
+            {
+              "type": "choice",
+              "q": "\"Could you swim when you were six?\" — Choose the correct answer.",
+              "options": ["Yes, I could.", "Yes, I can.", "Yes, I did swim."],
+              "answer": 0,
+              "explain_uz": "Could you...? → Yes, I **could**. / No, I **couldn't**."
+            },
+            {
+              "type": "match",
+              "pairs": [
+                ["childhood", "bolalik"],
+                ["village", "qishloq"],
+                ["climb", "tirmashib chiqmoq"],
+                ["toy", "o'yinchoq"],
+                ["bored", "zerikkan"]
+              ]
+            },
+            {
+              "type": "order",
+              "uz": "Sinfimda atigi o'n ikki bola bor edi.",
+              "words": ["There", "were", "only", "twelve", "children", "in", "my", "class"],
+              "answer": "There were only twelve children in my class"
+            },
+            {
+              "type": "choice",
+              "audio": true,
+              "q": "What couldn't the speaker do as a child?",
+              "say": "When I was a child, I couldn't swim, but I could ride a bike very well. There was a big park near our house, and I rode there every day.",
+              "options": ["Swim", "Ride a bike", "Go to the park"],
+              "answer": 0,
+              "explain_uz": "\"I couldn't swim\"."
+            },
+            {
+              "type": "listen",
+              "answer": ["When I was six, I could ride a bike.", "When I was six I could ride a bike", "When I was 6, I could ride a bike"],
+              "uz": "Eshiting va yozing"
+            },
+            {
+              "type": "translate",
+              "uz": "Bolaligimda men suzishni bilmasdim.",
+              "answer": [
+                "When I was a child I couldn't swim",
+                "When I was a child I could not swim",
+                "When I was little I couldn't swim",
+                "When I was young I couldn't swim",
+                "I couldn't swim when I was a child",
+                "I could not swim when I was a child",
+                "I couldn't swim when I was little",
+                "As a child I couldn't swim",
+                "In my childhood I couldn't swim",
+                "I couldn't swim in my childhood"
+              ],
+              "explain_uz": "O'tmishdagi qobiliyat yo'qligi → **couldn't** swim."
+            },
+            {
+              "type": "speak",
+              "text": "When I was a child, there was a big garden behind our house.",
+              "uz": "Ovoz chiqarib ayting"
+            },
+            {
+              "type": "write",
+              "prompt_uz": "Bolaligingiz haqida yozing: nimani qila olardingiz va nimani qila olmasdingiz? Shahringiz yoki qishlog'ingizda nimalar bor edi? 6–8 gap (could / couldn't, there was / there were).",
+              "prompt": "Write about your childhood. What could and couldn't you do? What was there in your town or village?",
+              "min_words": 50,
+              "example": "I grew up in a small town near Fergana. There was a river near our house, and there were a lot of fruit trees in our garden. When I was seven, I could swim very well, but I couldn't ride a bike. There wasn't a cinema in our town, so we watched films at home. There were only two shops in our street. I didn't have many toys, but I was never bored because I could play outside with my friends all day."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

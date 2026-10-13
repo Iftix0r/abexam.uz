@@ -1,26 +1,24 @@
 # Session state (auto-saved — last known reality)
 
-_Updated: 2026-10-13 10:52:16_  ·  branch: `main`
+_Updated: 2026-10-13 11:02:01_  ·  branch: `main`
 
 ## Uncommitted changes
 ```
  M .anchor/session-state.md
- M learn/services.py
- M learn/tests.py
- M learn/views.py
+?? data/learn/A2-04-time-habits.json
+?? data/learn/A2-05-past-stories.json
+?? data/learn/ROADMAP.md
 ```
 
 Diff stat:
 ```
- .anchor/session-state.md | 25 ++++--------------------
- learn/services.py        | 25 ++++++++++++++++++++----
- learn/tests.py           | 49 +++++++++++++++++++++++++++++++++++++++++++++---
- learn/views.py           | 40 +++++++++++++++++++++++++++------------
- 4 files changed, 99 insertions(+), 40 deletions(-)
+ .anchor/session-state.md | 30 ++++--------------------------
+ 1 file changed, 4 insertions(+), 26 deletions(-)
 ```
 
 ## Recent commits
 ```
+8d24ef4 12345678
 f1b865d 12332
 622206a asnmxkhsh
 1a3ea21 sfgdhes
@@ -28,7 +26,6 @@ f1b865d 12332
 14e1cfb 2qwged
 5dde6ac 1234sdd
 44c4316 dwaff
-cf65399 asffsev
 ```
 
 ## Resume
