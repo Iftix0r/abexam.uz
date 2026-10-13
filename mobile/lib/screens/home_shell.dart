@@ -21,7 +21,9 @@ class _HomeShellState extends State<HomeShell> {
   @override
   void initState() {
     super.initState();
-    AppScope.read(context).refresh().catchError((_) {});
+    final state = AppScope.read(context);
+    state.refresh().catchError((_) {});
+    WidgetsBinding.instance.addPostFrameCallback((_) => state.askRemindersOnce());
   }
 
   void goTo(int tab) => setState(() => _tab = tab);

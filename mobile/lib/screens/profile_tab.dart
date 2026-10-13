@@ -68,9 +68,58 @@ class ProfileTab extends StatelessWidget {
                 }),
               ),
           ]),
+          const SectionTitle('Eslatma'),
+          Card(
+            child: Column(children: [
+              SwitchListTile(
+                secondary: const Icon(Icons.notifications_active_rounded),
+                title: const Text('Kunlik eslatma'),
+                subtitle: const Text("Maqsad bajarilgan kuni eslatmaydi"),
+                value: state.reminderOn,
+                onChanged: (v) => state.setReminder(on: v),
+              ),
+              ListTile(
+                enabled: state.reminderOn,
+                leading: const Icon(Icons.schedule_rounded),
+                title: const Text('Vaqti'),
+                trailing: Text(
+                  '${(state.reminderMinutes ~/ 60).toString().padLeft(2, '0')}:${(state.reminderMinutes % 60).toString().padLeft(2, '0')}',
+                  style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: scheme.primary),
+                ),
+                onTap: () async {
+                  final t = await showTimePicker(
+                    context: context,
+                    initialTime: TimeOfDay(hour: state.reminderMinutes ~/ 60, minute: state.reminderMinutes % 60),
+                    helpText: 'Eslatma vaqti',
+                    builder: (c, child) => MediaQuery(data: MediaQuery.of(c).copyWith(alwaysUse24HourFormat: true), child: child!),
+                  );
+                  if (t != null) state.setReminder(minutes: t.hour * 60 + t.minute);
+                },
+              ),
+            ]),
+          ),
           const SectionTitle('Sozlamalar'),
           Card(
             child: Column(children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 14, 16, 6),
+                child: Row(children: [
+                  const Icon(Icons.palette_outlined),
+                  const SizedBox(width: 16),
+                  const Expanded(child: Text('Mavzu', style: TextStyle(fontSize: 16))),
+                  SegmentedButton<ThemeMode>(
+                    showSelectedIcon: false,
+                    style: SegmentedButton.styleFrom(visualDensity: VisualDensity.compact),
+                    segments: const [
+                      ButtonSegment(value: ThemeMode.system, icon: Icon(Icons.brightness_auto_rounded), tooltip: 'Tizim'),
+                      ButtonSegment(value: ThemeMode.light, icon: Icon(Icons.light_mode_rounded), tooltip: "Yorug'"),
+                      ButtonSegment(value: ThemeMode.dark, icon: Icon(Icons.dark_mode_rounded), tooltip: "Qorong'i"),
+                    ],
+                    selected: {state.themeMode},
+                    onSelectionChanged: (s) => state.setThemeMode(s.first),
+                  ),
+                ]),
+              ),
               SwitchListTile(
                 secondary: const Icon(Icons.speed_rounded),
                 title: const Text('Sekin talaffuz'),

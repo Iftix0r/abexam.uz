@@ -10,6 +10,7 @@ import '../../core/speech.dart';
 import '../../core/text.dart';
 import '../../core/theme.dart';
 import '../../widgets/common.dart';
+import '../../widgets/confetti.dart';
 import 'exercise_steps.dart';
 import 'input_steps.dart';
 import 'step_ctl.dart';
@@ -19,20 +20,32 @@ import 'step_ctl.dart';
 /// counts first attempts, and the result is saved to the server.
 class LessonScreen extends StatelessWidget {
   const LessonScreen.lesson(String this.slug, {super.key}) : practice = false;
-  const LessonScreen.practice({super.key})
-      : slug = null,
-        practice = true;
+  const LessonScreen.practice({super.key}) : slug = null, practice = true;
 
   final String? slug;
   final bool practice;
 
   @override
   Widget build(BuildContext context) {
-    final api = AppScope.read(context).api;
+    final state = AppScope.read(context);
+    final api = state.api;
     return Scaffold(
       body: SafeArea(
         child: Loader<Map<String, dynamic>>(
-          load: () => practice ? api.get('practice/') : api.get('lessons/$slug/'),
+          load: () async {
+            if (practice) return api.get('practice/');
+            // Keep opened lessons on the phone, so a weak connection doesn't block re-reading one.
+            final key = 'cache:lesson:$slug';
+            try {
+              final data = await api.get('lessons/$slug/');
+              state.writeJson(key, data);
+              return data;
+            } on ApiException catch (e) {
+              final cached = e.status == 0 ? state.readJson(key) : null;
+              if (cached == null) rethrow;
+              return cached;
+            }
+          },
           builder: (context, data, _) {
             if ((data['steps'] as List).isEmpty) {
               return _Empty(onClose: () => Navigator.pop(context));
@@ -55,15 +68,21 @@ class _Empty extends StatelessWidget {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          const Text('🎯', style: TextStyle(fontSize: 64)),
-          const SizedBox(height: 12),
-          const Text('Hali mashq yo\'q', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800)),
-          const SizedBox(height: 8),
-          const Text("Bir nechta dars o'ting — xato qilgan mashqlaringiz shu yerda qayta beriladi.", textAlign: TextAlign.center),
-          const SizedBox(height: 24),
-          FilledButton(onPressed: onClose, child: const Text('Darslarga qaytish')),
-        ]),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('🎯', style: TextStyle(fontSize: 64)),
+            const SizedBox(height: 12),
+            const Text('Hali mashq yo\'q', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800)),
+            const SizedBox(height: 8),
+            const Text(
+              "Bir nechta dars o'ting — xato qilgan mashqlaringiz shu yerda qayta beriladi.",
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            FilledButton(onPressed: onClose, child: const Text('Darslarga qaytish')),
+          ],
+        ),
       ),
     );
   }
@@ -298,7 +317,10 @@ class _PlayerState extends State<_Player> {
       } else {
         r = await api.post('lessons/${widget.data['slug']}/complete/', {
           'score': _score,
-          'mistakes': [for (final e in _firstTry.entries) if (!e.value) e.key],
+          'mistakes': [
+            for (final e in _firstTry.entries)
+              if (!e.value) e.key,
+          ],
         });
       }
       if (!mounted) return;
@@ -323,7 +345,10 @@ class _PlayerState extends State<_Player> {
         content: Text(widget.practice ? 'Natija saqlanmaydi.' : "Keyingi safar shu joydan davom ettirishingiz mumkin."),
         actions: [
           TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('Davom etish')),
-          TextButton(onPressed: () => Navigator.pop(c, true), child: const Text('Chiqish', style: TextStyle(color: Brand.bad))),
+          TextButton(
+            onPressed: () => Navigator.pop(c, true),
+            child: const Text('Chiqish', style: TextStyle(color: Brand.bad)),
+          ),
         ],
       ),
     );
@@ -393,74 +418,97 @@ class _PlayerState extends State<_Player> {
     final scheme = Theme.of(context).colorScheme;
     final slow = Speech.instance.slow;
     final wasWrong = step['_src']?['mistake'] == true;
-    return Column(children: [
-      Padding(
-        padding: const EdgeInsets.fromLTRB(4, 6, 12, 6),
-        child: Row(children: [
-          IconButton(
-            icon: const Icon(Icons.close_rounded),
-            onPressed: () async {
-              final nav = Navigator.of(context);
-              if (await _confirmExit()) nav.pop();
-            },
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(4, 6, 12, 6),
+          child: Row(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.close_rounded),
+                onPressed: () async {
+                  final nav = Navigator.of(context);
+                  if (await _confirmExit()) nav.pop();
+                },
+              ),
+              Expanded(
+                child: TweenAnimationBuilder<double>(
+                  tween: Tween(end: _pos / _queue.length),
+                  duration: const Duration(milliseconds: 400),
+                  curve: Curves.easeOutCubic,
+                  builder: (_, v, _) => ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: LinearProgressIndicator(
+                      value: v,
+                      minHeight: 12,
+                      backgroundColor: scheme.surfaceContainerHighest,
+                      color: Brand.ok,
+                    ),
+                  ),
+                ),
+              ),
+              if (_combo >= 3) ...[
+                const SizedBox(width: 8),
+                Pill(label: '$_combo', icon: Icons.local_fire_department_rounded, color: Brand.flame),
+              ],
+              if (_grammar.isNotEmpty && step['type'] != 'grammar')
+                IconButton(
+                  tooltip: 'Dars qoidasi',
+                  icon: Icon(Icons.menu_book_rounded, color: scheme.primary),
+                  onPressed: _showGrammar,
+                ),
+              IconButton(
+                tooltip: 'Sekin talaffuz',
+                icon: Icon(Icons.speed_rounded, color: slow ? scheme.primary : scheme.outline),
+                onPressed: () {
+                  Speech.instance.slow = !slow;
+                  AppScope.read(context).setSlowSpeech(!slow);
+                  ScaffoldMessenger.of(context)
+                    ..hideCurrentSnackBar()
+                    ..showSnackBar(
+                      SnackBar(
+                        content: Text(!slow ? 'Sekin talaffuz yoqildi 🐢' : 'Odatiy tezlik'),
+                        duration: const Duration(seconds: 1),
+                      ),
+                    );
+                },
+              ),
+            ],
           ),
-          Expanded(
-            child: TweenAnimationBuilder<double>(
-              tween: Tween(end: _pos / _queue.length),
-              duration: const Duration(milliseconds: 400),
-              curve: Curves.easeOutCubic,
-              builder: (_, v, _) => ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: LinearProgressIndicator(value: v, minHeight: 12, backgroundColor: scheme.surfaceContainerHighest, color: Brand.ok),
+        ),
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(18, 8, 18, 24),
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 280),
+              transitionBuilder: (child, a) => FadeTransition(
+                opacity: a,
+                child: SlideTransition(
+                  position: Tween(begin: const Offset(0.06, 0), end: Offset.zero).animate(a),
+                  child: child,
+                ),
+              ),
+              child: Column(
+                key: ValueKey('wrap-$_pos'),
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (wasWrong)
+                    const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: EdgeInsets.only(bottom: 8),
+                        child: Pill(label: 'avval xato qilgansiz', color: Brand.warn),
+                      ),
+                    ),
+                  _stepWidget(idx),
+                ],
               ),
             ),
           ),
-          if (_combo >= 3) ...[const SizedBox(width: 8), Pill(label: '$_combo', icon: Icons.local_fire_department_rounded, color: Brand.flame)],
-          if (_grammar.isNotEmpty && step['type'] != 'grammar')
-            IconButton(
-              tooltip: 'Dars qoidasi',
-              icon: Icon(Icons.menu_book_rounded, color: scheme.primary),
-              onPressed: _showGrammar,
-            ),
-          IconButton(
-            tooltip: 'Sekin talaffuz',
-            icon: Icon(Icons.speed_rounded, color: slow ? scheme.primary : scheme.outline),
-            onPressed: () {
-              Speech.instance.slow = !slow;
-              AppScope.read(context).setSlowSpeech(!slow);
-              ScaffoldMessenger.of(context)
-                ..hideCurrentSnackBar()
-                ..showSnackBar(SnackBar(content: Text(!slow ? 'Sekin talaffuz yoqildi 🐢' : 'Odatiy tezlik'), duration: const Duration(seconds: 1)));
-            },
-          ),
-        ]),
-      ),
-      Expanded(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(18, 8, 18, 24),
-          child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 280),
-            transitionBuilder: (child, a) => FadeTransition(
-              opacity: a,
-              child: SlideTransition(position: Tween(begin: const Offset(0.06, 0), end: Offset.zero).animate(a), child: child),
-            ),
-            child: Column(
-              key: ValueKey('wrap-$_pos'),
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                if (wasWrong)
-                  const Align(
-                    alignment: Alignment.centerLeft,
-                    child: Padding(padding: EdgeInsets.only(bottom: 8), child: Pill(label: 'avval xato qilgansiz', color: Brand.warn)),
-                  ),
-                _stepWidget(idx),
-              ],
-            ),
-          ),
         ),
-      ),
-      _bottomBar(),
-    ]);
+        _bottomBar(),
+      ],
+    );
   }
 
   void _showGrammar() {
@@ -476,7 +524,11 @@ class _PlayerState extends State<_Player> {
           controller: scroll,
           padding: const EdgeInsets.fromLTRB(18, 0, 18, 32),
           children: [
-            for (final g in _grammar) ...[StepTitle('${g['title_uz'] ?? ''}'), GrammarCard(step: g), const SizedBox(height: 16)],
+            for (final g in _grammar) ...[
+              StepTitle('${g['title_uz'] ?? ''}'),
+              GrammarCard(step: g),
+              const SizedBox(height: 16),
+            ],
           ],
         ),
       ),
@@ -491,21 +543,23 @@ class _PlayerState extends State<_Player> {
       final color = !fb.graded
           ? scheme.primary
           : !fb.ok
-              ? Brand.bad
-              : typo
-                  ? Brand.warn
-                  : Brand.ok;
+          ? Brand.bad
+          : typo
+          ? Brand.warn
+          : Brand.ok;
       final step = _steps[_queue[_pos]];
       final explain = '${step['explain_uz'] ?? ''}';
-      final title = fb.title ??
+      final title =
+          fb.title ??
           (!fb.ok
               ? "To'g'ri javob:"
               : typo
-                  ? "Deyarli to'g'ri! Imlosiga e'tibor bering:"
-                  : _combo >= 3
-                      ? "🔥 $_combo ta ketma-ket to'g'ri!"
-                      : _praise[Random().nextInt(_praise.length)]);
-      final body = fb.note ??
+              ? "Deyarli to'g'ri! Imlosiga e'tibor bering:"
+              : _combo >= 3
+              ? "🔥 $_combo ta ketma-ket to'g'ri!"
+              : _praise[Random().nextInt(_praise.length)]);
+      final body =
+          fb.note ??
           [
             if (!fb.ok && (fb.right ?? '').isNotEmpty) '**${fb.right}**',
             if (typo) '**${fb.typo}**',
@@ -515,27 +569,48 @@ class _PlayerState extends State<_Player> {
         duration: const Duration(milliseconds: 250),
         width: double.infinity,
         padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
-        decoration: BoxDecoration(color: color.withValues(alpha: 0.13), border: Border(top: BorderSide(color: color, width: 2))),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.13),
+          border: Border(top: BorderSide(color: color, width: 2)),
+        ),
         child: SafeArea(
           top: false,
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
-            Row(children: [
-              Icon(!fb.graded ? Icons.info_rounded : fb.ok ? Icons.check_circle_rounded : Icons.cancel_rounded, color: color),
-              const SizedBox(width: 8),
-              Expanded(child: Text(title, style: TextStyle(color: color, fontWeight: FontWeight.w900, fontSize: 17))),
-            ]),
-            if (body.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only(top: 6),
-                child: Text.rich(md(body, TextStyle(fontSize: 15, height: 1.4, color: scheme.onSurface))),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    !fb.graded
+                        ? Icons.info_rounded
+                        : fb.ok
+                        ? Icons.check_circle_rounded
+                        : Icons.cancel_rounded,
+                    color: color,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: TextStyle(color: color, fontWeight: FontWeight.w900, fontSize: 17),
+                    ),
+                  ),
+                ],
               ),
-            const SizedBox(height: 12),
-            FilledButton(
-              style: FilledButton.styleFrom(backgroundColor: color),
-              onPressed: _next,
-              child: const Text('Davom etish'),
-            ),
-          ]),
+              if (body.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 6),
+                  child: Text.rich(md(body, TextStyle(fontSize: 15, height: 1.4, color: scheme.onSurface))),
+                ),
+              const SizedBox(height: 12),
+              FilledButton(
+                style: FilledButton.styleFrom(backgroundColor: color),
+                onPressed: _next,
+                child: const Text('Davom etish'),
+              ),
+            ],
+          ),
         ),
       );
     }
@@ -543,27 +618,35 @@ class _PlayerState extends State<_Player> {
     final isExercise = ctl.isExercise;
     return Container(
       padding: const EdgeInsets.fromLTRB(18, 10, 18, 14),
-      decoration: BoxDecoration(border: Border(top: BorderSide(color: scheme.outlineVariant.withValues(alpha: 0.5)))),
+      decoration: BoxDecoration(
+        border: Border(top: BorderSide(color: scheme.outlineVariant.withValues(alpha: 0.5))),
+      ),
       child: SafeArea(
         top: false,
-        child: Row(children: [
-          if (ctl.hint != null) ...[
-            OutlinedButton.icon(onPressed: ctl.hint, icon: const Icon(Icons.lightbulb_outline_rounded), label: const Text('Yordam')),
-            const SizedBox(width: 10),
-          ],
-          if (ctl.skippable) ...[
-            OutlinedButton(onPressed: _next, child: const Text("O'tkazish")),
-            const SizedBox(width: 10),
-          ],
-          Expanded(
-            child: FilledButton(
-              onPressed: _checking || (isExercise && !ctl.ready) || (ctl.skippable && !isExercise) ? null : _check,
-              child: _checking
-                  ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.5))
-                  : Text(isExercise ? 'Tekshirish' : 'Davom etish'),
+        child: Row(
+          children: [
+            if (ctl.hint != null) ...[
+              OutlinedButton.icon(
+                onPressed: ctl.hint,
+                icon: const Icon(Icons.lightbulb_outline_rounded),
+                label: const Text('Yordam'),
+              ),
+              const SizedBox(width: 10),
+            ],
+            if (ctl.skippable) ...[
+              OutlinedButton(onPressed: _next, child: const Text("O'tkazish")),
+              const SizedBox(width: 10),
+            ],
+            Expanded(
+              child: FilledButton(
+                onPressed: _checking || (isExercise && !ctl.ready) || (ctl.skippable && !isExercise) ? null : _check,
+                child: _checking
+                    ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.5))
+                    : Text(isExercise ? 'Tekshirish' : 'Davom etish'),
+              ),
             ),
-          ),
-        ]),
+          ],
+        ),
       ),
     );
   }
@@ -572,70 +655,110 @@ class _PlayerState extends State<_Player> {
     final r = _result;
     final score = _score;
     final scheme = Theme.of(context).colorScheme;
-    final emoji = score >= 90 ? '🏆' : score >= 70 ? '🎉' : '💪';
-    final title = score >= 90 ? 'Mukammal!' : score >= 70 ? (widget.practice ? 'Mashq tugallandi!' : 'Dars tugallandi!') : 'Har bir xato — yangi bilim!';
+    final emoji = score >= 90
+        ? '🏆'
+        : score >= 70
+        ? '🎉'
+        : '💪';
+    final title = score >= 90
+        ? 'Mukammal!'
+        : score >= 70
+        ? (widget.practice ? 'Mashq tugallandi!' : 'Dars tugallandi!')
+        : 'Har bir xato — yangi bilim!';
     final next = widget.data['next_slug'] as String?;
-    return ListView(padding: const EdgeInsets.all(20), children: [
-      const SizedBox(height: 20),
-      Center(
-        child: TweenAnimationBuilder<double>(
-          tween: Tween(begin: 0.3, end: 1),
-          duration: const Duration(milliseconds: 700),
-          curve: Curves.elasticOut,
-          builder: (_, v, child) => Transform.scale(scale: v, child: child),
-          child: Text(emoji, style: const TextStyle(fontSize: 88)),
-        ),
-      ),
-      const SizedBox(height: 8),
-      Text(title, textAlign: TextAlign.center, style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w900)),
-      Text('${widget.data['title_uz'] ?? (widget.practice ? 'Aralash mashq' : '')}',
-          textAlign: TextAlign.center, style: TextStyle(color: scheme.outline)),
-      const SizedBox(height: 24),
-      Row(children: [
-        _stat('Natija', '$score%', Brand.ok),
-        const SizedBox(width: 10),
-        _stat('XP', r == null ? '…' : '+${r['xp'] ?? 0}', Brand.warn),
-        const SizedBox(width: 10),
-        widget.practice
-            ? _stat('Qolgan xatolar', r == null ? '…' : '${r['mistakes_left'] ?? 0}', Brand.flame)
-            : _stat("Yangi so'zlar", r == null ? '…' : '+${r['words_added'] ?? 0}', Brand.primary),
-      ]),
-      if (r != null && (r['streak'] ?? 0) > 0)
-        Padding(
-          padding: const EdgeInsets.only(top: 14),
-          child: Text('🔥 ${r['streak']} kunlik seriya!', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.w800, color: Brand.flame)),
-        ),
-      if (_saving) const Padding(padding: EdgeInsets.all(16), child: Center(child: CircularProgressIndicator())),
-      if (_saveError != null)
-        Card(
-          color: Brand.badSoft,
-          margin: const EdgeInsets.only(top: 16),
-          child: ListTile(
-            title: Text(_saveError is ApiException ? '$_saveError' : 'Natija saqlanmadi', style: const TextStyle(color: Brand.bad)),
-            trailing: TextButton(onPressed: _finish, child: const Text('Qayta')),
-          ),
-        ),
-      if (_mistakes.isNotEmpty) ...[
-        const SectionTitle('Xatolar ustida ishlang'),
-        for (final e in _mistakes.entries)
-          Card(
-            margin: const EdgeInsets.only(bottom: 8),
-            child: ListTile(
-              title: Text(_describe(_steps[e.key]), maxLines: 2, overflow: TextOverflow.ellipsis),
-              subtitle: e.value.isEmpty ? null : Text('✓ ${e.value}', style: const TextStyle(color: Brand.ok, fontWeight: FontWeight.w700)),
+    return Confetti(
+      active: r != null && score >= 70,
+      child: ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          const SizedBox(height: 20),
+          Center(
+            child: TweenAnimationBuilder<double>(
+              tween: Tween(begin: 0.3, end: 1),
+              duration: const Duration(milliseconds: 700),
+              curve: Curves.elasticOut,
+              builder: (_, v, child) => Transform.scale(scale: v, child: child),
+              child: Text(emoji, style: const TextStyle(fontSize: 88)),
             ),
           ),
-      ],
-      const SizedBox(height: 24),
-      if (!widget.practice && next != null && r != null)
-        FilledButton.icon(
-          onPressed: () => Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => LessonScreen.lesson(next))),
-          icon: const Icon(Icons.arrow_forward_rounded),
-          label: const Text('Keyingi dars'),
-        ),
-      const SizedBox(height: 10),
-      OutlinedButton(onPressed: () => Navigator.pop(context), child: const Text('Darslarga qaytish')),
-    ]);
+          const SizedBox(height: 8),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w900),
+          ),
+          Text(
+            '${widget.data['title_uz'] ?? (widget.practice ? 'Aralash mashq' : '')}',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: scheme.outline),
+          ),
+          const SizedBox(height: 24),
+          Row(
+            children: [
+              _stat('Natija', '$score%', Brand.ok),
+              const SizedBox(width: 10),
+              _stat('XP', r == null ? '…' : '+${r['xp'] ?? 0}', Brand.warn),
+              const SizedBox(width: 10),
+              widget.practice
+                  ? _stat('Qolgan xatolar', r == null ? '…' : '${r['mistakes_left'] ?? 0}', Brand.flame)
+                  : _stat("Yangi so'zlar", r == null ? '…' : '+${r['words_added'] ?? 0}', Brand.primary),
+            ],
+          ),
+          if (r != null && (r['streak'] ?? 0) > 0)
+            Padding(
+              padding: const EdgeInsets.only(top: 14),
+              child: Text(
+                '🔥 ${r['streak']} kunlik seriya!',
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontWeight: FontWeight.w800, color: Brand.flame),
+              ),
+            ),
+          if (_saving)
+            const Padding(
+              padding: EdgeInsets.all(16),
+              child: Center(child: CircularProgressIndicator()),
+            ),
+          if (_saveError != null)
+            Card(
+              color: Brand.badSoft,
+              margin: const EdgeInsets.only(top: 16),
+              child: ListTile(
+                title: Text(
+                  _saveError is ApiException ? '$_saveError' : 'Natija saqlanmadi',
+                  style: const TextStyle(color: Brand.bad),
+                ),
+                trailing: TextButton(onPressed: _finish, child: const Text('Qayta')),
+              ),
+            ),
+          if (_mistakes.isNotEmpty) ...[
+            const SectionTitle('Xatolar ustida ishlang'),
+            for (final e in _mistakes.entries)
+              Card(
+                margin: const EdgeInsets.only(bottom: 8),
+                child: ListTile(
+                  title: Text(_describe(_steps[e.key]), maxLines: 2, overflow: TextOverflow.ellipsis),
+                  subtitle: e.value.isEmpty
+                      ? null
+                      : Text(
+                          '✓ ${e.value}',
+                          style: const TextStyle(color: Brand.ok, fontWeight: FontWeight.w700),
+                        ),
+                ),
+              ),
+          ],
+          const SizedBox(height: 24),
+          if (!widget.practice && next != null && r != null)
+            FilledButton.icon(
+              onPressed: () =>
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => LessonScreen.lesson(next))),
+              icon: const Icon(Icons.arrow_forward_rounded),
+              label: const Text('Keyingi dars'),
+            ),
+          const SizedBox(height: 10),
+          OutlinedButton(onPressed: () => Navigator.pop(context), child: const Text('Darslarga qaytish')),
+        ],
+      ),
+    );
   }
 
   String _describe(Map<String, dynamic> s) =>
@@ -650,11 +773,16 @@ class _PlayerState extends State<_Player> {
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: color.withValues(alpha: 0.4), width: 1.5),
         ),
-        child: Column(children: [
-          Text(value, style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: color)),
-          const SizedBox(height: 2),
-          Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
-        ]),
+        child: Column(
+          children: [
+            Text(
+              value,
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: color),
+            ),
+            const SizedBox(height: 2),
+            Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+          ],
+        ),
       ),
     );
   }

@@ -1,10 +1,11 @@
 import 'dart:convert';
 
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'api.dart';
 import 'device.dart';
+import 'reminders.dart';
 
 /// Signed-in user, profile summary and a few local preferences.
 class AppState extends ChangeNotifier {
@@ -12,12 +13,18 @@ class AppState extends ChangeNotifier {
     api.onUnauthorized = () {
       if (api.token != null) _clear();
     };
+    // Show the last known profile at once; refresh() replaces it.
+    if (signedIn) me = readJson(_meCache);
   }
 
   static const _tokenKey = 'token';
   static const _slowKey = 'slow_speech';
   static const _soundKey = 'haptics';
   static const _sfxKey = 'sfx';
+  static const _themeKey = 'theme';
+  static const _reminderKey = 'reminder_minutes';
+  static const _reminderOnKey = 'reminder_on';
+  static const _meCache = 'cache:me';
 
   static Future<AppState> load() async => AppState._(await SharedPreferences.getInstance());
 
@@ -31,6 +38,17 @@ class AppState extends ChangeNotifier {
   bool get slowSpeech => _prefs.getBool(_slowKey) ?? false;
   bool get haptics => _prefs.getBool(_soundKey) ?? true;
   bool get sounds => _prefs.getBool(_sfxKey) ?? true;
+
+  ThemeMode get themeMode => switch (_prefs.getString(_themeKey)) {
+        'light' => ThemeMode.light,
+        'dark' => ThemeMode.dark,
+        _ => ThemeMode.system,
+      };
+
+  bool get reminderOn => _prefs.getBool(_reminderOnKey) ?? true;
+
+  /// Reminder time as minutes after midnight (default 20:00).
+  int get reminderMinutes => _prefs.getInt(_reminderKey) ?? 20 * 60;
 
   String get levelCode => (me?['level_code'] as String?) ?? 'A1';
   String get displayName {
@@ -68,16 +86,63 @@ class AppState extends ChangeNotifier {
     api.token = null;
     me = null;
     _prefs.remove(_tokenKey);
+    for (final k in _prefs.getKeys().where((k) => k.startsWith('cache:') || k.startsWith('lesson-progress-')).toList()) {
+      _prefs.remove(k);
+    }
+    Reminders.cancel();
     notifyListeners();
   }
 
   Future<void> refresh() async {
-    me = await api.get('me/');
-    notifyListeners();
+    _setMe(await api.get('me/'));
   }
 
   Future<void> updateProfile({String? level, int? dailyGoal}) async {
-    me = await api.post('me/', {'level': ?level, 'daily_goal': ?dailyGoal});
+    _setMe(await api.post('me/', {'level': ?level, 'daily_goal': ?dailyGoal}));
+  }
+
+  void _setMe(Map<String, dynamic> data) {
+    me = data;
+    writeJson(_meCache, data);
+    syncReminders();
+    notifyListeners();
+  }
+
+  /// Re-plans the week's reminders from the latest profile (skips today once the goal is met).
+  void syncReminders() {
+    if (!reminderOn || me == null) return;
+    final goal = (me!['daily_goal'] as int?) ?? 30;
+    Reminders.schedule(
+      minutes: reminderMinutes,
+      doneToday: ((me!['xp_today'] as int?) ?? 0) >= goal,
+      streak: (me!['streak'] as int?) ?? 0,
+    );
+  }
+
+  Future<void> setReminder({bool? on, int? minutes}) async {
+    if (on != null) await _prefs.setBool(_reminderOnKey, on);
+    if (minutes != null) await _prefs.setInt(_reminderKey, minutes);
+    if (reminderOn) {
+      await Reminders.requestPermission();
+      syncReminders();
+    } else {
+      await Reminders.cancel();
+    }
+    notifyListeners();
+  }
+
+  /// First time on the home screen: ask once for notification permission.
+  Future<void> askRemindersOnce() async {
+    if (_prefs.getBool('notif_asked') ?? false) return;
+    await _prefs.setBool('notif_asked', true);
+    if (reminderOn) {
+      await Reminders.requestPermission();
+      syncReminders();
+    }
+  }
+
+  void setThemeMode(ThemeMode mode) {
+    _prefs.setString(_themeKey, mode.name);
     notifyListeners();
   }
 

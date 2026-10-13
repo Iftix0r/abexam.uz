@@ -107,7 +107,7 @@ class Speech {
   }
 
   /// Listens once (until the speaker pauses) and reports what was heard.
-  Future<Heard> listen() async {
+  Future<Heard> listen({void Function(String text)? onPartial}) async {
     if (!await canListen) {
       return const Heard([], "Telefonda ovozni tanish xizmati topilmadi (Google ilovasini o'rnating yoki yangilang).");
     }
@@ -147,7 +147,10 @@ class Speech {
         ),
         onResult: (SpeechRecognitionResult r) {
           final alts = r.alternates.map((a) => a.recognizedWords).where((w) => w.trim().isNotEmpty).toList();
-          if (alts.isNotEmpty) lastWords = alts;
+          if (alts.isNotEmpty) {
+            lastWords = alts;
+            onPartial?.call(alts.first);
+          }
           if (r.finalResult) finish(Heard(lastWords, lastWords.isEmpty ? "Ovoz eshitilmadi." : null));
         },
       );

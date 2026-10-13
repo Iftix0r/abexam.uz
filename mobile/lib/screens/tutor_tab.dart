@@ -147,7 +147,9 @@ class _TutorChatState extends State<TutorChat> {
       return;
     }
     setState(() => _listening = true);
-    final heard = await Speech.instance.listen();
+    final heard = await Speech.instance.listen(onPartial: (text) {
+      if (mounted) _input.text = text;
+    });
     if (!mounted) return;
     setState(() => _listening = false);
     if (heard.ok) {

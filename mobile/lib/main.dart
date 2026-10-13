@@ -29,13 +29,17 @@ class AbExamApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppScope(
       state: state,
-      child: MaterialApp(
-        title: 'AbExam English',
-        debugShowCheckedModeBanner: false,
-        theme: buildTheme(Brightness.light),
-        darkTheme: buildTheme(Brightness.dark),
-        builder: (context, child) => useWebBridge ? WebBridgeHost(child: child!) : child!,
-        home: const _Gate(),
+      child: ListenableBuilder(
+        listenable: state,
+        builder: (context, _) => MaterialApp(
+          title: 'AbExam English',
+          debugShowCheckedModeBanner: false,
+          theme: buildTheme(Brightness.light),
+          darkTheme: buildTheme(Brightness.dark),
+          themeMode: state.themeMode,
+          builder: (context, child) => useWebBridge ? WebBridgeHost(child: child!) : child!,
+          home: const _Gate(),
+        ),
       ),
     );
   }

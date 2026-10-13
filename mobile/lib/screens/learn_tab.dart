@@ -23,9 +23,17 @@ class LearnTabState extends State<LearnTab> {
   Map<String, dynamic>? _course;
   Object? _error;
 
+  static const _cacheKey = 'cache:course';
+
   @override
   void initState() {
     super.initState();
+    // Draw the last known course map at once, then refresh it from the server.
+    final cached = AppScope.read(context).readJson(_cacheKey);
+    if (cached != null) {
+      _course = cached;
+      _level = cached['level'] as String?;
+    }
     reload();
   }
 
@@ -34,6 +42,7 @@ class LearnTabState extends State<LearnTab> {
     try {
       final course = await state.api.get('course/', query: {'level': ?_level});
       if (!mounted) return;
+      state.writeJson(_cacheKey, course);
       setState(() {
         _course = course;
         _level = course['level'] as String;
@@ -89,6 +98,11 @@ class LearnTabState extends State<LearnTab> {
           sliver: SliverPadding(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
             sliver: SliverList.list(children: [
+              if (_error != null)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: Pill(label: "Oflayn: oxirgi saqlangan ma'lumot ko'rsatilmoqda", icon: Icons.cloud_off_rounded, color: Brand.warn),
+                ),
               _Header(me: me, name: state.displayName),
               const SizedBox(height: 16),
               _GoalCard(me: me),
@@ -109,37 +123,12 @@ class LearnTabState extends State<LearnTab> {
                 _ContinueCard(lesson: currentLesson, onTap: () => _open(LessonScreen.lesson(currentLesson!['slug'] as String))),
               ],
               const SizedBox(height: 14),
-              Row(children: [
-                Expanded(
-                  child: _MiniAction(
-                    icon: Icons.replay_circle_filled_rounded,
-                    color: Brand.flame,
-                    title: 'Xatolar',
-                    value: '${me['mistakes'] ?? 0}',
-                    onTap: () => _open(LessonScreen.practice()),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: _MiniAction(
-                    icon: Icons.style_rounded,
-                    color: Brand.levels['B1']!,
-                    title: "So'zlar",
-                    value: '${(me['review'] as Map?)?['session'] ?? 0}',
-                    onTap: widget.onOpenReview,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: _MiniAction(
-                    icon: Icons.menu_book_rounded,
-                    color: Brand.violet,
-                    title: 'Grammatika',
-                    value: '📖',
-                    onTap: () => _open(const GrammarScreen()),
-                  ),
-                ),
-              ]),
+              _TodayPlan(
+                me: me,
+                onPractice: () => _open(LessonScreen.practice()),
+                onReview: widget.onOpenReview,
+                onGrammar: () => _open(const GrammarScreen()),
+              ),
             ]),
           ),
         ),
@@ -234,7 +223,7 @@ class _GoalCard extends StatelessWidget {
                 style: const TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w800)),
             const SizedBox(height: 10),
             SizedBox(
-              height: 46,
+              height: 52,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
@@ -366,30 +355,68 @@ class _ContinueCard extends StatelessWidget {
   }
 }
 
-class _MiniAction extends StatelessWidget {
-  const _MiniAction({required this.icon, required this.color, required this.title, required this.value, required this.onTap});
+/// Today's three habits: daily XP goal, due words, open mistakes.
+class _TodayPlan extends StatelessWidget {
+  const _TodayPlan({required this.me, required this.onPractice, required this.onReview, required this.onGrammar});
 
-  final IconData icon;
-  final Color color;
-  final String title;
-  final String value;
-  final VoidCallback onTap;
+  final Map<String, dynamic> me;
+  final VoidCallback onPractice;
+  final VoidCallback onReview;
+  final VoidCallback onGrammar;
 
   @override
   Widget build(BuildContext context) {
+    final today = (me['xp_today'] as int?) ?? 0;
+    final goal = (me['daily_goal'] as int?) ?? 30;
+    final due = ((me['review'] as Map?)?['due'] as int?) ?? 0;
+    final fresh = ((me['review'] as Map?)?['session'] as int?) ?? 0;
+    final mistakes = (me['mistakes'] as int?) ?? 0;
+    final items = [
+      (Icons.bolt_rounded, Brand.warn, 'Kunlik maqsad', '$today / $goal XP', today >= goal, null),
+      (Icons.style_rounded, Brand.levels['B1']!, "So'zlarni takrorlash",
+          due > 0 ? '$due ta so\'z takrorlash vaqti keldi' : (fresh > 0 ? '$fresh ta yangi so\'z bor' : 'Hammasi takrorlangan'), due == 0, onReview),
+      (Icons.replay_circle_filled_rounded, Brand.flame, 'Xatolar ustida ishlash',
+          mistakes > 0 ? '$mistakes ta mashq qayta yechilishi kerak' : "Ochiq xato yo'q — aralash mashq", mistakes == 0, onPractice),
+    ];
+    final doneCount = items.where((i) => i.$5).length;
+    final scheme = Theme.of(context).colorScheme;
     return Card(
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 10),
-          child: Column(children: [
-            Icon(icon, color: color, size: 28),
-            const SizedBox(height: 6),
-            Text(value, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
-            Text(title, style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.outline)),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 14, 8, 6),
+        child: Column(children: [
+          Row(children: [
+            const Expanded(child: Text('Bugungi reja', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800))),
+            Text('$doneCount / ${items.length}',
+                style: TextStyle(fontWeight: FontWeight.w800, color: doneCount == items.length ? Brand.ok : scheme.outline)),
+            const SizedBox(width: 8),
           ]),
-        ),
+          const SizedBox(height: 4),
+          for (final i in items)
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              dense: true,
+              onTap: i.$6,
+              leading: AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(color: i.$5 ? Brand.ok : i.$2.withValues(alpha: 0.14), shape: BoxShape.circle),
+                child: Icon(i.$5 ? Icons.check_rounded : i.$1, color: i.$5 ? Colors.white : i.$2, size: 22),
+              ),
+              title: Text(i.$3,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
+                    decoration: i.$5 && i.$6 == null ? TextDecoration.lineThrough : null,
+                  )),
+              subtitle: Text(i.$4),
+              trailing: i.$6 == null ? null : const Icon(Icons.chevron_right_rounded),
+            ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton.icon(onPressed: onGrammar, icon: const Icon(Icons.menu_book_rounded, size: 18), label: const Text("Grammatika ma'lumotnomasi")),
+          ),
+        ]),
       ),
     );
   }
