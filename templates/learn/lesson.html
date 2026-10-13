@@ -366,9 +366,23 @@
         $('lpCount').textContent = pos < queue.length ? `${pos + 1} / ${queue.length}` : '';
     }
 
+    // The state is also kept on the server (debounced), so a lesson started
+    // here can be finished in the mobile app and the other way round.
+    let draftTimer = null;
+    function pushDraft(data) {
+        if (PRACTICE || !L.draft_url) return;
+        clearTimeout(draftTimer);
+        draftTimer = setTimeout(() => fetch(L.draft_url, {
+            method: 'POST', keepalive: true,
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF },
+            body: JSON.stringify({ data }),
+        }).catch(() => {}), 600);
+    }
     function save() {
         if (PRACTICE) return;
-        store.set(SAVE_KEY, { sig: SIG, queue, pos, firstTry, retried, mistakes, at: Date.now() });
+        const state = { sig: SIG, queue, pos, firstTry, retried, mistakes, at: Date.now() };
+        store.set(SAVE_KEY, state);
+        pushDraft(state);
     }
 
     // ── flow ─────────────────────────────────────────────────────────────
@@ -1027,6 +1041,7 @@
     async function finish() {
         updateProgress();
         $('lpBar').style.width = '100%';
+        clearTimeout(draftTimer);   // a late draft save must not outlive the completed lesson
         const graded = Object.keys(firstTry);
         const right = graded.filter(k => firstTry[k]).length;
         const score = graded.length ? Math.round(right * 100 / graded.length) : 100;
@@ -1068,7 +1083,9 @@
     }
 
     // ── start (or resume where the learner left off) ─────────────────────
-    const saved = PRACTICE ? null : store.get(SAVE_KEY, null);
+    // Newest of this browser's copy and the server's (e.g. from the phone).
+    const saved = PRACTICE ? null : [store.get(SAVE_KEY, null), L.draft]
+        .filter(Boolean).sort((a, b) => (b.at || 0) - (a.at || 0))[0] || null;
     if (!L.steps.length) {
         foot.style.display = 'none';
         body.innerHTML = `<div class="lp-center"><div class="big">📚</div>
@@ -1086,7 +1103,7 @@
             ({ queue, pos, firstTry, retried, mistakes } = Object.assign({ mistakes: [], retried: [] }, saved));
             foot.style.display = ''; render();
         };
-        $('restart').onclick = () => { store.del(SAVE_KEY); foot.style.display = ''; render(); };
+        $('restart').onclick = () => { store.del(SAVE_KEY); pushDraft(null); foot.style.display = ''; render(); };
         $('lpBar').style.width = (saved.pos / saved.queue.length * 100) + '%';
     } else {
         render();

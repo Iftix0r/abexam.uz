@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -135,13 +136,16 @@ class _PlayerState extends State<_Player> {
 
   Future<void> _offerResume() async {
     final state = AppScope.read(context);
-    final saved = state.readJson(_saveKey);
-    if (saved == null) return;
+    // Newest of the phone's copy and the server's (e.g. started on the website).
+    final candidates = [state.readJson(_saveKey), widget.data['draft'] as Map<String, dynamic>?].whereType<Map<String, dynamic>>().toList()
+      ..sort((a, b) => ((b['at'] as num?) ?? 0).compareTo((a['at'] as num?) ?? 0));
+    if (candidates.isEmpty) return;
+    final saved = candidates.first;
     final age = DateTime.now().millisecondsSinceEpoch - ((saved['at'] as num?) ?? 0);
-    final queue = ((saved['queue'] as List?) ?? []).cast<int>();
-    final pos = (saved['pos'] as int?) ?? 0;
+    final queue = ((saved['queue'] as List?) ?? []).map((e) => (e as num).toInt()).toList();
+    final pos = (saved['pos'] as num?)?.toInt() ?? 0;
     if (saved['sig'] != _sig || pos <= 0 || pos >= queue.length || age > const Duration(days: 7).inMilliseconds) {
-      state.writeJson(_saveKey, null);
+      _clearProgress();
       return;
     }
     final resume = await showDialog<bool>(
@@ -149,7 +153,7 @@ class _PlayerState extends State<_Player> {
       barrierDismissible: false,
       builder: (c) => AlertDialog(
         title: const Text('Davom ettirasizmi?'),
-        content: Text('Bu darsni oldin boshlagan edingiz: ${pos + 1} / ${queue.length}-qadam.'),
+        content: Text('Bu darsni oldin boshlagan edingiz (saytda yoki ilovada): ${pos + 1} / ${queue.length}-qadam.'),
         actions: [
           TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('Boshidan')),
           FilledButton(onPressed: () => Navigator.pop(c, true), child: const Text('Davom etish')),
@@ -158,9 +162,17 @@ class _PlayerState extends State<_Player> {
     );
     if (!mounted) return;
     if (resume != true) {
-      state.writeJson(_saveKey, null);
+      _clearProgress();
       return;
     }
+    // The website stores mistakes as [{idx, right}], older app builds as {idx: right}.
+    final rawMistakes = saved['mistakes'];
+    final mistakes = <int, String>{
+      if (rawMistakes is List)
+        for (final m in rawMistakes.whereType<Map>()) (m['idx'] as num).toInt(): '${m['right'] ?? ''}'
+      else if (rawMistakes is Map)
+        for (final e in rawMistakes.entries) int.parse('${e.key}'): '${e.value}',
+    };
     setState(() {
       _queue
         ..clear()
@@ -171,26 +183,47 @@ class _PlayerState extends State<_Player> {
         ..addAll({for (final e in ((saved['firstTry'] as Map?) ?? {}).entries) int.parse('${e.key}'): e.value == true});
       _retried
         ..clear()
-        ..addAll(((saved['retried'] as List?) ?? []).cast<int>());
+        ..addAll(((saved['retried'] as List?) ?? []).map((e) => (e as num).toInt()));
       _mistakes
         ..clear()
-        ..addAll({for (final e in ((saved['mistakes'] as Map?) ?? {}).entries) int.parse('${e.key}'): '${e.value}'});
+        ..addAll(mistakes);
       _ctl.removeListener(_redraw);
       _ctl.dispose();
       _ctl = _newCtl();
     });
   }
 
+  Timer? _draftTimer;
+
+  /// Saves the state on the phone and (debounced) on the server, in the
+  /// website player's format, so the lesson can be resumed on either.
   void _saveProgress() {
     if (widget.practice) return;
-    AppScope.read(context).writeJson(_saveKey, {
+    final state = AppScope.read(context);
+    final data = {
       'sig': _sig,
       'queue': _queue,
       'pos': _pos,
       'firstTry': {for (final e in _firstTry.entries) '${e.key}': e.value},
       'retried': _retried.toList(),
-      'mistakes': {for (final e in _mistakes.entries) '${e.key}': e.value},
+      'mistakes': [for (final e in _mistakes.entries) {'idx': e.key, 'right': e.value}],
       'at': DateTime.now().millisecondsSinceEpoch,
+    };
+    state.writeJson(_saveKey, data);
+    _pushDraft(data);
+  }
+
+  void _clearProgress() {
+    AppScope.read(context).writeJson(_saveKey, null);
+    _pushDraft(null);
+  }
+
+  void _pushDraft(Map<String, dynamic>? data) {
+    _draftTimer?.cancel();
+    final api = AppScope.read(context).api;
+    final slug = widget.data['slug'];
+    _draftTimer = Timer(const Duration(milliseconds: 800), () {
+      api.post('lessons/$slug/draft/', {'data': data}).catchError((_) => <String, dynamic>{});
     });
   }
 
@@ -299,6 +332,8 @@ class _PlayerState extends State<_Player> {
   }
 
   Future<void> _finish() async {
+    // A late draft save must not bring back a lesson that's being completed.
+    _draftTimer?.cancel();
     setState(() {
       _saving = true;
       _saveError = null;
@@ -327,7 +362,7 @@ class _PlayerState extends State<_Player> {
       setState(() => _result = r);
       Sfx.win();
       final state = AppScope.read(context);
-      if (!widget.practice) state.writeJson(_saveKey, null);
+      if (!widget.practice) state.writeJson(_saveKey, null); // the server drops its draft on completion
       state.refresh().catchError((_) {});
     } catch (e) {
       if (mounted) setState(() => _saveError = e);

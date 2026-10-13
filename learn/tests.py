@@ -398,3 +398,45 @@ class ApiTests(TestCase):
         board = self._call('get', 'learn_api:leaderboard').json()
         self.assertEqual(board['me']['rank'], 1)
         self.assertTrue(self._call('get', 'learn_api:grammar').json()['levels'])
+
+
+class DraftAndAppTests(TestCase):
+    """Resume a lesson across site and app; app release download."""
+
+    def setUp(self):
+        cache.clear()
+        self.user = User.objects.create_user('learner', password='pw-Secret-123')
+        self.client.force_login(self.user)
+        self.lesson = get_lesson('a1-hello')
+        self.sig = f"{len(self.lesson['steps'])}:{len(self.lesson['words'])}"
+        self.state = {'sig': self.sig, 'queue': list(range(len(self.lesson['steps']))), 'pos': 3,
+                      'firstTry': {'1': True}, 'retried': [], 'mistakes': [], 'at': 1}
+
+    def _post(self, url, payload, **extra):
+        return self.client.post(url, data=json.dumps(payload), content_type='application/json', **extra)
+
+    def test_draft_saved_on_site_is_offered_in_app_and_cleared_on_completion(self):
+        site_url = reverse('learn:lesson_draft', args=['a1-hello'])
+        self.assertTrue(self._post(site_url, {'data': self.state}).json()['ok'])
+        self.assertFalse(self._post(site_url, {'data': {**self.state, 'sig': '1:1'}}).json()['ok'])
+        token = self._post(reverse('learn_api:login'), {'username': 'learner', 'password': 'pw-Secret-123'}).json()['token']
+        auth = {'HTTP_AUTHORIZATION': f'Bearer {token}'}
+        lesson = self.client.get(reverse('learn_api:lesson', args=['a1-hello']), **auth).json()
+        self.assertEqual(lesson['draft']['pos'], 3)
+        moved = {**self.state, 'pos': 5, 'at': 2}
+        self.assertTrue(self._post(reverse('learn_api:lesson_draft', args=['a1-hello']), {'data': moved}, **auth).json()['ok'])
+        complete_lesson(self.user, self.lesson, 80)
+        self.assertIsNone(self.client.get(reverse('learn_api:lesson', args=['a1-hello']), **auth).json()['draft'])
+
+    def test_app_version_and_download(self):
+        from .models import AppRelease
+        self.assertEqual(self.client.get(reverse('learn_api:app_version')).json()['build'], 0)
+        AppRelease.objects.create(version='1.0.0', build=1, url='https://example.com/old.apk')
+        AppRelease.objects.create(version='1.4.0', build=6, url='https://example.com/app.apk', notes='Yangi\n\nTez')
+        info = self.client.get(reverse('learn_api:app_version')).json()
+        self.assertEqual((info['version'], info['build'], info['notes']), ('1.4.0', 6, ['Yangi', 'Tez']))
+        self.client.logout()
+        resp = self.client.get(reverse('learn:app_download'))
+        self.assertRedirects(resp, 'https://example.com/app.apk', fetch_redirect_response=False)
+        self.assertEqual(AppRelease.objects.get(build=6).downloads, 1)
+        self.assertContains(self.client.get(reverse('learn:app')), '1.4.0')

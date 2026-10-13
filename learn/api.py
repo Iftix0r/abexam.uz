@@ -13,7 +13,7 @@ from functools import wraps
 from django.contrib.auth import authenticate
 from django.core.cache import cache
 from django.http import JsonResponse
-from django.urls import path
+from django.urls import path, reverse
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 
@@ -23,10 +23,11 @@ from users.models import LoginLog, Vocabulary
 from users.views import _MAX_FAILS_PER_IP, _MAX_FAILS_PER_USER, _bump, _fail_keys, _login_blocked
 from . import ai, srs
 from .content import LEVEL_INFO, LEVELS, get_course, get_lesson, get_placement, get_stories, placement_level
-from .models import ApiToken, LessonProgress, Mistake
+from .models import ApiToken, AppRelease, LessonProgress, Mistake
 from .services import (
-    TUTOR_XP, apply_practice, award_xp, build_practice, complete_lesson, complete_story, get_profile,
-    grade_review, leaderboard, recommended_level, record_mistakes, today_xp, week_activity,
+    TUTOR_XP, apply_practice, award_xp, build_practice, clear_draft, complete_lesson, complete_story, get_draft,
+    get_profile, grade_review, leaderboard, recommended_level, record_mistakes, save_draft, today_xp,
+    week_activity,
 )
 from .views import (
     DAILY_GOALS, PRACTICE_PAID_DAILY, TUTOR_DAILY_LIMIT, WRITE_DAILY_LIMIT, _daily_quota_left, _done_map,
@@ -260,7 +261,36 @@ def lesson_detail(request, slug):
         return JsonResponse({'error': 'Dars topilmadi'}, status=404)
     if not _is_unlocked(lesson, _done_map(request.user)):
         return JsonResponse({'error': 'Avval oldingi darsni tugating'}, status=403)
-    return JsonResponse(_lesson_json(lesson))
+    return JsonResponse({**_lesson_json(lesson), 'draft': get_draft(request.user, lesson)})
+
+
+@api(methods=('POST',))
+def lesson_draft(request, slug):
+    """Same as the website's LessonDraftView: resume a lesson on any device."""
+    lesson = get_lesson(slug)
+    if not lesson or not _is_unlocked(lesson, _done_map(request.user)):
+        return JsonResponse({'error': 'Dars topilmadi'}, status=404)
+    data, err = _body(request)
+    if err:
+        return err
+    if data.get('data') is None:
+        clear_draft(request.user, lesson)
+        return JsonResponse({'ok': True})
+    return JsonResponse({'ok': save_draft(request.user, lesson, data.get('data'))})
+
+
+@api(auth=False)
+def app_version(request):
+    """Newest app build, so old installs can offer an update."""
+    release = AppRelease.latest()
+    if not release or not release.available:
+        return JsonResponse({'build': 0})
+    return JsonResponse({
+        'version': release.version, 'build': release.build, 'force': release.force_update,
+        'notes': [line.strip() for line in release.notes.splitlines() if line.strip()],
+        'url': request.build_absolute_uri(reverse('learn:app_download')),
+        'page': request.build_absolute_uri(reverse('learn:app')),
+    })
 
 
 @api(methods=('POST',))
@@ -472,6 +502,8 @@ urlpatterns = [
     path('course/', course, name='course'),
     path('lessons/<slug:slug>/', lesson_detail, name='lesson'),
     path('lessons/<slug:slug>/complete/', lesson_complete, name='lesson_complete'),
+    path('lessons/<slug:slug>/draft/', lesson_draft, name='lesson_draft'),
+    path('app-version/', app_version, name='app_version'),
     path('write-check/', write_check, name='write_check'),
     path('practice/', practice, name='practice'),
     path('practice/complete/', practice_complete, name='practice_complete'),

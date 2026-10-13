@@ -188,6 +188,7 @@
             <div class="lb-right">
                 <a class="lb-back" href="{% url 'learn:hub' %}"><i data-lucide="arrow-left"></i>Darslar</a>
                 <a class="lb-ielts" href="{% url 'dashboard' %}" title="IELTS mock platformasiga o'tish"><i data-lucide="layout-grid"></i><span>IELTS platforma</span></a>
+                {% if user.is_authenticated %}
                 <div class="lb-user">
                     <button class="lb-avatar" id="lbAvatar" aria-label="Profil menyusi" aria-expanded="false">
                         {% if user.avatar %}<img src="{{ user.avatar.url }}" alt="">{% else %}{{ user.username|first|upper }}{% endif %}
@@ -197,9 +198,13 @@
                         <a href="{% url 'learn:placement' %}"><i data-lucide="target"></i>Darajani aniqlash</a>
                         <a href="{% url 'dashboard' %}"><i data-lucide="layout-grid"></i>IELTS platforma</a>
                         <a href="{% url 'profile' %}"><i data-lucide="user"></i>Profil</a>
+                        <a href="{% url 'learn:app' %}"><i data-lucide="smartphone"></i>Mobil ilova</a>
                         <a href="{% url 'users:logout' %}" class="danger"><i data-lucide="log-out"></i>Chiqish</a>
                     </div>
                 </div>
+                {% else %}
+                <a class="lb-ielts" href="{% url 'login' %}?next={{ request.path|urlencode }}"><i data-lucide="log-in"></i><span>Kirish</span></a>
+                {% endif %}
             </div>
         </div>
     </header>
@@ -226,6 +231,7 @@
         lucide.createIcons();
         (function () {
             const btn = document.getElementById('lbAvatar'), menu = document.getElementById('lbMenu');
+            if (!btn) return;
             btn.addEventListener('click', e => {
                 e.stopPropagation();
                 const open = menu.classList.toggle('open');

@@ -1,56 +1,68 @@
 # Session state (auto-saved — last known reality)
 
-_Updated: 2026-10-13 13:18:43_  ·  branch: `main`
+_Updated: 2026-10-13 14:00:34_  ·  branch: `main`
 
 ## Uncommitted changes
 ```
  M .anchor/session-state.md
- M mobile/android/app/build.gradle.kts
- M mobile/android/app/src/main/AndroidManifest.xml
- M mobile/lib/core/app_state.dart
- M mobile/lib/core/speech.dart
- M mobile/lib/main.dart
+ M learn/admin.py
+ M learn/api.py
+ M learn/models.py
+ M learn/services.py
+ M learn/tests.py
+ M learn/urls.py
+ M learn/views.py
  M mobile/lib/screens/home_shell.dart
- M mobile/lib/screens/learn_tab.dart
- M mobile/lib/screens/lesson/exercise_steps.dart
  M mobile/lib/screens/lesson/lesson_screen.dart
  M mobile/lib/screens/profile_tab.dart
- M mobile/lib/screens/tutor_tab.dart
- M mobile/pubspec.lock
  M mobile/pubspec.yaml
-?? mobile/lib/core/reminders.dart
-?? mobile/lib/widgets/confetti.dart
+ M panel/tests.py
+ M panel/urls.py
+ M panel/views.py
+ M templates/learn/base.html
+ M templates/learn/hub.html
+ M templates/learn/lesson.html
+ M templates/panel/base.html
+?? learn/migrations/0007_drafts_and_releases.py
+?? mobile/lib/core/updates.dart
+?? templates/learn/app.html
+?? templates/panel/english_app.html
 ```
 
 Diff stat:
 ```
- .anchor/session-state.md                        |  36 +-
- mobile/android/app/build.gradle.kts             |   6 +
- mobile/android/app/src/main/AndroidManifest.xml |  11 +
- mobile/lib/core/app_state.dart                  |  73 ++-
- mobile/lib/core/speech.dart                     |   7 +-
- mobile/lib/main.dart                            |  18 +-
- mobile/lib/screens/home_shell.dart              |   4 +-
- mobile/lib/screens/learn_tab.dart               | 127 ++--
- mobile/lib/screens/lesson/exercise_steps.dart   | 793 +++++++++++++++---------
- mobile/lib/screens/lesson/lesson_screen.dart    | 510 +++++++++------
- mobile/lib/screens/profile_tab.dart             |  49 ++
- mobile/lib/screens/tutor_tab.dart               |   4 +-
- mobile/pubspec.lock                             |  56 ++
- mobile/pubspec.yaml                             |   4 +-
- 14 files changed, 1127 insertions(+), 571 deletions(-)
+ .anchor/session-state.md                     | 63 +++++++++-------------------
+ learn/admin.py                               | 13 +++++-
+ learn/api.py                                 | 42 ++++++++++++++++---
+ learn/models.py                              | 46 ++++++++++++++++++++
+ learn/services.py                            | 37 +++++++++++++++-
+ learn/tests.py                               | 42 +++++++++++++++++++
+ learn/urls.py                                |  3 ++
+ learn/views.py                               | 56 +++++++++++++++++++++++--
+ mobile/lib/screens/home_shell.dart           |  6 ++-
+ mobile/lib/screens/lesson/lesson_screen.dart | 59 ++++++++++++++++++++------
+ mobile/lib/screens/profile_tab.dart          | 26 ++++++++++++
+ mobile/pubspec.yaml                          |  2 +-
+ panel/tests.py                               | 12 ++++++
+ panel/urls.py                                |  2 +
+ panel/views.py                               | 47 ++++++++++++++++++++-
+ templates/learn/base.html                    |  6 +++
+ templates/learn/hub.html                     | 31 ++++++++++++++
+ templates/learn/lesson.html                  | 23 ++++++++--
+ templates/panel/base.html                    |  4 ++
+ 19 files changed, 448 insertions(+), 72 deletions(-)
 ```
 
 ## Recent commits
 ```
+4aae2e5 1234567
+55eb282 32iowwfjoenk
 ce093e3 1234
 3b438fe efssg
 33b82f2 avve
 d33ee7f wdes
 1f797f8 afsdsd
 279e06d afff
-1bc4d39 2r4ered
-8d24ef4 12345678
 ```
 
 ## Resume

@@ -1,0 +1,119 @@
+{% extends 'learn/base.html' %}
+
+{% block title %}Mobil ilova — AbExam English{% endblock %}
+
+{% block extra_css %}
+<style>
+    .ap-hero {
+        border-radius: 24px; padding: 40px; color: #fff; display: grid; grid-template-columns: 1.3fr 1fr; gap: 32px; align-items: center;
+        background: radial-gradient(circle at 85% 15%, rgba(255,255,255,.18), transparent 40%), linear-gradient(135deg, #4338ca, #6d28d9 60%, #7c3aed);
+        box-shadow: 0 20px 50px rgba(79, 70, 229, .35); position: relative; overflow: hidden;
+    }
+    .ap-logo { width: 72px; height: 72px; border-radius: 22px; background: rgba(255,255,255,.16); display: grid; place-items: center; font-weight: 800; font-size: 1.7rem; position: relative; margin-bottom: 18px; }
+    .ap-logo::after { content: ''; position: absolute; bottom: 15px; width: 26px; height: 4px; border-radius: 2px; background: #fbbf24; }
+    .ap-hero h1 { font-size: 2.2rem; font-weight: 800; letter-spacing: -0.03em; line-height: 1.15; }
+    .ap-hero p { opacity: .88; margin-top: 10px; font-size: 1.05rem; line-height: 1.55; }
+    .ap-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+    .ap-meta span { background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.22); border-radius: 999px; padding: 5px 12px; font-size: .82rem; font-weight: 600; }
+    .ap-dl {
+        margin-top: 24px; display: inline-flex; align-items: center; gap: 12px; background: #fff; color: #3730a3; text-decoration: none;
+        padding: 14px 22px; border-radius: 16px; font-weight: 800; font-size: 1.05rem; box-shadow: 0 8px 20px rgba(0,0,0,.18); transition: transform .15s;
+    }
+    .ap-dl:hover { transform: translateY(-2px); }
+    .ap-dl i { width: 22px; }
+    .ap-dl small { display: block; font-weight: 600; font-size: .75rem; color: #6366f1; }
+    .ap-qr { justify-self: center; background: #fff; border-radius: 20px; padding: 18px; text-align: center; color: #3730a3; box-shadow: 0 10px 30px rgba(0,0,0,.2); }
+    .ap-qr #qr { width: 180px; height: 180px; margin: 0 auto 10px; }
+    .ap-qr div:last-child { font-size: .82rem; font-weight: 700; }
+
+    .ap-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 28px; }
+    .ap-f { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 18px; padding: 20px; }
+    .ap-f .ic { width: 44px; height: 44px; border-radius: 13px; display: grid; place-items: center; margin-bottom: 12px; }
+    .ap-f .ic i { width: 22px; }
+    .ap-f b { display: block; font-size: 1rem; margin-bottom: 4px; }
+    .ap-f p { color: var(--text-muted); font-size: .9rem; line-height: 1.5; }
+
+    .ap-two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+    .ap-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 18px; padding: 22px; }
+    .ap-card h3 { font-size: 1.05rem; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .ap-card h3 i { width: 20px; color: var(--primary-color); }
+    .ap-card ol, .ap-card ul { padding-left: 20px; color: var(--text-muted); line-height: 1.8; font-size: .93rem; }
+    .ap-card li b { color: var(--text-color); }
+    .ap-soon { text-align: center; padding: 50px 20px; }
+
+    @media (max-width: 900px) {
+        .ap-hero { grid-template-columns: 1fr; padding: 28px 22px; }
+        .ap-hero h1 { font-size: 1.7rem; }
+        .ap-qr { display: none; }
+        .ap-grid, .ap-two { grid-template-columns: 1fr; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="ap-hero">
+    <div>
+        <div class="ap-logo">Ab</div>
+        <h1>AbExam English —<br>endi telefoningizda</h1>
+        <p>Darslar, so'z kartochkalari, hikoyalar va AI suhbatdosh — sayt bilan bir hisob. Telefonda boshlagan darsingizni kompyuterda davom ettiring.</p>
+        {% if release and release.available %}
+        <div class="ap-meta">
+            <span>Android</span>
+            <span>Versiya {{ release.version }}</span>
+            {% if apk_size %}<span>{{ apk_size|filesizeformat }}</span>{% endif %}
+            <span>Bepul</span>
+        </div>
+        <a class="ap-dl" href="{% url 'learn:app_download' %}">
+            <i data-lucide="download"></i>
+            <span>Yuklab olish<small>Android uchun APK</small></span>
+        </a>
+        {% else %}
+        <div class="ap-meta"><span>Tez orada</span></div>
+        {% endif %}
+    </div>
+    {% if release and release.available %}
+    <div class="ap-qr">
+        <div id="qr"></div>
+        <div>Telefon kamerasi bilan skanerlang</div>
+    </div>
+    {% endif %}
+</section>
+
+<div class="ap-grid">
+    <div class="ap-f"><div class="ic" style="background:rgba(99,102,241,.12);color:#6366f1"><i data-lucide="graduation-cap"></i></div><b>A1 dan C2 gacha</b><p>Saytdagi barcha darslar: dialog, grammatika, mashqlar va yozish — AI tekshiruv bilan.</p></div>
+    <div class="ap-f"><div class="ic" style="background:rgba(34,197,94,.12);color:#16a34a"><i data-lucide="mic"></i></div><b>Talaffuz va tinglash</b><p>Gapirganingizda so'zlar jonli yashil bo'ladi. Audio internet bo'lmasa ham telefonda ishlaydi.</p></div>
+    <div class="ap-f"><div class="ic" style="background:rgba(249,115,22,.12);color:#f97316"><i data-lucide="bell-ring"></i></div><b>Kunlik eslatma</b><p>Belgilagan vaqtingizda eslatadi — seriyangiz uzilmaydi. Maqsad bajarilgan kuni bezovta qilmaydi.</p></div>
+    <div class="ap-f"><div class="ic" style="background:rgba(236,72,153,.12);color:#ec4899"><i data-lucide="refresh-cw"></i></div><b>Sayt bilan sinxron</b><p>XP, seriya, so'zlar, xatolar va tugallanmagan dars — sayt va ilovada bir xil.</p></div>
+    <div class="ap-f"><div class="ic" style="background:rgba(59,130,246,.12);color:#3b82f6"><i data-lucide="messages-square"></i></div><b>AI suhbatdosh</b><p>Kafe, aeroport, ish suhbati va IELTS Speaking — ovoz bilan gaplashing.</p></div>
+    <div class="ap-f"><div class="ic" style="background:rgba(234,179,8,.14);color:#ca8a04"><i data-lucide="zap"></i></div><b>Tez va qulay</b><p>Oxirgi ma'lumot telefonda saqlanadi — ilova bir zumda ochiladi.</p></div>
+</div>
+
+<div class="ap-two">
+    <div class="ap-card">
+        <h3><i data-lucide="smartphone"></i>Qanday o'rnatiladi</h3>
+        <ol>
+            <li><b>"Yuklab olish"</b> tugmasini bosing (yoki QR kodni skanerlang).</li>
+            <li>Yuklangan <b>AbExam-English.apk</b> faylini oching.</li>
+            <li>Telefon so'rasa — <b>"Noma'lum manbalardan o'rnatish"</b>ga ruxsat bering.</li>
+            <li>Sayt <b>login va parolingiz</b> bilan kiring.</li>
+        </ol>
+    </div>
+    <div class="ap-card">
+        <h3><i data-lucide="sparkles"></i>{% if release %}{{ release.version }} versiyada yangi{% else %}Nima bo'ladi{% endif %}</h3>
+        {% if notes %}
+        <ul>{% for n in notes %}<li>{{ n }}</li>{% endfor %}</ul>
+        {% else %}
+        <ul><li>Barcha darslar, so'zlar va hikoyalar</li><li>Kunlik eslatma va seriya</li><li>AI suhbatdosh</li></ul>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% if release and release.available %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+    if (window.QRCode) new QRCode(document.getElementById('qr'), { text: '{{ download_url|escapejs }}', width: 180, height: 180, colorDark: '#312e81' });
+</script>
+{% endif %}
+{% endblock %}

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import ApiToken, DailyXP, LearnerProfile, LessonProgress, Mistake
+from .models import ApiToken, AppRelease, DailyXP, LearnerProfile, LessonDraft, LessonProgress, Mistake
 
 
 @admin.register(LearnerProfile)
@@ -34,3 +34,14 @@ class ApiTokenAdmin(admin.ModelAdmin):
     list_display = ('user', 'device', 'created_at', 'last_used_at')
     search_fields = ('user__username', 'device')
     readonly_fields = ('user', 'key_hash', 'device', 'created_at', 'last_used_at')
+
+
+@admin.register(AppRelease)
+class AppReleaseAdmin(admin.ModelAdmin):
+    list_display = ('version', 'build', 'force_update', 'downloads', 'created_at')
+
+
+@admin.register(LessonDraft)
+class LessonDraftAdmin(admin.ModelAdmin):
+    list_display = ('user', 'lesson_slug', 'updated_at')
+    search_fields = ('user__username', 'lesson_slug')

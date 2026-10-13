@@ -70,6 +70,8 @@ urlpatterns = [
     path('english/learners/', views.english_learners, name='english_learners'),
     path('english/devices/', views.english_devices, name='english_devices'),
     path('english/devices/<int:pk>/revoke/', views.english_device_revoke, name='english_device_revoke'),
+    path('english/app/', views.english_app, name='english_app'),
+    path('english/app/<int:pk>/delete/', views.english_app_delete, name='english_app_delete'),
 
     path('promocodes/', views.promocodes_list, name='promocodes'),
     path('promocodes/<int:pk>/toggle/', views.promocode_toggle, name='promocode_toggle'),

@@ -38,3 +38,15 @@ class EnglishPanelTests(TestCase):
         resp = self.client.post(reverse('panel:english_device_revoke', args=[self.token.pk]), {'next': 'https://evil.example/'})
         self.assertRedirects(resp, reverse('panel:english_devices'), fetch_redirect_response=False)
         self.assertFalse(ApiToken.objects.exists())
+
+    def test_publish_app_release(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        from learn.models import AppRelease
+        apk = SimpleUploadedFile('app-release.apk', b'PK fake apk', content_type='application/vnd.android.package-archive')
+        resp = self.client.post(reverse('panel:english_app'), {'version': '1.4.0', 'build': 6, 'apk': apk, 'notes': 'Yangi'})
+        self.assertRedirects(resp, reverse('panel:english_app'))
+        release = AppRelease.objects.get()
+        self.assertTrue(release.apk.name.startswith('app/'))
+        self.assertContains(self.client.get(reverse('panel:english_app')), '1.4.0')
+        self.client.post(reverse('panel:english_app_delete', args=[release.pk]))
+        self.assertFalse(AppRelease.objects.exists())

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../core/api.dart';
 import '../core/app_state.dart';
 import '../core/sfx.dart';
 import '../core/speech.dart';
@@ -165,6 +168,20 @@ class ProfileTab extends StatelessWidget {
                 onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const GrammarScreen())),
               ),
               ListTile(
+                leading: const Icon(Icons.language_rounded, color: Brand.ok),
+                title: const Text('Saytda ochish'),
+                subtitle: const Text('abexam.uz/learn — hisob va natijalar umumiy'),
+                trailing: const Icon(Icons.open_in_new_rounded, size: 20),
+                onTap: () => launchUrl(Uri.parse('$apiBase/learn/'), mode: LaunchMode.externalApplication),
+              ),
+              ListTile(
+                leading: const Icon(Icons.share_rounded, color: Brand.flame),
+                title: const Text("Ilovani do'stga yuborish"),
+                subtitle: const Text("Yuklab olish sahifasi havolasi"),
+                trailing: const Icon(Icons.open_in_new_rounded, size: 20),
+                onTap: () => launchUrl(Uri.parse('$apiBase/learn/app/'), mode: LaunchMode.externalApplication),
+              ),
+              ListTile(
                 leading: const Icon(Icons.quiz_rounded, color: Brand.primary),
                 title: const Text('Darajani qayta aniqlash'),
                 trailing: const Icon(Icons.chevron_right_rounded),
@@ -191,6 +208,15 @@ class ProfileTab extends StatelessWidget {
             },
             icon: const Icon(Icons.logout_rounded),
             label: const Text('Hisobdan chiqish'),
+          ),
+          const SizedBox(height: 14),
+          FutureBuilder<PackageInfo>(
+            future: PackageInfo.fromPlatform(),
+            builder: (context, snap) => Text(
+              snap.hasData ? 'AbExam English ${snap.data!.version} (${snap.data!.buildNumber})' : '',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: scheme.outline, fontSize: 12),
+            ),
           ),
         ]),
       ),

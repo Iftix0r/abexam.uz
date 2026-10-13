@@ -112,6 +112,37 @@
 {% endblock %}
 
 {% block content %}
+{% if app_release and app_release.available %}
+<a href="{% url 'learn:app' %}" class="ln-app" id="lnApp" data-key="app-banner-{{ app_release.build }}">
+    <span class="ln-app-ic"><i data-lucide="smartphone"></i></span>
+    <span class="ln-app-tx"><b>Mobil ilova chiqdi — {{ app_release.version }}</b><small>Darslarni telefonda davom ettiring, kunlik eslatma oling</small></span>
+    <span class="ln-app-go">Yuklab olish</span>
+    <button type="button" class="ln-app-x" aria-label="Yopish"><i data-lucide="x"></i></button>
+</a>
+<style>
+    .ln-app { display: flex; align-items: center; gap: 14px; padding: 12px 14px; margin-bottom: 18px; border-radius: 16px; text-decoration: none; color: #fff; background: linear-gradient(135deg, #4338ca, #7c3aed); box-shadow: 0 8px 24px rgba(79,70,229,.3); }
+    .ln-app-ic { width: 40px; height: 40px; border-radius: 12px; background: rgba(255,255,255,.18); display: grid; place-items: center; flex-shrink: 0; }
+    .ln-app-ic i { width: 20px; }
+    .ln-app-tx { flex: 1; min-width: 0; }
+    .ln-app-tx b { display: block; font-size: .95rem; }
+    .ln-app-tx small { opacity: .85; font-size: .8rem; }
+    .ln-app-go { background: #fff; color: #3730a3; font-weight: 800; font-size: .85rem; padding: 8px 14px; border-radius: 10px; white-space: nowrap; }
+    .ln-app-x { background: none; border: none; color: #fff; opacity: .7; cursor: pointer; display: flex; padding: 4px; }
+    .ln-app-x i { width: 18px; }
+    @media (max-width: 600px) { .ln-app-go { display: none; } }
+</style>
+<script>
+    (function () {
+        const b = document.getElementById('lnApp');
+        try { if (localStorage.getItem(b.dataset.key)) b.remove(); } catch (e) {}
+        b.querySelector('.ln-app-x').addEventListener('click', e => {
+            e.preventDefault(); e.stopPropagation();
+            try { localStorage.setItem(b.dataset.key, '1'); } catch (err) {}
+            b.remove();
+        });
+    })();
+</script>
+{% endif %}
 <div class="ln-hero">
     <div>
         <h1>Ingliz tilini o'rganamiz</h1>

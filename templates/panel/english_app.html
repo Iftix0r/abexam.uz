@@ -1,0 +1,70 @@
+{% extends 'panel/base.html' %}
+{% block title %}Ilova versiyalari{% endblock %}
+{% block page_title %}Mobil ilova versiyalari{% endblock %}
+{% block nav_english_app %}active{% endblock %}
+
+{% block content %}
+<div class="grid-sidebar-r">
+  <div class="card" style="padding:0">
+    <div class="section-header" style="padding:20px 20px 0">
+      <span class="section-title">E'lon qilingan versiyalar</span>
+      <a href="{% url 'learn:app' %}" target="_blank" class="btn btn-ghost btn-sm">Yuklab olish sahifasi ↗</a>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Versiya</th><th>Build</th><th>Fayl</th><th>Yuklab olingan</th><th>Majburiy</th><th>Sana</th><th></th></tr></thead>
+        <tbody>
+          {% for r in releases %}
+          <tr>
+            <td style="font-weight:700">{{ r.version }}{% if forloop.first %} <span class="badge badge-green">joriy</span>{% endif %}</td>
+            <td>{{ r.build }}</td>
+            <td style="font-size:12px">{% if r.apk %}📦 APK{% elif r.url %}<a href="{{ r.url }}" target="_blank" rel="noopener" style="color:var(--primary)">havola ↗</a>{% else %}—{% endif %}</td>
+            <td><span class="badge badge-blue">{{ r.downloads }}</span></td>
+            <td>{% if r.force_update %}<span class="badge badge-red">ha</span>{% else %}<span style="color:var(--muted)">yo'q</span>{% endif %}</td>
+            <td style="color:var(--muted);font-size:12px">{{ r.created_at|date:"d M Y, H:i" }}</td>
+            <td>
+              <form method="post" action="{% url 'panel:english_app_delete' r.pk %}" onsubmit="return confirm('{{ r.version }} versiyani o\'chirasizmi?')">
+                {% csrf_token %}<button class="btn btn-danger btn-sm">O'chirish</button>
+              </form>
+            </td>
+          </tr>
+          {% if r.notes %}<tr><td colspan="7" style="font-size:12px;color:var(--muted);white-space:pre-line;padding-top:0">{{ r.notes }}</td></tr>{% endif %}
+          {% empty %}
+          <tr><td colspan="7" style="text-align:center;padding:32px;color:var(--muted)">Hali versiya yo'q — o'ngdagi forma orqali birinchi APKni yuklang</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <form class="card" method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="section-header"><span class="section-title">Yangi versiya</span></div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;gap:8px">
+          <input class="form-input" name="version" placeholder="1.4.0" required>
+          <input class="form-input" name="build" type="number" min="1" placeholder="Build: 6" required style="max-width:110px">
+        </div>
+        <label style="font-size:12px;color:var(--muted)">APK fayl (mobile/build/app/outputs/flutter-apk/app-release.apk)</label>
+        <input class="form-input" type="file" name="apk" accept=".apk">
+        <input class="form-input" name="url" placeholder="yoki tashqi havola (https://...)">
+        <textarea class="form-input" name="notes" placeholder="Nima yangi — har qatorda bittadan"></textarea>
+        <label class="form-check" style="font-size:13px"><input type="checkbox" name="force_update"> Majburiy yangilash (eski versiya ishlamaydi)</label>
+        <button class="btn btn-primary">E'lon qilish</button>
+      </div>
+      <p style="font-size:11px;color:var(--muted);margin-top:10px">Build raqami <code>pubspec.yaml</code> dagi <code>version: 1.4.0+6</code> ning "+" dan keyingi qismi. Ilova o'zidan kattaroq build ko'rsa, "Yangi versiya" oynasini chiqaradi.</p>
+    </form>
+
+    <div class="card">
+      <div class="section-header"><span class="section-title">Foydalanuvchilardagi versiyalar</span></div>
+      {% for v, c in installed %}
+      <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px"><span>{{ v }}</span><span class="badge badge-gray">{{ c }} qurilma</span></div>
+      {% empty %}
+      <div style="font-size:13px;color:var(--muted)">Ma'lumot yo'q</div>
+      {% endfor %}
+      <div style="font-size:12px;color:var(--muted);margin-top:12px">Tugallanmagan darslar (sayt ↔ ilova): {{ drafts }}</div>
+    </div>
+  </div>
+</div>
+{% endblock %}

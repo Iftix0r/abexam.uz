@@ -108,3 +108,49 @@ class ApiToken(models.Model):
 
     def __str__(self):
         return f"{self.user} · {self.device or 'ilova'}"
+
+
+class LessonDraft(models.Model):
+    """A half-finished lesson, so it can be resumed on another device.
+
+    `data` uses the website player's format (templates/learn/lesson.html):
+    {sig, queue, pos, firstTry: {idx: bool}, retried: [idx], mistakes: [{idx, right}], at}.
+    It is removed when the lesson is completed.
+    """
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='lesson_drafts')
+    lesson_slug = models.CharField(max_length=100)
+    data = models.JSONField()
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('user', 'lesson_slug')
+        verbose_name = 'Tugallanmagan dars'
+        verbose_name_plural = 'Tugallanmagan darslar'
+
+
+class AppRelease(models.Model):
+    """A mobile app build offered for download; the newest one is "current"."""
+    version = models.CharField(max_length=20, help_text='Masalan: 1.4.0')
+    build = models.PositiveIntegerField(help_text="Build raqami (pubspec.yaml: version: 1.4.0+7 → 7)")
+    apk = models.FileField(upload_to='app/', blank=True)
+    url = models.URLField(blank=True, help_text="APK yuklanmasa: tashqi havola (Telegram, Google Drive...)")
+    notes = models.TextField(blank=True, help_text="Nima yangi (har qator — bitta band)")
+    force_update = models.BooleanField(default=False, help_text="Eski versiyada ishlashni to'xtatadi")
+    downloads = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-build']
+        verbose_name = 'Ilova versiyasi'
+        verbose_name_plural = 'Ilova versiyalari'
+
+    def __str__(self):
+        return f"{self.version} ({self.build})"
+
+    @classmethod
+    def latest(cls):
+        return cls.objects.order_by('-build').first()
+
+    @property
+    def available(self):
+        return bool(self.apk or self.url)

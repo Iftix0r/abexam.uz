@@ -7,7 +7,7 @@ from django.utils import timezone
 
 from users.models import Vocabulary
 from .content import EXERCISE_STEPS, get_lesson
-from .models import DailyXP, LearnerProfile, LessonProgress, Mistake
+from .models import DailyXP, LearnerProfile, LessonDraft, LessonProgress, Mistake
 
 LESSON_XP_FIRST = 10       # + up to 10 more for accuracy, first completion only
 LESSON_XP_REPEAT = 5       # once per lesson per day, so replays can't farm the leaderboard
@@ -93,9 +93,44 @@ def complete_lesson(user, lesson, score):
         progress.completed_at = timezone.now()
         progress.save()
     words_added = add_lesson_words(user, lesson)
+    LessonDraft.objects.filter(user=user, lesson_slug=lesson['slug']).delete()
     profile = award_xp(user, xp)
     return {'xp': xp, 'words_added': words_added, 'first_time': created,
             'total_xp': profile.xp, 'streak': profile.streak, 'best_score': progress.best_score}
+
+
+# ── Resume a lesson on another device ───────────────────────────────────
+DRAFT_MAX_BYTES = 20_000
+
+
+def draft_signature(lesson):
+    # Same as the players' SIG: a changed lesson invalidates old drafts.
+    return f"{len(lesson['steps'])}:{len(lesson['words'])}"
+
+
+def get_draft(user, lesson):
+    draft = LessonDraft.objects.filter(user=user, lesson_slug=lesson['slug']).first()
+    if not draft or not isinstance(draft.data, dict) or draft.data.get('sig') != draft_signature(lesson):
+        return None
+    return draft.data
+
+
+def save_draft(user, lesson, data):
+    """Store the player's state; returns False if it doesn't look like one."""
+    import json
+    if not isinstance(data, dict) or data.get('sig') != draft_signature(lesson):
+        return False
+    queue, pos = data.get('queue'), data.get('pos')
+    if not isinstance(queue, list) or not isinstance(pos, int) or not 0 < pos < len(queue):
+        return False
+    if len(json.dumps(data)) > DRAFT_MAX_BYTES:
+        return False
+    LessonDraft.objects.update_or_create(user=user, lesson_slug=lesson['slug'], defaults={'data': data})
+    return True
+
+
+def clear_draft(user, lesson):
+    LessonDraft.objects.filter(user=user, lesson_slug=lesson['slug']).delete()
 
 
 STORY_XP_FIRST = 8

@@ -25,7 +25,7 @@ from core.utils import (
 from exams.models import ATTEMPT_ONLINE_WINDOW, Exam, ExamAttempt, Question, Section, UserResult
 from exams.views import finalize_attempt
 from learn.content import LEVEL_INFO, LEVELS, get_course, get_stories, validate_course
-from learn.models import ApiToken, DailyXP, LearnerProfile, LessonProgress, Mistake
+from learn.models import ApiToken, AppRelease, DailyXP, LearnerProfile, LessonDraft, LessonProgress, Mistake
 from payments.models import Transaction
 from users.models import LoginLog, User, Vocabulary
 
@@ -1792,3 +1792,48 @@ def english_device_revoke(request, pk):
     if not url_has_allowed_host_and_scheme(nxt, allowed_hosts={request.get_host()}):
         nxt = reverse('panel:english_devices')
     return redirect(nxt)
+
+
+@panel_required
+def english_app(request):
+    """Upload app builds; the newest one is offered on /learn/app/ and to old installs."""
+    if request.method == 'POST':
+        version = request.POST.get('version', '').strip()
+        apk = request.FILES.get('apk')
+        url = request.POST.get('url', '').strip()
+        try:
+            build = int(request.POST.get('build', ''))
+        except ValueError:
+            build = 0
+        if not version or build <= 0:
+            messages.error(request, "Versiya va build raqamini kiriting")
+        elif not apk and not url:
+            messages.error(request, "APK fayl yoki havola kerak")
+        elif apk and not apk.name.lower().endswith('.apk'):
+            messages.error(request, "Faqat .apk fayl yuklanadi")
+        elif AppRelease.objects.filter(build=build).exists():
+            messages.error(request, f"{build}-build allaqachon bor — kattaroq raqam kiriting")
+        else:
+            AppRelease.objects.create(
+                version=version, build=build, apk=apk or '', url=url,
+                notes=request.POST.get('notes', '').strip(), force_update=bool(request.POST.get('force_update')),
+            )
+            messages.success(request, f"{version} ({build}) e'lon qilindi")
+            return redirect('panel:english_app')
+    releases = AppRelease.objects.all()
+    installed = dict(ApiToken.objects.exclude(app_version='').values_list('app_version').annotate(c=Count('id')))
+    return render(request, 'panel/english_app.html', {
+        'releases': releases, 'installed': sorted(installed.items(), key=lambda kv: kv[0], reverse=True),
+        'drafts': LessonDraft.objects.count(),
+    })
+
+
+@panel_required
+@require_POST
+def english_app_delete(request, pk):
+    release = get_object_or_404(AppRelease, pk=pk)
+    if release.apk:
+        release.apk.delete(save=False)
+    release.delete()
+    messages.success(request, "Versiya o'chirildi")
+    return redirect('panel:english_app')

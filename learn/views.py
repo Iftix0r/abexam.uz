@@ -9,6 +9,7 @@ from django.core.cache import cache
 from django.http import FileResponse, Http404, HttpResponse, HttpResponseBadRequest, JsonResponse
 from django.shortcuts import redirect
 from django.urls import reverse
+from django.db.models import F
 from django.utils import timezone
 from django.views import View
 from django.views.generic import TemplateView
@@ -17,10 +18,11 @@ from core.utils import parse_json_body
 from users.models import Vocabulary
 from . import ai, srs
 from .content import LEVELS, get_course, get_lesson, get_placement, get_stories, placement_level
-from .models import LessonProgress, Mistake
+from .models import AppRelease, LessonProgress, Mistake
 from .services import (
-    TUTOR_XP, apply_practice, award_xp, build_practice, complete_lesson, complete_story, get_profile,
-    grade_review, leaderboard, recommended_level, record_mistakes, today_xp, week_activity,
+    TUTOR_XP, apply_practice, award_xp, build_practice, clear_draft, complete_lesson, complete_story, get_draft,
+    get_profile, grade_review, leaderboard, recommended_level, record_mistakes, save_draft, today_xp,
+    week_activity,
 )
 
 TUTOR_DAILY_LIMIT = 60
@@ -124,6 +126,7 @@ class HubView(LoginRequiredMixin, TemplateView):
             'can_practice': bool(done),
             'board': leaderboard(user, limit=5),
             'story_count': sum(1 for st in get_stories().values() if st['level'] == level_code),
+            'app_release': AppRelease.latest(),
         })
         return ctx
 
@@ -164,6 +167,9 @@ class LessonView(LoginRequiredMixin, TemplateView):
             'next_slug': lesson.get('next_slug'),
             'mode': 'lesson',
             'complete_url': reverse('learn:lesson_complete', args=[lesson['slug']]),
+            # Started on the phone? Offer to continue here (and the other way round).
+            'draft': get_draft(self.request.user, lesson),
+            'draft_url': reverse('learn:lesson_draft', args=[lesson['slug']]),
         }
         ctx['progress'] = LessonProgress.objects.filter(user=self.request.user, lesson_slug=lesson['slug']).first()
         return ctx
@@ -188,6 +194,50 @@ class LessonCompleteView(LoginRequiredMixin, View):
         if isinstance(mistakes, list):
             record_mistakes(request.user, lesson, mistakes[:50])
         return JsonResponse({'ok': True, **result})
+
+
+class LessonDraftView(LoginRequiredMixin, View):
+    """Save (or with data=null, drop) the half-finished state of a lesson."""
+
+    def post(self, request, slug):
+        lesson = get_lesson(slug)
+        if not lesson or not _is_unlocked(lesson, _done_map(request.user)):
+            return JsonResponse({'error': 'Dars topilmadi'}, status=404)
+        data, err = parse_json_body(request)
+        if err:
+            return err
+        if data.get('data') is None:
+            clear_draft(request.user, lesson)
+            return JsonResponse({'ok': True})
+        return JsonResponse({'ok': save_draft(request.user, lesson, data.get('data'))})
+
+
+class AppView(TemplateView):
+    """Public page to download the Android app (shareable link)."""
+    template_name = 'learn/app.html'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        release = ctx['release'] = AppRelease.latest()
+        ctx['download_url'] = self.request.build_absolute_uri(reverse('learn:app_download'))
+        try:
+            ctx['apk_size'] = release.apk.size if release and release.apk else None
+        except OSError:
+            ctx['apk_size'] = None
+        ctx['notes'] = [line.strip() for line in release.notes.splitlines() if line.strip()] if release else []
+        return ctx
+
+
+def app_download(request):
+    release = AppRelease.latest()
+    if not release or not release.available:
+        raise Http404
+    AppRelease.objects.filter(pk=release.pk).update(downloads=F('downloads') + 1)
+    if release.apk:
+        response = FileResponse(release.apk.open('rb'), content_type='application/vnd.android.package-archive')
+        response['Content-Disposition'] = f'attachment; filename="AbExam-English-{release.version}.apk"'
+        return response
+    return redirect(release.url)
 
 
 class WriteCheckView(LoginRequiredMixin, View):

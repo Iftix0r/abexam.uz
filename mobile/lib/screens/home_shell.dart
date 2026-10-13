@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../core/app_state.dart';
+import '../core/updates.dart';
 import 'learn_tab.dart';
 import 'profile_tab.dart';
 import 'review_screen.dart';
@@ -23,7 +24,10 @@ class _HomeShellState extends State<HomeShell> {
     super.initState();
     final state = AppScope.read(context);
     state.refresh().catchError((_) {});
-    WidgetsBinding.instance.addPostFrameCallback((_) => state.askRemindersOnce());
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await state.askRemindersOnce();
+      if (mounted) checkForUpdate(context);
+    });
   }
 
   void goTo(int tab) => setState(() => _tab = tab);
