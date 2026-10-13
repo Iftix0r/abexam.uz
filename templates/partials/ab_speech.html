@@ -1,0 +1,64 @@
+{# window.abSpeech — shared by the IELTS site (base.html) and the English course (learn/base.html). #}
+<script>
+        // English text-to-speech. Uses the browser voice when it has an English one;
+        // otherwise (e.g. Linux Chrome/Firefox, many Android webviews ship none, and
+        // speak() then fails silently) plays a server-generated MP3 instead.
+        window.abSpeech = (function () {
+            const synth = window.speechSynthesis;
+            const TTS_URL = '{% url "learn:tts" %}';
+            let voice = null, audio = null, seq = 0, broken = false;
+            const pick = () => {
+                const v = synth.getVoices();
+                voice = v.find(x => /en-GB/i.test(x.lang) && /female|Google UK English Female|Libby|Sonia/i.test(x.name))
+                     || v.find(x => /en-GB/i.test(x.lang)) || v.find(x => /^en/i.test(x.lang)) || null;
+            };
+            if (synth) { pick(); synth.addEventListener('voiceschanged', pick); }
+
+            function stop() {
+                seq++;
+                if (audio) { audio.pause(); audio = null; }
+                if (synth && (synth.speaking || synth.pending)) { synth.cancel(); return true; }
+                return false;
+            }
+            function viaServer(text, rate, done, my) {
+                const a = new Audio(TTS_URL + '?t=' + encodeURIComponent(text));
+                a.playbackRate = rate;
+                audio = a;
+                a.onended = a.onerror = done;
+                a.play().catch(done);
+            }
+            function speak(text, opts) {
+                const rate = (opts && opts.rate) || 0.95, onend = opts && opts.onend;
+                const cancelled = stop(), my = seq;
+                let finished = false;
+                const done = () => { if (my === seq && !finished) { finished = true; audio = null; onend && onend(); } };
+                text = String(text || '').trim();
+                if (!text) return done();
+                if (synth && !voice) pick();
+                if (!synth || broken || !voice) return viaServer(text, rate, done, my);
+                // Chrome drops long utterances after ~15s, so queue sentence by sentence.
+                const parts = text.match(/[^.!?]+[.!?]*["')]*\s*/g) || [text];
+                const go = () => {
+                    if (my !== seq) return;
+                    let fellBack = false, started = false;
+                    const fallBack = () => {
+                        if (my !== seq || fellBack) return;
+                        fellBack = broken = true; synth.cancel(); viaServer(text, rate, done, my);
+                    };
+                    // Some setups list voices yet never start speaking and never error.
+                    setTimeout(() => { if (!started) fallBack(); }, 1500);
+                    parts.forEach((p, i) => {
+                        const u = new SpeechSynthesisUtterance(p.trim());
+                        u.lang = voice.lang; u.voice = voice; u.rate = rate;
+                        u.onstart = () => { started = true; };
+                        if (i === parts.length - 1) u.onend = done;
+                        u.onerror = e => { if (e.error !== 'interrupted' && e.error !== 'canceled') fallBack(); };
+                        synth.speak(u);
+                    });
+                };
+                // speak() right after cancel() in the same tick is silently dropped on some Chrome builds.
+                cancelled ? setTimeout(go, 60) : go();
+            }
+            return { speak, stop };
+        })();
+</script>

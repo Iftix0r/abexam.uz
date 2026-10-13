@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'learn/base.html' %}
 
 {% block title %}Ingliz tili kursi - AbExam{% endblock %}
 {% block page_title %}Ingliz tili{% endblock %}
@@ -15,7 +15,7 @@
     .ln-chip small { font-weight: 400; color: var(--text-muted); }
 
     .ln-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; }
-    .ln-continue { display: flex; align-items: center; gap: 20px; padding: 22px; margin-bottom: 20px; border: 1px solid var(--primary-color); background: linear-gradient(135deg, rgba(211,47,47,0.08), transparent 60%), var(--card-bg); }
+    .ln-continue { display: flex; align-items: center; gap: 20px; padding: 22px; margin-bottom: 20px; border: 1px solid var(--primary-color); background: linear-gradient(135deg, rgba(79, 70, 229,0.08), transparent 60%), var(--card-bg); }
     .ln-continue .ln-badge { width: 56px; height: 56px; border-radius: 16px; background: var(--primary-color); color: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .ln-continue h2 { font-size: 1.15rem; font-weight: 600; }
     .ln-continue p { color: var(--text-muted); font-size: 0.85rem; margin-top: 2px; }
@@ -48,10 +48,10 @@
     a.ln-node:hover { border-color: var(--primary-color); transform: translateX(3px); }
     .ln-dot { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; z-index: 1; background: var(--tint-b); color: var(--text-muted); }
     .ln-node.done .ln-dot { background: var(--success-color); color: #fff; }
-    .ln-node.current { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(211,47,47,0.12); }
+    .ln-node.current { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(79, 70, 229,0.12); }
     .ln-node.current .ln-dot { background: var(--primary-color); color: #fff; animation: lnPulse 2s infinite; }
     .ln-node.locked { opacity: 0.55; cursor: not-allowed; }
-    @keyframes lnPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(211,47,47,0.45); } 50% { box-shadow: 0 0 0 8px rgba(211,47,47,0); } }
+    @keyframes lnPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(79, 70, 229,0.45); } 50% { box-shadow: 0 0 0 8px rgba(79, 70, 229,0); } }
     @media (prefers-reduced-motion: reduce) { .ln-node.current .ln-dot { animation: none; } }
     .ln-node-body { flex: 1; min-width: 0; }
     .ln-node-body b { display: block; font-size: 0.95rem; font-weight: 600; }

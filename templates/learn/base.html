@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="uz" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#4f46e5">
+    <title>{% block title %}AbExam English{% endblock %}</title>
+    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* The English course is its own product: same tokens as the IELTS
+           site (learn pages rely on them), indigo brand instead of red. */
+        :root {
+            --bg-color: #0e0f1a;
+            --card-bg: #181a2b;
+            --primary-color: #6366f1;
+            --primary-color-dark: #4f46e5;
+            --success-color: #22c55e;
+            --danger-color: #ef4444;
+            --text-color: #e6e7ee;
+            --text-muted: #9a9cb0;
+            --border-color: rgba(255, 255, 255, 0.07);
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --tint-a: rgba(255, 255, 255, 0.05);
+            --tint-b: rgba(255, 255, 255, 0.09);
+            --shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+            --header-bg: rgba(14, 15, 26, 0.85);
+        }
+        [data-theme="light"] {
+            --bg-color: #f6f7fb;
+            --card-bg: #ffffff;
+            --primary-color: #4f46e5;
+            --primary-color-dark: #4338ca;
+            --success-color: #16a34a;
+            --danger-color: #dc2626;
+            --text-color: #1f2133;
+            --text-muted: #6b6e84;
+            --border-color: rgba(15, 23, 42, 0.09);
+            --tint-a: rgba(15, 23, 42, 0.035);
+            --tint-b: rgba(15, 23, 42, 0.06);
+            --shadow: 0 8px 28px rgba(15, 23, 42, 0.08);
+            --header-bg: rgba(255, 255, 255, 0.85);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, system-ui, sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+        a, button, input, select, textarea { font-family: inherit; }
+        a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+            outline: 2px solid var(--primary-color); outline-offset: 2px; border-radius: 4px;
+        }
+
+        /* ── header ─────────────────────────────────────────── */
+        .lb-top {
+            position: sticky; top: 0; z-index: 50;
+            background: var(--header-bg);
+            backdrop-filter: saturate(180%) blur(14px);
+            -webkit-backdrop-filter: saturate(180%) blur(14px);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .lb-inner { max-width: 1200px; margin: 0 auto; height: 64px; padding: 0 1.5rem; display: flex; align-items: center; gap: 1.5rem; }
+        .lb-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text-color); flex-shrink: 0; }
+        .lb-logo {
+            width: 36px; height: 36px; border-radius: 11px; display: grid; place-items: center;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed); color: #fff; font-weight: 800; font-size: 0.95rem;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35); position: relative;
+        }
+        .lb-logo::after { content: ''; position: absolute; bottom: 7px; width: 14px; height: 2.5px; border-radius: 2px; background: #fbbf24; }
+        .lb-name { font-weight: 800; font-size: 1.05rem; letter-spacing: -0.02em; }
+        .lb-name span { color: var(--primary-color); }
+
+        .lb-nav { display: flex; align-items: center; gap: 4px; flex: 1; }
+        .lb-nav a {
+            display: flex; align-items: center; gap: 7px; padding: 8px 12px; border-radius: 10px;
+            color: var(--text-muted); text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: background .15s, color .15s;
+        }
+        .lb-nav a i { width: 17px; height: 17px; }
+        .lb-nav a:hover { background: var(--tint-a); color: var(--text-color); }
+        .lb-nav a.on { background: rgba(99, 102, 241, 0.12); color: var(--primary-color); }
+
+        .lb-right { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+        .lb-back {
+            display: none; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 10px;
+            color: var(--text-muted); text-decoration: none; font-size: 0.9rem; font-weight: 600;
+        }
+        .lb-back:hover { background: var(--tint-a); color: var(--text-color); }
+        .lb-back i { width: 17px; }
+        .lb-ielts {
+            display: flex; align-items: center; gap: 7px; padding: 7px 12px; border-radius: 10px; text-decoration: none;
+            color: var(--text-muted); font-size: 0.82rem; font-weight: 600; border: 1px solid var(--border-color);
+        }
+        .lb-ielts:hover { color: var(--text-color); background: var(--tint-a); }
+        .lb-ielts i { width: 15px; }
+
+        .lb-user { position: relative; }
+        .lb-avatar {
+            width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--border-color); background: var(--primary-color);
+            color: #fff; font-weight: 700; font-size: 0.85rem; cursor: pointer; overflow: hidden; display: grid; place-items: center;
+        }
+        .lb-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .lb-menu {
+            position: absolute; right: 0; top: 46px; min-width: 220px; background: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 14px; box-shadow: var(--shadow); padding: 6px; display: none;
+        }
+        .lb-menu.open { display: block; animation: lbIn .15s ease; }
+        @keyframes lbIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+        .lb-menu .who { padding: 10px 12px 8px; border-bottom: 1px solid var(--border-color); margin-bottom: 4px; }
+        .lb-menu .who b { display: block; font-size: 0.9rem; }
+        .lb-menu .who small { color: var(--text-muted); font-size: 0.78rem; }
+        .lb-menu a { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 9px; color: var(--text-color); text-decoration: none; font-size: 0.88rem; }
+        .lb-menu a:hover { background: var(--tint-a); }
+        .lb-menu a i { width: 17px; color: var(--text-muted); }
+        .lb-menu a.danger, .lb-menu a.danger i { color: var(--danger-color); }
+
+        .lb-msgs { max-width: 1200px; margin: 12px auto 0; padding: 0 1.5rem; width: 100%; }
+        .lb-msg { padding: 10px 14px; border-radius: 12px; font-size: 0.88rem; font-weight: 500; margin-bottom: 8px; background: rgba(34,197,94,.1); color: var(--success-color); border: 1px solid rgba(34,197,94,.25); }
+        .lb-msg.error { background: rgba(239,68,68,.1); color: var(--danger-color); border-color: rgba(239,68,68,.25); }
+
+        /* ── page ───────────────────────────────────────────── */
+        .page-container {
+            width: 100%; max-width: 1200px; padding: 2rem 1.5rem; margin: 0 auto; flex-grow: 1;
+            display: flex; flex-direction: column; animation: pageFadeIn 0.3s ease;
+        }
+        @keyframes pageFadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+        @media (prefers-reduced-motion: reduce) { .page-container { animation: none; } }
+
+        .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; padding: 1.5rem; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06); }
+        .btn { border: none; border-radius: 10px; cursor: pointer; font-weight: 600; transition: opacity 0.2s, transform 0.1s; text-decoration: none; display: inline-block; }
+        .btn:active { transform: scale(0.97); }
+        .btn-primary { background: var(--primary-color); color: #fff; box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3); }
+        .btn-primary:hover { box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4); }
+
+        /* ── mobile bottom tabs ─────────────────────────────── */
+        .lb-tabs { display: none; }
+        @media (max-width: 900px) {
+            .lb-nav, .lb-ielts span { display: none; }
+            .lb-inner { padding: 0 1rem; gap: 0.75rem; height: 58px; }
+            .page-container { padding: 1rem 1rem calc(88px + env(safe-area-inset-bottom)); }
+            .lb-tabs {
+                display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
+                background: var(--header-bg); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+                border-top: 1px solid var(--border-color); padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+            }
+            .lb-tabs a {
+                flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 0; border-radius: 12px;
+                color: var(--text-muted); text-decoration: none; font-size: 0.68rem; font-weight: 600;
+            }
+            .lb-tabs a i { width: 22px; height: 22px; }
+            .lb-tabs a.on { color: var(--primary-color); }
+            .lb-tabs a.on i { background: rgba(99, 102, 241, 0.14); border-radius: 10px; padding: 2px 10px; width: 42px; height: 26px; }
+        }
+
+        /* Lesson, story and test pages: no navigation, just the task. */
+        body.focus .lb-nav, body.focus .lb-tabs, body.focus .lb-ielts { display: none !important; }
+        body.focus .lb-back { display: flex; }
+        @media (max-width: 900px) { body.focus .page-container { padding-bottom: 1rem; } }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+{% with url=request.resolver_match.url_name %}
+<body class="{% block body_class %}{% endblock %}">
+    <header class="lb-top">
+        <div class="lb-inner">
+            <a class="lb-brand" href="{% url 'learn:hub' %}">
+                <span class="lb-logo">Ab</span>
+                <span class="lb-name">AbExam <span>English</span></span>
+            </a>
+
+            <nav class="lb-nav">
+                <a href="{% url 'learn:hub' %}" class="{% if url == 'hub' %}on{% endif %}"><i data-lucide="graduation-cap"></i>Darslar</a>
+                <a href="{% url 'learn:review' %}" class="{% if url == 'review' %}on{% endif %}"><i data-lucide="layers"></i>So'zlar</a>
+                <a href="{% url 'learn:stories' %}" class="{% if url == 'stories' or url == 'story' %}on{% endif %}"><i data-lucide="book-open"></i>Hikoyalar</a>
+                <a href="{% url 'learn:tutor' %}" class="{% if url == 'tutor' %}on{% endif %}"><i data-lucide="messages-square"></i>AI suhbat</a>
+                <a href="{% url 'learn:grammar' %}" class="{% if url == 'grammar' %}on{% endif %}"><i data-lucide="book-marked"></i>Grammatika</a>
+                <a href="{% url 'learn:leaderboard' %}" class="{% if url == 'leaderboard' %}on{% endif %}"><i data-lucide="trophy"></i>Reyting</a>
+            </nav>
+
+            <div class="lb-right">
+                <a class="lb-back" href="{% url 'learn:hub' %}"><i data-lucide="arrow-left"></i>Darslar</a>
+                <a class="lb-ielts" href="{% url 'dashboard' %}" title="IELTS mock platformasiga o'tish"><i data-lucide="layout-grid"></i><span>IELTS platforma</span></a>
+                <div class="lb-user">
+                    <button class="lb-avatar" id="lbAvatar" aria-label="Profil menyusi" aria-expanded="false">
+                        {% if user.avatar %}<img src="{{ user.avatar.url }}" alt="">{% else %}{{ user.username|first|upper }}{% endif %}
+                    </button>
+                    <div class="lb-menu" id="lbMenu">
+                        <div class="who"><b>{{ user.get_full_name|default:user.username }}</b><small>@{{ user.username }}</small></div>
+                        <a href="{% url 'learn:placement' %}"><i data-lucide="target"></i>Darajani aniqlash</a>
+                        <a href="{% url 'dashboard' %}"><i data-lucide="layout-grid"></i>IELTS platforma</a>
+                        <a href="{% url 'profile' %}"><i data-lucide="user"></i>Profil</a>
+                        <a href="{% url 'users:logout' %}" class="danger"><i data-lucide="log-out"></i>Chiqish</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    {% if messages %}
+    <div class="lb-msgs">
+        {% for message in messages %}<div class="lb-msg {{ message.tags }}">{{ message }}</div>{% endfor %}
+    </div>
+    {% endif %}
+
+    <main class="page-container">
+        {% block content %}{% endblock %}
+    </main>
+
+    <nav class="lb-tabs" aria-label="Bo'limlar">
+        <a href="{% url 'learn:hub' %}" class="{% if url == 'hub' %}on{% endif %}"><i data-lucide="graduation-cap"></i>Darslar</a>
+        <a href="{% url 'learn:review' %}" class="{% if url == 'review' %}on{% endif %}"><i data-lucide="layers"></i>So'zlar</a>
+        <a href="{% url 'learn:stories' %}" class="{% if url == 'stories' or url == 'story' %}on{% endif %}"><i data-lucide="book-open"></i>Hikoyalar</a>
+        <a href="{% url 'learn:tutor' %}" class="{% if url == 'tutor' %}on{% endif %}"><i data-lucide="messages-square"></i>AI suhbat</a>
+        <a href="{% url 'learn:leaderboard' %}" class="{% if url == 'leaderboard' %}on{% endif %}"><i data-lucide="trophy"></i>Reyting</a>
+    </nav>
+
+    <script>
+        lucide.createIcons();
+        (function () {
+            const btn = document.getElementById('lbAvatar'), menu = document.getElementById('lbMenu');
+            btn.addEventListener('click', e => {
+                e.stopPropagation();
+                const open = menu.classList.toggle('open');
+                btn.setAttribute('aria-expanded', open);
+            });
+            document.addEventListener('click', e => { if (!menu.contains(e.target)) menu.classList.remove('open'); });
+            document.addEventListener('keydown', e => { if (e.key === 'Escape') menu.classList.remove('open'); });
+        })();
+        window.siteChartColors = function () {
+            const cs = getComputedStyle(document.documentElement);
+            return {
+                grid: cs.getPropertyValue('--tint-a').trim(), gridStrong: cs.getPropertyValue('--tint-b').trim(),
+                tick: cs.getPropertyValue('--text-muted').trim(), text: cs.getPropertyValue('--text-color').trim(),
+                surface: cs.getPropertyValue('--card-bg').trim(), border: cs.getPropertyValue('--border-color').trim(),
+            };
+        };
+    </script>
+    {% include 'partials/ab_speech.html' %}
+    {% block extra_js %}{% endblock %}
+</body>
+{% endwith %}
+</html>
