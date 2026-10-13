@@ -163,6 +163,8 @@
     .lp-review div { padding: 8px 0; border-top: 1px dashed var(--border-color); font-size: 0.88rem; }
     .lp-review div span { color: var(--text-muted); display: block; }
     .lp-review div b { color: #16a34a; }
+    .lp-ex { margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: rgba(99,102,241,.1); color: var(--text-color); font-size: .9rem; line-height: 1.5; animation: lpIn .3s ease; }
+    .lp-ex-rule { margin-top: 6px; font-size: .85rem; color: var(--text-muted); }
     .lp-badge { display: block; margin: 10px auto 0; max-width: 420px; padding: 12px 16px; border-radius: 14px; text-decoration: none; color: #fff; font-size: .92rem; background: linear-gradient(135deg, #f59e0b, #f97316); box-shadow: 0 6px 18px rgba(249,115,22,.35); animation: lpIn .4s ease; }
     .lp-confetti { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 300; }
     .lp-confetti i { position: absolute; top: -12px; width: 9px; height: 14px; border-radius: 2px; animation: lpFall linear forwards; }
@@ -226,10 +228,14 @@
         hub: '{% url "learn:hub" %}?level=' + L.level,
         review: '{% url "learn:review" %}',
         achievements: '{% url "learn:achievements" %}',
+        explain: '{% url "learn:explain" %}',
         next: L.next_slug ? '{% url "learn:lesson" "__s__" %}'.replace('__s__', L.next_slug) : null,
     };
     const BEGINNER = L.level === 'A1' || L.level === 'A2';
     const PRACTICE = L.mode === 'practice';
+    // Unit test / level exam: no hints, no second chances, scored on the server.
+    const TEST = L.mode === 'test';
+    const EXPLAINABLE = new Set(['choice', 'gap', 'translate', 'listen', 'order']);
     const PRAISE = ['Barakalla!', "To'g'ri!", "Zo'r!", 'Ajoyib!', 'Aynan shunday!', 'Juda yaxshi!'];
 
     const $ = id => document.getElementById(id);
@@ -372,7 +378,7 @@
     // here can be finished in the mobile app and the other way round.
     let draftTimer = null;
     function pushDraft(data) {
-        if (PRACTICE || !L.draft_url) return;
+        if (PRACTICE || TEST || !L.draft_url) return;
         clearTimeout(draftTimer);
         draftTimer = setTimeout(() => fetch(L.draft_url, {
             method: 'POST', keepalive: true,
@@ -381,7 +387,7 @@
         }).catch(() => {}), 600);
     }
     function save() {
-        if (PRACTICE) return;
+        if (PRACTICE || TEST) return;
         const state = { sig: SIG, queue, pos, firstTry, retried, mistakes, at: Date.now() };
         store.set(SAVE_KEY, state);
         pushDraft(state);
@@ -417,7 +423,7 @@
         state.check = check;
         mainBtn.textContent = 'Tekshirish';
         mainBtn.disabled = true;
-        if (hint) side('Yordam', 'lightbulb', () => { state.hinted = true; hint(); });
+        if (hint && !TEST) side('Yordam', 'lightbulb', () => { state.hinted = true; hint(); });
     }
     function enableCheck(on = true) { if (!state.answered) mainBtn.disabled = !on; }
 
@@ -427,13 +433,15 @@
         state.answered = true;
         side(null);
         const { idx, step } = state;
+        state.firstAttempt = !(idx in firstTry);
         if (!(idx in firstTry)) firstTry[idx] = correct;
         if (!correct) {
             combo = 0;
-            if (!retried.includes(idx)) { retried.push(idx); queue.push(idx); }
+            if (!TEST && !retried.includes(idx)) { retried.push(idx); queue.push(idx); }
             if (!mistakes.some(m => m.idx === idx)) mistakes.push({ idx, right: rightAnswer || '' });
             sfx.bad();
             setFoot('bad', "To'g'ri javob:", (rightAnswer ? `**${rightAnswer}**` : '') + (step.explain_uz ? ' — ' + step.explain_uz : ''));
+            if (EXPLAINABLE.has(step.type) && state.given) side('Nega xato?', 'sparkles', () => explain(idx, step, state.given, state.firstAttempt));
         } else if (typo) {
             combo++;
             sfx.typo();
@@ -448,6 +456,36 @@
         mainBtn.disabled = false;
         mainBtn.textContent = 'Davom etish';
         body.querySelectorAll('input, textarea, .lp-opt, .lp-chipw').forEach(el => el.disabled = true);
+    }
+    // "Explain my answer": AI says why this exact answer is wrong — or that
+    // it is a valid alternative after all, in which case it counts as right.
+    async function explain(idx, step, given, firstAttempt) {
+        side(null);
+        fb.insertAdjacentHTML('beforeend', `<div class="lp-ex" id="lpEx">🤖 AI javobingizni tahlil qilmoqda...</div>`);
+        try {
+            const r = await fetch(URLS.explain, {
+                method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF },
+                body: JSON.stringify({ slug: step._src ? step._src.slug : L.slug, step: step._src ? step._src.idx : idx, answer: given }),
+            });
+            const d = await r.json();
+            const box = $('lpEx');
+            if (!box) return;
+            if (!r.ok) { box.textContent = d.error || 'Xatolik'; return; }
+            const head = d.verdict === 'correct' ? "✅ <b>Javobingiz ham to'g'ri ekan!</b> " : d.verdict === 'almost' ? "✏️ <b>Deyarli to'g'ri.</b> " : '🤖 ';
+            box.innerHTML = head + md(d.explain_uz)
+                + (d.rule_uz ? `<div class="lp-ex-rule">📌 ${md(d.rule_uz)}</div>` : '')
+                + (d.example ? `<div class="lp-ex-rule">✍️ ${esc(d.example)}</div>` : '');
+            if (d.verdict === 'correct' && firstAttempt && firstTry[idx] === false) {
+                firstTry[idx] = true;
+                const qi = queue.lastIndexOf(idx);
+                if (qi > pos) queue.splice(qi, 1);
+                mistakes = mistakes.filter(m => m.idx !== idx);
+                updateProgress();
+            }
+        } catch (e) {
+            const box = $('lpEx');
+            if (box) box.textContent = "Internet bilan muammo — keyinroq urinib ko'ring.";
+        }
     }
     function updateCombo() {
         const b = $('btnSound');
@@ -548,7 +586,7 @@
             mount() {
                 $('modeBtn').onclick = () => { if (!state.answered) { bankMode = !bankMode; draw(); } };
                 draw();
-                asExercise(() => resolve(grade(state.read(), s.answer), answerText), () => state.hintFn());
+                asExercise(() => { state.given = state.read(); resolve(grade(state.given, s.answer), answerText); }, () => state.hintFn());
             },
         };
     }
@@ -700,6 +738,7 @@
             }));
             asExercise(() => {
                 const ok = sel === s.answer;
+                state.given = s.options[sel];
                 opts[s.answer].classList.add('ok');
                 if (!ok) opts[sel].classList.add('bad');
                 resolve(ok, s.options[s.answer]);
@@ -721,7 +760,7 @@
             const inp = $('gi');
             inp.addEventListener('input', () => enableCheck(inp.value.trim().length > 0));
             let shown = 0;
-            asExercise(() => resolve(grade(inp.value, s.answer), first), () => {
+            asExercise(() => { state.given = inp.value; resolve(grade(inp.value, s.answer), first); }, () => {
                 // Hint: reveal the answer letter by letter, never the whole word.
                 shown = Math.min(shown + Math.max(1, Math.ceil(first.length / 3)), first.length - 1);
                 inp.value = first.slice(0, shown); inp.focus(); enableCheck(true);
@@ -756,7 +795,8 @@
                 <h2 class="lp-h">${esc(s.uz || '')}</h2>${bank.html}`;
             bank.mount();
             asExercise(() => {
-                const r = grade(bank.text(), s.answer);
+                state.given = bank.text();
+                const r = grade(state.given, s.answer);
                 if (r.ok) speak(s.answer);
                 resolve(r, s.answer);
             }, () => bank.placeNext(String(s.answer).split(/\s+/)));
@@ -1050,7 +1090,7 @@
         foot.style.display = 'none';
         body.innerHTML = `<div class="lp-center"><div class="big">⏳</div><h2 class="lp-h">Natija saqlanmoqda...</h2></div>`;
         let d = {};
-        const payload = PRACTICE
+        const payload = PRACTICE || TEST
             ? { results: graded.map(k => ({ slug: L.steps[k]._src.slug, step: L.steps[k]._src.idx, ok: firstTry[k] })) }
             : { score, mistakes: graded.filter(k => !firstTry[k]).map(Number) };
         try {
@@ -1058,9 +1098,17 @@
             d = await r.json();
             if (r.ok) store.del(SAVE_KEY);
         } catch (e) { d = { error: true }; }
-        const emoji = score >= 90 ? '🏆' : score >= 70 ? '🎉' : '💪';
+        let emoji = score >= 90 ? '🏆' : score >= 70 ? '🎉' : '💪';
         const done = PRACTICE ? 'Mashq tugallandi!' : 'Dars tugallandi!';
-        const msg = score >= 90 ? 'Mukammal!' : score >= 70 ? done : `${done} Har bir xato — yangi bilim.`;
+        let msg = score >= 90 ? 'Mukammal!' : score >= 70 ? done : `${done} Har bir xato — yangi bilim.`;
+        let testNote = '';
+        if (TEST && d.score !== undefined) {
+            emoji = d.passed ? '🎓' : '📚';
+            msg = d.passed ? 'Test topshirildi!' : `Bu safar ${d.score}% — o'tish uchun ${d.pass_mark}% kerak`;
+            testNote = d.passed
+                ? (d.tested_out ? `🚀 ${d.tested_out} ta dars ochildi — bilganingiz uchun ularni o'tkazib yubordingiz.` : '✅ Bilimingiz tasdiqlandi.')
+                : "Xatolar aralash mashqqa qo'shildi. Ularni ishlab, testni qayta topshiring.";
+        }
         const review = mistakes.filter(m => L.steps[m.idx]);
         body.innerHTML = `<div class="lp-center">
             <div class="big">${emoji}</div>
@@ -1068,9 +1116,10 @@
             <p class="lp-sub">${esc(L.title_uz)}</p>
             <div class="lp-stats">
                 <div class="lp-stat" style="border-color:#f59e0b"><small>XP</small><b style="color:#f59e0b">+${d.xp ?? 0}</b></div>
-                <div class="lp-stat" style="border-color:#22c55e"><small>Aniqlik</small><b style="color:#22c55e">${score}%</b></div>
+                <div class="lp-stat" style="border-color:#22c55e"><small>Aniqlik</small><b style="color:#22c55e">${TEST && d.score !== undefined ? d.score : score}%</b></div>
                 <div class="lp-stat" style="border-color:#f97316"><small>Streak</small><b style="color:#f97316">🔥 ${d.streak ?? '—'}</b></div>
             </div>
+            ${testNote ? `<p class="lp-hint" style="margin-bottom:20px">${testNote}</p>` : ''}
             ${PRACTICE && d.mistakes_left !== undefined ? `<p class="lp-hint" style="margin-bottom:20px">${d.mistakes_left ? `🎯 Yana ${d.mistakes_left} ta mashq ustida ishlash kerak. Har birini 2 marta ketma-ket to'g'ri yechsangiz, ro'yxatdan o'chadi.` : "🎉 Barcha xatolaringiz tuzatildi!"}</p>` : ''}
             ${d.words_added ? `<p class="lp-hint" style="margin-bottom:20px">📚 ${d.words_added} ta yangi so'z lug'atingizga qo'shildi — ertaga takrorlash uchun tayyor bo'ladi.</p>` : ''}
             ${review.length ? `<div class="lp-review"><h4>📝 Xatolar ustida ishlash</h4>${review.map(m => `<div><span>${esc(describe(L.steps[m.idx]))}</span>${m.right ? `<b>${esc(m.right)}</b>` : ''}${L.steps[m.idx].explain_uz ? ` — ${md(L.steps[m.idx].explain_uz)}` : ''}</div>`).join('')}</div>` : ''}
@@ -1079,15 +1128,16 @@
             <div class="lp-actions">
                 ${URLS.next ? `<a href="${URLS.next}" class="lp-main-btn" style="text-transform:none">Keyingi dars →</a>` : ''}
                 ${PRACTICE ? `<a href="" class="lp-main-btn" style="text-transform:none">Yana mashq qilish ↻</a>` : ''}
+                ${TEST && !d.passed ? `<a href="" class="lp-main-btn" style="text-transform:none">Qayta topshirish ↻</a>` : ''}
                 <a href="${URLS.review}" class="lp-ghost">So'zlarni takrorlash</a>
                 <a href="${URLS.hub}" class="lp-ghost">Kursga qaytish</a>
             </div></div>`;
-        if (score >= 70) { confetti(); sfx.win(); }
+        if (TEST ? d.passed : score >= 70) { confetti(); sfx.win(); }
     }
 
     // ── start (or resume where the learner left off) ─────────────────────
     // Newest of this browser's copy and the server's (e.g. from the phone).
-    const saved = PRACTICE ? null : [store.get(SAVE_KEY, null), L.draft]
+    const saved = PRACTICE || TEST ? null : [store.get(SAVE_KEY, null), L.draft]
         .filter(Boolean).sort((a, b) => (b.at || 0) - (a.at || 0))[0] || null;
     if (!L.steps.length) {
         foot.style.display = 'none';

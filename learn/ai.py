@@ -209,3 +209,47 @@ def check_writing(task, text, level):
         'praise_uz': str(data.get('praise_uz', '')),
         'next_uz': str(data.get('next_uz', '')),
     }
+
+
+EXPLAIN_PROMPT = """You are a patient English teacher for Uzbek learners at CEFR level {level}.
+An exercise was marked wrong. Explain the learner's mistake briefly, in Uzbek (Latin script).
+
+Exercise: {task}
+Accepted answer(s): {accepted}
+Learner's answer: {given}
+
+Rules:
+- If the learner's answer is actually correct English with the same meaning (a valid alternative), say so: verdict "correct".
+- If it is only a tiny spelling slip, verdict "almost".
+- Otherwise verdict "wrong": name the exact rule or word that is wrong, in 1-3 short sentences. Quote the wrong part and the right form.
+- No greetings, no general advice.
+
+Return ONLY JSON:
+{{"verdict": "correct" | "almost" | "wrong",
+  "explain_uz": "<1-3 sentences in Uzbek>",
+  "rule_uz": "<the grammar/vocabulary rule in one short line, Uzbek>",
+  "example": "<one more correct English example sentence using the rule>"}}"""
+
+
+def explain_answer(task, accepted, given, level):
+    """"Explain my answer": why this learner's answer is wrong (or actually fine)."""
+    try:
+        response = client.chat.completions.create(
+            model='gpt-4o-mini',
+            messages=[{'role': 'system', 'content': EXPLAIN_PROMPT.format(
+                level=level or 'B1', task=str(task)[:600], accepted=' | '.join(str(a) for a in accepted)[:600],
+                given=str(given)[:300])}],
+            temperature=0.2, max_tokens=300,
+            response_format={'type': 'json_object'}, timeout=_HOT_PATH_TIMEOUT,
+        )
+        data = json.loads(response.choices[0].message.content)
+    except Exception:
+        logger.exception('explain_answer failed')
+        return None
+    verdict = data.get('verdict') if data.get('verdict') in ('correct', 'almost', 'wrong') else 'wrong'
+    return {
+        'verdict': verdict,
+        'explain_uz': str(data.get('explain_uz', '')).strip(),
+        'rule_uz': str(data.get('rule_uz', '')).strip(),
+        'example': str(data.get('example', '')).strip(),
+    }

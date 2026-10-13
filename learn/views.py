@@ -16,14 +16,14 @@ from django.views.generic import TemplateView
 
 from core.utils import parse_json_body
 from users.models import Vocabulary
-from . import ai, srs
+from . import ai, checkpoints, srs
 from .gamification import badges, bump, daily_quests, open_chest
 from .content import LEVELS, get_course, get_lesson, get_placement, get_stories, placement_level
 from .models import AppRelease, LessonProgress, Mistake
 from .services import (
     TUTOR_XP, apply_practice, award_xp, build_practice, clear_draft, complete_lesson, complete_story, get_draft,
-    get_profile, grade_review, leaderboard, recommended_level, record_mistakes, save_draft, today_xp,
-    week_activity,
+    explain_step, get_profile, grade_review, leaderboard, recommended_level, record_mistakes, save_draft,
+    today_xp, week_activity,
 )
 
 TUTOR_DAILY_LIMIT = 60
@@ -32,6 +32,7 @@ TTS_DAILY_LIMIT = 500
 TTS_MAX_CHARS = 1500
 TRANSCRIBE_DAILY_LIMIT = 300
 TRANSCRIBE_MAX_BYTES = 2 * 1024 * 1024
+EXPLAIN_DAILY_LIMIT = 60
 PRACTICE_PAID_DAILY = 10   # mixed-practice sessions per day that earn XP
 PRACTICE_SESSION_KEY = 'learn_practice'
 DAILY_GOALS = (10, 20, 30, 50)
@@ -77,6 +78,7 @@ class HubView(LoginRequiredMixin, TemplateView):
         done = _done_map(user)
 
         level = course['levels'][level_code]
+        tests = checkpoints.status(user, done)
         current = None
         units = []
         for unit in level['units']:
@@ -87,7 +89,7 @@ class HubView(LoginRequiredMixin, TemplateView):
                     current = lesson
                     state = 'current'
                 items.append({'lesson': lesson, 'state': state, 'score': done.get(lesson['slug'])})
-            units.append({'unit': unit, 'items': items,
+            units.append({'unit': unit, 'items': items, 'test': tests[('unit', unit['slug'])],
                           'done': sum(1 for i in items if i['state'] == 'done')})
 
         levels = []
@@ -129,6 +131,8 @@ class HubView(LoginRequiredMixin, TemplateView):
             'story_count': sum(1 for st in get_stories().values() if st['level'] == level_code),
             'app_release': AppRelease.latest(),
             'daily': daily_quests(user, profile),
+            'level_exam': tests[('level', level_code)],
+            'pass_mark': checkpoints.PASS_MARK,
             'badges': badges(user, profile),
         })
         return ctx
@@ -218,6 +222,68 @@ class LessonCompleteView(LoginRequiredMixin, View):
         if isinstance(mistakes, list):
             record_mistakes(request.user, lesson, mistakes[:50])
         return JsonResponse({'ok': True, **result})
+
+
+class ExplainView(LoginRequiredMixin, View):
+    """'Explain my answer': AI says why this answer is wrong (or that it is fine)."""
+
+    def post(self, request):
+        data, err = parse_json_body(request)
+        if err:
+            return err
+        lesson = get_lesson(str(data.get('slug', '')))
+        if not lesson:
+            return JsonResponse({'error': 'Dars topilmadi'}, status=404)
+        if not _daily_quota_left(request.user, 'explain', EXPLAIN_DAILY_LIMIT):
+            return JsonResponse({'error': "Bugungi AI izoh limiti tugadi. Ertaga davom eting!"}, status=429)
+        result = explain_step(lesson, data.get('step'), str(data.get('answer', ''))[:300])
+        if result is None:
+            return JsonResponse({'error': "AI hozir javob bermadi. Keyinroq urinib ko'ring."}, status=503)
+        return JsonResponse({'ok': True, **result})
+
+
+def _test_session_key(kind, key):
+    return f'learn_test_{kind}_{key}'
+
+
+class CheckpointView(LoginRequiredMixin, TemplateView):
+    """Unit test / level exam, played by the lesson player in test mode."""
+    template_name = 'learn/lesson.html'
+
+    def get(self, request, *args, **kwargs):
+        kind, key = kwargs['kind'], kwargs['key']
+        if kind not in ('unit', 'level') or not checkpoints.lessons_of(kind, key):
+            raise Http404
+        if not checkpoints.can_take(kind, key, _done_map(request.user)):
+            messages.error(request, "Bu test hali ochilmagan — avval oldingi bo'limni tugating")
+            return redirect('learn:hub')
+        return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        kind, key = kwargs['kind'], kwargs['key']
+        test = checkpoints.build(kind, key)
+        self.request.session[_test_session_key(kind, key)] = [[s['_src']['slug'], s['_src']['idx']] for s in test['steps']]
+        title = ("Bo'lim testi: " if kind == 'unit' else 'Daraja imtihoni: ') + test['title_uz']
+        ctx['lesson'] = {'slug': f'test-{kind}-{key}', 'level': test['level'], 'title_uz': title}
+        ctx['lesson_data'] = {
+            'slug': f'test-{kind}-{key}', 'level': test['level'], 'title': title, 'title_uz': title,
+            'words': test['words'], 'steps': test['steps'], 'next_slug': None, 'mode': 'test',
+            'pass_mark': test['pass_mark'],
+            'complete_url': reverse('learn:checkpoint_complete', args=[kind, key]),
+        }
+        return ctx
+
+
+class CheckpointCompleteView(LoginRequiredMixin, View):
+    def post(self, request, kind, key):
+        data, err = parse_json_body(request)
+        if err:
+            return err
+        served = request.session.pop(_test_session_key(kind, key), None)
+        if not served or kind not in ('unit', 'level'):
+            return JsonResponse({'error': "Test sessiyasi topilmadi. Testni qaytadan boshlang."}, status=400)
+        return JsonResponse({'ok': True, **checkpoints.finish(request.user, kind, key, served, data.get('results'))})
 
 
 class LessonDraftView(LoginRequiredMixin, View):

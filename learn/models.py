@@ -167,3 +167,30 @@ class AppRelease(models.Model):
     @property
     def available(self):
         return bool(self.apk or self.url)
+
+
+class Checkpoint(models.Model):
+    """Unit test or level exam (see checkpoints.py).
+
+    Passing one also "tests out" of its lessons, Duolingo-style: lessons not
+    done yet are marked done, so a learner who already knows the material
+    can jump ahead.
+    """
+    KINDS = (('unit', "Bo'lim testi"), ('level', 'Daraja imtihoni'))
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='learn_checkpoints')
+    kind = models.CharField(max_length=5, choices=KINDS)
+    key = models.CharField(max_length=100, help_text="Bo'lim slugi yoki daraja kodi")
+    best_score = models.PositiveSmallIntegerField(default=0)
+    attempts = models.PositiveIntegerField(default=0)
+    passed_at = models.DateTimeField(null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('user', 'kind', 'key')
+        verbose_name = 'Test natijasi'
+        verbose_name_plural = 'Test natijalari'
+
+    @property
+    def passed(self):
+        return self.passed_at is not None

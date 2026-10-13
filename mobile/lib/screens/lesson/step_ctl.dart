@@ -4,7 +4,7 @@ import '../../core/api.dart';
 
 /// Result of answering one step.
 class Outcome {
-  const Outcome({required this.ok, this.typo, this.right, this.graded = true, this.title, this.note});
+  const Outcome({required this.ok, this.typo, this.right, this.graded = true, this.title, this.note, this.given});
 
   final bool ok;
 
@@ -20,6 +20,9 @@ class Outcome {
   /// Overrides the default feedback title / text.
   final String? title;
   final String? note;
+
+  /// What the learner answered (for "Explain my answer").
+  final String? given;
 }
 
 /// Link between the lesson player and the widget of the current step.

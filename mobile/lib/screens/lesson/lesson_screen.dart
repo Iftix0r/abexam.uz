@@ -20,11 +20,15 @@ import 'step_ctl.dart';
 /// website's lesson player: wrong answers come back at the end, the score
 /// counts first attempts, and the result is saved to the server.
 class LessonScreen extends StatelessWidget {
-  const LessonScreen.lesson(String this.slug, {super.key}) : practice = false;
-  const LessonScreen.practice({super.key}) : slug = null, practice = true;
+  const LessonScreen.lesson(String this.slug, {super.key}) : practice = false, testKind = null;
+  const LessonScreen.practice({super.key}) : slug = null, practice = true, testKind = null;
+
+  /// Unit test ('unit', unit slug) or level exam ('level', level code).
+  const LessonScreen.checkpoint(String this.testKind, String this.slug, {super.key}) : practice = false;
 
   final String? slug;
   final bool practice;
+  final String? testKind;
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +39,7 @@ class LessonScreen extends StatelessWidget {
         child: Loader<Map<String, dynamic>>(
           load: () async {
             if (practice) return api.get('practice/');
+            if (testKind != null) return api.get('checkpoint/', query: {'kind': testKind!, 'key': slug!});
             // Keep opened lessons on the phone, so a weak connection doesn't block re-reading one.
             final key = 'cache:lesson:$slug';
             try {
@@ -51,7 +56,7 @@ class LessonScreen extends StatelessWidget {
             if ((data['steps'] as List).isEmpty) {
               return _Empty(onClose: () => Navigator.pop(context));
             }
-            return _Player(data: data, practice: practice);
+            return _Player(data: data, practice: practice, test: testKind != null);
           },
         ),
       ),
@@ -92,10 +97,13 @@ class _Empty extends StatelessWidget {
 const _praise = ["To'g'ri!", 'Barakalla!', "Zo'r!", 'Ajoyib!', 'Aynan shunday!', 'Mukammal!'];
 
 class _Player extends StatefulWidget {
-  const _Player({required this.data, required this.practice});
+  const _Player({required this.data, required this.practice, this.test = false});
 
   final Map<String, dynamic> data;
   final bool practice;
+
+  /// Unit test / level exam: no hints, no second chances, scored on the server.
+  final bool test;
 
   @override
   State<_Player> createState() => _PlayerState();
@@ -131,7 +139,7 @@ class _PlayerState extends State<_Player> {
   void initState() {
     super.initState();
     _ctl = _newCtl();
-    if (!widget.practice) WidgetsBinding.instance.addPostFrameCallback((_) => _offerResume());
+    if (!widget.practice && !widget.test) WidgetsBinding.instance.addPostFrameCallback((_) => _offerResume());
   }
 
   Future<void> _offerResume() async {
@@ -202,7 +210,7 @@ class _PlayerState extends State<_Player> {
   /// Saves the state on the phone and (debounced) on the server, in the
   /// website player's format, so the lesson can be resumed on either.
   void _saveProgress() {
-    if (widget.practice) return;
+    if (widget.practice || widget.test) return;
     final state = AppScope.read(context);
     final data = {
       'sig': _sig,
@@ -300,11 +308,12 @@ class _PlayerState extends State<_Player> {
     if (_ctl.answered) return;
     _ctl.answered = true;
     final idx = _queue[_pos];
+    _firstAttempt = !_firstTry.containsKey(idx);
     if (o.graded) {
       _firstTry.putIfAbsent(idx, () => o.ok);
       if (!o.ok) {
         _combo = 0;
-        if (_retried.add(idx)) _queue.add(idx);
+        if (!widget.test && _retried.add(idx)) _queue.add(idx);
         _mistakes.putIfAbsent(idx, () => o.right ?? '');
       } else {
         _combo++;
@@ -321,6 +330,8 @@ class _PlayerState extends State<_Player> {
     setState(() {
       _pos++;
       _feedback = null;
+      _explanation = null;
+      _explaining = false;
       _ctl.removeListener(_redraw);
       _ctl.dispose();
       _ctl = _newCtl();
@@ -347,7 +358,15 @@ class _PlayerState extends State<_Player> {
     final api = AppScope.read(context).api;
     try {
       final Map<String, dynamic> r;
-      if (widget.practice) {
+      if (widget.test) {
+        r = await api.post('checkpoint/complete/', {
+          'id': widget.data['id'],
+          'results': [
+            for (final e in _firstTry.entries)
+              {'slug': _steps[e.key]['_src']['slug'], 'step': _steps[e.key]['_src']['idx'], 'ok': e.value},
+          ],
+        });
+      } else if (widget.practice) {
         r = await api.post('practice/complete/', {
           'id': widget.data['id'],
           'results': [
@@ -368,7 +387,7 @@ class _PlayerState extends State<_Player> {
       setState(() => _result = r);
       Sfx.win();
       final state = AppScope.read(context);
-      if (!widget.practice) state.writeJson(_saveKey, null); // the server drops its draft on completion
+      if (!widget.practice && !widget.test) state.writeJson(_saveKey, null); // the server drops its draft on completion
       state.refresh().catchError((_) {});
     } catch (e) {
       if (mounted) setState(() => _saveError = e);
@@ -383,7 +402,7 @@ class _PlayerState extends State<_Player> {
       context: context,
       builder: (c) => AlertDialog(
         title: const Text('Darsni tark etasizmi?'),
-        content: Text(widget.practice ? 'Natija saqlanmaydi.' : "Keyingi safar shu joydan davom ettirishingiz mumkin."),
+        content: Text(widget.practice || widget.test ? 'Natija saqlanmaydi.' : "Keyingi safar shu joydan davom ettirishingiz mumkin."),
         actions: [
           TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('Davom etish')),
           TextButton(
@@ -576,6 +595,77 @@ class _PlayerState extends State<_Player> {
     );
   }
 
+  // ── "Explain my answer" (AI) ──────────────────────────────────────────
+  static const _explainable = {'choice', 'gap', 'translate', 'listen', 'order'};
+  Map<String, dynamic>? _explanation;
+  bool _explaining = false;
+  bool _firstAttempt = true;
+
+  Future<void> _explain(int idx, String given) async {
+    final step = _steps[idx];
+    final src = step['_src'] as Map?;
+    setState(() => _explaining = true);
+    try {
+      final r = await AppScope.read(context).api.post('explain/', {
+        'slug': src?['slug'] ?? widget.data['slug'],
+        'step': src?['idx'] ?? idx,
+        'answer': given,
+      });
+      if (!mounted) return;
+      setState(() {
+        _explanation = r;
+        // A valid alternative after all: count it and don't ask again.
+        if (r['verdict'] == 'correct' && _firstAttempt && _firstTry[idx] == false) {
+          _firstTry[idx] = true;
+          final qi = _queue.lastIndexOf(idx);
+          if (qi > _pos) _queue.removeAt(qi);
+          _retried.remove(idx);
+          _mistakes.remove(idx);
+        }
+      });
+    } catch (e) {
+      if (mounted) setState(() => _explanation = {'verdict': 'error', 'explain_uz': e is ApiException ? e.message : 'Xatolik'});
+    } finally {
+      if (mounted) setState(() => _explaining = false);
+    }
+  }
+
+  Widget _explainBox(int idx, String? given, ColorScheme scheme) {
+    final ex = _explanation;
+    if (ex == null) {
+      return Align(
+        alignment: Alignment.centerLeft,
+        child: TextButton.icon(
+          onPressed: _explaining ? null : () => _explain(idx, given!),
+          icon: _explaining
+              ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+              : const Icon(Icons.auto_awesome_rounded, size: 18),
+          label: Text(_explaining ? 'AI tahlil qilmoqda...' : 'Nega xato? (AI tushuntiradi)'),
+        ),
+      );
+    }
+    final head = switch (ex['verdict']) {
+      'correct' => "✅ **Javobingiz ham to'g'ri ekan!** ",
+      'almost' => "✏️ **Deyarli to'g'ri.** ",
+      'error' => '⚠️ ',
+      _ => '🤖 ',
+    };
+    final base = TextStyle(fontSize: 14.5, height: 1.45, color: scheme.onSurface);
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(top: 10),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(color: scheme.primary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text.rich(md('$head${ex['explain_uz'] ?? ''}', base)),
+        if ('${ex['rule_uz'] ?? ''}'.isNotEmpty)
+          Padding(padding: const EdgeInsets.only(top: 6), child: Text.rich(md('📌 ${ex['rule_uz']}', base.copyWith(fontSize: 13.5)))),
+        if ('${ex['example'] ?? ''}'.isNotEmpty)
+          Padding(padding: const EdgeInsets.only(top: 4), child: Text('✍️ ${ex['example']}', style: base.copyWith(fontSize: 13.5, fontStyle: FontStyle.italic))),
+      ]),
+    );
+  }
+
   Widget _bottomBar() {
     final fb = _feedback;
     final scheme = Theme.of(context).colorScheme;
@@ -644,6 +734,8 @@ class _PlayerState extends State<_Player> {
                   padding: const EdgeInsets.only(top: 6),
                   child: Text.rich(md(body, TextStyle(fontSize: 15, height: 1.4, color: scheme.onSurface))),
                 ),
+              if (fb.graded && !fb.ok && _explainable.contains(step['type']) && (fb.given ?? '').trim().isNotEmpty)
+                _explainBox(_queue[_pos], fb.given, scheme),
               const SizedBox(height: 12),
               FilledButton(
                 style: FilledButton.styleFrom(backgroundColor: color),
@@ -666,7 +758,7 @@ class _PlayerState extends State<_Player> {
         top: false,
         child: Row(
           children: [
-            if (ctl.hint != null) ...[
+            if (ctl.hint != null && !widget.test) ...[
               OutlinedButton.icon(
                 onPressed: ctl.hint,
                 icon: const Icon(Icons.lightbulb_outline_rounded),
@@ -694,21 +786,32 @@ class _PlayerState extends State<_Player> {
 
   Widget _finishView() {
     final r = _result;
-    final score = _score;
+    final test = widget.test;
+    final passed = r?['passed'] == true;
+    final score = test && r != null ? (r['score'] as num).toInt() : _score;
     final scheme = Theme.of(context).colorScheme;
-    final emoji = score >= 90
+    var emoji = score >= 90
         ? '🏆'
         : score >= 70
         ? '🎉'
         : '💪';
-    final title = score >= 90
+    var title = score >= 90
         ? 'Mukammal!'
         : score >= 70
         ? (widget.practice ? 'Mashq tugallandi!' : 'Dars tugallandi!')
         : 'Har bir xato — yangi bilim!';
-    final next = widget.data['next_slug'] as String?;
+    String? testNote;
+    if (test && r != null) {
+      emoji = passed ? '🎓' : '📚';
+      title = passed ? 'Test topshirildi!' : "O'tish uchun ${r['pass_mark']}% kerak";
+      final out = (r['tested_out'] as num?)?.toInt() ?? 0;
+      testNote = passed
+          ? (out > 0 ? "🚀 $out ta dars ochildi — bilganingiz uchun ularni o'tkazib yubordingiz." : '✅ Bilimingiz tasdiqlandi.')
+          : "Xatolar aralash mashqqa qo'shildi. Ularni ishlab, testni qayta topshiring.";
+    }
+    final next = test ? null : widget.data['next_slug'] as String?;
     return Confetti(
-      active: r != null && score >= 70,
+      active: r != null && (test ? passed : score >= 70),
       child: ListView(
         padding: const EdgeInsets.all(20),
         children: [
@@ -740,11 +843,18 @@ class _PlayerState extends State<_Player> {
               const SizedBox(width: 10),
               _stat('XP', r == null ? '…' : '+${r['xp'] ?? 0}', Brand.warn),
               const SizedBox(width: 10),
-              widget.practice
+              test
+                  ? _stat("To'g'ri", r == null ? '…' : '${r['right']}/${r['total']}', Brand.primary)
+                  : widget.practice
                   ? _stat('Qolgan xatolar', r == null ? '…' : '${r['mistakes_left'] ?? 0}', Brand.flame)
                   : _stat("Yangi so'zlar", r == null ? '…' : '+${r['words_added'] ?? 0}', Brand.primary),
             ],
           ),
+          if (testNote != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 14),
+              child: Text(testNote, textAlign: TextAlign.center, style: const TextStyle(fontSize: 15, height: 1.4)),
+            ),
           if (r != null && (r['streak'] ?? 0) > 0)
             Padding(
               padding: const EdgeInsets.only(top: 14),
@@ -818,6 +928,17 @@ class _PlayerState extends State<_Player> {
               label: const Text('Keyingi dars'),
             ),
           const SizedBox(height: 10),
+          if (test && r != null && !passed)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: FilledButton.icon(
+                onPressed: () => Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (_) => LessonScreen.checkpoint('${widget.data['kind']}', '${widget.data['key']}')),
+                ),
+                icon: const Icon(Icons.refresh_rounded),
+                label: const Text('Qayta topshirish'),
+              ),
+            ),
           OutlinedButton(onPressed: () => Navigator.pop(context), child: const Text('Darslarga qaytish')),
         ],
       ),

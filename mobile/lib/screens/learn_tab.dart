@@ -131,6 +131,15 @@ class LearnTabState extends State<LearnTab> {
                     selected: _level!,
                     onPick: _pickLevel,
                   ),
+                  if (units.isNotEmpty) ...[
+                    const SizedBox(height: 14),
+                    _ExamCard(
+                      level: _level!,
+                      exam: (course['exam'] as Map?)?.cast<String, dynamic>() ?? {},
+                      passMark: (course['pass_mark'] as int?) ?? 80,
+                      onTap: () => _open(LessonScreen.checkpoint('level', _level!)),
+                    ),
+                  ],
                   if (currentLesson != null) ...[
                     const SizedBox(height: 16),
                     _ContinueCard(
@@ -159,6 +168,7 @@ class LearnTabState extends State<LearnTab> {
                 index: i,
                 level: _level!,
                 onOpen: (slug) => _open(LessonScreen.lesson(slug)),
+                onTest: (slug) => _open(LessonScreen.checkpoint('unit', slug)),
               ),
             ),
           ),
@@ -673,7 +683,15 @@ class _ActionCard extends StatelessWidget {
 
 /// One unit as a winding path of lesson nodes.
 class _UnitPath extends StatelessWidget {
-  const _UnitPath({required this.unit, required this.index, required this.level, required this.onOpen});
+  const _UnitPath({
+    required this.unit,
+    required this.index,
+    required this.level,
+    required this.onOpen,
+    required this.onTest,
+  });
+
+  final ValueChanged<String> onTest;
 
   final Map<String, dynamic> unit;
   final int index;
@@ -726,7 +744,148 @@ class _UnitPath extends StatelessWidget {
           const SizedBox(height: 8),
           for (var i = 0; i < lessons.length; i++)
             _LessonNode(lesson: lessons[i], offset: [0.0, 0.55, -0.55][i % 3], color: color, onOpen: onOpen),
+          _TestNode(
+            test: (unit['test'] as Map?)?.cast<String, dynamic>() ?? {'state': 'locked'},
+            allDone: lessons.every((l) => l['state'] == 'done'),
+            onTap: () => onTest(unit['slug'] as String),
+          ),
         ],
+      ),
+    );
+  }
+}
+
+/// Unit test at the end of a unit's path (Duolingo checkpoint).
+class _TestNode extends StatelessWidget {
+  const _TestNode({required this.test, required this.allDone, required this.onTap});
+
+  final Map<String, dynamic> test;
+  final bool allDone;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final state = test['state'] as String? ?? 'locked';
+    final locked = state == 'locked';
+    final passed = state == 'passed';
+    final scheme = Theme.of(context).colorScheme;
+    final sub = passed
+        ? 'Topshirilgan · ${test['score']}%'
+        : locked
+        ? "Oldingi bo'lim tugagach ochiladi"
+        : allDone
+        ? 'Bilimingizni tekshiring (80%+)'
+        : "Bilsangiz — o'tib keting";
+    return Padding(
+      padding: const EdgeInsets.only(top: 6, bottom: 4),
+      child: Material(
+        color: passed
+            ? Brand.ok.withValues(alpha: 0.1)
+            : (locked ? scheme.surfaceContainerHighest.withValues(alpha: 0.5) : Brand.warn.withValues(alpha: 0.1)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18),
+          side: BorderSide(
+            color: passed
+                ? Brand.ok.withValues(alpha: 0.4)
+                : (locked ? scheme.outlineVariant : Brand.warn.withValues(alpha: 0.6)),
+            width: 1.5,
+          ),
+        ),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(18),
+          onTap: locked
+              ? () => ScaffoldMessenger.of(context)
+                  ..hideCurrentSnackBar()
+                  ..showSnackBar(const SnackBar(content: Text("Avval oldingi bo'limni tugating 🔒")))
+              : onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              children: [
+                Container(
+                  width: 46,
+                  height: 46,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: passed ? const LinearGradient(colors: [Color(0xFFFBBF24), Color(0xFFF97316)]) : null,
+                    color: passed
+                        ? null
+                        : (locked ? scheme.surfaceContainerHighest : Brand.warn.withValues(alpha: 0.2)),
+                  ),
+                  child: Icon(
+                    passed ? Icons.military_tech_rounded : (locked ? Icons.lock_rounded : Icons.flag_rounded),
+                    color: passed ? Colors.white : (locked ? scheme.outline : Brand.warn),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text("Bo'lim testi", style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
+                      Text(sub, style: TextStyle(color: scheme.outline, fontSize: 13)),
+                    ],
+                  ),
+                ),
+                if (!locked) const Icon(Icons.chevron_right_rounded),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Level exam: 20 questions from the whole level; passing tests out of it.
+class _ExamCard extends StatelessWidget {
+  const _ExamCard({required this.level, required this.exam, required this.passMark, required this.onTap});
+
+  final String level;
+  final Map<String, dynamic> exam;
+  final int passMark;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final passed = exam['state'] == 'passed';
+    final color = passed ? Brand.ok : Brand.warn;
+    return Material(
+      color: color.withValues(alpha: 0.1),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18),
+        side: BorderSide(color: color.withValues(alpha: 0.4)),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(18),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Row(
+            children: [
+              const Text('🎓', style: TextStyle(fontSize: 30)),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      passed ? '$level darajasi tasdiqlangan · ${exam['score']}%' : '$level daraja imtihoni',
+                      style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15),
+                    ),
+                    Text(
+                      passed
+                          ? "Qayta topshirib natijani oshirishingiz mumkin"
+                          : "20 savol, $passMark%+ kerak. Bilsangiz — darajani o'tib keting",
+                      style: TextStyle(color: Theme.of(context).colorScheme.outline, fontSize: 12.5),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(Icons.chevron_right_rounded, color: color),
+            ],
+          ),
+        ),
       ),
     );
   }

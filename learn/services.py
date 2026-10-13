@@ -323,3 +323,49 @@ def _display_name(u):
     if u.first_name:
         return f"{u.first_name} {u.last_name[:1]}." if u.last_name else u.first_name
     return u.username
+
+
+# ── "Explain my answer" (AI) ──────────────────────────────────────────────
+EXPLAIN_TYPES = {'choice', 'gap', 'translate', 'listen', 'order'}
+
+
+def explain_step(lesson, idx, given):
+    """AI explanation of a wrong answer, cached per exercise and answer.
+    Returns None when the step can't be explained or AI is unavailable."""
+    import hashlib
+
+    from django.core.cache import cache
+
+    from . import ai
+    from .content import normalize
+
+    try:
+        step = lesson['steps'][int(idx)]
+    except (IndexError, TypeError, ValueError):
+        return None
+    kind = step.get('type')
+    if kind not in EXPLAIN_TYPES or not str(given).strip():
+        return None
+    if kind == 'choice':
+        task = step.get('q', '') + (f" (audio: {step['say']})" if step.get('say') else '')
+        accepted = [step['options'][step['answer']]]
+    elif kind == 'gap':
+        task = f"Fill the gap: {step.get('text', '')}" + (f" (Uzbek: {step['uz']})" if step.get('uz') else '')
+        accepted = step['answer'] if isinstance(step['answer'], list) else [step['answer']]
+    elif kind == 'translate':
+        task = f"Translate into English: {step.get('uz', '')}"
+        accepted = step['answer'] if isinstance(step['answer'], list) else [step['answer']]
+    elif kind == 'listen':
+        task = 'Dictation: write the English sentence you heard'
+        accepted = step['answer'] if isinstance(step['answer'], list) else [step['answer']]
+    else:
+        task = f"Put the words in order: {' / '.join(step.get('words', []))} (Uzbek: {step.get('uz', '')})"
+        accepted = [step.get('answer', '')]
+    key = 'learn_explain_' + hashlib.sha256(f"{lesson['slug']}|{idx}|{normalize(given)}".encode()).hexdigest()[:32]
+    cached = cache.get(key)
+    if cached:
+        return cached
+    result = ai.explain_answer(task, accepted[:5], given, lesson.get('level'))
+    if result:
+        cache.set(key, result, 60 * 60 * 24 * 30)
+    return result

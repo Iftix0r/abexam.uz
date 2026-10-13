@@ -21,18 +21,18 @@ from core.utils import get_client_ip, notify_admin_telegram, parse_json_body
 from users.forms import RegisterForm
 from users.models import LoginLog, Vocabulary
 from users.views import _MAX_FAILS_PER_IP, _MAX_FAILS_PER_USER, _bump, _fail_keys, _login_blocked
-from . import ai, srs
+from . import ai, checkpoints, srs
 from .gamification import badges, bump, daily_quests, open_chest
 from .content import LEVEL_INFO, LEVELS, get_course, get_lesson, get_placement, get_stories, placement_level
 from .models import ApiToken, AppRelease, LessonProgress, Mistake
 from .services import (
     TUTOR_XP, apply_practice, award_xp, build_practice, clear_draft, complete_lesson, complete_story, get_draft,
-    get_profile, grade_review, leaderboard, recommended_level, record_mistakes, save_draft, today_xp,
-    week_activity,
+    explain_step, get_profile, grade_review, leaderboard, recommended_level, record_mistakes, save_draft,
+    today_xp, week_activity,
 )
 from .views import (
-    DAILY_GOALS, PRACTICE_PAID_DAILY, TUTOR_DAILY_LIMIT, WRITE_DAILY_LIMIT, _daily_quota_left, _done_map,
-    _is_unlocked,
+    DAILY_GOALS, EXPLAIN_DAILY_LIMIT, PRACTICE_PAID_DAILY, TUTOR_DAILY_LIMIT, WRITE_DAILY_LIMIT, _daily_quota_left,
+    _done_map, _is_unlocked,
 )
 
 MAX_TOKENS_PER_USER = 10
@@ -245,6 +245,7 @@ def course(request):
         finished = sum(1 for s in slugs if s in done)
         levels.append({'code': c, **LEVEL_INFO[c], 'total': len(slugs), 'done': finished})
 
+    tests = checkpoints.status(user, done)
     current = None
     units = []
     for unit in data['levels'][code]['units']:
@@ -260,8 +261,12 @@ def course(request):
                 'state': state, 'score': done.get(lesson['slug']),
             })
         units.append({'slug': unit['slug'], 'title': unit.get('title', ''), 'title_uz': unit.get('title_uz', ''),
-                      'icon': unit.get('icon', 'book-open'), 'lessons': lessons})
-    return JsonResponse({'level': code, 'levels': levels, 'units': units, 'current': current})
+                      'icon': unit.get('icon', 'book-open'), 'lessons': lessons,
+                      'test': tests[('unit', unit['slug'])]})
+    exam = tests[('level', code)]
+    return JsonResponse({'level': code, 'levels': levels, 'units': units, 'current': current,
+                         'exam': {**exam, 'passed_at': exam['passed_at'].isoformat() if exam['passed_at'] else None},
+                         'pass_mark': checkpoints.PASS_MARK})
 
 
 # ── lessons ──────────────────────────────────────────────────────────────
@@ -351,6 +356,56 @@ def write_check(request):
     if result is None:
         return JsonResponse({'error': "AI hozir javob bermadi. Keyinroq urinib ko'ring."}, status=503)
     return JsonResponse({'ok': True, **result})
+
+
+@api(methods=('POST',))
+def explain(request):
+    """'Explain my answer' — same as the website's ExplainView."""
+    data, err = _body(request)
+    if err:
+        return err
+    lesson = get_lesson(str(data.get('slug', '')))
+    if not lesson:
+        return JsonResponse({'error': 'Dars topilmadi'}, status=404)
+    if not _daily_quota_left(request.user, 'explain', EXPLAIN_DAILY_LIMIT):
+        return JsonResponse({'error': "Bugungi AI izoh limiti tugadi. Ertaga davom eting!"}, status=429)
+    result = explain_step(lesson, data.get('step'), str(data.get('answer', ''))[:300])
+    if result is None:
+        return JsonResponse({'error': "AI hozir javob bermadi. Keyinroq urinib ko'ring."}, status=503)
+    return JsonResponse({'ok': True, **result})
+
+
+# ── unit tests and level exams ───────────────────────────────────────────
+def _test_key(user, tid):
+    return f'learn_api_test_{user.pk}_{tid}'
+
+
+@api()
+def checkpoint(request):
+    kind, key = request.GET.get('kind', ''), request.GET.get('key', '')
+    if kind not in ('unit', 'level') or not checkpoints.lessons_of(kind, key):
+        return JsonResponse({'error': 'Test topilmadi'}, status=404)
+    if not checkpoints.can_take(kind, key, _done_map(request.user)):
+        return JsonResponse({'error': "Bu test hali ochilmagan — avval oldingi bo'limni tugating"}, status=403)
+    test = checkpoints.build(kind, key)
+    tid = secrets.token_hex(8)
+    cache.set(_test_key(request.user, tid), {'kind': kind, 'key': key,
+              'served': [[s['_src']['slug'], s['_src']['idx']] for s in test['steps']]}, PRACTICE_TTL)
+    return JsonResponse({'id': tid, **test})
+
+
+@api(methods=('POST',))
+def checkpoint_complete(request):
+    data, err = _body(request)
+    if err:
+        return err
+    key = _test_key(request.user, str(data.get('id', ''))[:32])
+    session = cache.get(key)
+    cache.delete(key)
+    if not session:
+        return JsonResponse({'error': "Test sessiyasi topilmadi. Qaytadan boshlang."}, status=400)
+    return JsonResponse({'ok': True, **checkpoints.finish(request.user, session['kind'], session['key'],
+                                                          session['served'], data.get('results'))})
 
 
 # ── mixed practice ───────────────────────────────────────────────────────
@@ -524,6 +579,9 @@ urlpatterns = [
     path('lessons/<slug:slug>/draft/', lesson_draft, name='lesson_draft'),
     path('app-version/', app_version, name='app_version'),
     path('write-check/', write_check, name='write_check'),
+    path('explain/', explain, name='explain'),
+    path('checkpoint/', checkpoint, name='checkpoint'),
+    path('checkpoint/complete/', checkpoint_complete, name='checkpoint_complete'),
     path('practice/', practice, name='practice'),
     path('practice/complete/', practice_complete, name='practice_complete'),
     path('review/', review, name='review'),

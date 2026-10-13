@@ -38,7 +38,7 @@ class _ChoiceStepState extends State<ChoiceStep> {
     widget.ctl.configure(
       check: () async {
         setState(() => _revealed = true);
-        return Outcome(ok: _sel == _answer, right: _options[_answer]);
+        return Outcome(ok: _sel == _answer, right: _options[_answer], given: _sel == null ? null : _options[_sel!]);
       },
       hint: _hint,
     );
@@ -222,7 +222,7 @@ class _GapStepState extends State<GapStep> {
     widget.ctl.configure(
       check: () async {
         final g = grade(_input.text, widget.step['answer']);
-        return Outcome(ok: g.ok, typo: g.typo, right: _first);
+        return Outcome(ok: g.ok, typo: g.typo, right: _first, given: _input.text);
       },
       hint: () {
         // Reveal the answer letter by letter, never the whole word.
@@ -435,7 +435,7 @@ class _TypedStepState extends State<TypedStep> {
     widget.ctl.configure(
       check: () async {
         final g = grade(_value, widget.step['answer']);
-        return Outcome(ok: g.ok, typo: g.typo, right: _answer);
+        return Outcome(ok: g.ok, typo: g.typo, right: _answer, given: _value);
       },
       hint: () {
         if (!_bank) {
@@ -536,9 +536,10 @@ class _OrderStepState extends State<OrderStep> {
     super.initState();
     widget.ctl.configure(
       check: () async {
-        final g = grade(_bankKey.currentState?.text ?? '', _answer);
+        final given = _bankKey.currentState?.text ?? '';
+        final g = grade(given, _answer);
         if (g.ok) Speech.instance.say(_answer);
-        return Outcome(ok: g.ok, typo: g.typo, right: _answer);
+        return Outcome(ok: g.ok, typo: g.typo, right: _answer, given: given);
       },
       hint: () => _bankKey.currentState?.placeNext(_answer.split(RegExp(r'\s+'))),
     );

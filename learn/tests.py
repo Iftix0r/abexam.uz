@@ -491,3 +491,81 @@ class GamificationTests(TestCase):
         badges = self.client.get(reverse('learn_api:achievements'), **auth).json()['badges']
         self.assertEqual({b['key'] for b in badges}, {'lessons', 'streak', 'perfect', 'words', 'stories', 'xp'})
         self.assertEqual(self.client.post(reverse('learn_api:chest'), **auth).status_code, 400)
+
+
+class CheckpointTests(TestCase):
+    """Unit tests / level exams with test-out, and AI 'explain my answer'."""
+
+    def setUp(self):
+        cache.clear()
+        self.user = User.objects.create_user('learner', password='pw')
+        self.client.force_login(self.user)
+
+    def _all_right(self, served):
+        return [{'slug': s, 'step': i, 'ok': True} for s, i in served]
+
+    def test_unit_test_mixes_lessons_and_passing_tests_out(self):
+        from . import checkpoints
+        unit = get_course()['levels']['A1']['units'][0]
+        test = checkpoints.build('unit', unit['slug'])
+        self.assertEqual(len(test['steps']), checkpoints.UNIT_SIZE)
+        self.assertEqual({s['_src']['slug'] for s in test['steps']}, {l['slug'] for l in unit['lessons']})
+        self.assertTrue(all(s['type'] in checkpoints.TEST_TYPES and not s.get('needs_text') for s in test['steps']))
+        served = [[s['_src']['slug'], s['_src']['idx']] for s in test['steps']]
+        half = [dict(r, ok=n < 5) for n, r in enumerate(self._all_right(served))]
+        fail = checkpoints.finish(self.user, 'unit', unit['slug'], served, half)
+        self.assertFalse(fail['passed'])
+        self.assertTrue(Mistake.objects.filter(user=self.user).exists())   # wrong answers → practice
+        ok = checkpoints.finish(self.user, 'unit', unit['slug'], served, self._all_right(served))
+        self.assertEqual((ok['passed'], ok['first_pass'], ok['tested_out'], ok['xp']), (True, True, 3, checkpoints.UNIT_XP))
+        next_unit_first = get_course()['levels']['A1']['units'][1]['lessons'][0]
+        self.assertEqual(self.client.get(reverse('learn:lesson', args=[next_unit_first['slug']])).status_code, 200)
+        again = checkpoints.finish(self.user, 'unit', unit['slug'], served, self._all_right(served))
+        self.assertEqual((again['first_pass'], again['xp']), (False, 0))
+
+    def test_later_unit_test_is_locked_until_the_previous_unit_is_done(self):
+        units = get_course()['levels']['A1']['units']
+        locked = reverse('learn:checkpoint', args=['unit', units[1]['slug']])
+        self.assertRedirects(self.client.get(locked), reverse('learn:hub'), fetch_redirect_response=False)
+
+    def test_site_test_flow_uses_the_served_questions_only(self):
+        units = get_course()['levels']['A1']['units']
+        url = reverse('learn:checkpoint', args=['unit', units[0]['slug']])
+        self.assertEqual(self.client.get(url).status_code, 200)
+        served = self.client.session[f"learn_test_unit_{units[0]['slug']}"]
+        forged = self._all_right(served) + [{'slug': 'a1-hello', 'step': 999, 'ok': True}]
+        done = self.client.post(reverse('learn:checkpoint_complete', args=['unit', units[0]['slug']]),
+                                data=json.dumps({'results': forged}), content_type='application/json').json()
+        self.assertEqual((done['score'], done['passed']), (100, True))
+        self.assertEqual(self.client.post(reverse('learn:checkpoint_complete', args=['unit', units[0]['slug']]),
+                                          data='{}', content_type='application/json').status_code, 400)
+
+    def test_api_level_exam_and_course_states(self):
+        token = self.client.post(reverse('learn_api:login'), data=json.dumps({'username': 'learner', 'password': 'pw'}),
+                                 content_type='application/json').json()['token']
+        auth = {'HTTP_AUTHORIZATION': f'Bearer {token}'}
+        course = self.client.get(reverse('learn_api:course'), {'level': 'A1'}, **auth).json()
+        self.assertEqual([u['test']['state'] for u in course['units']][:2], ['open', 'locked'])
+        exam = self.client.get(reverse('learn_api:checkpoint'), {'kind': 'level', 'key': 'A2'}, **auth).json()
+        results = [{'slug': s['_src']['slug'], 'step': s['_src']['idx'], 'ok': True} for s in exam['steps']]
+        done = self.client.post(reverse('learn_api:checkpoint_complete'), data=json.dumps({'id': exam['id'], 'results': results}),
+                                content_type='application/json', **auth).json()
+        self.assertTrue(done['passed'])
+        self.assertGreater(done['tested_out'], 9)
+        course = self.client.get(reverse('learn_api:course'), {'level': 'A2'}, **auth).json()
+        self.assertEqual(course['exam']['state'], 'passed')
+        self.assertIsNone(course['current'])
+
+    @mock.patch('learn.ai.explain_answer', return_value={'verdict': 'correct', 'explain_uz': "To'g'ri", 'rule_uz': '', 'example': ''})
+    def test_explain_my_answer_is_cached(self, explain):
+        lesson = get_lesson('a1-hello')
+        gap = next(i for i, s in enumerate(lesson['steps']) if s['type'] == 'gap')
+        body = json.dumps({'slug': 'a1-hello', 'step': gap, 'answer': 'something'})
+        first = self.client.post(reverse('learn:explain'), data=body, content_type='application/json').json()
+        self.assertEqual(first['verdict'], 'correct')
+        self.client.post(reverse('learn:explain'), data=body, content_type='application/json')
+        self.assertEqual(explain.call_count, 1)
+        words = next(i for i, s in enumerate(lesson['steps']) if s['type'] == 'words')
+        bad = self.client.post(reverse('learn:explain'), data=json.dumps({'slug': 'a1-hello', 'step': words, 'answer': 'x'}),
+                               content_type='application/json')
+        self.assertEqual(bad.status_code, 503)
