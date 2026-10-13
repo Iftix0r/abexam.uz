@@ -20,7 +20,7 @@ from .content import LEVELS, get_course, get_lesson, get_placement, get_stories,
 from .models import LessonProgress, Mistake
 from .services import (
     REVIEW_XP, TUTOR_XP, apply_practice, award_xp, build_practice, complete_lesson, get_profile,
-    leaderboard, recommended_level, record_mistakes, today_xp, week_activity,
+    leaderboard, recommended_level, record_mistakes, repeat_pays, today_xp, week_activity,
 )
 
 TUTOR_DAILY_LIMIT = 60
@@ -29,11 +29,13 @@ TTS_DAILY_LIMIT = 500
 TTS_MAX_CHARS = 1500
 TRANSCRIBE_DAILY_LIMIT = 300
 TRANSCRIBE_MAX_BYTES = 2 * 1024 * 1024
+PRACTICE_PAID_DAILY = 10   # mixed-practice sessions per day that earn XP
+PRACTICE_SESSION_KEY = 'learn_practice'
 DAILY_GOALS = (10, 20, 30, 50)
 
 
-def _ai_quota_left(user, kind, limit):
-    """Count one AI call against a per-user daily cap; False once it's used up."""
+def _daily_quota_left(user, kind, limit):
+    """Count one use (AI call, paid practice...) against a per-user daily cap; False once it's used up."""
     key = f'learn_ai_{kind}_{user.pk}_{timezone.localdate():%Y%m%d}'
     used = cache.get(key, 0)
     if used >= limit:
@@ -203,7 +205,7 @@ class WriteCheckView(LoginRequiredMixin, View):
             return JsonResponse({'error': "Topshiriq topilmadi"}, status=400)
         if len(text.split()) < 3:
             return JsonResponse({'error': "Kamida bir nechta gap yozing"}, status=400)
-        if not _ai_quota_left(request.user, 'write', WRITE_DAILY_LIMIT):
+        if not _daily_quota_left(request.user, 'write', WRITE_DAILY_LIMIT):
             return JsonResponse({'error': "Bugungi AI tekshiruv limiti tugadi. Ertaga davom eting!"}, status=429)
         result = ai.check_writing(step.get('prompt') or step.get('prompt_uz', ''), text, lesson['level'])
         if result is None:
@@ -220,7 +222,7 @@ class TtsView(LoginRequiredMixin, View):
             return HttpResponseBadRequest()
         path = Path(settings.MEDIA_ROOT) / 'tts' / f'{hashlib.sha256(text.encode()).hexdigest()[:40]}.mp3'
         if not path.exists():
-            if not _ai_quota_left(request.user, 'tts', TTS_DAILY_LIMIT):
+            if not _daily_quota_left(request.user, 'tts', TTS_DAILY_LIMIT):
                 return HttpResponse(status=429)
             audio = ai.synthesize_speech(text)
             if not audio:
@@ -241,7 +243,7 @@ class TranscribeView(LoginRequiredMixin, View):
         audio = request.FILES.get('audio')
         if not audio or audio.size > TRANSCRIBE_MAX_BYTES:
             return JsonResponse({'error': "Audio topilmadi"}, status=400)
-        if not _ai_quota_left(request.user, 'transcribe', TRANSCRIBE_DAILY_LIMIT):
+        if not _daily_quota_left(request.user, 'transcribe', TRANSCRIBE_DAILY_LIMIT):
             return JsonResponse({'error': "Bugungi limit tugadi. Ertaga davom eting!"}, status=429)
         text = ai.transcribe(audio.read(), audio.name or 'speech.webm')
         if text is None:
@@ -276,8 +278,12 @@ class ReviewGradeView(LoginRequiredMixin, View):
             grade = int(data.get('grade'))
         except (Vocabulary.DoesNotExist, TypeError, ValueError):
             return JsonResponse({'error': "So'z topilmadi"}, status=404)
+        # Only a card that was actually up for review pays, so re-grading the
+        # same card in a loop earns nothing.
+        was_due = card.due_at is None or card.due_at <= timezone.now()
         srs.schedule(card, grade).save(update_fields=['due_at', 'interval_days', 'ease', 'reps', 'lapses'])
-        award_xp(request.user, REVIEW_XP)
+        if was_due:
+            award_xp(request.user, REVIEW_XP)
         return JsonResponse({'ok': True, 'interval_days': card.interval_days,
                              'again': grade == srs.AGAIN})
 
@@ -304,7 +310,7 @@ class TutorSendView(LoginRequiredMixin, View):
         message = str(data.get('message', '')).strip()
         if not message:
             return JsonResponse({'error': 'Xabar bo\'sh'}, status=400)
-        if not _ai_quota_left(request.user, 'tutor', TUTOR_DAILY_LIMIT):
+        if not _daily_quota_left(request.user, 'tutor', TUTOR_DAILY_LIMIT):
             return JsonResponse({'error': "Bugungi suhbat limiti tugadi. Ertaga davom etamiz!"}, status=429)
         level = get_profile(request.user).level or recommended_level(request.user)[0] or 'B1'
         result = ai.tutor_reply(data.get('scenario', 'free'), level, message, data.get('history'))
@@ -368,6 +374,8 @@ class PracticeView(LoginRequiredMixin, TemplateView):
         ctx = super().get_context_data(**kwargs)
         profile = get_profile(self.request.user)
         steps, words = build_practice(self.request.user)
+        # Only these exercises may be reported back by PracticeCompleteView.
+        self.request.session[PRACTICE_SESSION_KEY] = [[s['_src']['slug'], s['_src']['idx']] for s in steps]
         level = profile.level or 'A1'
         ctx['lesson'] = {'slug': 'practice', 'level': level, 'title_uz': 'Aralash mashq'}
         ctx['lesson_data'] = {
@@ -383,7 +391,12 @@ class PracticeCompleteView(LoginRequiredMixin, View):
         data, err = parse_json_body(request)
         if err:
             return err
-        return JsonResponse({'ok': True, **apply_practice(request.user, data.get('results'))})
+        served = request.session.pop(PRACTICE_SESSION_KEY, None)
+        if not served:
+            return JsonResponse({'error': "Mashq sessiyasi topilmadi. Sahifani yangilang."}, status=400)
+        served = {(slug, idx) for slug, idx in served}
+        pay = _daily_quota_left(request.user, 'practice', PRACTICE_PAID_DAILY)
+        return JsonResponse({'ok': True, **apply_practice(request.user, data.get('results'), served, pay)})
 
 
 STORY_XP_FIRST = 8
@@ -434,11 +447,14 @@ class StoryCompleteView(LoginRequiredMixin, View):
             score = 0
         progress, created = LessonProgress.objects.get_or_create(
             user=request.user, lesson_slug='story:' + slug, defaults={'best_score': score, 'attempts': 1})
-        if not created:
+        if created:
+            xp = STORY_XP_FIRST
+        else:
+            xp = STORY_XP_REPEAT if repeat_pays(progress) else 0
             progress.attempts += 1
             progress.best_score = max(progress.best_score, score)
-            progress.save(update_fields=['attempts', 'best_score'])
-        xp = STORY_XP_FIRST if created else STORY_XP_REPEAT
+            progress.completed_at = timezone.now()
+            progress.save(update_fields=['attempts', 'best_score', 'completed_at'])
         profile = award_xp(request.user, xp)
         return JsonResponse({'ok': True, 'xp': xp, 'streak': profile.streak})
 

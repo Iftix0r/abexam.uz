@@ -14,7 +14,9 @@ from .content import (
     validate_stories,
 )
 from .models import DailyXP, LearnerProfile, LessonProgress, Mistake
-from .services import apply_practice, award_xp, build_practice, complete_lesson, leaderboard, record_mistakes
+from .services import (
+    apply_practice, award_xp, build_practice, complete_lesson, get_profile, leaderboard, record_mistakes,
+)
 
 
 class ContentTests(TestCase):
@@ -198,13 +200,54 @@ class EndpointTests(TestCase):
         gap = next(i for i, st in enumerate(lesson['steps']) if st['type'] == 'gap')
         self._post('learn:lesson_complete', {'score': 50, 'mistakes': [gap]}, 'a1-hello')
         self.assertTrue(Mistake.objects.filter(user=self.user, step_index=gap).exists())
-        resp = self._post('learn:practice_complete', {'results': [{'slug': 'a1-hello', 'step': gap, 'ok': True}]})
+        res = {'slug': 'a1-hello', 'step': gap, 'ok': True}
+        # No practice session was served, so there is nothing to report.
+        self.assertEqual(self._post('learn:practice_complete', {'results': [res]}).status_code, 400)
+        self._serve_practice([['a1-hello', gap]])
+        resp = self._post('learn:practice_complete', {'results': [res]})
         self.assertEqual(resp.json()['right'], 1)
+
+    def _serve_practice(self, steps):
+        session = self.client.session
+        session['learn_practice'] = steps
+        session.save()
+
+    def test_practice_only_counts_served_steps_once(self):
+        lesson = get_lesson('a1-hello')
+        gaps = [i for i, st in enumerate(lesson['steps']) if st['type'] == 'gap']
+        self._serve_practice([['a1-hello', gaps[0]]])
+        forged = [{'slug': 'a1-hello', 'step': gaps[0], 'ok': True}] * 5 + \
+                 [{'slug': 'a1-hello', 'step': i, 'ok': True} for i in gaps[1:]]
+        d = self._post('learn:practice_complete', {'results': forged}).json()
+        self.assertEqual((d['right'], d['xp']), (1, 4))
+        # The session is used up: replaying the same request is rejected.
+        self.assertEqual(self._post('learn:practice_complete', {'results': forged}).status_code, 400)
+
+    def test_practice_xp_has_a_daily_cap(self):
+        with mock.patch('learn.views.PRACTICE_PAID_DAILY', 1):
+            self._serve_practice([['a1-hello', 0]])
+            first = self._post('learn:practice_complete', {'results': []}).json()
+            self._serve_practice([['a1-hello', 0]])
+            second = self._post('learn:practice_complete', {'results': []}).json()
+        self.assertEqual((first['xp'], second['xp']), (3, 0))
+
+    def test_lesson_replay_pays_once_a_day(self):
+        xps = [self._post('learn:lesson_complete', {'score': 100}, 'a1-hello').json()['xp'] for _ in range(3)]
+        self.assertEqual(xps, [20, 5, 0])
+        LessonProgress.objects.filter(lesson_slug='a1-hello').update(completed_at=timezone.now() - timedelta(days=1))
+        self.assertEqual(self._post('learn:lesson_complete', {'score': 100}, 'a1-hello').json()['xp'], 5)
+
+    def test_regrading_a_reviewed_card_earns_nothing(self):
+        card = Vocabulary.objects.create(user=self.user, english='x', translation='y')
+        for _ in range(3):
+            self._post('learn:review_grade', {'id': card.id, 'grade': 2})
+        self.assertEqual(get_profile(self.user).xp, 1)
 
     def test_story_completion_pays_once(self):
         first = self._post('learn:story_complete', {'score': 75}, 'a1-malikas-cat').json()
         again = self._post('learn:story_complete', {'score': 100}, 'a1-malikas-cat').json()
-        self.assertEqual((first['xp'], again['xp']), (8, 2))
+        third = self._post('learn:story_complete', {'score': 100}, 'a1-malikas-cat').json()
+        self.assertEqual((first['xp'], again['xp'], third['xp']), (8, 2, 0))
         self.assertEqual(LessonProgress.objects.get(lesson_slug='story:a1-malikas-cat').best_score, 100)
         # A read story doesn't count as a finished lesson (no lesson unlocks, placement still offered).
         self.assertEqual(self._post('learn:lesson_complete', {'score': 1}, 'a1-family').status_code, 403)

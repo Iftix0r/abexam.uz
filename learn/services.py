@@ -10,9 +10,18 @@ from .content import EXERCISE_STEPS, get_lesson
 from .models import DailyXP, LearnerProfile, LessonProgress, Mistake
 
 LESSON_XP_FIRST = 10       # + up to 10 more for accuracy, first completion only
-LESSON_XP_REPEAT = 5
+LESSON_XP_REPEAT = 5       # once per lesson per day, so replays can't farm the leaderboard
 REVIEW_XP = 1
 TUTOR_XP = 2
+
+
+def repeat_pays(progress):
+    """A repeated lesson/story earns XP only on its first replay of the day.
+
+    Call before counting the new attempt: completed_at moves on every replay,
+    so "touched today and already replayed" means today's replay was paid.
+    """
+    return timezone.localdate(progress.completed_at) != timezone.localdate() or progress.attempts < 2
 
 
 def get_profile(user):
@@ -78,11 +87,11 @@ def complete_lesson(user, lesson, score):
     if created:
         xp = LESSON_XP_FIRST + round(score / 10)
     else:
+        xp = LESSON_XP_REPEAT if repeat_pays(progress) else 0
         progress.attempts += 1
         progress.best_score = max(progress.best_score, score)
         progress.completed_at = timezone.now()
         progress.save()
-        xp = LESSON_XP_REPEAT
     words_added = add_lesson_words(user, lesson)
     profile = award_xp(user, xp)
     return {'xp': xp, 'words_added': words_added, 'first_time': created,
@@ -169,13 +178,21 @@ def build_practice(user):
     return steps, words
 
 
-def apply_practice(user, results):
+def apply_practice(user, results, served=None, pay=True):
+    """`served` is the set of (slug, idx) the session actually showed; anything
+    else is ignored and each served step counts once, so a hand-made request
+    can't claim XP for exercises nobody answered."""
     now = timezone.now()
     right = 0
+    served = None if served is None else set(served)
     for r in results if isinstance(results, list) else []:
         if not isinstance(r, dict) or not isinstance(r.get('step'), int):
             continue
         slug, idx, ok = str(r.get('slug', '')), r['step'], bool(r.get('ok'))
+        if served is not None:
+            if (slug, idx) not in served:
+                continue
+            served.discard((slug, idx))
         if not _practice_step(slug, idx)[0]:
             continue
         m = Mistake.objects.filter(user=user, lesson_slug=slug, step_index=idx).first()
@@ -194,7 +211,7 @@ def apply_practice(user, results):
             m.save()
         else:
             Mistake.objects.create(user=user, lesson_slug=slug, step_index=idx)
-    xp = 3 + min(right, 12)
+    xp = 3 + min(right, 12) if pay else 0
     profile = award_xp(user, xp)
     return {'xp': xp, 'streak': profile.streak, 'right': right,
             'mistakes_left': Mistake.objects.filter(user=user).count()}
