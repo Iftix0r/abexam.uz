@@ -234,9 +234,12 @@
         .cam-status.ok { background: #e8f5e9; color: #2e7d32; }
         .cam-status.err { background: #ffebee; color: #c62828; }
         .cam-status button { margin-left: 8px; padding: 4px 10px; border: none; border-radius: 6px; background: #c62828; color: #fff; font-weight: 700; cursor: pointer; }
-        .cam-preview { position: fixed; left: 12px; bottom: 72px; z-index: 1500; width: 132px; border-radius: 10px; overflow: hidden; box-shadow: 0 6px 18px rgba(0,0,0,.3); background: #000; }
-        .cam-preview video { display: block; width: 100%; height: auto; transform: scaleX(-1); }
-        .cam-dot { position: absolute; left: 6px; top: 4px; font-size: 10px; font-weight: 700; color: #fff; text-shadow: 0 1px 2px #000; }
+        /* The student doesn't see their own picture — only a small "camera
+           on" badge. The video still has to be rendered (not display:none)
+           for the browser to keep playing it and frames to be captured. */
+        .cam-preview { position: fixed; left: 12px; bottom: 72px; z-index: 1500; padding: 5px 10px; border-radius: 20px; background: rgba(0,0,0,.72); }
+        .cam-preview video { position: absolute; left: 0; top: 0; width: 2px; height: 2px; opacity: 0; pointer-events: none; }
+        .cam-dot { font-size: 11px; font-weight: 700; color: #fff; }
         .cam-dot::first-letter { color: #ef5350; }
         /* A question group's own title + instructions, above its first question */
         .q-heading { margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px dashed var(--border); }
@@ -958,7 +961,7 @@
 </div>
 
 {% if site_settings.camera_proctoring %}
-<!-- ─── CAMERA PREVIEW (the student sees what staff see) ─── -->
+<!-- ─── CAMERA (hidden capture + "camera on" badge) ─── -->
 <div id="camPreview" class="cam-preview" style="display:none" title="Imtihon nazorati: kamerangiz nazoratchiga ko'rinadi">
     <video id="camVideo" autoplay muted playsinline></video>
     <span class="cam-dot">● Kamera</span>
