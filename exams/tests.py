@@ -8,6 +8,7 @@ from django.urls import reverse
 from core.models import Notification
 from users.models import User
 from .models import Exam, ExamAttempt, Question, Section, UserResult
+from .passwords import exam_password, mark_exam_unlocked
 from .views import calc_writing_band, round_band
 
 
@@ -222,6 +223,7 @@ class SeedTestlar7Tests(TestCase):
 
         user = User.objects.create_user('student', password='pw')
         self.client.force_login(user)
+        mark_exam_unlocked(user.pk, exam.pk)
         resp = self.client.get(reverse('exams:take_exam', args=[exam.pk]))
         self.assertContains(resp, 'Rethinking the Past')
         # audio bor Listening'da transkript (javoblar) sahifaga chiqmaydi
@@ -265,10 +267,82 @@ class QuestionHeadingTests(TestCase):
                                 text='Occupation: ___')
         user = User.objects.create_user('reader', password='pw')
         self.client.force_login(user)
+        mark_exam_unlocked(user.pk, exam.pk)
         resp = self.client.get(reverse('exams:take_exam', args=[exam.pk]))
         self.assertContains(resp, '<div class="q-heading-title">Customer Satisfaction Survey</div>', html=True)
         self.assertContains(resp, '<div class="q-heading-instr">Complete the form below.</div>', html=True)
         self.assertNotContains(resp, '[Customer Satisfaction Survey]')
+
+
+class ExamPasswordTests(TestCase):
+    """Imtihonni boshlash uchun har soatda o'zgaradigan test paroli."""
+
+    def setUp(self):
+        from django.core.cache import cache
+        cache.clear()
+        self.user = User.objects.create_user('student', password='pw')
+        self.exam = Exam.objects.create(title='Password test', price=0)
+        section = Section.objects.create(exam=self.exam, title='Reading', section_type='reading', order=1)
+        Question.objects.create(section=section, text='q', question_type='gap_fill', correct_answer='a', order=1)
+        self.client.force_login(self.user)
+        self.take = reverse('exams:take_exam', args=[self.exam.pk])
+        self.unlock = reverse('exams:unlock_exam', args=[self.exam.pk])
+        self.detail = reverse('exams:exam_detail', args=[self.exam.pk])
+
+    def test_password_changes_hourly_and_per_exam(self):
+        from .passwords import check_exam_password
+        t = 1_800_000_000 - 1_800_000_000 % 3600  # on the hour
+        self.assertRegex(exam_password(self.exam.pk, now=t), r'^\d{6}$')
+        self.assertEqual(exam_password(self.exam.pk, now=t), exam_password(self.exam.pk, now=t + 3599))
+        self.assertNotEqual(exam_password(self.exam.pk, now=t), exam_password(self.exam.pk, now=t + 3600))
+        self.assertNotEqual(exam_password(self.exam.pk, now=t), exam_password(self.exam.pk + 1, now=t))
+        old = exam_password(self.exam.pk, now=t - 1)
+        self.assertTrue(check_exam_password(self.exam.pk, old, now=t + 5 * 60))   # grace
+        self.assertFalse(check_exam_password(self.exam.pk, old, now=t + 15 * 60))
+        self.assertFalse(check_exam_password(self.exam.pk + 1, exam_password(self.exam.pk, now=t), now=t))
+
+    def test_take_requires_password(self):
+        resp = self.client.get(self.take)
+        self.assertRedirects(resp, self.detail, fetch_redirect_response=False)
+        self.assertContains(self.client.get(self.detail), self.unlock)
+
+    def test_wrong_password_rejected(self):
+        resp = self.client.post(self.unlock, {'password': '000000' if exam_password(self.exam.pk) != '000000' else '111111'})
+        self.assertRedirects(resp, self.detail, fetch_redirect_response=False)
+        self.assertEqual(self.client.get(self.take).status_code, 302)
+
+    def test_correct_password_unlocks_until_submit(self):
+        resp = self.client.post(self.unlock, {'password': exam_password(self.exam.pk)})
+        self.assertRedirects(resp, self.take, fetch_redirect_response=False)
+        self.assertEqual(self.client.get(self.take).status_code, 200)
+        self.client.post(reverse('exams:submit_exam', args=[self.exam.pk]),
+                         data=json.dumps({'answers': {}}), content_type='application/json')
+        self.assertEqual(self.client.get(self.take).status_code, 302)
+
+    def test_lockout_after_many_failures(self):
+        wrong = '000000' if exam_password(self.exam.pk) != '000000' else '111111'
+        for _ in range(5):
+            self.client.post(self.unlock, {'password': wrong})
+        self.client.post(self.unlock, {'password': exam_password(self.exam.pk)})
+        self.assertEqual(self.client.get(self.take).status_code, 302)
+
+    def test_staff_and_disabled_setting_skip_password(self):
+        from core.models import SiteSettings
+        site = SiteSettings.get()
+        site.exam_password_required = False
+        site.save()
+        self.assertEqual(self.client.get(self.take).status_code, 200)
+        site.exam_password_required = True
+        site.save()
+        staff = User.objects.create_user('teacher', password='pw', is_staff=True)
+        self.client.force_login(staff)
+        self.assertEqual(self.client.get(self.take).status_code, 200)
+
+    def test_panel_lists_current_password(self):
+        staff = User.objects.create_user('teacher', password='pw', is_staff=True)
+        self.client.force_login(staff)
+        resp = self.client.get(reverse('panel:exam_passwords'))
+        self.assertContains(resp, exam_password(self.exam.pk))
 
 
 class ChooseTwoGradingTests(TestCase):
@@ -468,6 +542,7 @@ class ProctorAlarmSettingTests(TestCase):
         section = Section.objects.create(exam=exam, title='Reading', section_type='reading', order=1)
         Question.objects.create(section=section, text='q', question_type='gap_fill', correct_answer='a', order=1)
         self.client.force_login(user)
+        mark_exam_unlocked(user.pk, exam.pk)
         url = reverse('exams:take_exam', args=[exam.pk])
         self.assertContains(self.client.get(url), 'const PROCTOR_ALARM = true;')
         site = SiteSettings.get()

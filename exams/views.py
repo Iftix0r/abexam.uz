@@ -15,8 +15,13 @@ from django.utils import timezone
 from django.views import View
 from django.views.generic import DetailView
 
+from core.models import SiteSettings
 from core.utils import get_client_ip, parse_json_body
 from .models import Exam, ExamAttempt, UserAnswer, UserResult, Question
+from .passwords import (
+    check_exam_password, clear_exam_unlocked, exam_is_unlocked, mark_exam_unlocked,
+    record_failure, too_many_failures,
+)
 from users.models import User
 
 submit_logger = logging.getLogger('exams.submit')
@@ -41,6 +46,14 @@ def mark_exam_paid(user_pk, exam_pk):
 
 def clear_exam_paid(user_pk, exam_pk):
     cache.delete(_exam_paid_key(user_pk, exam_pk))
+
+
+def exam_needs_password(user, exam):
+    """True while this user still has to enter the exam's hourly password
+    before starting it. Staff (invigilators) are never asked."""
+    if user.is_staff or not SiteSettings.get().exam_password_required:
+        return False
+    return not exam_is_unlocked(user.pk, exam.pk)
 
 
 def _fuzzy_match(user_ans: str, correct: str) -> bool:
@@ -184,7 +197,27 @@ class ExamDetailView(LoginRequiredMixin, DetailView):
         context['last_graded'] = UserResult.objects.graded().filter(
             user=self.request.user, exam=exam
         ).order_by('-completed_at').first()
+        context['needs_password'] = exam_needs_password(self.request.user, exam)
         return context
+
+
+class ExamUnlockView(LoginRequiredMixin, View):
+    """Checks the hourly test password from the exam page's start form and,
+    when it's right, lets this student into the exam."""
+
+    def post(self, request, pk):
+        exam = get_object_or_404(Exam, pk=pk)
+        if not exam_needs_password(request.user, exam):
+            return redirect('exams:take_exam', pk=exam.pk)
+        if too_many_failures(request.user.pk, exam.pk):
+            messages.error(request, "Juda ko'p noto'g'ri urinish. 10 daqiqadan keyin qayta urinib ko'ring.")
+            return redirect('exams:exam_detail', pk=exam.pk)
+        if not check_exam_password(exam.pk, request.POST.get('password', '')):
+            record_failure(request.user.pk, exam.pk)
+            messages.error(request, "Test paroli noto'g'ri. Parolni nazoratchidan so'rang.")
+            return redirect('exams:exam_detail', pk=exam.pk)
+        mark_exam_unlocked(request.user.pk, exam.pk)
+        return redirect('exams:take_exam', pk=exam.pk)
 
 
 class TakeExamView(LoginRequiredMixin, DetailView):
@@ -203,6 +236,11 @@ class TakeExamView(LoginRequiredMixin, DetailView):
             return redirect('exams:exam_detail', pk=exam.pk)
         if is_preview:
             return super().get(request, *args, **kwargs)
+        # Checked before the payment below, so a student without the
+        # password is never charged for an exam they can't open.
+        if exam_needs_password(request.user, exam):
+            messages.info(request, "Testni boshlash uchun test parolini kiriting.")
+            return redirect('exams:exam_detail', pk=exam.pk)
         if exam.price > 0 and not exam_is_paid(request.user.pk, exam.pk):
             # A Django session write only persists at the end of the
             # request, so two concurrent requests (double-click, retry)
@@ -614,6 +652,7 @@ class SubmitExamView(LoginRequiredMixin, View):
             with transaction.atomic():
                 result = create_result(request.user, exam, answers)
         clear_exam_paid(request.user.pk, exam.pk)
+        clear_exam_unlocked(request.user.pk, exam.pk)
         return JsonResponse(submit_payload(result))
 
 

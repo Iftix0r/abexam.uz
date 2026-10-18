@@ -22,6 +22,7 @@ urlpatterns = [
     path('exams/', views.exams_list, name='exams'),
     path('exams/bulk/', views.exams_bulk_action, name='exams_bulk'),
     path('exams/create/', views.exam_create, name='exam_create'),
+    path('exams/passwords/', views.exam_passwords, name='exam_passwords'),
     path('exams/<int:pk>/', views.exam_detail, name='exam_detail'),
     path('exams/<int:pk>/edit/', views.exam_edit, name='exam_edit'),
     path('exams/<int:pk>/delete/', views.exam_delete, name='exam_delete'),

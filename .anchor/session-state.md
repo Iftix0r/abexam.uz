@@ -1,43 +1,44 @@
 # Session state (auto-saved — last known reality)
 
-_Updated: 2026-10-18 08:20:06_  ·  branch: `main`
+_Updated: 2026-10-18 09:26:24_  ·  branch: `main`
 
 ## Uncommitted changes
 ```
  M .anchor/session-state.md
- M core/urls.py
- M learn/api.py
- M learn/tests.py
- M mobile/android/app/build.gradle.kts
- M mobile/android/app/src/main/AndroidManifest.xml
- M mobile/lib/core/app_state.dart
- M mobile/lib/core/updates.dart
- M mobile/lib/screens/profile_tab.dart
- M users/tests.py
- M users/views.py
-?? templates/privacy.html
-?? templates/public_base.html
-?? templates/users/account_delete.html
+ M core/models.py
+ M exams/tests.py
+ M exams/urls.py
+ M exams/views.py
+ M panel/urls.py
+ M panel/views.py
+ M templates/exams/exam_detail.html
+ M templates/panel/base.html
+ M templates/panel/exam_detail.html
+ M templates/panel/settings.html
+?? core/migrations/0003_sitesettings_exam_password_required.py
+?? exams/passwords.py
+?? templates/panel/exam_passwords.html
 ```
 
 Diff stat:
 ```
- .anchor/session-state.md                        | 60 ++++-------------
- core/urls.py                                    |  5 +-
- learn/api.py                                    | 18 ++++-
- learn/tests.py                                  |  8 +++
- mobile/android/app/build.gradle.kts             | 26 +++++++-
- mobile/android/app/src/main/AndroidManifest.xml |  3 -
- mobile/lib/core/app_state.dart                  |  6 ++
- mobile/lib/core/updates.dart                    |  8 +++
- mobile/lib/screens/profile_tab.dart             | 87 ++++++++++++++++++++++++-
- users/tests.py                                  | 34 ++++++++++
- users/views.py                                  | 30 +++++++++
- 11 files changed, 228 insertions(+), 57 deletions(-)
+ .anchor/session-state.md         | 57 ++++++++----------------------
+ core/models.py                   |  3 ++
+ exams/tests.py                   | 75 ++++++++++++++++++++++++++++++++++++++++
+ exams/urls.py                    |  3 +-
+ exams/views.py                   | 39 +++++++++++++++++++++
+ panel/urls.py                    |  1 +
+ panel/views.py                   | 21 ++++++++++-
+ templates/exams/exam_detail.html | 18 ++++++++++
+ templates/panel/base.html        |  4 +++
+ templates/panel/exam_detail.html |  7 ++++
+ templates/panel/settings.html    |  4 +++
+ 11 files changed, 187 insertions(+), 45 deletions(-)
 ```
 
 ## Recent commits
 ```
+0f56e97 3wd4trtr
 f1d5ba5 wqegrdh
 bd7a1a2 1235465
 93ecb5f 3b8begfus
@@ -45,7 +46,6 @@ bd7a1a2 1235465
 55eb282 32iowwfjoenk
 ce093e3 1234
 3b438fe efssg
-33b82f2 avve
 ```
 
 ## Resume

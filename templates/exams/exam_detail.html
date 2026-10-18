@@ -151,6 +151,15 @@
 .band-mid  { background: rgba(234,179,8,.12);  color: #ca8a04; }
 .band-low  { background: rgba(239,68,68,.12);  color: #ef4444; }
 
+.exam-password-form label { display: block; font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+.exam-password-form p { font-size: 12.5px; color: var(--text-muted); margin: 0 0 10px; }
+.exam-password-form input {
+    width: 100%; box-sizing: border-box; padding: 12px 14px; margin-bottom: 12px;
+    font-size: 22px; letter-spacing: 8px; text-align: center; font-family: monospace;
+    border: 1.5px solid var(--text-muted); border-radius: 10px;
+    background: var(--bg-color); color: var(--text-color);
+}
+
 @media (max-width: 600px) {
     .test-header { flex-direction: column; }
     .section-row { flex-wrap: wrap; gap: 12px; }
@@ -199,6 +208,15 @@
         <div style="padding: 0 30px 26px;">
             {% if exam.price > 0 and request.user.balance < exam.price %}
             <button class="btn-start" disabled style="width:100%; padding:13px; cursor:not-allowed; opacity:.5;">Balans yetarli emas</button>
+            {% elif needs_password %}
+            <form method="post" action="{% url 'exams:unlock_exam' exam.id %}" class="exam-password-form">
+                {% csrf_token %}
+                <label for="exam-password">Test paroli</label>
+                <p>Parolni xonadagi nazoratchi (admin) beradi. Parol har soatda yangilanadi.</p>
+                <input id="exam-password" type="text" name="password" inputmode="numeric" pattern="[0-9 ]*"
+                       maxlength="7" autocomplete="off" placeholder="••••••" required autofocus>
+                <button type="submit" class="btn-start" style="width:100%; padding:13px;">Testni boshlash</button>
+            </form>
             {% else %}
             <a href="{% url 'exams:take_exam' exam.id %}" class="btn-start" style="display:block; width:100%; padding:13px; text-align:center; box-sizing:border-box;">Testni boshlash</a>
             {% endif %}

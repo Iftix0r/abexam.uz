@@ -23,6 +23,7 @@ from core.utils import (
     text_to_html_paragraphs, validate_audio_upload, validate_image_upload,
 )
 from exams.models import ATTEMPT_ONLINE_WINDOW, Exam, ExamAttempt, Question, Section, UserResult
+from exams.passwords import GRACE_SECONDS, exam_password, seconds_until_rotation
 from exams.views import finalize_attempt
 from learn.content import LEVEL_INFO, LEVELS, get_course, get_stories, validate_course
 from learn.models import ApiToken, AppRelease, DailyXP, LearnerProfile, LessonDraft, LessonProgress, Mistake
@@ -309,7 +310,24 @@ def exam_detail(request, pk):
     results = UserResult.objects.filter(exam=exam).select_related('user').order_by('-completed_at')[:20]
     stats = UserResult.objects.graded().filter(exam=exam).aggregate(avg=Avg('score'), total=Count('id'))
     return render(request, 'panel/exam_detail.html', {
-        'exam': exam, 'sections': sections, 'results': results, 'stats': stats
+        'exam': exam, 'sections': sections, 'results': results, 'stats': stats,
+        'exam_password': exam_password(exam.pk), 'password_rotates_in': seconds_until_rotation(),
+        'password_required': SiteSettings.get().exam_password_required,
+    })
+
+
+@panel_required
+def exam_passwords(request):
+    """Current hourly password of every active exam, for the invigilator to
+    read out to the students in the room (see exams/passwords.py)."""
+    exams = list(Exam.objects.filter(is_active=True).order_by('-created_at'))
+    for exam in exams:
+        exam.current_password = exam_password(exam.pk)
+    return render(request, 'panel/exam_passwords.html', {
+        'exams': exams,
+        'rotates_in': seconds_until_rotation(),
+        'grace_minutes': GRACE_SECONDS // 60,
+        'password_required': SiteSettings.get().exam_password_required,
     })
 
 
@@ -1508,6 +1526,7 @@ def site_settings(request):
         settings_obj.announcement_active = request.POST.get('announcement_active') == 'on'
         settings_obj.maintenance_mode = request.POST.get('maintenance_mode') == 'on'
         settings_obj.proctor_alarm = request.POST.get('proctor_alarm') == 'on'
+        settings_obj.exam_password_required = request.POST.get('exam_password_required') == 'on'
         settings_obj.maintenance_message = request.POST.get('maintenance_message', '').strip()
         settings_obj.save()
         messages.success(request, 'Sozlamalar saqlandi')

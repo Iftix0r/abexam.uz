@@ -58,6 +58,10 @@
       <input type="checkbox" name="proctor_alarm" {% if settings.proctor_alarm %}checked{% endif %}>
       Shubhali harakatda ovozli signal va qizil ekran
     </label>
+    <label class="form-check" style="margin-top:10px">
+      <input type="checkbox" name="exam_password_required" {% if settings.exam_password_required %}checked{% endif %}>
+      Testni boshlash uchun test paroli so'ralsin (parol har soatda o'zgaradi — <a href="{% url 'panel:exam_passwords' %}">Test parollari</a>)
+    </label>
   </div>
 
   <button type="submit" class="btn btn-primary">Saqlash</button>
