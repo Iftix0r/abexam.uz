@@ -1844,7 +1844,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     window.closeInstructionAndStart = function() {
-        if (CAMERA_REQUIRED && !cameraOn()) { startCamera(); return; }
         document.getElementById('sectionInstrOverlay').style.display = 'none';
         examStarted = true;
         unlockAudio();
@@ -2914,13 +2913,15 @@ document.addEventListener('DOMContentLoaded', () => {
     })();
 
     // ─── CAMERA PROCTORING ───────────────────────────────
-    // The exam can't start until the webcam is on. A small JPEG frame goes
+    // The webcam is asked for, but the exam starts without it too (no
+    // camera on the computer, or permission refused) — staff then see
+    // "no camera" for this student. A small JPEG frame goes
     // to the server every few seconds (every second while an invigilator
     // has this student open); only the latest one is kept. When staff open
     // this student, the reply also asks for a live video call: the page
     // sends the camera straight to the staff browser over WebRTC (the
     // server only relays the offer/answer), so the panel sees smooth video.
-    const CAMERA_REQUIRED = {{ site_settings.camera_proctoring|yesno:"true,false" }};
+    const CAMERA_ENABLED = {{ site_settings.camera_proctoring|yesno:"true,false" }};
     const LIVE_URL = "{% url 'exams:camera_live' exam.id %}";
     let camStream = null, camTimer = null, camCanvas = null, camRetry = null, camGrabber = null;
     const livePcs = new Map();      // session → RTCPeerConnection (one per staff view)
@@ -2936,12 +2937,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!el) return;
         el.className = 'cam-status' + (kind ? ' ' + kind : '');
         el.innerHTML = html;
-        const btn = document.getElementById('instrStartBtn');
-        if (btn) btn.disabled = CAMERA_REQUIRED && kind !== 'ok';
     }
 
     async function startCamera() {
-        if (!CAMERA_REQUIRED || cameraOn() || examSubmitted) return;
+        if (!CAMERA_ENABLED || cameraOn() || examSubmitted) return;
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
             setCamStatus('err', "📷 Bu brauzer kamerani qo'llamaydi. Chrome yoki Edge'da oching.");
             return;
@@ -2956,8 +2955,10 @@ document.addEventListener('DOMContentLoaded', () => {
             camStream = null;
             const denied = e && (e.name === 'NotAllowedError' || e.name === 'SecurityError');
             setCamStatus('err', (denied
-                ? "📷 Kameraga ruxsat berilmadi. Manzil satridagi 🔒 belgisidan kamerani yoqing"
-                : "📷 Kamera topilmadi yoki band") + ' <button type="button" onclick="startCamera()">Qayta urinish</button>');
+                ? "📷 Kameraga ruxsat berilmadi — test kamerasiz boshlanadi"
+                : "📷 Kamera topilmadi — test kamerasiz boshlanadi") + ' <button type="button" onclick="startCamera()">Qayta urinish</button>');
+            // A camera plugged in later is picked up by itself.
+            if (!denied && !camRetry) camRetry = setInterval(startCamera, 15000);
             return;
         }
         const track = camStream.getVideoTracks()[0];
@@ -2973,6 +2974,7 @@ document.addEventListener('DOMContentLoaded', () => {
         closeAllLive();
         setCamStatus('ok', '📷 Kamera yoqilgan — nazoratchi sizni ko\'radi');
         clearInterval(camRetry);
+        camRetry = null;
         clearTimeout(camTimer);
         camTimer = setTimeout(sendFrame, 1000);
     }
@@ -3172,7 +3174,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => { if (rec.state !== 'inactive') rec.stop(); }, 2000);
     }
 
-    if (CAMERA_REQUIRED) startCamera();
+    if (CAMERA_ENABLED) startCamera();
 
     // Render inline gaps after draft restore
     setTimeout(renderInlineGapFill, 100);

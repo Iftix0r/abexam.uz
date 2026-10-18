@@ -408,12 +408,12 @@ class CameraProctoringTests(TestCase):
     def test_live_video_signalling(self):
         live_staff = reverse('panel:attempt_camera_live', args=[self.attempt.pk])
         live_student = reverse('exams:camera_live', args=[self.exam.pk])
-        self.assertIsNone(self._send().json()['live'])
+        self.assertEqual(self._send().json()['live'], [])
         self.client.force_login(self.staff)
         session = self.client.post(live_staff, data=json.dumps({'action': 'start'}),
                                    content_type='application/json').json()['session']
         # o'quvchi sahifasi keyingi kadr javobida chaqiruvni oladi
-        self.assertEqual(self._send().json()['live'], session)
+        self.assertEqual(self._send().json()['live'], [{'session': session, 'quality': 'high'}])
         self.assertEqual(self.client.post(live_student, data=json.dumps(
             {'attempt_id': 'abc-123', 'session': 'other', 'sdp': 'v=0'}), content_type='application/json').status_code, 400)
         self.client.post(live_student, data=json.dumps({'attempt_id': 'abc-123', 'session': session, 'sdp': 'OFFER'}),
@@ -425,16 +425,31 @@ class CameraProctoringTests(TestCase):
         self.client.force_login(self.user)
         self.assertEqual(self.client.get(live_student, {'attempt_id': 'abc-123', 'session': session}).json()['answer'], 'ANSWER')
 
-    def test_exam_page_requires_camera_when_enabled(self):
+    def test_relayed_clips(self):
+        clip_staff = reverse('panel:attempt_camera_clip', args=[self.attempt.pk])
+        clip_student = reverse('exams:camera_clip', args=[self.exam.pk])
+        self.client.force_login(self.staff)
+        self.assertEqual(self.client.get(clip_staff).status_code, 204)  # ko'rish so'rovi yuborildi
+        self.assertTrue(self._send().json()['relay'])
+        for seq in (100, 200):
+            self.client.post(clip_student, data=b'WEBM%d' % seq, content_type='video/webm;codecs=vp8',
+                             HTTP_X_ATTEMPT_ID='abc-123', HTTP_X_CLIP_SEQ=str(seq))
+        self.client.force_login(self.staff)
+        first = self.client.get(clip_staff, {'after': 0})  # eng yangisidan boshlaydi
+        self.assertEqual((first['X-Clip-Seq'], first.content), ('200', b'WEBM200'))
+        self.assertEqual(self.client.get(clip_staff, {'after': 100}).content, b'WEBM200')
+        self.assertEqual(self.client.get(clip_staff, {'after': 200}).status_code, 204)
+
+    def test_exam_page_uses_camera_when_enabled(self):
         from core.models import SiteSettings
         self.client.force_login(self.user)
         mark_exam_unlocked(self.user.pk, self.exam.pk)
         take = reverse('exams:take_exam', args=[self.exam.pk])
-        self.assertContains(self.client.get(take), 'const CAMERA_REQUIRED = true;')
+        self.assertContains(self.client.get(take), 'const CAMERA_ENABLED = true;')
         site = SiteSettings.get()
         site.camera_proctoring = False
         site.save()
-        self.assertContains(self.client.get(take), 'const CAMERA_REQUIRED = false;')
+        self.assertContains(self.client.get(take), 'const CAMERA_ENABLED = false;')
 
 
 class ChooseTwoGradingTests(TestCase):
