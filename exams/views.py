@@ -15,13 +15,9 @@ from django.utils import timezone
 from django.views import View
 from django.views.generic import DetailView
 
-from core.models import SiteSettings
 from core.utils import get_client_ip, parse_json_body
 from .models import Exam, ExamAttempt, UserAnswer, UserResult, Question
-from .passwords import (
-    check_exam_password, clear_exam_unlocked, exam_is_unlocked, mark_exam_unlocked,
-    record_failure, too_many_failures,
-)
+from .passwords import clear_exam_unlocked, exam_is_unlocked, exam_scope, password_required_for, try_unlock
 from users.models import User
 
 submit_logger = logging.getLogger('exams.submit')
@@ -51,9 +47,7 @@ def clear_exam_paid(user_pk, exam_pk):
 def exam_needs_password(user, exam):
     """True while this user still has to enter the exam's hourly password
     before starting it. Staff (invigilators) are never asked."""
-    if user.is_staff or not SiteSettings.get().exam_password_required:
-        return False
-    return not exam_is_unlocked(user.pk, exam.pk)
+    return password_required_for(user) and not exam_is_unlocked(user.pk, exam.pk)
 
 
 def _fuzzy_match(user_ans: str, correct: str) -> bool:
@@ -209,14 +203,10 @@ class ExamUnlockView(LoginRequiredMixin, View):
         exam = get_object_or_404(Exam, pk=pk)
         if not exam_needs_password(request.user, exam):
             return redirect('exams:take_exam', pk=exam.pk)
-        if too_many_failures(request.user.pk, exam.pk):
-            messages.error(request, "Juda ko'p noto'g'ri urinish. 10 daqiqadan keyin qayta urinib ko'ring.")
+        error = try_unlock(request.user.pk, exam_scope(exam.pk), request.POST.get('password', ''))
+        if error:
+            messages.error(request, error)
             return redirect('exams:exam_detail', pk=exam.pk)
-        if not check_exam_password(exam.pk, request.POST.get('password', '')):
-            record_failure(request.user.pk, exam.pk)
-            messages.error(request, "Test paroli noto'g'ri. Parolni nazoratchidan so'rang.")
-            return redirect('exams:exam_detail', pk=exam.pk)
-        mark_exam_unlocked(request.user.pk, exam.pk)
         return redirect('exams:take_exam', pk=exam.pk)
 
 

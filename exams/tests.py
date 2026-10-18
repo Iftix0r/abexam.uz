@@ -169,10 +169,33 @@ class TestlarFilesTests(TestCase):
         self.assertNotContains(resp, 'secret')
 
     def test_serves_test_page(self):
+        from django.core.cache import cache
+        from .passwords import testlar_password
+        cache.clear()
         self.client.force_login(self.user)
-        resp = self.client.get(self._url('Listening 1.html'))
+        url = self._url('Listening 1.html')
+        # to'plam paroli kiritilmaguncha test o'rniga parol so'raladi
+        resp = self.client.get(url)
+        self.assertContains(resp, 'Test paroli kerak')
+        self.assertNotContains(resp, 'L1</html>')
+        wrong = '000000' if testlar_password(7) != '000000' else '111111'
+        self.client.post(url, {'password': wrong})
+        self.assertContains(self.client.get(url), 'Test paroli kerak')
+        resp = self.client.post(url, {'password': testlar_password(7)})
+        self.assertRedirects(resp, url, fetch_redirect_response=False)
+        resp = self.client.get(url)
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(b''.join(resp.streaming_content), b'<html>L1</html>')
+
+    def test_panel_shows_set_password(self):
+        from .passwords import testlar_password
+        staff = User.objects.create_user('teacher', password='pw', is_staff=True)
+        self.client.force_login(staff)
+        resp = self.client.get(reverse('panel:exam_passwords'))
+        self.assertContains(resp, "Test to'plami 7")
+        self.assertContains(resp, testlar_password(7))
+        # admin parolsiz ochadi
+        self.assertEqual(self.client.get(self._url('Listening 1.html')).status_code, 200)
 
     def test_blocks_raw_files_and_traversal(self):
         self.client.force_login(self.user)

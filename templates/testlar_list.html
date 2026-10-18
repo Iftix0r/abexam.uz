@@ -16,7 +16,7 @@
 {% endblock %}
 
 {% block content %}
-<p style="color:var(--text-muted);font-size:15px;margin-bottom:28px">Tayyor IELTS testlari — har biri yangi oynada ochiladi, javoblarni oxirida "Check Answers" bilan tekshirasiz.</p>
+<p style="color:var(--text-muted);font-size:15px;margin-bottom:28px">Tayyor IELTS testlari — har biri yangi oynada ochiladi, javoblarni oxirida "Check Answers" bilan tekshirasiz.{% if password_required %} Har bir to'plam test paroli bilan ochiladi — parolni nazoratchidan so'rang.{% endif %}</p>
 
 {% for group in groups %}
 <div class="test-group">

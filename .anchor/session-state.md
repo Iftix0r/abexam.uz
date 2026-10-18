@@ -1,43 +1,36 @@
 # Session state (auto-saved — last known reality)
 
-_Updated: 2026-10-18 09:26:24_  ·  branch: `main`
+_Updated: 2026-10-18 09:33:10_  ·  branch: `main`
 
 ## Uncommitted changes
 ```
  M .anchor/session-state.md
- M core/models.py
+ M exams/passwords.py
+ M exams/testlar.py
  M exams/tests.py
- M exams/urls.py
  M exams/views.py
- M panel/urls.py
  M panel/views.py
- M templates/exams/exam_detail.html
- M templates/panel/base.html
- M templates/panel/exam_detail.html
- M templates/panel/settings.html
-?? core/migrations/0003_sitesettings_exam_password_required.py
-?? exams/passwords.py
-?? templates/panel/exam_passwords.html
+ M templates/panel/exam_passwords.html
+ M templates/testlar_list.html
+?? templates/testlar_password.html
 ```
 
 Diff stat:
 ```
- .anchor/session-state.md         | 57 ++++++++----------------------
- core/models.py                   |  3 ++
- exams/tests.py                   | 75 ++++++++++++++++++++++++++++++++++++++++
- exams/urls.py                    |  3 +-
- exams/views.py                   | 39 +++++++++++++++++++++
- panel/urls.py                    |  1 +
- panel/views.py                   | 21 ++++++++++-
- templates/exams/exam_detail.html | 18 ++++++++++
- templates/panel/base.html        |  4 +++
- templates/panel/exam_detail.html |  7 ++++
- templates/panel/settings.html    |  4 +++
- 11 files changed, 187 insertions(+), 45 deletions(-)
+ .anchor/session-state.md            |  46 ++-------------
+ exams/passwords.py                  | 115 ++++++++++++++++++++++++++----------
+ exams/testlar.py                    |  28 +++++++++
+ exams/tests.py                      |  25 +++++++-
+ exams/views.py                      |  20 ++-----
+ panel/views.py                      |   5 +-
+ templates/panel/exam_passwords.html |  15 +++++
+ templates/testlar_list.html         |   2 +-
+ 8 files changed, 166 insertions(+), 90 deletions(-)
 ```
 
 ## Recent commits
 ```
+450c7a7 feat(exams): require hourly test password to start an exam
 0f56e97 3wd4trtr
 f1d5ba5 wqegrdh
 bd7a1a2 1235465
@@ -45,7 +38,6 @@ bd7a1a2 1235465
 4aae2e5 1234567
 55eb282 32iowwfjoenk
 ce093e3 1234
-3b438fe efssg
 ```
 
 ## Resume

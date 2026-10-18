@@ -23,7 +23,8 @@ from core.utils import (
     text_to_html_paragraphs, validate_audio_upload, validate_image_upload,
 )
 from exams.models import ATTEMPT_ONLINE_WINDOW, Exam, ExamAttempt, Question, Section, UserResult
-from exams.passwords import GRACE_SECONDS, exam_password, seconds_until_rotation
+from exams.passwords import GRACE_SECONDS, exam_password, seconds_until_rotation, testlar_password
+from exams.testlar import testlar_folders
 from exams.views import finalize_attempt
 from learn.content import LEVEL_INFO, LEVELS, get_course, get_stories, validate_course
 from learn.models import ApiToken, AppRelease, DailyXP, LearnerProfile, LessonDraft, LessonProgress, Mistake
@@ -323,8 +324,10 @@ def exam_passwords(request):
     exams = list(Exam.objects.filter(is_active=True).order_by('-created_at'))
     for exam in exams:
         exam.current_password = exam_password(exam.pk)
+    testlar = [{'number': n, 'password': testlar_password(n)} for n in testlar_folders()]
     return render(request, 'panel/exam_passwords.html', {
         'exams': exams,
+        'testlar': testlar,
         'rotates_in': seconds_until_rotation(),
         'grace_minutes': GRACE_SECONDS // 60,
         'password_required': SiteSettings.get().exam_password_required,

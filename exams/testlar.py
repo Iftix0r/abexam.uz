@@ -9,8 +9,12 @@ from pathlib import Path
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
 from django.http import FileResponse, Http404, HttpResponse, StreamingHttpResponse
+from django.shortcuts import redirect, render
 from django.views.generic import TemplateView
+
+from .passwords import is_unlocked, password_required_for, testlar_scope, try_unlock
 
 # Xom materiallar (PDF, zip, asl rasmlar) ham shu papkada turishi mumkin —
 # ular tashqariga chiqmasin, faqat test sahifasi va uning audiosi/rasmi.
@@ -32,6 +36,16 @@ def _kind(name):
     return next((k for k in _KINDS if name.lower().startswith(k.lower())), 'Test')
 
 
+def testlar_folders():
+    """Numbers of the TESTLAR/<n>/ sets that have at least one test page,
+    newest first."""
+    root = _root()
+    if not root.is_dir():
+        return []
+    folders = [d for d in root.iterdir() if d.is_dir() and d.name.isdigit() and any(d.glob('*.html'))]
+    return sorted((int(d.name) for d in folders), reverse=True)
+
+
 class TestlarListView(LoginRequiredMixin, TemplateView):
     template_name = 'testlar_list.html'
 
@@ -49,6 +63,7 @@ class TestlarListView(LoginRequiredMixin, TemplateView):
                         'files': [{'name': f, 'title': f[:-5], 'kind': _kind(f)} for f in files],
                     })
         context['groups'] = groups
+        context['password_required'] = password_required_for(self.request.user)
         return context
 
 
@@ -70,6 +85,19 @@ def testlar_file(request, folder, filename):
     path = (root / str(folder) / filename).resolve()
     if path.parent != root / str(folder) or path.suffix.lower() not in _ALLOWED_EXT or not path.is_file():
         raise Http404
+
+    # A whole set (Listening/Reading/Writing of /testlar/<n>/) opens with
+    # one hourly password from the panel. Only the test pages are gated —
+    # their audio/images load from inside an already unlocked page.
+    if path.suffix.lower() == '.html' and password_required_for(request.user):
+        scope = testlar_scope(folder)
+        if request.method == 'POST':
+            error = try_unlock(request.user.pk, scope, request.POST.get('password', ''))
+            if error:
+                messages.error(request, error)
+            return redirect(request.path)
+        if not is_unlocked(request.user.pk, scope):
+            return render(request, 'testlar_password.html', {'folder': folder, 'title': path.stem})
 
     content_type = mimetypes.guess_type(path.name)[0] or 'application/octet-stream'
     size = path.stat().st_size
