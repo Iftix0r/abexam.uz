@@ -1,0 +1,57 @@
+{# Asks for camera permission once on entering the site, so the exam page #}
+{# (which needs the webcam for proctoring) can start without surprises.   #}
+{% if user.is_authenticated and site_settings.camera_proctoring %}
+<div id="camAsk" class="cam-ask-overlay" style="display:none" role="dialog" aria-modal="true" aria-labelledby="camAskTitle">
+  <div class="cam-ask-card">
+    <div style="font-size:40px;line-height:1">📷</div>
+    <h3 id="camAskTitle">Kameraga ruxsat bering</h3>
+    <p id="camAskText">Imtihon paytida nazorat uchun kamerangiz yoqiladi va uni faqat imtihon nazoratchisi ko'radi. Video yozib olinmaydi. Kamerasiz imtihonni boshlab bo'lmaydi.</p>
+    <div class="cam-ask-actions">
+      <button type="button" id="camAskLater" class="cam-ask-later">Keyinroq</button>
+      <button type="button" id="camAskAllow" class="cam-ask-allow">Ruxsat berish</button>
+    </div>
+  </div>
+</div>
+<style>
+.cam-ask-overlay{position:fixed;inset:0;z-index:5000;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px}
+.cam-ask-card{max-width:400px;width:100%;background:var(--bg-color);color:var(--text-color);border:1px solid var(--border-color);border-radius:16px;padding:24px;text-align:center;box-shadow:var(--shadow)}
+.cam-ask-card h3{margin:12px 0 8px;font-size:18px}
+.cam-ask-card p{font-size:14px;color:var(--text-muted);line-height:1.55;margin:0 0 18px}
+.cam-ask-actions{display:flex;gap:10px}
+.cam-ask-actions button{flex:1;padding:11px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer}
+.cam-ask-later{background:transparent;color:var(--text-color);border:1px solid var(--border-color)}
+.cam-ask-allow{background:var(--primary-color);color:#fff;border:none}
+</style>
+<script>
+(async function () {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
+  const GRANTED = 'abexam_cam_granted', LATER = 'abexam_cam_later';
+  try { if (sessionStorage.getItem(LATER)) return; } catch (e) {}
+  let state = null;
+  try { state = (await navigator.permissions.query({ name: 'camera' })).state; } catch (e) {}
+  if (state === 'granted') return;
+  // Browsers without the camera permission query (Firefox): trust our own flag.
+  if (state === null) { try { if (localStorage.getItem(GRANTED)) return; } catch (e) {} }
+
+  const box = document.getElementById('camAsk'), text = document.getElementById('camAskText');
+  const blockedText = "Kamera bloklangan. Manzil satridagi 🔒 belgisini bosing → Kamera → «Ruxsat berish», so'ng sahifani yangilang.";
+  if (state === 'denied') text.textContent = blockedText;
+  box.style.display = 'flex';
+
+  document.getElementById('camAskLater').onclick = () => {
+    try { sessionStorage.setItem(LATER, '1'); } catch (e) {}
+    box.style.display = 'none';
+  };
+  document.getElementById('camAskAllow').onclick = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+      stream.getTracks().forEach(t => t.stop());
+      try { localStorage.setItem(GRANTED, '1'); } catch (e) {}
+      box.style.display = 'none';
+    } catch (e) {
+      text.textContent = blockedText;
+    }
+  };
+})();
+</script>
+{% endif %}

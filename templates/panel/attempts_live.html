@@ -7,6 +7,14 @@
 <style>
 @keyframes rowAlert { 0%,100% { background: transparent } 50% { background: #ef444433 } }
 tr.row-alert td { animation: rowAlert 1s ease-in-out 6; }
+.cam-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-bottom:16px}
+.cam-grid:empty{display:none}
+.cam-tile{position:relative;display:block;aspect-ratio:4/3;background:#111;border-radius:10px;overflow:hidden;border:1px solid var(--border)}
+.cam-tile img{width:100%;height:100%;object-fit:cover;display:block}
+.cam-tile img.off{display:none}
+.cam-tile .cam-none{position:absolute;inset:0;display:none;align-items:center;justify-content:center;color:#ef4444;font-size:12px;font-weight:600}
+.cam-tile img.off + .cam-none{display:flex}
+.cam-tile .cam-name{position:absolute;left:0;right:0;bottom:0;padding:4px 8px;font-size:12px;font-weight:600;color:#fff;background:linear-gradient(transparent,#000a);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 </style>
 <div id="liveStats">
 <div class="stat-grid">
@@ -67,6 +75,20 @@ tr.row-alert td { animation: rowAlert 1s ease-in-out 6; }
     <button onclick="bulkFinalize()" class="btn btn-primary btn-sm">Natija yaratish</button>
   </span>
 </div>
+
+{% if site_settings.camera_proctoring %}
+<div id="cameraGrid" data-ids="{% for a in attempts %}{% if a.state == 'active' %}{{ a.pk }},{% endif %}{% endfor %}">
+  <div class="cam-grid">
+    {% for a in attempts %}{% if a.state == 'active' %}
+    <a class="cam-tile" href="{% url 'panel:attempt_detail' a.pk %}" title="Kamerani kattaroq ko'rish">
+      <img data-cam="{% url 'panel:attempt_camera' a.pk %}" alt="">
+      <span class="cam-none">📷 Kamera yo'q</span>
+      <span class="cam-name">{{ a.user.get_full_name|default:a.user.username }}{% if a.suspicious %} ⚠{% endif %}</span>
+    </a>
+    {% endif %}{% endfor %}
+  </div>
+</div>
+{% endif %}
 
 <div class="card" style="padding:0" id="liveTable">
   <div class="table-wrap">
@@ -195,6 +217,14 @@ async function refreshLive(force){
     const fresh = doc.getElementById(id);
     if (fresh) document.getElementById(id).innerHTML = fresh.innerHTML;
   });
+  // Camera tiles are only rebuilt when someone started or finished, so the
+  // pictures don't blink on every refresh.
+  const freshGrid = doc.getElementById('cameraGrid'), grid = document.getElementById('cameraGrid');
+  if (freshGrid && grid && freshGrid.dataset.ids !== grid.dataset.ids) {
+    grid.innerHTML = freshGrid.innerHTML;
+    grid.dataset.ids = freshGrid.dataset.ids;
+    refreshCameras();
+  }
   updateBulk();
   const alerts = [];
   document.querySelectorAll('#liveTable tr[data-flags]').forEach(tr => {
@@ -212,6 +242,20 @@ async function refreshLive(force){
   }
 }
 setInterval(() => { if (autoRefresh.checked) refreshLive(); }, 10000);
+
+// Each tile reloads its student's latest webcam frame every 3 seconds.
+function refreshCameras(){
+  document.querySelectorAll('#cameraGrid img[data-cam]').forEach(img => {
+    if (img.dataset.loading === '1') return;
+    img.dataset.loading = '1';
+    const next = new Image();
+    next.onload = () => { img.src = next.src; img.classList.remove('off'); img.dataset.loading = ''; };
+    next.onerror = () => { img.classList.add('off'); img.dataset.loading = ''; };
+    next.src = img.dataset.cam + '?t=' + Date.now();
+  });
+}
+refreshCameras();
+setInterval(refreshCameras, 3000);
 
 function selectedIds(){ return Array.from(document.querySelectorAll('.attempt-checkbox:checked')).map(cb => Number(cb.value)); }
 function toggleAll(master){

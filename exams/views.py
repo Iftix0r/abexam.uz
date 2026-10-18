@@ -17,6 +17,7 @@ from django.views.generic import DetailView
 
 from core.utils import get_client_ip, parse_json_body
 from .models import Exam, ExamAttempt, UserAnswer, UserResult, Question
+from . import camera
 from .passwords import clear_exam_unlocked, exam_is_unlocked, exam_scope, password_required_for, try_unlock
 from users.models import User
 
@@ -584,6 +585,21 @@ class ExamAutosaveView(LoginRequiredMixin, View):
             'result_id': attempt.result_id,
             'commands': attempt.commands,
         })
+
+
+class CameraFrameView(LoginRequiredMixin, View):
+    """One webcam frame (raw JPEG body) from the exam page. The reply says
+    how soon to send the next one — every second while staff are watching
+    this student, otherwise every few seconds."""
+
+    def post(self, request, *args, **kwargs):
+        client_id = request.headers.get('X-Attempt-Id', '')
+        data = request.body
+        if not client_id or len(data) > camera.MAX_FRAME_BYTES or not camera.looks_like_jpeg(data):
+            return JsonResponse({'error': "Noto'g'ri kadr"}, status=400)
+        exam_pk = kwargs['pk']
+        camera.store_frame(request.user.pk, exam_pk, client_id, data)
+        return JsonResponse({'interval': camera.next_interval_ms(request.user.pk, exam_pk, client_id)})
 
 
 class SubmitExamView(LoginRequiredMixin, View):

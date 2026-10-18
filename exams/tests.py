@@ -368,6 +368,55 @@ class ExamPasswordTests(TestCase):
         self.assertContains(resp, exam_password(self.exam.pk))
 
 
+class CameraProctoringTests(TestCase):
+    """Imtihon paytida kameradan kadrlar va «Jonli imtihon»da kuzatish."""
+    JPEG = b'\xff\xd8\xff\xe0' + b'0' * 500
+
+    def setUp(self):
+        from django.core.cache import cache
+        cache.clear()
+        self.user = User.objects.create_user('student', password='pw')
+        self.exam = Exam.objects.create(title='Camera test', price=0)
+        self.attempt = ExamAttempt.objects.create(user=self.user, exam=self.exam, client_id='abc-123')
+        self.frame_url = reverse('exams:camera_frame', args=[self.exam.pk])
+        self.panel_url = reverse('panel:attempt_camera', args=[self.attempt.pk])
+        self.staff = User.objects.create_user('teacher', password='pw', is_staff=True)
+
+    def _send(self, body=None):
+        self.client.force_login(self.user)
+        return self.client.post(self.frame_url, data=body or self.JPEG, content_type='image/jpeg',
+                                HTTP_X_ATTEMPT_ID='abc-123')
+
+    def test_rejects_non_jpeg(self):
+        self.assertEqual(self._send(b'not an image').status_code, 400)
+
+    def test_staff_sees_latest_frame_and_watching_speeds_it_up(self):
+        self.assertEqual(self._send().json()['interval'], 5000)
+        self.client.force_login(self.staff)
+        resp = self.client.get(self.panel_url + '?watch=1')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp['Content-Type'], 'image/jpeg')
+        self.assertEqual(resp.content, self.JPEG)
+        self.assertEqual(self._send().json()['interval'], 1000)
+
+    def test_no_frame_is_404_and_students_cannot_watch(self):
+        self.client.force_login(self.staff)
+        self.assertEqual(self.client.get(self.panel_url).status_code, 404)
+        self._send()
+        self.assertEqual(self.client.get(self.panel_url).status_code, 302)  # student → login
+
+    def test_exam_page_requires_camera_when_enabled(self):
+        from core.models import SiteSettings
+        self.client.force_login(self.user)
+        mark_exam_unlocked(self.user.pk, self.exam.pk)
+        take = reverse('exams:take_exam', args=[self.exam.pk])
+        self.assertContains(self.client.get(take), 'const CAMERA_REQUIRED = true;')
+        site = SiteSettings.get()
+        site.camera_proctoring = False
+        site.save()
+        self.assertContains(self.client.get(take), 'const CAMERA_REQUIRED = false;')
+
+
 class ChooseTwoGradingTests(TestCase):
     """"Choose TWO letters" juftligida bir xil to'g'ri harf ikki marta ball bermaydi."""
 

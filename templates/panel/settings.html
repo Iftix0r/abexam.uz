@@ -62,6 +62,10 @@
       <input type="checkbox" name="exam_password_required" {% if settings.exam_password_required %}checked{% endif %}>
       Testni boshlash uchun test paroli so'ralsin (parol har soatda o'zgaradi — <a href="{% url 'panel:exam_passwords' %}">Test parollari</a>)
     </label>
+    <label class="form-check" style="margin-top:10px">
+      <input type="checkbox" name="camera_proctoring" {% if settings.camera_proctoring %}checked{% endif %}>
+      Imtihonda kamera majburiy — o'quvchini «Jonli imtihon»da kamera orqali kuzatish (saytga kirganda kamera ruxsati so'raladi)
+    </label>
   </div>
 
   <button type="submit" class="btn btn-primary">Saqlash</button>

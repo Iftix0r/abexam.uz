@@ -229,6 +229,15 @@
             vertical-align: middle;
         }
         .question-text { font-weight: 500; line-height: 1.6; font-size: 1.22rem; }
+        /* Camera proctoring: status on the START card + a small self-view */
+        .cam-status { margin: 4px 0 14px; padding: 9px 12px; border-radius: 8px; font-size: 13px; font-weight: 600; background: #fff8e1; color: #8d6e00; }
+        .cam-status.ok { background: #e8f5e9; color: #2e7d32; }
+        .cam-status.err { background: #ffebee; color: #c62828; }
+        .cam-status button { margin-left: 8px; padding: 4px 10px; border: none; border-radius: 6px; background: #c62828; color: #fff; font-weight: 700; cursor: pointer; }
+        .cam-preview { position: fixed; left: 12px; bottom: 72px; z-index: 1500; width: 132px; border-radius: 10px; overflow: hidden; box-shadow: 0 6px 18px rgba(0,0,0,.3); background: #000; }
+        .cam-preview video { display: block; width: 100%; height: auto; transform: scaleX(-1); }
+        .cam-dot { position: absolute; left: 6px; top: 4px; font-size: 10px; font-weight: 700; color: #fff; text-shadow: 0 1px 2px #000; }
+        .cam-dot::first-letter { color: #ef5350; }
         /* A question group's own title + instructions, above its first question */
         .q-heading { margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px dashed var(--border); }
         .q-heading-title { font-weight: 700; font-size: 1.15rem; color: #1a237e; margin-bottom: 4px; }
@@ -765,6 +774,7 @@
             cursor: pointer; letter-spacing: 0.5px; transition: opacity 0.2s;
         }
         .btn-start-section:hover { opacity: 0.88; }
+        .btn-start-section:disabled { opacity: .45; cursor: not-allowed; }
 
         /* ─── INLINE GAP INPUT ───────────────────────────── */
         .inline-gap {
@@ -940,9 +950,20 @@
             </div>
         </div>
         <div class="instr-rules" id="instrRules"></div>
+        {% if site_settings.camera_proctoring %}
+        <div id="camStatus" class="cam-status">📷 Kamera yoqilmoqda…</div>
+        {% endif %}
         <button class="btn-start-section" id="instrStartBtn" onclick="closeInstructionAndStart()">START</button>
     </div>
 </div>
+
+{% if site_settings.camera_proctoring %}
+<!-- ─── CAMERA PREVIEW (the student sees what staff see) ─── -->
+<div id="camPreview" class="cam-preview" style="display:none" title="Imtihon nazorati: kamerangiz nazoratchiga ko'rinadi">
+    <video id="camVideo" autoplay muted playsinline></video>
+    <span class="cam-dot">● Kamera</span>
+</div>
+{% endif %}
 
 <!-- ─── STAFF MESSAGE BANNER ───────────────────────────── -->
 <div id="staffBanner" style="display:none; position:fixed; top:12px; left:50%; transform:translateX(-50%); z-index:3000;
@@ -1823,6 +1844,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     window.closeInstructionAndStart = function() {
+        if (CAMERA_REQUIRED && !cameraOn()) { startCamera(); return; }
         document.getElementById('sectionInstrOverlay').style.display = 'none';
         examStarted = true;
         unlockAudio();
@@ -2890,6 +2912,105 @@ document.addEventListener('DOMContentLoaded', () => {
         {% endif %}
         {% endwith %}
     })();
+
+    // ─── CAMERA PROCTORING ───────────────────────────────
+    // The exam can't start until the webcam is on. A small JPEG frame goes
+    // to the server every few seconds (every second while an invigilator
+    // has this student open in the panel); only the latest one is kept.
+    const CAMERA_REQUIRED = {{ site_settings.camera_proctoring|yesno:"true,false" }};
+    let camStream = null, camTimer = null, camCanvas = null, camRetry = null;
+
+    function cameraOn() {
+        return !!camStream && camStream.getVideoTracks().some(t => t.readyState === 'live');
+    }
+
+    function setCamStatus(kind, html) {
+        const el = document.getElementById('camStatus');
+        if (!el) return;
+        el.className = 'cam-status' + (kind ? ' ' + kind : '');
+        el.innerHTML = html;
+        const btn = document.getElementById('instrStartBtn');
+        if (btn) btn.disabled = CAMERA_REQUIRED && kind !== 'ok';
+    }
+
+    async function startCamera() {
+        if (!CAMERA_REQUIRED || cameraOn() || examSubmitted) return;
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            setCamStatus('err', "📷 Bu brauzer kamerani qo'llamaydi. Chrome yoki Edge'da oching.");
+            return;
+        }
+        setCamStatus('', '📷 Kamera yoqilmoqda…');
+        try {
+            camStream = await navigator.mediaDevices.getUserMedia({
+                video: { width: { ideal: 320 }, height: { ideal: 240 }, facingMode: 'user' }, audio: false,
+            });
+        } catch (e) {
+            camStream = null;
+            const denied = e && (e.name === 'NotAllowedError' || e.name === 'SecurityError');
+            setCamStatus('err', (denied
+                ? "📷 Kameraga ruxsat berilmadi. Manzil satridagi 🔒 belgisidan kamerani yoqing"
+                : "📷 Kamera topilmadi yoki band") + ' <button type="button" onclick="startCamera()">Qayta urinish</button>');
+            return;
+        }
+        const video = document.getElementById('camVideo');
+        video.srcObject = camStream;
+        document.getElementById('camPreview').style.display = 'block';
+        camStream.getVideoTracks().forEach(t => t.addEventListener('ended', cameraLost));
+        setCamStatus('ok', '📷 Kamera yoqilgan — nazoratchi sizni ko\'radi');
+        clearInterval(camRetry);
+        clearTimeout(camTimer);
+        camTimer = setTimeout(sendFrame, 1000);
+    }
+
+    function cameraLost() {
+        if (examSubmitted) return;
+        camStream = null;
+        setCamStatus('err', "📷 Kamera o'chdi <button type=\"button\" onclick=\"startCamera()\">Qayta yoqish</button>");
+        if (examStarted) {
+            showStaffBanner("📷 Kamera o'chdi! Kamerani qayta yoqing — nazoratchi buni ko'radi.", '#c62828');
+            clearInterval(camRetry);
+            camRetry = setInterval(startCamera, 5000);
+        }
+    }
+
+    function stopCamera() {
+        clearTimeout(camTimer);
+        clearInterval(camRetry);
+        if (camStream) camStream.getTracks().forEach(t => t.stop());
+        camStream = null;
+        const preview = document.getElementById('camPreview');
+        if (preview) preview.style.display = 'none';
+    }
+
+    async function sendFrame() {
+        if (examSubmitted) { stopCamera(); return; }
+        if (!cameraOn()) { cameraLost(); return; }
+        let next = 5000;
+        const video = document.getElementById('camVideo');
+        if (video.videoWidth) {
+            camCanvas = camCanvas || document.createElement('canvas');
+            camCanvas.width = 320;
+            camCanvas.height = Math.round(320 * video.videoHeight / video.videoWidth);
+            camCanvas.getContext('2d').drawImage(video, 0, 0, camCanvas.width, camCanvas.height);
+            const blob = await new Promise(res => camCanvas.toBlob(res, 'image/jpeg', 0.6));
+            if (blob) {
+                try {
+                    const r = await fetchWithTimeout("{% url 'exams:camera_frame' exam.id %}", {
+                        method: 'POST',
+                        credentials: 'same-origin',
+                        headers: { 'Content-Type': 'image/jpeg', 'X-CSRFToken': csrfToken(), 'X-Attempt-Id': attemptId() },
+                        body: blob,
+                    }, 10000);
+                    if (r.ok) next = (await r.json()).interval || next;
+                } catch (e) {}
+            }
+        } else {
+            next = 1000;
+        }
+        camTimer = setTimeout(sendFrame, next);
+    }
+
+    if (CAMERA_REQUIRED) startCamera();
 
     // Render inline gaps after draft restore
     setTimeout(renderInlineGapFill, 100);

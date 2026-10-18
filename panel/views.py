@@ -23,6 +23,7 @@ from core.utils import (
     text_to_html_paragraphs, validate_audio_upload, validate_image_upload,
 )
 from exams.models import ATTEMPT_ONLINE_WINDOW, Exam, ExamAttempt, Question, Section, UserResult
+from exams import camera
 from exams.passwords import GRACE_SECONDS, exam_password, seconds_until_rotation, testlar_password
 from exams.testlar import testlar_folders
 from exams.views import finalize_attempt
@@ -1065,6 +1066,22 @@ def attempt_detail(request, pk):
 
 
 @panel_required
+def attempt_camera(request, pk):
+    """Latest webcam frame of an attempt (404 when the camera is off). With
+    ?watch=1 the student's page switches to a frame every second."""
+    attempt = get_object_or_404(ExamAttempt, pk=pk)
+    if request.GET.get('watch') == '1' and not attempt.is_submitted:
+        camera.mark_watched(attempt.user_id, attempt.exam_id, attempt.client_id)
+    frame = camera.latest_frame(attempt.user_id, attempt.exam_id, attempt.client_id)
+    if frame is None:
+        return HttpResponse(status=404)
+    resp = HttpResponse(frame[0], content_type='image/jpeg')
+    resp['Cache-Control'] = 'no-store'
+    resp['X-Frame-Age'] = str(int(frame[1]))
+    return resp
+
+
+@panel_required
 @require_POST
 def attempts_command(request):
     """Message or extra time for chosen attempts, or for everyone currently
@@ -1530,6 +1547,7 @@ def site_settings(request):
         settings_obj.maintenance_mode = request.POST.get('maintenance_mode') == 'on'
         settings_obj.proctor_alarm = request.POST.get('proctor_alarm') == 'on'
         settings_obj.exam_password_required = request.POST.get('exam_password_required') == 'on'
+        settings_obj.camera_proctoring = request.POST.get('camera_proctoring') == 'on'
         settings_obj.maintenance_message = request.POST.get('maintenance_message', '').strip()
         settings_obj.save()
         messages.success(request, 'Sozlamalar saqlandi')

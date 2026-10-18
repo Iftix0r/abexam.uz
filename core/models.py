@@ -17,6 +17,9 @@ class SiteSettings(models.Model):
     # Starting an exam needs its hourly password (exams/passwords.py), which
     # the invigilator reads in the panel and tells the students in the room.
     exam_password_required = models.BooleanField(default=True)
+    # The exam page needs the webcam on and sends frames staff watch live
+    # (exams/camera.py); the site asks for camera permission on entry.
+    camera_proctoring = models.BooleanField(default=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
