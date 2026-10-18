@@ -601,9 +601,31 @@ class CameraFrameView(LoginRequiredMixin, View):
         camera.store_frame(request.user.pk, exam_pk, client_id, data)
         return JsonResponse({
             'interval': camera.next_interval_ms(request.user.pk, exam_pk, client_id),
-            # Staff opened this student: start (or keep) the live video call.
-            'live': camera.live_request(request.user.pk, exam_pk, client_id),
+            # Staff watching this student: the live video calls to keep up,
+            # and whether to also send relayed clips.
+            'live': camera.live_sessions(request.user.pk, exam_pk, client_id),
+            'relay': camera.relay_requested(request.user.pk, exam_pk, client_id),
         })
+
+
+class CameraClipView(LoginRequiredMixin, View):
+    """A 2-second webcam clip (raw WebM body) for staff watching over the
+    relay. The reply says whether they still are."""
+
+    def post(self, request, *args, **kwargs):
+        client_id = request.headers.get('X-Attempt-Id', '')
+        try:
+            seq = int(request.headers.get('X-Clip-Seq', ''))
+        except ValueError:
+            seq = 0
+        content_type = request.content_type or ''
+        data = request.body
+        if (not client_id or seq <= 0 or not content_type.startswith('video/') or not data
+                or len(data) > camera.MAX_CLIP_BYTES):
+            return JsonResponse({'error': "Noto'g'ri klip"}, status=400)
+        full_type = request.META.get('CONTENT_TYPE', content_type)[:100]
+        camera.store_clip(request.user.pk, kwargs['pk'], client_id, seq, data, full_type)
+        return JsonResponse({'relay': camera.relay_requested(request.user.pk, kwargs['pk'], client_id)})
 
 
 class CameraLiveView(LoginRequiredMixin, View):
@@ -617,7 +639,7 @@ class CameraLiveView(LoginRequiredMixin, View):
         client_id, session_id = str(data.get('attempt_id') or ''), str(data.get('session') or '')
         sdp = data.get('sdp')
         if (not client_id or not session_id or not isinstance(sdp, str) or len(sdp) > camera.MAX_SDP_CHARS
-                or camera.live_request(request.user.pk, kwargs['pk'], client_id) != session_id):
+                or not camera.is_live_session(request.user.pk, kwargs['pk'], client_id, session_id)):
             return JsonResponse({'error': "Noto'g'ri so'rov"}, status=400)
         camera.put_sdp('offer', request.user.pk, kwargs['pk'], client_id, session_id, sdp)
         return JsonResponse({'ok': True})

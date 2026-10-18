@@ -10,7 +10,10 @@ tr.row-alert td { animation: rowAlert 1s ease-in-out 6; }
 .cam-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-bottom:16px}
 .cam-grid:empty{display:none}
 .cam-tile{position:relative;display:block;aspect-ratio:4/3;background:#111;border-radius:10px;overflow:hidden;border:1px solid var(--border)}
-.cam-tile img{width:100%;height:100%;object-fit:cover;display:block}
+.cam-tile img,.cam-tile video{width:100%;height:100%;object-fit:cover;display:block}
+.cam-tile video{display:none}
+.cam-tile.is-live video{display:block}
+.cam-tile.is-live img,.cam-tile.is-live .cam-none{display:none!important}
 .cam-tile img.off{display:none}
 .cam-tile .cam-none{position:absolute;inset:0;display:none;align-items:center;justify-content:center;color:#ef4444;font-size:12px;font-weight:600}
 .cam-tile img.off + .cam-none{display:flex}
@@ -80,7 +83,9 @@ tr.row-alert td { animation: rowAlert 1s ease-in-out 6; }
 <div id="cameraGrid" data-ids="{% for a in attempts %}{% if a.state == 'active' %}{{ a.pk }},{% endif %}{% endfor %}">
   <div class="cam-grid">
     {% for a in attempts %}{% if a.state == 'active' %}
-    <a class="cam-tile" href="{% url 'panel:attempt_detail' a.pk %}" title="Kamerani kattaroq ko'rish">
+    <a class="cam-tile" href="{% url 'panel:attempt_detail' a.pk %}" title="Kamerani kattaroq ko'rish"
+       data-attempt="{{ a.pk }}" data-live="{% url 'panel:attempt_camera_live' a.pk %}">
+      <video muted autoplay playsinline></video>
       <img data-cam="{% url 'panel:attempt_camera' a.pk %}" alt="">
       <span class="cam-none">📷 Kamera yo'q</span>
       <span class="cam-name">{{ a.user.get_full_name|default:a.user.username }}{% if a.suspicious %} ⚠{% endif %}</span>
@@ -156,6 +161,7 @@ tr.row-alert td { animation: rowAlert 1s ease-in-out 6; }
 {% endblock %}
 
 {% block extra_js %}
+{% include 'panel/_live_camera_js.html' %}
 <script>
 const EXAM_ID = "{{ exam_id }}";
 const REFRESH_KEY = 'panel_live_autorefresh';
@@ -224,6 +230,7 @@ async function refreshLive(force){
     grid.innerHTML = freshGrid.innerHTML;
     grid.dataset.ids = freshGrid.dataset.ids;
     refreshCameras();
+    syncTileVideos();
   }
   updateBulk();
   const alerts = [];
@@ -243,9 +250,28 @@ async function refreshLive(force){
 }
 setInterval(() => { if (autoRefresh.checked) refreshLive(); }, 10000);
 
-// Each tile reloads its student's latest webcam frame every 3 seconds.
+// Each tile shows its student as live video (a direct, low-quality call);
+// until that connects — or if it can't — the latest snapshot, every 3 s.
+const tileCams = new Map();  // attempt id → LiveCamera
+function syncTileVideos(){
+  const seen = new Set();
+  document.querySelectorAll('#cameraGrid .cam-tile[data-attempt]').forEach(tile => {
+    const id = tile.dataset.attempt;
+    seen.add(id);
+    const old = tileCams.get(id);
+    if (old && old.tile === tile) return;
+    if (old) old.stop();
+    const cam = new LiveCamera({ url: tile.dataset.live, quality: 'low', video: tile.querySelector('video'),
+      onChange: live => tile.classList.toggle('is-live', live) });
+    cam.tile = tile;
+    tileCams.set(id, cam);
+    cam.start();
+  });
+  tileCams.forEach((cam, id) => { if (!seen.has(id)) { cam.stop(); tileCams.delete(id); } });
+}
+
 function refreshCameras(){
-  document.querySelectorAll('#cameraGrid img[data-cam]').forEach(img => {
+  document.querySelectorAll('#cameraGrid .cam-tile:not(.is-live) img[data-cam]').forEach(img => {
     if (img.dataset.loading === '1') return;
     img.dataset.loading = '1';
     const next = new Image();
@@ -256,6 +282,7 @@ function refreshCameras(){
 }
 refreshCameras();
 setInterval(refreshCameras, 3000);
+syncTileVideos();
 
 function selectedIds(){ return Array.from(document.querySelectorAll('.attempt-checkbox:checked')).map(cb => Number(cb.value)); }
 function toggleAll(master){

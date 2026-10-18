@@ -1,6 +1,7 @@
 import csv
 import json
 import logging
+import re
 from datetime import timedelta
 from itertools import groupby
 
@@ -1098,19 +1099,41 @@ def attempt_camera_live(request, pk):
     if attempt.is_submitted:
         return JsonResponse({'ok': False, 'error': 'Urinish yakunlangan'})
     if data.get('action') == 'start':
-        session = str(data.get('session') or '') or uuid.uuid4().hex
-        # The same staff page keeps its session; another viewer (or a page
-        # reload) takes over with a fresh one.
-        camera.request_live(*args, session)
+        # Each staff view keeps its own session (several can watch at once).
+        session = re.sub(r'[^A-Za-z0-9_-]', '', str(data.get('session') or ''))[:64] or uuid.uuid4().hex
+        camera.request_live(*args, session, str(data.get('quality') or 'high'))
         return JsonResponse({'ok': True, 'session': session})
     if data.get('action') == 'answer':
         sdp = data.get('sdp')
         session = str(data.get('session') or '')
-        if not isinstance(sdp, str) or len(sdp) > camera.MAX_SDP_CHARS or camera.live_request(*args) != session:
+        if (not isinstance(sdp, str) or len(sdp) > camera.MAX_SDP_CHARS
+                or not camera.is_live_session(*args, session)):
             return JsonResponse({'ok': False, 'error': "Noto'g'ri so'rov"}, status=400)
         camera.put_sdp('answer', *args, session, sdp)
         return JsonResponse({'ok': True})
     return JsonResponse({'ok': False, 'error': "Noma'lum amal"}, status=400)
+
+
+@panel_required
+def attempt_camera_clip(request, pk):
+    """Next relayed video clip of an attempt newer than ?after= (204 when
+    there's none yet). Polling it keeps the student's page sending clips."""
+    attempt = get_object_or_404(ExamAttempt, pk=pk)
+    args = (attempt.user_id, attempt.exam_id, attempt.client_id)
+    if not attempt.is_submitted:
+        camera.request_relay(*args)
+    try:
+        after = int(request.GET.get('after') or 0)
+    except ValueError:
+        after = 0
+    found = camera.next_clip(*args, after)
+    if found is None:
+        return HttpResponse(status=204)
+    seq, clip = found
+    resp = HttpResponse(clip['data'], content_type=clip['type'])
+    resp['X-Clip-Seq'] = str(seq)
+    resp['Cache-Control'] = 'no-store'
+    return resp
 
 
 @panel_required

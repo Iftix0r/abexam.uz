@@ -2923,8 +2923,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const CAMERA_REQUIRED = {{ site_settings.camera_proctoring|yesno:"true,false" }};
     const LIVE_URL = "{% url 'exams:camera_live' exam.id %}";
     let camStream = null, camTimer = null, camCanvas = null, camRetry = null, camGrabber = null;
-    let livePc = null, liveSession = null;
-    const liveFailed = new Set();  // sessions that couldn't connect — don't retry them
+    const livePcs = new Map();      // session → RTCPeerConnection (one per staff view)
+    const liveFailed = new Set();   // sessions that couldn't connect — don't retry them
+    let relayOn = false, relayRecorder = null;
 
     function cameraOn() {
         return !!camStream && camStream.getVideoTracks().some(t => t.readyState === 'live');
@@ -2969,7 +2970,7 @@ document.addEventListener('DOMContentLoaded', () => {
         video.play().catch(() => {});
         document.getElementById('camPreview').style.display = 'block';
         track.addEventListener('ended', cameraLost);
-        if (livePc) closeLive();
+        closeAllLive();
         setCamStatus('ok', '📷 Kamera yoqilgan — nazoratchi sizni ko\'radi');
         clearInterval(camRetry);
         clearTimeout(camTimer);
@@ -2979,7 +2980,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function cameraLost() {
         if (examSubmitted) return;
         camStream = null;
-        closeLive();
+        closeAllLive();
+        stopRelay();
         setCamStatus('err', "📷 Kamera o'chdi <button type=\"button\" onclick=\"startCamera()\">Qayta yoqish</button>");
         if (examStarted) {
             showStaffBanner("📷 Kamera o'chdi! Kamerani qayta yoqing — nazoratchi buni ko'radi.", '#c62828');
@@ -2991,7 +2993,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function stopCamera() {
         clearTimeout(camTimer);
         clearInterval(camRetry);
-        closeLive();
+        closeAllLive();
+        stopRelay();
         if (camStream) camStream.getTracks().forEach(t => t.stop());
         camStream = null;
         const preview = document.getElementById('camPreview');
@@ -3003,7 +3006,18 @@ document.addEventListener('DOMContentLoaded', () => {
         camCanvas = camCanvas || document.createElement('canvas');
         let source = null, w = 0, h = 0;
         if (camGrabber) {
-            try { source = await camGrabber.grabFrame(); w = source.width; h = source.height; } catch (e) { source = null; }
+            // grabFrame() can hang while the camera is busy (e.g. feeding a
+            // video call) — never let that stall the frame loop.
+            try {
+                source = await Promise.race([
+                    camGrabber.grabFrame(),
+                    new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 1500)),
+                ]);
+                w = source.width; h = source.height;
+            } catch (e) {
+                source = null;
+                if (e && e.message === 'timeout') camGrabber = null;  // use the <video> from now on
+            }
         }
         if (!source) {
             const video = document.getElementById('camVideo');
@@ -3022,7 +3036,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (examSubmitted) { stopCamera(); return; }
         if (!cameraOn()) { cameraLost(); return; }
         let next = 3000;
-        const blob = await grabFrame();
+        let blob = null;
+        try { blob = await grabFrame(); } catch (e) {}
         if (blob) {
             try {
                 const r = await fetchWithTimeout("{% url 'exams:camera_frame' exam.id %}", {
@@ -3034,7 +3049,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (r.ok) {
                     const reply = await r.json();
                     next = reply.interval || next;
-                    handleLiveRequest(reply.live);
+                    syncLive(reply.live || []);
+                    setRelay(!!reply.relay);
                 }
             } catch (e) {}
         } else {
@@ -3043,12 +3059,24 @@ document.addEventListener('DOMContentLoaded', () => {
         camTimer = setTimeout(sendFrame, next);
     }
 
-    // ─── Live video call to the invigilator (WebRTC) ───
-    function closeLive(failed) {
-        if (failed && liveSession) liveFailed.add(liveSession);
-        if (livePc) { try { livePc.close(); } catch (e) {} }
-        livePc = null;
-        liveSession = null;
+    // ─── Live video calls to staff (WebRTC), one per watching view ───
+    function closeLive(session, failed) {
+        const pc = livePcs.get(session);
+        if (pc) { try { pc.close(); } catch (e) {} }
+        livePcs.delete(session);
+        if (failed) liveFailed.add(session);
+    }
+
+    function closeAllLive() {
+        Array.from(livePcs.keys()).forEach(s => closeLive(s));
+    }
+
+    function syncLive(requests) {
+        const wanted = new Set(requests.map(r => r.session));
+        Array.from(livePcs.keys()).forEach(s => { if (!wanted.has(s)) closeLive(s); });
+        requests.forEach(r => {
+            if (!livePcs.has(r.session) && !liveFailed.has(r.session)) startLive(r.session, r.quality);
+        });
     }
 
     function waitIceGathering(pc, ms) {
@@ -3060,37 +3088,88 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    async function handleLiveRequest(session) {
-        if (!session) { if (livePc) closeLive(); return; }
-        if (session === liveSession || liveFailed.has(session) || !window.RTCPeerConnection || !cameraOn()) return;
-        closeLive();
-        liveSession = session;
-        const pc = livePc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
-        camStream.getVideoTracks().forEach(t => pc.addTrack(t, camStream));
+    async function startLive(session, quality) {
+        if (!window.RTCPeerConnection || !cameraOn()) return;
+        const pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+        livePcs.set(session, pc);
+        const alive = () => livePcs.get(session) === pc;
+        camStream.getVideoTracks().forEach(t => {
+            const sender = pc.addTrack(t, camStream);
+            // The grid's small tiles get a lighter stream than a student's own page.
+            try {
+                const params = sender.getParameters();
+                params.encodings = [quality === 'low'
+                    ? { maxBitrate: 150000, scaleResolutionDownBy: 2, maxFramerate: 12 }
+                    : { maxBitrate: 700000, maxFramerate: 20 }];
+                sender.setParameters(params).catch(() => {});
+            } catch (e) {}
+        });
         pc.addEventListener('connectionstatechange', () => {
-            if (pc.connectionState === 'failed' && livePc === pc) closeLive(true);
+            if (pc.connectionState === 'failed' && alive()) closeLive(session, true);
         });
         try {
             await pc.setLocalDescription(await pc.createOffer());
             await waitIceGathering(pc, 3000);
-            if (livePc !== pc) return;
-            const headers = { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken() };
+            if (!alive()) return;
             const sent = await fetchWithTimeout(LIVE_URL, {
-                method: 'POST', credentials: 'same-origin', headers,
+                method: 'POST', credentials: 'same-origin',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken() },
                 body: JSON.stringify({ attempt_id: attemptId(), session, sdp: pc.localDescription.sdp }),
             }, 10000);
-            if (!sent.ok) { closeLive(true); return; }
-            for (let i = 0; i < 30 && livePc === pc; i++) {
+            if (!sent.ok) { closeLive(session, true); return; }
+            for (let i = 0; i < 30 && alive(); i++) {
                 await new Promise(r => setTimeout(r, 1000));
                 const r = await fetchWithTimeout(`${LIVE_URL}?attempt_id=${encodeURIComponent(attemptId())}&session=${encodeURIComponent(session)}`,
                                                   { credentials: 'same-origin' }, 8000);
                 const answer = r.ok ? (await r.json()).answer : null;
                 if (answer) { await pc.setRemoteDescription({ type: 'answer', sdp: answer }); return; }
             }
-            if (livePc === pc) closeLive(true);
+            if (alive()) closeLive(session, true);
         } catch (e) {
-            if (livePc === pc) closeLive(true);
+            if (alive()) closeLive(session, true);
         }
+    }
+
+    // ─── Relayed video: 2-second clips through the server ───
+    // For when a direct call can't connect: staff then get smooth video a
+    // few seconds behind instead of single snapshots.
+    const CLIP_URL = "{% url 'exams:camera_clip' exam.id %}";
+    const CLIP_TYPE = !window.MediaRecorder ? null
+        : ['video/webm;codecs=vp8', 'video/webm'].find(t => MediaRecorder.isTypeSupported(t)) || null;
+
+    function setRelay(wanted) {
+        if (wanted && !relayOn && CLIP_TYPE && cameraOn()) { relayOn = true; recordClip(); }
+        if (!wanted) stopRelay();
+    }
+
+    function stopRelay() {
+        relayOn = false;
+        if (relayRecorder && relayRecorder.state !== 'inactive') { try { relayRecorder.stop(); } catch (e) {} }
+        relayRecorder = null;
+    }
+
+    function recordClip() {
+        if (!relayOn || !cameraOn() || examSubmitted) { relayOn = false; return; }
+        let rec;
+        try {
+            rec = new MediaRecorder(camStream, { mimeType: CLIP_TYPE, videoBitsPerSecond: 300000 });
+        } catch (e) { relayOn = false; return; }
+        relayRecorder = rec;
+        const parts = [];
+        rec.ondataavailable = e => { if (e.data && e.data.size) parts.push(e.data); };
+        rec.onstop = () => {
+            // Each clip is a complete little video (own header + keyframe);
+            // the next one starts right away so there's no gap to speak of.
+            if (relayOn) recordClip();
+            if (!parts.length) return;
+            fetchWithTimeout(CLIP_URL, {
+                method: 'POST', credentials: 'same-origin',
+                headers: { 'Content-Type': CLIP_TYPE, 'X-CSRFToken': csrfToken(), 'X-Attempt-Id': attemptId(), 'X-Clip-Seq': String(Date.now()) },
+                body: new Blob(parts, { type: CLIP_TYPE }),
+            }, 15000).then(r => r.ok ? r.json() : null).then(reply => { if (reply && !reply.relay) stopRelay(); }).catch(() => {});
+        };
+        rec.start();
+        setTimeout(() => { if (rec.state !== 'inactive') rec.stop(); }, 2000);
     }
 
     if (CAMERA_REQUIRED) startCamera();

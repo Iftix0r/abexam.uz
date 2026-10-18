@@ -1,0 +1,159 @@
+<script>
+// Watching a student's webcam (see exams/camera.py).
+//  LiveCamera  — direct WebRTC video call from the student's page: smooth,
+//                near-real-time; needs the two browsers to reach each other.
+//  RelayPlayer — 2-second clips through the server, played back to back:
+//                a few seconds behind but smooth, works on any network.
+const CAM_CSRF = () => (document.cookie.match(/(?:^|;\s*)csrftoken=([^;]+)/) || [])[1] || '';
+
+class LiveCamera {
+  constructor({ url, quality, video, onChange }) {
+    Object.assign(this, { url, quality, video, onChange });
+    this.session = null; this.pc = null; this.live = false; this.tries = 0; this.timers = []; this.stopped = false;
+  }
+  start() {
+    if (!window.RTCPeerConnection) return this._set(false);
+    this._keepAlive();
+    this._pollOffer();
+  }
+  stop() {
+    this.stopped = true;
+    this.timers.forEach(clearTimeout);
+    this._drop(false);
+  }
+  _later(fn, ms) { if (!this.stopped) this.timers.push(setTimeout(fn, ms)); }
+  _set(live) { if (this.live !== live) { this.live = live; this.onChange && this.onChange(live); } }
+  _drop(retry) {
+    if (this.pc) { try { this.pc.close(); } catch (e) {} }
+    this.pc = null;
+    this._set(false);
+    if (retry) this.session = null;  // the next keep-alive asks with a fresh session
+  }
+  async _post(body) {
+    const r = await fetch(this.url, { method: 'POST', credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CAM_CSRF() }, body: JSON.stringify(body) });
+    return r.json();
+  }
+  // Keeps asking the student's page for a call; a call that fails is
+  // retried a few times with a fresh session.
+  async _keepAlive() {
+    if (this.session || this.tries < 4) {
+      try {
+        if (!this.session) this.tries += 1;
+        const reply = await this._post({ action: 'start', session: this.session, quality: this.quality });
+        if (reply.ok) this.session = reply.session;
+      } catch (e) {}
+    }
+    this._later(() => this._keepAlive(), 10000);
+  }
+  _waitIce(pc, ms) {
+    return new Promise(resolve => {
+      if (pc.iceGatheringState === 'complete') return resolve();
+      pc.addEventListener('icegatheringstatechange', () => { if (pc.iceGatheringState === 'complete') resolve(); });
+      setTimeout(resolve, ms);
+    });
+  }
+  async _pollOffer() {
+    if (this.session && !this.pc) {
+      try {
+        const r = await fetch(this.url + '?session=' + encodeURIComponent(this.session), { credentials: 'same-origin', cache: 'no-store' });
+        const offer = r.ok ? (await r.json()).offer : null;
+        if (offer && !this.pc && !this.stopped) await this._answer(offer);
+      } catch (e) { this._drop(true); }
+    }
+    this._later(() => this._pollOffer(), 1000);
+  }
+  async _answer(offer) {
+    const session = this.session;
+    const pc = this.pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+    pc.addEventListener('track', e => { this.video.srcObject = e.streams[0] || new MediaStream([e.track]); this.video.play().catch(() => {}); });
+    pc.addEventListener('connectionstatechange', () => {
+      if (pc !== this.pc) return;
+      if (pc.connectionState === 'connected') { this.tries = 0; this._set(true); }
+      if (['failed', 'closed'].includes(pc.connectionState)) this._drop(true);
+      if (pc.connectionState === 'disconnected') {
+        setTimeout(() => { if (pc === this.pc && pc.connectionState !== 'connected') this._drop(true); }, 5000);
+      }
+    });
+    await pc.setRemoteDescription({ type: 'offer', sdp: offer });
+    await pc.setLocalDescription(await pc.createAnswer());
+    await this._waitIce(pc, 3000);
+    if (pc === this.pc && session === this.session) await this._post({ action: 'answer', session, sdp: pc.localDescription.sdp });
+    // Not connected within 20 s: give up on this session.
+    setTimeout(() => { if (pc === this.pc && !this.live) this._drop(true); }, 20000);
+  }
+}
+
+class RelayPlayer {
+  constructor({ url, video, onPlaying }) {
+    Object.assign(this, { url, video, onPlaying });
+    this.after = 0; this.sb = null; this.ms = null; this.running = false; this.playing = false; this.gen = 0;
+  }
+  static supported() {
+    return !!window.MediaSource && MediaSource.isTypeSupported('video/webm; codecs="vp8"');
+  }
+  start() {
+    if (this.running || !RelayPlayer.supported()) return;
+    this.running = true;
+    const gen = ++this.gen, ms = this.ms = new MediaSource();
+    this.video.src = URL.createObjectURL(ms);
+    ms.addEventListener('sourceopen', () => {
+      if (gen !== this.gen) return;
+      this.sb = ms.addSourceBuffer('video/webm; codecs="vp8"');
+      this.sb.mode = 'sequence';  // each clip carries its own timestamps from 0
+      this._loop(gen);
+    }, { once: true });
+  }
+  stop() {
+    this.running = false;
+    this.playing = false;
+    this.gen += 1;  // a loop still waiting on a request ends instead of feeding the next player
+    try { this.video.pause(); this.video.removeAttribute('src'); this.video.load(); } catch (e) {}
+    this.sb = null; this.ms = null; this.after = 0;
+  }
+  _append(buf) {
+    return new Promise((resolve, reject) => {
+      this.sb.addEventListener('updateend', resolve, { once: true });
+      this.sb.addEventListener('error', reject, { once: true });
+      this.sb.appendBuffer(buf);
+    });
+  }
+  async _loop(gen) {
+    while (this.running && gen === this.gen) {
+      let wait = 500;
+      try {
+        const r = await fetch(this.url + '?after=' + this.after + '&t=' + Date.now(), { credentials: 'same-origin', cache: 'no-store' });
+        if (gen !== this.gen) break;
+        if (r.status === 200 && this.sb) {
+          this.after = parseInt(r.headers.get('X-Clip-Seq') || '0', 10) || this.after;
+          const buf = await r.arrayBuffer();
+          try {
+            await this._append(buf);
+          } catch (e) {
+            // A clip the player couldn't take (e.g. the camera changed
+            // size): start over with a fresh player rather than stay stuck.
+            if (gen === this.gen && this.running) { this.stop(); this.start(); }
+            return;
+          }
+          const b = this.sb.buffered;
+          if (b.length) {
+            const end = b.end(b.length - 1);
+            // Too far behind (a slow tab, a pause): jump close to the newest picture.
+            if (end - this.video.currentTime > 6) this.video.currentTime = Math.max(0, end - 1.5);
+            if (end - b.start(0) > 40 && !this.sb.updating) {
+              this.sb.remove(0, end - 20);
+              await new Promise(res => this.sb.addEventListener('updateend', res, { once: true }));
+            }
+          }
+          if (this.video.paused) this.video.play().catch(() => {});
+          if (!this.playing) { this.playing = true; this.onPlaying && this.onPlaying(); }
+          wait = 0;
+        }
+      } catch (e) {
+        wait = 2000;  // network hiccup — try again shortly
+      }
+      if (wait) await new Promise(res => setTimeout(res, wait));
+    }
+  }
+}
+</script>
