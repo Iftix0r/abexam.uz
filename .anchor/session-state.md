@@ -1,6 +1,6 @@
 # Session state (auto-saved — last known reality)
 
-_Updated: 2026-10-18 09:47:54_  ·  branch: `main`
+_Updated: 2026-10-18 09:50:08_  ·  branch: `main`
 
 ## Uncommitted changes
 ```
@@ -10,13 +10,14 @@ _Updated: 2026-10-18 09:47:54_  ·  branch: `main`
 
 Diff stat:
 ```
- .anchor/session-state.md       | 47 +-----------------------------------------
- templates/exams/take_exam.html | 11 ++++++----
- 2 files changed, 8 insertions(+), 50 deletions(-)
+ .anchor/session-state.md       | 22 +---------------------
+ templates/exams/take_exam.html | 17 +++++++----------
+ 2 files changed, 8 insertions(+), 31 deletions(-)
 ```
 
 ## Recent commits
 ```
+eba6355 w13rwff
 a2f0ec8 feat(exams): require webcam during exams with live staff view
 f3c110d feat(exams): ask admins for the exam password too
 dad9440 qdwa
@@ -24,7 +25,6 @@ dad9440 qdwa
 0f56e97 3wd4trtr
 f1d5ba5 wqegrdh
 bd7a1a2 1235465
-93ecb5f 3b8begfus
 ```
 
 ## Resume

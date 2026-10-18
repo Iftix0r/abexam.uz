@@ -53,6 +53,7 @@ urlpatterns = [
     path('live/command/', views.attempts_command, name='attempts_command'),
     path('live/<int:pk>/', views.attempt_detail, name='attempt_detail'),
     path('live/<int:pk>/camera/', views.attempt_camera, name='attempt_camera'),
+    path('live/<int:pk>/camera/live/', views.attempt_camera_live, name='attempt_camera_live'),
     path('live/<int:pk>/finalize/', views.attempt_finalize, name='attempt_finalize'),
     path('live/<int:pk>/delete/', views.attempt_delete, name='attempt_delete'),
     path('create-admin/', views.create_admin, name='create_admin'),

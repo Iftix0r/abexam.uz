@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import CameraFrameView, ExamDetailView, ExamUnlockView, TakeExamView, SubmitExamView, ResultDetailView, SpeakingEvalView, DemoAnswersView, ExamAutosaveView
+from .views import CameraFrameView, CameraLiveView, ExamDetailView, ExamUnlockView, TakeExamView, SubmitExamView, ResultDetailView, SpeakingEvalView, DemoAnswersView, ExamAutosaveView
 
 app_name = 'exams'
 
@@ -10,6 +10,7 @@ urlpatterns = [
     path('<int:pk>/demo-answers/', DemoAnswersView.as_view(), name='demo_answers'),
     path('<int:pk>/autosave/', ExamAutosaveView.as_view(), name='autosave'),
     path('<int:pk>/camera/', CameraFrameView.as_view(), name='camera_frame'),
+    path('<int:pk>/camera/live/', CameraLiveView.as_view(), name='camera_live'),
     path('<int:pk>/submit/', SubmitExamView.as_view(), name='submit_exam'),
     path('result/<int:pk>/', ResultDetailView.as_view(), name='result_detail'),
     path('speaking/evaluate/', SpeakingEvalView.as_view(), name='speaking_eval'),

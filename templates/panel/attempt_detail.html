@@ -32,32 +32,114 @@
     <span id="camInfo" style="font-size:12px;color:var(--muted)">Ulanmoqda…</span>
   </div>
   <div style="position:relative;max-width:640px;aspect-ratio:4/3;background:#111;border-radius:10px;overflow:hidden">
+    <video id="camVideo" autoplay muted playsinline style="width:100%;height:100%;object-fit:contain;display:none"></video>
     <img id="camLive" alt="O'quvchi kamerasi" style="width:100%;height:100%;object-fit:contain;display:none">
     <div id="camOff" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#ef4444;font-weight:600">Kamera hozir o'chiq yoki o'quvchi sahifani yopgan</div>
   </div>
-  <p style="font-size:12px;color:var(--muted);margin-top:8px">Shu sahifa ochiq turganda o'quvchining kamerasi har soniyada yangilanadi (boshqa paytda — har 5 soniyada). Hech narsa yozib olinmaydi.</p>
+  <p style="font-size:12px;color:var(--muted);margin-top:8px">Shu sahifa ochiq turganda o'quvchi kamerasi to'g'ridan-to'g'ri jonli video bo'lib keladi. Tarmoq bunga yo'l qo'ymasa, har soniyada yangilanadigan kadrlar ko'rsatiladi. Hech narsa yozib olinmaydi.</p>
 </div>
 <script>
 (function () {
-  const img = document.getElementById('camLive'), off = document.getElementById('camOff'), info = document.getElementById('camInfo');
-  const url = "{% url 'panel:attempt_camera' attempt.pk %}?watch=1";
-  async function tick() {
-    try {
-      const r = await fetch(url + '&t=' + Date.now(), {credentials: 'same-origin', cache: 'no-store'});
-      if (r.ok) {
-        const old = img.src;
-        img.src = URL.createObjectURL(await r.blob());
-        if (old.startsWith('blob:')) URL.revokeObjectURL(old);
-        img.style.display = 'block'; off.style.display = 'none';
-        const age = parseInt(r.headers.get('X-Frame-Age') || '0', 10);
-        info.textContent = age <= 2 ? '● Jonli' : age + ' soniya oldingi kadr';
-      } else {
-        img.style.display = 'none'; off.style.display = 'flex'; info.textContent = 'Kamera yo\'q';
-      }
-    } catch (e) {}
-    setTimeout(tick, 1000);
+  const video = document.getElementById('camVideo'), img = document.getElementById('camLive');
+  const off = document.getElementById('camOff'), info = document.getElementById('camInfo');
+  const SNAP_URL = "{% url 'panel:attempt_camera' attempt.pk %}?watch=1";
+  const LIVE_URL = "{% url 'panel:attempt_camera_live' attempt.pk %}";
+  const csrf = (document.cookie.match(/(?:^|;\s*)csrftoken=([^;]+)/) || [])[1] || '';
+  let session = null, pc = null, videoLive = false, attempts = 0;
+
+  function show(which) {
+    video.style.display = which === 'video' ? 'block' : 'none';
+    img.style.display = which === 'img' ? 'block' : 'none';
+    off.style.display = which === 'off' ? 'flex' : 'none';
   }
-  tick();
+
+  // Snapshots: shown until (and whenever) the live video isn't connected.
+  async function snapshot() {
+    if (!videoLive) {
+      try {
+        const r = await fetch(SNAP_URL + '&t=' + Date.now(), {credentials: 'same-origin', cache: 'no-store'});
+        if (r.ok) {
+          const old = img.src;
+          img.src = URL.createObjectURL(await r.blob());
+          if (old.startsWith('blob:')) URL.revokeObjectURL(old);
+          if (!videoLive) {
+            show('img');
+            const age = parseInt(r.headers.get('X-Frame-Age') || '0', 10);
+            info.textContent = (age <= 2 ? 'Kadrlar (har soniyada)' : age + ' soniya oldingi kadr') + (pc ? ' · video ulanmoqda…' : '');
+          }
+        } else if (!videoLive) {
+          show('off'); info.textContent = 'Kamera yo\'q';
+        }
+      } catch (e) {}
+    }
+    setTimeout(snapshot, 1000);
+  }
+
+  async function post(body) {
+    const r = await fetch(LIVE_URL, {method: 'POST', credentials: 'same-origin',
+      headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrf}, body: JSON.stringify(body)});
+    return r.json();
+  }
+
+  function dropCall() {
+    if (pc) { try { pc.close(); } catch (e) {} }
+    pc = null; videoLive = false; session = null;
+  }
+
+  // Keeps asking the student's page for a live call; a failed call is
+  // retried a few times with a fresh session, then snapshots stay.
+  async function keepAlive() {
+    if (attempts < 4) {
+      try {
+        const reply = await post({action: 'start', session});
+        if (reply.ok && reply.session !== session) { session = reply.session; attempts += 1; }
+      } catch (e) {}
+    }
+    setTimeout(keepAlive, 10000);
+  }
+
+  function waitIce(conn, ms) {
+    return new Promise(resolve => {
+      if (conn.iceGatheringState === 'complete') return resolve();
+      conn.addEventListener('icegatheringstatechange', () => { if (conn.iceGatheringState === 'complete') resolve(); });
+      setTimeout(resolve, ms);
+    });
+  }
+
+  async function pollOffer() {
+    if (session && !pc && window.RTCPeerConnection) {
+      try {
+        const r = await fetch(LIVE_URL + '?session=' + encodeURIComponent(session), {credentials: 'same-origin', cache: 'no-store'});
+        const offer = r.ok ? (await r.json()).offer : null;
+        if (offer && !pc) {
+          const mine = session;
+          pc = new RTCPeerConnection({iceServers: [{urls: 'stun:stun.l.google.com:19302'}]});
+          const conn = pc;
+          conn.addEventListener('track', e => { video.srcObject = e.streams[0] || new MediaStream([e.track]); });
+          conn.addEventListener('connectionstatechange', () => {
+            if (conn !== pc) return;
+            if (conn.connectionState === 'connected') { videoLive = true; show('video'); info.textContent = '● Jonli video'; }
+            if (['failed', 'closed'].includes(conn.connectionState)) dropCall();
+            if (conn.connectionState === 'disconnected') setTimeout(() => { if (conn === pc && conn.connectionState !== 'connected') dropCall(); }, 5000);
+          });
+          await conn.setRemoteDescription({type: 'offer', sdp: offer});
+          await conn.setLocalDescription(await conn.createAnswer());
+          await waitIce(conn, 3000);
+          if (conn === pc && mine === session) await post({action: 'answer', session: mine, sdp: conn.localDescription.sdp});
+          // Not connected within 20 s: give up on this session.
+          setTimeout(() => { if (conn === pc && !videoLive) dropCall(); }, 20000);
+        }
+      } catch (e) { dropCall(); }
+    }
+    setTimeout(pollOffer, 1000);
+  }
+
+  // The student's video freezing on a dead connection: fall back.
+  video.addEventListener('emptied', () => { if (videoLive) dropCall(); });
+
+  snapshot();
+  keepAlive();
+  pollOffer();
 })();
 </script>
 {% endif %}

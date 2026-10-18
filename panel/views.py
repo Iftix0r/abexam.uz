@@ -1082,6 +1082,38 @@ def attempt_camera(request, pk):
 
 
 @panel_required
+def attempt_camera_live(request, pk):
+    """Staff side of the live video call signalling. POST {action: 'start'}
+    asks (and keeps asking) the student's page for a call and returns the
+    session id; GET ?session= polls for the student's offer; POST {action:
+    'answer', session, sdp} sends the answer back."""
+    import uuid
+    attempt = get_object_or_404(ExamAttempt, pk=pk)
+    args = (attempt.user_id, attempt.exam_id, attempt.client_id)
+    if request.method == 'GET':
+        return JsonResponse({'offer': camera.get_sdp('offer', *args, request.GET.get('session', ''))})
+    data, err = parse_json_body(request)
+    if err:
+        return err
+    if attempt.is_submitted:
+        return JsonResponse({'ok': False, 'error': 'Urinish yakunlangan'})
+    if data.get('action') == 'start':
+        session = str(data.get('session') or '') or uuid.uuid4().hex
+        # The same staff page keeps its session; another viewer (or a page
+        # reload) takes over with a fresh one.
+        camera.request_live(*args, session)
+        return JsonResponse({'ok': True, 'session': session})
+    if data.get('action') == 'answer':
+        sdp = data.get('sdp')
+        session = str(data.get('session') or '')
+        if not isinstance(sdp, str) or len(sdp) > camera.MAX_SDP_CHARS or camera.live_request(*args) != session:
+            return JsonResponse({'ok': False, 'error': "Noto'g'ri so'rov"}, status=400)
+        camera.put_sdp('answer', *args, session, sdp)
+        return JsonResponse({'ok': True})
+    return JsonResponse({'ok': False, 'error': "Noma'lum amal"}, status=400)
+
+
+@panel_required
 @require_POST
 def attempts_command(request):
     """Message or extra time for chosen attempts, or for everyone currently

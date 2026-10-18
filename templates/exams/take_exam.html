@@ -234,13 +234,11 @@
         .cam-status.ok { background: #e8f5e9; color: #2e7d32; }
         .cam-status.err { background: #ffebee; color: #c62828; }
         .cam-status button { margin-left: 8px; padding: 4px 10px; border: none; border-radius: 6px; background: #c62828; color: #fff; font-weight: 700; cursor: pointer; }
-        /* The student doesn't see their own picture — only a small "camera
-           on" badge. The video still has to be rendered (not display:none)
-           for the browser to keep playing it and frames to be captured. */
-        .cam-preview { position: fixed; left: 12px; bottom: 72px; z-index: 1500; padding: 5px 10px; border-radius: 20px; background: rgba(0,0,0,.72); }
-        .cam-preview video { position: absolute; left: 0; top: 0; width: 2px; height: 2px; opacity: 0; pointer-events: none; }
-        .cam-dot { font-size: 11px; font-weight: 700; color: #fff; }
-        .cam-dot::first-letter { color: #ef5350; }
+        /* Nothing of the camera shows during the exam. The video still has
+           to be rendered (not display:none) for the browser to keep playing
+           it, so it sits as an invisible 2px element. */
+        .cam-preview { position: fixed; left: 0; bottom: 0; width: 2px; height: 2px; overflow: hidden; opacity: 0; pointer-events: none; }
+        .cam-preview video { width: 2px; height: 2px; }
         /* A question group's own title + instructions, above its first question */
         .q-heading { margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px dashed var(--border); }
         .q-heading-title { font-weight: 700; font-size: 1.15rem; color: #1a237e; margin-bottom: 4px; }
@@ -961,10 +959,9 @@
 </div>
 
 {% if site_settings.camera_proctoring %}
-<!-- ─── CAMERA (hidden capture + "camera on" badge) ─── -->
-<div id="camPreview" class="cam-preview" style="display:none" title="Imtihon nazorati: kamerangiz nazoratchiga ko'rinadi">
-    <video id="camVideo" autoplay muted playsinline></video>
-    <span class="cam-dot">● Kamera</span>
+<!-- ─── CAMERA (invisible capture element) ─── -->
+<div id="camPreview" class="cam-preview" style="display:none" aria-hidden="true">
+    <video id="camVideo" muted playsinline></video>
 </div>
 {% endif %}
 
@@ -2919,9 +2916,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // ─── CAMERA PROCTORING ───────────────────────────────
     // The exam can't start until the webcam is on. A small JPEG frame goes
     // to the server every few seconds (every second while an invigilator
-    // has this student open in the panel); only the latest one is kept.
+    // has this student open); only the latest one is kept. When staff open
+    // this student, the reply also asks for a live video call: the page
+    // sends the camera straight to the staff browser over WebRTC (the
+    // server only relays the offer/answer), so the panel sees smooth video.
     const CAMERA_REQUIRED = {{ site_settings.camera_proctoring|yesno:"true,false" }};
-    let camStream = null, camTimer = null, camCanvas = null, camRetry = null;
+    const LIVE_URL = "{% url 'exams:camera_live' exam.id %}";
+    let camStream = null, camTimer = null, camCanvas = null, camRetry = null, camGrabber = null;
+    let livePc = null, liveSession = null;
+    const liveFailed = new Set();  // sessions that couldn't connect — don't retry them
 
     function cameraOn() {
         return !!camStream && camStream.getVideoTracks().some(t => t.readyState === 'live');
@@ -2945,7 +2948,8 @@ document.addEventListener('DOMContentLoaded', () => {
         setCamStatus('', '📷 Kamera yoqilmoqda…');
         try {
             camStream = await navigator.mediaDevices.getUserMedia({
-                video: { width: { ideal: 320 }, height: { ideal: 240 }, facingMode: 'user' }, audio: false,
+                video: { width: { ideal: 640 }, height: { ideal: 480 }, frameRate: { ideal: 15, max: 24 }, facingMode: 'user' },
+                audio: false,
             });
         } catch (e) {
             camStream = null;
@@ -2955,10 +2959,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 : "📷 Kamera topilmadi yoki band") + ' <button type="button" onclick="startCamera()">Qayta urinish</button>');
             return;
         }
+        const track = camStream.getVideoTracks()[0];
+        // Frames are read straight from the camera track where the browser
+        // allows it — the hidden <video> fallback can be paused by the
+        // browser because nobody sees it, which froze the picture.
+        camGrabber = (window.ImageCapture && track) ? new ImageCapture(track) : null;
         const video = document.getElementById('camVideo');
         video.srcObject = camStream;
+        video.play().catch(() => {});
         document.getElementById('camPreview').style.display = 'block';
-        camStream.getVideoTracks().forEach(t => t.addEventListener('ended', cameraLost));
+        track.addEventListener('ended', cameraLost);
+        if (livePc) closeLive();
         setCamStatus('ok', '📷 Kamera yoqilgan — nazoratchi sizni ko\'radi');
         clearInterval(camRetry);
         clearTimeout(camTimer);
@@ -2968,6 +2979,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function cameraLost() {
         if (examSubmitted) return;
         camStream = null;
+        closeLive();
         setCamStatus('err', "📷 Kamera o'chdi <button type=\"button\" onclick=\"startCamera()\">Qayta yoqish</button>");
         if (examStarted) {
             showStaffBanner("📷 Kamera o'chdi! Kamerani qayta yoqing — nazoratchi buni ko'radi.", '#c62828');
@@ -2979,38 +2991,106 @@ document.addEventListener('DOMContentLoaded', () => {
     function stopCamera() {
         clearTimeout(camTimer);
         clearInterval(camRetry);
+        closeLive();
         if (camStream) camStream.getTracks().forEach(t => t.stop());
         camStream = null;
         const preview = document.getElementById('camPreview');
         if (preview) preview.style.display = 'none';
     }
 
+    async function grabFrame() {
+        const W = 320;
+        camCanvas = camCanvas || document.createElement('canvas');
+        let source = null, w = 0, h = 0;
+        if (camGrabber) {
+            try { source = await camGrabber.grabFrame(); w = source.width; h = source.height; } catch (e) { source = null; }
+        }
+        if (!source) {
+            const video = document.getElementById('camVideo');
+            if (video.paused) video.play().catch(() => {});
+            if (!video.videoWidth) return null;
+            source = video; w = video.videoWidth; h = video.videoHeight;
+        }
+        camCanvas.width = W;
+        camCanvas.height = Math.round(W * h / w);
+        camCanvas.getContext('2d').drawImage(source, 0, 0, camCanvas.width, camCanvas.height);
+        if (source.close) source.close();
+        return new Promise(res => camCanvas.toBlob(res, 'image/jpeg', 0.6));
+    }
+
     async function sendFrame() {
         if (examSubmitted) { stopCamera(); return; }
         if (!cameraOn()) { cameraLost(); return; }
-        let next = 5000;
-        const video = document.getElementById('camVideo');
-        if (video.videoWidth) {
-            camCanvas = camCanvas || document.createElement('canvas');
-            camCanvas.width = 320;
-            camCanvas.height = Math.round(320 * video.videoHeight / video.videoWidth);
-            camCanvas.getContext('2d').drawImage(video, 0, 0, camCanvas.width, camCanvas.height);
-            const blob = await new Promise(res => camCanvas.toBlob(res, 'image/jpeg', 0.6));
-            if (blob) {
-                try {
-                    const r = await fetchWithTimeout("{% url 'exams:camera_frame' exam.id %}", {
-                        method: 'POST',
-                        credentials: 'same-origin',
-                        headers: { 'Content-Type': 'image/jpeg', 'X-CSRFToken': csrfToken(), 'X-Attempt-Id': attemptId() },
-                        body: blob,
-                    }, 10000);
-                    if (r.ok) next = (await r.json()).interval || next;
-                } catch (e) {}
-            }
+        let next = 3000;
+        const blob = await grabFrame();
+        if (blob) {
+            try {
+                const r = await fetchWithTimeout("{% url 'exams:camera_frame' exam.id %}", {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: { 'Content-Type': 'image/jpeg', 'X-CSRFToken': csrfToken(), 'X-Attempt-Id': attemptId() },
+                    body: blob,
+                }, 10000);
+                if (r.ok) {
+                    const reply = await r.json();
+                    next = reply.interval || next;
+                    handleLiveRequest(reply.live);
+                }
+            } catch (e) {}
         } else {
             next = 1000;
         }
         camTimer = setTimeout(sendFrame, next);
+    }
+
+    // ─── Live video call to the invigilator (WebRTC) ───
+    function closeLive(failed) {
+        if (failed && liveSession) liveFailed.add(liveSession);
+        if (livePc) { try { livePc.close(); } catch (e) {} }
+        livePc = null;
+        liveSession = null;
+    }
+
+    function waitIceGathering(pc, ms) {
+        return new Promise(resolve => {
+            if (pc.iceGatheringState === 'complete') return resolve();
+            const done = () => { if (pc.iceGatheringState === 'complete') { pc.removeEventListener('icegatheringstatechange', done); resolve(); } };
+            pc.addEventListener('icegatheringstatechange', done);
+            setTimeout(resolve, ms);
+        });
+    }
+
+    async function handleLiveRequest(session) {
+        if (!session) { if (livePc) closeLive(); return; }
+        if (session === liveSession || liveFailed.has(session) || !window.RTCPeerConnection || !cameraOn()) return;
+        closeLive();
+        liveSession = session;
+        const pc = livePc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+        camStream.getVideoTracks().forEach(t => pc.addTrack(t, camStream));
+        pc.addEventListener('connectionstatechange', () => {
+            if (pc.connectionState === 'failed' && livePc === pc) closeLive(true);
+        });
+        try {
+            await pc.setLocalDescription(await pc.createOffer());
+            await waitIceGathering(pc, 3000);
+            if (livePc !== pc) return;
+            const headers = { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken() };
+            const sent = await fetchWithTimeout(LIVE_URL, {
+                method: 'POST', credentials: 'same-origin', headers,
+                body: JSON.stringify({ attempt_id: attemptId(), session, sdp: pc.localDescription.sdp }),
+            }, 10000);
+            if (!sent.ok) { closeLive(true); return; }
+            for (let i = 0; i < 30 && livePc === pc; i++) {
+                await new Promise(r => setTimeout(r, 1000));
+                const r = await fetchWithTimeout(`${LIVE_URL}?attempt_id=${encodeURIComponent(attemptId())}&session=${encodeURIComponent(session)}`,
+                                                  { credentials: 'same-origin' }, 8000);
+                const answer = r.ok ? (await r.json()).answer : null;
+                if (answer) { await pc.setRemoteDescription({ type: 'answer', sdp: answer }); return; }
+            }
+            if (livePc === pc) closeLive(true);
+        } catch (e) {
+            if (livePc === pc) closeLive(true);
+        }
     }
 
     if (CAMERA_REQUIRED) startCamera();

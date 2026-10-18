@@ -391,7 +391,7 @@ class CameraProctoringTests(TestCase):
         self.assertEqual(self._send(b'not an image').status_code, 400)
 
     def test_staff_sees_latest_frame_and_watching_speeds_it_up(self):
-        self.assertEqual(self._send().json()['interval'], 5000)
+        self.assertEqual(self._send().json()['interval'], 3000)
         self.client.force_login(self.staff)
         resp = self.client.get(self.panel_url + '?watch=1')
         self.assertEqual(resp.status_code, 200)
@@ -404,6 +404,26 @@ class CameraProctoringTests(TestCase):
         self.assertEqual(self.client.get(self.panel_url).status_code, 404)
         self._send()
         self.assertEqual(self.client.get(self.panel_url).status_code, 302)  # student → login
+
+    def test_live_video_signalling(self):
+        live_staff = reverse('panel:attempt_camera_live', args=[self.attempt.pk])
+        live_student = reverse('exams:camera_live', args=[self.exam.pk])
+        self.assertIsNone(self._send().json()['live'])
+        self.client.force_login(self.staff)
+        session = self.client.post(live_staff, data=json.dumps({'action': 'start'}),
+                                   content_type='application/json').json()['session']
+        # o'quvchi sahifasi keyingi kadr javobida chaqiruvni oladi
+        self.assertEqual(self._send().json()['live'], session)
+        self.assertEqual(self.client.post(live_student, data=json.dumps(
+            {'attempt_id': 'abc-123', 'session': 'other', 'sdp': 'v=0'}), content_type='application/json').status_code, 400)
+        self.client.post(live_student, data=json.dumps({'attempt_id': 'abc-123', 'session': session, 'sdp': 'OFFER'}),
+                         content_type='application/json')
+        self.client.force_login(self.staff)
+        self.assertEqual(self.client.get(live_staff, {'session': session}).json()['offer'], 'OFFER')
+        self.client.post(live_staff, data=json.dumps({'action': 'answer', 'session': session, 'sdp': 'ANSWER'}),
+                         content_type='application/json')
+        self.client.force_login(self.user)
+        self.assertEqual(self.client.get(live_student, {'attempt_id': 'abc-123', 'session': session}).json()['answer'], 'ANSWER')
 
     def test_exam_page_requires_camera_when_enabled(self):
         from core.models import SiteSettings

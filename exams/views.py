@@ -599,7 +599,33 @@ class CameraFrameView(LoginRequiredMixin, View):
             return JsonResponse({'error': "Noto'g'ri kadr"}, status=400)
         exam_pk = kwargs['pk']
         camera.store_frame(request.user.pk, exam_pk, client_id, data)
-        return JsonResponse({'interval': camera.next_interval_ms(request.user.pk, exam_pk, client_id)})
+        return JsonResponse({
+            'interval': camera.next_interval_ms(request.user.pk, exam_pk, client_id),
+            # Staff opened this student: start (or keep) the live video call.
+            'live': camera.live_request(request.user.pk, exam_pk, client_id),
+        })
+
+
+class CameraLiveView(LoginRequiredMixin, View):
+    """The student's side of the live video call signalling: POST the
+    connection offer, GET (poll) staff's answer."""
+
+    def post(self, request, *args, **kwargs):
+        data, err = parse_json_body(request)
+        if err:
+            return err
+        client_id, session_id = str(data.get('attempt_id') or ''), str(data.get('session') or '')
+        sdp = data.get('sdp')
+        if (not client_id or not session_id or not isinstance(sdp, str) or len(sdp) > camera.MAX_SDP_CHARS
+                or camera.live_request(request.user.pk, kwargs['pk'], client_id) != session_id):
+            return JsonResponse({'error': "Noto'g'ri so'rov"}, status=400)
+        camera.put_sdp('offer', request.user.pk, kwargs['pk'], client_id, session_id, sdp)
+        return JsonResponse({'ok': True})
+
+    def get(self, request, *args, **kwargs):
+        answer = camera.get_sdp('answer', request.user.pk, kwargs['pk'],
+                                request.GET.get('attempt_id', ''), request.GET.get('session', ''))
+        return JsonResponse({'answer': answer})
 
 
 class SubmitExamView(LoginRequiredMixin, View):
