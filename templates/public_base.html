@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AbExam{% endblock %}</title>
+    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <meta name="color-scheme" content="light">
+    <style>
+        :root {
+            --bg: #f7f7f9;
+            --primary: #d32f2f;
+            --text: #1c1c1e;
+            --muted: #6b6b73;
+            --card: #ffffff;
+            --border: rgba(0, 0, 0, 0.09);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; padding: 32px 16px; }
+        .page { max-width: 760px; margin: 0 auto; background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 32px; }
+        .logo { display: inline-block; font-size: 1.5rem; font-weight: 800; text-decoration: none; color: var(--text); margin-bottom: 20px; }
+        .logo span { color: var(--primary); }
+        h1 { font-size: 1.8rem; line-height: 1.25; margin-bottom: 8px; }
+        h2 { font-size: 1.15rem; margin: 26px 0 8px; }
+        p, li { color: #333; }
+        ul { padding-left: 22px; }
+        li { margin-bottom: 4px; }
+        .muted { color: var(--muted); font-size: .9rem; }
+        a { color: var(--primary); }
+        .box { border-radius: 14px; padding: 14px 16px; margin: 16px 0; }
+        .box.warn { background: #fff4f4; border: 1px solid #f5c2c2; }
+        .box.ok { background: #f0faf3; border: 1px solid #bfe5c9; }
+        label { display: block; font-weight: 600; margin: 16px 0 6px; }
+        input[type=password] { width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: 12px; font: inherit; }
+        button { margin-top: 16px; background: var(--primary); color: #fff; border: 0; border-radius: 12px; padding: 12px 20px; font: inherit; font-weight: 700; cursor: pointer; }
+        @media (max-width: 520px) { .page { padding: 22px 18px; } h1 { font-size: 1.5rem; } }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <a href="/" class="logo">Ab<span>Exam</span></a>
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

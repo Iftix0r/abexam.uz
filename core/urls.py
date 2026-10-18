@@ -3,13 +3,14 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
+from django.views.generic import TemplateView
 from core.admin_site import AbExamAdminSite
 from core import system_views
 from exams.testlar import TestlarListView, testlar_file
 from users.views import (
     HomeView, DashboardView, CustomLoginView, RegisterView,
     ExamsListView, ResultsListView, VocabularyView, FinanceView,
-    ChatAIView, ProfileView, NotificationsView
+    ChatAIView, ProfileView, NotificationsView, AccountDeleteView
 )
 
 admin.site.__class__ = AbExamAdminSite
@@ -50,6 +51,8 @@ urlpatterns = [
     path('api/chat/', ChatAIView.as_view(), name='chat_api'),
     path('login/', CustomLoginView.as_view(), name='login'),
     path('register/', RegisterView.as_view(), name='register'),
+    path('privacy/', TemplateView.as_view(template_name='privacy.html'), name='privacy'),
+    path('account/delete/', AccountDeleteView.as_view(), name='account_delete'),
 
     # Password reset
     path('password-reset/', auth_views.PasswordResetView.as_view(

@@ -2,6 +2,7 @@ import hashlib
 import json
 
 from django.contrib import messages
+from django.contrib.auth import logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView as BaseLoginView
 from django.core.cache import cache
@@ -351,3 +352,32 @@ class NotificationsView(LoginRequiredMixin, View):
         elif action == 'mark_all_read':
             Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
         return redirect('notifications')
+
+
+def delete_account(user):
+    """Erases the user and everything tied to them (Google Play requires
+    account deletion both in the app and on the web)."""
+    username = user.username
+    if user.avatar:
+        user.avatar.delete(save=False)
+    user.delete()
+    notify_admin_telegram(f"🗑 <b>Hisob o'chirildi</b>\n👤 @{username}")
+
+
+class AccountDeleteView(LoginRequiredMixin, View):
+    template_name = 'users/account_delete.html'
+
+    def get(self, request):
+        return render(request, self.template_name)
+
+    def post(self, request):
+        user = request.user
+        if user.is_staff:
+            error = "Admin hisobini bu yerdan o'chirib bo'lmaydi."
+        elif not user.check_password(request.POST.get('password', '')):
+            error = "Parol noto'g'ri."
+        else:
+            logout(request)
+            delete_account(user)
+            return render(request, self.template_name, {'deleted': True})
+        return render(request, self.template_name, {'error': error})

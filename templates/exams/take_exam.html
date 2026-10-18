@@ -229,8 +229,10 @@
             vertical-align: middle;
         }
         .question-text { font-weight: 500; line-height: 1.6; font-size: 1.22rem; }
-        /* Leading "[Passage title]" on a question — set apart from the prompt */
-        .question-text .q-title { font-weight: 700; color: #1a237e; }
+        /* A question group's own title + instructions, above its first question */
+        .q-heading { margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px dashed var(--border); }
+        .q-heading-title { font-weight: 700; font-size: 1.15rem; color: #1a237e; margin-bottom: 4px; }
+        .q-heading-instr { font-size: 0.98rem; font-style: italic; color: #455a64; line-height: 1.6; }
         .ans-input {
             width: 100%;
             padding: 0.55rem 0.8rem;
@@ -1151,6 +1153,7 @@
             {# matching) — one legend + one grid instead of repeating    #}
             {# the full option list under every question.                #}
             <div class="question-item matching-group-item">
+                {% include 'exams/_question_heading.html' %}
                 {% if block.image_url %}
                 <div class="question-image"><img src="{{ block.image_url }}" alt="Diagram for these questions"></div>
                 {% endif %}
@@ -1174,7 +1177,7 @@
                         <tr id="qitem-{{ question.id }}" data-qid="{{ question.id }}" data-qtype="matching">
                             <td>
                                 <span class="question-num">{{ question.display_number }}</span>
-                                <span class="question-text">{{ question.text|safe }}</span>
+                                <span class="question-text">{{ question.body_text|safe }}</span>
                             </td>
                             {% for opt in block.options %}
                             <td class="grid-cell">
@@ -1190,13 +1193,14 @@
             {% else %}
             {% with question=block.questions.0 %}
             <div class="question-item" id="qitem-{{ question.id }}" data-qtype="{{ question.question_type }}">
+                {% include 'exams/_question_heading.html' %}
                 {% if block.image_url %}
                 <div class="question-image"><img src="{{ block.image_url }}" alt="Diagram for this question"></div>
                 {% endif %}
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; gap:8px;">
                     <span class="question-text">
                         <span class="question-num">{{ question.display_number }}</span>
-                        {{ question.text|safe }}
+                        {{ question.body_text|safe }}
                     </span>
                 </div>
 
@@ -2887,29 +2891,8 @@ document.addEventListener('DOMContentLoaded', () => {
         {% endwith %}
     })();
 
-    // ─── QUESTION TITLE ──────────────────────────────────
-    // Imported questions start with their passage/section name in brackets
-    // ("[Early Photographic Processes] Complete the table…"). Bold it so it
-    // reads as a heading, not part of the prompt. Runs after the gap-fill
-    // pass, which rebuilds .question-text from plain text.
-    function boldQuestionTitles() {
-        document.querySelectorAll('.question-text').forEach(textEl => {
-            const node = Array.from(textEl.childNodes).find(n =>
-                n.nodeType === 3 ? n.textContent.trim() : !n.classList?.contains('question-num'));
-            if (!node || node.nodeType !== 3) return;
-            const m = node.textContent.match(/^(\s*)(\[[^\]]+\])/);
-            if (!m) return;
-            const title = document.createElement('strong');
-            title.className = 'q-title';
-            title.textContent = m[2];
-            const rest = node.splitText(m[1].length);
-            rest.textContent = rest.textContent.slice(m[2].length);
-            textEl.insertBefore(title, rest);
-        });
-    }
-
     // Render inline gaps after draft restore
-    setTimeout(() => { renderInlineGapFill(); boldQuestionTitles(); }, 100);
+    setTimeout(renderInlineGapFill, 100);
 
     // ─── DRAGGABLE PANEL RESIZER ──────────────────────────
     // Lets the student widen the passage or the questions column, like the

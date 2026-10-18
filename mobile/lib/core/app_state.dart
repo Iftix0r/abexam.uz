@@ -82,6 +82,12 @@ class AppState extends ChangeNotifier {
     _clear();
   }
 
+  /// Erases the account on the server for good, then signs out here.
+  Future<void> deleteAccount(String password) async {
+    await api.post('auth/delete/', {'password': password});
+    _clear();
+  }
+
   void _clear() {
     api.token = null;
     me = null;

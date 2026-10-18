@@ -4,11 +4,19 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'app_state.dart';
 
+const playStoreUrl = 'https://play.google.com/store/apps/details?id=uz.abexam.abexam_english';
+
+/// True when this copy was installed from Google Play. Play then delivers
+/// updates itself, and its policy forbids offering APKs from elsewhere.
+Future<bool> installedFromPlay() async =>
+    (await PackageInfo.fromPlatform()).installerStore == 'com.android.vending';
+
 /// Asks the server for the newest build (published in the admin panel) and
 /// offers it. A skipped version isn't offered again unless it's mandatory.
 Future<void> checkForUpdate(BuildContext context) async {
   final state = AppScope.read(context);
   try {
+    if (await installedFromPlay()) return;
     final info = await state.api.get('app-version/');
     final build = (info['build'] as num?)?.toInt() ?? 0;
     final mine = int.tryParse((await PackageInfo.fromPlatform()).buildNumber) ?? 0;

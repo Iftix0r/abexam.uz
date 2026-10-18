@@ -1,50 +1,44 @@
 # Session state (auto-saved — last known reality)
 
-_Updated: 2026-10-13 14:36:31_  ·  branch: `main`
+_Updated: 2026-10-18 08:20:06_  ·  branch: `main`
 
 ## Uncommitted changes
 ```
  M .anchor/session-state.md
- M learn/ai.py
+ M core/urls.py
  M learn/api.py
- M learn/models.py
- M learn/services.py
  M learn/tests.py
- M learn/urls.py
- M learn/views.py
- M mobile/lib/screens/learn_tab.dart
- M mobile/lib/screens/lesson/exercise_steps.dart
- M mobile/lib/screens/lesson/lesson_screen.dart
- M mobile/lib/screens/lesson/step_ctl.dart
- M mobile/pubspec.yaml
- M templates/learn/hub.html
- M templates/learn/lesson.html
-?? learn/checkpoints.py
-?? learn/migrations/0009_checkpoints.py
+ M mobile/android/app/build.gradle.kts
+ M mobile/android/app/src/main/AndroidManifest.xml
+ M mobile/lib/core/app_state.dart
+ M mobile/lib/core/updates.dart
+ M mobile/lib/screens/profile_tab.dart
+ M users/tests.py
+ M users/views.py
+?? templates/privacy.html
+?? templates/public_base.html
+?? templates/users/account_delete.html
 ```
 
 Diff stat:
 ```
- .anchor/session-state.md                      |  45 +------
- learn/ai.py                                   |  44 +++++++
- learn/api.py                                  |  72 ++++++++++--
- learn/models.py                               |  27 +++++
- learn/services.py                             |  46 ++++++++
- learn/tests.py                                |  78 +++++++++++++
- learn/urls.py                                 |   3 +
- learn/views.py                                |  74 +++++++++++-
- mobile/lib/screens/learn_tab.dart             | 161 +++++++++++++++++++++++++-
- mobile/lib/screens/lesson/exercise_steps.dart |  11 +-
- mobile/lib/screens/lesson/lesson_screen.dart  | 155 ++++++++++++++++++++++---
- mobile/lib/screens/lesson/step_ctl.dart       |   5 +-
- mobile/pubspec.yaml                           |   2 +-
- templates/learn/hub.html                      |  47 +++++++-
- templates/learn/lesson.html                   |  76 +++++++++---
- 15 files changed, 756 insertions(+), 90 deletions(-)
+ .anchor/session-state.md                        | 60 ++++-------------
+ core/urls.py                                    |  5 +-
+ learn/api.py                                    | 18 ++++-
+ learn/tests.py                                  |  8 +++
+ mobile/android/app/build.gradle.kts             | 26 +++++++-
+ mobile/android/app/src/main/AndroidManifest.xml |  3 -
+ mobile/lib/core/app_state.dart                  |  6 ++
+ mobile/lib/core/updates.dart                    |  8 +++
+ mobile/lib/screens/profile_tab.dart             | 87 ++++++++++++++++++++++++-
+ users/tests.py                                  | 34 ++++++++++
+ users/views.py                                  | 30 +++++++++
+ 11 files changed, 228 insertions(+), 57 deletions(-)
 ```
 
 ## Recent commits
 ```
+f1d5ba5 wqegrdh
 bd7a1a2 1235465
 93ecb5f 3b8begfus
 4aae2e5 1234567
@@ -52,7 +46,6 @@ bd7a1a2 1235465
 ce093e3 1234
 3b438fe efssg
 33b82f2 avve
-d33ee7f wdes
 ```
 
 ## Resume

@@ -1,0 +1,32 @@
+{% extends 'public_base.html' %}
+
+{% block title %}Hisobni o'chirish — AbExam{% endblock %}
+
+{% block content %}
+{% if deleted %}
+    <h1>Hisobingiz o'chirildi</h1>
+    <div class="box ok">Hisobingiz va unga bog'liq barcha ma'lumotlar o'chirildi. AbExam'dan foydalanganingiz uchun rahmat!</div>
+    <p><a href="/">Bosh sahifaga qaytish</a></p>
+{% else %}
+    <h1>Hisobni o'chirish</h1>
+    <p>Siz <b>@{{ user.username }}</b> hisobini butunlay o'chirmoqchisiz. Bu sahifa abexam.uz sayti va AbExam English mobil ilovasidagi umumiy hisob uchun.</p>
+    <div class="box warn">
+        <b>Quyidagilar qaytarib bo'lmaydigan tarzda o'chiriladi:</b>
+        <ul>
+            <li>profil ma'lumotlari: ism, familiya, email, telefon, rasm;</li>
+            <li>darslar, XP, seriya, yutuqlar, lug'at va imtihon natijalari;</li>
+            <li>balans va to'lovlar tarixi (balansdagi qoldiq qaytarilmaydi);</li>
+            <li>kirish tarixi va ilovadagi barcha seanslar.</li>
+        </ul>
+    </div>
+    <p class="muted">Ma'lumotlar darhol o'chiriladi. Server zaxira nusxalarida ular ko'pi bilan 14 kun saqlanib, keyin o'chib ketadi.</p>
+    {% if error %}<div class="box warn">{{ error }}</div>{% endif %}
+    <form method="post">
+        {% csrf_token %}
+        <label for="password">Tasdiqlash uchun parolingizni kiriting</label>
+        <input type="password" id="password" name="password" required autocomplete="current-password">
+        <button type="submit">Hisobni butunlay o'chirish</button>
+    </form>
+    <p class="muted" style="margin-top:18px">Parolingizni unutgan bo'lsangiz, <a href="{% url 'password_reset' %}">parolni tiklang</a>.</p>
+{% endif %}
+{% endblock %}

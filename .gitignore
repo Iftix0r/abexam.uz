@@ -50,6 +50,7 @@ Thumbs.db
 # faqat tayyor HTML testlar va ularning siqilgan listening*.mp3 audiosi.
 TESTLAR/**/*.pdf
 TESTLAR/**/*.zip
+TESTLAR/**/*.m4a
 TESTLAR/**/*.jpg
 TESTLAR/**/*.jpeg
 TESTLAR/**/*.png

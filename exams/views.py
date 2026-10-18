@@ -1,5 +1,6 @@
 import logging
 import math
+import re
 from itertools import groupby
 
 from django.conf import settings
@@ -239,6 +240,11 @@ class TakeExamView(LoginRequiredMixin, DetailView):
             sections = [s for s in sections if s.section_type != 'speaking']
         for section in sections:
             questions = list(section.questions.all())
+            for q in questions:
+                if section.section_type in ('listening', 'reading'):
+                    q.group_title, q.group_instructions, q.body_text = _split_question_heading(q.text)
+                else:
+                    q.group_title, q.group_instructions, q.body_text = '', '', q.text
             section.render_blocks = _build_render_blocks(questions)
             section.q_count = len(questions)
             # A map/plan/diagram that a run of questions refers to (e.g.
@@ -287,6 +293,25 @@ class TakeExamView(LoginRequiredMixin, DetailView):
         return context
 
 
+_QUESTION_TITLE_RE = re.compile(r'^\s*\[([^\]]+)\]\s*')
+
+
+def _split_question_heading(text):
+    """The first question of each Listening/Reading group carries that
+    group's header line: "[Passage title] Instructions…\nQuestion". Shown
+    as-is, the title and instructions run straight into question 1's own
+    prompt; split them off so the page renders them as a separate heading
+    above the question. Returns (title, instructions, question text)."""
+    title = ''
+    match = _QUESTION_TITLE_RE.match(text)
+    if match:
+        title, text = match.group(1).strip(), text[match.end():]
+    instructions = ''
+    if '\n' in text:
+        instructions, text = (part.strip() for part in text.split('\n', 1))
+    return title, instructions, text
+
+
 def _build_render_blocks(questions):
     """Groups consecutive 'matching'-type questions that share an identical
     options list into one shared-table block instead of repeating the same
@@ -299,7 +324,8 @@ def _build_render_blocks(questions):
         q = questions[i]
         if q.question_type == 'matching' and q.options:
             j = i + 1
-            while j < n and questions[j].question_type == 'matching' and questions[j].options == q.options:
+            while (j < n and questions[j].question_type == 'matching'
+                   and questions[j].options == q.options and not _has_heading(questions[j])):
                 j += 1
             group = questions[i:j]
             if len(group) >= 2:
@@ -310,7 +336,17 @@ def _build_render_blocks(questions):
         else:
             blocks.append({'kind': 'single', 'questions': [q]})
             i += 1
+    for block in blocks:
+        first = block['questions'][0]
+        block['title'] = getattr(first, 'group_title', '')
+        block['instructions'] = getattr(first, 'group_instructions', '')
     return blocks
+
+
+def _has_heading(question):
+    # A new title/instructions line starts a new question group, even when
+    # its options happen to match the previous group's (e.g. two A–C sets).
+    return bool(getattr(question, 'group_title', '') or getattr(question, 'group_instructions', ''))
 
 
 class DemoAnswersView(LoginRequiredMixin, View):

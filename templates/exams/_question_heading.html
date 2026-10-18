@@ -1,0 +1,6 @@
+{% if block.title or block.instructions %}
+<div class="q-heading">
+    {% if block.title %}<div class="q-heading-title">{{ block.title }}</div>{% endif %}
+    {% if block.instructions %}<div class="q-heading-instr">{{ block.instructions|safe }}</div>{% endif %}
+</div>
+{% endif %}

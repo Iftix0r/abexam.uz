@@ -20,7 +20,7 @@ from django.views.decorators.csrf import csrf_exempt
 from core.utils import get_client_ip, notify_admin_telegram, parse_json_body
 from users.forms import RegisterForm
 from users.models import LoginLog, Vocabulary
-from users.views import _MAX_FAILS_PER_IP, _MAX_FAILS_PER_USER, _bump, _fail_keys, _login_blocked
+from users.views import _MAX_FAILS_PER_IP, _MAX_FAILS_PER_USER, _bump, _fail_keys, _login_blocked, delete_account
 from . import ai, checkpoints, srs
 from .gamification import badges, bump, daily_quests, open_chest
 from .content import LEVEL_INFO, LEVELS, get_course, get_lesson, get_placement, get_stories, placement_level
@@ -168,6 +168,21 @@ def register(request):
 @api(methods=('POST',))
 def logout(request):
     request.api_token.delete()
+    return JsonResponse({'ok': True})
+
+
+@api(methods=('POST',))
+def delete_me(request):
+    """Deletes the account for good — the password is asked again first."""
+    data, err = _body(request)
+    if err:
+        return err
+    user = request.user
+    if user.is_staff:
+        return JsonResponse({'error': "Admin hisobini ilovadan o'chirib bo'lmaydi."}, status=403)
+    if not user.check_password(str(data.get('password', ''))):
+        return JsonResponse({'error': "Parol noto'g'ri."}, status=400)
+    delete_account(user)
     return JsonResponse({'ok': True})
 
 
@@ -570,6 +585,7 @@ urlpatterns = [
     path('auth/login/', login, name='login'),
     path('auth/register/', register, name='register'),
     path('auth/logout/', logout, name='logout'),
+    path('auth/delete/', delete_me, name='delete_me'),
     path('me/', me, name='me'),
     path('achievements/', achievements, name='achievements'),
     path('quests/chest/', chest, name='chest'),

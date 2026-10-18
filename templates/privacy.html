@@ -1,0 +1,59 @@
+{% extends 'public_base.html' %}
+
+{% block title %}Maxfiylik siyosati — AbExam{% endblock %}
+
+{% block content %}
+<h1>Maxfiylik siyosati</h1>
+<p class="muted">Oxirgi yangilanish: 2026-yil 14-oktabr</p>
+
+<p>Ushbu siyosat abexam.uz sayti va <b>AbExam English</b> mobil ilovasi (birgalikda — «Xizmat») qanday ma'lumot to'plashi, ulardan qanday foydalanishi va siz ularni qanday o'chirishingiz mumkinligini tushuntiradi.</p>
+
+<h2>1. Qanday ma'lumotlar to'planadi</h2>
+<ul>
+    <li><b>Hisob ma'lumotlari:</b> foydalanuvchi nomi, ism, familiya, email, telefon raqami (ixtiyoriy) va parol (faqat shifrlangan ko'rinishda saqlanadi).</li>
+    <li><b>O'qish natijalari:</b> darslar, XP, seriya, xatolar, lug'at, imtihon natijalari, yozma javoblar va AI ustoz bilan yozishmalar.</li>
+    <li><b>Texnik ma'lumotlar:</b> IP manzil, qurilma modeli, operatsion tizim va ilova versiyasi, brauzer ma'lumoti, kirish vaqtlari.</li>
+    <li><b>To'lovlar:</b> balans to'ldirish summasi, usuli va holati. Karta ma'lumotlari bizda saqlanmaydi — ularni to'lov tizimi (Payme, Click) qayta ishlaydi.</li>
+</ul>
+
+<h2>2. Mikrofon va ovoz</h2>
+<p>Gapirish mashqlari uchun ilova mikrofonga ruxsat so'raydi. Ilovada nutq telefoningizning o'z nutqni aniqlash xizmati (masalan, Google) yordamida matnga aylantiriladi — ovoz yozuvi bizning serverga yuborilmaydi va saqlanmaydi. Saytdagi gapirish mashqlarida qisqa ovoz yozuvi matnga aylantirish uchun OpenAI'ga yuboriladi va saqlab qolinmaydi.</p>
+
+<h2>3. Ma'lumotlardan foydalanish</h2>
+<ul>
+    <li>hisobingizga kirish va o'qish natijalaringizni sayt hamda ilova o'rtasida saqlash;</li>
+    <li>yozma javoblarni tekshirish, tushuntirishlar va AI ustoz javoblarini tayyorlash;</li>
+    <li>xavfsizlik: shubhali kirishlarni aniqlash va xizmatni suiiste'moldan himoya qilish;</li>
+    <li>xatolarni topish va xizmatni yaxshilash.</li>
+</ul>
+<p>Biz reklama ko'rsatmaymiz va ma'lumotlaringizni hech kimga sotmaymiz.</p>
+
+<h2>4. Uchinchi tomon xizmatlari</h2>
+<ul>
+    <li><b>OpenAI</b> — yozma javoblarni tekshirish, AI ustoz va nutqni matnga aylantirish (faqat shu vazifa uchun kerakli matn yoki ovoz yuboriladi);</li>
+    <li><b>Google</b> — so'zlarni ovozli o'qish (faqat o'qiladigan matn yuboriladi);</li>
+    <li><b>Sentry</b> — server xatolari haqida texnik hisobotlar;</li>
+    <li><b>Telegram</b> — ro'yxatdan o'tish va kirishlar haqida ma'muriyatga xizmat xabarlari;</li>
+    <li><b>Payme, Click</b> — to'lovlarni qabul qilish.</li>
+</ul>
+
+<h2>5. Bildirishnomalar</h2>
+<p>Ilova dars eslatmalarini telefoningizning o'zida rejalashtiradi. Ularni ilova sozlamalarida yoki telefon sozlamalarida o'chirishingiz mumkin.</p>
+
+<h2>6. Saqlash muddati va o'chirish</h2>
+<p>Ma'lumotlar hisobingiz mavjud bo'lgan vaqt davomida saqlanadi. Hisobni istalgan vaqtda o'chirishingiz mumkin:</p>
+<ul>
+    <li>ilovada: <b>Profil → Hisobni o'chirish</b>;</li>
+    <li>saytda: <a href="{% url 'account_delete' %}">abexam.uz/account/delete/</a>.</li>
+</ul>
+<p>O'chirilganda barcha ma'lumotlaringiz darhol o'chiriladi; server zaxira nusxalarida ular ko'pi bilan 14 kun saqlanib, keyin o'chib ketadi.</p>
+
+<h2>7. Xavfsizlik</h2>
+<p>Ma'lumotlar HTTPS orqali shifrlangan holda uzatiladi, parollar faqat xeshlangan ko'rinishda saqlanadi.</p>
+
+<h2>8. Bolalar</h2>
+<p>Xizmat 13 yoshdan kichik bolalarga mo'ljallanmagan va biz ulardan bila turib ma'lumot to'plamaymiz.</p>
+
+<h2>9. O'zgarishlar va aloqa</h2>
+<p>Siyosat o'zgarsa, ushbu sahifadagi sana yangilanadi. Savollar bo'yicha: <a href="mailto:support@abexam.uz">support@abexam.uz</a>.</p>
+{% endblock %}

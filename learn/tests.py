@@ -348,6 +348,14 @@ class ApiTests(TestCase):
         self.assertEqual(self._call('post', 'learn_api:logout').status_code, 200)
         self.assertEqual(self._call('get', 'learn_api:me').status_code, 401)
 
+    def test_delete_account_needs_password_and_erases_user(self):
+        bad = self._call('post', 'learn_api:delete_me', {'password': 'wrong'})
+        self.assertEqual(bad.status_code, 400)
+        self.assertTrue(User.objects.filter(username='learner').exists())
+        self.assertEqual(self._call('post', 'learn_api:delete_me', {'password': 'pw-Secret-123'}).status_code, 200)
+        self.assertFalse(User.objects.filter(username='learner').exists())
+        self.assertEqual(self._call('get', 'learn_api:me').status_code, 401)
+
     def test_register_returns_a_working_token(self):
         resp = self._call('post', 'learn_api:register', {
             'username': 'newbie', 'first_name': 'Ali', 'password': 'Very-Strong-77', 'confirm_password': 'Very-Strong-77',

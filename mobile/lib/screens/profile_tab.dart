@@ -7,6 +7,7 @@ import '../core/app_state.dart';
 import '../core/sfx.dart';
 import '../core/speech.dart';
 import '../core/theme.dart';
+import '../core/updates.dart';
 import '../widgets/common.dart';
 import 'achievements_screen.dart';
 import 'grammar_screen.dart';
@@ -187,7 +188,16 @@ class ProfileTab extends StatelessWidget {
                 title: const Text("Ilovani do'stga yuborish"),
                 subtitle: const Text("Yuklab olish sahifasi havolasi"),
                 trailing: const Icon(Icons.open_in_new_rounded, size: 20),
-                onTap: () => launchUrl(Uri.parse('$apiBase/learn/app/'), mode: LaunchMode.externalApplication),
+                onTap: () async {
+                  final url = await installedFromPlay() ? playStoreUrl : '$apiBase/learn/app/';
+                  await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.privacy_tip_rounded, color: Brand.primary),
+                title: const Text('Maxfiylik siyosati'),
+                trailing: const Icon(Icons.open_in_new_rounded, size: 20),
+                onTap: () => launchUrl(Uri.parse('$apiBase/privacy/'), mode: LaunchMode.externalApplication),
               ),
               ListTile(
                 leading: const Icon(Icons.quiz_rounded, color: Brand.primary),
@@ -216,6 +226,12 @@ class ProfileTab extends StatelessWidget {
             },
             icon: const Icon(Icons.logout_rounded),
             label: const Text('Hisobdan chiqish'),
+          ),
+          TextButton.icon(
+            style: TextButton.styleFrom(foregroundColor: scheme.outline),
+            onPressed: () => showDialog<void>(context: context, builder: (_) => _DeleteAccountDialog(state: state)),
+            icon: const Icon(Icons.delete_forever_rounded),
+            label: const Text("Hisobni o'chirish"),
           ),
           const SizedBox(height: 14),
           FutureBuilder<PackageInfo>(
@@ -246,6 +262,75 @@ class ProfileTab extends StatelessWidget {
           ),
         ]),
       ),
+    );
+  }
+}
+
+/// Asks for the password again, then deletes the account on the server.
+class _DeleteAccountDialog extends StatefulWidget {
+  const _DeleteAccountDialog({required this.state});
+
+  final AppState state;
+
+  @override
+  State<_DeleteAccountDialog> createState() => _DeleteAccountDialogState();
+}
+
+class _DeleteAccountDialogState extends State<_DeleteAccountDialog> {
+  final _password = TextEditingController();
+  String? _error;
+  bool _busy = false;
+
+  @override
+  void dispose() {
+    _password.dispose();
+    super.dispose();
+  }
+
+  Future<void> _delete() async {
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
+    try {
+      await widget.state.deleteAccount(_password.text);
+      if (mounted) Navigator.pop(context);
+    } on ApiException catch (e) {
+      if (mounted) {
+        setState(() {
+          _busy = false;
+          _error = e.message;
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      icon: const Icon(Icons.warning_amber_rounded, color: Brand.bad, size: 36),
+      title: const Text("Hisobni o'chirish"),
+      content: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+        const Text("Hisobingiz va barcha ma'lumotlaringiz — XP, darslar, lug'at, natijalar va balans — butunlay "
+            "o'chiriladi. Buni qaytarib bo'lmaydi. Sayt va ilovadagi hisob umumiy, u ikkalasidan ham o'chadi."),
+        const SizedBox(height: 14),
+        TextField(
+          controller: _password,
+          obscureText: true,
+          enabled: !_busy,
+          decoration: InputDecoration(labelText: 'Parolingiz', errorText: _error),
+        ),
+      ]),
+      actions: [
+        TextButton(onPressed: _busy ? null : () => Navigator.pop(context), child: const Text('Bekor qilish')),
+        FilledButton(
+          style: FilledButton.styleFrom(backgroundColor: Brand.bad),
+          onPressed: _busy ? null : _delete,
+          child: _busy
+              ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+              : const Text("O'chirish"),
+        ),
+      ],
     );
   }
 }

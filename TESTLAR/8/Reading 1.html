@@ -1,0 +1,1997 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS CDI Reading Practice</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffffff;
+            line-height: 1.4;
+            font-size: 16px;
+            overflow: hidden;
+        }
+
+        body::after {
+            content: "@MINDLESS_WRITER";
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 90px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: #000000;
+            opacity: 0.035;
+            pointer-events: none;
+            user-select: none;
+            z-index: 50;
+            white-space: nowrap;
+        }
+
+        .header {
+            background-color: #ffffff;
+            padding: 12px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            height: 60px;
+        }
+
+        .telegram-link {
+            color: #3e3e3e;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            border: 2px solid #3e3e3e;
+            border-radius: 9999px;
+            background-color: #ffffff;
+            line-height: 1;
+        }
+
+        .telegram-link:hover {
+            background-color: #f6f6f6;
+        }
+
+        .telegram-link::before {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background-color: currentColor;
+            -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23l7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3L3.64 12c-.88-.25-.89-1.37.2-1.64l16.56-6.4c.75-.29 1.4.22 1.2.94l-2.67 12.61c-.22.95-1.13 1.18-1.78.73l-4.5-3.32l-2.23 2.15c-.47.44-1.29.21-1.48-.37z"/></svg>');
+            mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23l7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3L3.64 12c-.88-.25-.89-1.37.2-1.64l16.56-6.4c.75-.29 1.4.22 1.2.94l-2.67 12.61c-.22.95-1.13 1.18-1.78.73l-4.5-3.32l-2.23 2.15c-.47.44-1.29.21-1.48-.37z"/></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        .part-indicator {
+            font-size: 15px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .main-container {
+            position: fixed;
+            top: 60px;
+            bottom: 80px;
+            left: 0;
+            right: 0;
+            display: flex;
+            background: #ffffff;
+        }
+
+        .passage-panel {
+            flex: 0 0 50%;
+            min-width: 200px;
+            overflow-y: auto;
+            padding: 20px 24px 40px;
+        }
+
+        .resizer {
+            width: 10px;
+            cursor: col-resize;
+            background-color: #f0f0f0;
+            border-left: 1px solid #d0d0d0;
+            border-right: 1px solid #d0d0d0;
+            background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="30" viewBox="0 0 10 30"><path d="M4 11h2v2H4zM4 15h2v2H4zM4 19h2v2H4z" fill="%23888"/></svg>');
+            background-repeat: no-repeat;
+            background-position: center;
+            flex-shrink: 0;
+            flex-grow: 0;
+        }
+
+        .resizer:hover {
+            background-color: #e2e6ea;
+        }
+
+        body.resizing {
+            cursor: col-resize;
+            user-select: none;
+        }
+
+        .questions-panel {
+            flex: 1;
+            min-width: 200px;
+            overflow-y: auto;
+            padding: 20px 24px 60px;
+        }
+
+        .passage-set,
+        .question-set {
+            display: none;
+        }
+
+        .passage-set.active,
+        .question-set.active {
+            display: block;
+        }
+
+        .passage-intro {
+            background-color: #f1f2ec;
+            padding: 12px 15px;
+            border-radius: 5px;
+            margin-bottom: 18px;
+            border: 1px solid #e0e0e0;
+            font-size: 15px;
+        }
+
+        .passage-title {
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 18px;
+        }
+
+        .passage-text p {
+            margin-bottom: 14px;
+            text-align: justify;
+            line-height: 1.65;
+        }
+
+        .para-label {
+            font-weight: 700;
+            margin-right: 6px;
+        }
+
+        .q-group {
+            margin-bottom: 34px;
+        }
+
+        .q-group-header {
+            font-weight: 700;
+            font-size: 17px;
+            margin-bottom: 6px;
+        }
+
+        .q-instruction {
+            margin-bottom: 14px;
+            font-size: 15px;
+        }
+
+        .q-instruction p {
+            margin-bottom: 4px;
+        }
+
+        .q-item {
+            margin-bottom: 16px;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .q-num {
+            font-weight: 700;
+            min-width: 24px;
+            padding-top: 4px;
+        }
+
+        .q-body {
+            flex: 1;
+        }
+
+        .answer-input {
+            border: 1px solid #9aa3ad;
+            border-radius: 4px;
+            background-color: #fff;
+            padding: 4px 8px;
+            font-size: 16px;
+            width: 150px;
+            height: 30px;
+            line-height: 1.2;
+            vertical-align: middle;
+            transition: border-color 0.15s ease;
+        }
+
+        .answer-input::placeholder {
+            color: #999;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .answer-input:focus,
+        .answer-select:focus {
+            outline: none;
+            border-color: #2c6bed;
+            border-width: 2px;
+        }
+
+        .answer-select {
+            border: 1px solid #9aa3ad;
+            border-radius: 4px;
+            background-color: #fff;
+            padding: 4px 6px;
+            font-size: 15px;
+            height: 30px;
+            min-width: 140px;
+            cursor: pointer;
+        }
+
+        .answer-input.correct,
+        .answer-select.correct {
+            border-color: #28a745;
+            background-color: #e9f7ef;
+        }
+
+        .answer-input.incorrect,
+        .answer-select.incorrect {
+            border-color: #dc3545;
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .correct-inline {
+            color: #28a745;
+            font-weight: 700;
+            margin-left: 10px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .correct-inline::before {
+            content: "\2192  ";
+        }
+
+        .multi-choice-option {
+            display: block;
+            width: 100%;
+            padding: 8px 12px;
+            background-color: #fff;
+            border: 1px solid transparent;
+            transition: background-color 0.2s;
+        }
+
+        .multi-choice-option:hover {
+            background-color: #f1f7ff;
+            border-color: #c6dcfb;
+        }
+
+        .multi-choice-option:has(input[type="radio"]:checked),
+        .multi-choice-option:has(input[type="checkbox"]:checked) {
+            background-color: #cfe3f9;
+        }
+
+        .multi-choice-option.correct {
+            background-color: #d4edda !important;
+        }
+
+        .multi-choice-option.incorrect {
+            background-color: #f8d7da !important;
+        }
+
+        .multi-choice-option label {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        .multi-choice-option input {
+            transform: scale(1.15);
+            margin-top: 3px;
+        }
+
+        .info-box {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 12px 15px;
+            background: #f9f9f9;
+            margin-bottom: 16px;
+            font-size: 15px;
+        }
+
+        .info-box p {
+            margin-bottom: 4px;
+        }
+
+        .notes-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 15px;
+            margin-bottom: 10px;
+        }
+
+        .notes-table th,
+        .notes-table td {
+            border: 1px solid #888;
+            padding: 8px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .notes-table th {
+            background: #f1f2ec;
+            font-weight: 700;
+        }
+
+        .summary-box {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 15px;
+            background: #fafafa;
+            margin-bottom: 16px;
+        }
+
+        .summary-box p {
+            margin-bottom: 12px;
+            line-height: 1.8;
+        }
+
+        .summary-title {
+            text-align: center;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .option-list {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 12px 15px;
+            background: #f9f9f9;
+            display: inline-block;
+            min-width: 240px;
+        }
+
+        .option-list p {
+            margin-bottom: 4px;
+        }
+
+        /* --- TRUE/FALSE/NOT GIVEN va YES/NO/NOT GIVEN (radio ro'yxat) --- */
+        .tf-question {
+            margin-bottom: 22px;
+        }
+
+        .tf-question-line {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            padding: 5px 0;
+        }
+
+        .tf-question-number {
+            border: 2px solid #ccc;
+            padding: 2px 8px;
+            margin-right: 10px;
+            border-radius: 3px;
+            font-weight: bold;
+            transition: border-color 0.3s;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+
+        .tf-question.active-question .tf-question-number {
+            border-color: #4a90e2;
+        }
+
+        .tf-options {
+            padding-left: 5px;
+        }
+
+        .tf-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 9px 12px;
+            background-color: #fff;
+            border: 1px solid transparent;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+
+        .tf-option:hover {
+            background-color: #f1f7ff;
+            border-color: #c6dcfb;
+        }
+
+        .tf-option:has(input[type="radio"]:checked) {
+            background-color: #cfe3f9;
+        }
+
+        .tf-option.correct {
+            background-color: #d4edda !important;
+        }
+
+        .tf-option.incorrect {
+            background-color: #f8d7da !important;
+        }
+
+        .tf-option input[type="radio"] {
+            transform: scale(1.15);
+        }
+
+        /* --- "Which paragraph contains..." matching jadvali --- */
+        .matching-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 18px 0;
+            font-size: 15px;
+        }
+
+        .matching-table th {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            border: 1px solid #ddd;
+        }
+
+        .matching-table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            vertical-align: middle;
+        }
+
+        .matching-table .statement {
+            text-align: left;
+            width: 58%;
+        }
+
+        .matching-table td:not(.statement) {
+            text-align: center;
+            min-width: 44px;
+        }
+
+        .matching-table th:not(:first-child) {
+            min-width: 44px;
+        }
+
+        .matching-table .table-radio {
+            margin: 0;
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+
+        .matching-table td:not(.statement):has(input:checked) {
+            background-color: #e3f2fd;
+        }
+
+        .matching-table input[type="radio"]:checked {
+            accent-color: #007bff;
+        }
+
+        .matching-table td.correct {
+            background-color: #d4edda !important;
+            border-color: #c3e6cb;
+        }
+
+        .matching-table td.incorrect {
+            background-color: #f8d7da !important;
+            border-color: #f5c6cb;
+        }
+
+        /* --- Drag & drop (summary / headings turi) --- */
+        .drag-item {
+            background: white;
+            border: 1px solid #9c9c9c;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: move;
+            font-size: 15px;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .drag-item:hover {
+            background: #e9ecef;
+        }
+
+        .drag-item.dragging {
+            opacity: 0.5;
+        }
+
+        .drag-item.selected {
+            border-color: #4a90e2;
+            box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.5);
+        }
+
+        .drop-zone {
+            border: 2px dashed #aaa;
+            border-radius: 4px;
+            transition: background-color 0.2s, border-color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 150px;
+            min-height: 30px;
+            padding: 2px 6px;
+            vertical-align: middle;
+            font-weight: 700;
+            color: #666;
+            background: #fff;
+        }
+
+        .drop-zone.filled {
+            border-style: solid;
+            border-color: #9c9c9c;
+            color: inherit;
+            font-weight: 400;
+            padding: 1px;
+        }
+
+        .drop-zone.drag-over {
+            background-color: #e6f4ff;
+            border-color: #4a90e2;
+        }
+
+        .drop-zone.correct {
+            background-color: #e9f7ef;
+            border-color: #28a745;
+            border-style: solid;
+        }
+
+        .drop-zone.incorrect {
+            background-color: #f8d7da;
+            border-color: #dc3545;
+            border-style: solid;
+        }
+
+        .drop-zone.disabled {
+            pointer-events: none;
+        }
+
+        .drop-zone .drag-item {
+            border: none;
+            background: transparent;
+            font-size: 15px;
+            padding: 0 4px;
+            cursor: move;
+            width: 100%;
+            text-align: center;
+        }
+
+        .drag-options-container {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 12px 15px;
+            background: #f9f9f9;
+            /* panel kengligiga qarab bir qatorga 2 (yoki undan ko'p) ibora joylashadi */
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 8px;
+            min-height: 60px;
+        }
+
+        .drag-options-container .drag-item {
+            text-align: left;
+        }
+
+        .drag-options-container.drag-over {
+            background-color: #e6f4ff;
+            border-color: #4a90e2;
+        }
+
+        .drag-bank-title {
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        /* --- Javob dalillari (tekshirgandan keyin ochiladi) --- */
+        .t-qmark,
+        .t-note {
+            display: none;
+        }
+
+        .main-container.results-mode .t-hl {
+            background: #fff3a0;
+            border-radius: 3px;
+            padding: 0 2px;
+            scroll-margin-top: 24px;
+        }
+
+        .main-container.results-mode .t-hl.active {
+            background: #ffd34d;
+            box-shadow: 0 0 0 2px #f0a500;
+        }
+
+        .main-container.results-mode .t-qmark {
+            display: inline-flex;
+            font-size: 10px;
+            font-weight: 700;
+            color: #fff;
+            background: #4a90e2;
+            border-radius: 50%;
+            align-items: center;
+            justify-content: center;
+            width: 17px;
+            height: 17px;
+            min-width: 17px;
+            vertical-align: super;
+            margin-right: 2px;
+            line-height: 1;
+        }
+
+        .main-container.results-mode .t-note {
+            display: inline;
+            font-style: italic;
+            font-weight: 700;
+            color: #0b6b3a;
+            font-size: 13px;
+            margin-left: 3px;
+        }
+
+        .nav-row {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            height: 80px;
+            z-index: 100;
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+        }
+
+        .footer__questionWrapper___1tZ46 {
+            display: flex;
+            align-items: center;
+            margin-right: 16px;
+            flex-shrink: 0;
+        }
+
+        .footer__questionNo___3WNct {
+            background: none;
+            border: none;
+            padding: 10px 12px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .footer__questionNo___3WNct:hover {
+            background-color: #f8f9fa;
+        }
+
+        .attemptedCount {
+            font-size: 13px;
+            color: #666;
+            margin-left: 5px;
+            font-weight: 400;
+        }
+
+        .footer__subquestionWrapper___9GgoP {
+            display: none;
+            gap: 2px;
+            margin-left: 8px;
+        }
+
+        .footer__questionWrapper___1tZ46.selected .footer__subquestionWrapper___9GgoP {
+            display: flex;
+        }
+
+        .footer__questionWrapper___1tZ46.selected .attemptedCount {
+            display: none;
+        }
+
+        .subQuestion {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #ccc;
+            background: white;
+            color: #333;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .subQuestion.answered {
+            background-color: #e9ecef;
+            border-color: #ddd;
+        }
+
+        .subQuestion.correct {
+            background-color: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+
+        .subQuestion.incorrect {
+            background-color: #dc3545;
+            color: white;
+            border-color: #dc3545;
+        }
+
+        .subQuestion:hover {
+            background-color: #f0f0f0;
+            border-color: #999;
+        }
+
+        .subQuestion.active {
+            background-color: #4a90e2;
+            color: white;
+            border-color: #4a90e2;
+        }
+
+        .footer__deliverButton___3FM07 {
+            margin-left: auto;
+            margin-right: 20px;
+            background-color: #f0f0f0;
+            color: #333;
+            border: 1px solid #ccc;
+            padding: 12px 20px;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 170px;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .footer__deliverButton___3FM07:hover {
+            background-color: #e0e0e0;
+            border-color: #bbb;
+        }
+
+        .footer__deliverButton___3FM07.success {
+            background-color: #28a745;
+            color: #fff;
+            border-color: #28a745;
+        }
+
+        .highlight {
+            background-color: #ffff00;
+        }
+
+        .comment-highlight {
+            background-color: #90EE90;
+            position: relative;
+            cursor: help;
+        }
+
+        .comment-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            white-space: nowrap;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .comment-highlight:hover .comment-tooltip {
+            opacity: 1;
+        }
+
+        .context-menu {
+            position: absolute;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            display: none;
+            min-width: 140px;
+        }
+
+        .context-menu-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            font-size: 16px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .context-menu-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .context-menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            font-size: 24px;
+            color: #333;
+        }
+
+        .modal-close-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #888;
+        }
+
+        .modal-close-btn:hover {
+            color: #333;
+        }
+
+        #score-summary {
+            font-size: 16px;
+            font-weight: 600;
+            color: #111827;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            padding: 10px 12px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        #result-details table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        #result-details th,
+        #result-details td {
+            border: 1px solid #ddd;
+            padding: 8px 10px;
+            text-align: left;
+        }
+
+        #result-details th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+
+        .result-correct {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .result-incorrect {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        @keyframes flash {
+            0% {
+                background-color: #e6f4ff;
+            }
+
+            100% {
+                background-color: transparent;
+            }
+        }
+
+        .q-item.flash,
+        .tf-question.flash,
+        .matching-table tr.flash td,
+        .q-group.flash {
+            animation: flash 1s ease-out;
+        }
+
+        @media (max-width: 1024px) {
+            body {
+                overflow: auto;
+            }
+
+            .main-container {
+                position: static;
+                flex-direction: column;
+                margin-top: 60px;
+                padding-bottom: 90px;
+            }
+
+            .passage-panel,
+            .questions-panel {
+                flex: 1 1 auto !important;
+                width: 100%;
+                min-width: 0;
+                overflow-y: visible;
+            }
+
+            .passage-panel {
+                border-bottom: 2px solid #d0d0d0;
+            }
+
+            .resizer {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <div class="part-indicator" id="part-indicator">Reading Passage 1</div>
+        <a href="https://t.me/+SoPpY9nBi3U0NTE1" target="_blank" class="telegram-link">MINDLESS WRITER</a>
+    </div>
+
+    <div class="main-container">
+
+        <!-- ============== PASSAGE PANEL ============== -->
+        <div class="passage-panel" id="passage-panel">
+
+            <div class="passage-set active" id="passage-1">
+                <div class="passage-intro">
+                    <strong>READING PASSAGE 1</strong><br>
+                    You should spend about 20 minutes on <strong>Questions 1–13</strong>, which are based on Reading
+                    Passage 1 below.
+                </div>
+                <p class="passage-title">The Tuatara of New Zealand</p>
+                <div class="passage-text">
+                    <p>Tuatara are lizard-like reptiles found only in New Zealand. They are representative of ancient life forms. Tuatara are the sole surviving members of an ancient lineage of reptiles called Sphenodontia, which is over 250 million years old. Because tuatara still resemble fossils of reptiles that lived during the age of dinosaurs, they are often called “living fossils”. Now only two species survive in New Zealand. One is the Brothers Island tuatara which, until recent re-introductions to sanctuaries (safe places for wildlife), survived only on North Brother Island. The other species is the common tuatara, which inhabits many other offshore islands. <span class="t-hl" data-q="1"><span class="t-qmark">1</span>Although the two species appear similar<span class="t-note">(TRUE — ikki tur bir-biriga o'xshaydi)</span></span>, they have genetic differences. Tuatara bones have been found in many parts of New Zealand; where dated, they are <span class="t-hl" data-q="2"><span class="t-qmark">2</span>usually a few hundred to 5,000 years old<span class="t-note">(FALSE — millionlab emas, bir necha yuzdan 5000 yilgacha)</span></span>. It is not known whether these bones belong to the two living species or to others that are now extinct.</p>
+                    <p>Many anatomical features distinguish tuatara from other living reptiles—for example, they have a distinctive pattern of openings in the skull, a unique type of haemoglobin in the blood, and males have no external reproductive organ. Adults range from 30 to 75 centimetres in length and weigh between 250 and 1,200 grams. <span class="t-hl" data-q="3"><span class="t-qmark">3</span>Males are larger than females and have more developed spines in the crest along the neck, back and tail<span class="t-note">(NOT GIVEN — dum rangi haqida gap yo'q)</span></span>.</p>
+                    <p>The male tuatara courts the female by approaching her with a proud walk. Tuatara mate in late summer, and the female usually <span class="t-hl" data-q="4"><span class="t-qmark">4</span>lays 6–10 eggs the following spring in a shallow ground-level nest<span class="t-note">(FALSE — tuxum inga (nest) qo'yiladi, uyaga (burrow) emas)</span></span>. She may guard the nest for a few nights, then return to her underground burrow. The eggs incubate for about a year, so hatchlings emerge just as new eggs are being laid the next season. Evidence indicates that the sex of hatchlings is determined by both genetic and environmental factors: <span class="t-hl" data-q="5"><span class="t-qmark">5</span>warmer eggs are more likely to produce males, while cooler eggs tend to produce females<span class="t-note">(NOT GIVEN — qaysi jins ko'pligi aytilmagan)</span></span>. <span class="t-hl" data-q="6"><span class="t-qmark">6</span>The hatchlings receive no parental care and must find their own food<span class="t-note">(TRUE — ota-ona g'amxo'rligi yo'q)</span></span>.</p>
+                    <p>Tuatara live a long time, reaching reproductive maturity at about 15 years and breeding for many decades. Their maximum lifespan is uncertain, but <span class="t-hl" data-q="7"><span class="t-qmark">7</span>many individuals have lived to 80 years<span class="t-note">(80)</span></span> while still looking vigorous and healthy. Tuatara live in underground burrows and are more active at night, though they bask in the sun by day. Both sexes are territorial; males aggressively defend their range by posturing and, if necessary, fighting. <span class="t-hl" data-q="8"><span class="t-qmark">8</span>Their teeth are their chief weapons<span class="t-note">(teeth)</span></span>, and a bite can cause serious injury. Tuatara are carnivorous, feeding on invertebrates, lizards and <span class="t-hl" data-q="9"><span class="t-qmark">9</span>the baby seabirds with which they often share burrows<span class="t-note">(seabirds)</span></span>.</p>
+                    <p>Tuatara were once widespread and abundant on the New Zealand mainland, but <span class="t-hl" data-q="10"><span class="t-qmark">10</span>when Polynesian settlers arrived<span class="t-note">(Polynesian)</span></span> (about 1250–1300 AD) they brought Pacific rats, which killed tuatara. By the time of European settlement in the 1840s, <span class="t-hl" data-q="11"><span class="t-qmark">11</span>tuatara were almost extinct on the mainland<span class="t-note">(mainland)</span></span>. Some islands provided temporary refuges, but these too were eventually invaded by rats and other mammalian predators.</p>
+                    <p>Gradually tuatara became confined to 32 near-shore islands. Many of these islands were tiny, some only one hectare in size. A few, such as the Poor Knights Islands off the north-eastern coast of New Zealand and some islands in Cook Strait, <span class="t-hl" data-q="12"><span class="t-qmark">12</span>still support the common tuatara<span class="t-note">(common)</span></span>. The Brothers Island tuatara survived only on North Brother Island, but new populations have been created on Titi Island in the Marlborough Sounds and on Somes Island in Wellington Harbour.</p>
+                    <p>Tuatara can live in remarkably dense populations. Most tuatara islands support 50–100 individuals per hectare, so an island of just 10 hectares may hold hundreds. Larger islands rich in seabirds and invertebrates—key tuatara prey—may support even greater densities. The largest population is on Stephens Island, where <span class="t-hl" data-q="13"><span class="t-qmark">13</span>numbers reach up to 2,500 per hectare<span class="t-note">(2,500)</span></span> in some areas, with a total of at least 30,000 individuals. Overall, the tuatara population across all islands is estimated at 50,000–100,000.</p>
+                    <p>Legal protection was granted to tuatara and their islands in 1895, yet the reptiles continued to decline. Since then, active conservation management has reversed the trend, and new populations have been established on predator-free islands. In the mid-1980s the New Zealand Wildlife Service (now the Department of Conservation) developed methods to eradicate rats from islands. Rats have since been removed from almost all tuatara islands, making these habitats safe for many threatened native species. Conservationists have also collected eggs for incubation, bred tuatara in captivity, and relocated them to rat-free islands off the Northland coast and to Stephens Island in Cook Strait—areas never invaded by rats and largely free of other mammalian predators. Two additional predator-free islands now host tuatara, raising the total to 37. Many more introductions are planned for islands and mainland reserves cleared of predators.</p>
+                </div>
+            </div>
+
+            <div class="passage-set" id="passage-2">
+                <div class="passage-intro">
+                    <strong>READING PASSAGE 2</strong><br>
+                    You should spend about 20 minutes on <strong>Questions 14–26</strong>, which are based on Reading
+                    Passage 2 below.
+                </div>
+                <p class="passage-title">The Tasmanian tiger</p>
+                <div class="passage-text">
+                    <p>The Tasmanian tiger, or thylacine, was a carnivorous marsupial (a meat-eating mammal which carries its young in a pouch). It was given the name ‘tiger’ <span class="t-hl" data-q="14"><span class="t-qmark">14</span>because it had striped fur<span class="t-note">(striped)</span></span>, and because it was ferocious. Between 24 million and 15 million years ago, <span class="t-hl" data-q="15"><span class="t-qmark">15</span>many types of thylacine roamed across Australia<span class="t-note">(Australia)</span></span>, their powerful jaws playing a role in maintaining a balance in the ecosystems of their day. Some species were fox-sized, while others were barely the size of kittens.</p>
+                    <p>But <span class="t-hl" data-q="16"><span class="t-qmark">16</span>when a period of climate change cooled Australia about 12 million years ago<span class="t-note">(12 million years)</span></span>, the numbers of these ancient thylacines began to decline. By about 3 million years ago, only one species was left. About 4,000 years ago, these vanished completely from the Australian mainland, <span class="t-hl" data-q="17"><span class="t-qmark">17</span>so that Tasmania, a large island to the south of Australia, was then the last remaining place where thylacines existed<span class="t-note">(Tasmania)</span></span>. They ruled the animal life of that island unchallenged <span class="t-hl" data-q="18"><span class="t-qmark">18</span>until Europeans with sheep, dogs and a great indifference to native flora and fauna<span class="t-note">(Europeans)</span></span>, seem to have brought about their extinction. In 1936, the last captive Tasmanian tiger died in Hobart Zoo. Since then, many expeditions have searched for tigers in the Tasmanian bush, but no definitive evidence has been found. Despite this, there are many who keep searching.</p>
+                    <p>In 1981, Dutch-born zoologist Hans Naarding was in Tasmania conducting a survey of Latham’s snipe, a species of endangered bird. One night he saw an animal in the light from the searchlight mounted on his vehicle. He described it as about the size of a large dog, but with slightly sloping hindquarters and a fairly thick tail continuing straight on from its backbone. He said that it had 12 distinct stripes on its back, running down to the point where the tail began. He reported the sighting to the Director of Tasmania’s National Parks. When the news broke, said Naarding, ‘<span class="t-hl" data-q="23"><span class="t-qmark">23</span>I was besieged by television crews, including four or five from Japan<span class="t-note">(A — Naarding: xalqaro TV kanallari)</span></span>, and others from the United Kingdom, Germany, New Zealand and South America.’</p>
+                    <p><span class="t-hl" data-q="25"><span class="t-qmark">25</span>Government and private search parties combed the region<span class="t-note">(B — keng qidiruv o'tkazildi)</span></span>, but no further sightings were made. The tiger, as always, had escaped to its lair – a place that many insist exists only in the imagination. Others disagree: there have been more than 4,000 claimed sightings of the animal since it supposedly died out, and the average number of claims reported to the authorities each year is now 150. So is it out there? Even experts differ in opinion.</p>
+                    <p>Randolph Rose, Associate Professor of Zoology at the University of Tasmania, says that he dreamed of seeing a thylacine, but is now convinced that his dream will go unfulfilled. The consensus among conservationists is that any animal with a population base of less than 1,000 is headed for extinction within 60 years. ‘Sixty years ago,’ he says, ‘there was only one thylacine that we know of, and that was in Hobart Zoo. <span class="t-hl" data-q="19"><span class="t-qmark">19</span>Take it from me, the tiger is gone<span class="t-note">(B — Randolph Rose: yo'lbars yo'q bo'lib ketgan)</span></span>.’</p>
+                    <p>But Dr David Pemberton, curator of zoology at the Tasmanian Museum, states that, <span class="t-hl" data-q="22"><span class="t-qmark">22</span>despite scientific thinking that a relatively large number of animals is required to sustain a population<span class="t-note">(C — Pemberton: Florida panterasi misoli)</span></span>, ‘the Florida panther is down to a dozen or so animals, and, while it does have some inbreeding problems, is still ticking along.’ After all, animals can be notoriously elusive. The strange fish known as the coelacanth, with its ‘proto legs’, <span class="t-hl" data-q="26"><span class="t-qmark">26</span>was thought to have died out with the dinosaurs 70 million years ago until a specimen was dragged to the surface<span class="t-note">(D — yo'q bo'lgan deb o'ylangan, lekin topilgan)</span></span> in a shark net off the coast of South Africa in 1938.</p>
+                    <p>Wildlife biologist Nick Mooney has the unenviable task of investigating all so-called sightings of the tiger. It was Mooney who was first consulted in late February 2005 about the authenticity of new digital photographic images of a thylacine allegedly taken by a tourist. On face value, Mooney says, this particular account of a sighting and the photographs submitted as proof amount to <span class="t-hl" data-q="24"><span class="t-qmark">24</span>one of the most convincing cases for the species’ survival that he has seen<span class="t-note">(D — Mooney: sayyoh suratlari ishonarli)</span></span>. Many other ‘sightings’ have been hoaxes, and <span class="t-hl" data-q="21"><span class="t-qmark">21</span>many sincere seekers are victims of obsession<span class="t-note">(D — Mooney: ko'pchilik obsessiya qurboni)</span></span>. ‘It is a blind optimism that something is, rather than cynicism that something isn’t,’ Mooney says. ‘If something crosses the road, it’s not a case of “I wonder what that was?” Rather, it is a case of “That’s a thylacine!”’</p>
+                    <p>However, Mooney treats all sightings on face value. ‘I never try to embarrass people,’ he says, ‘… but the fact that I don’t pack the car immediately after they telephone can often be taken as ridicule. Obsessive characters get angry that someone in my position is not out there when they think the thylacine is there.’</p>
+                    <p>Hans Naarding, whose sighting of a striped animal two decades ago was the highlight of a lifetime of animal spotting, remains puzzled by the time and money people waste on tiger searches. He says resources would be better applied to saving another endangered animal, the Tasmanian devil, and helping declining migratory bird populations. Could the thylacine still be out there? ‘Sure,’ Naarding says. ‘I know the vast south-west wilderness of Tasmania well. They could survive … [But] if this is the case, it will not be long before they do disappear completely.’ Naarding believes that any discovery of surviving thylacines would be ‘rather pointless’. ‘How do you bring a species back from extinction?’ he asks. ‘What could you do with it? <span class="t-hl" data-q="20"><span class="t-qmark">20</span>If there are thylacines out there, they are better off right where they are<span class="t-note">(A — Naarding: ularni tinch qo'yish yaxshi)</span></span>.’</p>
+                </div>
+            </div>
+
+            <div class="passage-set" id="passage-3">
+                <div class="passage-intro">
+                    <strong>READING PASSAGE 3</strong><br>
+                    You should spend about 20 minutes on <strong>Questions 27–40</strong>, which are based on Reading
+                    Passage 3 below.
+                </div>
+                <p class="passage-title">Rebranding art museums</p>
+                <p style="text-align:center;font-style:italic;margin:-6px 0 14px;">A study of the reopened National Gallery of Victoria</p>
+                <div class="passage-text">
+                    <p>As anyone with even a passing interest in cultural institutions will know, art museums are adapting to keep up with changes in society. Do any of these newly developed spaces indicate a fundamental shift in the ways we engage with art at the beginning of the twenty-first century? The answer is a qualified Yes — and also, it must be said, No. A clear sense of this can be gained by <span class="t-hl" data-q="27"><span class="t-qmark">27</span>considering the 2003 redevelopment of the National Gallery of Victoria (NGV) in Melbourne, Australia's second largest city, in the light of the aspirations embodied in the original building<span class="t-note">(A — yangi NGV eski bino bilan solishtiriladi)</span></span> that served as its template.</p>
+                    <p>The first building was considered a thoroughly modern museum when it opened to the public in 1968. We should not forget that it was also bold, entrepreneurial and innovative in ways that have often been credited to the vision and foresight of the architect, Roy Grounds. For those who know it, the 1968 building signalled a strong sense of engagement with Asian and Pacific cultures, both in its architecture and through the layout of its collections. Its entrance lobby was designed to facilitate the rapid and efficient circulation of visitors. It also contained a series of greatly expanded temporary exhibition galleries and a vast Great Hall, <span class="t-hl" data-q="31"><span class="t-qmark">31</span>which represented an unprecedented emphasis on the ancillary roles of corporate functions and public performances<span class="t-note">(NO — aksincha, bunga katta e'tibor bergan)</span></span> in the contemporary museum. This last feature might have seemed excessive to some, yet how wise it has proven over the years <span class="t-hl" data-q="36"><span class="t-qmark">36</span>as museums have come to place increasing emphasis on corporate sponsorship, and on the need to generate additional funds via room hire<span class="t-note">(F — zal ijarasi orqali daromad)</span></span>. Furthermore, <span class="t-hl" data-q="37"><span class="t-qmark">37</span>the Great Hall has for forty years provided an area for children to roam at large<span class="t-note">(E — kelajakdagi tashrifchilarni rag'batlantiradi)</span></span> before being escorted through the much less spatially accommodating galleries themselves. As an unintimidating introduction to the lifelong rigors of visiting art museums, its impact and attendance cannot be overestimated.</p>
+                    <p>At the same time, other aspects of the 1968 NGV have not withstood the test of time so well. Foremost among these are the huge expanses of exterior concrete, windowless walls and the surrounding moat, <span class="t-hl" data-q="28"><span class="t-qmark">28</span>which creates a rather unwelcoming expression of the museum as a temple of culture set apart from the everyday world<span class="t-note">(B — san'at kundalik hayotdan uzoq tuyulgan)</span></span>. Over time, this idea has been questioned, and has been superseded by the growing impetus towards the alternative model of the museum as a more open-ended and visitor-friendly forum that engages the public more effectively.</p>
+                    <p>With these considerations in mind, <span class="t-hl" data-q="33"><span class="t-qmark">33</span>Mario Bellini's redeveloped NGV opened in 2003<span class="t-note">(NOT GIVEN — Bellinining keyingi loyihalari haqida gap yo'q)</span></span> and <span class="t-hl" data-q="32"><span class="t-qmark">32</span>his design reflects what the new, improved, twenty-first century global museum feels it should be emphasising<span class="t-note">(NO — xalqaro tendensiyalarga mos)</span></span> to its visitors. Here the institution's energies are focused, not so much on the technical subtleties of how to design the galleries themselves, as on presenting to the public a spectacular image of the museum itself as a welcoming yet efficient facilitator of social interaction, popular entertainment and public knowledge.</p>
+                    <p>All of this is certainly impressive, but where has the art gone? <span class="t-hl" data-q="29"><span class="t-qmark">29</span>We are not allowed to see the exhibitions until we have completed the necessary inductions<span class="t-note">(C — kirish qismi san'atni to'sib qo'ygan)</span></span>. We are greeted by a hugely expanded cloakroom screening off our vision to the right, followed by a large visitor information office leading to the ticket booths. Above us is the cafe and to our left we cannot escape the NGV shop set alongside the exit. And what of the redesigned galleries themselves? In fact, they represent a wonderfully elegant reframing of the permanent collections in ways that <span class="t-hl" data-q="34"><span class="t-qmark">34</span>should offer first-time visitors and seasoned members alike many new avenues for engagement<span class="t-note">(NOT GIVEN — tashrifchilar soni kuzatilishi aytilmagan)</span></span> in the years to come.</p>
+                    <p>But here is the conundrum posed by the NGV renovation and by the global sweep of new museum projects more generally. The mainstay elements of a permanent collection can become all too easily lost in the increased prominence that these rebranding exercises tend to place on the more commercially assertive aspects of the institution itself. At its most extreme, <span class="t-hl" data-q="38"><span class="t-qmark">38</span>this results in the construction of new buildings that supplant the artworks inside them to become the major attractions themselves<span class="t-note">(C — bino san'at asarlarini soyada qoldiradi)</span></span>.</p>
+                    <p>These challenges are most keenly felt in the area of the temporary exhibition. <span class="t-hl" data-q="30"><span class="t-qmark">30</span>Entrance to the NGV permanent collection is now free, so the NGV needs something to keep the paying public coming back<span class="t-note">(B — pul topish uchun zarur)</span></span>. The answer lies in the international 'blockbuster' exhibition. The Impressionists, for example, netted a total of 380,000 visitors, making it one of the most popular exhibitions in Australian history. There has also been, it needs to be said, a commendable attempt to leaven the international masterpieces with selected highlights from the permanent collection. Overall, though, the prevalence of these 'rental' blockbusters <span class="t-hl" data-q="39"><span class="t-qmark">39</span>cannot help but introduce a certain 'off the rack' feeling to the institution's exhibition programme<span class="t-note">(A — dastur o'ziga xosligini yo'qotadi)</span></span>. More importantly perhaps, they clearly narrow the options for other worthy but less glamorous projects, and they take energy away from the curators' potential to do further work on and around the permanent collection itself.</p>
+                    <p>Yet the show must go on, and shows can't exist without the public. Even the most adroit organisation, as the NGV assuredly is, <span class="t-hl" data-q="40"><span class="t-qmark">40</span>needs to be able to juggle numerous, often conflicting priorities<span class="t-note">(D — qarama-qarshi talablarni muvozanatlash)</span></span>: the need to advance scholarship, on the one hand, versus the imperative of access on the other; the need to introduce audiences to new ideas, versus the necessity of luring them in with instant brand recognition. Nobody said it was going to be easy, and <span class="t-hl" data-q="35"><span class="t-qmark">35</span>the effect of too much innovation in museums can be disastrous<span class="t-note">(YES — haddan tashqari yangilik halokatli bo'lishi mumkin)</span></span>.</p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ============== O'RTADAGI SURILADIGAN AJRATUVCHI ============== -->
+        <div class="resizer" id="resizer" title="Panellar kengligini o'zgartirish uchun surib torting"></div>
+
+        <!-- ============== QUESTIONS PANEL ============== -->
+        <div class="questions-panel" id="questions-panel">
+
+            <div class="question-set active" id="questions-1">
+
+                <div class="q-group" id="group-q1">
+                    <p class="q-group-header">Questions 1–6</p>
+                    <div class="q-instruction">
+                        <p>Do the following statements agree with the information given in Reading Passage 1?</p>
+                        <p>Choose <strong>TRUE</strong>, <strong>FALSE</strong> or <strong>NOT GIVEN</strong>.</p>
+                    </div>
+                    <div class="info-box">
+                        <p><strong>TRUE</strong> — if the statement agrees with the information</p>
+                        <p><strong>FALSE</strong> — if the statement contradicts the information</p>
+                        <p style="margin-bottom:0;"><strong>NOT GIVEN</strong> — if there is no information on this</p>
+                    </div>
+                    <div class="tf-question" id="item-q1">
+                        <div class="tf-question-line"><span class="tf-question-number">1</span><span class="tf-question-text">The two living species of tuatara look alike.</span></div>
+                        <div class="tf-options">
+                            <label class="tf-option"><input type="radio" name="q1" value="TRUE"> TRUE</label>
+                            <label class="tf-option"><input type="radio" name="q1" value="FALSE"> FALSE</label>
+                            <label class="tf-option"><input type="radio" name="q1" value="NOT GIVEN"> NOT GIVEN</label>
+                        </div>
+                    </div>
+                    <div class="tf-question" id="item-q2">
+                        <div class="tf-question-line"><span class="tf-question-number">2</span><span class="tf-question-text">Many tuatara bones that have been discovered are millions of years old.</span></div>
+                        <div class="tf-options">
+                            <label class="tf-option"><input type="radio" name="q2" value="TRUE"> TRUE</label>
+                            <label class="tf-option"><input type="radio" name="q2" value="FALSE"> FALSE</label>
+                            <label class="tf-option"><input type="radio" name="q2" value="NOT GIVEN"> NOT GIVEN</label>
+                        </div>
+                    </div>
+                    <div class="tf-question" id="item-q3">
+                        <div class="tf-question-line"><span class="tf-question-number">3</span><span class="tf-question-text">The tails of male tuatara are a different colour from those of female tuatara.</span></div>
+                        <div class="tf-options">
+                            <label class="tf-option"><input type="radio" name="q3" value="TRUE"> TRUE</label>
+                            <label class="tf-option"><input type="radio" name="q3" value="FALSE"> FALSE</label>
+                            <label class="tf-option"><input type="radio" name="q3" value="NOT GIVEN"> NOT GIVEN</label>
+                        </div>
+                    </div>
+                    <div class="tf-question" id="item-q4">
+                        <div class="tf-question-line"><span class="tf-question-number">4</span><span class="tf-question-text">The female tuatara lays her eggs in a burrow.</span></div>
+                        <div class="tf-options">
+                            <label class="tf-option"><input type="radio" name="q4" value="TRUE"> TRUE</label>
+                            <label class="tf-option"><input type="radio" name="q4" value="FALSE"> FALSE</label>
+                            <label class="tf-option"><input type="radio" name="q4" value="NOT GIVEN"> NOT GIVEN</label>
+                        </div>
+                    </div>
+                    <div class="tf-question" id="item-q5">
+                        <div class="tf-question-line"><span class="tf-question-number">5</span><span class="tf-question-text">There are more female hatchlings than male hatchlings.</span></div>
+                        <div class="tf-options">
+                            <label class="tf-option"><input type="radio" name="q5" value="TRUE"> TRUE</label>
+                            <label class="tf-option"><input type="radio" name="q5" value="FALSE"> FALSE</label>
+                            <label class="tf-option"><input type="radio" name="q5" value="NOT GIVEN"> NOT GIVEN</label>
+                        </div>
+                    </div>
+                    <div class="tf-question" id="item-q6">
+                        <div class="tf-question-line"><span class="tf-question-number">6</span><span class="tf-question-text">Once they have hatched, young tuatara have to look after themselves.</span></div>
+                        <div class="tf-options">
+                            <label class="tf-option"><input type="radio" name="q6" value="TRUE"> TRUE</label>
+                            <label class="tf-option"><input type="radio" name="q6" value="FALSE"> FALSE</label>
+                            <label class="tf-option"><input type="radio" name="q6" value="NOT GIVEN"> NOT GIVEN</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="q-group" id="group-q7">
+                    <p class="q-group-header">Questions 7–13</p>
+                    <div class="q-instruction">
+                        <p>Complete the notes below.</p>
+                        <p>Choose <strong>ONE WORD AND/OR A NUMBER</strong> from the passage for each answer.</p>
+                    </div>
+                    <div class="summary-box">
+                        <p class="summary-title">The tuatara</p>
+                        <p style="font-weight:700;margin:12px 0 6px;">Lifespan</p>
+                        <ul style="padding-left:22px;margin:0;">
+                            <li style="margin-bottom:10px;line-height:2;">maximum lifespan unknown</li>
+                            <li style="margin-bottom:10px;line-height:2;">many live to at least <input type="text" id="q7" class="answer-input" placeholder="7" style="width:130px;"> years</li>
+                        </ul>
+                        <p style="font-weight:700;margin:12px 0 6px;">Behaviour</p>
+                        <ul style="padding-left:22px;margin:0;">
+                            <li style="margin-bottom:10px;line-height:2;">attack other creatures with their <input type="text" id="q8" class="answer-input" placeholder="8" style="width:130px;"></li>
+                            <li style="margin-bottom:10px;line-height:2;">eat young <input type="text" id="q9" class="answer-input" placeholder="9" style="width:130px;"> that share the same burrows, as well as invertebrates and reptiles</li>
+                        </ul>
+                        <p style="font-weight:700;margin:12px 0 6px;">Population</p>
+                        <ul style="padding-left:22px;margin:0;">
+                            <li style="margin-bottom:10px;line-height:2;">abundant until rats were introduced by <input type="text" id="q10" class="answer-input" placeholder="10" style="width:130px;"> people</li>
+                            <li style="margin-bottom:10px;line-height:2;">by the 1840s, hardly any tuatara were found on the <input type="text" id="q11" class="answer-input" placeholder="11" style="width:130px;"></li>
+                            <li style="margin-bottom:10px;line-height:2;">islands off the north-eastern coast and in Cook Strait are now home to the <input type="text" id="q12" class="answer-input" placeholder="12" style="width:130px;"> tuatara</li>
+                            <li style="margin-bottom:10px;line-height:2;">Brothers Island tuatara found only on North Brother Island</li>
+                            <li style="margin-bottom:10px;line-height:2;">density of tuatara on Stephens Island is up to <input type="text" id="q13" class="answer-input" placeholder="13" style="width:130px;"> per hectare</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="question-set" id="questions-2">
+
+                <div class="q-group" id="group-q14">
+                    <p class="q-group-header">Questions 14–18</p>
+                    <div class="q-instruction">
+                        <p>Complete the summary below.</p>
+                        <p>Choose <strong>NO MORE THAN TWO WORDS AND/OR A NUMBER</strong> from the passage for each answer.</p>
+                    </div>
+                    <div class="summary-box">
+                        <p class="summary-title">The thylacine</p>
+                        <p style="line-height:2.2;">The thylacine was a dog-like animal which had a <input type="text" id="q14" class="answer-input" placeholder="14" style="width:130px;"> coat and was carnivorous. It was originally spread widely throughout the mainland of <input type="text" id="q15" class="answer-input" placeholder="15" style="width:130px;">, but started to disappear from that area around <input type="text" id="q16" class="answer-input" placeholder="16" style="width:130px;"> ago because of climate change.</p>
+                        <p style="line-height:2.2;">In the end, thylacines were found only on the island of <input type="text" id="q17" class="answer-input" placeholder="17" style="width:130px;">, until the arrival of <input type="text" id="q18" class="answer-input" placeholder="18" style="width:130px;"> with their farming practices brought about a drastic reduction in thylacine numbers. The last one is thought to have died in Hobart Zoo in 1936.</p>
+                    </div>
+                </div>
+
+                <div class="q-group" id="group-q19">
+                    <p class="q-group-header">Questions 19–24</p>
+                    <div class="q-instruction">
+                        <p>Look at the following statements (Questions 19–24) and the list of people below.</p>
+                        <p>Match each statement with the correct person, <strong>A</strong>, <strong>B</strong>, <strong>C</strong> or <strong>D</strong>.</p>
+                        <p><strong>NB</strong> You may use any letter more than once.</p>
+                    </div>
+                    <div class="info-box option-list">
+                        <p style="font-weight:700;">List of people</p>
+                        <p><strong>A</strong> &nbsp; Hans Naarding</p>
+                        <p><strong>B</strong> &nbsp; Randolph Rose</p>
+                        <p><strong>C</strong> &nbsp; David Pemberton</p>
+                        <p><strong>D</strong> &nbsp; Nick Mooney</p>
+                    </div>
+                    <table class="matching-table">
+                        <thead><tr><th class="statement">Statement</th><th>A</th><th>B</th><th>C</th><th>D</th></tr></thead>
+                        <tbody>
+                            <tr id="item-q19"><td class="statement"><strong>19</strong> &nbsp;There is no longer any hope of finding a surviving Tasmanian tiger.</td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q19" value="A" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q19" value="B" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q19" value="C" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q19" value="D" class="table-radio"></label></td></tr>
+                            <tr id="item-q20"><td class="statement"><strong>20</strong> &nbsp;It would be preferable not to disturb any surviving Tasmanian tigers.</td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q20" value="A" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q20" value="B" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q20" value="C" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q20" value="D" class="table-radio"></label></td></tr>
+                            <tr id="item-q21"><td class="statement"><strong>21</strong> &nbsp;Many who claim to have seen Tasmanian tigers are not objective witnesses.</td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q21" value="A" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q21" value="B" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q21" value="C" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q21" value="D" class="table-radio"></label></td></tr>
+                            <tr id="item-q22"><td class="statement"><strong>22</strong> &nbsp;Expert estimates of numbers needed to ensure species survival may be inaccurate.</td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q22" value="A" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q22" value="B" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q22" value="C" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q22" value="D" class="table-radio"></label></td></tr>
+                            <tr id="item-q23"><td class="statement"><strong>23</strong> &nbsp;There is a great deal of international interest in Tasmanian tiger stories.</td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q23" value="A" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q23" value="B" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q23" value="C" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q23" value="D" class="table-radio"></label></td></tr>
+                            <tr id="item-q24"><td class="statement"><strong>24</strong> &nbsp;Some fresh evidence provided by a visitor to Tasmania seems credible.</td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q24" value="A" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q24" value="B" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q24" value="C" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q24" value="D" class="table-radio"></label></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="q-group" id="group-q25">
+                    <p class="q-group-header">Questions 25–26</p>
+                    <div class="q-instruction">
+                        <p>Choose the correct letter, <strong>A</strong>, <strong>B</strong>, <strong>C</strong> or <strong>D</strong>.</p>
+                    </div>
+                    <div class="q-item" id="item-q25">
+                        <span class="q-num">25</span>
+                        <div class="q-body">
+                            <p style="font-weight:600;margin-bottom:8px;">Has Naarding’s sighting of a Tasmanian tiger resulted in</p>
+                            <div class="multi-choice-option"><label><input type="radio" name="q25" value="A"> <span><strong>A</strong> &nbsp; the capture of the tiger.</span></label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q25" value="B"> <span><strong>B</strong> &nbsp; an extensive follow-up.</span></label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q25" value="C"> <span><strong>C</strong> &nbsp; many other sightings.</span></label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q25" value="D"> <span><strong>D</strong> &nbsp; the death of the tiger.</span></label></div>
+                        </div>
+                    </div>
+                    <div class="q-item" id="item-q26">
+                        <span class="q-num">26</span>
+                        <div class="q-body">
+                            <p style="font-weight:600;margin-bottom:8px;">The example of the coelacanth is used to show that</p>
+                            <div class="multi-choice-option"><label><input type="radio" name="q26" value="A"> <span><strong>A</strong> &nbsp; new animal species are still evolving.</span></label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q26" value="B"> <span><strong>B</strong> &nbsp; animals can possess surprising physical characteristics.</span></label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q26" value="C"> <span><strong>C</strong> &nbsp; species of sea animals can be saved from extinction.</span></label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q26" value="D"> <span><strong>D</strong> &nbsp; opinions regarding extinction of animal species can be mistaken.</span></label></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="question-set" id="questions-3">
+
+                <div class="q-group" id="group-q27">
+                    <p class="q-group-header">Questions 27–30</p>
+                    <div class="q-instruction">
+                        <p>Choose the correct letter, <strong>A</strong>, <strong>B</strong>, <strong>C</strong> or <strong>D</strong>.</p>
+                    </div>
+                    <div class="q-item" id="item-q27">
+                        <span class="q-num">27</span>
+                        <div class="q-body">
+                            <p style="font-weight:600;margin-bottom:8px;">What is the writer doing in paragraph 1?</p>
+                            <div class="multi-choice-option"><label><input type="radio" name="q27" value="A"> <span><strong>A</strong> &nbsp; comparing the old NGV with the new NGV</span></label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q27" value="B"> <span><strong>B</strong> &nbsp; describing the role of art museums in Australian culture</span></label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q27" value="C"> <span><strong>C</strong> &nbsp; considering the influence of gallery design on art appreciation</span></label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q27" value="D"> <span><strong>D</strong> &nbsp; suggesting there has been little recent change in gallery design</span></label></div>
+                        </div>
+                    </div>
+                    <div class="q-item" id="item-q28">
+                        <span class="q-num">28</span>
+                        <div class="q-body">
+                            <p style="font-weight:600;margin-bottom:8px;">The writer criticises the old NGV because</p>
+                            <div class="multi-choice-option"><label><input type="radio" name="q28" value="A"> <span><strong>A</strong> &nbsp; the permanent collection was poorly displayed.</span></label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q28" value="B"> <span><strong>B</strong> &nbsp; the building tended to make art seem remote.</span></label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q28" value="C"> <span><strong>C</strong> &nbsp; Asian and Pacific art was neglected.</span></label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q28" value="D"> <span><strong>D</strong> &nbsp; the foyer resembled a shop.</span></label></div>
+                        </div>
+                    </div>
+                    <div class="q-item" id="item-q29">
+                        <span class="q-num">29</span>
+                        <div class="q-body">
+                            <p style="font-weight:600;margin-bottom:8px;">What does the writer notice about the new NGV?</p>
+                            <div class="multi-choice-option"><label><input type="radio" name="q29" value="A"> <span><strong>A</strong> &nbsp; He thinks the ticket booths are well positioned.</span></label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q29" value="B"> <span><strong>B</strong> &nbsp; He is upset that he is made to move so quickly.</span></label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q29" value="C"> <span><strong>C</strong> &nbsp; He is frustrated because the art is obscured by the entrance.</span></label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q29" value="D"> <span><strong>D</strong> &nbsp; He thinks the redevelopment fails to keep up with international trends.</span></label></div>
+                        </div>
+                    </div>
+                    <div class="q-item" id="item-q30">
+                        <span class="q-num">30</span>
+                        <div class="q-body">
+                            <p style="font-weight:600;margin-bottom:8px;">The writer argues that rental 'blockbuster' exhibitions</p>
+                            <div class="multi-choice-option"><label><input type="radio" name="q30" value="A"> <span><strong>A</strong> &nbsp; should be cheaper.</span></label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q30" value="B"> <span><strong>B</strong> &nbsp; are a financial necessity.</span></label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q30" value="C"> <span><strong>C</strong> &nbsp; should be increased in number.</span></label></div>
+                            <div class="multi-choice-option"><label><input type="radio" name="q30" value="D"> <span><strong>D</strong> &nbsp; allow the museum to present an original programme.</span></label></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="q-group" id="group-q31">
+                    <p class="q-group-header">Questions 31–35</p>
+                    <div class="q-instruction">
+                        <p>Do the following statements agree with the views of the writer in Reading Passage 3?</p>
+                        <p>Choose <strong>YES</strong>, <strong>NO</strong> or <strong>NOT GIVEN</strong>.</p>
+                    </div>
+                    <div class="info-box">
+                        <p><strong>YES</strong> — if the statement agrees with the views of the writer</p>
+                        <p><strong>NO</strong> — if the statement contradicts the views of the writer</p>
+                        <p style="margin-bottom:0;"><strong>NOT GIVEN</strong> — if it is impossible to say what the writer thinks about this</p>
+                    </div>
+                    <div class="tf-question" id="item-q31">
+                        <div class="tf-question-line"><span class="tf-question-number">31</span><span class="tf-question-text">Roy Grounds's design failed to recognise the importance of functions and performances in museums.</span></div>
+                        <div class="tf-options">
+                            <label class="tf-option"><input type="radio" name="q31" value="YES"> YES</label>
+                            <label class="tf-option"><input type="radio" name="q31" value="NO"> NO</label>
+                            <label class="tf-option"><input type="radio" name="q31" value="NOT GIVEN"> NOT GIVEN</label>
+                        </div>
+                    </div>
+                    <div class="tf-question" id="item-q32">
+                        <div class="tf-question-line"><span class="tf-question-number">32</span><span class="tf-question-text">Mario Bellini's new NGV rejects international museum design trends.</span></div>
+                        <div class="tf-options">
+                            <label class="tf-option"><input type="radio" name="q32" value="YES"> YES</label>
+                            <label class="tf-option"><input type="radio" name="q32" value="NO"> NO</label>
+                            <label class="tf-option"><input type="radio" name="q32" value="NOT GIVEN"> NOT GIVEN</label>
+                        </div>
+                    </div>
+                    <div class="tf-question" id="item-q33">
+                        <div class="tf-question-line"><span class="tf-question-number">33</span><span class="tf-question-text">Mario Bellini's work on subsequent museum projects has been less successful than that on the NGV.</span></div>
+                        <div class="tf-options">
+                            <label class="tf-option"><input type="radio" name="q33" value="YES"> YES</label>
+                            <label class="tf-option"><input type="radio" name="q33" value="NO"> NO</label>
+                            <label class="tf-option"><input type="radio" name="q33" value="NOT GIVEN"> NOT GIVEN</label>
+                        </div>
+                    </div>
+                    <div class="tf-question" id="item-q34">
+                        <div class="tf-question-line"><span class="tf-question-number">34</span><span class="tf-question-text">The NGV monitors the number of first-time visitors to permanent collections.</span></div>
+                        <div class="tf-options">
+                            <label class="tf-option"><input type="radio" name="q34" value="YES"> YES</label>
+                            <label class="tf-option"><input type="radio" name="q34" value="NO"> NO</label>
+                            <label class="tf-option"><input type="radio" name="q34" value="NOT GIVEN"> NOT GIVEN</label>
+                        </div>
+                    </div>
+                    <div class="tf-question" id="item-q35">
+                        <div class="tf-question-line"><span class="tf-question-number">35</span><span class="tf-question-text">Too much change may have negative impacts on museums.</span></div>
+                        <div class="tf-options">
+                            <label class="tf-option"><input type="radio" name="q35" value="YES"> YES</label>
+                            <label class="tf-option"><input type="radio" name="q35" value="NO"> NO</label>
+                            <label class="tf-option"><input type="radio" name="q35" value="NOT GIVEN"> NOT GIVEN</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="q-group" id="group-q36">
+                    <p class="q-group-header">Questions 36–40</p>
+                    <div class="q-instruction">
+                        <p>Complete each sentence with the correct ending, <strong>A–G</strong>, below.</p>
+                    </div>
+                    <div class="info-box option-list">
+                        <p style="font-weight:700;">Sentence endings</p>
+                        <p><strong>A</strong> &nbsp; the museum programme will lose its individuality.</p>
+                        <p><strong>B</strong> &nbsp; the museum will lose credibility.</p>
+                        <p><strong>C</strong> &nbsp; the art loses its importance.</p>
+                        <p><strong>D</strong> &nbsp; it will have to balance opposing demands.</p>
+                        <p><strong>E</strong> &nbsp; this will encourage museum visitors in the future.</p>
+                        <p><strong>F</strong> &nbsp; it will have the capability of increasing revenue.</p>
+                        <p><strong>G</strong> &nbsp; the architect's reputation might suffer.</p>
+                    </div>
+                    <table class="matching-table">
+                        <thead><tr><th class="statement">Sentence beginning</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th></tr></thead>
+                        <tbody>
+                            <tr id="item-q36"><td class="statement"><strong>36</strong> &nbsp;If a large space is available in the museum,</td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q36" value="A" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q36" value="B" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q36" value="C" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q36" value="D" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q36" value="E" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q36" value="F" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q36" value="G" class="table-radio"></label></td></tr>
+                            <tr id="item-q37"><td class="statement"><strong>37</strong> &nbsp;If children are allowed to move freely in parts of the gallery,</td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q37" value="A" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q37" value="B" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q37" value="C" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q37" value="D" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q37" value="E" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q37" value="F" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q37" value="G" class="table-radio"></label></td></tr>
+                            <tr id="item-q38"><td class="statement"><strong>38</strong> &nbsp;If too much emphasis is placed on the museum building itself,</td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q38" value="A" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q38" value="B" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q38" value="C" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q38" value="D" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q38" value="E" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q38" value="F" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q38" value="G" class="table-radio"></label></td></tr>
+                            <tr id="item-q39"><td class="statement"><strong>39</strong> &nbsp;If there is an over-reliance on 'blockbuster' exhibitions,</td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q39" value="A" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q39" value="B" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q39" value="C" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q39" value="D" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q39" value="E" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q39" value="F" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q39" value="G" class="table-radio"></label></td></tr>
+                            <tr id="item-q40"><td class="statement"><strong>40</strong> &nbsp;If the NGV wants to continue to be successful,</td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q40" value="A" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q40" value="B" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q40" value="C" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q40" value="D" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q40" value="E" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q40" value="F" class="table-radio"></label></td><td><label style="display:block;width:100%;height:100%;cursor:pointer;"><input type="radio" name="q40" value="G" class="table-radio"></label></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="nav-row" aria-label="Questions">
+        <div class="footer__questionWrapper___1tZ46 selected" role="tablist">
+            <button role="tab" class="footer__questionNo___3WNct" onclick="switchToPassage(1)">
+                <span>Passage <span class="sectionNr">1</span><span class="attemptedCount">0 of 13</span></span>
+            </button>
+            <div class="footer__subquestionWrapper___9GgoP">
+                <button class="subQuestion" onclick="goToQuestion(1)"><span>1</span></button>
+                <button class="subQuestion" onclick="goToQuestion(2)"><span>2</span></button>
+                <button class="subQuestion" onclick="goToQuestion(3)"><span>3</span></button>
+                <button class="subQuestion" onclick="goToQuestion(4)"><span>4</span></button>
+                <button class="subQuestion" onclick="goToQuestion(5)"><span>5</span></button>
+                <button class="subQuestion" onclick="goToQuestion(6)"><span>6</span></button>
+                <button class="subQuestion" onclick="goToQuestion(7)"><span>7</span></button>
+                <button class="subQuestion" onclick="goToQuestion(8)"><span>8</span></button>
+                <button class="subQuestion" onclick="goToQuestion(9)"><span>9</span></button>
+                <button class="subQuestion" onclick="goToQuestion(10)"><span>10</span></button>
+                <button class="subQuestion" onclick="goToQuestion(11)"><span>11</span></button>
+                <button class="subQuestion" onclick="goToQuestion(12)"><span>12</span></button>
+                <button class="subQuestion" onclick="goToQuestion(13)"><span>13</span></button>
+            </div>
+        </div>
+        <div class="footer__questionWrapper___1tZ46" role="tablist">
+            <button role="tab" class="footer__questionNo___3WNct" onclick="switchToPassage(2)">
+                <span>Passage <span class="sectionNr">2</span><span class="attemptedCount">0 of 13</span></span>
+            </button>
+            <div class="footer__subquestionWrapper___9GgoP">
+                <button class="subQuestion" onclick="goToQuestion(14)"><span>14</span></button>
+                <button class="subQuestion" onclick="goToQuestion(15)"><span>15</span></button>
+                <button class="subQuestion" onclick="goToQuestion(16)"><span>16</span></button>
+                <button class="subQuestion" onclick="goToQuestion(17)"><span>17</span></button>
+                <button class="subQuestion" onclick="goToQuestion(18)"><span>18</span></button>
+                <button class="subQuestion" onclick="goToQuestion(19)"><span>19</span></button>
+                <button class="subQuestion" onclick="goToQuestion(20)"><span>20</span></button>
+                <button class="subQuestion" onclick="goToQuestion(21)"><span>21</span></button>
+                <button class="subQuestion" onclick="goToQuestion(22)"><span>22</span></button>
+                <button class="subQuestion" onclick="goToQuestion(23)"><span>23</span></button>
+                <button class="subQuestion" onclick="goToQuestion(24)"><span>24</span></button>
+                <button class="subQuestion" onclick="goToQuestion(25)"><span>25</span></button>
+                <button class="subQuestion" onclick="goToQuestion(26)"><span>26</span></button>
+            </div>
+        </div>
+        <div class="footer__questionWrapper___1tZ46" role="tablist">
+            <button role="tab" class="footer__questionNo___3WNct" onclick="switchToPassage(3)">
+                <span>Passage <span class="sectionNr">3</span><span class="attemptedCount">0 of 14</span></span>
+            </button>
+            <div class="footer__subquestionWrapper___9GgoP">
+                <button class="subQuestion" onclick="goToQuestion(27)"><span>27</span></button>
+                <button class="subQuestion" onclick="goToQuestion(28)"><span>28</span></button>
+                <button class="subQuestion" onclick="goToQuestion(29)"><span>29</span></button>
+                <button class="subQuestion" onclick="goToQuestion(30)"><span>30</span></button>
+                <button class="subQuestion" onclick="goToQuestion(31)"><span>31</span></button>
+                <button class="subQuestion" onclick="goToQuestion(32)"><span>32</span></button>
+                <button class="subQuestion" onclick="goToQuestion(33)"><span>33</span></button>
+                <button class="subQuestion" onclick="goToQuestion(34)"><span>34</span></button>
+                <button class="subQuestion" onclick="goToQuestion(35)"><span>35</span></button>
+                <button class="subQuestion" onclick="goToQuestion(36)"><span>36</span></button>
+                <button class="subQuestion" onclick="goToQuestion(37)"><span>37</span></button>
+                <button class="subQuestion" onclick="goToQuestion(38)"><span>38</span></button>
+                <button class="subQuestion" onclick="goToQuestion(39)"><span>39</span></button>
+                <button class="subQuestion" onclick="goToQuestion(40)"><span>40</span></button>
+            </div>
+        </div>
+        <button id="deliver-button" class="footer__deliverButton___3FM07"><span>Check Answers</span></button>
+    </nav>
+
+    <!-- Context Menu -->
+    <div id="contextMenu" class="context-menu">
+        <div class="context-menu-item" onclick="highlightText()">Highlight</div>
+        <div class="context-menu-item" onclick="addComment()">Comment</div>
+        <div class="context-menu-item" id="clear-item" onclick="clearHighlight()" style="display:none;">Clear</div>
+        <div class="context-menu-item" onclick="clearAllHighlights()">Clear All</div>
+    </div>
+
+    <!-- Result Modal -->
+    <div id="result-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Your Results</h2>
+                <button id="modal-close-button" class="modal-close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="score-summary"></p>
+                <div id="result-details"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const correctAnswers = {
+            'q1': 'TRUE',
+            'q2': 'FALSE',
+            'q3': 'NOT GIVEN',
+            'q4': 'FALSE',
+            'q5': 'NOT GIVEN',
+            'q6': 'TRUE',
+            'q7': ['80'],
+            'q8': ['teeth'],
+            'q9': ['seabirds', 'seabird'],
+            'q10': ['Polynesian'],
+            'q11': ['mainland'],
+            'q12': ['common'],
+            'q13': ['2,500', '2500'],
+            'q14': ['striped'],
+            'q15': ['Australia'],
+            'q16': ['12 million years', '12 million', 'twelve million years'],
+            'q17': ['Tasmania'],
+            'q18': ['Europeans', 'European'],
+            'q19': 'B',
+            'q20': 'A',
+            'q21': 'D',
+            'q22': 'C',
+            'q23': 'A',
+            'q24': 'D',
+            'q25': 'B',
+            'q26': 'D',
+            'q27': 'A',
+            'q28': 'B',
+            'q29': 'C',
+            'q30': 'B',
+            'q31': 'NO',
+            'q32': 'NO',
+            'q33': 'NOT GIVEN',
+            'q34': 'NOT GIVEN',
+            'q35': 'YES',
+            'q36': 'F',
+            'q37': 'E',
+            'q38': 'C',
+            'q39': 'A',
+            'q40': 'D'
+        };
+
+        const questionTypes = {
+            'q1': 'tf',
+            'q2': 'tf',
+            'q3': 'tf',
+            'q4': 'tf',
+            'q5': 'tf',
+            'q6': 'tf',
+            'q7': 'text',
+            'q8': 'text',
+            'q9': 'text',
+            'q10': 'text',
+            'q11': 'text',
+            'q12': 'text',
+            'q13': 'text',
+            'q14': 'text',
+            'q15': 'text',
+            'q16': 'text',
+            'q17': 'text',
+            'q18': 'text',
+            'q19': 'table',
+            'q20': 'table',
+            'q21': 'table',
+            'q22': 'table',
+            'q23': 'table',
+            'q24': 'table',
+            'q25': 'mcq',
+            'q26': 'mcq',
+            'q27': 'mcq',
+            'q28': 'mcq',
+            'q29': 'mcq',
+            'q30': 'mcq',
+            'q31': 'tf',
+            'q32': 'tf',
+            'q33': 'tf',
+            'q34': 'tf',
+            'q35': 'tf',
+            'q36': 'table',
+            'q37': 'table',
+            'q38': 'table',
+            'q39': 'table',
+            'q40': 'table'
+        };
+
+        // "Choose TWO letters" guruhi: qaysi savol raqamlari shu guruhga tegishli
+        const pairGroups = {  };
+
+        function pairNameForQ(qNum) {
+            return Object.keys(pairGroups).find(name => pairGroups[name].includes(qNum)) || null;
+        }
+
+        // qaysi savol qaysi passage-da
+        function passageForQ(qNum) {
+            if (qNum <= 13) return 1;
+            if (qNum <= 26) return 2;
+            return 3;
+        }
+
+        const passageRanges = { 1: [1, 13], 2: [14, 26], 3: [27, 40] };
+
+        let currentPassage = 1;
+        let currentQuestion = 1;
+        let selectedRange = null;
+        let contextElement = null;
+
+        function switchToPassage(n) {
+            currentPassage = n;
+            document.querySelectorAll('.passage-set').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.question-set').forEach(p => p.classList.remove('active'));
+            document.getElementById('passage-' + n).classList.add('active');
+            document.getElementById('questions-' + n).classList.add('active');
+            document.querySelectorAll('.footer__questionWrapper___1tZ46').forEach((w, i) => w.classList.toggle('selected', i + 1 === n));
+            document.getElementById('part-indicator').textContent = 'Reading Passage ' + n;
+            document.getElementById('passage-panel').scrollTop = 0;
+            document.getElementById('questions-panel').scrollTop = 0;
+            const [start, end] = passageRanges[n];
+            if (currentQuestion < start || currentQuestion > end) {
+                currentQuestion = start;
+                document.querySelectorAll('.subQuestion').forEach(b => b.classList.remove('active'));
+                const btn = document.querySelector('.subQuestion[onclick="goToQuestion(' + start + ')"]');
+                if (btn) btn.classList.add('active');
+            }
+            [1, 2, 3].forEach(p => updateAttemptedCount(p));
+        }
+
+        function goToQuestion(qNum) {
+            const p = passageForQ(qNum);
+            if (currentPassage !== p) switchToPassage(p);
+            currentQuestion = qNum;
+            document.querySelectorAll('.subQuestion').forEach(b => b.classList.remove('active'));
+            const btn = document.querySelector('.subQuestion[onclick="goToQuestion(' + qNum + ')"]');
+            if (btn) btn.classList.add('active');
+            const pairName = pairNameForQ(qNum);
+            let el = document.getElementById('q' + qNum)
+                || document.querySelector('input[name="q' + qNum + '"]')
+                || (pairName ? document.querySelector('input[name="' + pairName + '"]') : null);
+            document.querySelectorAll('.tf-question').forEach(q => q.classList.remove('active-question'));
+            if (el) {
+                const target = el.closest('.q-item') || el.closest('.tf-question') || el.closest('tr') || el.closest('.q-group');
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    target.classList.add('flash');
+                    setTimeout(() => target.classList.remove('flash'), 1000);
+                    if (target.classList.contains('tf-question')) target.classList.add('active-question');
+                }
+            }
+            // natijalar rejimida matndagi dalil joyiga ham o'tamiz
+            if (document.querySelector('.main-container.results-mode')) {
+                const hl = document.querySelector('.passage-set.active .t-hl[data-q="' + qNum + '"]');
+                if (hl) {
+                    document.querySelectorAll('.t-hl.active').forEach(x => x.classList.remove('active'));
+                    hl.classList.add('active');
+                    hl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        }
+
+        function isAnswered(qNum) {
+            const pairName = pairNameForQ(qNum);
+            if (pairName) {
+                const idx = pairGroups[pairName].indexOf(qNum);
+                return document.querySelectorAll('input[name="' + pairName + '"]:checked').length >= (idx + 1);
+            }
+            const key = 'q' + qNum;
+            const type = questionTypes[key];
+            if (type === 'text' || type === 'select') {
+                const el = document.getElementById(key);
+                return !!(el && el.value.trim() !== '');
+            }
+            if (type === 'mcq' || type === 'tf' || type === 'table') {
+                return !!document.querySelector('input[name="' + key + '"]:checked');
+            }
+            if (type === 'dragdrop') {
+                const zone = document.getElementById(key);
+                return !!(zone && zone.querySelector('.drag-item'));
+            }
+            return false;
+        }
+
+        function updateAttemptedCount(p) {
+            const [start, end] = passageRanges[p];
+            let count = 0;
+            for (let i = start; i <= end; i++) if (isAnswered(i)) count++;
+            const wrapper = document.querySelectorAll('.footer__questionWrapper___1tZ46')[p - 1];
+            if (wrapper) {
+                const span = wrapper.querySelector('.attemptedCount');
+                if (span) span.textContent = count + ' of ' + (end - start + 1);
+            }
+        }
+
+        function updateAnsweredIndicators() {
+            for (let qNum = 1; qNum <= 40; qNum++) {
+                const btn = document.querySelector('.subQuestion[onclick="goToQuestion(' + qNum + ')"]');
+                if (!btn || btn.classList.contains('correct') || btn.classList.contains('incorrect')) continue;
+                btn.classList.toggle('answered', isAnswered(qNum));
+            }
+            [1, 2, 3].forEach(p => updateAttemptedCount(p));
+        }
+
+        document.querySelectorAll('.answer-input, .answer-select, input[type="radio"], input[type="checkbox"]').forEach(inp => {
+            inp.addEventListener('input', updateAnsweredIndicators);
+            inp.addEventListener('change', updateAnsweredIndicators);
+        });
+
+        function setupCheckboxLimits() {
+            Object.keys(pairGroups).forEach(name => {
+                const boxes = Array.from(document.querySelectorAll('input[type="checkbox"][name="' + name + '"]'));
+                if (!boxes.length) return;
+                boxes.forEach(b => b.addEventListener('change', () => {
+                    const checkedCount = boxes.filter(x => x.checked).length;
+                    boxes.forEach(x => { if (!x.checked) x.disabled = checkedCount >= pairGroups[name].length; });
+                }));
+            });
+        }
+
+        function checkAnswers() {
+            let score = 0;
+            const resultsData = [];
+
+            document.querySelectorAll('.correct-inline').forEach(el => el.remove());
+            document.querySelectorAll('.answer-input, .answer-select').forEach(el => el.classList.remove('correct', 'incorrect'));
+            document.querySelectorAll('.multi-choice-option, .tf-option, .matching-table td, .drop-zone').forEach(el => el.classList.remove('correct', 'incorrect'));
+
+            Object.keys(correctAnswers).forEach(key => {
+                const correct = correctAnswers[key];
+                const type = questionTypes[key];
+
+                if (type === 'checkbox') {
+                    const [startQ, endQ] = key.split('-').map(s => parseInt(s.replace('q', '')));
+                    const checked = document.querySelectorAll('input[name="' + key + '"]:checked');
+                    const userVals = Array.from(checked).map(c => c.value).sort();
+                    const correctSorted = [...correct].sort();
+                    const correctSel = userVals.filter(v => correctSorted.includes(v));
+                    score += correctSel.length;
+                    const isCorrect = correctSel.length === correctSorted.length && userVals.length === correctSorted.length;
+                    checked.forEach(cb => { const w = cb.closest('.multi-choice-option'); if (w) w.classList.add(correctSorted.includes(cb.value) ? 'correct' : 'incorrect'); });
+                    correctSorted.forEach(v => { const cb = document.querySelector('input[name="' + key + '"][value="' + v + '"]'); if (cb && !cb.checked) { const w = cb.closest('.multi-choice-option'); if (w) w.classList.add('correct'); } });
+                    for (let q = startQ; q <= endQ; q++) { const b = document.querySelector('.subQuestion[onclick="goToQuestion(' + q + ')"]'); if (b) { b.classList.remove('answered'); b.classList.add(isCorrect ? 'correct' : 'incorrect'); } }
+                    resultsData.push({ question: startQ + '–' + endQ, userAnswer: userVals.join(', ') || 'No Answer', correctAnswer: correctSorted.join(', '), isCorrect });
+                    return;
+                }
+
+                const qNum = parseInt(key.replace('q', ''));
+                let userAnswer = '', isCorrect = false;
+
+                if (type === 'text') {
+                    const el = document.getElementById(key);
+                    userAnswer = el ? el.value.trim() : '';
+                    const accepted = Array.isArray(correct) ? correct : [correct];
+                    isCorrect = accepted.some(a => a.toLowerCase() === userAnswer.toLowerCase());
+                    if (el) {
+                        el.classList.add(isCorrect ? 'correct' : 'incorrect');
+                        if (!isCorrect) {
+                            const sp = document.createElement('span');
+                            sp.className = 'correct-inline';
+                            sp.textContent = accepted[0];
+                            el.insertAdjacentElement('afterend', sp);
+                        }
+                    }
+                } else if (type === 'select') {
+                    const el = document.getElementById(key);
+                    userAnswer = el ? el.value : '';
+                    isCorrect = userAnswer === correct;
+                    if (el) {
+                        el.classList.add(isCorrect ? 'correct' : 'incorrect');
+                        if (!isCorrect) {
+                            const sp = document.createElement('span');
+                            sp.className = 'correct-inline';
+                            sp.textContent = correct;
+                            el.insertAdjacentElement('afterend', sp);
+                        }
+                    }
+                } else if (type === 'mcq' || type === 'tf') {
+                    const checked = document.querySelector('input[name="' + key + '"]:checked');
+                    userAnswer = checked ? checked.value : 'No Answer';
+                    isCorrect = userAnswer === correct;
+                    const wrapSel = (type === 'tf') ? '.tf-option' : '.multi-choice-option';
+                    document.querySelectorAll('input[name="' + key + '"]').forEach(r => {
+                        const wrapper = r.closest(wrapSel);
+                        if (!wrapper) return;
+                        if (r.value === correct) wrapper.classList.add('correct');
+                        else if (r.checked) wrapper.classList.add('incorrect');
+                    });
+                } else if (type === 'dragdrop') {
+                    const zone = document.getElementById(key);
+                    const item = zone ? zone.querySelector('.drag-item') : null;
+                    userAnswer = item ? item.dataset.value : 'No Answer';
+                    isCorrect = userAnswer === correct;
+                    if (zone) {
+                        zone.classList.add(isCorrect ? 'correct' : 'incorrect');
+                        zone.classList.add('disabled');
+                        if (!isCorrect) {
+                            const sp = document.createElement('span');
+                            sp.className = 'correct-inline';
+                            sp.textContent = correct;
+                            zone.insertAdjacentElement('afterend', sp);
+                        }
+                    }
+                } else if (type === 'table') {
+                    const checked = document.querySelector('input[name="' + key + '"]:checked');
+                    userAnswer = checked ? checked.value : 'No Answer';
+                    isCorrect = userAnswer === correct;
+                    document.querySelectorAll('input[name="' + key + '"]').forEach(r => {
+                        const cell = r.closest('td');
+                        if (!cell) return;
+                        if (r.value === correct) cell.classList.add('correct');
+                        else if (r.checked) cell.classList.add('incorrect');
+                    });
+                }
+
+                if (isCorrect) score++;
+                const navBtn = document.querySelector('.subQuestion[onclick="goToQuestion(' + qNum + ')"]');
+                if (navBtn) { navBtn.classList.remove('answered'); navBtn.classList.add(isCorrect ? 'correct' : 'incorrect'); }
+                resultsData.push({ question: qNum, userAnswer: userAnswer || 'No Answer', correctAnswer: Array.isArray(correct) ? correct[0] : correct, isCorrect });
+            });
+
+            document.querySelectorAll('.answer-input, .answer-select, input[type="radio"], input[type="checkbox"]').forEach(el => el.disabled = true);
+            document.querySelectorAll('.drag-item').forEach(item => {
+                item.setAttribute('draggable', 'false');
+                item.style.cursor = 'not-allowed';
+            });
+            document.querySelectorAll('.drop-zone, .drag-options-container').forEach(z => z.classList.add('disabled'));
+
+            const band = (function (r) {
+                if (r >= 39) return 9; if (r >= 37) return 8.5; if (r >= 35) return 8; if (r >= 33) return 7.5;
+                if (r >= 30) return 7; if (r >= 27) return 6.5; if (r >= 23) return 6; if (r >= 19) return 5.5;
+                if (r >= 15) return 5; if (r >= 13) return 4.5; if (r >= 10) return 4; if (r >= 8) return 3.5;
+                if (r >= 6) return 3; if (r >= 4) return 2.5; if (r >= 2) return 2; if (r === 1) return 1.5; return 0;
+            })(score);
+
+            // matndagi javob dalillarini ochamiz
+            document.querySelector('.main-container').classList.add('results-mode');
+
+            document.getElementById('score-summary').textContent = 'You scored ' + score + ' out of 40 (Band ' + band + ').';
+
+            const resultDetails = document.getElementById('result-details');
+            let html = '<table><thead><tr><th>Question</th><th>Your Answer</th><th>Correct Answer</th><th>Result</th></tr></thead><tbody>';
+            resultsData.forEach(r => {
+                html += '<tr><td>' + r.question + '</td><td>' + r.userAnswer + '</td><td>' + r.correctAnswer + '</td><td class="' + (r.isCorrect ? 'result-correct' : 'result-incorrect') + '">' + (r.isCorrect ? '&#10003; Correct' : '&#10007; Incorrect') + '</td></tr>';
+            });
+            html += '</tbody></table>';
+            resultDetails.innerHTML = html;
+
+            const deliverButton = document.getElementById('deliver-button');
+            deliverButton.classList.add('success');
+            deliverButton.innerHTML = '<span>My Results</span>';
+            const newBtn = deliverButton.cloneNode(true);
+            deliverButton.parentNode.replaceChild(newBtn, deliverButton);
+            newBtn.addEventListener('click', () => { document.getElementById('result-modal').style.display = 'flex'; });
+            document.getElementById('result-modal').style.display = 'flex';
+        }
+
+        document.getElementById('deliver-button').addEventListener('click', checkAnswers);
+        document.getElementById('modal-close-button').addEventListener('click', () => { document.getElementById('result-modal').style.display = 'none'; });
+
+        document.addEventListener('selectionchange', () => {
+            const sel = window.getSelection();
+            if (sel && sel.rangeCount > 0 && !sel.isCollapsed) selectedRange = sel.getRangeAt(0);
+        });
+        document.body.addEventListener('contextmenu', function (e) {
+            const text = window.getSelection().toString();
+            if (!text) return;
+            e.preventDefault();
+            const menu = document.getElementById('contextMenu');
+            menu.style.left = e.pageX + 'px';
+            menu.style.top = e.pageY + 'px';
+            menu.style.display = 'block';
+            contextElement = e.target.closest('.highlight, .comment-highlight');
+            document.getElementById('clear-item').style.display = contextElement ? 'block' : 'none';
+        });
+        document.body.addEventListener('click', function (e) {
+            if (!e.target.closest('.context-menu')) document.getElementById('contextMenu').style.display = 'none';
+        });
+        function highlightText() {
+            if (!selectedRange || selectedRange.collapsed) return;
+            try { const span = document.createElement('span'); span.className = 'highlight'; selectedRange.surroundContents(span); } catch (e) { }
+            window.getSelection().removeAllRanges();
+            document.getElementById('contextMenu').style.display = 'none';
+        }
+        function addComment() {
+            const t = prompt('Enter your comment:');
+            if (!t || !selectedRange) return;
+            try {
+                const span = document.createElement('span'); span.className = 'comment-highlight';
+                const tip = document.createElement('span'); tip.className = 'comment-tooltip'; tip.textContent = t;
+                span.appendChild(tip); selectedRange.surroundContents(span);
+            } catch (e) { }
+            window.getSelection().removeAllRanges();
+            document.getElementById('contextMenu').style.display = 'none';
+        }
+        function clearHighlight() {
+            if (contextElement) {
+                const parent = contextElement.parentNode;
+                while (contextElement.firstChild) parent.insertBefore(contextElement.firstChild, contextElement);
+                parent.removeChild(contextElement); parent.normalize();
+            }
+            document.getElementById('contextMenu').style.display = 'none';
+        }
+        function clearAllHighlights() {
+            document.querySelectorAll('.highlight, .comment-highlight').forEach(el => {
+                const parent = el.parentNode;
+                while (el.firstChild) parent.insertBefore(el.firstChild, el);
+                parent.removeChild(el); parent.normalize();
+            });
+            document.getElementById('contextMenu').style.display = 'none';
+        }
+
+        // --- panellar orasidagi ajratuvchini surib kenglikni o'zgartirish ---
+        const resizer = document.getElementById('resizer');
+        const passagePanel = document.getElementById('passage-panel');
+
+        function initResize(e) {
+            e.preventDefault();
+            const startX = e.clientX;
+            const startWidth = passagePanel.offsetWidth;
+            document.body.classList.add('resizing');
+
+            const doDrag = (ev) => {
+                const newWidth = startWidth + ev.clientX - startX;
+                if (newWidth > 200 && (document.body.clientWidth - newWidth - resizer.offsetWidth) > 200) {
+                    passagePanel.style.flex = '0 0 ' + newWidth + 'px';
+                }
+            };
+            const stopDrag = () => {
+                document.body.classList.remove('resizing');
+                window.removeEventListener('mousemove', doDrag, false);
+                window.removeEventListener('mouseup', stopDrag, false);
+            };
+
+            window.addEventListener('mousemove', doDrag, false);
+            window.addEventListener('mouseup', stopDrag, false);
+        }
+
+        resizer.addEventListener('mousedown', initResize, false);
+        // ikki marta bosilsa 50/50 holatiga qaytadi
+        resizer.addEventListener('dblclick', () => { passagePanel.style.flex = '0 0 50%'; });
+
+        // --- drag & drop (36–40 summary) — eski Reading fayllaridagi mantiq ---
+        let draggedItem = null;
+        let selectedDragItem = null;
+
+        function setupDragAndDrop() {
+            document.querySelectorAll('.drag-item').forEach(item => {
+                item.addEventListener('dragstart', handleDragStart);
+                item.addEventListener('dragend', handleDragEnd);
+                item.addEventListener('click', () => selectDragItem(item));
+            });
+            document.querySelectorAll('.drop-zone, .drag-options-container').forEach(zone => {
+                zone.addEventListener('dragover', handleDragOver);
+                zone.addEventListener('dragleave', handleDragLeave);
+                zone.addEventListener('drop', handleDrop);
+                // klik bilan qo'yish: avval iborani tanlab, keyin bo'sh joyni bosish
+                zone.addEventListener('click', () => {
+                    if (selectedDragItem && zone.dataset.dndGroup === selectedDragItem.dataset.dndGroup) {
+                        placeItem(selectedDragItem, zone);
+                        selectDragItem(null);
+                    }
+                });
+            });
+        }
+
+        function selectDragItem(item) {
+            if (selectedDragItem) selectedDragItem.classList.remove('selected');
+            selectedDragItem = item;
+            if (selectedDragItem) selectedDragItem.classList.add('selected');
+        }
+
+        function handleDragStart(e) {
+            draggedItem = e.target;
+            setTimeout(() => e.target.classList.add('dragging'), 0);
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+            draggedItem = null;
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            const zone = e.currentTarget;
+            if (draggedItem && draggedItem.dataset.dndGroup === zone.dataset.dndGroup) {
+                zone.classList.add('drag-over');
+            }
+        }
+
+        function handleDragLeave(e) {
+            e.currentTarget.classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            const zone = e.currentTarget;
+            zone.classList.remove('drag-over');
+            if (!draggedItem || draggedItem.dataset.dndGroup !== zone.dataset.dndGroup) return;
+            placeItem(draggedItem, zone);
+        }
+
+        function placeItem(item, targetZone) {
+            const sourceZone = item.parentElement;
+            if (sourceZone === targetZone) return;
+
+            const isDropZone = targetZone.classList.contains('drop-zone');
+            const existing = isDropZone ? targetZone.querySelector('.drag-item') : null;
+
+            if (isDropZone) {
+                // savol raqamini (matnni) tozalash
+                Array.from(targetZone.childNodes).forEach(node => {
+                    if (node.nodeType === Node.TEXT_NODE) node.remove();
+                });
+            }
+
+            // joyi band bo'lsa, eski iborani manba joyiga qaytaramiz
+            if (existing) sourceZone.appendChild(existing);
+
+            targetZone.appendChild(item);
+            if (isDropZone) targetZone.classList.add('filled');
+
+            // manba drop-zone bo'shab qolsa, raqamini qaytaramiz
+            if (sourceZone.classList.contains('drop-zone') && !sourceZone.querySelector('.drag-item')) {
+                sourceZone.classList.remove('filled');
+                sourceZone.textContent = sourceZone.dataset.qStart;
+            }
+            updateAnsweredIndicators();
+        }
+
+        // matndagi sariq belgini bosganda tegishli savolga o'tadi
+        document.getElementById('passage-panel').addEventListener('click', (e) => {
+            const hl = e.target.closest('.t-hl');
+            if (!hl || !document.querySelector('.main-container.results-mode')) return;
+            const q = parseInt(hl.getAttribute('data-q'));
+            if (!isNaN(q)) goToQuestion(q);
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            switchToPassage(1);
+            goToQuestion(1);
+            setupCheckboxLimits();
+            setupDragAndDrop();
+        });
+    </script>
+</body>
+
+</html>

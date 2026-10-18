@@ -227,6 +227,49 @@ class SeedTestlar7Tests(TestCase):
         # audio bor Listening'da transkript (javoblar) sahifaga chiqmaydi
         self.assertNotContains(resp, 'The idea is hugely popular with local chefs')
 
+    def test_seed_testlar8(self):
+        from django.core.management import call_command
+        for n in (8, 9):
+            call_command('seed_cambridge', file=f'data/cambridge/ielts_full_mock_test_{n}.json', stdout=io.StringIO())
+            exam = Exam.objects.get(title=f'IELTS Full Mock Test {n}')
+            listening, reading, writing = exam.sections.order_by('order')
+            self.assertEqual(listening.questions.count(), 40)
+            self.assertEqual(reading.questions.count(), 40)
+            self.assertEqual(writing.questions.count(), 2)
+            self.assertTrue(listening.audio_file)
+            self.assertTrue(writing.image)
+        exam = Exam.objects.get(title='IELTS Full Mock Test 8')
+        self.assertIn('16', exam.sections.get(order=1).extra_data['question_images'])
+
+
+class QuestionHeadingTests(TestCase):
+    """Guruh nomi va ko'rsatmasi ("[Title] Instructions\\n…") 1-savol matniga
+    qo'shilib ketmasdan, alohida sarlavha bo'lib chiqadi."""
+
+    def test_split(self):
+        from .views import _split_question_heading
+        self.assertEqual(
+            _split_question_heading('[The coconut palm] Complete the notes below.\nCoconuts grow on ___'),
+            ('The coconut palm', 'Complete the notes below.', 'Coconuts grow on ___'))
+        self.assertEqual(
+            _split_question_heading('Choose the correct letter, A, B or C.\nWhy?'),
+            ('', 'Choose the correct letter, A, B or C.', 'Why?'))
+        self.assertEqual(_split_question_heading('Plain question'), ('', '', 'Plain question'))
+
+    def test_take_exam_renders_heading_separately(self):
+        exam = Exam.objects.create(title='Heading test', duration_minutes=60)
+        section = Section.objects.create(exam=exam, title='Reading', section_type='reading', order=1)
+        Question.objects.create(section=section, order=1, question_type='gap_fill', correct_answer='x',
+                                text='[Customer Satisfaction Survey] Complete the form below.\nName: ___')
+        Question.objects.create(section=section, order=2, question_type='gap_fill', correct_answer='y',
+                                text='Occupation: ___')
+        user = User.objects.create_user('reader', password='pw')
+        self.client.force_login(user)
+        resp = self.client.get(reverse('exams:take_exam', args=[exam.pk]))
+        self.assertContains(resp, '<div class="q-heading-title">Customer Satisfaction Survey</div>', html=True)
+        self.assertContains(resp, '<div class="q-heading-instr">Complete the form below.</div>', html=True)
+        self.assertNotContains(resp, '[Customer Satisfaction Survey]')
+
 
 class ChooseTwoGradingTests(TestCase):
     """"Choose TWO letters" juftligida bir xil to'g'ri harf ikki marta ball bermaydi."""
