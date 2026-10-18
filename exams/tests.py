@@ -194,8 +194,8 @@ class TestlarFilesTests(TestCase):
         resp = self.client.get(reverse('panel:exam_passwords'))
         self.assertContains(resp, "Test to'plami 7")
         self.assertContains(resp, testlar_password(7))
-        # admin parolsiz ochadi
-        self.assertEqual(self.client.get(self._url('Listening 1.html')).status_code, 200)
+        # admindan ham so'raladi
+        self.assertContains(self.client.get(self._url('Listening 1.html')), 'Test paroli kerak')
 
     def test_blocks_raw_files_and_traversal(self):
         self.client.force_login(self.user)
@@ -349,16 +349,16 @@ class ExamPasswordTests(TestCase):
         self.client.post(self.unlock, {'password': exam_password(self.exam.pk)})
         self.assertEqual(self.client.get(self.take).status_code, 302)
 
-    def test_staff_and_disabled_setting_skip_password(self):
+    def test_admins_asked_too_unless_setting_off(self):
         from core.models import SiteSettings
+        for name, flags in (('teacher', {'is_staff': True}), ('boss', {'is_staff': True, 'is_superuser': True})):
+            self.client.force_login(User.objects.create_user(name, password='pw', **flags))
+            self.assertEqual(self.client.get(self.take).status_code, 302)
+            # panelning "Talaba sifatida ko'rish" havolasi parolsiz ochadi
+            self.assertEqual(self.client.get(self.take + '?preview=1').status_code, 200)
         site = SiteSettings.get()
         site.exam_password_required = False
         site.save()
-        self.assertEqual(self.client.get(self.take).status_code, 200)
-        site.exam_password_required = True
-        site.save()
-        staff = User.objects.create_user('teacher', password='pw', is_staff=True)
-        self.client.force_login(staff)
         self.assertEqual(self.client.get(self.take).status_code, 200)
 
     def test_panel_lists_current_password(self):

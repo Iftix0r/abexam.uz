@@ -46,7 +46,7 @@ def clear_exam_paid(user_pk, exam_pk):
 
 def exam_needs_password(user, exam):
     """True while this user still has to enter the exam's hourly password
-    before starting it. Staff (invigilators) are never asked."""
+    before starting it — admins included."""
     return password_required_for(user) and not exam_is_unlocked(user.pk, exam.pk)
 
 

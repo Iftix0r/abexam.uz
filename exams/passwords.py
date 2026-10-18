@@ -122,10 +122,10 @@ def try_unlock(user_pk, scope, entered):
 
 
 def password_required_for(user):
-    """Staff (invigilators) are never asked; otherwise it follows the site
-    setting."""
+    """Everyone is asked — admins included — while the site setting is on.
+    (Staff can still open a draft through the panel's ?preview=1 link.)"""
     from core.models import SiteSettings
-    return not user.is_staff and SiteSettings.get().exam_password_required
+    return SiteSettings.get().exam_password_required
 
 
 # Site-exam shorthands.
