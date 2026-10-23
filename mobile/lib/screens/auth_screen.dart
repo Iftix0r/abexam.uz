@@ -20,7 +20,7 @@ class _AuthScreenState extends State<AuthScreen> {
   String? _error;
   final _form = GlobalKey<FormState>();
   final _c = {
-    for (final k in ['username', 'password', 'confirm_password', 'first_name', 'last_name', 'phone_number'])
+    for (final k in ['phone_number', 'password', 'first_name', 'last_name'])
       k: TextEditingController(),
   };
 
@@ -55,7 +55,7 @@ class _AuthScreenState extends State<AuthScreen> {
           for (final e in _c.entries) e.key: e.key.contains('password') ? e.value.text : e.value.text.trim(),
         });
       } else {
-        await state.signIn(_c['username']!.text.trim(), _c['password']!.text);
+        await state.signIn(_c['phone_number']!.text.trim(), _c['password']!.text);
       }
     } on ApiException catch (e) {
       HapticFeedback.heavyImpact();
@@ -146,18 +146,14 @@ class _AuthScreenState extends State<AuthScreen> {
                   Row(children: [
                     Expanded(child: _field('first_name', 'Ism', Icons.badge_outlined, capitalize: true)),
                     const SizedBox(width: 10),
-                    Expanded(child: _field('last_name', 'Familiya', null, required: false, capitalize: true)),
+                    Expanded(child: _field('last_name', 'Familiya', null, capitalize: true)),
                   ]),
-                  _field('phone_number', 'Telefon (ixtiyoriy)', Icons.phone_iphone_rounded,
-                      required: false, keyboard: TextInputType.phone, hint: '+998 90 123 45 67'),
                 ],
-                _field('username', 'Login', Icons.alternate_email_rounded,
-                    hint: _register ? 'masalan: ali_2007' : null, autofill: AutofillHints.username),
+                _field('phone_number', 'Telefon raqam', Icons.phone_iphone_rounded,
+                    keyboard: TextInputType.phone, hint: '+998 90 123 45 67', autofill: AutofillHints.telephoneNumber),
                 _field('password', 'Parol', Icons.lock_rounded,
                     password: true, autofill: _register ? AutofillHints.newPassword : AutofillHints.password),
-                if (_register)
-                  _field('confirm_password', 'Parolni takrorlang', Icons.lock_reset_rounded, password: true)
-                else
+                if (!_register)
                   Align(
                     alignment: Alignment.centerRight,
                     child: TextButton(
@@ -232,7 +228,7 @@ class _AuthScreenState extends State<AuthScreen> {
   }) {
     final scheme = Theme.of(context).colorScheme;
     final dark = Theme.of(context).brightness == Brightness.dark;
-    final last = (!_register && key == 'password') || (_register && key == 'confirm_password');
+    final last = key == 'password';
     final radius = BorderRadius.circular(16);
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
@@ -267,7 +263,6 @@ class _AuthScreenState extends State<AuthScreen> {
         ),
         validator: (v) {
           if (required && (v == null || v.trim().isEmpty)) return "To'ldiring";
-          if (key == 'confirm_password' && v != _c['password']!.text) return 'Parollar mos emas';
           return null;
         },
       ),

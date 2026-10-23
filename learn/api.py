@@ -131,7 +131,7 @@ def login(request):
         blocked = user_fails >= _MAX_FAILS_PER_USER or ip_fails >= _MAX_FAILS_PER_IP
         LoginLog.objects.create(username_attempt=username[:150], ip=ip, user_agent=ua,
                                 status='blocked' if blocked else 'failed')
-        return JsonResponse({'error': "Foydalanuvchi nomi yoki parol noto'g'ri."}, status=400)
+        return JsonResponse({'error': "Telefon raqam yoki parol noto'g'ri."}, status=400)
     cache.delete(_fail_keys(ip, username)[1])
     user.last_ip = ip
     user.save(update_fields=['last_ip'])
@@ -150,13 +150,12 @@ def register(request):
     if cache.get(key, 0) >= REGISTER_PER_IP_HOURLY:
         return JsonResponse({'error': "Juda ko'p urinish. Keyinroq qayta urinib ko'ring."}, status=429)
     form = RegisterForm(data={k: str(data.get(k, '') or '') for k in (
-        'username', 'first_name', 'last_name', 'email', 'phone_number', 'password', 'confirm_password')})
+        'first_name', 'last_name', 'phone_number', 'password')})
     if not form.is_valid():
         errors = [msg for field_errors in form.errors.values() for msg in field_errors]
         return JsonResponse({'error': ' '.join(errors) or "Ma'lumotlarni tekshiring"}, status=400)
     cache.set(key, cache.get(key, 0) + 1, 60 * 60)
     user = form.save(commit=False)
-    user.set_password(form.cleaned_data['password'])
     user.last_ip = ip
     user.save()
     notify_admin_telegram(

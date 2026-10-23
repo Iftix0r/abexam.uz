@@ -109,7 +109,7 @@
             background: #f2f2f5;
             border: 1px solid var(--border);
             border-radius: 12px;
-            color: white;
+            color: var(--text);
             font-size: 0.95rem;
             transition: all 0.3s;
             font-family: 'Outfit', sans-serif;
@@ -119,6 +119,42 @@
             outline: none;
             border-color: var(--primary);
             background: rgba(211, 47, 47, 0.05);
+        }
+
+        .pw-wrap {
+            position: relative;
+        }
+
+        .pw-wrap input {
+            padding-right: 6.5rem;
+        }
+
+        .pw-toggle {
+            position: absolute;
+            right: 0.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 0.4rem;
+        }
+
+        .hint {
+            margin-top: 0.4rem;
+            font-size: 0.78rem;
+            color: var(--muted);
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 1rem; }
+            .login-card { padding: 2rem 1.25rem; }
+            .grid-form { grid-template-columns: 1fr; gap: 0; }
+            .full-width { grid-column: auto; }
         }
 
         .btn {
@@ -191,35 +227,27 @@
 
             <div class="grid-form">
                 <div class="form-group">
-                    <label>Ism</label>
+                    <label for="id_first_name">Ism</label>
                     {{ form.first_name }}
                 </div>
                 <div class="form-group">
-                    <label>Familiya</label>
+                    <label for="id_last_name">Familiya</label>
                     {{ form.last_name }}
                 </div>
                 <div class="form-group full-width">
-                    <label>Username</label>
-                    {{ form.username }}
-                </div>
-                <div class="form-group full-width">
-                    <label>Email</label>
-                    {{ form.email }}
-                </div>
-                <div class="form-group full-width">
-                    <label>Telefon raqam</label>
+                    <label for="id_phone_number">Telefon raqam</label>
                     {{ form.phone_number }}
                 </div>
-                <div class="form-group">
-                    <label>Parol</label>
-                    {{ form.password }}
-                </div>
-                <div class="form-group">
-                    <label>Tasdiqlash</label>
-                    {{ form.confirm_password }}
+                <div class="form-group full-width">
+                    <label for="id_password">Parol</label>
+                    <div class="pw-wrap">
+                        {{ form.password }}
+                        <button type="button" class="pw-toggle" onclick="var i=document.getElementById('id_password');i.type=i.type==='password'?'text':'password';this.textContent=i.type==='password'?'Ko\'rsatish':'Yashirish'">Ko'rsatish</button>
+                    </div>
+                    <div class="hint">Kamida 8 belgi, faqat raqamlardan iborat bo'lmasin.</div>
                 </div>
             </div>
-            
+
             <button type="submit" class="btn">Ro'yxatdan o'tish</button>
         </form>
         

@@ -358,13 +358,15 @@ class ApiTests(TestCase):
 
     def test_register_returns_a_working_token(self):
         resp = self._call('post', 'learn_api:register', {
-            'username': 'newbie', 'first_name': 'Ali', 'password': 'Very-Strong-77', 'confirm_password': 'Very-Strong-77',
+            'first_name': 'Ali', 'last_name': 'Valiyev', 'phone_number': '90 123 45 67', 'password': 'Very-Strong-77',
         }, token=None)
         self.assertEqual(resp.status_code, 200, resp.content)
         me = self._call('get', 'learn_api:me', token=resp.json()['token']).json()
-        self.assertEqual(me['user']['username'], 'newbie')
+        self.assertEqual(me['user']['first_name'], 'Ali')
+        login = self._call('post', 'learn_api:login', {'username': '+998901234567', 'password': 'Very-Strong-77'}, token=None)
+        self.assertEqual(login.status_code, 200, login.content)
         dup = self._call('post', 'learn_api:register', {
-            'username': 'newbie', 'password': 'Very-Strong-77', 'confirm_password': 'Very-Strong-77'}, token=None)
+            'first_name': 'Vali', 'last_name': 'X', 'phone_number': '+998 90 123-45-67', 'password': 'Very-Strong-77'}, token=None)
         self.assertEqual(dup.status_code, 400)
 
     def test_course_lesson_and_completion(self):

@@ -2,7 +2,7 @@ import hashlib
 import json
 
 from django.contrib import messages
-from django.contrib.auth import logout
+from django.contrib.auth import login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView as BaseLoginView
 from django.core.cache import cache
@@ -15,6 +15,7 @@ from django.views.generic import CreateView, TemplateView
 
 from core.utils import get_client_ip, monthly_series, notify_admin_telegram, parse_json_body, validate_image_upload
 from exams.models import Exam, UserResult
+from .backends import normalize_phone
 from .forms import LoginForm, RegisterForm
 from .models import LoginLog, User, Vocabulary
 from payments.models import Transaction
@@ -30,7 +31,9 @@ _MAX_FAILS_PER_IP = 200
 
 
 def _fail_keys(ip, username):
-    digest = hashlib.md5(username.strip().lower().encode()).hexdigest()
+    # '+998 90…' and '90…' are the same account, so they share one counter.
+    username = normalize_phone(username) or username.strip().lower()
+    digest = hashlib.md5(username.encode()).hexdigest()
     return f'login_fail_ip_{ip}', f'login_fail_user_{ip}_{digest}'
 
 
@@ -52,7 +55,7 @@ class CustomLoginView(BaseLoginView):
     def post(self, request, *args, **kwargs):
         # Only the login attempt itself is refused — the page always opens.
         if _login_blocked(get_client_ip(request), request.POST.get('username', '')):
-            messages.error(request, "Bu foydalanuvchi nomi bilan juda ko'p noto'g'ri urinish bo'ldi. "
+            messages.error(request, "Bu raqam bilan juda ko'p noto'g'ri urinish bo'ldi. "
                                     "15 daqiqadan keyin qayta urinib ko'ring.")
             return redirect(request.get_full_path())
         return super().post(request, *args, **kwargs)
@@ -103,19 +106,23 @@ class CustomLoginView(BaseLoginView):
 class RegisterView(CreateView):
     form_class = RegisterForm
     template_name = 'register.html'
-    success_url = reverse_lazy('login')
+    success_url = reverse_lazy('dashboard')
+
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect(self.success_url)
+        return super().get(request, *args, **kwargs)
 
     def form_valid(self, form):
         user = form.save(commit=False)
-        user.set_password(form.cleaned_data['password'])
         ip = get_client_ip(self.request)
         user.last_ip = ip
         user.save()
+        login(self.request, user, backend='users.backends.PhoneOrUsernameBackend')
         notify_admin_telegram(
             f"🆕 <b>Yangi ro'yxatdan o'tish</b>\n"
             f"👤 {user.get_full_name() or '—'} (@{user.username})\n"
             f"📞 {user.phone_number or '—'}\n"
-            f"📧 {user.email or '—'}\n"
             f"🌐 IP: {ip}\n"
             f"💻 {self.request.META.get('HTTP_USER_AGENT', '—')[:300]}"
         )
@@ -316,7 +323,9 @@ class ProfileView(LoginRequiredMixin, View):
         user.first_name = request.POST.get('first_name', user.first_name)
         user.last_name = request.POST.get('last_name', user.last_name)
         user.email = request.POST.get('email', user.email)
-        user.phone_number = request.POST.get('phone_number', user.phone_number)
+        if 'phone_number' in request.POST:
+            raw = request.POST['phone_number'].strip()
+            user.phone_number = (normalize_phone(raw) or raw) or None
         user.bio = request.POST.get('bio', user.bio)
         if 'avatar' in request.FILES:
             avatar = request.FILES['avatar']

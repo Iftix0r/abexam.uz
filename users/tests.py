@@ -74,3 +74,43 @@ class AccountDeleteTests(TestCase):
 
     def test_privacy_page_is_public(self):
         self.assertContains(self.client.get(reverse('privacy')), 'Maxfiylik siyosati')
+
+
+class PhoneSignupTests(TestCase):
+    """Ro'yxat: ism, familiya, telefon, parol. Kirish: telefon + parol."""
+
+    def _register(self, **overrides):
+        data = {'first_name': 'Ali', 'last_name': 'Valiyev', 'phone_number': '+998 90 123 45 67',
+                'password': 'Very-Strong-77', **overrides}
+        return self.client.post(reverse('register'), data)
+
+    def test_register_logs_in_and_normalizes_phone(self):
+        resp = self._register()
+        self.assertRedirects(resp, reverse('dashboard'), fetch_redirect_response=False)
+        user = User.objects.get()
+        self.assertEqual((user.phone_number, user.username, user.get_full_name()),
+                         ('+998901234567', '998901234567', 'Ali Valiyev'))
+        self.assertEqual(self.client.session['_auth_user_id'], str(user.pk))
+
+    def test_all_four_fields_required(self):
+        for field in ('first_name', 'last_name', 'phone_number', 'password'):
+            self._register(**{field: ''})
+        self.assertFalse(User.objects.exists())
+
+    def test_same_phone_in_another_format_is_rejected(self):
+        User.objects.create_user('old', password='x', phone_number='901234567')
+        resp = self._register(phone_number='998901234567')
+        self.assertContains(resp, 'allaqachon bor')
+        self.assertEqual(User.objects.count(), 1)
+
+    @override_settings(CACHES={'default': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'}})
+    def test_login_with_phone_in_any_format_or_old_username(self):
+        user = User.objects.create_user('ali', password='right-pw-1', phone_number='+998901234567')
+        for login_as in ('90 123 45 67', '+998 (90) 123-45-67', 'ali'):
+            self.client.logout()
+            resp = self.client.post(reverse('login'), {'username': login_as, 'password': 'right-pw-1'})
+            self.assertEqual(resp.status_code, 302, login_as)
+            self.assertEqual(self.client.session['_auth_user_id'], str(user.pk))
+        self.client.logout()
+        resp = self.client.post(reverse('login'), {'username': '901234567', 'password': 'nope'})
+        self.assertContains(resp, "Telefon raqam yoki parol")
