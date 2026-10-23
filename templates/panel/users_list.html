@@ -8,7 +8,7 @@
   <form method="get" style="display:flex;gap:10px;flex-wrap:wrap">
     <div class="search-box">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke-width="1.8"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke-width="1.8"/></svg>
-      <input name="q" value="{{ q }}" placeholder="Username yoki email...">
+      <input name="q" value="{{ q }}" placeholder="Ism, telefon, username yoki email...">
     </div>
     <div style="display:flex;gap:6px">
       <a href="?" class="btn btn-sm {% if not filter %}btn-primary{% else %}btn-ghost{% endif %}">Barchasi</a>
@@ -53,11 +53,12 @@
         <tr id="user-row-{{ u.pk }}">
           <td><input type="checkbox" class="row-check" value="{{ u.pk }}" onchange="updateBulk()" style="accent-color:var(--primary)"></td>
           <td><div class="u-info">
-            <div class="u-avatar">{% if u.avatar %}<img src="{{ u.avatar.url }}">{% else %}{{ u.username|first|upper }}{% endif %}</div>
+            <div class="u-avatar">{% if u.avatar %}<img src="{{ u.avatar.url }}">{% else %}{{ u.display_name|first|upper }}{% endif %}</div>
             <div>
-              <a href="{% url 'panel:user_detail' u.pk %}" style="color:var(--primary);font-weight:500">{{ u.username }}</a>
+              <a href="{% url 'panel:user_detail' u.pk %}" style="color:var(--primary);font-weight:500">{{ u.display_name }}</a>
               {% if u.is_superuser %}<span class="badge badge-purple" style="margin-left:4px;font-size:10px">Super</span>
               {% elif u.is_staff %}<span class="badge badge-blue" style="margin-left:4px;font-size:10px">Admin</span>{% endif %}
+              {% if u.has_own_username %}<div style="font-size:11px;color:var(--muted)">@{{ u.username }}</div>{% endif %}
             </div>
           </div></td>
           <td style="color:var(--muted)">{{ u.email|default:"—" }}</td>

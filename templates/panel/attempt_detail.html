@@ -1,6 +1,6 @@
 {% extends 'panel/base.html' %}
-{% block title %}Urinish — {{ attempt.user.username }}{% endblock %}
-{% block page_title %}Urinish: {{ attempt.user.username }}{% endblock %}
+{% block title %}Urinish — {{ attempt.user.display_name }}{% endblock %}
+{% block page_title %}Urinish: {{ attempt.user.display_name }}{% endblock %}
 {% block nav_live %}active{% endblock %}
 
 {% block content %}
@@ -11,7 +11,7 @@
 
 <div class="card" style="margin-bottom:16px">
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;font-size:13px">
-    <div><div style="color:var(--muted)">O'quvchi</div><b>{{ attempt.user.get_full_name|default:attempt.user.username }}</b></div>
+    <div><div style="color:var(--muted)">O'quvchi</div><b>{{ attempt.user.display_name }}</b></div>
     <div><div style="color:var(--muted)">Imtihon</div><b>{{ attempt.exam.title }}</b></div>
     <div><div style="color:var(--muted)">Holat</div>
       {% if attempt.is_submitted %}<span class="badge badge-green">✓ Yuborildi {{ attempt.submitted_at|date:"H:i" }}</span>{% else %}<span class="badge badge-yellow">Yuborilmagan</span>{% endif %}</div>

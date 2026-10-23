@@ -1,6 +1,6 @@
 {% extends 'panel/base.html' %}
 {% load l10n %}
-{% block title %}Baholash — {{ result.user.username }}{% endblock %}
+{% block title %}Baholash — {{ result.user.display_name }}{% endblock %}
 {% block page_title %}Baholash{% endblock %}
 {% block nav_results %}active{% endblock %}
 
@@ -54,13 +54,13 @@
     <div class="g-head">
       <div>
         <div style="font-size:17px;font-weight:700">
-          <a href="{% url 'panel:user_detail' result.user.pk %}" style="color:var(--text)">{{ result.user.get_full_name|default:result.user.username }}</a>
+          <a href="{% url 'panel:user_detail' result.user.pk %}" style="color:var(--text)">{{ result.user.display_name }}</a>
         </div>
         <div class="g-meta">{{ result.exam.title }} · {{ result.completed_at|date:"d M Y, H:i" }}</div>
       </div>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
         {% if result.is_pending %}<span class="badge badge-yellow">⏳ Tekshirilmoqda</span>
-        {% else %}<span class="badge badge-green">✓ Baholangan{% if result.graded_by %} · {{ result.graded_by.username }}{% endif %}</span>{% endif %}
+        {% else %}<span class="badge badge-green">✓ Baholangan{% if result.graded_by %} · {{ result.graded_by.display_name }}{% endif %}</span>{% endif %}
         {% if pending_count %}<span class="badge" style="background:var(--bg);color:var(--muted)">Navbatda yana {{ pending_count }} ta</span>{% endif %}
       </div>
     </div>

@@ -21,7 +21,7 @@
       <tbody>
         {% for tx in txs %}
         <tr id="tx-row-{{ tx.pk }}">
-          <td><a href="{% url 'panel:user_detail' tx.user.pk %}" style="color:var(--primary);font-weight:500">{{ tx.user.username }}</a></td>
+          <td><a href="{% url 'panel:user_detail' tx.user.pk %}" style="color:var(--primary);font-weight:500">{{ tx.user.display_name }}</a></td>
           <td style="font-weight:700;color:var(--green)">+{{ tx.amount|floatformat:0 }} so'm</td>
           <td><span class="badge badge-blue">{{ tx.get_method_display }}</span></td>
           <td id="tx-status-{{ tx.pk }}">

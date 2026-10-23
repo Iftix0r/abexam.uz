@@ -97,7 +97,7 @@
           {% for r in top_week %}
           <tr>
             <td style="font-weight:700">{{ forloop.counter }}</td>
-            <td>{% if r.user %}<a href="{% url 'panel:user_detail' r.user.pk %}" style="color:var(--primary)">{{ r.user.get_full_name|default:r.user.username }}</a>{% endif %}</td>
+            <td>{% if r.user %}<a href="{% url 'panel:user_detail' r.user.pk %}" style="color:var(--primary)">{{ r.user.display_name }}</a>{% endif %}</td>
             <td><span class="badge badge-yellow">{{ r.xp }}</span></td>
           </tr>
           {% empty %}
@@ -116,7 +116,7 @@
         <tbody>
           {% for r in recent %}
           <tr>
-            <td><a href="{% url 'panel:user_detail' r.p.user.pk %}" style="color:var(--primary)">{{ r.p.user.username }}</a></td>
+            <td><a href="{% url 'panel:user_detail' r.p.user.pk %}" style="color:var(--primary)">{{ r.p.user.display_name }}</a></td>
             <td style="font-size:12px">{% if r.story %}📖 {% endif %}{{ r.title|truncatechars:40 }}</td>
             <td><span class="badge {% if r.p.best_score >= 80 %}badge-green{% elif r.p.best_score >= 50 %}badge-yellow{% else %}badge-red{% endif %}">{{ r.p.best_score }}%</span></td>
             <td style="color:var(--muted);font-size:12px">{{ r.p.completed_at|date:"d M, H:i" }}</td>

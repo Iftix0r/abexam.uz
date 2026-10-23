@@ -13,7 +13,7 @@
           {% for n in notifications %}
           <tr id="notif-row-{{ n.pk }}">
             <td style="font-weight:500">{{ n.title }}</td>
-            <td>{% if n.user %}<span style="color:var(--primary)">{{ n.user.username }}</span>{% else %}<span class="badge badge-blue">Barchaga</span>{% endif %}</td>
+            <td>{% if n.user %}<span style="color:var(--primary)">{{ n.user.display_name }}</span>{% else %}<span class="badge badge-blue">Barchaga</span>{% endif %}</td>
             <td>
               {% if n.type == 'success' %}<span class="badge badge-green">{{ n.get_type_display }}</span>
               {% elif n.type == 'warning' %}<span class="badge badge-yellow">{{ n.get_type_display }}</span>

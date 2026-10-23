@@ -35,7 +35,7 @@
         {% for r in results %}
         <tr id="result-row-{{ r.pk }}">
           <td><input type="checkbox" class="result-checkbox" value="{{ r.pk }}" onchange="updateBulkDeleteBtn()"></td>
-          <td><a href="{% url 'panel:user_detail' r.user.pk %}" style="color:var(--primary);font-weight:500">{{ r.user.username }}</a></td>
+          <td><a href="{% url 'panel:user_detail' r.user.pk %}" style="color:var(--primary);font-weight:500">{{ r.user.display_name }}</a></td>
           <td><a href="{% url 'panel:exam_detail' r.exam.pk %}" style="color:var(--muted)">{{ r.exam.title|truncatechars:26 }}</a></td>
           <td>{% if r.is_pending %}<span class="badge badge-yellow">⏳ Tekshirilmoqda</span>{% elif r.score >= 7.5 %}<span class="badge badge-green">{{ r.score }}</span>{% elif r.score >= 6.0 %}<span class="badge badge-yellow">{{ r.score }}</span>{% else %}<span class="badge badge-red">{{ r.score }}</span>{% endif %}</td>
           <td style="color:var(--muted)">{{ r.listening_score }}</td>

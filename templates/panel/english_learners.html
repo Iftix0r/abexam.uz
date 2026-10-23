@@ -31,7 +31,7 @@
         {% for r in rows %}
         <tr>
           <td>
-            <a href="{% url 'panel:user_detail' r.p.user.pk %}" style="color:var(--primary);font-weight:600">{{ r.p.user.get_full_name|default:r.p.user.username }}</a>
+            <a href="{% url 'panel:user_detail' r.p.user.pk %}" style="color:var(--primary);font-weight:600">{{ r.p.user.display_name }}</a>
             <div style="font-size:11px;color:var(--muted)">@{{ r.p.user.username }}</div>
           </td>
           <td>{% if r.p.level %}<span class="badge badge-blue">{{ r.p.level }}</span>{% else %}<span style="color:var(--muted)">—</span>{% endif %}</td>

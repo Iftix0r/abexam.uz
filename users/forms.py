@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 
-from .backends import normalize_phone, phone_variants
+from .backends import is_uz_mobile, normalize_phone, phone_variants
 
 User = get_user_model()
 
@@ -38,8 +38,8 @@ class RegisterForm(forms.ModelForm):
 
     def clean_phone_number(self):
         phone = normalize_phone(self.cleaned_data.get('phone_number'))
-        if not phone:
-            raise forms.ValidationError("To'g'ri telefon raqam kiriting (masalan: +998 90 123 45 67).")
+        if not is_uz_mobile(phone):
+            raise forms.ValidationError("O'zbekiston mobil raqamini kiriting (masalan: +998 90 123 45 67).")
         if User.objects.filter(phone_number__in=phone_variants(phone)).exists():
             raise forms.ValidationError("Bu telefon raqam bilan hisob allaqachon bor. Kirish sahifasidan kiring.")
         return phone

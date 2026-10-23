@@ -1,13 +1,13 @@
 {% extends 'panel/base.html' %}
-{% block title %}{{ obj.username }} — Login loglari{% endblock %}
-{% block page_title %}{{ obj.username }} — Login tarixi{% endblock %}
+{% block title %}{{ obj.display_name }} — Login loglari{% endblock %}
+{% block page_title %}{{ obj.display_name }} — Login tarixi{% endblock %}
 {% block nav_users %}active{% endblock %}
 
 {% block content %}
 <nav class="breadcrumb">
   <a href="{% url 'panel:users' %}">Foydalanuvchilar</a>
   <span class="bc-sep">/</span>
-  <a href="{% url 'panel:user_detail' obj.pk %}">{{ obj.username }}</a>
+  <a href="{% url 'panel:user_detail' obj.pk %}">{{ obj.display_name }}</a>
   <span class="bc-sep">/</span>
   <span class="bc-current">Login tarixi</span>
 </nav>

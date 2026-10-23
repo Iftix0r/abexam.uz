@@ -85,19 +85,33 @@ def search(request):
     q = request.GET.get('q', '').strip()
     results = {'users': [], 'exams': []}
     if q:
-        results['users'] = list(User.objects.filter(username__icontains=q).values('id', 'username', 'email')[:6])
+        results['users'] = [{'id': u.pk, 'username': u.display_name, 'email': u.phone_number or u.email}
+                            for u in User.objects.filter(_user_search(q))[:6]]
         results['exams'] = list(Exam.objects.filter(title__icontains=q).values('id', 'title', 'exam_type')[:6])
     return JsonResponse(results)
 
 
 # ── Users ──────────────────────────────────────────────────────────────────────
+def _user_search(q):
+    """Matches username, email, phone (any spelling) or 'Ism Familiya'."""
+    cond = (Q(username__icontains=q) | Q(email__icontains=q) | Q(first_name__icontains=q)
+            | Q(last_name__icontains=q) | Q(phone_number__icontains=q))
+    digits = re.sub(r'\D', '', q)
+    if len(digits) >= 4:
+        cond |= Q(phone_number__icontains=digits[-9:])
+    first, _, last = q.partition(' ')
+    if last.strip():
+        cond |= Q(first_name__icontains=first, last_name__icontains=last.strip())
+    return cond
+
+
 @panel_required
 def users_list(request):
     q = request.GET.get('q', '')
     filter_by = request.GET.get('filter', '')
     users = User.objects.order_by('-date_joined')
     if q:
-        users = users.filter(username__icontains=q) | users.filter(email__icontains=q)
+        users = users.filter(_user_search(q))
     if filter_by == 'staff':
         users = users.filter(is_staff=True)
     elif filter_by == 'inactive':
@@ -253,9 +267,11 @@ def users_export_csv(request):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="users.csv"'
     w = csv.writer(response)
-    w.writerow(['ID', 'Username', 'Email', 'Telefon', 'Balans', 'Faol', 'Qo\'shilgan'])
-    for u in User.objects.only('pk', 'username', 'email', 'phone_number', 'balance', 'is_active', 'date_joined').order_by('-date_joined'):
-        w.writerow([u.pk, u.username, u.email, u.phone_number or '', u.balance, u.is_active, u.date_joined.strftime('%Y-%m-%d')])
+    w.writerow(['ID', 'Ism Familiya', 'Username', 'Email', 'Telefon', 'Balans', 'Faol', 'Qo\'shilgan'])
+    for u in User.objects.only('pk', 'username', 'first_name', 'last_name', 'email', 'phone_number', 'balance',
+                               'is_active', 'date_joined').order_by('-date_joined'):
+        w.writerow([u.pk, u.get_full_name(), u.username, u.email, u.phone_number or '', u.balance, u.is_active,
+                    u.date_joined.strftime('%Y-%m-%d')])
     return response
 
 

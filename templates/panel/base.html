@@ -308,10 +308,10 @@ textarea.form-input{resize:vertical;min-height:80px}
   <div class="sidebar-footer">
     <div class="user-card">
       <div class="avatar">
-        {% if request.user.avatar %}<img src="{{ request.user.avatar.url }}">{% else %}{{ request.user.username|first|upper }}{% endif %}
+        {% if request.user.avatar %}<img src="{{ request.user.avatar.url }}">{% else %}{{ request.user.display_name|first|upper }}{% endif %}
       </div>
       <div style="flex:1;min-width:0">
-        <div style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ request.user.username }}</div>
+        <div style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ request.user.display_name }}</div>
         <div style="font-size:11px;color:var(--muted)">Superadmin</div>
       </div>
       <a href="{% url 'users:logout' %}" title="Chiqish" style="color:var(--muted)">

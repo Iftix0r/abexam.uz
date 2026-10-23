@@ -23,6 +23,17 @@ class User(AbstractUser):
     def __str__(self):
         return self.username
 
+    @property
+    def display_name(self):
+        """Ism familiya; signups' usernames are just their phone digits."""
+        return self.get_full_name() or self.username
+
+    @property
+    def has_own_username(self):
+        """False when the username was generated from the phone number."""
+        digits = (self.phone_number or '').lstrip('+')
+        return not digits or not self.username.startswith(digits)
+
     class Meta:
         verbose_name = 'Foydalanuvchi'
         verbose_name_plural = 'Foydalanuvchilar'

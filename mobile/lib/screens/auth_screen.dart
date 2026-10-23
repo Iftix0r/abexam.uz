@@ -263,11 +263,24 @@ class _AuthScreenState extends State<AuthScreen> {
         ),
         validator: (v) {
           if (required && (v == null || v.trim().isEmpty)) return "To'ldiring";
+          if (_register && key == 'phone_number' && !_isUzMobile(v!)) return "O'zbekiston raqamini kiriting: +998 90 123 45 67";
           return null;
         },
       ),
     );
   }
+}
+
+// Same rule as the server (users/backends.py is_uz_mobile); the server has the final say.
+const _uzMobileCodes = {'20', '33', '50', '55', '77', '88', '90', '91', '93', '94', '95', '97', '98', '99'};
+
+bool _isUzMobile(String raw) {
+  var digits = raw.replaceAll(RegExp(r'\D'), '');
+  if (digits.length == 9) digits = '998$digits';
+  if (digits.length != 12 || !digits.startsWith('998')) return false;
+  final sub = digits.substring(5);
+  if (!_uzMobileCodes.contains(digits.substring(3, 5))) return false;
+  return sub.split('').toSet().length > 1 && !'01234567890'.contains(sub) && !'09876543210'.contains(sub);
 }
 
 /// Logo, name and what the app offers.
