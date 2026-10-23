@@ -3,7 +3,9 @@
 While a student sits an exam, the exam page sends a small JPEG frame from
 their webcam every few seconds; staff see everyone on the panel's live page.
 Only the latest frame of each attempt is kept, in the cache, for a couple of
-minutes — nothing is recorded or stored long-term.
+minutes — nothing is recorded or stored long-term on the server. (Staff can
+record what they're watching in their own browser; see CamRecorder in
+templates/panel/_live_camera_js.html.)
 
 When a staff member opens one student, the two browsers also set up a
 direct WebRTC video call (student → staff, video only) for smooth live

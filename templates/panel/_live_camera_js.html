@@ -156,4 +156,89 @@ class RelayPlayer {
     }
   }
 }
+
+// Staff record what they're watching, in their own browser: whatever is on
+// screen (direct video, relayed video or snapshots) is drawn onto a canvas
+// with the student's name and the time, and saved as a video file when
+// stopped. Nothing is uploaded or kept on the server.
+class CamRecorder {
+  constructor({ source, label, onChange }) {
+    // source() → the <video>/<img> currently showing the student, or null.
+    Object.assign(this, { source, label, onChange });
+    this.rec = null; this.timer = null; this.chunks = []; this.startedAt = 0;
+  }
+  static supported() {
+    return !!(window.MediaRecorder && HTMLCanvasElement.prototype.captureStream);
+  }
+  get recording() { return !!this.rec; }
+  start() {
+    if (this.rec || !CamRecorder.supported()) return false;
+    const src = this.source();
+    const w = (src && (src.videoWidth || src.naturalWidth)) || 640, h = (src && (src.videoHeight || src.naturalHeight)) || 480;
+    const scale = Math.min(1, 1280 / w);
+    const canvas = this.canvas = document.createElement('canvas');
+    canvas.width = Math.round(w * scale) & ~1; canvas.height = Math.round(h * scale) & ~1;
+    this._draw();
+    const type = ['video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm', 'video/mp4']
+      .find(t => MediaRecorder.isTypeSupported(t)) || '';
+    this.rec = new MediaRecorder(canvas.captureStream(15), type ? { mimeType: type, videoBitsPerSecond: 1500000 } : {});
+    this.chunks = [];
+    this.rec.ondataavailable = e => { if (e.data && e.data.size) this.chunks.push(e.data); };
+    this.rec.onstop = () => this._save();
+    this.rec.start(1000);
+    this.startedAt = Date.now();
+    this.timer = setInterval(() => this._draw(), 1000 / 15);
+    this.onChange && this.onChange(true);
+    return true;
+  }
+  stop() {
+    if (!this.rec) return;
+    clearInterval(this.timer);
+    this._draw();
+    const rec = this.rec;
+    this.rec = null;
+    if (rec.state !== 'inactive') rec.stop();
+    this.onChange && this.onChange(false);
+  }
+  elapsed() {
+    const s = this.rec ? Math.floor((Date.now() - this.startedAt) / 1000) : 0;
+    return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+  }
+  _draw() {
+    const c = this.canvas, g = c.getContext('2d'), src = this.source();
+    g.fillStyle = '#111'; g.fillRect(0, 0, c.width, c.height);
+    const sw = src && (src.videoWidth || src.naturalWidth), sh = src && (src.videoHeight || src.naturalHeight);
+    if (sw && sh) {
+      const k = Math.min(c.width / sw, c.height / sh), dw = sw * k, dh = sh * k;
+      try { g.drawImage(src, (c.width - dw) / 2, (c.height - dh) / 2, dw, dh); } catch (e) {}
+    } else {
+      g.fillStyle = '#ef4444'; g.font = `600 ${Math.round(c.height / 18)}px sans-serif`; g.textAlign = 'center';
+      g.fillText("Kamera yo'q", c.width / 2, c.height / 2);
+    }
+    const fs = Math.max(12, Math.round(c.height / 28)), pad = Math.round(fs / 2);
+    g.fillStyle = 'rgba(0,0,0,.55)'; g.fillRect(0, c.height - fs - pad * 2, c.width, fs + pad * 2);
+    g.fillStyle = '#fff'; g.font = `600 ${fs}px sans-serif`; g.textBaseline = 'middle';
+    const y = c.height - pad - fs / 2;
+    g.textAlign = 'left'; g.fillText(this.label, pad, y);
+    g.textAlign = 'right'; g.fillText(new Date().toLocaleString('uz-UZ', { hour12: false }), c.width - pad, y);
+  }
+  _save() {
+    if (!this.chunks.length) return;
+    const type = this.chunks[0].type || 'video/webm';
+    const blob = new Blob(this.chunks, { type });
+    this.chunks = [];
+    const d = new Date(this.startedAt), p = n => String(n).padStart(2, '0');
+    const stamp = `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}_${p(d.getHours())}-${p(d.getMinutes())}`;
+    const name = this.label.replace(/[^\p{L}\p{N}]+/gu, '_').replace(/^_+|_+$/g, '') || 'talaba';
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `kamera_${name}_${stamp}.${type.includes('mp4') ? 'mp4' : 'webm'}`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 60000);
+  }
+}
+// Leaving the page mid-recording would lose the video.
+window.addEventListener('beforeunload', e => {
+  if (window.__camRecordersActive && window.__camRecordersActive()) { e.preventDefault(); e.returnValue = ''; }
+});
 </script>

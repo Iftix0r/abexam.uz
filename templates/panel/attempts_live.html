@@ -17,6 +17,10 @@ tr.row-alert td { animation: rowAlert 1s ease-in-out 6; }
 .cam-tile img.off{display:none}
 .cam-tile .cam-none{position:absolute;inset:0;display:none;align-items:center;justify-content:center;color:#ef4444;font-size:12px;font-weight:600}
 .cam-tile img.off + .cam-none{display:flex}
+.cam-tile .cam-rec{position:absolute;top:6px;right:6px;z-index:2;padding:3px 8px;border-radius:999px;font-size:11px;font-weight:700;color:#fff;background:#000a;border:1px solid #fff4;cursor:pointer;user-select:none}
+.cam-tile .cam-rec:hover{background:#000c}
+.cam-tile .cam-rec.on{background:#dc2626;border-color:#dc2626;animation:recblink 1.2s infinite}
+@keyframes recblink{50%{opacity:.65}}
 .cam-tile .cam-name{position:absolute;left:0;right:0;bottom:0;padding:4px 8px;font-size:12px;font-weight:600;color:#fff;background:linear-gradient(transparent,#000a);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 </style>
 <div id="liveStats">
@@ -84,7 +88,8 @@ tr.row-alert td { animation: rowAlert 1s ease-in-out 6; }
   <div class="cam-grid">
     {% for a in attempts %}{% if a.state == 'active' %}
     <a class="cam-tile" href="{% url 'panel:attempt_detail' a.pk %}" title="Kamerani kattaroq ko'rish"
-       data-attempt="{{ a.pk }}" data-live="{% url 'panel:attempt_camera_live' a.pk %}">
+       data-attempt="{{ a.pk }}" data-name="{{ a.user.display_name }}" data-live="{% url 'panel:attempt_camera_live' a.pk %}">
+      <span class="cam-rec" role="button" tabindex="0" title="Kamerani yozib olish (kompyuteringizga video bo'lib tushadi)">⏺ Yozish</span>
       <video muted autoplay playsinline></video>
       <img data-cam="{% url 'panel:attempt_camera' a.pk %}" alt="">
       <span class="cam-none">📷 Kamera yo'q</span>
@@ -231,6 +236,7 @@ async function refreshLive(force){
     grid.dataset.ids = freshGrid.dataset.ids;
     refreshCameras();
     syncTileVideos();
+    syncRecorders();
   }
   updateBulk();
   const alerts = [];
@@ -283,6 +289,56 @@ function refreshCameras(){
 refreshCameras();
 setInterval(refreshCameras, 3000);
 syncTileVideos();
+
+// ⏺ Yozish on a tile records that student's camera (see CamRecorder); it
+// keeps going across grid refreshes and saves when stopped or when the
+// student finishes.
+const recorders = new Map();  // attempt id → CamRecorder
+const tileOf = id => document.querySelector(`#cameraGrid .cam-tile[data-attempt="${id}"]`);
+window.__camRecordersActive = () => [...recorders.values()].some(r => r.recording);
+function tileSource(id){
+  const tile = tileOf(id);
+  if (!tile) return null;
+  if (tile.classList.contains('is-live')) return tile.querySelector('video');
+  const img = tile.querySelector('img');
+  return img && !img.classList.contains('off') && img.complete ? img : null;
+}
+function toggleRecord(tile){
+  const id = tile.dataset.attempt;
+  let r = recorders.get(id);
+  if (r && r.recording) { r.stop(); return; }
+  if (!CamRecorder.supported()) { toast("Bu brauzer video yozishni qo'llamaydi — Chrome yoki Edge'dan foydalaning", '#ef4444'); return; }
+  r = new CamRecorder({ source: () => tileSource(id), label: tile.dataset.name || 'Talaba', onChange: syncRecorders });
+  recorders.set(id, r);
+  r.start();
+}
+function syncRecorders(){
+  recorders.forEach((r, id) => {
+    if (r.recording && !tileOf(id)) { r.stop(); toast(`${r.label}: imtihon tugadi — video saqlandi`, '#16a34a'); }
+    if (!r.recording) recorders.delete(id);
+  });
+  document.querySelectorAll('#cameraGrid .cam-tile[data-attempt]').forEach(tile => {
+    const r = recorders.get(tile.dataset.attempt), btn = tile.querySelector('.cam-rec');
+    if (!btn) return;
+    btn.classList.toggle('on', !!(r && r.recording));
+    btn.textContent = r && r.recording ? `■ ${r.elapsed()}` : '⏺ Yozish';
+    btn.title = r && r.recording ? "To'xtatish va videoni saqlash" : "Kamerani yozib olish (kompyuteringizga video bo'lib tushadi)";
+  });
+}
+const camGridEl = document.getElementById('cameraGrid');
+if (camGridEl) {
+  camGridEl.addEventListener('click', e => {
+    const btn = e.target.closest('.cam-rec');
+    if (!btn) return;
+    e.preventDefault(); e.stopPropagation();
+    toggleRecord(btn.closest('.cam-tile'));
+  });
+  camGridEl.addEventListener('keydown', e => {
+    const btn = e.target.closest('.cam-rec');
+    if (btn && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); toggleRecord(btn.closest('.cam-tile')); }
+  });
+  setInterval(() => { if (recorders.size) syncRecorders(); }, 1000);
+}
 
 function selectedIds(){ return Array.from(document.querySelectorAll('.attempt-checkbox:checked')).map(cb => Number(cb.value)); }
 function toggleAll(master){
