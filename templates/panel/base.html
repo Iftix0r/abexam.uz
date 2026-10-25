@@ -140,6 +140,8 @@ textarea.form-input{resize:vertical;min-height:80px}
 
 /* Reusable responsive grids — collapse to fewer columns on smaller screens */
 .grid-sidebar-r{display:grid;grid-template-columns:1fr 320px;gap:20px}
+/* Grid cells may shrink below their content (wide tables scroll inside .table-wrap instead of widening the page) */
+.grid-2>*,.grid-2-eq>*,.grid-3-eq>*,.grid-sidebar-r>*,.grid-sidebar-l>*{min-width:0}
 .grid-sidebar-l{display:grid;grid-template-columns:300px 1fr;gap:20px}
 .grid-2-eq{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .grid-3-eq{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px}

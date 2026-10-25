@@ -49,7 +49,7 @@
           {% if exam.is_active %}<span class="badge badge-green">Faol</span>{% else %}<span class="badge badge-gray">Draft</span>{% endif %}
           {% if exam.is_ai_generated %}<span style="background:rgba(99,102,241,.15);color:#a5b4fc;border:1px solid rgba(99,102,241,.3);border-radius:20px;padding:2px 10px;font-size:11px;font-weight:700">🤖 AI Generated</span>{% endif %}
         </div>
-        <div style="display:flex;gap:8px">
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
           <a href="{% url 'exams:take_exam' exam.pk %}?preview=1" target="_blank" class="btn btn-ghost btn-sm">👁 Talaba sifatida ko'rish</a>
           <a href="{% url 'panel:exam_analysis' exam.pk %}" class="btn btn-ghost btn-sm">📊 Savollar tahlili</a>
           <a href="{% url 'panel:exam_edit' exam.pk %}" class="btn btn-ghost btn-sm">Tahrirlash</a>
@@ -92,7 +92,7 @@
         <span class="badge badge-blue">{{ section.get_section_type_display }}</span>
         <span style="font-weight:600;font-size:14px">{{ section.title }}</span>
         <span style="color:var(--muted);font-size:12px;margin-left:auto">{{ section.questions.count }} savol</span>
-        <div style="display:flex;gap:4px">
+        <div style="display:flex;gap:4px;flex-wrap:wrap">
           <button onclick="moveSection({{ section.pk }},'up')" class="btn btn-ghost btn-sm" title="Yuqoriga">▲</button>
           <button onclick="moveSection({{ section.pk }},'down')" class="btn btn-ghost btn-sm" title="Pastga">▼</button>
           <a href="{% url 'panel:section_edit' section.pk %}" class="btn btn-ghost btn-sm">✎ Tahrirlash</a>
