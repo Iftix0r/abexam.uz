@@ -26,7 +26,7 @@
 
 <div class="card" style="padding:0">
   <div class="table-wrap">
-    <table>
+    <table class="table-cards">
       <thead><tr>
         <th style="width:32px"><input type="checkbox" id="selectAllResults" onchange="toggleAllResults(this)"></th>
         <th>Foydalanuvchi</th><th>Imtihon</th><th>Ball</th><th>Listening</th><th>Reading</th><th>Writing</th><th>Speaking</th><th>Sana</th><th></th>
@@ -54,7 +54,7 @@
           </td>
         </tr>
         {% empty %}
-        <tr><td colspan="10" style="text-align:center;padding:32px;color:var(--muted)">{% if status == 'pending' %}Tekshirilishi kerak bo'lgan natija yo'q 🎉{% else %}Natija yo'q{% endif %}</td></tr>
+        <tr><td colspan="10"><div class="empty-state">{% if status == 'pending' %}<div class="empty-icon">🎉</div><div class="empty-title">Hammasi baholangan</div>Tekshirilishi kerak bo'lgan natija yo'q{% else %}<div class="empty-icon">📝</div><div class="empty-title">Natija yo'q</div>Talabalar test topshirgach shu yerda ko'rinadi{% endif %}</div></td></tr>
         {% endfor %}
       </tbody>
     </table>

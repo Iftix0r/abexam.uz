@@ -34,7 +34,7 @@
 
 <div class="card" style="padding:0">
   <div class="table-wrap">
-    <table>
+    <table class="table-cards">
       <thead>
         <tr>
           <th style="width:36px"><input type="checkbox" id="select-all" onchange="toggleAll(this)" style="accent-color:var(--primary)"></th>
@@ -75,7 +75,7 @@
           </td>
         </tr>
         {% empty %}
-        <tr><td colspan="8" style="text-align:center;padding:32px;color:var(--muted)">Foydalanuvchi topilmadi</td></tr>
+        <tr><td colspan="8"><div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">Foydalanuvchi topilmadi</div>Qidiruv yoki filtrni o'zgartirib ko'ring</div></td></tr>
         {% endfor %}
       </tbody>
     </table>

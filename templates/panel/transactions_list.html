@@ -16,7 +16,7 @@
 
 <div class="card" style="padding:0">
   <div class="table-wrap">
-    <table>
+    <table class="table-cards">
       <thead><tr><th>Foydalanuvchi</th><th>Summa</th><th>Usul</th><th>Holat</th><th>Izoh</th><th>Sana</th><th></th></tr></thead>
       <tbody>
         {% for tx in txs %}
@@ -41,7 +41,7 @@
           </td>
         </tr>
         {% empty %}
-        <tr><td colspan="7" style="text-align:center;padding:32px;color:var(--muted)">Tranzaksiya topilmadi</td></tr>
+        <tr><td colspan="7"><div class="empty-state"><div class="empty-icon">💳</div><div class="empty-title">Tranzaksiya topilmadi</div>Boshqa holat filtrini tanlab ko'ring</div></td></tr>
         {% endfor %}
       </tbody>
     </table>

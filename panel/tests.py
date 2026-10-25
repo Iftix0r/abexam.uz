@@ -133,3 +133,12 @@ class ExamToolsPanelTests(TestCase):
         rows = json.loads(resp.context['progress_json'])
         self.assertEqual([r['l'] for r in rows], [6.0, 7.0])
         self.assertIsNone(rows[0]['r'])
+
+    def test_dashboard_todo_links_to_pending_work(self):
+        from exams.models import UserResult
+        student = User.objects.create_user('vali', password='pw')
+        UserResult.objects.create(user=student, exam=self.exam, status=UserResult.STATUS_PENDING)
+        resp = self.client.get(reverse('panel:dashboard'))
+        self.assertEqual(resp.context['todo']['pending_results'], 1)
+        self.assertContains(resp, 'Writing baholash')
+        self.assertContains(resp, f"{reverse('panel:result_grade', args=[UserResult.objects.get().pk])}")

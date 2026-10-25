@@ -67,12 +67,21 @@ def dashboard(request):
         'pending_tx': Transaction.objects.filter(status='pending').count(),
         'avg_score': UserResult.objects.graded().aggregate(a=Avg('score'))['a'] or 0,
     }
+    # What needs a staff member today — each tile links to where it's done.
+    todo = {
+        'pending_results': UserResult.objects.pending().count(),
+        'pending_tx': stats['pending_tx'],
+        'new_imports': sum(1 for r in _cambridge_files() if r.get('is_new')),
+        'ai_review': Exam.objects.filter(is_ai_generated=True, is_reviewed=False).count(),
+    }
     recent_results = UserResult.objects.select_related('user', 'exam').order_by('-completed_at')[:8]
     recent_users = User.objects.order_by('-date_joined')[:6]
     recent_tx = Transaction.objects.select_related('user').order_by('-created_at')[:6]
 
     return render(request, 'panel/dashboard.html', {
         'stats': stats,
+        'todo': todo,
+        'todo_any': any(todo.values()),
         'recent_results': recent_results,
         'recent_users': recent_users,
         'recent_tx': recent_tx,

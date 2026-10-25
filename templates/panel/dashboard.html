@@ -46,12 +46,42 @@
   </div>
 </div>
 
-{% if stats.pending_tx %}
-<div style="background:#eab30812;border:1px solid #eab30830;border-radius:10px;padding:12px 18px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
-  <span style="color:var(--yellow);font-size:13px;font-weight:600">⚠ {{ stats.pending_tx }} ta to'lov tasdiqlash kutmoqda</span>
-  <a href="{% url 'panel:transactions' %}?status=pending" class="btn btn-sm" style="background:#eab30820;color:var(--yellow);border:1px solid #eab30840">Ko'rish</a>
+<div class="card" style="margin-bottom:20px">
+  <div class="section-header">
+    <span class="section-title">Bajarilishi kerak</span>
+    {% if request.active_attempts_count %}<a href="{% url 'panel:attempts_live' %}" class="badge badge-blue">● {{ request.active_attempts_count }} kishi hozir test yozmoqda</a>{% endif %}
+  </div>
+  {% if todo_any %}
+  <div class="action-grid">
+    {% if todo.pending_results %}
+    <a href="{% url 'panel:results' %}?status=pending" class="action-tile tone-red">
+      <span class="action-count">{{ todo.pending_results }}</span>
+      <span><div class="action-label">Writing baholash</div><div class="action-sub">Natijalar tekshirilishini kutmoqda</div></span>
+    </a>
+    {% endif %}
+    {% if todo.pending_tx %}
+    <a href="{% url 'panel:transactions' %}?status=pending" class="action-tile tone-yellow">
+      <span class="action-count">{{ todo.pending_tx }}</span>
+      <span><div class="action-label">To'lovlarni tasdiqlash</div><div class="action-sub">Tasdiqlash kutilmoqda</div></span>
+    </a>
+    {% endif %}
+    {% if todo.new_imports %}
+    <a href="{% url 'panel:exam_import' %}" class="action-tile tone-blue">
+      <span class="action-count">{{ todo.new_imports }}</span>
+      <span><div class="action-label">Yangi testlar</div><div class="action-sub">Saytga yuklanmagan</div></span>
+    </a>
+    {% endif %}
+    {% if todo.ai_review %}
+    <a href="{% url 'panel:exams' %}?show=pending_review" class="action-tile tone-blue">
+      <span class="action-count">{{ todo.ai_review }}</span>
+      <span><div class="action-label">AI testlarni ko'rib chiqish</div><div class="action-sub">Tasdiqlanmagan</div></span>
+    </a>
+    {% endif %}
+  </div>
+  {% else %}
+  <div class="action-ok">✓ Hammasi joyida — kutayotgan ish yo'q</div>
+  {% endif %}
 </div>
-{% endif %}
 
 <!-- Chart -->
 <div class="card" style="margin-bottom:20px">
@@ -73,7 +103,7 @@
       </div>
     </div>
     <div class="table-wrap">
-      <table>
+      <table class="table-cards">
         <thead><tr><th>Foydalanuvchi</th><th>Imtihon</th><th>Ball</th><th>Sana</th></tr></thead>
         <tbody>
           {% for r in recent_results %}
@@ -83,10 +113,10 @@
               <a href="{% url 'panel:user_detail' r.user.pk %}" style="color:var(--primary)">{{ r.user.display_name }}</a>
             </div></td>
             <td style="color:var(--muted)">{{ r.exam.title|truncatechars:26 }}</td>
-            <td>{% if r.score >= 7.5 %}<span class="badge badge-green">{{ r.score }}</span>{% elif r.score >= 6.0 %}<span class="badge badge-yellow">{{ r.score }}</span>{% else %}<span class="badge badge-red">{{ r.score }}</span>{% endif %}</td>
+            <td>{% if r.is_pending %}<a href="{% url 'panel:result_grade' r.pk %}" class="badge badge-yellow">⏳ Baholash</a>{% elif r.score >= 7.5 %}<span class="badge badge-green">{{ r.score }}</span>{% elif r.score >= 6.0 %}<span class="badge badge-yellow">{{ r.score }}</span>{% else %}<span class="badge badge-red">{{ r.score }}</span>{% endif %}</td>
             <td style="color:var(--muted);font-size:12px">{{ r.completed_at|date:"d M, H:i" }}</td>
           </tr>
-          {% empty %}<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:24px">Hali natija yo'q</td></tr>
+          {% empty %}<tr><td colspan="4"><div class="empty-state"><div class="empty-icon">📝</div><div class="empty-title">Hali natija yo'q</div>Talabalar test topshirgach shu yerda ko'rinadi</div></td></tr>
           {% endfor %}
         </tbody>
       </table>
