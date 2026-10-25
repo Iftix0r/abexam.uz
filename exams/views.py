@@ -12,6 +12,8 @@ from django.db import transaction
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.utils import timezone
+from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 from django.views import View
 from django.views.generic import DetailView
 
@@ -274,7 +276,7 @@ class TakeExamView(LoginRequiredMixin, DetailView):
                     q.group_title, q.group_instructions, q.body_text = _split_question_heading(q.text)
                 else:
                     q.group_title, q.group_instructions, q.body_text = '', '', q.text
-            section.render_blocks = _build_render_blocks(questions)
+            section.render_blocks = _build_render_blocks(questions, (section.extra_data or {}).get('notes'))
             section.q_count = len(questions)
             # A map/plan/diagram that a run of questions refers to (e.g.
             # Listening "Label the plan", Q16-20) is shown right above the
@@ -317,6 +319,12 @@ class TakeExamView(LoginRequiredMixin, DetailView):
                 ] if len(group) > 1 else [],
             })
 
+        # Notes blocks need each question's display_number, only known now.
+        for section in sections:
+            for block in section.render_blocks:
+                if block['kind'] == 'notes':
+                    block['html'] = _render_notes(block['template'], block['questions'])
+
         context['sections'] = sections
         context['tab_groups'] = tab_groups
         return context
@@ -341,17 +349,54 @@ def _split_question_heading(text):
     return title, instructions, text
 
 
-def _build_render_blocks(questions):
+_NOTES_GAP_RE = re.compile(r'\[\[(\d+)\]\]')
+
+
+def _render_notes(template, questions):
+    """A notes/form block's HTML with each [[order]] placeholder turned into
+    that question's numbered input, so the gaps sit inside the notes text
+    like on the paper test."""
+    by_order = {q.order: q for q in questions}
+
+    def gap(match):
+        q = by_order.get(int(match.group(1)))
+        if q is None:
+            return match.group(0)
+        return format_html(
+            '<span class="notes-gap" id="qitem-{}"><span class="question-num">{}</span>'
+            '<input type="text" class="ans-input notes-input" data-qid="{}" autocomplete="off"'
+            ' oninput="saveAnswer(\'{}\', this.value)"></span>',
+            q.id, q.display_number, q.id, q.id,
+        )
+
+    # The template comes from the seed JSON, like the section content.
+    return mark_safe(_NOTES_GAP_RE.sub(gap, template))
+
+
+def _build_render_blocks(questions, notes=None):
     """Groups consecutive 'matching'-type questions that share an identical
     options list into one shared-table block instead of repeating the same
     options under every question — mirrors the real IELTS computer-delivered
     layout (e.g. "match each statement to a person" or paragraph-matching,
-    where several questions point at the same small set of choices)."""
+    where several questions point at the same small set of choices).
+
+    `notes` ({"<first question order>": html with [[order]] gaps}, from the
+    section's extra_data) turns a run of gap-fill questions into one boxed
+    notes/form block, the way Listening Part 1/4 notes look on paper."""
+    notes = notes or {}
     blocks = []
     i, n = 0, len(questions)
     while i < n:
         q = questions[i]
-        if q.question_type == 'matching' and q.options:
+        template = notes.get(str(q.order), '')
+        orders = {int(o) for o in _NOTES_GAP_RE.findall(template)}
+        if q.order in orders:
+            j = i
+            while j < n and questions[j].order in orders:
+                j += 1
+            blocks.append({'kind': 'notes', 'questions': questions[i:j], 'template': template})
+            i = j
+        elif q.question_type == 'matching' and q.options:
             j = i + 1
             while (j < n and questions[j].question_type == 'matching'
                    and questions[j].options == q.options and not _has_heading(questions[j])):

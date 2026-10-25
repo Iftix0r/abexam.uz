@@ -266,6 +266,32 @@ class SeedTestlar7Tests(TestCase):
         exam = Exam.objects.get(title='IELTS Full Mock Test 8')
         self.assertIn('16', exam.sections.get(order=1).extra_data['question_images'])
 
+    def test_seed_testlar9_notes_boxes(self):
+        """Listening Part 1/4 notes render as one box with the gaps inside
+        the text, not as ten separate questions."""
+        from django.core.management import call_command
+        for n in (10, 11):
+            call_command('seed_cambridge', file=f'data/cambridge/ielts_full_mock_test_{n}.json', stdout=io.StringIO())
+            exam = Exam.objects.get(title=f'IELTS Full Mock Test {n}')
+            listening, reading, writing = exam.sections.order_by('order')
+            self.assertEqual(listening.questions.count(), 40)
+            self.assertEqual(reading.questions.count(), 40)
+            self.assertEqual(writing.questions.count(), 2)
+            self.assertEqual(set(listening.extra_data['notes']), {'1', '31'})
+
+        exam = Exam.objects.get(title='IELTS Full Mock Test 11')
+        user = User.objects.create_user('student9', password='pw')
+        self.client.force_login(user)
+        mark_exam_unlocked(user.pk, exam.pk)
+        resp = self.client.get(reverse('exams:take_exam', args=[exam.pk]))
+        html = resp.content.decode()
+        self.assertContains(resp, '<div class="notes-box-title">Getting a job with an airline</div>', html=True)
+        self.assertNotRegex(html, r'\[\[\d+\]\]')
+        q1 = exam.sections.get(order=1).questions.get(order=1)
+        self.assertIn(f'<span class="notes-gap" id="qitem-{q1.id}"><span class="question-num">1</span>', html)
+        # the gap's own input is the one answers are saved from
+        self.assertEqual(html.count(f'data-qid="{q1.id}"'), 1)
+
 
 class QuestionHeadingTests(TestCase):
     """Guruh nomi va ko'rsatmasi ("[Title] Instructions\\n…") 1-savol matniga

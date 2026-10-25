@@ -189,6 +189,12 @@ class Command(BaseCommand):
             section.extra_data = {**(section.extra_data or {}), 'question_images': stored}
             section.save(update_fields=['extra_data'])
 
+        # "notes": {"1": "<p>Name: [[1]]</p>…"} — a boxed notes/form block
+        # whose [[n]] gaps are the inputs of questions n… (see TakeExamView).
+        if 'notes' in sec_data:
+            section.extra_data = {**(section.extra_data or {}), 'notes': sec_data['notes']}
+            section.save(update_fields=['extra_data'])
+
         # "audio_file": Listening audio already in the repo (path relative to
         # the JSON file, e.g. "../../TESTLAR/7/listening1.mp3") — for tests
         # whose audio isn't hosted anywhere to download from.
