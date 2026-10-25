@@ -23,12 +23,19 @@
   <div style="font-size:13px;color:var(--muted);line-height:1.7">
     <strong style="color:var(--text)">{{ results_count }}</strong> ta natija bo'yicha.
     To'g'rilik <strong style="color:var(--text)">joriy kalit</strong> bilan hisoblanadi — kalitni tuzatsangiz, bu sahifa darhol yangilanadi
-    (talabalarning saqlangan ballari o'zgarmaydi).
+    (talabalarning ballarini yangilash uchun kalitni tuzatgach "Ballarni qayta hisoblash" ni bosing).
     {% if flagged %}<br><span style="color:var(--yellow);font-weight:700">⚠ {{ flagged }} ta savolda kalitni tekshiring</span> — ko'pchilik bir xil "noto'g'ri" javob yozgan.{% endif %}
   </div>
-  <div style="display:flex;gap:6px">
+  <div style="display:flex;gap:6px;flex-wrap:wrap">
     <a href="?" class="btn btn-sm {% if not sort %}btn-primary{% else %}btn-ghost{% endif %}">Tartib bo'yicha</a>
     <a href="?sort=hard" class="btn btn-sm {% if sort == 'hard' %}btn-primary{% else %}btn-ghost{% endif %}">Eng qiyinlari</a>
+    {% if results_count %}
+    <form method="post" action="{% url 'panel:exam_regrade' exam.pk %}" style="display:inline"
+          onsubmit="return confirm('Barcha {{ results_count }} ta natija joriy kalit bilan qayta hisoblanadi (Listening/Reading). Writing baholari saqlanadi. Davom etasizmi?')">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-sm btn-success" title="Kalit tuzatilgandan keyin talabalarning ballarini yangilash">↻ Ballarni qayta hisoblash</button>
+    </form>
+    {% endif %}
   </div>
 </div>
 

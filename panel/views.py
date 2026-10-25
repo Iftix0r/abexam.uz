@@ -28,6 +28,8 @@ from core.utils import (
 )
 from exams.models import ATTEMPT_ONLINE_WINDOW, Exam, ExamAttempt, Question, Section, UserResult
 from exams import camera
+from exams.analysis import question_stats, regrade_exam
+from core.audit import ACTIONS, log_action
 from exams.passwords import GRACE_SECONDS, exam_password, seconds_until_rotation, testlar_password
 from exams.testlar import testlar_folders
 from exams.views import finalize_attempt
@@ -130,7 +132,14 @@ def users_list(request):
         users = users.filter(is_active=False)
     elif filter_by == 'student':
         users = users.filter(is_active_student=True)
-    return render(request, 'panel/users_list.html', {'users': users, 'q': q, 'filter': filter_by})
+    group_id = request.GET.get('group', '')
+    if group_id.isdigit():
+        users = users.filter(study_groups=int(group_id))
+    from users.models import StudyGroup
+    return render(request, 'panel/users_list.html', {
+        'users': users.prefetch_related('study_groups'), 'q': q, 'filter': filter_by,
+        'groups': StudyGroup.objects.all(), 'group_id': group_id,
+    })
 
 
 @panel_required
@@ -149,12 +158,222 @@ def user_detail(request, pk):
         for r in results.graded().order_by('completed_at')
     ]
     return render(request, 'panel/user_detail.html', {
+        'user_groups': user.study_groups.all(), 'other_groups': _groups().exclude(members=user),
         'progress_json': json.dumps(progress, ensure_ascii=False).replace('<', '\\u003c'), 'progress_count': len(progress),
         'obj': user, 'results': results, 'transactions': transactions, 'stats': stats,
         'learner': LearnerProfile.objects.filter(user=user).first(),
         'learn_stats': learn_done.aggregate(done=Count('id'), avg=Avg('best_score')),
         'learn_words': Vocabulary.objects.filter(user=user).count(),
         'app_tokens': ApiToken.objects.filter(user=user).order_by(F('last_used_at').desc(nulls_last=True)),
+    })
+
+
+# ── Study groups (classes) ──────────────────────────────────────────────────
+def _groups():
+    from users.models import StudyGroup
+    return StudyGroup.objects.all()
+
+
+def _member_rows(group):
+    """One row per member with their graded-results summary, best first."""
+    rows = []
+    members = group.members.annotate(
+        n=Count('userresult', filter=Q(userresult__status=UserResult.STATUS_GRADED)),
+        avg=Avg('userresult__score', filter=Q(userresult__status=UserResult.STATUS_GRADED)),
+        best=Max('userresult__score', filter=Q(userresult__status=UserResult.STATUS_GRADED)),
+    )
+    last_by_user = {}
+    for r in (UserResult.objects.graded().filter(user__in=group.members.all())
+              .select_related('exam').order_by('user_id', '-completed_at')):
+        last_by_user.setdefault(r.user_id, r)
+    for m in members:
+        rows.append({'user': m, 'count': m.n, 'avg': m.avg, 'best': m.best, 'last': last_by_user.get(m.pk)})
+    rows.sort(key=lambda r: (r['last'] is None, -(r['last'].score if r['last'] else 0), -(r['avg'] or 0)))
+    return rows
+
+
+@panel_required
+def groups_list(request):
+    from users.models import StudyGroup
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        if not name:
+            messages.error(request, "Guruh nomini kiriting")
+        elif StudyGroup.objects.filter(name__iexact=name).exists():
+            messages.error(request, "Bunday nomli guruh bor")
+        else:
+            group = StudyGroup.objects.create(name=name, description=request.POST.get('description', '').strip())
+            log_action(request, 'group', group.name, reverse('panel:group_detail', args=[group.pk]), 'Yaratildi')
+            messages.success(request, f'"{group.name}" guruhi yaratildi')
+            return redirect('panel:group_detail', pk=group.pk)
+        return redirect('panel:groups')
+    groups = StudyGroup.objects.annotate(
+        member_count=Count('members', distinct=True),
+        avg=Avg('members__userresult__score', filter=Q(members__userresult__status=UserResult.STATUS_GRADED)),
+        results=Count('members__userresult', filter=Q(members__userresult__status=UserResult.STATUS_GRADED)),
+    )
+    return render(request, 'panel/groups_list.html', {'groups': groups})
+
+
+@panel_required
+def group_detail(request, pk):
+    from users.models import StudyGroup
+    group = get_object_or_404(StudyGroup, pk=pk)
+    url = reverse('panel:group_detail', args=[group.pk])
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        if action == 'rename':
+            name = request.POST.get('name', '').strip()
+            if name and not StudyGroup.objects.filter(name__iexact=name).exclude(pk=group.pk).exists():
+                group.name = name
+                group.description = request.POST.get('description', '').strip()
+                group.save(update_fields=['name', 'description'])
+                log_action(request, 'group', group.name, url, 'Nomi/tavsifi o\'zgardi')
+                messages.success(request, 'Saqlandi')
+            else:
+                messages.error(request, "Nom bo'sh yoki boshqa guruhda bor")
+        elif action == 'add':
+            user = User.objects.filter(pk=request.POST.get('user_id') or 0).first()
+            if user:
+                group.members.add(user)
+                log_action(request, 'group', group.name, url, f"Qo'shildi: {user.display_name}")
+                messages.success(request, f"{user.display_name} guruhga qo'shildi")
+        elif action == 'remove':
+            user = group.members.filter(pk=request.POST.get('user_id') or 0).first()
+            if user:
+                group.members.remove(user)
+                log_action(request, 'group', group.name, url, f'Chiqarildi: {user.display_name}')
+                messages.success(request, f'{user.display_name} guruhdan chiqarildi')
+        elif action == 'delete':
+            log_action(request, 'group', group.name, '', f"O'chirildi ({group.members.count()} a'zo)")
+            group.delete()
+            messages.success(request, "Guruh o'chirildi")
+            return redirect('panel:groups')
+        # Membership is also changed from the user's own page.
+        back = request.POST.get('back', '')
+        if back and url_has_allowed_host_and_scheme(back, allowed_hosts={request.get_host()}):
+            return redirect(back)
+        return redirect(url)
+
+    rows = _member_rows(group)
+    graded = [r['last'] for r in rows if r['last']]
+    # Group progress: each month's average band of its members' results.
+    monthly = {}
+    for r in UserResult.objects.graded().filter(user__in=group.members.all()).order_by('completed_at'):
+        key = r.completed_at.strftime('%Y-%m')
+        bucket = monthly.setdefault(key, {'overall': [], 'l': [], 'r': [], 'w': []})
+        for k, f in (('overall', 'score'), ('l', 'listening_score'), ('r', 'reading_score'), ('w', 'writing_score')):
+            if getattr(r, f):
+                bucket[k].append(getattr(r, f))
+    progress = [{'date': k, **{f: (round(sum(v) / len(v), 2) if v else None) for f, v in b.items()}}
+                for k, b in monthly.items()]
+    return render(request, 'panel/group_detail.html', {
+        'group': group, 'rows': rows,
+        'avg_last': round(sum(r.score for r in graded) / len(graded), 1) if graded else None,
+        'recent': UserResult.objects.filter(user__in=group.members.all()).select_related('user', 'exam').order_by('-completed_at')[:10],
+        'progress_json': json.dumps(progress).replace('<', '\\u003c'), 'progress_count': len(progress),
+    })
+
+
+@panel_required
+def group_member_search(request, pk):
+    """Live search for the "add member" box: users not yet in the group."""
+    from users.models import StudyGroup
+    group = get_object_or_404(StudyGroup, pk=pk)
+    q = request.GET.get('q', '').strip()
+    users = []
+    if q:
+        users = [{'id': u.pk, 'name': u.display_name, 'sub': u.phone_number or f'@{u.username}'}
+                 for u in User.objects.filter(_user_search(q)).exclude(study_groups=group)[:8]]
+    return JsonResponse({'users': users})
+
+
+@panel_required
+def audit_log(request):
+    """Who did what in the panel. Superadmins only — it's the record of the
+    other admins' actions."""
+    from core.models import AuditLog
+    if not request.user.is_superuser:
+        messages.error(request, "Bu sahifa faqat superadmin uchun.")
+        return redirect('panel:dashboard')
+    logs = AuditLog.objects.all()
+    staff_id = request.GET.get('staff', '')
+    action = request.GET.get('action', '')
+    q = request.GET.get('q', '').strip()
+    if staff_id.isdigit():
+        logs = logs.filter(staff_id=int(staff_id))
+    if action in ACTIONS:
+        logs = logs.filter(action=action)
+    if q:
+        logs = logs.filter(Q(target__icontains=q) | Q(details__icontains=q))
+    page = Paginator(logs, 50).get_page(request.GET.get('page'))
+    for entry in page:
+        entry.label = ACTIONS.get(entry.action, entry.action)
+    return render(request, 'panel/audit_log.html', {
+        'page': page, 'actions': sorted(ACTIONS.items(), key=lambda kv: kv[1]),
+        'staff_users': User.objects.filter(is_staff=True).order_by('username'),
+        'staff_id': staff_id, 'action': action, 'q': q,
+    })
+
+
+_QTYPE_LABELS = {
+    'tfng': "True/False/Not Given", 'mcq': "Variant tanlash (A/B/C)",
+    'gap_fill': "Bo'sh joyni to'ldirish", 'matching': "Moslashtirish",
+}
+
+
+@panel_required
+def user_report(request, pk):
+    """Printable progress report for a student (to hand to parents): band
+    history, per-skill summary, weakest question types and Writing
+    criteria. Saved as PDF from the browser's print dialog."""
+    from collections import defaultdict
+    from exams.models import UserAnswer
+    student = get_object_or_404(User, pk=pk)
+    results = list(UserResult.objects.graded().filter(user=student).select_related('exam').order_by('completed_at'))
+
+    def skill(field):
+        vals = [getattr(r, field) for r in results if getattr(r, field)]
+        return {'last': vals[-1] if vals else None, 'avg': round(sum(vals) / len(vals), 1) if vals else None,
+                'best': max(vals) if vals else None}
+
+    skills = [('Listening', skill('listening_score')), ('Reading', skill('reading_score')),
+              ('Writing', skill('writing_score')), ('Speaking', skill('speaking_score'))]
+    skills = [(name, data) for name, data in skills if data['last'] is not None]
+
+    # Accuracy by skill + question type over every answer the student gave.
+    acc = defaultdict(lambda: [0, 0])
+    for stype, qtype, ok in (UserAnswer.objects.filter(result__in=results, question__isnull=False,
+                                                        question__question_type__in=_QTYPE_LABELS)
+                             .values_list('question__section__section_type', 'question__question_type', 'is_correct')):
+        acc[(stype, qtype)][0] += ok
+        acc[(stype, qtype)][1] += 1
+    accuracy = sorted(
+        ({'skill': stype.title(), 'type': _QTYPE_LABELS[qtype], 'right': r, 'total': t, 'pct': round(r * 100 / t)}
+         for (stype, qtype), (r, t) in acc.items() if t >= 3),
+        key=lambda a: a['pct'])
+
+    criteria = defaultdict(list)
+    for r in results:
+        for task in (r.writing_feedback or {}).get('tasks', []) if isinstance(r.writing_feedback, dict) else []:
+            for key, label in _WRITING_CRITERIA:
+                if task.get(key):
+                    criteria[label].append(task[key])
+    writing_criteria = [(label, round(sum(v) / len(v), 1)) for label, v in criteria.items()]
+
+    first, last = (results[0], results[-1]) if results else (None, None)
+    progress = [{'date': r.completed_at.strftime('%d.%m.%y'), 'exam': r.exam.title,
+                 **{k: (getattr(r, f) or None) for k, f in (('overall', 'score'), ('l', 'listening_score'),
+                                                            ('r', 'reading_score'), ('w', 'writing_score'))}}
+                for r in results]
+    return render(request, 'panel/user_report.html', {
+        'student': student, 'results': results, 'skills': skills, 'first': first, 'last': last,
+        'change': round(last.score - first.score, 1) if results and len(results) > 1 else None,
+        'best': max((r.score for r in results), default=None),
+        'weak': [a for a in accuracy if a['pct'] < 70][:4], 'accuracy': accuracy,
+        'writing_criteria': writing_criteria, 'groups': student.study_groups.all(),
+        'site': SiteSettings.get(), 'today': timezone.localdate(),
+        'progress_json': json.dumps(progress, ensure_ascii=False).replace('<', '\\u003c'),
     })
 
 
@@ -182,6 +401,7 @@ def user_toggle_active(request, pk):
     user = get_object_or_404(User, pk=pk)
     user.is_active = not user.is_active
     user.save(update_fields=['is_active'])
+    log_action(request, 'user_block', user.display_name, reverse('panel:user_detail', args=[user.pk]), 'Faollashtirildi' if user.is_active else 'Bloklandi')
     return JsonResponse({'active': user.is_active})
 
 
@@ -193,6 +413,7 @@ def user_delete(request, pk):
         return JsonResponse({'ok': False, 'error': 'O\'zingizni o\'chira olmaysiz'})
     if user.is_superuser and not request.user.is_superuser:
         return JsonResponse({'ok': False, 'error': 'Faqat superadmin superadminni o\'chira oladi'}, status=403)
+    log_action(request, 'user_delete', f'{user.display_name} (@{user.username})', '', f'Balans: {user.balance:.0f} so\'m')
     user.delete()
     return JsonResponse({'ok': True})
 
@@ -216,6 +437,9 @@ def user_add_balance(request, pk):
         User.objects.filter(pk=user.pk).update(balance=F('balance') + amount)
         User.objects.filter(pk=user.pk, balance__lt=0).update(balance=0)
     user.refresh_from_db(fields=['balance'])
+    if amount:
+        log_action(request, 'balance', user.display_name, reverse('panel:user_detail', args=[user.pk]),
+                   f'{amount:+,.0f} so\'m → balans {user.balance:,.0f} so\'m. Izoh: {note}')
     return JsonResponse({'balance': float(user.balance)})
 
 
@@ -231,6 +455,7 @@ def user_reset_password(request, pk):
         return JsonResponse({'ok': False, 'error': 'Parol kamida 6 ta belgi bo\'lishi kerak'})
     user.set_password(new_password)
     user.save()
+    log_action(request, 'user_password', user.display_name, reverse('panel:user_detail', args=[user.pk]))
     return JsonResponse({'ok': True})
 
 
@@ -247,6 +472,8 @@ def user_edit(request, pk):
     user.phone_number = data.get('phone_number', user.phone_number) or None
     user.is_active_student = data.get('is_active_student', user.is_active_student)
     user.save()
+    log_action(request, 'user_edit', user.display_name, reverse('panel:user_detail', args=[user.pk]),
+               f'Ism: {user.get_full_name() or "—"}, telefon: {user.phone_number or "—"}')
     return JsonResponse({'ok': True})
 
 
@@ -260,6 +487,7 @@ def user_make_staff(request, pk):
         return JsonResponse({'ok': False, 'error': 'O\'zingizni o\'zgartira olmaysiz'})
     user.is_staff = not user.is_staff
     user.save(update_fields=['is_staff'])
+    log_action(request, 'user_staff', user.display_name, reverse('panel:user_detail', args=[user.pk]), 'Admin qilindi' if user.is_staff else 'Admin huquqi olindi')
     return JsonResponse({'ok': True, 'is_staff': user.is_staff})
 
 
@@ -273,7 +501,21 @@ def users_bulk_action(request):
     ids = data.get('ids', [])
     if not ids:
         return JsonResponse({'ok': False})
+    if action == 'add_group':
+        from users.models import StudyGroup
+        group = StudyGroup.objects.filter(pk=data.get('group') or 0).first()
+        if not group:
+            return JsonResponse({'ok': False, 'error': 'Guruhni tanlang'}, status=400)
+        added = list(User.objects.filter(pk__in=ids))
+        group.members.add(*added)
+        log_action(request, 'group', group.name, reverse('panel:group_detail', args=[group.pk]),
+                   f"Qo'shildi: {', '.join(u.display_name for u in added[:20])}")
+        return JsonResponse({'ok': True, 'count': len(added), 'group': group.name})
     users = User.objects.filter(pk__in=ids).exclude(pk=request.user.pk)
+    if action in ('block', 'unblock', 'delete'):
+        label = {'block': 'Bloklandi', 'unblock': 'Faollashtirildi', 'delete': "O'chirildi"}[action]
+        names = ', '.join(u.display_name for u in users[:20])
+        log_action(request, 'user_bulk', f'{users.count()} ta foydalanuvchi', details=f'{label}: {names}')
     if action == 'block':
         users.update(is_active=False)
     elif action == 'unblock':
@@ -416,6 +658,9 @@ def exam_edit(request, pk):
         else:
             exam.is_active = want_active
         exam.save()
+        active = 'ha' if exam.is_active else "yo'q"
+        log_action(request, 'exam_edit', exam.title, reverse('panel:exam_detail', args=[exam.pk]),
+                   f'Narx: {exam.price}, davomiylik: {exam.duration_minutes} daq, faol: {active}')
         return redirect('panel:exam_detail', pk=exam.pk)
     return render(request, 'panel/exam_form.html', {'exam_types': Exam.EXAM_TYPES, 'exam': exam})
 
@@ -424,6 +669,7 @@ def exam_edit(request, pk):
 @require_POST
 def exam_delete(request, pk):
     exam = get_object_or_404(Exam, pk=pk)
+    log_action(request, 'exam_delete', exam.title, details=f'{UserResult.objects.filter(exam=exam).count()} ta natija bilan')
     exam.delete()
     return JsonResponse({'ok': True})
 
@@ -439,6 +685,7 @@ def exam_toggle_active(request, pk):
         }, status=400)
     exam.is_active = not exam.is_active
     exam.save(update_fields=['is_active'])
+    log_action(request, 'exam_toggle', exam.title, reverse('panel:exam_detail', args=[exam.pk]), 'Yoqildi' if exam.is_active else "O'chirildi")
     return JsonResponse({'active': exam.is_active})
 
 
@@ -453,6 +700,10 @@ def exams_bulk_action(request):
     if not ids:
         return JsonResponse({'ok': False})
     exams = Exam.objects.filter(pk__in=ids)
+    if action in ('activate', 'deactivate', 'delete'):
+        label = {'activate': 'Yoqildi', 'deactivate': "O'chirildi (draft)", 'delete': "O'chirildi"}[action]
+        log_action(request, 'exam_bulk', f'{exams.count()} ta imtihon',
+                   details=f"{label}: {', '.join(e.title for e in exams[:20])}")
     if action == 'activate':
         exam_objs = list(exams)
         activate_ids = [e.pk for e in exam_objs if _exam_has_content(e)]
@@ -535,6 +786,7 @@ def exam_import(request):
             messages.error(request, f'{name} yuklanmadi: {err.getvalue().strip()}')
             return redirect('panel:exam_import')
         row = next(r for r in _cambridge_files() if r['name'] == name)
+        log_action(request, 'exam_import', ', '.join(row['titles']), reverse('panel:exam_import'), name)
         messages.success(request, f"{name} yuklandi: {', '.join(row['titles'])}")
         if len(row['loaded']) == 1:
             return redirect('panel:exam_detail', pk=row['loaded'][0].pk)
@@ -546,79 +798,35 @@ def exam_import(request):
 
 
 # ── Question analysis: which questions students get wrong ───────────────────
-_ANALYSIS_TYPES = {'mcq', 'tfng', 'gap_fill', 'matching'}
-
-
-def _answer_key(text):
-    return re.sub(r'\s+', ' ', (text or '').strip()).lower()
-
-
 @panel_required
 def exam_analysis(request, pk):
     """Per question: how many students answered it right, left it blank or
-    got it wrong, and the most common wrong answers. Graded against the
-    current answer key, so a key fixed in the panel shows up here straight
-    away (stored results keep their old marks). A question that most
-    students "get wrong" with the same answer usually has a wrong key."""
-    from collections import Counter, defaultdict
-    from exams.models import UserAnswer
-    from exams.views import grade_answers
-
+    got it wrong, and the most common wrong answers (exams/analysis.py). A
+    question that most students "get wrong" the same way usually has a
+    wrong key — fix it, then re-grade the stored results."""
     exam = get_object_or_404(Exam, pk=pk)
-    sections = list(exam.sections.prefetch_related('questions').all())
-    by_result = defaultdict(dict)
-    for result_id, qid, ans in (UserAnswer.objects.filter(result__exam=exam, question__isnull=False)
-                                .values_list('result_id', 'question_id', 'user_answer')):
-        by_result[result_id][qid] = ans
-
-    groups, flagged = [], 0
-    for stype, group_iter in groupby(sections, key=lambda s: s.section_type):
-        counter, rows = 0, []
-        for section in group_iter:
-            questions = list(section.questions.all())
-            stats = {q.id: {'right': 0, 'blank': 0, 'wrong': Counter(), 'shown': {}} for q in questions}
-            gradable = [q for q in questions if q.question_type in _ANALYSIS_TYPES]
-            for answers in by_result.values():
-                if not any(q.id in answers for q in gradable):
-                    continue
-                verdicts = grade_answers(gradable, lambda q: answers.get(q.id, ''))
-                for q in gradable:
-                    raw = (answers.get(q.id) or '').strip()
-                    st = stats[q.id]
-                    if verdicts[q.id]:
-                        st['right'] += 1
-                    elif not raw:
-                        st['blank'] += 1
-                    else:
-                        key = _answer_key(raw)
-                        st['wrong'][key] += 1
-                        st['shown'].setdefault(key, raw)
-            for q in questions:
-                counter += 1
-                if q.question_type not in _ANALYSIS_TYPES:
-                    continue
-                st = stats[q.id]
-                wrong_total = sum(st['wrong'].values())
-                total = st['right'] + st['blank'] + wrong_total
-                top = [(st['shown'][k], n) for k, n in st['wrong'].most_common(3)]
-                pct = round(st['right'] * 100 / total) if total else None
-                # Most students answered it "wrong", and mostly the same way.
-                suspect = bool(total >= 5 and pct is not None and pct < 40 and top
-                               and top[0][1] >= max(3, wrong_total * 0.5))
-                flagged += suspect
-                rows.append({'q': q, 'number': counter, 'total': total, 'right': st['right'],
-                             'blank': st['blank'], 'wrong': wrong_total, 'pct': pct,
-                             'top_wrong': top, 'suspect': suspect})
-        if request.GET.get('sort') == 'hard':
-            rows.sort(key=lambda r: (r['pct'] is None, r['pct'] if r['pct'] is not None else 0))
-        if rows:
-            groups.append({'label': dict(Section.SECTION_TYPES).get(stype, stype), 'rows': rows})
-
+    groups = question_stats(exam)
+    if request.GET.get('sort') == 'hard':
+        for g in groups:
+            g['rows'].sort(key=lambda r: (r['pct'] is None, r['pct'] if r['pct'] is not None else 0))
     return render(request, 'panel/exam_analysis.html', {
-        'exam': exam, 'groups': groups, 'flagged': flagged,
+        'exam': exam, 'groups': groups,
+        'flagged': sum(r['suspect'] for g in groups for r in g['rows']),
         'results_count': UserResult.objects.filter(exam=exam).count(),
         'sort': request.GET.get('sort', ''),
     })
+
+
+@panel_required
+@require_POST
+def exam_regrade(request, pk):
+    """Re-marks the exam's stored results against the current answer key."""
+    exam = get_object_or_404(Exam, pk=pk)
+    checked, changed = regrade_exam(exam)
+    log_action(request, 'exam_regrade', exam.title, reverse('panel:exam_detail', args=[exam.pk]),
+               f'{checked} ta natija tekshirildi, {changed} tasining bali o\'zgardi')
+    messages.success(request, f"{checked} ta natija qayta hisoblandi — {changed} tasining bali o'zgardi.")
+    return redirect('panel:exam_analysis', pk=exam.pk)
 
 
 # ── Notes boxes (Listening Part 1/4 style forms) ────────────────────────────
@@ -689,6 +897,8 @@ def section_notes(request, pk):
                 extra.pop('notes', None)
             section.extra_data = extra
             section.save(update_fields=['extra_data'])
+            log_action(request, 'notes_edit', f'{section.exam.title} — {section.title}',
+                       reverse('panel:section_notes', args=[section.pk]), f'{len(notes)} ta blok')
             messages.success(request, "Notes bloklari saqlandi.")
             return redirect('panel:section_notes', pk=section.pk)
     numbers = _skill_numbers(section.exam)
@@ -881,6 +1091,8 @@ def transaction_approve(request, pk):
             tx.status = 'success'
             tx.save(update_fields=['status'])
             User.objects.filter(pk=tx.user_id).update(balance=F('balance') + tx.amount)
+            log_action(request, 'tx_approve', tx.user.display_name, reverse('panel:user_detail', args=[tx.user_id]),
+                       f"{tx.amount:,.0f} so'm · {tx.get_method_display()}")
     return JsonResponse({'status': tx.status})
 
 
@@ -891,6 +1103,8 @@ def transaction_reject(request, pk):
     if tx.status == 'pending':
         tx.status = 'failed'
         tx.save(update_fields=['status'])
+        log_action(request, 'tx_reject', tx.user.display_name, reverse('panel:user_detail', args=[tx.user_id]),
+                   f"{tx.amount:,.0f} so'm · {tx.get_method_display()}")
     return JsonResponse({'status': tx.status})
 
 
@@ -985,12 +1199,16 @@ def results_list(request):
     results = UserResult.objects.select_related('user', 'exam').order_by('-completed_at')
     if exam_id:
         results = results.filter(exam_id=exam_id)
+    group_id = request.GET.get('group', '')
+    if group_id.isdigit():
+        results = results.filter(user__study_groups=int(group_id))
     if status == UserResult.STATUS_PENDING:
         # Oldest first — whoever has been waiting longest gets graded first.
         results = results.pending().order_by('completed_at')
     exams = Exam.objects.all()
     return render(request, 'panel/results_list.html', {
         'results': results[:100], 'exams': exams, 'exam_id': exam_id, 'status': status,
+        'groups': _groups(), 'group_id': group_id,
         'pending_count': UserResult.objects.pending().count(),
     })
 
@@ -1152,6 +1370,9 @@ def result_grade(request, pk):
             result.graded_by = request.user
             result.graded_at = timezone.now()
             result.save(update_fields=fields)
+            log_action(request, 'result_grade', f'{result.user.display_name} — {result.exam.title}',
+                       reverse('panel:result_grade', args=[result.pk]),
+                       f'Writing {result.writing_score} · umumiy {result.score}')
             if was_pending:
                 Notification.objects.create(
                     user=result.user,
@@ -1179,6 +1400,8 @@ def result_grade(request, pk):
 @require_POST
 def result_delete(request, pk):
     result = get_object_or_404(UserResult, pk=pk)
+    log_action(request, 'result_delete', f'{result.user.display_name} — {result.exam.title}',
+               reverse('panel:user_detail', args=[result.user_id]), f'Ball: {result.score}')
     result.delete()
     return JsonResponse({'ok': True})
 
@@ -1192,6 +1415,9 @@ def results_bulk_delete(request):
     ids = data.get('ids', [])
     qs = UserResult.objects.filter(pk__in=ids)
     deleted = qs.count()
+    if deleted:
+        log_action(request, 'result_delete', f'{deleted} ta natija',
+                   details=', '.join(f'{r.user.display_name} — {r.exam.title}' for r in qs.select_related('user', 'exam')[:20]))
     qs.delete()
     return JsonResponse({'ok': True, 'deleted': deleted})
 
@@ -1241,6 +1467,9 @@ def attempts_live(request):
     qs = ExamAttempt.objects.select_related('user', 'exam')
     if exam_id:
         qs = qs.filter(exam_id=exam_id)
+    group_id = request.GET.get('group', '')
+    if group_id.isdigit():
+        qs = qs.filter(user__study_groups=int(group_id))
     recent = qs.filter(last_seen_at__gte=now - timedelta(hours=24))
     counts = {name: qs.filter(q).count() for name, q in filters.items()}
     counts['started'] = recent.count()
@@ -1291,6 +1520,7 @@ def attempts_live(request):
     return render(request, 'panel/attempts_live.html', {
         'attempts': attempts, 'tab': tab, 'counts': counts,
         'exam_id': exam_id, 'exams': Exam.objects.order_by('-created_at'),
+        'groups': _groups(), 'group_id': group_id,
     })
 
 
@@ -1648,6 +1878,18 @@ def exam_generate(request):
     })
 
 
+_TFNG_KEYS = {'tf': ['TRUE', 'FALSE', 'NOT GIVEN'], 'yn': ['YES', 'NO', 'NOT GIVEN']}
+
+
+def _tfng_choice(question):
+    """The tfng <select> value ("tf:TRUE", "yn:NOT GIVEN") for a saved
+    question — older panel questions stored "True"/"Not Given"."""
+    answer = (question.correct_answer or '').upper()
+    keys = {o.get('key', '').upper() for o in question.options or []}
+    family = 'yn' if 'YES' in keys or answer in ('YES', 'NO') else 'tf'
+    return f'{family}:{answer}'
+
+
 def _save_question_from_post(request, section, question=None):
     """Validate + save Question fields (type-specific) from request.POST.
     Returns an Uzbek error message on failure, or None on success."""
@@ -1669,15 +1911,26 @@ def _save_question_from_post(request, section, question=None):
         try:
             correct_idx = int(request.POST.get('correct_option', ''))
         except ValueError:
-            return "To'g'ri javobni belgilang"
-        if not (0 <= correct_idx < len(option_texts)):
-            return "To'g'ri javobni belgilang"
+            correct_idx = -1
         options = [{'key': chr(65 + i), 'text': t} for i, t in enumerate(option_texts)]
-        correct_answer = options[correct_idx]['key']
+        # "Choose TWO" rows store every right letter ("C/E", see
+        # exams.views._choose_many_groups); otherwise one radio-picked key.
+        multi = request.POST.get('correct_answer_multi', '').strip().upper().replace(' ', '')
+        if multi:
+            letters = [x for x in multi.replace(',', '/').split('/') if x]
+            if len(letters) < 2 or any(x not in {o['key'] for o in options} for x in letters):
+                return "Bir nechta javob uchun variant harflarini / bilan yozing, masalan: C/E"
+            correct_answer = '/'.join(letters)
+        else:
+            if not (0 <= correct_idx < len(option_texts)):
+                return "To'g'ri javobni belgilang"
+            correct_answer = options[correct_idx]['key']
     elif qtype == 'tfng':
-        correct_answer = request.POST.get('correct_answer_tfng', '').strip()
-        if correct_answer not in ('True', 'False', 'Not Given'):
+        family, _, correct_answer = request.POST.get('correct_answer_tfng', '').partition(':')
+        keys = _TFNG_KEYS.get(family)
+        if not keys or correct_answer not in keys:
             return "To'g'ri javobni tanlang"
+        options = [{'key': k, 'text': k} for k in keys]
     elif qtype in ('gap_fill', 'matching'):
         correct_answer = request.POST.get('correct_answer_text', '').strip()
         if not correct_answer:
@@ -1694,6 +1947,7 @@ def _save_question_from_post(request, section, question=None):
         question = Question(section=section)
         question.order = (section.questions.aggregate(Max('order'))['order__max'] or 0) + 1
 
+    old_answer = question.correct_answer if question.pk else None
     question.text = text
     question.question_type = qtype
     question.options = options
@@ -1702,6 +1956,12 @@ def _save_question_from_post(request, section, question=None):
     question.model_answer = model_answer
     question.word_limit = word_limit
     question.save()
+    target = f'{section.exam.title} — {question.text.splitlines()[-1][:80]}'
+    url = reverse('panel:question_edit', args=[question.pk])
+    if old_answer is not None and old_answer != correct_answer:
+        log_action(request, 'question_key', target, url, f'{old_answer or "—"} → {correct_answer or "—"}')
+    else:
+        log_action(request, 'question_edit', target, url)
     return None
 
 
@@ -1714,7 +1974,7 @@ def _question_initial(question):
                 'model_answer': '', 'word_limit': 0, 'explanation': ''}
     return {
         'text': question.text, 'question_type': question.question_type,
-        'correct_answer_tfng': question.correct_answer, 'correct_answer_text': question.correct_answer,
+        'correct_answer_tfng': _tfng_choice(question), 'correct_answer_text': question.correct_answer,
         'model_answer': question.model_answer, 'word_limit': question.word_limit,
         'explanation': question.explanation,
     }
@@ -1788,6 +2048,8 @@ def question_duplicate(request, pk):
 @require_POST
 def question_delete(request, pk):
     question = get_object_or_404(Question, pk=pk)
+    log_action(request, 'question_delete', f'{question.section.exam.title} — {question.text.splitlines()[-1][:80]}',
+               reverse('panel:exam_detail', args=[question.section.exam.pk]), f'Kalit: {question.correct_answer or "—"}')
     question.delete()
     return JsonResponse({'ok': True})
 
@@ -1820,6 +2082,8 @@ def create_admin(request):
                 is_staff=True,
                 is_superuser=is_superuser,
             )
+            log_action(request, 'admin_create', user.username, reverse('panel:user_detail', args=[user.pk]),
+                       'Superadmin' if is_superuser else 'Admin')
             return redirect('panel:user_detail', pk=user.pk)
 
     return render(request, 'panel/create_admin.html', {'error': error})
@@ -1856,8 +2120,10 @@ def site_settings(request):
         settings_obj.proctor_alarm = request.POST.get('proctor_alarm') == 'on'
         settings_obj.exam_password_required = request.POST.get('exam_password_required') == 'on'
         settings_obj.camera_proctoring = request.POST.get('camera_proctoring') == 'on'
+        settings_obj.telegram_work_alerts = request.POST.get('telegram_work_alerts') == 'on'
         settings_obj.maintenance_message = request.POST.get('maintenance_message', '').strip()
         settings_obj.save()
+        log_action(request, 'settings', 'Sayt sozlamalari', reverse('panel:site_settings'))
         messages.success(request, 'Sozlamalar saqlandi')
         return redirect('panel:site_settings')
     return render(request, 'panel/settings.html', {'settings': settings_obj})
@@ -1946,6 +2212,7 @@ def promocodes_list(request):
         except IntegrityError:
             messages.error(request, 'Bu kod allaqachon mavjud')
             return redirect('panel:promocodes')
+        log_action(request, 'promocode', code, reverse('panel:promocodes'), 'Yaratildi')
         messages.success(request, 'Promo kod yaratildi')
         return redirect('panel:promocodes')
 
@@ -1959,13 +2226,16 @@ def promocode_toggle(request, pk):
     promo = get_object_or_404(PromoCode, pk=pk)
     promo.is_active = not promo.is_active
     promo.save(update_fields=['is_active'])
+    log_action(request, 'promocode', promo.code, reverse('panel:promocodes'), 'Yoqildi' if promo.is_active else "O'chirildi")
     return JsonResponse({'ok': True, 'is_active': promo.is_active})
 
 
 @panel_required
 @require_POST
 def promocode_delete(request, pk):
-    get_object_or_404(PromoCode, pk=pk).delete()
+    promo = get_object_or_404(PromoCode, pk=pk)
+    log_action(request, 'promocode', promo.code, details="O'chirildi")
+    promo.delete()
     return JsonResponse({'ok': True})
 
 

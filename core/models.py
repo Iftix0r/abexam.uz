@@ -20,6 +20,9 @@ class SiteSettings(models.Model):
     # The exam page needs the webcam on and sends frames staff watch live
     # (exams/camera.py); the site asks for camera permission on entry.
     camera_proctoring = models.BooleanField(default=True)
+    # Admin Telegram chat gets pinged when work is waiting: a payment to
+    # approve, a Writing to grade, a question whose answer key looks wrong.
+    telegram_work_alerts = models.BooleanField(default=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
@@ -99,3 +102,25 @@ class PromoCode(models.Model):
         if self.expires_at and self.expires_at < timezone.now():
             return False
         return True
+
+
+class AuditLog(models.Model):
+    """What a staff member did in the panel — balance changes, answer-key
+    edits, grading, deletions — with who and when, for accountability."""
+    staff = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name='+')
+    # Kept as text too, so the entry still reads right after the account is gone.
+    staff_name = models.CharField(max_length=150)
+    action = models.CharField(max_length=40, db_index=True)
+    target = models.CharField(max_length=255, blank=True)
+    target_url = models.CharField(max_length=255, blank=True)
+    details = models.TextField(blank=True)
+    ip = models.GenericIPAddressField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        verbose_name = 'Xodim harakati'
+        verbose_name_plural = 'Xodimlar harakatlari'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.staff_name}: {self.action} {self.target}"

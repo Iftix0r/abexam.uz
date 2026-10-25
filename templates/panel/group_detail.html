@@ -1,0 +1,154 @@
+{% extends 'panel/base.html' %}
+{% block title %}{{ group.name }}{% endblock %}
+{% block page_title %}{{ group.name }}{% endblock %}
+{% block nav_groups %}active{% endblock %}
+
+{% block content %}
+<style>
+.gm-results{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow);z-index:20;overflow:hidden}
+.gm-item{display:flex;justify-content:space-between;gap:10px;width:100%;padding:9px 14px;background:none;border:none;color:var(--text);font-size:13px;cursor:pointer;text-align:left}
+.gm-item:hover{background:var(--surface2)}
+.rank{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:var(--surface2);font-size:11px;font-weight:700;color:var(--muted)}
+.rank.top{background:#eab30822;color:var(--yellow)}
+</style>
+
+<nav class="breadcrumb">
+  <a href="{% url 'panel:groups' %}">Guruhlar</a>
+  <span class="bc-sep">/</span>
+  <span class="bc-current">{{ group.name }}</span>
+</nav>
+
+<div class="stat-grid">
+  <div class="stat-card"><div><div class="stat-val">{{ rows|length }}</div><div class="stat-label">A'zolar</div></div></div>
+  <div class="stat-card"><div><div class="stat-val">{{ avg_last|default:"—" }}</div><div class="stat-label">O'rtacha band (oxirgi test)</div></div></div>
+  <div class="stat-card"><div><div class="stat-val">{% with r=rows.0 %}{% if r.last %}{{ r.last.score }}{% else %}—{% endif %}{% endwith %}</div><div class="stat-label">Eng yuqori (oxirgi test)</div></div></div>
+  <div class="stat-card"><div><div class="stat-val">{{ recent|length }}</div><div class="stat-label">So'nggi natijalar</div></div></div>
+</div>
+
+<div class="grid-sidebar-r">
+  <div style="display:flex;flex-direction:column;gap:16px">
+    {% if progress_count %}
+    <div class="card">
+      <div class="section-header"><span class="section-title">Guruhning o'sishi (oylik o'rtacha band)</span></div>
+      <div style="position:relative;height:240px"><canvas id="groupChart"></canvas></div>
+    </div>
+    {% endif %}
+
+    <div class="card">
+      <div class="section-header">
+        <span class="section-title">Reyting</span>
+        <a href="{% url 'panel:results' %}?group={{ group.pk }}" class="btn btn-ghost btn-sm">Guruh natijalari →</a>
+      </div>
+      <div class="table-wrap">
+        <table class="table-cards">
+          <thead><tr><th>#</th><th>Talaba</th><th>Oxirgi band</th><th>O'rtacha</th><th>Eng yaxshi</th><th>Testlar</th><th></th></tr></thead>
+          <tbody>
+            {% for r in rows %}
+            <tr>
+              <td><span class="rank {% if forloop.counter <= 3 and r.last %}top{% endif %}">{{ forloop.counter }}</span></td>
+              <td><a href="{% url 'panel:user_detail' r.user.pk %}" style="color:var(--primary);font-weight:500">{{ r.user.display_name }}</a>
+                {% if r.last %}<div style="font-size:11px;color:var(--muted)">{{ r.last.exam.title|truncatechars:30 }} · {{ r.last.completed_at|date:"d M" }}</div>{% endif %}</td>
+              <td>{% if r.last %}<span class="badge {% if r.last.score >= 7 %}badge-green{% elif r.last.score >= 5.5 %}badge-yellow{% else %}badge-red{% endif %}">{{ r.last.score }}</span>{% else %}<span style="color:var(--muted)">—</span>{% endif %}</td>
+              <td style="color:var(--muted)">{{ r.avg|floatformat:1|default:"—" }}</td>
+              <td style="color:var(--muted)">{{ r.best|default:"—" }}</td>
+              <td style="color:var(--muted)">{{ r.count }}</td>
+              <td>
+                <form method="post" onsubmit="return confirm('{{ r.user.display_name|escapejs }} guruhdan chiqarilsinmi?')">
+                  {% csrf_token %}<input type="hidden" name="action" value="remove"><input type="hidden" name="user_id" value="{{ r.user.pk }}">
+                  <button class="btn btn-ghost btn-sm" title="Guruhdan chiqarish">✕</button>
+                </form>
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7"><div class="empty-state"><div class="empty-icon">👤</div><div class="empty-title">Guruhda hali talaba yo'q</div>O'ng tomondagi qidiruv orqali qo'shing</div></td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div class="card">
+      <div class="section-title" style="margin-bottom:12px">Talaba qo'shish</div>
+      <form method="post" id="add-form">
+        {% csrf_token %}<input type="hidden" name="action" value="add"><input type="hidden" name="user_id" id="add-user-id">
+        <div style="position:relative">
+          <input class="form-input" id="member-q" placeholder="Ism, telefon yoki username..." autocomplete="off">
+          <div class="gm-results" id="member-results" hidden></div>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <div class="section-title" style="margin-bottom:12px">Guruh sozlamalari</div>
+      <form method="post">
+        {% csrf_token %}<input type="hidden" name="action" value="rename">
+        <div class="form-group"><label class="form-label">Nomi</label><input class="form-input" name="name" value="{{ group.name }}" maxlength="100" required></div>
+        <div class="form-group"><label class="form-label">Tavsif</label><input class="form-input" name="description" value="{{ group.description }}" maxlength="255"></div>
+        <button class="btn btn-primary btn-sm">Saqlash</button>
+      </form>
+      <form method="post" style="margin-top:14px" onsubmit="return confirm('Guruh o\'chirilsinmi? Talabalar va ularning natijalari saqlanib qoladi.')">
+        {% csrf_token %}<input type="hidden" name="action" value="delete">
+        <button class="btn btn-danger btn-sm">Guruhni o'chirish</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <div class="section-title" style="margin-bottom:12px">So'nggi natijalar</div>
+      {% for r in recent %}
+      <div style="display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12.5px">
+        <span><a href="{% url 'panel:user_detail' r.user.pk %}">{{ r.user.display_name }}</a><br><span style="color:var(--muted);font-size:11px">{{ r.exam.title|truncatechars:26 }}</span></span>
+        {% if r.is_pending %}<a href="{% url 'panel:result_grade' r.pk %}" class="badge badge-yellow" style="align-self:center">⏳ Baholash</a>{% else %}<span class="badge badge-blue" style="align-self:center">{{ r.score }}</span>{% endif %}
+      </div>
+      {% empty %}<div class="empty-state" style="padding:12px">Hali natija yo'q</div>{% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const memberQ = document.getElementById('member-q');
+const memberResults = document.getElementById('member-results');
+let memberTimer;
+memberQ.addEventListener('input', () => {
+  clearTimeout(memberTimer);
+  const q = memberQ.value.trim();
+  if (!q) { memberResults.hidden = true; return; }
+  memberTimer = setTimeout(async () => {
+    const r = await fetch(`{% url 'panel:group_member_search' group.pk %}?q=${encodeURIComponent(q)}`);
+    const d = await r.json();
+    memberResults.innerHTML = '';
+    if (!d.users.length) {
+      memberResults.innerHTML = '<div class="gm-item" style="cursor:default;color:var(--muted)">Topilmadi (yoki allaqachon guruhda)</div>';
+    }
+    d.users.forEach(u => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'gm-item';
+      b.innerHTML = '<span></span><span style="color:var(--muted);font-size:11.5px"></span>';
+      b.children[0].textContent = u.name; b.children[1].textContent = u.sub;
+      b.onclick = () => { document.getElementById('add-user-id').value = u.id; document.getElementById('add-form').submit(); };
+      memberResults.appendChild(b);
+    });
+    memberResults.hidden = false;
+  }, 250);
+});
+document.addEventListener('click', e => { if (!e.target.closest('#add-form')) memberResults.hidden = true; });
+</script>
+{% if progress_count %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<script>
+(function(){
+  const rows = {{ progress_json|safe }};
+  const c = panelChartColors();
+  const line = (label, key, color, width) => ({label, data: rows.map(r => r[key]), borderColor: color, backgroundColor: color, borderWidth: width, tension: .25, spanGaps: true, pointRadius: 4});
+  new Chart(document.getElementById('groupChart'), {
+    type: 'line',
+    data: {labels: rows.map(r => r.date), datasets: [line('Umumiy', 'overall', '#d32f2f', 3), line('Listening', 'l', '#3b82f6', 2), line('Reading', 'r', '#22c55e', 2), line('Writing', 'w', '#a855f7', 2)]},
+    options: {maintainAspectRatio: false, scales: {y: {min: 0, max: 9, ticks: {stepSize: 1, color: c.tick}, grid: {color: c.grid}}, x: {ticks: {color: c.tick}, grid: {color: c.grid}}}, plugins: {legend: {labels: {color: c.text}}}},
+  });
+})();
+</script>
+{% endif %}
+{% endblock %}

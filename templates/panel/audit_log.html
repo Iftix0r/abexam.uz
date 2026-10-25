@@ -1,0 +1,52 @@
+{% extends 'panel/base.html' %}
+{% block title %}Xodimlar harakatlari{% endblock %}
+{% block page_title %}Xodimlar harakatlari{% endblock %}
+{% block nav_audit %}active{% endblock %}
+
+{% block content %}
+<form method="get" class="card" style="margin-bottom:16px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+  <select name="staff" class="form-input" style="max-width:200px">
+    <option value="">Barcha xodimlar</option>
+    {% for u in staff_users %}<option value="{{ u.pk }}" {% if staff_id == u.pk|stringformat:"d" %}selected{% endif %}>{{ u.display_name }}</option>{% endfor %}
+  </select>
+  <select name="action" class="form-input" style="max-width:240px">
+    <option value="">Barcha harakatlar</option>
+    {% for code, label in actions %}<option value="{{ code }}" {% if action == code %}selected{% endif %}>{{ label }}</option>{% endfor %}
+  </select>
+  <input name="q" value="{{ q }}" class="form-input" placeholder="Kimga / nimaga, izoh..." style="max-width:240px">
+  <button type="submit" class="btn btn-primary btn-sm">Filtrlash</button>
+  {% if staff_id or action or q %}<a href="?" class="btn btn-ghost btn-sm">Tozalash</a>{% endif %}
+</form>
+
+<div class="card">
+  <div class="section-header">
+    <span class="section-title">Jurnal ({{ page.paginator.count }})</span>
+    <span style="font-size:12px;color:var(--muted)">Balans, kalit, baho, o'chirish va boshqa o'zgarishlar</span>
+  </div>
+  <div class="table-wrap">
+    <table class="table-cards">
+      <thead><tr><th>Vaqt</th><th>Xodim</th><th>Harakat</th><th>Nimaga</th><th>Tafsilot</th></tr></thead>
+      <tbody>
+        {% for e in page %}
+        <tr>
+          <td style="color:var(--muted);font-size:12px;white-space:nowrap">{{ e.created_at|date:"d M Y, H:i" }}</td>
+          <td style="font-weight:600;font-size:13px">{{ e.staff_name }}</td>
+          <td><span class="badge {% if 'delete' in e.action or e.action == 'tx_reject' %}badge-red{% elif e.action == 'balance' or e.action == 'question_key' or e.action == 'exam_regrade' %}badge-yellow{% else %}badge-blue{% endif %}">{{ e.label }}</span></td>
+          <td style="font-size:13px">{% if e.target_url %}<a href="{{ e.target_url }}" style="color:var(--primary)">{{ e.target|truncatechars:60 }}</a>{% else %}{{ e.target|truncatechars:60 }}{% endif %}</td>
+          <td style="font-size:12px;color:var(--muted)">{{ e.details|truncatechars:140 }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5"><div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">Hali yozuv yo'q</div>Xodimlar panelda biror narsani o'zgartirganda shu yerda ko'rinadi</div></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% if page.has_other_pages %}
+  <div style="display:flex;gap:8px;justify-content:center;margin-top:16px">
+    {% if page.has_previous %}<a href="?page={{ page.previous_page_number }}&staff={{ staff_id }}&action={{ action }}&q={{ q|urlencode }}" class="btn btn-ghost btn-sm">← Oldingi</a>{% endif %}
+    <span style="font-size:12px;color:var(--muted);align-self:center">{{ page.number }} / {{ page.paginator.num_pages }}</span>
+    {% if page.has_next %}<a href="?page={{ page.next_page_number }}&staff={{ staff_id }}&action={{ action }}&q={{ q|urlencode }}" class="btn btn-ghost btn-sm">Keyingi →</a>{% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

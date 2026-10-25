@@ -12,14 +12,15 @@ from django.db import transaction
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.utils import timezone
-from django.utils.html import format_html
+from django.utils.html import escape, format_html
 from django.utils.safestring import mark_safe
 from django.views import View
 from django.views.generic import DetailView
 
-from core.utils import get_client_ip, parse_json_body
+from core.utils import get_client_ip, notify_staff_work, parse_json_body
 from .models import Exam, ExamAttempt, UserAnswer, UserResult, Question
 from . import camera
+from .analysis import alert_suspect_keys
 from .passwords import clear_exam_unlocked, exam_is_unlocked, exam_scope, password_required_for, try_unlock
 from users.models import User
 
@@ -528,6 +529,14 @@ def create_result(user, exam, answers):
         for question, user_ans, is_correct in answer_records
     ]
     UserAnswer.objects.bulk_create(answer_objs, ignore_conflicts=True)
+
+    if pending:
+        notify_staff_work(
+            f"✍️ <b>Writing baholash kerak</b>\n👤 {escape(user.display_name)} — {escape(exam.title)}"
+        )
+    # A wrong answer key only shows once several students have taken the test.
+    if UserResult.objects.filter(exam=exam).count() >= 5:
+        alert_suspect_keys(exam)
 
     return result
 

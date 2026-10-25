@@ -142,3 +142,124 @@ class ExamToolsPanelTests(TestCase):
         self.assertEqual(resp.context['todo']['pending_results'], 1)
         self.assertContains(resp, 'Writing baholash')
         self.assertContains(resp, f"{reverse('panel:result_grade', args=[UserResult.objects.get().pk])}")
+
+
+class PanelWorkflowTests(TestCase):
+    """Re-grading, audit log, key editing, groups, Telegram alerts, report."""
+
+    def setUp(self):
+        from exams.models import Exam, Question, Section
+        self.admin = User.objects.create_superuser('boss', password='pw')
+        self.client.force_login(self.admin)
+        self.exam = Exam.objects.create(title='Workflow', duration_minutes=60)
+        self.listening = Section.objects.create(exam=self.exam, title='Listening', section_type='listening', order=1)
+        self.qs = [Question.objects.create(section=self.listening, order=n, question_type='gap_fill',
+                                           correct_answer=ans, text=f'Item {n}: ___')
+                   for n, ans in ((1, 'bed'), (2, 'post'))]
+        self.reading = Section.objects.create(exam=self.exam, title='Reading', section_type='reading', order=2)
+        self.yn = Question.objects.create(section=self.reading, order=41, question_type='tfng', correct_answer='NO',
+                                          text='Claim', options=[{'key': k, 'text': k} for k in ('YES', 'NO', 'NOT GIVEN')])
+
+    def _result(self, username, answers):
+        from exams.views import create_result
+        student = User.objects.create_user(username, password='pw')
+        return create_result(student, self.exam, {str(q.id): a for q, a in answers})
+
+    def test_regrade_after_key_fix(self):
+        from core.models import AuditLog
+        result = self._result('ali', [(self.qs[0], 'beds'), (self.qs[1], 'post'), (self.yn, 'YES')])
+        self.assertFalse(result.answers.get(question=self.qs[0]).is_correct)
+        old_listening = result.listening_score
+        self.qs[0].correct_answer = 'bed/beds'
+        self.qs[0].save()
+        resp = self.client.post(reverse('panel:exam_regrade', args=[self.exam.pk]))
+        self.assertRedirects(resp, reverse('panel:exam_analysis', args=[self.exam.pk]), fetch_redirect_response=False)
+        result.refresh_from_db()
+        self.assertTrue(result.answers.get(question=self.qs[0]).is_correct)
+        self.assertGreater(result.listening_score, old_listening)
+        self.assertEqual(AuditLog.objects.get().action, 'exam_regrade')
+
+    def test_key_edit_keeps_yes_no_and_choose_two(self):
+        from core.models import AuditLog
+        from exams.models import Question
+        url = reverse('panel:question_edit', args=[self.yn.pk])
+        self.assertContains(self.client.get(url), 'value="yn:NO" selected')
+        self.client.post(url, {'text': 'Claim', 'question_type': 'tfng', 'correct_answer_tfng': 'yn:YES'})
+        self.yn.refresh_from_db()
+        self.assertEqual(self.yn.correct_answer, 'YES')
+        self.assertEqual([o['key'] for o in self.yn.options], ['YES', 'NO', 'NOT GIVEN'])
+        log = AuditLog.objects.get(action='question_key')
+        self.assertEqual(log.details, 'NO → YES')
+
+        two = Question.objects.create(section=self.listening, order=3, question_type='mcq', correct_answer='C/E',
+                                      text='Which TWO?', options=[{'key': k, 'text': k} for k in 'ABCDE'])
+        resp = self.client.post(reverse('panel:question_edit', args=[two.pk]), {
+            'text': 'Which TWO?', 'question_type': 'mcq', 'option_text': list('ABCDE'),
+            'correct_option': '-1', 'correct_answer_multi': 'b / d'})
+        self.assertEqual(resp.status_code, 302)
+        two.refresh_from_db()
+        self.assertEqual(two.correct_answer, 'B/D')
+
+    def test_balance_change_is_logged_and_audit_page_is_superuser_only(self):
+        import json
+        from core.models import AuditLog
+        student = User.objects.create_user('vali', password='pw')
+        self.client.post(reverse('panel:user_balance', args=[student.pk]),
+                         data=json.dumps({'amount': 50000, 'note': 'naqd'}), content_type='application/json')
+        entry = AuditLog.objects.get(action='balance')
+        self.assertIn('+50,000', entry.details)
+        self.assertEqual(entry.staff, self.admin)
+        self.assertContains(self.client.get(reverse('panel:audit')), "Balans o&#x27;zgartirildi")
+        staff = User.objects.create_user('helper', password='pw', is_staff=True)
+        self.client.force_login(staff)
+        self.assertRedirects(self.client.get(reverse('panel:audit')), reverse('panel:dashboard'), fetch_redirect_response=False)
+
+    def test_groups_members_and_filters(self):
+        from users.models import StudyGroup
+        self.client.post(reverse('panel:groups'), {'name': 'Ertalabki'})
+        group = StudyGroup.objects.get()
+        ali = User.objects.create_user('ali', password='pw', first_name='Ali')
+        vali = User.objects.create_user('vali', password='pw')
+        self.assertEqual(self.client.get(reverse('panel:group_member_search', args=[group.pk]), {'q': 'ali'}).json()['users'][0]['id'], ali.pk)
+        self.client.post(reverse('panel:group_detail', args=[group.pk]), {'action': 'add', 'user_id': ali.pk})
+        self.assertEqual(list(group.members.all()), [ali])
+        self._result('x', [])  # someone outside the group
+        from exams.views import create_result
+        create_result(ali, self.exam, {str(self.qs[0].id): 'bed'})
+        resp = self.client.get(reverse('panel:results'), {'group': group.pk})
+        self.assertEqual([r.user for r in resp.context['results']], [ali])
+        page = self.client.get(reverse('panel:group_detail', args=[group.pk]))
+        self.assertEqual(page.context['rows'][0]['user'], ali)
+        import json
+        self.client.post(reverse('panel:users_bulk'), data=json.dumps({'action': 'add_group', 'ids': [vali.pk], 'group': group.pk}),
+                         content_type='application/json')
+        self.assertEqual(group.members.count(), 2)
+        self.client.post(reverse('panel:group_detail', args=[group.pk]),
+                         {'action': 'remove', 'user_id': ali.pk, 'back': reverse('panel:user_detail', args=[ali.pk])})
+        self.assertEqual(group.members.count(), 1)
+
+    def test_telegram_alerts(self):
+        from unittest import mock
+        from exams.models import Section, Question
+        writing = Section.objects.create(exam=self.exam, title='Writing', section_type='writing', order=3)
+        task = Question.objects.create(section=writing, order=81, question_type='writing_task', text='Essay')
+        with mock.patch('core.utils.notify_admin_telegram') as tg:
+            self._result('w1', [(task, 'my essay')])
+        self.assertIn('Writing baholash kerak', tg.call_args[0][0])
+        # five students all answer Q1 "beds" → the key "bed" looks wrong
+        with mock.patch('core.utils.notify_admin_telegram') as tg:
+            for i in range(5):
+                self._result(f's{i}', [(self.qs[0], 'beds'), (self.qs[1], 'post')])
+        alerts = [c[0][0] for c in tg.call_args_list if 'Kalitni tekshiring' in c[0][0]]
+        self.assertEqual(len(alerts), 1)
+        self.assertIn('beds', alerts[0])
+
+    def test_progress_report(self):
+        from exams.views import create_result
+        ali = User.objects.create_user('ali', password='pw', first_name='Ali')
+        create_result(ali, self.exam, {str(self.qs[0].id): 'bed', str(self.yn.id): 'YES'})
+        create_result(ali, self.exam, {str(self.qs[0].id): 'bed', str(self.qs[1].id): 'post', str(self.yn.id): 'NO'})
+        resp = self.client.get(reverse('panel:user_report', args=[ali.pk]))
+        self.assertContains(resp, 'IELTS progress hisoboti')
+        self.assertEqual(len(resp.context['results']), 2)
+        self.assertGreater(resp.context['change'], 0)

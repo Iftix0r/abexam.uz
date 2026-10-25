@@ -68,6 +68,15 @@
     </label>
   </div>
 
+  <div class="card" style="margin-bottom:20px">
+    <div class="section-header"><span class="section-title">Telegram ogohlantirishlari</span></div>
+    <p style="font-size:12.5px;color:var(--muted);margin-bottom:14px">Admin Telegram chatiga xabar keladi: yangi to'lov tasdiqlash kutsa, talaba Writing topshirsa (baholash kerak) va biror savolda ko'pchilik bir xil "noto'g'ri" javob yozsa (kalit xato bo'lishi mumkin).</p>
+    <label class="form-check">
+      <input type="checkbox" name="telegram_work_alerts" {% if settings.telegram_work_alerts %}checked{% endif %}>
+      Kutayotgan ishlar haqida Telegram'ga xabar yuborish
+    </label>
+  </div>
+
   <button type="submit" class="btn btn-primary">Saqlash</button>
 </form>
 {% endblock %}

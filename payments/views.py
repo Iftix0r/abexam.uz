@@ -3,9 +3,10 @@ from decimal import Decimal
 from django.http import JsonResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import F
+from django.utils.html import escape
 from django.views import View
 from core.models import PromoCode
-from core.utils import parse_json_body
+from core.utils import notify_staff_work, parse_json_body
 from .models import Transaction
 
 
@@ -54,6 +55,11 @@ class TopUpView(LoginRequiredMixin, View):
             method=method,
             status='pending',
             description=description,
+        )
+        notify_staff_work(
+            f"💳 <b>To'lov tasdiqlash kutmoqda</b>\n"
+            f"👤 {escape(request.user.display_name)} (@{escape(request.user.username)})\n"
+            f"💰 {amount:,.0f} so'm · {tx.get_method_display()}"
         )
 
         return JsonResponse({

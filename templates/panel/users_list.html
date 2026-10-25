@@ -16,6 +16,13 @@
       <a href="?filter=staff" class="btn btn-sm {% if filter == 'staff' %}btn-primary{% else %}btn-ghost{% endif %}">Adminlar</a>
       <a href="?filter=inactive" class="btn btn-sm {% if filter == 'inactive' %}btn-primary{% else %}btn-ghost{% endif %}">Bloklangan</a>
     </div>
+    {% if groups %}
+    <select name="group" class="form-input" style="width:auto;padding:6px 10px" onchange="this.form.submit()">
+      <option value="">Barcha guruhlar</option>
+      {% for g in groups %}<option value="{{ g.pk }}" {% if group_id == g.pk|stringformat:"d" %}selected{% endif %}>{{ g.name }}</option>{% endfor %}
+    </select>
+    {% if filter %}<input type="hidden" name="filter" value="{{ filter }}">{% endif %}
+    {% endif %}
   </form>
   <div style="display:flex;gap:8px;align-items:center">
     <span style="color:var(--muted);font-size:13px">{{ users.count }} ta</span>
@@ -29,6 +36,13 @@
   <button onclick="bulkAction('unblock')" class="btn btn-success btn-sm">✓ Faollashtirish</button>
   <button onclick="bulkAction('block')" class="btn btn-ghost btn-sm">⛔ Bloklash</button>
   <button onclick="bulkAction('delete')" class="btn btn-danger btn-sm">O'chirish</button>
+  {% if groups %}
+  <select id="bulk-group" class="form-input" style="width:auto;padding:5px 10px;font-size:12px">
+    <option value="">Guruhni tanlang…</option>
+    {% for g in groups %}<option value="{{ g.pk }}">{{ g.name }}</option>{% endfor %}
+  </select>
+  <button onclick="bulkAddGroup()" class="btn btn-ghost btn-sm">👥 Guruhga qo'shish</button>
+  {% endif %}
   <button onclick="clearSelection()" class="btn btn-ghost btn-sm" style="margin-left:auto">Bekor</button>
 </div>
 
@@ -58,6 +72,7 @@
               {% if u.is_superuser %}<span class="badge badge-purple" style="margin-left:4px;font-size:10px">Super</span>
               {% elif u.is_staff %}<span class="badge badge-blue" style="margin-left:4px;font-size:10px">Admin</span>{% endif %}
               {% if u.has_own_username %}<div style="font-size:11px;color:var(--muted)">@{{ u.username }}</div>{% endif %}
+              {% for g in u.study_groups.all %}<span class="badge badge-gray" style="font-size:10px;margin-top:2px">{{ g.name }}</span> {% endfor %}
             </div>
           </div></td>
           <td style="color:var(--muted)">{{ u.phone_number|default:"—" }}</td>
@@ -115,6 +130,17 @@ async function bulkAction(action){
     clearSelection();
     if(action!=='delete')setTimeout(()=>location.reload(),1000);
   }
+}
+
+async function bulkAddGroup(){
+  const ids=[...document.querySelectorAll('.row-check:checked')].map(c=>c.value);
+  const group=document.getElementById('bulk-group').value;
+  if(!ids.length)return;
+  if(!group){toast('Avval guruhni tanlang','#eab308');return;}
+  const r=await fetch('/panel/users/bulk/',{method:'POST',headers:{'X-CSRFToken':csrf,'Content-Type':'application/json'},body:JSON.stringify({action:'add_group',ids,group})});
+  const d=await r.json();
+  if(d.ok){toast(d.count+' ta talaba "'+d.group+'" guruhiga qo\'shildi');clearSelection();setTimeout(()=>location.reload(),1000);}
+  else toast(d.error||'Xatolik','#ef4444');
 }
 
 async function quickDelete(pk){

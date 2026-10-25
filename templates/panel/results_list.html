@@ -6,8 +6,8 @@
 {% block content %}
 <div class="section-header">
   <form method="get" style="display:flex;gap:10px;max-width:100%;flex-wrap:wrap;align-items:center">
-    <a href="?{% if exam_id %}exam={{ exam_id }}{% endif %}" class="btn btn-sm {% if status != 'pending' %}btn-primary{% else %}btn-ghost{% endif %}">Barchasi</a>
-    <a href="?status=pending{% if exam_id %}&exam={{ exam_id }}{% endif %}" class="btn btn-sm {% if status == 'pending' %}btn-primary{% else %}btn-ghost{% endif %}">
+    <a href="?{% if exam_id %}exam={{ exam_id }}{% endif %}{% if group_id %}&group={{ group_id }}{% endif %}" class="btn btn-sm {% if status != 'pending' %}btn-primary{% else %}btn-ghost{% endif %}">Barchasi</a>
+    <a href="?status=pending{% if exam_id %}&exam={{ exam_id }}{% endif %}{% if group_id %}&group={{ group_id }}{% endif %}" class="btn btn-sm {% if status == 'pending' %}btn-primary{% else %}btn-ghost{% endif %}">
       Tekshirilishi kerak{% if pending_count %} <span class="nav-badge" style="margin-left:4px">{{ pending_count }}</span>{% endif %}
     </a>
     {% if status %}<input type="hidden" name="status" value="{{ status }}">{% endif %}
@@ -17,6 +17,12 @@
       <option value="{{ e.pk }}" {% if exam_id == e.pk|stringformat:"s" %}selected{% endif %}>{{ e.title }}</option>
       {% endfor %}
     </select>
+    {% if groups %}
+    <select name="group" class="form-input" style="width:auto;max-width:100%" onchange="this.form.submit()">
+      <option value="">Barcha guruhlar</option>
+      {% for g in groups %}<option value="{{ g.pk }}" {% if group_id == g.pk|stringformat:"d" %}selected{% endif %}>{{ g.name }}</option>{% endfor %}
+    </select>
+    {% endif %}
   </form>
   <div style="display:flex;gap:10px">
     <button id="bulkDeleteBtn" onclick="bulkDeleteResults()" class="btn btn-danger btn-sm" style="display:none">Tanlanganlarni o'chirish (<span id="bulkDeleteCount">0</span>)</button>

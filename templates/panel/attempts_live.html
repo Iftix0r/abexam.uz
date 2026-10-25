@@ -46,11 +46,11 @@ tr.row-alert td { animation: rowAlert 1s ease-in-out 6; }
 
 <div class="section-header">
   <form method="get" style="display:flex;gap:10px;max-width:100%;flex-wrap:wrap;align-items:center">
-    <a href="?tab=all{% if exam_id %}&exam={{ exam_id }}{% endif %}" class="btn btn-sm {% if tab == 'all' %}btn-primary{% else %}btn-ghost{% endif %}">Oxirgi 24 soat</a>
-    <a href="?tab=active{% if exam_id %}&exam={{ exam_id }}{% endif %}" class="btn btn-sm {% if tab == 'active' %}btn-primary{% else %}btn-ghost{% endif %}">
+    <a href="?tab=all{% if exam_id %}&exam={{ exam_id }}{% endif %}{% if group_id %}&group={{ group_id }}{% endif %}" class="btn btn-sm {% if tab == 'all' %}btn-primary{% else %}btn-ghost{% endif %}">Oxirgi 24 soat</a>
+    <a href="?tab=active{% if exam_id %}&exam={{ exam_id }}{% endif %}{% if group_id %}&group={{ group_id }}{% endif %}" class="btn btn-sm {% if tab == 'active' %}btn-primary{% else %}btn-ghost{% endif %}">
       Hozir yozmoqda{% if counts.active %} <span class="nav-badge" style="margin-left:4px;background:var(--blue)">{{ counts.active }}</span>{% endif %}
     </a>
-    <a href="?tab=unsent{% if exam_id %}&exam={{ exam_id }}{% endif %}" class="btn btn-sm {% if tab == 'unsent' %}btn-primary{% else %}btn-ghost{% endif %}">
+    <a href="?tab=unsent{% if exam_id %}&exam={{ exam_id }}{% endif %}{% if group_id %}&group={{ group_id }}{% endif %}" class="btn btn-sm {% if tab == 'unsent' %}btn-primary{% else %}btn-ghost{% endif %}">
       Yuborilmagan{% if counts.unsent %} <span class="nav-badge" style="margin-left:4px">{{ counts.unsent }}</span>{% endif %}
     </a>
     <input type="hidden" name="tab" value="{{ tab }}">
@@ -60,6 +60,12 @@ tr.row-alert td { animation: rowAlert 1s ease-in-out 6; }
       <option value="{{ e.pk }}" {% if exam_id == e.pk|stringformat:"s" %}selected{% endif %}>{{ e.title }}</option>
       {% endfor %}
     </select>
+    {% if groups %}
+    <select name="group" class="form-input" style="width:auto;max-width:100%" onchange="this.form.submit()">
+      <option value="">Barcha guruhlar</option>
+      {% for g in groups %}<option value="{{ g.pk }}" {% if group_id == g.pk|stringformat:"d" %}selected{% endif %}>{{ g.name }}</option>{% endfor %}
+    </select>
+    {% endif %}
   </form>
   <div style="display:flex;gap:14px;flex-wrap:wrap">
     <label style="font-size:13px;color:var(--muted);display:flex;gap:6px;align-items:center;cursor:pointer">

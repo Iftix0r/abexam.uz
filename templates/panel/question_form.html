@@ -84,16 +84,27 @@
         <input type="hidden" name="correct_option" id="correct_option_hidden" value="-1">
         <button type="button" class="btn btn-ghost btn-sm" onclick="addOption()">+ Variant qo'shish</button>
         <div style="font-size:11px;color:var(--muted);margin-top:6px">Chap tomondagi doiracha (⭘) — to'g'ri javobni belgilash uchun.</div>
+        <label class="form-label" style="margin-top:14px">Bir nechta to'g'ri javob — faqat "Choose TWO" savollar uchun</label>
+        <input class="form-input" name="correct_answer_multi" value="{% if '/' in question.correct_answer %}{{ question.correct_answer }}{% endif %}" placeholder="Masalan: C/E" style="max-width:200px">
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">To'ldirilsa, doiracha hisobga olinmaydi. Juftlikdagi ikkala savolga (masalan 11 va 12) bir xil yozing.</div>
       </div>
 
       <!-- TFNG -->
       <div class="form-group qtype-block" id="block-tfng">
         <label class="form-label">To'g'ri javob</label>
         <select class="form-input" name="correct_answer_tfng">
-          <option value="True" {% if initial.correct_answer_tfng == "True" %}selected{% endif %}>True</option>
-          <option value="False" {% if initial.correct_answer_tfng == "False" %}selected{% endif %}>False</option>
-          <option value="Not Given" {% if initial.correct_answer_tfng == "Not Given" %}selected{% endif %}>Not Given</option>
+          <optgroup label="True / False / Not Given">
+            <option value="tf:TRUE" {% if initial.correct_answer_tfng == "tf:TRUE" %}selected{% endif %}>TRUE</option>
+            <option value="tf:FALSE" {% if initial.correct_answer_tfng == "tf:FALSE" %}selected{% endif %}>FALSE</option>
+            <option value="tf:NOT GIVEN" {% if initial.correct_answer_tfng == "tf:NOT GIVEN" %}selected{% endif %}>NOT GIVEN</option>
+          </optgroup>
+          <optgroup label="Yes / No / Not Given">
+            <option value="yn:YES" {% if initial.correct_answer_tfng == "yn:YES" %}selected{% endif %}>YES</option>
+            <option value="yn:NO" {% if initial.correct_answer_tfng == "yn:NO" %}selected{% endif %}>NO</option>
+            <option value="yn:NOT GIVEN" {% if initial.correct_answer_tfng == "yn:NOT GIVEN" %}selected{% endif %}>NOT GIVEN</option>
+          </optgroup>
         </select>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">Talabaga shu guruhdagi uchta tugma ko'rsatiladi (TRUE/FALSE/NOT GIVEN yoki YES/NO/NOT GIVEN).</div>
       </div>
 
       <!-- Gap-fill / Matching -->

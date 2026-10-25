@@ -11,6 +11,7 @@
     <span class="bc-current">{{ obj.display_name }}</span>
   </nav>
   <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <a href="{% url 'panel:user_report' obj.pk %}" target="_blank" class="btn btn-ghost btn-sm">📄 Progress hisoboti</a>
     <button onclick="openEditModal()" class="btn btn-ghost btn-sm">✏ Tahrirlash</button>
     <button onclick="openPasswordModal()" class="btn btn-ghost btn-sm">🔑 Parol</button>
     {% if not obj.is_superuser and obj.pk != request.user.pk %}
@@ -46,6 +47,29 @@
       <button onclick="toggleUser({{ obj.pk }})" class="btn btn-ghost btn-sm" style="margin-top:14px;width:100%" id="toggle-btn">
         {% if obj.is_active %}⛔ Bloklash{% else %}✓ Faollashtirish{% endif %}
       </button>
+    </div>
+
+    <!-- Guruhlar -->
+    <div class="card">
+      <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Guruhlar</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">
+        {% for g in user_groups %}
+        <form method="post" action="{% url 'panel:group_detail' g.pk %}" style="display:inline">
+          {% csrf_token %}<input type="hidden" name="action" value="remove"><input type="hidden" name="user_id" value="{{ obj.pk }}"><input type="hidden" name="back" value="{{ request.path }}">
+          <span class="badge badge-blue"><a href="{% url 'panel:group_detail' g.pk %}">{{ g.name }}</a>
+            <button type="submit" title="Guruhdan chiqarish" style="background:none;border:none;color:inherit;cursor:pointer;margin-left:4px;font-size:12px">✕</button></span>
+        </form>
+        {% empty %}<span style="font-size:12px;color:var(--muted)">Hech qaysi guruhda emas</span>{% endfor %}
+      </div>
+      {% if other_groups %}
+      <form method="post" id="add-group-form" style="display:flex;gap:6px">
+        {% csrf_token %}<input type="hidden" name="action" value="add"><input type="hidden" name="user_id" value="{{ obj.pk }}"><input type="hidden" name="back" value="{{ request.path }}">
+        <select class="form-input" style="padding:6px 10px" onchange="if(this.value){this.form.action=this.value;this.form.submit()}">
+          <option value="">+ Guruhga qo'shish…</option>
+          {% for g in other_groups %}<option value="{% url 'panel:group_detail' g.pk %}">{{ g.name }}</option>{% endfor %}
+        </select>
+      </form>
+      {% endif %}
     </div>
 
     <!-- Info -->

@@ -48,6 +48,14 @@ def notify_admin_telegram(message: str):
     threading.Thread(target=_send, daemon=True).start()
 
 
+def notify_staff_work(message: str):
+    """Admin Telegram ping about work waiting for staff (a payment to
+    approve, a Writing to grade), unless turned off in site settings."""
+    from .models import SiteSettings
+    if SiteSettings.get().telegram_work_alerts:
+        notify_admin_telegram(message)
+
+
 _IMAGE_TYPE_LABELS = {
     'image/jpeg': 'JPEG', 'image/png': 'PNG', 'image/webp': 'WEBP', 'image/svg+xml': 'SVG',
 }

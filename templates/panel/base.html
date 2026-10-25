@@ -271,6 +271,10 @@ textarea.form-input{resize:vertical;min-height:80px}
     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4" stroke-width="1.8"/><path stroke-width="1.8" d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
     Foydalanuvchilar
   </a>
+  <a href="{% url 'panel:groups' %}" class="nav-item {% block nav_groups %}{% endblock %}">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="7" cy="8" r="3" stroke-width="1.8"/><circle cx="17" cy="8" r="3" stroke-width="1.8"/><path stroke-width="1.8" d="M2 20v-1a5 5 0 0 1 10 0v1M12 20v-1a5 5 0 0 1 10 0v1"/></svg>
+    Guruhlar
+  </a>
   <a href="{% url 'panel:exams' %}" class="nav-item {% block nav_exams %}{% endblock %}">
     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8" stroke-width="1.8"/><line x1="16" y1="13" x2="8" y2="13" stroke-width="1.8"/><line x1="16" y1="17" x2="8" y2="17" stroke-width="1.8"/></svg>
     Imtihonlar
@@ -318,6 +322,12 @@ textarea.form-input{resize:vertical;min-height:80px}
     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
     Xavfsizlik loglari
   </a>
+  {% if request.user.is_superuser %}
+  <a href="{% url 'panel:audit' %}" class="nav-item {% block nav_audit %}{% endblock %}">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1" stroke-width="1.8"/><path stroke-width="1.8" d="M9 12h6M9 16h4"/></svg>
+    Xodimlar harakatlari
+  </a>
+  {% endif %}
 
   <span class="nav-section">Analitika</span>
   <a href="{% url 'panel:analytics' %}" class="nav-item {% block nav_analytics %}{% endblock %}">

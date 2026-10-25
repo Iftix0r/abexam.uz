@@ -83,3 +83,20 @@ class LoginLog(models.Model):
         verbose_name = 'Login log'
         verbose_name_plural = 'Login loglar'
         ordering = ['-created_at']
+
+
+class StudyGroup(models.Model):
+    """A class of students (e.g. "Ertalabki IELTS") — staff filter results,
+    live exams and analytics by it and compare its members."""
+    name = models.CharField(max_length=100, unique=True)
+    description = models.CharField(max_length=255, blank=True)
+    members = models.ManyToManyField(User, related_name='study_groups', blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Guruh'
+        verbose_name_plural = 'Guruhlar'
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
