@@ -22,7 +22,10 @@
     onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
     🤖 AI bilan Test Yaratish
   </a>
-  <a href="{% url 'panel:exam_create' %}" class="btn btn-primary btn-sm">+ Qo'lda yaratish</a>
+  <div style="display:flex;gap:8px">
+    <a href="{% url 'panel:exam_import' %}" class="btn btn-ghost btn-sm">📥 Testni yuklash{% if import_new_count %} <span class="badge badge-yellow" style="margin-left:4px">{{ import_new_count }} yangi</span>{% endif %}</a>
+    <a href="{% url 'panel:exam_create' %}" class="btn btn-primary btn-sm">+ Qo'lda yaratish</a>
+  </div>
 </div>
 
 <div class="stat-grid">

@@ -50,3 +50,86 @@ class EnglishPanelTests(TestCase):
         self.assertContains(self.client.get(reverse('panel:english_app')), '1.4.0')
         self.client.post(reverse('panel:english_app_delete', args=[release.pk]))
         self.assertFalse(AppRelease.objects.exists())
+
+
+class ExamToolsPanelTests(TestCase):
+    """Test import, question analysis, notes editor and the progress chart."""
+
+    def setUp(self):
+        import tempfile
+        from django.test import override_settings
+        from exams.models import Exam, Question, Section
+        self.media = tempfile.TemporaryDirectory()
+        self.override = override_settings(
+            MEDIA_ROOT=self.media.name,
+            STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
+        self.override.enable()
+        self.admin = User.objects.create_user('boss', password='pw', is_staff=True)
+        self.client.force_login(self.admin)
+        self.exam = Exam.objects.create(title='Panel tools', duration_minutes=60)
+        self.section = Section.objects.create(exam=self.exam, title='Listening', section_type='listening', order=1)
+        self.q = [Question.objects.create(section=self.section, order=n, question_type='gap_fill',
+                                          correct_answer=ans, text=f'[Form] Complete.\nItem {n}: ___' if n == 1 else f'Item {n}: ___')
+                  for n, ans in ((1, 'bed'), (2, 'post'), (3, 'airport'))]
+
+    def tearDown(self):
+        self.override.disable()
+        self.media.cleanup()
+
+    def test_import_lists_and_loads_a_seed_file(self):
+        from exams.models import Exam
+        page = self.client.get(reverse('panel:exam_import'))
+        self.assertContains(page, 'ielts_full_mock_test_10.json')
+        resp = self.client.post(reverse('panel:exam_import'), {'file': 'ielts_full_mock_test_10.json'})
+        exam = Exam.objects.get(title='IELTS Full Mock Test 10')
+        self.assertRedirects(resp, reverse('panel:exam_detail', args=[exam.pk]), fetch_redirect_response=False)
+        self.assertEqual(exam.sections.get(order=1).questions.count(), 40)
+        # only names from the listing are accepted
+        self.client.post(reverse('panel:exam_import'), {'file': '../../core/settings.py'})
+        self.assertEqual(Exam.objects.filter(title__startswith='IELTS').count(), 1)
+
+    def test_analysis_flags_a_suspicious_key(self):
+        from exams.models import UserAnswer, UserResult
+        for i in range(6):
+            student = User.objects.create_user(f's{i}', password='pw')
+            result = UserResult.objects.create(user=student, exam=self.exam)
+            # everyone writes "beds" for Q1 — the key is probably wrong
+            for q, ans in zip(self.q, ('beds', 'post', '' if i < 2 else 'airport')):
+                UserAnswer.objects.create(result=result, question=q, user_answer=ans)
+        resp = self.client.get(reverse('panel:exam_analysis', args=[self.exam.pk]))
+        self.assertEqual(resp.context['flagged'], 1)
+        rows = resp.context['groups'][0]['rows']
+        self.assertEqual((rows[0]['pct'], rows[0]['top_wrong']), (0, [('beds', 6)]))
+        self.assertTrue(rows[0]['suspect'])
+        self.assertEqual((rows[2]['right'], rows[2]['blank']), (4, 2))
+        # fixing the key shows up straight away
+        self.q[0].correct_answer = 'bed/beds'
+        self.q[0].save()
+        resp = self.client.get(reverse('panel:exam_analysis', args=[self.exam.pk]))
+        self.assertEqual(resp.context['flagged'], 0)
+
+    def test_notes_editor_saves_and_validates(self):
+        url = reverse('panel:section_notes', args=[self.section.pk])
+        self.assertContains(self.client.get(url), '[[1]]')
+        resp = self.client.post(url, {'block': ['<p>Bed [[1]] and [[3]]</p>']})
+        self.assertContains(resp, "ketma-ket")
+        resp = self.client.post(url, {'block': ['<p>Bed [[9]]</p>']})
+        self.assertContains(resp, "9 tartibli savol yo")
+        self.client.post(url, {'block': ['<p>Bed [[1]] post [[2]]</p>', '']})
+        self.section.refresh_from_db()
+        self.assertEqual(self.section.extra_data['notes'], {'1': '<p>Bed [[1]] post [[2]]</p>'})
+        self.client.post(url, {'block': ['']})
+        self.section.refresh_from_db()
+        self.assertNotIn('notes', self.section.extra_data)
+
+    def test_user_progress_chart(self):
+        from exams.models import UserResult
+        student = User.objects.create_user('ali', password='pw')
+        UserResult.objects.create(user=student, exam=self.exam, score=5.5, listening_score=6.0)
+        UserResult.objects.create(user=student, exam=self.exam, score=6.5, listening_score=7.0, reading_score=6.5)
+        resp = self.client.get(reverse('panel:user_detail', args=[student.pk]))
+        self.assertContains(resp, 'progressChart')
+        import json
+        rows = json.loads(resp.context['progress_json'])
+        self.assertEqual([r['l'] for r in rows], [6.0, 7.0])
+        self.assertIsNone(rows[0]['r'])

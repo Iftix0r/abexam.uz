@@ -1,0 +1,70 @@
+{% extends 'panel/base.html' %}
+{% block title %}Savollar tahlili — {{ exam.title }}{% endblock %}
+{% block page_title %}Savollar tahlili{% endblock %}
+{% block nav_exams %}active{% endblock %}
+
+{% block content %}
+<style>
+.an-bar{height:8px;border-radius:4px;background:var(--border);overflow:hidden;min-width:80px}
+.an-bar span{display:block;height:100%}
+.an-row-suspect td{background:rgba(245,158,11,.08)}
+.an-wrong{display:inline-block;font-size:11.5px;padding:2px 8px;border-radius:6px;background:rgba(239,68,68,.1);color:var(--red);margin:2px 4px 2px 0}
+</style>
+
+<nav class="breadcrumb">
+  <a href="{% url 'panel:exams' %}">Imtihonlar</a>
+  <span class="bc-sep">/</span>
+  <a href="{% url 'panel:exam_detail' exam.pk %}">{{ exam.title }}</a>
+  <span class="bc-sep">/</span>
+  <span class="bc-current">Savollar tahlili</span>
+</nav>
+
+<div class="card" style="margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+  <div style="font-size:13px;color:var(--muted);line-height:1.7">
+    <strong style="color:var(--text)">{{ results_count }}</strong> ta natija bo'yicha.
+    To'g'rilik <strong style="color:var(--text)">joriy kalit</strong> bilan hisoblanadi — kalitni tuzatsangiz, bu sahifa darhol yangilanadi
+    (talabalarning saqlangan ballari o'zgarmaydi).
+    {% if flagged %}<br><span style="color:var(--yellow);font-weight:700">⚠ {{ flagged }} ta savolda kalitni tekshiring</span> — ko'pchilik bir xil "noto'g'ri" javob yozgan.{% endif %}
+  </div>
+  <div style="display:flex;gap:6px">
+    <a href="?" class="btn btn-sm {% if not sort %}btn-primary{% else %}btn-ghost{% endif %}">Tartib bo'yicha</a>
+    <a href="?sort=hard" class="btn btn-sm {% if sort == 'hard' %}btn-primary{% else %}btn-ghost{% endif %}">Eng qiyinlari</a>
+  </div>
+</div>
+
+{% for g in groups %}
+<div class="card" style="margin-bottom:16px">
+  <div class="section-header"><span class="section-title">{{ g.label }}</span></div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th style="width:36px">#</th><th>Savol</th><th style="width:110px">Kalit</th><th style="width:150px">To'g'ri</th><th style="width:70px">Bo'sh</th><th>Eng ko'p xato javoblar</th><th style="width:40px"></th></tr></thead>
+      <tbody>
+        {% for r in g.rows %}
+        <tr {% if r.suspect %}class="an-row-suspect"{% endif %}>
+          <td style="color:var(--muted);font-size:12px">{{ r.number }}</td>
+          <td style="font-size:12.5px">
+            {% if r.suspect %}<span title="Kalitni tekshiring" style="color:var(--yellow)">⚠</span>{% endif %}
+            {{ r.q.text|truncatechars:90 }}
+          </td>
+          <td style="font-size:12px;font-weight:700;color:var(--green)">{{ r.q.correct_answer }}</td>
+          <td>
+            {% if r.total %}
+            <div style="display:flex;align-items:center;gap:8px">
+              <div class="an-bar"><span style="width:{{ r.pct }}%;background:{% if r.pct >= 60 %}var(--green){% elif r.pct >= 35 %}var(--yellow){% else %}var(--red){% endif %}"></span></div>
+              <span style="font-size:12px;white-space:nowrap">{{ r.pct }}% <span style="color:var(--muted)">({{ r.right }}/{{ r.total }})</span></span>
+            </div>
+            {% else %}<span style="font-size:12px;color:var(--muted)">javob yo'q</span>{% endif %}
+          </td>
+          <td style="font-size:12px;color:var(--muted)">{{ r.blank }}</td>
+          <td>{% for ans, n in r.top_wrong %}<span class="an-wrong">{{ ans|truncatechars:30 }} × {{ n }}</span>{% empty %}<span style="font-size:12px;color:var(--muted)">—</span>{% endfor %}</td>
+          <td><a href="{% url 'panel:question_edit' r.q.pk %}" class="btn btn-ghost btn-sm" title="Savolni tahrirlash">✎</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% empty %}
+<div class="card" style="text-align:center;padding:32px;color:var(--muted)">Bu imtihonda avtomatik baholanadigan savol yo'q.</div>
+{% endfor %}
+{% endblock %}

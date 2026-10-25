@@ -1,12 +1,15 @@
 import csv
+import io
 import json
 import logging
 import re
 from datetime import timedelta
 from itertools import groupby
+from pathlib import Path
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.core.management import call_command
 from django.core.paginator import Paginator
 from django.db import IntegrityError, transaction as db_transaction
 from django.conf import settings
@@ -128,7 +131,16 @@ def user_detail(request, pk):
     transactions = Transaction.objects.filter(user=user).order_by('-created_at')[:10]
     stats = results.graded().aggregate(avg=Avg('score'), total=Count('id'))
     learn_done = LessonProgress.objects.filter(user=user).exclude(lesson_slug__startswith='story:')
+    # Band progress over time, oldest first. A skill the exam didn't have
+    # (or Writing not graded yet) is stored as 0 — a gap, not a 0 band.
+    progress = [
+        {'date': r.completed_at.strftime('%d.%m.%y'), 'exam': r.exam.title,
+         **{k: (getattr(r, f) or None) for k, f in (('overall', 'score'), ('l', 'listening_score'),
+                                                    ('r', 'reading_score'), ('w', 'writing_score'))}}
+        for r in results.graded().order_by('completed_at')
+    ]
     return render(request, 'panel/user_detail.html', {
+        'progress_json': json.dumps(progress, ensure_ascii=False).replace('<', '\\u003c'), 'progress_count': len(progress),
         'obj': user, 'results': results, 'transactions': transactions, 'stats': stats,
         'learner': LearnerProfile.objects.filter(user=user).first(),
         'learn_stats': learn_done.aggregate(done=Count('id'), avg=Avg('best_score')),
@@ -309,6 +321,7 @@ def exams_list(request):
         'exam_types': Exam.EXAM_TYPES,
         'pending_review_count': pending_review_count,
         'show': show, 'stats': stats,
+        'import_new_count': sum(1 for r in _cambridge_files() if r.get('is_new')),
     })
 
 
@@ -463,6 +476,221 @@ def exam_review(request, pk):
         exam.delete()
         messages.warning(request, f'"{title}" o\'chirildi.')
     return redirect('panel:exams')
+
+
+# ── Test import: data/cambridge JSON → exams (no SSH needed) ────────────────
+def _cambridge_dir():
+    return Path(settings.BASE_DIR) / 'data' / 'cambridge'
+
+
+def _cambridge_files():
+    """One row per seed JSON in data/cambridge: its exam title(s), question
+    count and which of those exams are already in the database."""
+    rows = []
+    for path in sorted(_cambridge_dir().glob('*.json')):
+        try:
+            data = json.loads(path.read_text(encoding='utf-8'))
+        except (OSError, ValueError):
+            rows.append({'name': path.name, 'error': True})
+            continue
+        items = data if isinstance(data, list) else [data]
+        titles = [item.get('title', path.stem) for item in items]
+        loaded = list(Exam.objects.filter(title__in=titles).order_by('title'))
+        rows.append({
+            'name': path.name,
+            'titles': titles,
+            'questions': sum(len(s.get('questions', [])) for item in items for s in item.get('sections', [])),
+            'loaded': loaded,
+            'is_new': not loaded,
+        })
+    # Not-yet-imported files first — those are what this page is for.
+    rows.sort(key=lambda r: (not r.get('is_new', False), r['name']))
+    return rows
+
+
+@panel_required
+def exam_import(request):
+    """Lists the seed JSONs that came with the last deploy and loads one into
+    the database with seed_cambridge — the step that used to need SSH."""
+    if request.method == 'POST':
+        name = request.POST.get('file', '')
+        # Only a file from the listing — never a path the request makes up.
+        path = next((p for p in _cambridge_dir().glob('*.json') if p.name == name), None)
+        if path is None:
+            messages.error(request, 'Fayl topilmadi.')
+            return redirect('panel:exam_import')
+        out, err = io.StringIO(), io.StringIO()
+        call_command('seed_cambridge', file=str(path), stdout=out, stderr=err)
+        if err.getvalue().strip():
+            logger.warning('exam import %s failed: %s', name, err.getvalue())
+            messages.error(request, f'{name} yuklanmadi: {err.getvalue().strip()}')
+            return redirect('panel:exam_import')
+        row = next(r for r in _cambridge_files() if r['name'] == name)
+        messages.success(request, f"{name} yuklandi: {', '.join(row['titles'])}")
+        if len(row['loaded']) == 1:
+            return redirect('panel:exam_detail', pk=row['loaded'][0].pk)
+        return redirect('panel:exam_import')
+    rows = _cambridge_files()
+    return render(request, 'panel/exam_import.html', {
+        'rows': rows, 'new_count': sum(1 for r in rows if r.get('is_new')),
+    })
+
+
+# ── Question analysis: which questions students get wrong ───────────────────
+_ANALYSIS_TYPES = {'mcq', 'tfng', 'gap_fill', 'matching'}
+
+
+def _answer_key(text):
+    return re.sub(r'\s+', ' ', (text or '').strip()).lower()
+
+
+@panel_required
+def exam_analysis(request, pk):
+    """Per question: how many students answered it right, left it blank or
+    got it wrong, and the most common wrong answers. Graded against the
+    current answer key, so a key fixed in the panel shows up here straight
+    away (stored results keep their old marks). A question that most
+    students "get wrong" with the same answer usually has a wrong key."""
+    from collections import Counter, defaultdict
+    from exams.models import UserAnswer
+    from exams.views import grade_answers
+
+    exam = get_object_or_404(Exam, pk=pk)
+    sections = list(exam.sections.prefetch_related('questions').all())
+    by_result = defaultdict(dict)
+    for result_id, qid, ans in (UserAnswer.objects.filter(result__exam=exam, question__isnull=False)
+                                .values_list('result_id', 'question_id', 'user_answer')):
+        by_result[result_id][qid] = ans
+
+    groups, flagged = [], 0
+    for stype, group_iter in groupby(sections, key=lambda s: s.section_type):
+        counter, rows = 0, []
+        for section in group_iter:
+            questions = list(section.questions.all())
+            stats = {q.id: {'right': 0, 'blank': 0, 'wrong': Counter(), 'shown': {}} for q in questions}
+            gradable = [q for q in questions if q.question_type in _ANALYSIS_TYPES]
+            for answers in by_result.values():
+                if not any(q.id in answers for q in gradable):
+                    continue
+                verdicts = grade_answers(gradable, lambda q: answers.get(q.id, ''))
+                for q in gradable:
+                    raw = (answers.get(q.id) or '').strip()
+                    st = stats[q.id]
+                    if verdicts[q.id]:
+                        st['right'] += 1
+                    elif not raw:
+                        st['blank'] += 1
+                    else:
+                        key = _answer_key(raw)
+                        st['wrong'][key] += 1
+                        st['shown'].setdefault(key, raw)
+            for q in questions:
+                counter += 1
+                if q.question_type not in _ANALYSIS_TYPES:
+                    continue
+                st = stats[q.id]
+                wrong_total = sum(st['wrong'].values())
+                total = st['right'] + st['blank'] + wrong_total
+                top = [(st['shown'][k], n) for k, n in st['wrong'].most_common(3)]
+                pct = round(st['right'] * 100 / total) if total else None
+                # Most students answered it "wrong", and mostly the same way.
+                suspect = bool(total >= 5 and pct is not None and pct < 40 and top
+                               and top[0][1] >= max(3, wrong_total * 0.5))
+                flagged += suspect
+                rows.append({'q': q, 'number': counter, 'total': total, 'right': st['right'],
+                             'blank': st['blank'], 'wrong': wrong_total, 'pct': pct,
+                             'top_wrong': top, 'suspect': suspect})
+        if request.GET.get('sort') == 'hard':
+            rows.sort(key=lambda r: (r['pct'] is None, r['pct'] if r['pct'] is not None else 0))
+        if rows:
+            groups.append({'label': dict(Section.SECTION_TYPES).get(stype, stype), 'rows': rows})
+
+    return render(request, 'panel/exam_analysis.html', {
+        'exam': exam, 'groups': groups, 'flagged': flagged,
+        'results_count': UserResult.objects.filter(exam=exam).count(),
+        'sort': request.GET.get('sort', ''),
+    })
+
+
+# ── Notes boxes (Listening Part 1/4 style forms) ────────────────────────────
+def _skill_numbers(exam):
+    """{question.order: number shown to students} — numbering runs per skill
+    across that skill's sections, like on the exam page."""
+    numbers = {}
+    sections = exam.sections.prefetch_related('questions').all()
+    for _stype, group_iter in groupby(sections, key=lambda s: s.section_type):
+        counter = 0
+        for section in group_iter:
+            for q in section.questions.all():
+                counter += 1
+                numbers[q.order] = counter
+    return numbers
+
+
+def _validate_notes(blocks, questions):
+    """(notes dict, errors) from the editor's textareas. Each block's gaps
+    must be a run of consecutive questions of this section — the exam page
+    puts exactly that run inside the box."""
+    from exams.views import _NOTES_GAP_RE
+    order_list = [q.order for q in questions]
+    notes, errors, used = {}, [], set()
+    for i, raw in enumerate(blocks, start=1):
+        raw = raw.strip()
+        if not raw:
+            continue
+        gaps = [int(n) for n in _NOTES_GAP_RE.findall(raw)]
+        if not gaps:
+            errors.append(f"{i}-blok: hech qanday [[raqam]] bo'sh joy yo'q.")
+            continue
+        unique = sorted(set(gaps))
+        missing = [n for n in unique if n not in order_list]
+        if missing:
+            errors.append(f"{i}-blok: bu bo'limda {', '.join(map(str, missing))} tartibli savol yo'q.")
+            continue
+        if len(unique) != len(gaps) or used & set(unique):
+            errors.append(f"{i}-blok: bitta savol ikki marta ishlatilgan.")
+            continue
+        start = order_list.index(unique[0])
+        if order_list[start:start + len(unique)] != unique:
+            errors.append(f"{i}-blok: savollar ketma-ket bo'lishi kerak (orada boshqa savol qolib ketgan).")
+            continue
+        used |= set(unique)
+        notes[str(unique[0])] = raw
+    return notes, errors
+
+
+@panel_required
+def section_notes(request, pk):
+    """Edit a section's notes boxes — the HTML with [[order]] gaps that the
+    exam page shows as one framed form instead of separate questions."""
+    from exams.views import _split_question_heading
+    section = get_object_or_404(Section, pk=pk)
+    questions = list(section.questions.all())
+    current = (section.extra_data or {}).get('notes') or {}
+    errors = []
+    blocks = [current[k] for k in sorted(current, key=int)]
+    if request.method == 'POST':
+        blocks = request.POST.getlist('block')
+        notes, errors = _validate_notes(blocks, questions)
+        if not errors:
+            extra = dict(section.extra_data or {})
+            if notes:
+                extra['notes'] = notes
+            else:
+                extra.pop('notes', None)
+            section.extra_data = extra
+            section.save(update_fields=['extra_data'])
+            messages.success(request, "Notes bloklari saqlandi.")
+            return redirect('panel:section_notes', pk=section.pk)
+    numbers = _skill_numbers(section.exam)
+    q_info = {q.order: {'num': numbers.get(q.order, q.order),
+                        'title': _split_question_heading(q.text)[0],
+                        'text': q.text.split('\n')[-1][:90]} for q in questions}
+    return render(request, 'panel/section_notes.html', {
+        'section': section, 'exam': section.exam, 'blocks': blocks or [''], 'errors': errors,
+        'questions': [(q, q_info[q.order]) for q in questions],
+        'q_info_json': json.dumps(q_info, ensure_ascii=False).replace('<', '\\u003c'),
+    })
 
 
 # ── Manual exam builder: sections ───────────────────────────────────────────

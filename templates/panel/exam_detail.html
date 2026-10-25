@@ -51,6 +51,7 @@
         </div>
         <div style="display:flex;gap:8px">
           <a href="{% url 'exams:take_exam' exam.pk %}?preview=1" target="_blank" class="btn btn-ghost btn-sm">👁 Talaba sifatida ko'rish</a>
+          <a href="{% url 'panel:exam_analysis' exam.pk %}" class="btn btn-ghost btn-sm">📊 Savollar tahlili</a>
           <a href="{% url 'panel:exam_edit' exam.pk %}" class="btn btn-ghost btn-sm">Tahrirlash</a>
           <button onclick="toggleExam({{ exam.pk }})" class="btn btn-ghost btn-sm" id="toggle-btn">
             {% if exam.is_active %}O'chirish{% else %}Yoqish{% endif %}
@@ -95,6 +96,9 @@
           <button onclick="moveSection({{ section.pk }},'up')" class="btn btn-ghost btn-sm" title="Yuqoriga">▲</button>
           <button onclick="moveSection({{ section.pk }},'down')" class="btn btn-ghost btn-sm" title="Pastga">▼</button>
           <a href="{% url 'panel:section_edit' section.pk %}" class="btn btn-ghost btn-sm">✎ Tahrirlash</a>
+          {% if section.section_type == 'listening' or section.section_type == 'reading' %}
+          <a href="{% url 'panel:section_notes' section.pk %}" class="btn btn-ghost btn-sm" title="To'rtburchak ichidagi notes bloklari">▭ Notes{% if section.extra_data.notes %} ({{ section.extra_data.notes|length }}){% endif %}</a>
+          {% endif %}
           <form method="post" action="{% url 'panel:section_duplicate' section.pk %}" style="display:inline">
             {% csrf_token %}
             <button type="submit" class="btn btn-ghost btn-sm" title="Nusxalash">⧉ Nusxalash</button>

@@ -1,0 +1,80 @@
+{% extends 'panel/base.html' %}
+{% block title %}Testni yuklash{% endblock %}
+
+{% block page_title %}Testni yuklash{% endblock %}
+
+{% block nav_exams %}active{% endblock %}
+
+
+{% block content %}
+<nav class="breadcrumb">
+  <a href="{% url 'panel:exams' %}">Imtihonlar</a>
+  <span class="bc-sep">/</span>
+  <span class="bc-current">Testni yuklash</span>
+</nav>
+
+<div class="card" style="margin-bottom:16px;font-size:13px;color:var(--muted);line-height:1.7">
+  Deploy bilan kelgan <code>data/cambridge/*.json</code> test fayllari. <strong style="color:var(--text)">Yangi</strong> fayllar hali saytda yo'q —
+  "Yuklash" bosilsa imtihon yaratiladi (audio va rasmlar bilan birga). Yuklangan faylni qayta yuklash imtihonni JSON'dagi holatga yangilaydi:
+  savollar matni va kalitlari JSON'dagiga qaytadi, talabalarning natijalari saqlanib qoladi.
+</div>
+
+<div class="card">
+  <div class="section-header">
+    <span class="section-title">Fayllar ({{ rows|length }})</span>
+    {% if new_count %}<span class="badge badge-yellow">{{ new_count }} ta yangi</span>{% endif %}
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Fayl</th><th>Imtihon</th><th>Savollar</th><th>Holat</th><th></th></tr></thead>
+      <tbody>
+        {% for r in rows %}
+        <tr>
+          <td style="font-family:monospace;font-size:12px">{{ r.name }}</td>
+          {% if r.error %}
+          <td colspan="3"><span class="badge badge-red">JSON o'qilmadi</span></td><td></td>
+          {% else %}
+          <td style="font-size:13px">
+            {% for t in r.titles %}{{ t }}{% if not forloop.last %}<br>{% endif %}{% endfor %}
+          </td>
+          <td style="font-size:12px;color:var(--muted)">{{ r.questions }}</td>
+          <td>
+            {% if r.is_new %}<span class="badge badge-yellow">Yangi</span>
+            {% else %}
+              {% for e in r.loaded %}<a href="{% url 'panel:exam_detail' e.pk %}" class="badge badge-green">Yuklangan{% if not e.is_active %} · draft{% endif %}</a>{% endfor %}
+            {% endif %}
+          </td>
+          <td style="text-align:right">
+            <form method="post" class="import-form" style="display:inline" {% if not r.is_new %}data-reload="1"{% endif %}>
+              {% csrf_token %}
+              <input type="hidden" name="file" value="{{ r.name }}">
+              <button type="submit" class="btn btn-sm {% if r.is_new %}btn-primary{% else %}btn-ghost{% endif %}">
+                {% if r.is_new %}📥 Yuklash{% else %}↻ Qayta yuklash{% endif %}
+              </button>
+            </form>
+          </td>
+          {% endif %}
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" style="text-align:center;padding:24px;color:var(--muted)">data/cambridge da JSON fayl yo'q</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Loading copies the audio too and takes a few seconds — one click only.
+document.querySelectorAll('.import-form').forEach(form => form.addEventListener('submit', e => {
+  if (form.dataset.reload && !confirm("Imtihon JSON'dagi holatga qayta yangilanadi. Panelda qo'lda qilingan o'zgarishlar (savol matni, kalit) yo'qoladi. Davom etasizmi?")) {
+    e.preventDefault();
+    return;
+  }
+  const btn = form.querySelector('button');
+  btn.disabled = true;
+  btn.textContent = 'Yuklanmoqda…';
+}));
+</script>
+{% endblock %}

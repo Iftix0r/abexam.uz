@@ -1,35 +1,36 @@
 # Session state (auto-saved — last known reality)
 
-_Updated: 2026-10-25 11:49:01_  ·  branch: `main`
+_Updated: 2026-10-25 12:21:31_  ·  branch: `main`
 
 ## Uncommitted changes
 ```
  M .anchor/session-state.md
- M exams/management/commands/seed_cambridge.py
- M exams/tests.py
- M exams/views.py
- M templates/exams/take_exam.html
-?? TESTLAR/9/
-?? data/cambridge/ielts_full_mock_test_10.json
-?? data/cambridge/ielts_full_mock_test_11.json
-?? data/cambridge/images/mock_test_10_task1.jpg
-?? data/cambridge/images/mock_test_10_varroa_flowchart.jpg
-?? data/cambridge/images/mock_test_11_education_house.jpg
-?? data/cambridge/images/mock_test_11_task1.jpg
+ M panel/tests.py
+ M panel/urls.py
+ M panel/views.py
+ M templates/panel/exam_detail.html
+ M templates/panel/exams_list.html
+ M templates/panel/user_detail.html
+?? templates/panel/exam_analysis.html
+?? templates/panel/exam_import.html
+?? templates/panel/section_notes.html
 ```
 
 Diff stat:
 ```
- .anchor/session-state.md                    | 44 +++++++-----------------
- exams/management/commands/seed_cambridge.py |  6 ++++
- exams/tests.py                              | 26 ++++++++++++++
- exams/views.py                              | 53 ++++++++++++++++++++++++++---
- templates/exams/take_exam.html              | 42 +++++++++++++++++++++--
- 5 files changed, 133 insertions(+), 38 deletions(-)
+ .anchor/session-state.md         |  45 ++------
+ panel/tests.py                   |  83 ++++++++++++++
+ panel/urls.py                    |   3 +
+ panel/views.py                   | 228 +++++++++++++++++++++++++++++++++++++++
+ templates/panel/exam_detail.html |   4 +
+ templates/panel/exams_list.html  |   5 +-
+ templates/panel/user_detail.html |  40 +++++++
+ 7 files changed, 372 insertions(+), 36 deletions(-)
 ```
 
 ## Recent commits
 ```
+0884beb feat(exams): render Listening notes as a boxed form with inline gaps
 c9c9a55 wes
 f3fd899 qdf
 496ddf7 rj3iwe
@@ -37,7 +38,6 @@ ac11883 feat(exams): let students take exams without a working webcam
 2a35e5e feat(exams): relay webcam video via clips and support multi-viewer calls
 474e1ac dwqaef
 eba6355 w13rwff
-a2f0ec8 feat(exams): require webcam during exams with live staff view
 ```
 
 ## Resume
