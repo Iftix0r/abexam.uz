@@ -80,7 +80,10 @@ def dashboard(request):
     recent_users = User.objects.order_by('-date_joined')[:6]
     recent_tx = Transaction.objects.select_related('user').order_by('-created_at')[:6]
 
+    hour = timezone.localtime().hour
+    greeting = 'Xayrli tong' if 5 <= hour < 12 else 'Xayrli kun' if hour < 18 else 'Xayrli kech'
     return render(request, 'panel/dashboard.html', {
+        'greeting': greeting, 'today': timezone.localdate(),
         'stats': stats,
         'todo': todo,
         'todo_any': any(todo.values()),

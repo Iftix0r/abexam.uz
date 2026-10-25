@@ -4,6 +4,18 @@
 {% block nav_dashboard %}active{% endblock %}
 
 {% block content %}
+<div class="page-hero">
+  <div>
+    <div class="hero-title">{{ greeting }}, {{ request.user.first_name|default:request.user.username }} 👋</div>
+    <div class="hero-sub">{{ today|date:"j F, l" }}{% if todo_any %} · sizni kutayotgan ishlar bor{% else %} · hammasi joyida{% endif %}</div>
+  </div>
+  <div class="hero-actions">
+    <a href="{% url 'panel:exam_create' %}" class="btn btn-sm">+ Test yaratish</a>
+    <a href="{% url 'panel:exam_import' %}" class="btn btn-sm">📥 Testni yuklash</a>
+    <a href="{% url 'panel:attempts_live' %}" class="btn btn-sm">● Jonli imtihon</a>
+  </div>
+</div>
+
 <div class="stat-grid">
   <div class="stat-card">
     <div class="stat-icon" style="background:#6366f118">
