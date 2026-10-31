@@ -5,296 +5,451 @@
 
 {% block extra_css %}
 <style>
-    @keyframes fadeInUp {
-        from { opacity: 0; transform: translateY(16px); }
+    @keyframes dashIn {
+        from { opacity: 0; transform: translateY(12px); }
         to { opacity: 1; transform: translateY(0); }
     }
+    .dash > * { animation: dashIn 0.45s ease-out both; }
+    .dash > *:nth-child(2) { animation-delay: 0.05s; }
+    .dash > *:nth-child(3) { animation-delay: 0.1s; }
+    .dash > *:nth-child(4) { animation-delay: 0.15s; }
+    .dash > *:nth-child(5) { animation-delay: 0.2s; }
+    @media (prefers-reduced-motion: reduce) { .dash > * { animation: none; } }
 
-    .dash-greeting {
-        animation: fadeInUp 0.5s ease-out;
-        margin-bottom: 2rem;
-    }
-
-    .dash-greeting h2 {
-        font-size: 1.6rem;
-        font-weight: 400;
-        color: var(--text-muted);
-        margin-bottom: 4px;
-    }
-
-    .dash-greeting h1 {
-        font-size: 2.5rem;
-        font-weight: 600;
-        background: linear-gradient(to right, #d32f2f, #b71c1c);
-        background-clip: text;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        letter-spacing: -0.03em;
-        line-height: 1.2;
-    }
-
-    .quick-actions {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-        gap: 16px;
-        margin-bottom: 2rem;
-        animation: fadeInUp 0.6s ease-out 0.1s both;
-    }
-
-    .qa-card {
+    .dash { display: flex; flex-direction: column; gap: 20px; }
+    .dash-panel {
         background: var(--card-bg);
         border: 1px solid var(--border-color);
         border-radius: 16px;
         padding: 20px;
-        text-decoration: none;
-        color: var(--text-color);
-        transition: all 0.2s;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        position: relative;
-        overflow: hidden;
+        min-width: 0;
+    }
+    .dash-panel-head {
+        display: flex; align-items: center; justify-content: space-between; gap: 12px;
+        margin-bottom: 16px;
+    }
+    .dash-panel-head h3 { font-size: 14px; font-weight: 600; }
+    .dash-panel-head a { font-size: 12px; font-weight: 500; color: var(--primary-color); text-decoration: none; }
+    .dash-panel-head a:hover { text-decoration: underline; }
+
+    /* ── Hero ── */
+    .dash-hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+        gap: 20px;
+        padding: 28px;
+        border-radius: 20px;
+        border: 1px solid var(--border-color);
+        background:
+            radial-gradient(120% 140% at 0% 0%, rgba(211, 47, 47, 0.09), transparent 55%),
+            var(--card-bg);
+    }
+    .dash-hello { font-size: 14px; color: var(--text-muted); margin-bottom: 6px; }
+    .dash-hero h1 {
+        font-size: clamp(1.6rem, 3.4vw, 2.2rem);
+        font-weight: 600;
+        letter-spacing: -0.03em;
+        line-height: 1.15;
+        margin-bottom: 10px;
+    }
+    .dash-hero h1 span { color: var(--primary-color); }
+    .dash-lead { font-size: 14px; color: var(--text-muted); line-height: 1.6; max-width: 46ch; }
+    .dash-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+    .dash-btn {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 11px 18px; border-radius: 12px;
+        font-size: 14px; font-weight: 600; text-decoration: none;
+        transition: transform 0.15s, box-shadow 0.2s, background 0.2s;
+    }
+    .dash-btn:active { transform: scale(0.97); }
+    .dash-btn.primary { background: var(--primary-color); color: #fff; box-shadow: 0 4px 14px rgba(211, 47, 47, 0.28); }
+    .dash-btn.primary:hover { background: var(--primary-color-dark); }
+    .dash-btn.ghost { background: var(--bg-color); color: var(--text-color); border: 1px solid var(--border-color); }
+    .dash-btn.ghost:hover { background: var(--tint-a); }
+    .dash-pending {
+        display: inline-flex; align-items: center; gap: 8px;
+        margin-top: 16px; padding: 8px 12px; border-radius: 10px;
+        background: rgba(245, 158, 11, 0.12); color: #a15c07;
+        font-size: 12.5px; font-weight: 500;
     }
 
-    .qa-card::before {
-        content: '';
-        position: absolute;
-        top: 0; left: 0; right: 0;
-        height: 2px;
-        opacity: 0;
-        transition: opacity 0.2s;
+    /* Score ring */
+    .dash-score {
+        display: flex; align-items: center; gap: 20px;
+        background: var(--bg-color);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 20px;
+        align-self: center;
     }
-
-    .qa-card:hover {
-        border-color: var(--primary-color);
-        transform: translateY(-3px);
-        box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    .dash-ring { position: relative; width: 112px; height: 112px; flex-shrink: 0; }
+    .dash-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+    .dash-ring .track { stroke: var(--tint-b); }
+    .dash-ring .value { stroke: var(--primary-color); stroke-linecap: round; transition: stroke-dashoffset 0.8s ease-out; }
+    .dash-ring-label {
+        position: absolute; inset: 0;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
     }
+    .dash-ring-label strong { font-size: 30px; font-weight: 700; letter-spacing: -0.02em; line-height: 1; }
+    .dash-ring-label small { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+    .dash-score-meta { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+    .dash-score-meta .title { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .dash-score-meta .exam { font-size: 14px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .dash-delta {
+        align-self: flex-start;
+        display: inline-flex; align-items: center; gap: 4px;
+        padding: 3px 8px; border-radius: 999px;
+        font-size: 12px; font-weight: 600;
+    }
+    .dash-delta.up { background: rgba(46, 125, 50, 0.12); color: #2e7d32; }
+    .dash-delta.down { background: rgba(211, 47, 47, 0.1); color: #c62828; }
+    .dash-delta.flat { background: var(--tint-b); color: var(--text-muted); }
 
-    .qa-card:hover::before { opacity: 1; }
+    /* Getting started (no results yet) */
+    .dash-steps { list-style: none; display: flex; flex-direction: column; gap: 12px; align-self: center; }
+    .dash-steps li {
+        display: flex; gap: 12px; align-items: flex-start;
+        background: var(--bg-color); border: 1px solid var(--border-color);
+        border-radius: 14px; padding: 14px;
+    }
+    .dash-steps .num {
+        width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+        background: rgba(211, 47, 47, 0.1); color: var(--primary-color);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 13px; font-weight: 700;
+    }
+    .dash-steps b { display: block; font-size: 13.5px; font-weight: 600; margin-bottom: 2px; }
+    .dash-steps span { font-size: 12.5px; color: var(--text-muted); line-height: 1.5; }
 
-    .qa-card.exam::before { background: linear-gradient(90deg, #d32f2f, #b71c1c); }
-    .qa-card.results::before { background: linear-gradient(90deg, #22c55e, #16a34a); }
-    .qa-card.vocab::before { background: linear-gradient(90deg, #f59e0b, #d97706); }
-    .qa-card.finance::before { background: linear-gradient(90deg, #6366f1, #4f46e5); }
-    .qa-card.learn::before { background: linear-gradient(90deg, #0ea5e9, #0284c7); }
-
-    .qa-icon {
-        width: 40px; height: 40px;
-        border-radius: 10px;
+    /* ── Stats ── */
+    .dash-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+    .dash-stat {
+        display: flex; align-items: center; gap: 14px;
+        background: var(--card-bg); border: 1px solid var(--border-color);
+        border-radius: 16px; padding: 16px 18px; min-width: 0;
+    }
+    .dash-stat-icon {
+        width: 40px; height: 40px; border-radius: 12px; flex-shrink: 0;
         display: flex; align-items: center; justify-content: center;
     }
+    .dash-stat-label { font-size: 12px; color: var(--text-muted); margin-bottom: 2px; }
+    .dash-stat-value { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; }
+    .dash-stat-value small { font-size: 12px; font-weight: 500; color: var(--text-muted); letter-spacing: 0; }
 
-    .qa-icon.exam    { background: rgba(211,47,47,.15); color: #d32f2f; }
-    .qa-icon.results { background: rgba(34,197,94,.15);  color: #22c55e; }
-    .qa-icon.vocab   { background: rgba(245,158,11,.15); color: #f59e0b; }
-    .qa-icon.finance { background: rgba(99,102,241,.15); color: #6366f1; }
-    .qa-icon.learn   { background: rgba(14,165,233,.15); color: #0ea5e9; }
+    .tone-red    { background: rgba(211, 47, 47, 0.1);  color: #d32f2f; }
+    .tone-green  { background: rgba(46, 125, 50, 0.1);  color: #2e7d32; }
+    .tone-blue   { background: rgba(21, 101, 192, 0.1); color: #1565c0; }
+    .tone-amber  { background: rgba(245, 158, 11, 0.14); color: #b45309; }
+    .tone-violet { background: rgba(99, 102, 241, 0.12); color: #4f46e5; }
+    .tone-sky    { background: rgba(14, 165, 233, 0.12); color: #0284c7; }
 
-    .qa-card h3 {
-        font-size: 15px;
-        font-weight: 600;
-        margin: 0;
+    /* ── Charts + sections ── */
+    .dash-grid { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: 20px; }
+    .dash-chart { position: relative; height: 230px; }
+    .dash-bars { display: flex; flex-direction: column; gap: 16px; }
+    .dash-bar-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; }
+    .dash-bar-row span { color: var(--text-muted); }
+    .dash-bar-row strong { font-weight: 600; }
+    .dash-bar { height: 8px; background: var(--tint-b); border-radius: 999px; overflow: hidden; }
+    .dash-bar div { height: 100%; border-radius: 999px; }
+    .dash-bars-note { font-size: 12px; color: var(--text-muted); margin-top: 18px; line-height: 1.5; }
+
+    /* Recent results */
+    .dash-results { list-style: none; display: flex; flex-direction: column; }
+    .dash-results a {
+        display: flex; align-items: center; gap: 14px;
+        padding: 12px 10px; margin: 0 -10px; border-radius: 12px;
+        text-decoration: none; color: var(--text-color);
+        transition: background 0.15s;
+    }
+    .dash-results a:hover { background: var(--tint-a); }
+    .dash-results li + li { border-top: 1px solid var(--border-color); }
+    .dash-results .info { flex: 1; min-width: 0; }
+    .dash-results .name { font-size: 14px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .dash-results .date { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .dash-band {
+        min-width: 46px; padding: 6px 10px; border-radius: 10px; text-align: center;
+        font-size: 15px; font-weight: 700;
     }
 
-    .qa-card p {
-        font-size: 12px;
-        color: var(--text-muted);
-        margin: 0;
-        line-height: 1.5;
+    /* ── Quick links ── */
+    .dash-links { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+    .dash-link {
+        display: flex; align-items: center; gap: 14px;
+        background: var(--card-bg); border: 1px solid var(--border-color);
+        border-radius: 16px; padding: 16px;
+        text-decoration: none; color: var(--text-color);
+        transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+        min-width: 0;
     }
+    .dash-link:hover { border-color: rgba(211, 47, 47, 0.35); transform: translateY(-2px); box-shadow: var(--shadow); }
+    .dash-link .dash-stat-icon { width: 42px; height: 42px; }
+    .dash-link .txt { min-width: 0; flex: 1; }
+    .dash-link b { display: block; font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+    .dash-link span { display: block; font-size: 12px; color: var(--text-muted); line-height: 1.4; }
+    .dash-link .chev { color: var(--text-muted); flex-shrink: 0; transition: transform 0.2s; }
+    .dash-link:hover .chev { transform: translateX(3px); color: var(--primary-color); }
 
-    .qa-card .arrow {
-        font-size: 18px;
-        color: var(--text-muted);
-        align-self: flex-end;
-        margin-top: auto;
-        transition: transform 0.2s;
+    .dash-section-title { font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: -6px; }
+
+    @media (max-width: 1100px) {
+        .dash-links { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .dash-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
-
-    .qa-card:hover .arrow { transform: translateX(4px); color: var(--primary-color); }
+    @media (max-width: 900px) {
+        .dash-hero, .dash-grid { grid-template-columns: minmax(0, 1fr); }
+        .dash-hero { padding: 22px; }
+    }
+    @media (max-width: 560px) {
+        .page-container { padding: 1.25rem 1rem; }
+        .dash { gap: 16px; }
+        .dash-hero { padding: 18px; border-radius: 18px; }
+        .dash-actions .dash-btn { flex: 1; justify-content: center; padding: 11px 12px; font-size: 13.5px; white-space: nowrap; }
+        .dash-score { padding: 16px; gap: 16px; }
+        .dash-ring { width: 92px; height: 92px; }
+        .dash-ring-label strong { font-size: 24px; }
+        .dash-stats { gap: 10px; }
+        .dash-stat { flex-direction: column; align-items: flex-start; gap: 10px; padding: 14px; }
+        .dash-links { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+        .dash-panel { padding: 16px; }
+        .dash-chart { height: 200px; }
+    }
 </style>
 {% endblock %}
 
 {% block content %}
+<div class="dash">
 
-<!-- Greeting -->
-<div class="dash-greeting">
-    <h2>Salom, {{ user.first_name|default:user.username }}</h2>
-    <h1>{% if stats.total_tests %}Davom etamizmi?{% else %}Nimalardan boshlaymiz?{% endif %}</h1>
-</div>
+    <!-- Hero -->
+    <section class="dash-hero">
+        <div>
+            <p class="dash-hello">Salom, {{ user.first_name|default:user.username }} 👋</p>
+            {% if stats.total_tests %}
+            <h1>Davom etamizmi? <span>Keyingi bandga</span> bir qadam.</h1>
+            <p class="dash-lead">Yangi mock test topshiring yoki oldingi natijalaringizni tahlil qilib, zaif bo'limlarni mustahkamlang.</p>
+            {% else %}
+            <h1>IELTS tayyorgarligini <span>bugun</span> boshlang.</h1>
+            <p class="dash-lead">To'liq mock imtihon topshiring — Listening, Reading va Writing bo'yicha band ballingizni darhol bilib oling.</p>
+            {% endif %}
+            <div class="dash-actions">
+                <a href="{% url 'exams_list' %}" class="dash-btn primary">
+                    <i data-lucide="play-circle" style="width:18px;"></i> Test topshirish
+                </a>
+                {% if stats.total_tests %}
+                <a href="{% url 'results_list' %}" class="dash-btn ghost">
+                    <i data-lucide="bar-chart-3" style="width:18px;"></i> Natijalarim
+                </a>
+                {% else %}
+                <a href="{% url 'learn:hub' %}" class="dash-btn ghost">
+                    <i data-lucide="graduation-cap" style="width:18px;"></i> Ingliz tili kursi
+                </a>
+                {% endif %}
+            </div>
+            {% if pending_count %}
+            <div class="dash-pending">
+                <i data-lucide="hourglass" style="width:15px;"></i>
+                {{ pending_count }} ta natija Writing tekshiruvini kutmoqda
+            </div>
+            {% endif %}
+        </div>
 
-<!-- Quick action cards (always visible) -->
-<div class="quick-actions">
-    <a href="{% url 'exams_list' %}" class="qa-card exam">
-        <div class="qa-icon exam"><i data-lucide="clipboard-check" style="width:20px;"></i></div>
-        <h3>Test topshirish</h3>
-        <p>Mock IELTS imtihonlaridan birini tanlang va boshlang</p>
-        <span class="arrow">→</span>
-    </a>
-    <a href="{% url 'learn:hub' %}" class="qa-card learn">
-        <div class="qa-icon learn"><i data-lucide="graduation-cap" style="width:20px;"></i></div>
-        <h3>Ingliz tili kursi</h3>
-        <p>{% if learn_streak %}🔥 {{ learn_streak }} kun ketma-ket · {% endif %}{% if learn_due %}{{ learn_due }} ta so'z takrorlashni kutmoqda{% else %}Har kuni 10 daqiqa: dialoglar, mashqlar, AI suhbat{% endif %}</p>
-        <span class="arrow">→</span>
-    </a>
-    <a href="{% url 'results_list' %}" class="qa-card results">
-        <div class="qa-icon results"><i data-lucide="trophy" style="width:20px;"></i></div>
-        <h3>Natijalar</h3>
-        <p>Oldingi imtihon natijalaringizni ko'ring va tahlil qiling</p>
-        <span class="arrow">→</span>
-    </a>
-    <a href="{% url 'vocabulary' %}" class="qa-card vocab">
-        <div class="qa-icon vocab"><i data-lucide="languages" style="width:20px;"></i></div>
-        <h3>Lug'at</h3>
-        <p>IELTS uchun muhim so'zlarni o'rganing va yodlang</p>
-        <span class="arrow">→</span>
-    </a>
-    <a href="{% url 'finance' %}" class="qa-card finance">
-        <div class="qa-icon finance"><i data-lucide="credit-card" style="width:20px;"></i></div>
-        <h3>Moliya</h3>
-        <p>Balansni to'ldiring va to'lovlarni boshqaring</p>
-        <span class="arrow">→</span>
-    </a>
-</div>
+        {% if recent_results %}
+        {% with last=recent_results.0 %}
+        <div class="dash-score">
+            <div class="dash-ring">
+                <svg viewBox="0 0 120 120" aria-hidden="true">
+                    <circle class="track" cx="60" cy="60" r="52" fill="none" stroke-width="10"></circle>
+                    <circle class="value" id="scoreRing" cx="60" cy="60" r="52" fill="none" stroke-width="10"
+                            stroke-dasharray="326.7" stroke-dashoffset="326.7" data-score="{{ last.score|stringformat:'f' }}"></circle>
+                </svg>
+                <div class="dash-ring-label">
+                    <strong>{{ last.score|floatformat:1 }}</strong>
+                    <small>/ 9 band</small>
+                </div>
+            </div>
+            <div class="dash-score-meta">
+                <span class="title">So'nggi natija</span>
+                <span class="exam" title="{{ last.exam.title }}">{{ last.exam.title }}</span>
+                {% if score_delta is not None %}
+                    {% if score_delta > 0 %}
+                    <span class="dash-delta up"><i data-lucide="trending-up" style="width:14px;"></i> +{{ score_delta|floatformat:1 }} oldingisidan</span>
+                    {% elif score_delta < 0 %}
+                    <span class="dash-delta down"><i data-lucide="trending-down" style="width:14px;"></i> {{ score_delta|floatformat:1 }} oldingisidan</span>
+                    {% else %}
+                    <span class="dash-delta flat">Oldingisi bilan teng</span>
+                    {% endif %}
+                {% endif %}
+                <a href="{% url 'exams:result_detail' last.pk %}" style="font-size:12.5px; color:var(--primary-color); text-decoration:none; font-weight:500;">Tahlilni ko'rish →</a>
+            </div>
+        </div>
+        {% endwith %}
+        {% else %}
+        <ol class="dash-steps">
+            <li><span class="num">1</span><div><b>Imtihonni tanlang</b><span>Imtihonlar ro'yxatidan mock testni oching.</span></div></li>
+            <li><span class="num">2</span><div><b>Real sharoitda ishlang</b><span>Vaqt va savollar haqiqiy IELTS kabi.</span></div></li>
+            <li><span class="num">3</span><div><b>Natijani tahlil qiling</b><span>Band ball va bo'limlar bo'yicha izohlar.</span></div></li>
+        </ol>
+        {% endif %}
+    </section>
 
-<!-- Analytics section (only if has results) -->
-{% if stats.total_tests %}
-<div style="margin-bottom:28px">
-  <!-- Stats row -->
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px">
-    <div style="background:var(--card-bg);border:1px solid var(--border-color);border-radius:14px;padding:16px 18px">
-      <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">O'rtacha ball</div>
-      <div style="font-size:26px;font-weight:700;color:var(--primary-color)">{{ stats.avg_score|floatformat:1|default:"—" }}</div>
-    </div>
-    <div style="background:var(--card-bg);border:1px solid var(--border-color);border-radius:14px;padding:16px 18px">
-      <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Jami testlar</div>
-      <div style="font-size:26px;font-weight:700;color:#22c55e">{{ stats.total_tests }}</div>
-    </div>
-    {% if recent_results %}
-    <div style="background:var(--card-bg);border:1px solid var(--border-color);border-radius:14px;padding:16px 18px">
-      <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">So'nggi natija</div>
-      <div style="font-size:26px;font-weight:700;color:#eab308">{{ recent_results.0.score|floatformat:1 }}</div>
-    </div>
+    {% if stats.total_tests %}
+    <!-- Stats -->
+    <section class="dash-stats">
+        <div class="dash-stat">
+            <div class="dash-stat-icon tone-red"><i data-lucide="gauge" style="width:20px;"></i></div>
+            <div><div class="dash-stat-label">O'rtacha ball</div><div class="dash-stat-value">{{ stats.avg_score|floatformat:1 }}</div></div>
+        </div>
+        <div class="dash-stat">
+            <div class="dash-stat-icon tone-amber"><i data-lucide="trophy" style="width:20px;"></i></div>
+            <div><div class="dash-stat-label">Eng yaxshi ball</div><div class="dash-stat-value">{{ stats.best_score|floatformat:1 }}</div></div>
+        </div>
+        <div class="dash-stat">
+            <div class="dash-stat-icon tone-green"><i data-lucide="clipboard-check" style="width:20px;"></i></div>
+            <div><div class="dash-stat-label">Topshirilgan testlar</div><div class="dash-stat-value">{{ stats.total_tests }}</div></div>
+        </div>
+        <div class="dash-stat">
+            <div class="dash-stat-icon tone-sky"><i data-lucide="flame" style="width:20px;"></i></div>
+            <div><div class="dash-stat-label">Kunlik seriya</div><div class="dash-stat-value">{{ learn_streak }} <small>kun</small></div></div>
+        </div>
+    </section>
+
+    <!-- Progress + sections -->
+    <section class="dash-grid">
+        <div class="dash-panel">
+            <div class="dash-panel-head">
+                <h3>Ball dinamikasi</h3>
+                <a href="{% url 'results_list' %}">Barchasi →</a>
+            </div>
+            <div class="dash-chart"><canvas id="progressChart" aria-label="So'nggi testlar bo'yicha band ballari"></canvas></div>
+        </div>
+        <div class="dash-panel">
+            <div class="dash-panel-head"><h3>Bo'limlar bo'yicha</h3></div>
+            {% if section_bars %}
+            <div class="dash-bars">
+                {% for bar in section_bars %}
+                <div>
+                    <div class="dash-bar-row"><span>{{ bar.label }}</span><strong>{{ bar.value|floatformat:1 }}</strong></div>
+                    <div class="dash-bar"><div style="width:{{ bar.pct }}%; background:{{ bar.color }};"></div></div>
+                </div>
+                {% endfor %}
+            </div>
+            <p class="dash-bars-note">O'rtacha band ball (9 ballik shkala) — eng past bo'limga ko'proq vaqt ajrating.</p>
+            {% else %}
+            <p class="dash-bars-note">Bo'limlar bo'yicha ma'lumot hali yo'q.</p>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Recent results -->
+    <section class="dash-panel">
+        <div class="dash-panel-head">
+            <h3>So'nggi natijalar</h3>
+            <a href="{% url 'results_list' %}">Barchasi →</a>
+        </div>
+        <ul class="dash-results">
+            {% for r in recent_results %}
+            <li>
+                <a href="{% url 'exams:result_detail' r.pk %}">
+                    <div class="dash-stat-icon tone-violet"><i data-lucide="file-text" style="width:18px;"></i></div>
+                    <div class="info">
+                        <div class="name">{{ r.exam.title }}</div>
+                        <div class="date">{{ r.completed_at|date:"d.m.Y, H:i" }} · L {{ r.listening_score|floatformat:1 }} · R {{ r.reading_score|floatformat:1 }}{% if r.writing_score %} · W {{ r.writing_score|floatformat:1 }}{% endif %}</div>
+                    </div>
+                    <span class="dash-band {% if r.score >= 7 %}tone-green{% elif r.score >= 5.5 %}tone-amber{% else %}tone-red{% endif %}">{{ r.score|floatformat:1 }}</span>
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </section>
     {% endif %}
-  </div>
 
-  <!-- Charts row -->
-  <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px">
-    <div style="background:var(--card-bg);border:1px solid var(--border-color);border-radius:14px;padding:18px">
-      <div style="font-size:13px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between">
-        <span>Ball dinamikasi</span>
-        <a href="{% url 'results_list' %}" style="font-size:12px;color:var(--primary-color)">Barchasi →</a>
-      </div>
-      <div style="height:160px"><canvas id="progressChart"></canvas></div>
-    </div>
-    <div style="background:var(--card-bg);border:1px solid var(--border-color);border-radius:14px;padding:18px">
-      <div style="font-size:13px;font-weight:600;margin-bottom:14px">Bo'limlar bo'yicha</div>
-      <div style="height:160px"><canvas id="radarChart"></canvas></div>
-    </div>
-  </div>
+    <!-- Quick links -->
+    <p class="dash-section-title">Bo'limlar</p>
+    <section class="dash-links">
+        <a href="{% url 'learn:hub' %}" class="dash-link">
+            <div class="dash-stat-icon tone-sky"><i data-lucide="graduation-cap" style="width:20px;"></i></div>
+            <div class="txt">
+                <b>Ingliz tili kursi</b>
+                <span>{% if learn_due %}{{ learn_due }} ta so'z takrorlashni kutmoqda{% elif learn_streak %}🔥 {{ learn_streak }} kun ketma-ket{% else %}Har kuni 10 daqiqa mashq{% endif %}</span>
+            </div>
+            <i data-lucide="chevron-right" class="chev" style="width:18px;"></i>
+        </a>
+        <a href="{% url 'testlar' %}" class="dash-link">
+            <div class="dash-stat-icon tone-red"><i data-lucide="file-text" style="width:20px;"></i></div>
+            <div class="txt"><b>Testlar</b><span>Alohida Listening, Reading, Writing</span></div>
+            <i data-lucide="chevron-right" class="chev" style="width:18px;"></i>
+        </a>
+        <a href="{% url 'vocabulary' %}" class="dash-link">
+            <div class="dash-stat-icon tone-amber"><i data-lucide="languages" style="width:20px;"></i></div>
+            <div class="txt"><b>Lug'at</b><span>IELTS so'zlarini yodlang</span></div>
+            <i data-lucide="chevron-right" class="chev" style="width:18px;"></i>
+        </a>
+        <a href="{% url 'finance' %}" class="dash-link">
+            <div class="dash-stat-icon tone-violet"><i data-lucide="credit-card" style="width:20px;"></i></div>
+            <div class="txt"><b>Moliya</b><span>Balans va to'lovlar</span></div>
+            <i data-lucide="chevron-right" class="chev" style="width:18px;"></i>
+        </a>
+    </section>
 
-  <!-- Section bars -->
-  {% if section_avgs.avg_l %}
-  <div style="background:var(--card-bg);border:1px solid var(--border-color);border-radius:14px;padding:18px;margin-bottom:16px">
-    <div style="font-size:13px;font-weight:600;margin-bottom:14px">O'rtacha ko'rsatkichlar</div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px">
-      {% if section_avgs.avg_l %}
-      <div>
-        <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:var(--text-muted)">Listening</span><span style="font-weight:600">{{ section_avgs.avg_l|floatformat:1 }}</span></div>
-        <div style="height:6px;background:var(--tint-a);border-radius:3px"><div style="width:{{ section_avgs.avg_l|floatformat:0 }}0%;height:100%;background:#1565c0;border-radius:3px"></div></div>
-      </div>
-      {% endif %}
-      {% if section_avgs.avg_r %}
-      <div>
-        <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:var(--text-muted)">Reading</span><span style="font-weight:600">{{ section_avgs.avg_r|floatformat:1 }}</span></div>
-        <div style="height:6px;background:var(--tint-a);border-radius:3px"><div style="width:{{ section_avgs.avg_r|floatformat:0 }}0%;height:100%;background:#2e7d32;border-radius:3px"></div></div>
-      </div>
-      {% endif %}
-      {% if section_avgs.avg_w %}
-      <div>
-        <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:var(--text-muted)">Writing</span><span style="font-weight:600">{{ section_avgs.avg_w|floatformat:1 }}</span></div>
-        <div style="height:6px;background:var(--tint-a);border-radius:3px"><div style="width:{{ section_avgs.avg_w|floatformat:0 }}0%;height:100%;background:#6a1b9a;border-radius:3px"></div></div>
-      </div>
-      {% endif %}
-      {% if section_avgs.avg_s %}
-      <div>
-        <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:var(--text-muted)">Speaking</span><span style="font-weight:600">{{ section_avgs.avg_s|floatformat:1 }}</span></div>
-        <div style="height:6px;background:var(--tint-a);border-radius:3px"><div style="width:{{ section_avgs.avg_s|floatformat:0 }}0%;height:100%;background:#e65100;border-radius:3px"></div></div>
-      </div>
-      {% endif %}
-    </div>
-  </div>
-  {% endif %}
 </div>
-{% endif %}
+{% endblock %}
 
+{% block extra_js %}
+<script>
+(function () {
+    const ring = document.getElementById('scoreRing');
+    if (ring) {
+        const full = 2 * Math.PI * 52;
+        const score = Math.max(0, Math.min(9, parseFloat(ring.dataset.score) || 0));
+        requestAnimationFrame(() => { ring.style.strokeDashoffset = full * (1 - score / 9); });
+    }
+})();
+</script>
+{% if stats.total_tests and chart_labels %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 <script>
-{% if stats.total_tests and chart_labels %}
-function buildChartDefaults(){
+(function () {
+    const canvas = document.getElementById('progressChart');
+    if (!canvas || !window.Chart) return;
     const C = siteChartColors();
-    return {
-        responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { labels: { color: C.tick, font: { size: 11 } } }, tooltip: { backgroundColor: C.surface, borderColor: C.border, borderWidth: 1, titleColor: C.text, bodyColor: C.tick } },
-    };
-}
+    const fill = canvas.getContext('2d').createLinearGradient(0, 0, 0, 230);
+    fill.addColorStop(0, 'rgba(211,47,47,.22)');
+    fill.addColorStop(1, 'rgba(211,47,47,0)');
 
-let progressChart, radarChart;
-
-function buildDashCharts(){
-    const chartDefaults = buildChartDefaults();
-    const C = siteChartColors();
-
-    const pCtx = document.getElementById('progressChart');
-    if(pCtx) progressChart = new Chart(pCtx.getContext('2d'), {
+    const chart = new Chart(canvas, {
         type: 'line',
         data: {
             labels: {{ chart_labels|safe }},
             datasets: [
-                { label: 'Umumiy', data: {{ chart_scores|safe }}, borderColor: '#d32f2f', backgroundColor: 'rgba(211,47,47,.12)', tension: .4, fill: true, pointBackgroundColor: '#d32f2f', pointRadius: 4 },
-                { label: 'Listening', data: {{ chart_listening|safe }}, borderColor: '#1565c0', backgroundColor: 'transparent', tension: .4, borderDash: [4,3], pointRadius: 2 },
-                { label: 'Reading', data: {{ chart_reading|safe }}, borderColor: '#2e7d32', backgroundColor: 'transparent', tension: .4, borderDash: [4,3], pointRadius: 2 },
+                { label: 'Umumiy', data: {{ chart_scores|safe }}, borderColor: '#d32f2f', backgroundColor: fill, fill: true, tension: .35, borderWidth: 2.5, pointBackgroundColor: '#fff', pointBorderColor: '#d32f2f', pointBorderWidth: 2, pointRadius: 4, pointHoverRadius: 6 },
+                { label: 'Listening', data: {{ chart_listening|safe }}, borderColor: '#1565c0', tension: .35, borderWidth: 1.5, borderDash: [5, 4], pointRadius: 0, pointHoverRadius: 4 },
+                { label: 'Reading', data: {{ chart_reading|safe }}, borderColor: '#2e7d32', tension: .35, borderWidth: 1.5, borderDash: [5, 4], pointRadius: 0, pointHoverRadius: 4 },
             ]
         },
-        options: { ...chartDefaults, scales: {
-            x: { ticks: { color: C.tick, font: { size: 10 } }, grid: { color: C.grid } },
-            y: { min: 0, max: 9, ticks: { color: C.tick, font: { size: 10 } }, grid: { color: C.grid } }
-        }}
-    });
-
-    const rCtx = document.getElementById('radarChart');
-    if(rCtx) radarChart = new Chart(rCtx.getContext('2d'), {
-        type: 'radar',
-        data: {
-            labels: ['Listening', 'Reading', 'Writing', 'Speaking'],
-            datasets: [{ label: 'O\'rtacha', data: [
-                {{ section_avgs.avg_l|default:0|floatformat:1 }},
-                {{ section_avgs.avg_r|default:0|floatformat:1 }},
-                {{ section_avgs.avg_w|default:0|floatformat:1 }},
-                {{ section_avgs.avg_s|default:0|floatformat:1 }},
-            ], borderColor: '#d32f2f', backgroundColor: 'rgba(211,47,47,.15)', pointBackgroundColor: '#d32f2f', pointRadius: 4 }]
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+                legend: { position: 'bottom', labels: { color: C.tick, usePointStyle: true, pointStyle: 'line', boxWidth: 18, font: { size: 11 } } },
+                tooltip: { backgroundColor: C.surface, borderColor: C.border, borderWidth: 1, titleColor: C.text, bodyColor: C.tick, padding: 10 },
+            },
+            scales: {
+                x: { ticks: { color: C.tick, font: { size: 10 } }, grid: { display: false } },
+                y: { min: 0, max: 9, ticks: { color: C.tick, font: { size: 10 }, stepSize: 3 }, grid: { color: C.grid }, border: { display: false } },
+            },
         },
-        options: { ...chartDefaults, scales: { r: { min: 0, max: 9, ticks: { color: C.tick, font: { size: 9 }, stepSize: 3 }, grid: { color: C.gridStrong }, pointLabels: { color: C.tick, font: { size: 10 } } } } }
     });
-}
-buildDashCharts();
 
-window.addEventListener('sitethemechange', () => {
-    const chartDefaults = buildChartDefaults();
-    const C = siteChartColors();
-    [progressChart, radarChart].forEach(ch => {
-        if(!ch) return;
-        ch.options.plugins.tooltip = chartDefaults.plugins.tooltip;
-        ch.options.plugins.legend.labels.color = C.tick;
-        Object.values(ch.options.scales).forEach(scale => {
-            if(scale.ticks) scale.ticks.color = C.tick;
-            if(scale.grid) scale.grid.color = scale === ch.options.scales.r ? C.gridStrong : C.grid;
-            if(scale.pointLabels) scale.pointLabels.color = C.tick;
-        });
-        ch.update();
+    window.addEventListener('sitethemechange', () => {
+        const T = siteChartColors();
+        chart.options.plugins.legend.labels.color = T.tick;
+        Object.assign(chart.options.plugins.tooltip, { backgroundColor: T.surface, borderColor: T.border, titleColor: T.text, bodyColor: T.tick });
+        chart.options.scales.x.ticks.color = T.tick;
+        chart.options.scales.y.ticks.color = T.tick;
+        chart.options.scales.y.grid.color = T.grid;
+        chart.update();
     });
-});
-{% endif %}
+})();
 </script>
+{% endif %}
 {% endblock %}

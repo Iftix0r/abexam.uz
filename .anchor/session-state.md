@@ -1,27 +1,25 @@
 # Session state (auto-saved — last known reality)
 
-_Updated: 2026-11-01 01:05:56_  ·  branch: `main`
+_Updated: 2026-11-01 01:24:42_  ·  branch: `main`
 
 ## Uncommitted changes
 ```
  M .anchor/session-state.md
-?? TESTLAR/10/
-?? data/cambridge/ielts_full_mock_test_12.json
-?? data/cambridge/ielts_full_mock_test_13.json
-?? data/cambridge/images/mock_test_12_rivermead_map.jpg
-?? data/cambridge/images/mock_test_12_task1.jpg
-?? data/cambridge/images/mock_test_13_brightwater_map.jpg
-?? data/cambridge/images/mock_test_13_task1.jpg
+ M templates/dashboard.html
+ M users/views.py
 ```
 
 Diff stat:
 ```
- .anchor/session-state.md | 36 ++++++++----------------------------
- 1 file changed, 8 insertions(+), 28 deletions(-)
+ .anchor/session-state.md |  30 +--
+ templates/dashboard.html | 629 +++++++++++++++++++++++++++++------------------
+ users/views.py           |  18 +-
+ 3 files changed, 410 insertions(+), 267 deletions(-)
 ```
 
 ## Recent commits
 ```
+dcb78b6 ielss
 fe39d30 waf
 b2fd35d qdwff
 f24b14c efwea
@@ -29,7 +27,6 @@ f24b14c efwea
 6871102 fa
 7f8fafb qdwadf
 0884beb feat(exams): render Listening notes as a boxed form with inline gaps
-c9c9a55 wes
 ```
 
 ## Resume

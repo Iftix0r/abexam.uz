@@ -6,7 +6,7 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView as BaseLoginView
 from django.core.cache import cache
-from django.db.models import Avg, Count
+from django.db.models import Avg, Count, Max
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
@@ -146,8 +146,12 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         user = self.request.user
         results = UserResult.objects.graded().filter(user=user).order_by('-completed_at')
 
-        context['recent_results'] = results[:3]
-        context['stats'] = results.aggregate(avg_score=Avg('score'), total_tests=Count('id'))
+        recent = list(results.select_related('exam')[:4])
+        context['recent_results'] = recent
+        context['stats'] = results.aggregate(avg_score=Avg('score'), best_score=Max('score'), total_tests=Count('id'))
+        # Change of the latest band versus the one before it, for the hero card.
+        context['score_delta'] = recent[0].score - recent[1].score if len(recent) > 1 else None
+        context['pending_count'] = UserResult.objects.pending().filter(user=user).count()
 
         chart_results = list(results[:8][::-1])
         context['chart_labels'] = json.dumps([r.completed_at.strftime('%d %b') for r in chart_results])
@@ -160,6 +164,14 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             avg_w=Avg('writing_score'), avg_s=Avg('speaking_score'),
         )
         context['section_avgs'] = avgs
+        context['section_bars'] = [
+            {'label': label, 'value': avgs[key], 'pct': round(avgs[key] / 9 * 100), 'color': color}
+            for label, key, color in (
+                ('Listening', 'avg_l', '#1565c0'), ('Reading', 'avg_r', '#2e7d32'),
+                ('Writing', 'avg_w', '#6a1b9a'), ('Speaking', 'avg_s', '#e65100'),
+            )
+            if avgs[key]
+        ]
 
         from learn.models import LearnerProfile
         from learn.srs import due_queryset
