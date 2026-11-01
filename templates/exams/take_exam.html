@@ -939,8 +939,8 @@
             <div style="font-size: 13px; font-weight: 700;">{{ user.get_full_name|default:user.username }}</div>
             <div style="font-size: 10px; color: #90a4ae;">ID: {{ user.pk|stringformat:"06d" }}</div>
         </div>
-        <div style="width: 34px; height: 34px; background: #455a64; border-radius: 50%; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-            <i data-lucide="user" style="width:16px; color:#cfd8dc;"></i>
+        <div style="width: 34px; height: 34px; background: {{ user.avatar_color }}; color: #fff; border-radius: 50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; overflow:hidden; font-size: 13px; font-weight: 700; letter-spacing: .3px;">
+            {% if user.avatar %}<img src="{{ user.avatar.url }}" alt="" style="width:100%; height:100%; object-fit:cover;">{% else %}{{ user.initials }}{% endif %}
         </div>
     </div>
 </header>

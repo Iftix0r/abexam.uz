@@ -34,6 +34,19 @@ class User(AbstractUser):
         digits = (self.phone_number or '').lstrip('+')
         return not digits or not self.username.startswith(digits)
 
+    # Telegram-style letter avatar: up to two initials on a colour that stays
+    # the same for a user (picked from the pk).
+    AVATAR_COLORS = ('#e17076', '#faa774', '#a695e7', '#7bc862', '#6ec9cb', '#65aadd', '#ee7aae')
+
+    @property
+    def initials(self):
+        words = (self.get_full_name() or self.username).split()
+        return ''.join(w[0] for w in words[:2]).upper() or '?'
+
+    @property
+    def avatar_color(self):
+        return self.AVATAR_COLORS[(self.pk or 0) % len(self.AVATAR_COLORS)]
+
     class Meta:
         verbose_name = 'Foydalanuvchi'
         verbose_name_plural = 'Foydalanuvchilar'

@@ -190,8 +190,8 @@
                 <a class="lb-ielts" href="{% url 'dashboard' %}" title="IELTS mock platformasiga o'tish"><i data-lucide="layout-grid"></i><span>IELTS platforma</span></a>
                 {% if user.is_authenticated %}
                 <div class="lb-user">
-                    <button class="lb-avatar" id="lbAvatar" aria-label="Profil menyusi" aria-expanded="false">
-                        {% if user.avatar %}<img src="{{ user.avatar.url }}" alt="">{% else %}{{ user.username|first|upper }}{% endif %}
+                    <button class="lb-avatar" id="lbAvatar" aria-label="Profil menyusi" aria-expanded="false"{% if not user.avatar %} style="background: {{ user.avatar_color }};"{% endif %}>
+                        {% if user.avatar %}<img src="{{ user.avatar.url }}" alt="">{% else %}{{ user.initials }}{% endif %}
                     </button>
                     <div class="lb-menu" id="lbMenu">
                         <div class="who"><b>{{ user.get_full_name|default:user.username }}</b><small>@{{ user.username }}</small></div>
