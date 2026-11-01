@@ -620,6 +620,20 @@ def exam_passwords(request):
 
 
 @panel_required
+@require_POST
+def exam_password_toggle(request):
+    """One-click on/off for the test password from the Test parollari page —
+    the same flag as the checkbox in Sozlamalar."""
+    settings_obj = SiteSettings.get()
+    settings_obj.exam_password_required = request.POST.get('enabled') == '1'
+    settings_obj.save()
+    state = 'yoqildi' if settings_obj.exam_password_required else "o'chirildi"
+    log_action(request, 'settings', f'Test paroli {state}', reverse('panel:exam_passwords'))
+    messages.success(request, f'Test paroli {state}')
+    return redirect('panel:exam_passwords')
+
+
+@panel_required
 def exam_create(request):
     if request.method == 'POST':
         title = request.POST.get('title', '').strip()

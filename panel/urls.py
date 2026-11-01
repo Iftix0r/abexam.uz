@@ -27,6 +27,7 @@ urlpatterns = [
     path('exams/bulk/', views.exams_bulk_action, name='exams_bulk'),
     path('exams/create/', views.exam_create, name='exam_create'),
     path('exams/passwords/', views.exam_passwords, name='exam_passwords'),
+    path('exams/passwords/toggle/', views.exam_password_toggle, name='exam_password_toggle'),
     path('exams/import/', views.exam_import, name='exam_import'),
     path('exams/<int:pk>/analysis/', views.exam_analysis, name='exam_analysis'),
     path('exams/<int:pk>/regrade/', views.exam_regrade, name='exam_regrade'),

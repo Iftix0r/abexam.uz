@@ -393,6 +393,21 @@ class ExamPasswordTests(TestCase):
         resp = self.client.get(reverse('panel:exam_passwords'))
         self.assertContains(resp, exam_password(self.exam.pk))
 
+    def test_panel_toggle_turns_password_off_and_on(self):
+        toggle = reverse('panel:exam_password_toggle')
+        self.assertEqual(self.client.post(toggle, {'enabled': '0'}).status_code, 302)  # o'quvchi — panelga kira olmaydi
+        self.assertEqual(self.client.get(self.take).status_code, 302)
+        student = self.client.session.get('_auth_user_id')
+        self.client.force_login(User.objects.create_user('teacher', password='pw', is_staff=True))
+        self.assertRedirects(self.client.post(toggle, {'enabled': '0'}), reverse('panel:exam_passwords'),
+                             fetch_redirect_response=False)
+        self.client.force_login(User.objects.get(pk=student))
+        self.assertEqual(self.client.get(self.take).status_code, 200)
+        self.client.force_login(User.objects.get(username='teacher'))
+        self.client.post(toggle, {'enabled': '1'})
+        self.client.force_login(User.objects.get(pk=student))
+        self.assertEqual(self.client.get(self.take).status_code, 302)
+
 
 class CameraProctoringTests(TestCase):
     """Imtihon paytida kameradan kadrlar va «Jonli imtihon»da kuzatish."""
