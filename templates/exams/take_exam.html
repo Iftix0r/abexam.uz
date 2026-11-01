@@ -858,6 +858,45 @@
             .instr-card { padding: 24px 20px; }
             .instr-meta { gap: 16px; }
         }
+
+        /* ─── VIEW SETTINGS (text size / hide time / full screen) ───
+           Like the real computer-delivered test's Settings menu. Text size
+           zooms each panel's children (not the scrolling panels themselves,
+           so the split layout keeps its widths). */
+        .passage-panel > *, .questions-panel > * { zoom: var(--exam-zoom, 1); }
+        body.timer-hidden .timer-box:not(.danger) #countdown,
+        body.timer-hidden .timer-box:not(.danger) #timerSectionLabel { display: none; }
+        body.timer-hidden .timer-box:not(.danger)::after { content: 'Vaqt yashirin'; font-size: .8em; letter-spacing: .5px; }
+        .timer-box { cursor: pointer; }
+        .view-settings { position: relative; }
+        .view-settings-btn {
+            height: 38px; width: 38px; border-radius: 6px; border: 1px solid #455a64;
+            background: transparent; color: #cfd8dc; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .view-settings-btn:hover, .view-settings.open .view-settings-btn { background: rgba(255,255,255,.08); color: #fff; }
+        .view-settings-menu {
+            display: none; position: absolute; right: 0; top: 46px; z-index: 900; width: 250px;
+            background: #fff; color: #263238; border-radius: 10px; padding: 14px;
+            box-shadow: 0 10px 30px rgba(0,0,0,.25); border: 1px solid var(--border);
+        }
+        .view-settings.open .view-settings-menu { display: block; }
+        .vs-label { font-size: 11px; font-weight: 700; color: #607d8b; text-transform: uppercase; letter-spacing: .6px; margin-bottom: 8px; }
+        .vs-sizes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 14px; }
+        .vs-size {
+            border: 1.5px solid var(--border); background: #fff; border-radius: 8px; padding: 6px 0 4px;
+            cursor: pointer; color: #263238; font-weight: 700; line-height: 1.1;
+        }
+        .vs-size small { display: block; font-size: 10px; font-weight: 600; color: #78909c; margin-top: 2px; }
+        .vs-size.active { border-color: var(--primary); background: #fff5f5; color: var(--primary); }
+        .vs-row {
+            width: 100%; display: flex; align-items: center; gap: 10px; padding: 9px 4px;
+            background: none; border: none; border-top: 1px solid #eceff1; cursor: pointer;
+            font-size: 13.5px; color: #263238; text-align: left;
+        }
+        .vs-row:hover { color: var(--primary); }
+        .vs-row .vs-state { margin-left: auto; font-size: 11px; font-weight: 700; color: #90a4ae; }
+        .vs-row.on .vs-state { color: var(--success); }
     </style>
 </head>
 <body>
@@ -933,6 +972,26 @@
         🧪 Demo to'ldirish
     </button>
     {% endif %}
+
+    <div class="view-settings" id="viewSettings">
+        <button type="button" class="view-settings-btn" id="viewSettingsBtn" title="Sozlamalar" aria-haspopup="true" aria-expanded="false">
+            <i data-lucide="settings" style="width:17px;"></i>
+        </button>
+        <div class="view-settings-menu" role="menu">
+            <div class="vs-label">Matn o'lchami</div>
+            <div class="vs-sizes">
+                <button type="button" class="vs-size" data-zoom="1" style="font-size:13px">Aa<small>Standart</small></button>
+                <button type="button" class="vs-size" data-zoom="1.15" style="font-size:15px">Aa<small>Katta</small></button>
+                <button type="button" class="vs-size" data-zoom="1.3" style="font-size:17px">Aa<small>Juda katta</small></button>
+            </div>
+            <button type="button" class="vs-row" id="vsHideTime">
+                <i data-lucide="clock" style="width:16px;"></i> Vaqtni yashirish <span class="vs-state"></span>
+            </button>
+            <button type="button" class="vs-row" id="vsFullscreen">
+                <i data-lucide="maximize" style="width:16px;"></i> To'liq ekran <span class="vs-state"></span>
+            </button>
+        </div>
+    </div>
 
     <div class="flex-center header-user" style="gap: 10px;">
         <div class="header-user-info" style="text-align: right; line-height: 1.3;">
@@ -3317,6 +3376,66 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 }); // end DOMContentLoaded
+</script>
+<script>
+// ─── VIEW SETTINGS ──────────────────────────────────────
+// Text size, hide time and full screen. A per-device preference, so it lives
+// in localStorage and carries over to the next test.
+(function() {
+    const PREFS_KEY = 'abexam_exam_view';
+    const box = document.getElementById('viewSettings');
+    const btn = document.getElementById('viewSettingsBtn');
+    const hideRow = document.getElementById('vsHideTime');
+    const fsRow = document.getElementById('vsFullscreen');
+    let prefs = {};
+    try { prefs = JSON.parse(localStorage.getItem(PREFS_KEY) || '{}'); } catch(e) {}
+    const save = () => { try { localStorage.setItem(PREFS_KEY, JSON.stringify(prefs)); } catch(e) {} };
+
+    function applyZoom() {
+        const zoom = prefs.zoom || '1';
+        document.documentElement.style.setProperty('--exam-zoom', zoom);
+        box.querySelectorAll('.vs-size').forEach(b => b.classList.toggle('active', b.dataset.zoom === zoom));
+    }
+    function applyHideTime() {
+        document.body.classList.toggle('timer-hidden', !!prefs.hideTime);
+        hideRow.classList.toggle('on', !!prefs.hideTime);
+        hideRow.querySelector('.vs-state').textContent = prefs.hideTime ? 'Yoqilgan' : "O'chiq";
+    }
+    function syncFullscreen() {
+        const on = !!document.fullscreenElement;
+        fsRow.classList.toggle('on', on);
+        fsRow.querySelector('.vs-state').textContent = on ? 'Yoqilgan' : "O'chiq";
+    }
+
+    btn.addEventListener('click', e => {
+        e.stopPropagation();
+        btn.setAttribute('aria-expanded', box.classList.toggle('open'));
+    });
+    document.addEventListener('click', e => {
+        if (!box.contains(e.target)) { box.classList.remove('open'); btn.setAttribute('aria-expanded', 'false'); }
+    });
+    box.querySelectorAll('.vs-size').forEach(b => b.addEventListener('click', () => {
+        prefs.zoom = b.dataset.zoom; save(); applyZoom();
+    }));
+    function toggleHideTime() { prefs.hideTime = !prefs.hideTime; save(); applyHideTime(); }
+    hideRow.addEventListener('click', toggleHideTime);
+    // Clicking the clock itself also shows/hides it. In the last 5 minutes
+    // it shows regardless (CSS), so nobody runs out of time unaware.
+    document.getElementById('timerBox').addEventListener('click', toggleHideTime);
+
+    if (document.fullscreenEnabled) {
+        fsRow.addEventListener('click', () => {
+            if (document.fullscreenElement) document.exitFullscreen();
+            else document.documentElement.requestFullscreen().catch(() => {});
+        });
+        document.addEventListener('fullscreenchange', syncFullscreen);
+        syncFullscreen();
+    } else {
+        fsRow.style.display = 'none';  // iPhone Safari has no page full screen
+    }
+    applyZoom();
+    applyHideTime();
+})();
 </script>
 </body>
 </html>
