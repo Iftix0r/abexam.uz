@@ -1500,6 +1500,12 @@ def _objective_stats(result):
     return out
 
 
+def _duration_text(delta):
+    minutes = max(0, int(delta.total_seconds() // 60))
+    hours, minutes = divmod(minutes, 60)
+    return f"{hours} soat {minutes} daq" if hours else f"{minutes} daq"
+
+
 @panel_required
 def result_grade(request, pk):
     """Manual grading of Writing (hand-checked essays) and Speaking (held
@@ -1525,6 +1531,7 @@ def result_grade(request, pk):
             'answer': ua,
             'question': ua.question,
             'word_count': len(ua.user_answer.split()),
+            'paragraphs': len([p for p in re.split(r'\n\s*\n', ua.user_answer) if p.strip()]),
             'band': prev.get('band'),
             'criteria': [(key, label, prev.get(key)) for key, label in _WRITING_CRITERIA],
             'feedback': prev.get('feedback', ''),
@@ -1603,6 +1610,7 @@ def result_grade(request, pk):
                 return redirect('panel:result_grade', pk=nxt.pk)
             return redirect(f"{reverse('panel:results')}?status=pending")
 
+    attempt = result.attempts.order_by('-submitted_at').first()
     return render(request, 'panel/result_grade.html', {
         'result': result, 'tasks': tasks, 'speaking': speaking,
         'objective': _objective_stats(result), 'band_choices': _BAND_CHOICES, 'error': error,
@@ -1610,6 +1618,12 @@ def result_grade(request, pk):
         'present_types': sorted(present_section_types(result.exam)),
         'fixed_bands': {'listening': result.listening_score, 'reading': result.reading_score},
         'pending_count': UserResult.objects.pending().exclude(pk=result.pk).count(),
+        'next_pending': UserResult.objects.pending().exclude(pk=result.pk).order_by('completed_at')
+                        .values_list('pk', flat=True).first(),
+        # How the sitting went (time, leaving the window, pasting into Writing).
+        'attempt': attempt,
+        'attempt_time': _duration_text(attempt.submitted_at - attempt.started_at)
+                        if attempt and attempt.submitted_at else '',
     })
 
 

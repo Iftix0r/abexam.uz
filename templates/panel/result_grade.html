@@ -6,65 +6,139 @@
 
 {% block extra_css %}
 <style>
-.g-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
-.g-meta{font-size:13px;color:var(--muted);margin-top:4px}
-.g-scores{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:16px}
-.g-score{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px 12px}
-.g-score .lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
-.g-score .val{font-size:22px;font-weight:800;line-height:1.3}
+/* ── Header ── */
+.g-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap}
+.g-who{display:flex;gap:14px;align-items:center;min-width:0}
+.g-avatar{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:19px;flex-shrink:0;overflow:hidden}
+.g-avatar img{width:100%;height:100%;object-fit:cover}
+.g-name{font-size:18px;font-weight:700;color:var(--text);line-height:1.25}
+.g-meta{font-size:13px;color:var(--muted);margin-top:3px}
+.g-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.g-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.g-chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:5px 10px;border-radius:20px;background:var(--surface2);border:1px solid var(--border);color:var(--muted)}
+.g-chip b{color:var(--text)}
+.g-chip.warn{background:#eab30814;border-color:#eab30855;color:var(--yellow)}
+.g-chip.bad{background:#ef444414;border-color:#ef444455;color:var(--red)}
+.g-chip.warn b,.g-chip.bad b{color:inherit}
+
+/* ── Score tiles ── */
+.g-scores{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-top:18px}
+.g-score{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;position:relative;overflow:hidden}
+.g-score .lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+.g-score .val{font-size:26px;font-weight:800;line-height:1.25;letter-spacing:-.02em}
 .g-score .sub{font-size:12px;color:var(--muted)}
-.g-score.overall{border-color:var(--primary);background:var(--primary-dim)}
-.g-score.overall .val{color:var(--primary)}
-.marks{display:flex;flex-wrap:wrap;gap:3px;margin-top:8px}
-.mark{width:22px;height:22px;border-radius:5px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.g-score .meter{position:absolute;left:0;bottom:0;height:3px;background:var(--primary);opacity:.55;transition:width .25s}
+.g-score.todo .val{color:var(--muted)}
+.g-score.overall{background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-color:transparent;color:#fff}
+.g-score.overall .lbl,.g-score.overall .sub{color:#ffffffcc}
+.g-score.overall .val{font-size:30px}
+
+/* ── Section nav ── */
+.g-nav{position:sticky;top:60px;z-index:30;display:flex;gap:6px;overflow-x:auto;padding:10px 0;margin:4px 0 12px;background:var(--bg);scrollbar-width:none}
+.g-nav a{display:inline-flex;align-items:center;gap:7px;white-space:nowrap;padding:7px 13px;border-radius:20px;border:1px solid var(--border);background:var(--surface);font-size:13px;font-weight:600;color:var(--muted);transition:.15s}
+.g-nav a:hover{color:var(--text);border-color:var(--primary)}
+.g-nav .dot{width:8px;height:8px;border-radius:50%;background:var(--border)}
+.g-nav .dot.done{background:var(--green)}
+.g-nav .dot.need{background:var(--yellow)}
+.g-nav .cnt{font-size:11px;padding:1px 7px;border-radius:10px;background:#ef444418;color:var(--red)}
+
+/* ── Cards ── */
+.g-card{margin-bottom:16px;scroll-margin-top:120px}
+.g-card-title{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.g-card-title h3{font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px}
+.g-tags{display:flex;gap:6px;flex-wrap:wrap}
+.g-tag{font-size:12px;padding:3px 9px;border-radius:6px;background:var(--surface2);color:var(--muted);border:1px solid var(--border)}
+.g-tag.bad{color:var(--red);border-color:#ef444455;background:#ef444410}
+.g-tag.ok{color:var(--green);border-color:#22c55e55;background:#22c55e10}
+.g-cols{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(300px,1fr);gap:22px;align-items:start}
+@media(max-width:900px){.g-cols{grid-template-columns:1fr}}
+
+/* Essay side */
+.g-seg{display:inline-flex;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:3px;gap:2px}
+.g-seg button{border:0;background:transparent;color:var(--muted);font-size:12.5px;font-weight:600;padding:5px 12px;border-radius:7px;cursor:pointer}
+.g-seg button.on{background:var(--surface);color:var(--text);box-shadow:0 1px 3px #0000001f}
+.g-essay-tools{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.g-font{display:inline-flex;gap:4px}
+.g-font button{width:30px;height:28px;border-radius:7px;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;font-weight:700}
+.essay{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:18px 20px;font-size:15px;line-height:1.85;white-space:pre-wrap;max-height:620px;overflow-y:auto;font-family:Georgia,'Times New Roman',serif;color:var(--text)}
+.essay.empty{font-family:inherit;color:var(--muted);font-style:italic}
+.prompt{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px 18px;font-size:14px;line-height:1.7;white-space:pre-wrap}
+.prompt img{max-width:100%;border-radius:8px;margin-bottom:12px;display:block}
+
+/* Scoring side */
+.g-side{position:sticky;top:124px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px}
+.small-label{font-size:11.5px;font-weight:700;color:var(--muted);margin-bottom:8px;display:flex;gap:6px;align-items:baseline;flex-wrap:wrap;text-transform:uppercase;letter-spacing:.05em}
+.crit-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px}
+.crit-grid label{font-size:11.5px;color:var(--muted);display:block;margin-bottom:4px;font-weight:500}
+.crit-grid select{padding:7px 10px;font-size:14px;font-weight:600;background:var(--surface)}
+.crit-hint{font-size:12px;color:var(--muted);min-height:18px;margin-bottom:12px}
+.crit-hint b{color:var(--primary)}
+.pills{display:grid;grid-template-columns:repeat(6,1fr);gap:5px}
+.pills input{position:absolute;opacity:0;pointer-events:none}
+.pills label{text-align:center;padding:7px 0;border:1px solid var(--border);border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;color:var(--text);background:var(--surface);user-select:none;transition:.12s}
+.pills label:hover{border-color:var(--primary)}
+.pills label.suggest{border-color:var(--primary);border-style:dashed}
+.pills input:checked+label{background:var(--primary);border-color:var(--primary);color:#fff;box-shadow:0 2px 8px #d32f2f55}
+.pills input:focus-visible+label{outline:2px solid var(--primary);outline-offset:2px}
+.pills .none{grid-column:span 6}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin:2px 0 8px}
+.chips button{font-size:11.5px;padding:4px 9px;border-radius:14px;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;transition:.12s}
+.chips button:hover{color:var(--text);border-color:var(--primary)}
+.chips button.used{background:var(--primary-dim);color:var(--primary);border-color:var(--primary)}
+.g-side textarea{background:var(--surface);min-height:110px}
+
+/* Speaking collapse */
+.sp-body[hidden]{display:none}
+
+/* ── Save bar ── */
+.g-bar{position:sticky;bottom:12px;z-index:20;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;box-shadow:0 10px 30px #00000033;padding:14px 18px}
+.g-progress{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:12.5px;color:var(--muted)}
+.g-progress span{display:inline-flex;align-items:center;gap:5px}
+.g-progress .dot{width:8px;height:8px;border-radius:50%;background:var(--yellow)}
+.g-progress .dot.done{background:var(--green)}
+.g-overall{display:flex;align-items:baseline;gap:8px;font-size:13px;color:var(--muted)}
+.g-overall b{font-size:24px;color:var(--primary)}
+.kbd{font-size:11px;color:var(--muted);border:1px solid var(--border);border-radius:5px;padding:1px 5px;background:var(--surface2)}
+
+/* ── Listening / Reading review ── */
+.marks{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.mark{width:24px;height:24px;border-radius:6px;font-size:10.5px;font-weight:700;display:flex;align-items:center;justify-content:center;text-decoration:none}
 .mark.ok{background:#22c55e22;color:var(--green)}
 .mark.no{background:#ef444422;color:var(--red)}
-.mark.empty{background:var(--bg);color:var(--muted);border:1px dashed var(--border)}
-a.mark{text-decoration:none}
+.mark.empty{background:var(--surface2);color:var(--muted);border:1px dashed var(--border)}
 a.mark:hover{outline:2px solid currentColor}
-.an-sum{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-bottom:10px}
-.an-sum b{font-size:15px}
-.an-break{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,420px));gap:12px 40px;margin:14px 0}
-.an-break h4{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px}
-.an-line{display:grid;grid-template-columns:minmax(0,1fr) 54px 70px;gap:8px;align-items:center;font-size:12.5px;padding:3px 0}
+.an-tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);margin:-4px 0 16px}
+.an-tabs button{border:0;background:none;padding:10px 14px;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.an-tabs button.on{color:var(--text);border-bottom-color:var(--primary)}
+.an-sum{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.an-sum div{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--muted)}
+.an-sum b{display:block;font-size:20px;color:var(--text)}
+@media(max-width:600px){.an-sum{grid-template-columns:repeat(2,1fr)}}
+.an-break{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,420px));gap:12px 40px;margin:16px 0}
+.an-break h4{font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:8px}
+.an-line{display:grid;grid-template-columns:minmax(0,1fr) 48px 90px;gap:10px;align-items:center;font-size:13px;padding:4px 0}
 .an-line span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.an-bar{height:6px;border-radius:4px;background:var(--bg);overflow:hidden}
+.an-bar{height:7px;border-radius:4px;background:var(--surface2);overflow:hidden}
 .an-bar i{display:block;height:100%;background:var(--green)}
 .an-bar.low i{background:var(--red)}
 .an-bar.mid i{background:var(--yellow)}
+.an-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:18px 0 10px;flex-wrap:wrap}
+.an-filter{display:inline-flex}
 .an-table td{vertical-align:top;font-size:13px}
 .an-table .q-meta{font-size:11px;color:var(--muted);margin-bottom:3px}
 .an-table .q-instr{font-size:11.5px;color:var(--muted);font-style:italic;margin-bottom:3px}
-.an-table .opt{display:block;font-size:11.5px;color:var(--muted)}
+.an-table .opt{display:block;font-size:11.5px;color:var(--muted);margin-top:2px}
 .an-table .given-no{color:var(--red);font-weight:700;text-decoration:line-through;text-decoration-thickness:1px}
 .an-table .given-ok{color:var(--green);font-weight:700}
 .an-table .key{color:var(--green);font-weight:700}
 .an-table tr.is-wrong td:first-child{box-shadow:inset 3px 0 var(--red)}
 .an-table tr.is-empty td:first-child{box-shadow:inset 3px 0 var(--muted)}
-.an-table tr:target td{background:var(--primary-dim)}
-.an-filter .btn.is-on{background:var(--primary);border-color:var(--primary);color:#fff}
-.g-card-title{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
-.g-card-title h3{font-size:15px;font-weight:700}
-.g-cols{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:18px}
-@media(max-width:820px){.g-cols{grid-template-columns:1fr}}
-.essay{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px 16px;font-size:14px;line-height:1.8;white-space:pre-wrap;max-height:460px;overflow-y:auto;font-family:Georgia,serif}
-.prompt{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:13px;line-height:1.6;white-space:pre-wrap;margin-top:8px}
-.pills{display:flex;flex-wrap:wrap;gap:5px}
-.pills input{position:absolute;opacity:0;pointer-events:none}
-.pills label{min-width:40px;text-align:center;padding:6px 0;border:1px solid var(--border);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;color:var(--text);user-select:none;transition:.12s}
-.pills label:hover{border-color:var(--primary)}
-.pills input:checked+label{background:var(--primary);border-color:var(--primary);color:#fff}
-.pills input:focus-visible+label{outline:2px solid var(--primary);outline-offset:2px}
-.crit-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
-.crit-grid select{padding:6px 8px;font-size:13px}
-.crit-grid label{font-size:11px;color:var(--muted);display:block;margin-bottom:3px}
-.small-label{font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px;display:block}
-.g-bar{position:sticky;bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;box-shadow:0 6px 24px #0000002a}
+.an-table tr.flash td{background:var(--primary-dim)}
 </style>
 {% endblock %}
 
 {% block content %}
-<div style="max-width:1000px">
+<div style="max-width:1120px">
   <nav class="breadcrumb">
     <a href="{% url 'panel:results' %}">Natijalar</a>
     <span class="bc-sep">/</span>
@@ -74,20 +148,37 @@ a.mark:hover{outline:2px solid currentColor}
   </nav>
 
   <!-- Who / what + full score picture -->
-  <div class="card" style="margin-bottom:16px">
+  <div class="card" style="margin-bottom:4px">
     <div class="g-head">
-      <div>
-        <div style="font-size:17px;font-weight:700">
-          <a href="{% url 'panel:user_detail' result.user.pk %}" style="color:var(--text)">{{ result.user.display_name }}</a>
+      <div class="g-who">
+        <div class="g-avatar" style="background:{{ result.user.avatar_color }}">
+          {% if result.user.avatar %}<img src="{{ result.user.avatar.url }}" alt="">{% else %}{{ result.user.initials }}{% endif %}
         </div>
-        <div class="g-meta">{{ result.exam.title }} · {{ result.completed_at|date:"d M Y, H:i" }}</div>
+        <div style="min-width:0">
+          <a href="{% url 'panel:user_detail' result.user.pk %}" class="g-name">{{ result.user.display_name }}</a>
+          <div class="g-meta">{{ result.exam.title }} · {{ result.completed_at|date:"d M Y, H:i" }}</div>
+          <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">
+            {% if result.is_pending %}<span class="badge badge-yellow">⏳ Tekshirilmoqda</span>
+            {% else %}<span class="badge badge-green">✓ Baholangan{% if result.graded_by %} · {{ result.graded_by.display_name }}{% endif %}</span>{% endif %}
+            {% if pending_count %}<span class="badge badge-gray">Navbatda yana {{ pending_count }} ta</span>{% endif %}
+          </div>
+        </div>
       </div>
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-        {% if result.is_pending %}<span class="badge badge-yellow">⏳ Tekshirilmoqda</span>
-        {% else %}<span class="badge badge-green">✓ Baholangan{% if result.graded_by %} · {{ result.graded_by.display_name }}{% endif %}</span>{% endif %}
-        {% if pending_count %}<span class="badge" style="background:var(--bg);color:var(--muted)">Navbatda yana {{ pending_count }} ta</span>{% endif %}
+      <div class="g-actions">
+        <a href="{% url 'exams:result_detail' result.pk %}" target="_blank" class="btn btn-ghost btn-sm">O'quvchi sahifasi ↗</a>
+        {% if next_pending %}<a href="{% url 'panel:result_grade' next_pending %}" class="btn btn-ghost btn-sm" title="Saqlamasdan keyingi tekshiriladigan natijaga o'tish">O'tkazib yuborish →</a>{% endif %}
       </div>
     </div>
+
+    {% if attempt %}
+    <div class="g-chips">
+      {% if attempt_time %}<span class="g-chip">⏱ Vaqt: <b>{{ attempt_time }}</b></span>{% endif %}
+      <span class="g-chip {% if attempt.leave_count >= 3 %}bad{% elif attempt.leave_count %}warn{% endif %}" title="Test oynasidan chiqqanlar soni">🚪 Oynadan chiqish: <b>{{ attempt.leave_count }}</b>{% if attempt.away_seconds %} ({{ attempt.away_seconds }} s){% endif %}</span>
+      <span class="g-chip {% if attempt.pasted_chars >= 200 %}bad{% elif attempt.pasted_chars %}warn{% endif %}" title="Writing'ga boshqa joydan joylangan (paste) belgilar">📋 Joylangan matn: <b>{{ attempt.pasted_chars }} belgi</b></span>
+      {% if attempt.ip %}<span class="g-chip">🌐 <b>{{ attempt.ip }}</b></span>{% endif %}
+      <a class="g-chip" href="{% url 'panel:attempt_detail' attempt.pk %}">🎥 Urinish tafsilotlari →</a>
+    </div>
+    {% endif %}
 
     <div class="g-scores">
       {% for o in objective %}
@@ -95,19 +186,22 @@ a.mark:hover{outline:2px solid currentColor}
         <div class="lbl">{{ o.label }}</div>
         <div class="val">{{ o.band|floatformat:1 }}</div>
         <div class="sub">{{ o.correct }}/{{ o.total }} to'g'ri</div>
+        <div class="meter" style="width:{% widthratio o.band 9 100 %}%"></div>
       </div>
       {% endfor %}
       {% if tasks %}
-      <div class="g-score">
+      <div class="g-score" id="tileWriting">
         <div class="lbl">Writing</div>
         <div class="val" id="sumWriting">—</div>
         <div class="sub">{{ tasks|length }} ta task</div>
+        <div class="meter" id="meterWriting" style="width:0"></div>
       </div>
       {% endif %}
-      <div class="g-score">
+      <div class="g-score" id="tileSpeaking">
         <div class="lbl">Speaking</div>
         <div class="val" id="sumSpeaking">—</div>
         <div class="sub">ixtiyoriy</div>
+        <div class="meter" id="meterSpeaking" style="width:0"></div>
       </div>
       <div class="g-score overall">
         <div class="lbl">Umumiy</div>
@@ -115,20 +209,17 @@ a.mark:hover{outline:2px solid currentColor}
         <div class="sub">o'quvchi ko'radigan ball</div>
       </div>
     </div>
-
-    {% for o in objective %}
-    <div style="margin-top:12px;font-size:13px;color:var(--muted)">
-      {{ o.label }}: {{ o.wrong }} ta xato, {{ o.empty }} ta bo'sh —
-      <a href="#answers-{{ o.type }}">savollar bo'yicha batafsil ↓</a>
-    </div>
-    <div class="marks">
-      {% for it in o.items %}<a href="#ua-{{ it.id }}" class="mark {% if it.ok %}ok{% elif it.empty %}empty{% else %}no{% endif %}" title="{{ it.n }}-savol{% if not it.ok %}: {{ it.given|default:"bo'sh" }} → {{ it.key }}{% endif %}">{{ it.n }}</a>{% endfor %}
-    </div>
-    {% endfor %}
   </div>
 
+  <!-- Jump between parts; dots turn green once a part is banded -->
+  <nav class="g-nav" aria-label="Bo'limlar">
+    {% for t in tasks %}<a href="#task-{{ t.num }}"><span class="dot need" data-dot="{{ t.prefix }}"></span>Writing {{ t.num }}</a>{% endfor %}
+    <a href="#speaking"><span class="dot" data-dot="speaking"></span>Speaking</a>
+    {% for o in objective %}<a href="#answers" data-tab-link="{{ o.type }}">{{ o.label }}{% if o.wrong|add:o.empty %} <span class="cnt">{{ o.wrong|add:o.empty }}</span>{% endif %}</a>{% endfor %}
+  </nav>
+
   {% if error %}
-  <div style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:var(--red);border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:16px">⚠ {{ error }}</div>
+  <div style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:var(--red);border-radius:10px;padding:12px 16px;font-size:13px;margin-bottom:16px">⚠ {{ error }}</div>
   {% endif %}
 
   <form method="post" id="gradeForm">
@@ -136,173 +227,211 @@ a.mark:hover{outline:2px solid currentColor}
 
     <!-- Writing tasks -->
     {% for t in tasks %}
-    <div class="card" style="margin-bottom:16px">
+    <div class="card g-card" id="task-{{ t.num }}">
       <div class="g-card-title">
-        <h3>✍ Writing Task {{ t.num }}</h3>
-        <span style="font-size:13px;color:{% if t.question.word_limit and t.word_count < t.question.word_limit %}var(--red){% else %}var(--muted){% endif %}">
-          {{ t.word_count }} so'z{% if t.question.word_limit %} / min {{ t.question.word_limit }}{% endif %}
-        </span>
+        <h3>✍️ Writing Task {{ t.num }}</h3>
+        <div class="g-tags">
+          <span class="g-tag {% if t.question.word_limit and t.word_count < t.question.word_limit %}bad{% elif t.question.word_limit %}ok{% endif %}">
+            {{ t.word_count }} so'z{% if t.question.word_limit %} / min {{ t.question.word_limit }}{% endif %}
+          </span>
+          <span class="g-tag {% if t.paragraphs < 2 and t.word_count %}bad{% endif %}">{{ t.paragraphs }} paragraf</span>
+        </div>
       </div>
       <div class="g-cols">
         <div>
-          <div class="essay">{{ t.answer.user_answer|default:"(Javob berilmagan)" }}</div>
-          <details style="margin-top:8px">
-            <summary style="cursor:pointer;font-size:12px;color:var(--muted)">Topshiriq matni</summary>
-            {% if t.question.section.image %}<img src="{{ t.question.section.image.url }}" alt="" style="max-width:100%;border-radius:8px;margin-top:8px">{% endif %}
-            <div class="prompt">{{ t.question.text }}</div>
-          </details>
+          <div class="g-essay-tools">
+            <div class="g-seg" data-switch="{{ t.prefix }}">
+              <button type="button" class="on" data-pane="answer">Javob</button>
+              <button type="button" data-pane="prompt">Topshiriq</button>
+            </div>
+            <div class="g-font" data-font="{{ t.prefix }}">
+              <button type="button" data-step="-1" title="Kichikroq">A−</button>
+              <button type="button" data-step="1" title="Kattaroq">A+</button>
+            </div>
+          </div>
+          <div data-pane-of="{{ t.prefix }}" data-pane="answer">
+            <div class="essay{% if not t.answer.user_answer %} empty{% endif %}">{{ t.answer.user_answer|default:"(Javob berilmagan)" }}</div>
+          </div>
+          <div data-pane-of="{{ t.prefix }}" data-pane="prompt" hidden>
+            <div class="prompt">{% if t.question.section.image %}<img src="{{ t.question.section.image.url }}" alt="Task {{ t.num }} rasmi">{% endif %}{{ t.question.text }}</div>
+          </div>
         </div>
-        <div class="score-block" data-block="{{ t.prefix }}" data-kind="writing">
-          <span class="small-label">Ball *</span>
+
+        <div class="g-side score-block" data-block="{{ t.prefix }}" data-kind="writing">
+          <span class="small-label">Mezonlar</span>
+          <div class="crit-grid">
+            {% for key, label, val in t.criteria %}
+            <div>
+              <label for="{{ t.prefix }}_{{ key }}">{{ label }}</label>
+              <select class="form-input crit" id="{{ t.prefix }}_{{ key }}" name="{{ t.prefix }}_{{ key }}">
+                <option value="">—</option>
+                {% for b in band_choices %}<option value="{{ b|unlocalize }}" {% if val == b %}selected{% endif %}>{{ b|floatformat:1 }}</option>{% endfor %}
+              </select>
+            </div>
+            {% endfor %}
+          </div>
+          <div class="crit-hint" data-hint></div>
+
+          <span class="small-label">Ball <span style="color:var(--red)">*</span></span>
           <div class="pills">
             {% for b in band_choices %}
             <input type="radio" name="{{ t.prefix }}_band" id="{{ t.prefix }}_b{{ forloop.counter }}" value="{{ b|unlocalize }}" {% if t.band == b %}checked{% endif %}>
             <label for="{{ t.prefix }}_b{{ forloop.counter }}">{{ b|floatformat:1 }}</label>
             {% endfor %}
           </div>
-          <details style="margin-top:12px" {% for k, l, v in t.criteria %}{% if v != None %}open{% endif %}{% endfor %}>
-            <summary style="cursor:pointer;font-size:12px;color:var(--muted)">4 mezon bo'yicha (ixtiyoriy)</summary>
-            <div class="crit-grid">
-              {% for key, label, val in t.criteria %}
-              <div>
-                <label>{{ label }}</label>
-                <select class="form-input crit" name="{{ t.prefix }}_{{ key }}">
-                  <option value="">—</option>
-                  {% for b in band_choices %}<option value="{{ b|unlocalize }}" {% if val == b %}selected{% endif %}>{{ b|floatformat:1 }}</option>{% endfor %}
-                </select>
-              </div>
-              {% endfor %}
-            </div>
-          </details>
-          <span class="small-label" style="margin-top:14px">Izoh o'quvchiga</span>
-          <textarea class="form-input" name="{{ t.prefix }}_feedback" rows="5" placeholder="Kuchli tomonlar, xatolar, tavsiyalar...">{{ t.feedback }}</textarea>
+
+          <span class="small-label" style="margin-top:16px">Izoh o'quvchiga</span>
+          <div class="chips" data-chips="{% if t.num == 1 %}task1{% else %}task2{% endif %}" data-for="{{ t.prefix }}_feedback"></div>
+          <textarea class="form-input" id="{{ t.prefix }}_feedback" name="{{ t.prefix }}_feedback" rows="5" placeholder="Kuchli tomonlar, xatolar, tavsiyalar...">{{ t.feedback }}</textarea>
         </div>
       </div>
     </div>
     {% endfor %}
 
     <!-- Speaking (held in person) -->
-    <div class="card" style="margin-bottom:16px">
-      <div class="g-card-title">
-        <h3>🎤 Speaking</h3>
-        <span style="font-size:12px;color:var(--muted)">Yuzma-yuz o'tkazilgan bo'lsa kiriting. Bo'sh qolsa umumiy ballga kirmaydi.</span>
+    <div class="card g-card" id="speaking">
+      <div class="g-card-title" style="margin-bottom:0">
+        <h3>🎤 Speaking <span style="font-size:12px;font-weight:500;color:var(--muted)">yuzma-yuz o'tkazilgan bo'lsa</span></h3>
+        <button type="button" class="btn btn-ghost btn-sm" id="spToggle">{% if speaking.band == None %}＋ Speaking bahosini kiritish{% else %}Yashirish{% endif %}</button>
       </div>
-      <div class="score-block" data-block="speaking" data-kind="speaking">
-        <span class="small-label">Ball</span>
-        <div class="pills">
-          <input type="radio" name="speaking_band" id="speaking_none" value="" {% if speaking.band == None %}checked{% endif %}>
-          <label for="speaking_none" style="min-width:90px">Baholanmagan</label>
-          {% for b in band_choices %}
-          <input type="radio" name="speaking_band" id="speaking_b{{ forloop.counter }}" value="{{ b|unlocalize }}" {% if speaking.band == b %}checked{% endif %}>
-          <label for="speaking_b{{ forloop.counter }}">{{ b|floatformat:1 }}</label>
-          {% endfor %}
-        </div>
-        <div class="g-cols" style="margin-top:12px">
+      <div class="sp-body" id="spBody" {% if speaking.band == None %}hidden{% endif %} style="margin-top:14px">
+        <div class="g-cols score-block" data-block="speaking" data-kind="speaking">
           <div>
-            <span class="small-label">Izoh o'quvchiga</span>
-            <textarea class="form-input" name="speaking_feedback" rows="3" placeholder="Talaffuz, ravonlik, so'z boyligi bo'yicha...">{{ speaking.feedback }}</textarea>
+            <span class="small-label">Ball <span style="font-weight:500;text-transform:none;letter-spacing:0">bo'sh qolsa umumiy ballga kirmaydi</span></span>
+            <div class="pills">
+              <input type="radio" name="speaking_band" id="speaking_none" value="" {% if speaking.band == None %}checked{% endif %}>
+              <label for="speaking_none" class="none">Baholanmagan</label>
+              {% for b in band_choices %}
+              <input type="radio" name="speaking_band" id="speaking_b{{ forloop.counter }}" value="{{ b|unlocalize }}" {% if speaking.band == b %}checked{% endif %}>
+              <label for="speaking_b{{ forloop.counter }}">{{ b|floatformat:1 }}</label>
+              {% endfor %}
+            </div>
+            <span class="small-label" style="margin-top:16px">Izoh o'quvchiga</span>
+            <div class="chips" data-chips="speaking" data-for="speaking_feedback"></div>
+            <textarea class="form-input" id="speaking_feedback" name="speaking_feedback" rows="4" placeholder="Talaffuz, ravonlik, so'z boyligi bo'yicha...">{{ speaking.feedback }}</textarea>
           </div>
-          <details {% for k, l, v in speaking.criteria %}{% if v != None %}open{% endif %}{% endfor %}>
-            <summary style="cursor:pointer;font-size:12px;color:var(--muted)">4 mezon bo'yicha (ixtiyoriy)</summary>
+          <div class="g-side" style="position:static">
+            <span class="small-label">Mezonlar</span>
             <div class="crit-grid">
               {% for key, label, val in speaking.criteria %}
               <div>
-                <label>{{ label }}</label>
-                <select class="form-input crit" name="speaking_{{ key }}">
+                <label for="speaking_{{ key }}">{{ label }}</label>
+                <select class="form-input crit" id="speaking_{{ key }}" name="speaking_{{ key }}">
                   <option value="">—</option>
                   {% for b in band_choices %}<option value="{{ b|unlocalize }}" {% if val == b %}selected{% endif %}>{{ b|floatformat:1 }}</option>{% endfor %}
                 </select>
               </div>
               {% endfor %}
             </div>
-          </details>
+            <div class="crit-hint" data-hint></div>
+          </div>
         </div>
       </div>
     </div>
 
     <div class="card g-bar">
-      <div style="font-size:14px">Umumiy ball: <b id="barOverall" style="font-size:20px;color:var(--primary)">—</b></div>
+      <div>
+        <div class="g-overall">Umumiy ball: <b id="barOverall">—</b></div>
+        <div class="g-progress" id="progress">
+          {% for t in tasks %}<span><i class="dot" data-dot="{{ t.prefix }}"></i>Task {{ t.num }}</span>{% endfor %}
+          <span class="kbd" title="Klaviatura">Ctrl+Enter — saqlash</span>
+        </div>
+      </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button type="submit" class="btn btn-ghost">Saqlash</button>
         {% if pending_count %}
-        <button type="submit" name="next" value="1" class="btn btn-primary">Saqlash va keyingisi →</button>
+        <button type="submit" class="btn btn-ghost">Saqlash</button>
+        <button type="submit" name="next" value="1" class="btn btn-primary" data-default>Saqlash va keyingisi →</button>
         {% else %}
-        <button type="submit" class="btn btn-primary">Saqlash{% if result.is_pending %} va natijani ochish{% endif %}</button>
+        <button type="submit" class="btn btn-primary" data-default>Saqlash{% if result.is_pending %} va natijani ochish{% endif %}</button>
         {% endif %}
       </div>
     </div>
   </form>
 
-  <div id="answers"></div>
-  {% for o in objective %}
-  <div class="card an-card" id="answers-{{ o.type }}" style="margin-top:16px">
-    <div class="g-card-title">
-      <h3>{% if o.type == 'listening' %}🎧{% else %}📖{% endif %} {{ o.label }} — javoblar tahlili</h3>
-      <div class="an-filter" style="display:flex;gap:6px">
-        <button type="button" class="btn btn-ghost btn-sm is-on" data-show="mistakes">Xatolar ({{ o.wrong|add:o.empty }})</button>
-        <button type="button" class="btn btn-ghost btn-sm" data-show="all">Hammasi ({{ o.total }})</button>
-      </div>
+  {% if objective %}
+  <div class="card g-card" id="answers" style="margin-top:16px">
+    <div class="g-card-title"><h3>🔍 Listening / Reading — javoblar tahlili</h3></div>
+    {% if objective|length > 1 %}
+    <div class="an-tabs" role="tablist">
+      {% for o in objective %}<button type="button" role="tab" data-tab="{{ o.type }}" {% if forloop.first %}class="on"{% endif %}>{% if o.type == 'listening' %}🎧{% else %}📖{% endif %} {{ o.label }}</button>{% endfor %}
     </div>
-    <div class="an-sum">
-      <span>Band <b>{{ o.band|floatformat:1 }}</b></span>
-      <span style="color:var(--green)">✓ <b>{{ o.correct }}</b> to'g'ri</span>
-      <span style="color:var(--red)">✗ <b>{{ o.wrong }}</b> xato</span>
-      <span>○ <b>{{ o.empty }}</b> bo'sh qoldirilgan</span>
-    </div>
+    {% endif %}
 
-    <div class="an-break">
-      {% if o.parts|length > 1 %}
-      <div>
-        <h4>Qismlar bo'yicha</h4>
-        {% for p in o.parts %}
-        {% widthratio p.correct p.total 100 as pct %}
-        <div class="an-line" title="{{ p.name }}">
-          <span>{{ p.name }}</span><span>{{ p.correct }}/{{ p.total }}</span>
-          <div class="an-bar {% if pct|add:0 < 50 %}low{% elif pct|add:0 < 75 %}mid{% endif %}"><i style="width:{{ pct }}%"></i></div>
-        </div>
-        {% endfor %}
+    {% for o in objective %}
+    <div class="an-card" id="answers-{{ o.type }}" data-tab-panel="{{ o.type }}" {% if not forloop.first %}hidden{% endif %}>
+      <div class="an-sum">
+        <div>Band<b>{{ o.band|floatformat:1 }}</b></div>
+        <div style="color:var(--green)">To'g'ri<b style="color:var(--green)">{{ o.correct }} / {{ o.total }}</b></div>
+        <div style="color:var(--red)">Xato<b style="color:var(--red)">{{ o.wrong }}</b></div>
+        <div>Bo'sh qoldirilgan<b>{{ o.empty }}</b></div>
       </div>
-      {% endif %}
-      <div>
-        <h4>Savol turi bo'yicha (eng qiyini tepada)</h4>
-        {% for t in o.types %}
-        {% widthratio t.correct t.total 100 as pct %}
-        <div class="an-line">
-          <span>{{ t.name }}</span><span>{{ t.correct }}/{{ t.total }}</span>
-          <div class="an-bar {% if pct|add:0 < 50 %}low{% elif pct|add:0 < 75 %}mid{% endif %}"><i style="width:{{ pct }}%"></i></div>
-        </div>
-        {% endfor %}
-      </div>
-    </div>
 
-    <div class="table-wrap">
-      <table class="an-table">
-        <thead><tr><th style="width:44px">#</th><th>Savol</th><th style="width:22%">O'quvchi javobi</th><th style="width:22%">To'g'ri javob</th></tr></thead>
-        <tbody>
-          {% for it in o.items %}
-          <tr id="ua-{{ it.id }}" class="{% if it.ok %}is-ok{% elif it.empty %}is-empty{% else %}is-wrong{% endif %}"{% if it.ok %} hidden{% endif %}>
-            <td style="font-weight:700">{{ it.n }}<br>{% if it.ok %}<span style="color:var(--green)">✓</span>{% elif it.empty %}<span style="color:var(--muted)">○</span>{% else %}<span style="color:var(--red)">✗</span>{% endif %}</td>
-            <td>
-              <div class="q-meta">{{ it.part }} · {{ it.type }}</div>
-              {% if it.instructions %}<div class="q-instr">{{ it.instructions|striptags|truncatechars:200 }}</div>{% endif %}
-              <div>{{ it.text|striptags|truncatechars:400 }}</div>
-              {% if it.explanation %}<details style="margin-top:4px"><summary style="cursor:pointer;font-size:12px;color:var(--muted)">Izoh</summary><div style="font-size:12.5px;margin-top:4px">{{ it.explanation|linebreaksbr }}</div></details>{% endif %}
-            </td>
-            <td>
-              {% if it.empty %}<span style="color:var(--muted)">— bo'sh</span>
-              {% else %}<span class="{% if it.ok %}given-ok{% else %}given-no{% endif %}">{{ it.given }}</span>{% if it.given_text %}<span class="opt">{{ it.given_text|truncatechars:120 }}</span>{% endif %}{% endif %}
-            </td>
-            <td><span class="key">{{ it.key|default:"—" }}</span>{% if it.key_text %}<span class="opt">{{ it.key_text|truncatechars:120 }}</span>{% endif %}</td>
-          </tr>
+      <div class="marks">
+        {% for it in o.items %}<a href="#ua-{{ it.id }}" class="mark {% if it.ok %}ok{% elif it.empty %}empty{% else %}no{% endif %}" title="{{ it.n }}-savol{% if not it.ok %}: {{ it.given|default:"bo'sh" }} → {{ it.key }}{% endif %}">{{ it.n }}</a>{% endfor %}
+      </div>
+
+      <div class="an-break">
+        {% if o.parts|length > 1 %}
+        <div>
+          <h4>Qismlar bo'yicha</h4>
+          {% for p in o.parts %}
+          {% widthratio p.correct p.total 100 as pct %}
+          <div class="an-line" title="{{ p.name }}">
+            <span>{{ p.name }}</span><span>{{ p.correct }}/{{ p.total }}</span>
+            <div class="an-bar {% if pct|add:0 < 50 %}low{% elif pct|add:0 < 75 %}mid{% endif %}"><i style="width:{{ pct }}%"></i></div>
+          </div>
           {% endfor %}
-          {% if not o.wrong and not o.empty %}
-          <tr class="an-none"><td colspan="4" style="text-align:center;padding:24px;color:var(--green)">Barcha javoblar to'g'ri 🎉</td></tr>
-          {% endif %}
-        </tbody>
-      </table>
+        </div>
+        {% endif %}
+        <div>
+          <h4>Savol turi bo'yicha (eng qiyini tepada)</h4>
+          {% for t in o.types %}
+          {% widthratio t.correct t.total 100 as pct %}
+          <div class="an-line">
+            <span>{{ t.name }}</span><span>{{ t.correct }}/{{ t.total }}</span>
+            <div class="an-bar {% if pct|add:0 < 50 %}low{% elif pct|add:0 < 75 %}mid{% endif %}"><i style="width:{{ pct }}%"></i></div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="an-head">
+        <span class="small-label" style="margin:0">Savollar</span>
+        <div class="g-seg an-filter">
+          <button type="button" class="on" data-show="mistakes">Xatolar ({{ o.wrong|add:o.empty }})</button>
+          <button type="button" data-show="all">Hammasi ({{ o.total }})</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="an-table">
+          <thead><tr><th style="width:44px">#</th><th>Savol</th><th style="width:22%">O'quvchi javobi</th><th style="width:22%">To'g'ri javob</th></tr></thead>
+          <tbody>
+            {% for it in o.items %}
+            <tr id="ua-{{ it.id }}" class="{% if it.ok %}is-ok{% elif it.empty %}is-empty{% else %}is-wrong{% endif %}"{% if it.ok %} hidden{% endif %}>
+              <td style="font-weight:700">{{ it.n }}<br>{% if it.ok %}<span style="color:var(--green)">✓</span>{% elif it.empty %}<span style="color:var(--muted)">○</span>{% else %}<span style="color:var(--red)">✗</span>{% endif %}</td>
+              <td>
+                <div class="q-meta">{{ it.part }} · {{ it.type }}</div>
+                {% if it.instructions %}<div class="q-instr">{{ it.instructions|striptags|truncatechars:200 }}</div>{% endif %}
+                <div>{{ it.text|striptags|truncatechars:400 }}</div>
+                {% if it.explanation %}<details style="margin-top:4px"><summary style="cursor:pointer;font-size:12px;color:var(--muted)">Izoh</summary><div style="font-size:12.5px;margin-top:4px">{{ it.explanation|linebreaksbr }}</div></details>{% endif %}
+              </td>
+              <td>
+                {% if it.empty %}<span style="color:var(--muted)">— bo'sh</span>
+                {% else %}<span class="{% if it.ok %}given-ok{% else %}given-no{% endif %}">{{ it.given }}</span>{% if it.given_text %}<span class="opt">{{ it.given_text|truncatechars:120 }}</span>{% endif %}{% endif %}
+              </td>
+              <td><span class="key">{{ it.key|default:"—" }}</span>{% if it.key_text %}<span class="opt">{{ it.key_text|truncatechars:120 }}</span>{% endif %}</td>
+            </tr>
+            {% endfor %}
+            {% if not o.wrong and not o.empty %}
+            <tr class="an-none"><td colspan="4" style="text-align:center;padding:24px;color:var(--green)">Barcha javoblar to'g'ri 🎉</td></tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
     </div>
+    {% endfor %}
   </div>
-  {% endfor %}
+  {% endif %}
 </div>
 {{ present_types|json_script:"presentTypes" }}
 {{ fixed_bands|json_script:"fixedBands" }}
@@ -310,23 +439,6 @@ a.mark:hover{outline:2px solid currentColor}
 
 {% block extra_js %}
 <script>
-// Answer review: "Xatolar" shows only wrong/blank rows; a ✓/✗ square jumps
-// to its row (switching to "Hammasi" if that row is filtered out).
-document.querySelectorAll('.an-card').forEach(card => {
-  const buttons = card.querySelectorAll('.an-filter .btn');
-  const show = mode => {
-    buttons.forEach(b => b.classList.toggle('is-on', b.dataset.show === mode));
-    card.querySelectorAll('tr.is-ok').forEach(tr => { tr.hidden = mode !== 'all'; });
-    const none = card.querySelector('.an-none'); if (none) none.hidden = mode === 'all';
-  };
-  buttons.forEach(b => b.addEventListener('click', () => show(b.dataset.show)));
-  card.showAll = () => show('all');
-});
-document.querySelectorAll('a.mark').forEach(a => a.addEventListener('click', () => {
-  const row = document.querySelector(a.getAttribute('href'));
-  if (row && row.hidden) row.closest('.an-card').showAll();
-}));
-
 // Mirrors exams.views (round_band / calc_writing_band / compute_overall_band)
 // so the grader sees exactly the band the student will get.
 const roundBand = v => Math.floor(v * 2 + 0.5) / 2;
@@ -341,28 +453,56 @@ function pickedBand(prefix){
   return el && el.value !== '' ? parseFloat(el.value) : null;
 }
 
-// Filling all 4 criteria selects the matching overall band automatically.
+// Criteria → suggested band. Filling all 4 picks it automatically (unless
+// the grader already chose a band by hand); the suggestion stays outlined.
 form.querySelectorAll('.score-block').forEach(block => {
   const prefix = block.dataset.block;
-  block.querySelectorAll('select.crit').forEach(sel => sel.addEventListener('change', () => {
-    const vals = [...block.querySelectorAll('select.crit')].map(s => s.value);
-    if (vals.some(v => v === '')) return;
-    const b = roundBand(vals.reduce((a, v) => a + parseFloat(v), 0) / vals.length);
+  const hint = block.querySelector('[data-hint]');
+  const selects = [...block.querySelectorAll('select.crit')];
+  const update = (autoPick) => {
+    const vals = selects.map(s => s.value).filter(v => v !== '').map(parseFloat);
+    form.querySelectorAll(`input[name="${prefix}_band"] + label`).forEach(l => l.classList.remove('suggest'));
+    if (!vals.length) { hint.textContent = ''; return; }
+    const b = roundBand(vals.reduce((a, v) => a + v, 0) / vals.length);
+    hint.innerHTML = vals.length === 4
+      ? `Mezonlardan o'rtacha: <b>${fmt(b)}</b>`
+      : `${vals.length}/4 mezon · hozircha o'rtacha ${fmt(b)}`;
     const radio = form.querySelector(`input[name="${prefix}_band"][value="${b.toFixed(1)}"]`);
-    if (radio) { radio.checked = true; recalc(); }
-  }));
+    if (!radio) return;
+    radio.nextElementSibling.classList.add('suggest');
+    if (autoPick && vals.length === 4 && !radio.checked) { radio.checked = true; recalc(); }
+  };
+  selects.forEach(sel => sel.addEventListener('change', () => update(true)));
+  update(false);
 });
 
+function setDot(prefix, done){
+  document.querySelectorAll(`[data-dot="${prefix}"]`).forEach(d => {
+    d.classList.toggle('done', done);
+    d.classList.toggle('need', !done && d.closest('.g-nav') !== null && prefix !== 'speaking');
+  });
+}
+
 function recalc(){
-  const tasks = [...form.querySelectorAll('[data-kind="writing"]')].map(b => pickedBand(b.dataset.block));
+  const blocks = [...form.querySelectorAll('[data-kind="writing"]')];
+  const tasks = blocks.map(b => pickedBand(b.dataset.block));
+  blocks.forEach((b, i) => setDot(b.dataset.block, tasks[i] != null));
   let writing = null;
   if (tasks.length && !tasks.includes(null)) {
     writing = tasks.length === 2 ? roundBand((tasks[0] + 2 * tasks[1]) / 3)
                                  : roundBand(tasks.reduce((a, b) => a + b, 0) / tasks.length);
   }
   const speaking = pickedBand('speaking');
-  const w = document.getElementById('sumWriting'); if (w) w.textContent = fmt(writing);
+  setDot('speaking', speaking != null);
+  const w = document.getElementById('sumWriting');
+  if (w) {
+    w.textContent = fmt(writing);
+    document.getElementById('tileWriting').classList.toggle('todo', writing == null);
+    document.getElementById('meterWriting').style.width = (writing ?? 0) / 9 * 100 + '%';
+  }
   document.getElementById('sumSpeaking').textContent = fmt(speaking);
+  document.getElementById('tileSpeaking').classList.toggle('todo', speaking == null);
+  document.getElementById('meterSpeaking').style.width = (speaking ?? 0) / 9 * 100 + '%';
 
   const bands = {...fixedBands, writing: writing ?? 0, speaking: speaking ?? 0};
   const types = new Set(presentTypes);
@@ -377,5 +517,109 @@ function recalc(){
 }
 form.addEventListener('change', recalc);
 recalc();
+
+// Answer / task prompt switch and essay font size.
+document.querySelectorAll('[data-switch]').forEach(seg => {
+  const prefix = seg.dataset.switch;
+  seg.querySelectorAll('button').forEach(btn => btn.addEventListener('click', () => {
+    seg.querySelectorAll('button').forEach(b => b.classList.toggle('on', b === btn));
+    document.querySelectorAll(`[data-pane-of="${prefix}"]`).forEach(p => { p.hidden = p.dataset.pane !== btn.dataset.pane; });
+  }));
+});
+let essaySize = 15;
+try { essaySize = parseInt(localStorage.getItem('gradeEssaySize'), 10) || 15; } catch (e) {}
+const applySize = () => document.querySelectorAll('.essay').forEach(e => { e.style.fontSize = essaySize + 'px'; });
+applySize();
+document.querySelectorAll('[data-font] button').forEach(btn => btn.addEventListener('click', () => {
+  essaySize = Math.min(22, Math.max(12, essaySize + parseInt(btn.dataset.step, 10)));
+  applySize();
+  try { localStorage.setItem('gradeEssaySize', essaySize); } catch (e) {}
+}));
+
+// Ready-made feedback lines: one click adds (or removes) a line.
+const CHIPS = {
+  task1: ["Overview yo'q yoki aniq emas", "Asosiy tendensiyalar ajratilmagan", "Raqamlar keltirilmagan",
+          "Taqqoslash yetarli emas", "So'z soni 150 tadan kam"],
+  task2: ["Savolga to'liq javob berilmagan", "Pozitsiya aniq emas", "Fikrlar misol bilan asoslanmagan",
+          "Xulosa yo'q", "So'z soni 250 tadan kam"],
+  common: ["Paragraflarga bo'linmagan", "Bog'lovchi so'zlar kam", "So'z boyligi cheklangan, takrorlar ko'p",
+           "Imlo xatolari ko'p", "Grammatik xatolar ko'p", "Murakkab gaplar kam", "Yaxshi tuzilgan, mantiqiy javob 👍"],
+  speaking: ["Ravon gapirdi", "Ko'p to'xtalishlar bo'ldi", "Talaffuz tushunarli", "Talaffuzda xatolar bor",
+             "So'z boyligi yetarli emas", "Grammatik xatolar ko'p", "Javoblar qisqa, kengaytirilmagan"],
+};
+document.querySelectorAll('[data-chips]').forEach(box => {
+  const area = document.getElementById(box.dataset.for);
+  const kind = box.dataset.chips;
+  const lines = kind === 'speaking' ? CHIPS.speaking : [...CHIPS[kind], ...CHIPS.common];
+  const mark = () => box.querySelectorAll('button').forEach(b => b.classList.toggle('used', area.value.includes(b.textContent)));
+  lines.forEach(text => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = text;
+    b.addEventListener('click', () => {
+      const line = '• ' + text;
+      if (area.value.includes(line)) {
+        area.value = area.value.split('\n').filter(l => l.trim() !== line).join('\n');
+      } else {
+        area.value = (area.value.trim() ? area.value.replace(/\s+$/, '') + '\n' : '') + line;
+      }
+      mark();
+      area.dispatchEvent(new Event('input', {bubbles: true}));
+    });
+    box.appendChild(b);
+  });
+  area.addEventListener('input', mark);
+  mark();
+});
+
+// Speaking is optional: folded away until needed.
+const spToggle = document.getElementById('spToggle'), spBody = document.getElementById('spBody');
+spToggle.addEventListener('click', () => {
+  spBody.hidden = !spBody.hidden;
+  spToggle.textContent = spBody.hidden ? '＋ Speaking bahosini kiritish' : 'Yashirish';
+});
+
+// Ctrl/Cmd+Enter saves (and goes to the next one when there is one);
+// leaving with unsaved changes asks first.
+let dirty = false, submitting = false;
+form.addEventListener('input', () => { dirty = true; });
+form.addEventListener('change', () => { dirty = true; });
+form.addEventListener('submit', () => { submitting = true; });
+window.addEventListener('beforeunload', e => { if (dirty && !submitting) { e.preventDefault(); e.returnValue = ''; } });
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+    e.preventDefault();
+    form.querySelector('[data-default]').click();
+  }
+});
+
+// Listening / Reading review: tabs, "Xatolar | Hammasi" filter, and the
+// ✓/✗ squares jump to their row (showing it if it was filtered out).
+const tabs = document.querySelectorAll('.an-tabs [data-tab]');
+const openTab = type => {
+  tabs.forEach(t => t.classList.toggle('on', t.dataset.tab === type));
+  document.querySelectorAll('[data-tab-panel]').forEach(p => { p.hidden = p.dataset.tabPanel !== type; });
+};
+tabs.forEach(t => t.addEventListener('click', () => openTab(t.dataset.tab)));
+document.querySelectorAll('[data-tab-link]').forEach(a => a.addEventListener('click', () => openTab(a.dataset.tabLink)));
+document.querySelectorAll('.an-card').forEach(card => {
+  const buttons = card.querySelectorAll('.an-filter button');
+  const show = mode => {
+    buttons.forEach(b => b.classList.toggle('on', b.dataset.show === mode));
+    card.querySelectorAll('tr.is-ok').forEach(tr => { tr.hidden = mode !== 'all'; });
+    const none = card.querySelector('.an-none'); if (none) none.hidden = mode === 'all';
+  };
+  buttons.forEach(b => b.addEventListener('click', () => show(b.dataset.show)));
+  card.showAll = () => show('all');
+});
+document.querySelectorAll('a.mark').forEach(a => a.addEventListener('click', e => {
+  const row = document.querySelector(a.getAttribute('href'));
+  if (!row) return;
+  e.preventDefault();
+  if (row.hidden) row.closest('.an-card').showAll();
+  row.scrollIntoView({behavior: 'smooth', block: 'center'});
+  row.classList.add('flash');
+  setTimeout(() => row.classList.remove('flash'), 1600);
+}));
 </script>
 {% endblock %}
