@@ -85,6 +85,20 @@
             margin-bottom: 1.5rem;
         }
 
+        .login-switch {
+            display: block;
+            margin: 8px 0 0 auto;
+            background: none;
+            border: 0;
+            color: var(--muted);
+            font: inherit;
+            font-size: 0.82rem;
+            cursor: pointer;
+            padding: 2px 0;
+        }
+
+        .login-switch:hover { color: var(--primary); }
+
         label {
             display: block;
             margin-bottom: 0.5rem;
@@ -171,8 +185,12 @@
         <form method="post">
             {% csrf_token %}
             <div class="form-group">
-                <label for="id_username">Telefon raqam</label>
-                <input type="tel" id="id_username" name="username" placeholder="+998 90 123 45 67" required autocomplete="tel" value="{{ form.username.value|default:'' }}">
+                <label for="id_username" id="login-label">{% if username_login %}Login (username yoki telefon){% else %}Telefon raqam{% endif %}</label>
+                <input id="id_username" name="username" required value="{{ form.username.value|default:'' }}"
+                       autocapitalize="none" autocorrect="off" spellcheck="false"
+                       {% if username_login %}type="text" autocomplete="username" placeholder="admin yoki +998 90 123 45 67"
+                       {% else %}type="tel" autocomplete="tel" placeholder="+998 90 123 45 67"{% endif %}>
+                <button type="button" class="login-switch" id="login-switch">{% if username_login %}📱 Telefon raqam bilan kirish{% else %}👤 Username bilan kirish{% endif %}</button>
             </div>
 
             <div class="form-group">
@@ -182,6 +200,24 @@
 
             <button type="submit" class="btn">Tizimga kirish</button>
         </form>
+        <script>
+        // Phone keyboard for students; a letter keyboard for usernames (admins,
+        // older accounts) — iPhone can't type letters into a tel field.
+        (function () {
+            const input = document.getElementById('id_username');
+            const label = document.getElementById('login-label');
+            const btn = document.getElementById('login-switch');
+            btn.addEventListener('click', () => {
+                const toText = input.type === 'tel';
+                input.type = toText ? 'text' : 'tel';
+                input.autocomplete = toText ? 'username' : 'tel';
+                input.placeholder = toText ? 'admin yoki +998 90 123 45 67' : '+998 90 123 45 67';
+                label.textContent = toText ? 'Login (username yoki telefon)' : 'Telefon raqam';
+                btn.textContent = toText ? '📱 Telefon raqam bilan kirish' : '👤 Username bilan kirish';
+                input.focus();
+            });
+        })();
+        </script>
         
         <div class="footer-links">
             Hisobingiz yo'qmi? <a href="{% url 'register' %}">Ro'yxatdan o'tish</a>

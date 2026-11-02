@@ -125,3 +125,24 @@ class PhoneSignupTests(TestCase):
         self.client.logout()
         resp = self.client.post(reverse('login'), {'username': '904120977', 'password': 'nope'})
         self.assertContains(resp, "Telefon raqam yoki parol")
+
+
+class StaffLoginFieldTests(TestCase):
+    """Admins sign in with a username; on iPhone a tel field can't type letters."""
+
+    def test_panel_redirect_gives_a_text_login_field(self):
+        resp = self.client.get(reverse('panel:dashboard'))
+        login_page = self.client.get(resp.url)
+        self.assertContains(login_page, 'type="text" autocomplete="username"')
+        self.assertContains(login_page, 'Login (username yoki telefon)')
+        self.assertContains(self.client.get(reverse('login')), 'type="tel"')
+
+    def test_admin_logs_in_with_username_from_panel(self):
+        User.objects.create_user('boss', password='Very-Strong-77', is_staff=True)
+        resp = self.client.post(reverse('login') + '?next=/panel/',
+                                {'username': 'boss', 'password': 'Very-Strong-77', 'next': '/panel/'})
+        self.assertRedirects(resp, '/panel/', fetch_redirect_response=False)
+
+    def test_failed_username_attempt_keeps_the_text_field(self):
+        page = self.client.post(reverse('login'), {'username': 'boss', 'password': 'wrong'})
+        self.assertContains(page, 'type="text" autocomplete="username"')

@@ -55,6 +55,17 @@ class CustomLoginView(BaseLoginView):
     template_name = 'login.html'
     authentication_form = LoginForm
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Staff sign in with a username, and an iPhone can't type letters into
+        # the phone field — so coming from /panel/ (or after typing letters)
+        # the field starts as a plain text «Login» field.
+        nxt = self.request.POST.get('next') or self.request.GET.get('next', '')
+        typed = self.request.POST.get('username', '')
+        context['username_login'] = (nxt.startswith(('/panel', '/system', '/admin'))
+                                     or any(ch.isalpha() for ch in typed))
+        return context
+
     def post(self, request, *args, **kwargs):
         # Only the login attempt itself is refused — the page always opens.
         if _login_blocked(get_client_ip(request), request.POST.get('username', '')):
