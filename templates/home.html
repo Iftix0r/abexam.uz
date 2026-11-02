@@ -344,6 +344,7 @@
         <div class="nav-links">
             <a href="#features" class="nav-link">Imtihonlar</a>
             <a href="#pricing" class="nav-link">Narxlar</a>
+            {% if tg_bot_url %}<a href="{% url 'telegram' %}" class="nav-link">Telegram bot</a>{% endif %}
             {% if user.is_authenticated %}
                 <a href="{% url 'dashboard' %}" class="btn btn-primary">Kabinet</a>
             {% else %}
@@ -362,6 +363,7 @@
         <button onclick="closeMobileMenu()" style="position: absolute; top: 2rem; right: 2rem; background: none; border: none; color: white; font-size: 2rem; cursor: pointer;">✕</button>
         <a href="#features" onclick="closeMobileMenu()">Imtihonlar</a>
         <a href="#" onclick="closeMobileMenu()">Narxlar</a>
+        {% if tg_bot_url %}<a href="{% url 'telegram' %}" onclick="closeMobileMenu()">Telegram bot</a>{% endif %}
         {% if user.is_authenticated %}
             <a href="{% url 'dashboard' %}">Kabinet</a>
         {% else %}
