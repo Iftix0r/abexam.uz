@@ -17,7 +17,7 @@ from django.utils.safestring import mark_safe
 from django.views import View
 from django.views.generic import DetailView
 
-from core.utils import get_client_ip, notify_staff_work, parse_json_body
+from core.utils import get_client_ip, notify_staff_work, parse_json_body, site_link
 from tgbot.services import notify_result_ready
 from .models import Exam, ExamAttempt, UserAnswer, UserResult, Question
 from . import camera
@@ -533,7 +533,8 @@ def create_result(user, exam, answers):
 
     if pending:
         notify_staff_work(
-            f"✍️ <b>Writing baholash kerak</b>\n👤 {escape(user.display_name)} — {escape(exam.title)}"
+            f"✍️ <b>Writing baholash kerak</b>\n👤 {escape(user.display_name)} — {escape(exam.title)}",
+            [[('✍️ Baholash', site_link(f'/panel/results/{result.pk}/grade/'))]],
         )
     else:
         transaction.on_commit(lambda: notify_result_ready(result))

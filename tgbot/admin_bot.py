@@ -69,12 +69,20 @@ def forward_question(acc, msg):
 
 # ── Admin menu ────────────────────────────────────────────────────────────────
 
-def menu(acc):
-    reply(acc, "🛠 <b>Admin panel</b>", api.inline_keyboard([
+def _menu_view(acc):
+    alerts = ("🔕 Xabarnomalar o'chirilgan — yangi a'zolar, navbat, savollar, to'lov va Writing haqida "
+              "xabar kelmaydi." if acc.alerts_off else
+              "🔔 Xabarnomalar yoqilgan: yangi a'zolar (bot va sayt), navbatlar, savollar, to'lovlar, Writing.")
+    return f"🛠 <b>Admin panel</b>\n\n{alerts}", api.inline_keyboard([
         [('📊 Statistika', 'adm:stats'), ('📋 Navbatlar', 'adm:days')],
         [('📣 Xabar yuborish', 'adm:bc'), ("👥 Yangi a'zolar", 'adm:new')],
         [('👮 Adminlar', 'adm:admins'), ('🌐 Saytdagi panel', site_url('/panel/'))],
-    ]))
+        [("🔔 Xabarnomalarni yoqish" if acc.alerts_off else "🔕 Xabarnomalarni o'chirish", 'adm:alerts')],
+    ])
+
+
+def menu(acc):
+    reply(acc, *_menu_view(acc))
 
 
 def _stats_text():
@@ -281,6 +289,10 @@ def on_callback(actor, cq):
             return api.edit(chat_id, message_id, *_days_view())
         if arg == 'new':
             return api.edit(chat_id, message_id, _new_members_text())
+        if arg == 'alerts':
+            actor.alerts_off = not actor.alerts_off
+            actor.save(update_fields=['alerts_off'])
+            return api.edit(chat_id, message_id, *_menu_view(actor))
         if arg == 'admins':
             return api.edit(chat_id, message_id, *_admins_view(actor))
         if arg == 'addadmin':

@@ -25,6 +25,7 @@ class TelegramAccount(models.Model):
     # Bot-only admin (stats, queue, broadcasts, replies) — gives no access to
     # the site panel. Site staff who link their account are admins anyway.
     is_admin = models.BooleanField(default=False, help_text="Bot admini — saytdagi panelga kirish huquqi bermaydi")
+    alerts_off = models.BooleanField(default=False, help_text="Admin xabarnomalarini o'chirib qo'ygan")
     created_at = models.DateTimeField(auto_now_add=True)
     last_seen_at = models.DateTimeField(default=timezone.now)
 

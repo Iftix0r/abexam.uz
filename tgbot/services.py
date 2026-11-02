@@ -43,18 +43,16 @@ def day_details(day):
 
 
 def admin_chat_ids():
-    """Where admin alerts go. A group TELEGRAM_ADMIN_CHAT_ID (negative id)
-    is the one place staff read them; otherwise each staff member who linked
-    their account to the bot gets them privately, plus that chat."""
+    """Where admin alerts go: the TELEGRAM_ADMIN_CHAT_ID chat, site staff who
+    linked their account to the bot, and admins added in the bot — minus
+    anyone who turned alerts off in the bot's admin menu."""
+    ids = set(TelegramAccount.objects.filter(Q(user__is_staff=True, user__is_active=True) | Q(is_admin=True),
+                                             is_blocked=False, alerts_off=False).values_list('chat_id', flat=True))
     try:
         admin_chat = int(settings.TELEGRAM_ADMIN_CHAT_ID)
     except (TypeError, ValueError):
         admin_chat = None
-    if admin_chat and admin_chat < 0:
-        return {admin_chat}
-    ids = set(TelegramAccount.objects.filter(Q(user__is_staff=True, user__is_active=True) | Q(is_admin=True),
-                                             is_blocked=False).values_list('chat_id', flat=True))
-    if admin_chat:
+    if admin_chat and not TelegramAccount.objects.filter(chat_id=admin_chat, alerts_off=True).exists():
         ids.add(admin_chat)
     return ids
 
@@ -74,6 +72,8 @@ def is_owner(acc):
 
 
 def notify_admins(text, markup=None):
+    if not api.enabled():
+        return
     for chat_id in admin_chat_ids():
         api.send_async(chat_id, text, markup)
 

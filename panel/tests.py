@@ -243,11 +243,11 @@ class PanelWorkflowTests(TestCase):
         from exams.models import Section, Question
         writing = Section.objects.create(exam=self.exam, title='Writing', section_type='writing', order=3)
         task = Question.objects.create(section=writing, order=81, question_type='writing_task', text='Essay')
-        with mock.patch('core.utils.notify_admin_telegram') as tg:
+        with mock.patch('core.utils.notify_admins') as tg:
             self._result('w1', [(task, 'my essay')])
         self.assertIn('Writing baholash kerak', tg.call_args[0][0])
         # five students all answer Q1 "beds" → the key "bed" looks wrong
-        with mock.patch('core.utils.notify_admin_telegram') as tg:
+        with mock.patch('core.utils.notify_admins') as tg:
             for i in range(5):
                 self._result(f's{i}', [(self.qs[0], 'beds'), (self.qs[1], 'post')])
         alerts = [c[0][0] for c in tg.call_args_list if 'Kalitni tekshiring' in c[0][0]]

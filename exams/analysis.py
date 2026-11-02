@@ -130,11 +130,8 @@ def regrade_exam(exam):
 def alert_suspect_keys(exam):
     """Telegram heads-up for questions that newly look like they have a
     wrong key. Called after each submission; never raises."""
-    from core.models import SiteSettings
-    from core.utils import notify_admin_telegram
+    from core.utils import notify_staff_work, site_link
     try:
-        if not SiteSettings.get().telegram_work_alerts:
-            return
         suspects = [r for g in question_stats(exam) for r in g['rows'] if r['suspect']]
         cache_key = f'suspect_keys_alerted_{exam.pk}'
         alerted = cache.get(cache_key) or set()
@@ -145,7 +142,8 @@ def alert_suspect_keys(exam):
             f"• №{r['number']}: kalit <b>{escape(r['q'].correct_answer)}</b>, "
             f"ko'pchilik yozgan: <b>{escape(r['top_wrong'][0][0])}</b> ({r['top_wrong'][0][1]} ta)"
             for r in new[:8])
-        notify_admin_telegram(f"⚠ <b>Kalitni tekshiring</b> — {escape(exam.title)}\n{lines}")
+        notify_staff_work(f"⚠ <b>Kalitni tekshiring</b> — {escape(exam.title)}\n{lines}",
+                          [[('🔍 Tahlilni ochish', site_link(f'/panel/exams/{exam.pk}/analysis/'))]])
         cache.set(cache_key, alerted | {r['q'].pk for r in new}, 60 * 60 * 24 * 30)
     except Exception:
         logger.exception('suspect key alert failed for exam %s', exam.pk)

@@ -48,12 +48,41 @@ def notify_admin_telegram(message: str):
     threading.Thread(target=_send, daemon=True).start()
 
 
-def notify_staff_work(message: str):
-    """Admin Telegram ping about work waiting for staff (a payment to
-    approve, a Writing to grade), unless turned off in site settings."""
+def site_link(path):
+    """Absolute site URL for links sent outside the site (Telegram)."""
+    return settings.SITE_URL.rstrip('/') + path
+
+
+def notify_admins(message: str, buttons=None):
+    """Alert for everyone who runs the site through the Telegram bot: the
+    admin chat, staff who linked their account, and admins added in the
+    bot. `buttons` are rows of (text, url). Security noise (logins, crashes)
+    goes through notify_admin_telegram instead, to the admin chat only."""
+    from tgbot import api
+    from tgbot.services import notify_admins as send
+    send(message, api.inline_keyboard(buttons) if buttons else None)
+
+
+def notify_new_signup(user, source='saytda'):
+    """«New member» alert for every admin, with today's signup count."""
+    from html import escape
+    from users.models import User
+    today = User.objects.filter(date_joined__date=timezone.localdate()).count()
+    notify_admins(
+        f"🆕 <b>Yangi a'zo</b> ({source} ro'yxatdan o'tdi)\n"
+        f"👤 {escape(user.get_full_name() or '—')} (@{escape(user.username)})\n"
+        f"📞 {escape(user.phone_number or '—')}\n"
+        f"👥 Bugun: +{today} · jami {User.objects.count()}",
+        [[("👤 Panelda ochish", site_link(f'/panel/users/{user.pk}/'))]],
+    )
+
+
+def notify_staff_work(message: str, buttons=None):
+    """Admin ping about work waiting for staff (a payment to approve, a
+    Writing to grade), unless turned off in site settings."""
     from .models import SiteSettings
     if SiteSettings.get().telegram_work_alerts:
-        notify_admin_telegram(message)
+        notify_admins(message, buttons)
 
 
 _IMAGE_TYPE_LABELS = {

@@ -17,7 +17,7 @@ from django.urls import path, reverse
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 
-from core.utils import get_client_ip, notify_admin_telegram, parse_json_body
+from core.utils import get_client_ip, notify_admin_telegram, notify_new_signup, parse_json_body
 from users.forms import RegisterForm
 from users.models import LoginLog, Vocabulary
 from users.views import _MAX_FAILS_PER_IP, _MAX_FAILS_PER_USER, _bump, _fail_keys, _login_blocked, delete_account
@@ -158,9 +158,7 @@ def register(request):
     user = form.save(commit=False)
     user.last_ip = ip
     user.save()
-    notify_admin_telegram(
-        f"🆕 <b>Ilovada ro'yxatdan o'tish</b>\n👤 {user.get_full_name() or '—'} (@{user.username})\n"
-        f"📞 {user.phone_number or '—'}\n🌐 IP: {ip}")
+    notify_new_signup(user, 'ilovada')
     return JsonResponse({'token': _issue_token(user, request, data), 'user': _user_json(user)})
 
 

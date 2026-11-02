@@ -292,6 +292,38 @@ class BotTests(TestCase):
         self.say_as(900, str(CHAT))
         self.assertFalse(TelegramAccount.objects.get(chat_id=CHAT).is_admin)
 
+    def test_site_alerts_reach_bot_added_admins(self):
+        from core.models import SiteSettings
+        from core.utils import notify_admin_telegram
+        SiteSettings.objects.update_or_create(pk=1, defaults={'telegram_work_alerts': True})
+        cache.clear()
+        bot_admin = TelegramAccount.objects.create(chat_id=777, is_admin=True)
+
+        self.client.post(reverse('register'), {'first_name': 'Ali', 'last_name': 'Valiyev',
+                                               'phone_number': '+998 90 412 09 77', 'password': 'Very-Strong-77'})
+        alert = self.sent_to(777)[-1]
+        self.assertIn("Yangi a'zo", alert)
+        self.assertIn('Ali Valiyev', alert)
+        self.assertNotIn('IP', alert)
+        button = self.post.call_args_list[-1].kwargs['json']['reply_markup']['inline_keyboard'][0][0]
+        self.assertTrue(button['url'].startswith('https://abexam.uz/panel/users/'))
+
+        # Security noise (logins, crashes) stays in the owner's admin chat only.
+        with override_settings(TELEGRAM_ADMIN_CHAT_ID='111'), \
+                mock.patch('core.utils.threading.Thread') as thread:
+            notify_admin_telegram('✅ Kirish')
+            thread.call_args.kwargs['target']()
+        self.assertEqual(self.post.call_args.kwargs['json']['chat_id'], '111')
+
+        # An admin can mute alerts from the bot's admin menu.
+        self.press_as(777, 'adm:alerts')
+        bot_admin.refresh_from_db()
+        self.assertTrue(bot_admin.alerts_off)
+        before = len(self.sent_to(777))
+        from core.utils import notify_staff_work
+        notify_staff_work('✍️ Writing baholash kerak')
+        self.assertEqual(len(self.sent_to(777)), before)
+
     def test_public_schedule(self):
         resp = self.client.get(reverse('schedule'))
         self.assertContains(resp, 'Chilonzor')

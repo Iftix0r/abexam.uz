@@ -13,7 +13,10 @@ from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import CreateView, TemplateView
 
-from core.utils import get_client_ip, monthly_series, notify_admin_telegram, parse_json_body, validate_image_upload
+from core.utils import (
+    get_client_ip, monthly_series, notify_admin_telegram, notify_new_signup, parse_json_body,
+    validate_image_upload,
+)
 from exams.models import Exam, UserResult
 from .backends import normalize_phone
 from .forms import LoginForm, RegisterForm
@@ -119,13 +122,7 @@ class RegisterView(CreateView):
         user.last_ip = ip
         user.save()
         login(self.request, user, backend='users.backends.PhoneOrUsernameBackend')
-        notify_admin_telegram(
-            f"🆕 <b>Yangi ro'yxatdan o'tish</b>\n"
-            f"👤 {user.get_full_name() or '—'} (@{user.username})\n"
-            f"📞 {user.phone_number or '—'}\n"
-            f"🌐 IP: {ip}\n"
-            f"💻 {self.request.META.get('HTTP_USER_AGENT', '—')[:300]}"
-        )
+        notify_new_signup(user, 'saytda')
         return redirect(self.success_url)
 
 
