@@ -334,6 +334,22 @@ class BotTests(TestCase):
             TelegramAccount.objects.all().delete()
             self.assertNotContains(self.client.get(reverse('dashboard')), 'Natijangizni Telegramda oling')
 
+    def test_pending_result_page_always_shows_telegram_status(self):
+        user = User.objects.create_user('vali', password='pw')
+        result = UserResult.objects.create(user=user, exam=Exam.objects.create(title='Mock 6'),
+                                           status=UserResult.STATUS_PENDING)
+        url = reverse('exams:result_detail', args=[result.pk])
+        self.client.force_login(user)
+        self.assertContains(self.client.get(url), 'Natijangizni Telegramda oling')
+        TelegramAccount.objects.create(chat_id=CHAT, user=user)
+        page = self.client.get(url)
+        self.assertNotContains(page, 'Natijangizni Telegramda oling')
+        self.assertContains(page, 'Telegram ulangan')
+        # Staff see the full pending result; on their own it still shows.
+        user.is_staff = True
+        user.save()
+        self.assertContains(self.client.get(url), 'Telegram ulangan')
+
     def test_linking_after_exam_sends_result_right_away(self):
         user = User.objects.create_user('vali', password='pw')
         exam = Exam.objects.create(title='Mock 4')
