@@ -209,10 +209,13 @@ class PanelWorkflowTests(TestCase):
         entry = AuditLog.objects.get(action='balance')
         self.assertIn('+50,000', entry.details)
         self.assertEqual(entry.staff, self.admin)
-        self.assertContains(self.client.get(reverse('panel:audit')), "Balans o&#x27;zgartirildi")
+        self.assertContains(self.client.get(reverse('system:staff_audit')), "Balans o&#x27;zgartirildi")
         staff = User.objects.create_user('helper', password='pw', is_staff=True)
         self.client.force_login(staff)
-        self.assertRedirects(self.client.get(reverse('panel:audit')), reverse('panel:dashboard'), fetch_redirect_response=False)
+        # Lives in /system/ now — superusers only.
+        resp = self.client.get(reverse('system:staff_audit'))
+        self.assertEqual(resp.status_code, 302)
+        self.assertTrue(resp.url.startswith('/login/'))
 
     def test_groups_members_and_filters(self):
         from users.models import StudyGroup
@@ -299,3 +302,28 @@ class AnswerReviewTests(TestCase):
         self.assertContains(page, 'Paragraph C, line 3')
         self.assertContains(page, "— bo'sh")
         self.assertIsInstance(result, UserResult)
+
+
+class SystemMovedPagesTests(TestCase):
+    """Security logs, staff audit, notifications, promo codes and site
+    settings moved from /panel/ to /system/ (superusers only)."""
+
+    def test_pages_live_in_system_panel_only(self):
+        boss = User.objects.create_user('boss', password='pw', is_staff=True, is_superuser=True)
+        helper = User.objects.create_user('helper', password='pw', is_staff=True)
+        self.client.force_login(boss)
+        panel_home = self.client.get(reverse('panel:dashboard'))
+        for name in ('security', 'staff_audit', 'notifications', 'promocodes', 'settings'):
+            url = reverse(f'system:{name}')
+            self.assertEqual(self.client.get(url).status_code, 200, name)
+            self.assertNotContains(panel_home, f'href="{url}"')
+        self.assertContains(self.client.get(reverse('system:dashboard')), reverse('system:promocodes'))
+        self.assertRedirects(self.client.get('/panel/promocodes/'), reverse('system:promocodes'),
+                             fetch_redirect_response=False)
+        self.client.post(reverse('system:promocodes'), {'code': 'yoz26', 'max_uses': '3'})
+        from core.models import PromoCode
+        self.assertTrue(PromoCode.objects.filter(code='YOZ26').exists())
+
+        self.client.force_login(helper)
+        self.assertEqual(self.client.get(reverse('system:promocodes')).status_code, 302)
+        self.assertNotContains(self.client.get(reverse('panel:dashboard')), 'Tizim</a>')

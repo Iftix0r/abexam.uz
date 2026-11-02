@@ -1,4 +1,5 @@
 from django.urls import path
+from django.views.generic import RedirectView
 from . import views
 
 app_name = 'panel'
@@ -77,18 +78,13 @@ urlpatterns = [
     path('live/<int:pk>/finalize/', views.attempt_finalize, name='attempt_finalize'),
     path('live/<int:pk>/delete/', views.attempt_delete, name='attempt_delete'),
     path('create-admin/', views.create_admin, name='create_admin'),
-    path('security/', views.security_logs, name='security'),
-    path('audit/', views.audit_log, name='audit'),
     path('analytics/', views.analytics, name='analytics'),
 
     path('exams/generate/', views.exam_generate, name='exam_generate'),
     path('questions/<int:pk>/edit/', views.question_edit, name='question_edit'),
     path('questions/<int:pk>/delete/', views.question_delete, name='question_delete'),
 
-    path('settings/', views.site_settings, name='site_settings'),
 
-    path('notifications/', views.panel_notifications, name='notifications'),
-    path('notifications/<int:pk>/delete/', views.notification_delete, name='notification_delete'),
 
     path('english/', views.english_overview, name='english'),
     path('english/learners/', views.english_learners, name='english_learners'),
@@ -97,7 +93,10 @@ urlpatterns = [
     path('english/app/', views.english_app, name='english_app'),
     path('english/app/<int:pk>/delete/', views.english_app_delete, name='english_app_delete'),
 
-    path('promocodes/', views.promocodes_list, name='promocodes'),
-    path('promocodes/<int:pk>/toggle/', views.promocode_toggle, name='promocode_toggle'),
-    path('promocodes/<int:pk>/delete/', views.promocode_delete, name='promocode_delete'),
+    # Moved to /system/ (superusers only); old bookmarks keep working.
+    path('security/', RedirectView.as_view(pattern_name='system:security')),
+    path('audit/', RedirectView.as_view(pattern_name='system:staff_audit')),
+    path('notifications/', RedirectView.as_view(pattern_name='system:notifications')),
+    path('promocodes/', RedirectView.as_view(pattern_name='system:promocodes')),
+    path('settings/', RedirectView.as_view(pattern_name='system:settings')),
 ]

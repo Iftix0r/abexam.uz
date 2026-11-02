@@ -2374,7 +2374,7 @@ def site_settings(request):
             site_name = request.POST.get('site_name', '').strip()
             if not site_name:
                 messages.error(request, "Sayt nomi bo'sh bo'lishi mumkin emas")
-                return redirect('panel:site_settings')
+                return redirect('system:settings')
             settings_obj.site_name = site_name
 
         if 'logo' in request.FILES:
@@ -2382,7 +2382,7 @@ def site_settings(request):
             error = validate_image_upload(logo, 2, {'image/jpeg', 'image/png', 'image/webp', 'image/svg+xml'})
             if error:
                 messages.error(request, error)
-                return redirect('panel:site_settings')
+                return redirect('system:settings')
             settings_obj.logo = logo
 
         settings_obj.site_description = request.POST.get('site_description', '').strip()
@@ -2395,9 +2395,9 @@ def site_settings(request):
         settings_obj.telegram_work_alerts = request.POST.get('telegram_work_alerts') == 'on'
         settings_obj.maintenance_message = request.POST.get('maintenance_message', '').strip()
         settings_obj.save()
-        log_action(request, 'settings', 'Sayt sozlamalari', reverse('panel:site_settings'))
+        log_action(request, 'settings', 'Sayt sozlamalari', reverse('system:settings'))
         messages.success(request, 'Sozlamalar saqlandi')
-        return redirect('panel:site_settings')
+        return redirect('system:settings')
     return render(request, 'panel/settings.html', {'settings': settings_obj})
 
 
@@ -2411,17 +2411,17 @@ def panel_notifications(request):
         target_username = request.POST.get('target_username', '').strip()
         if not title or not message_text:
             messages.error(request, "Sarlavha va matn kiritilishi shart")
-            return redirect('panel:notifications')
+            return redirect('system:notifications')
         target_user = None
         if target_username:
             try:
                 target_user = User.objects.get(username=target_username)
             except User.DoesNotExist:
                 messages.error(request, f"'{target_username}' nomli foydalanuvchi topilmadi")
-                return redirect('panel:notifications')
+                return redirect('system:notifications')
         Notification.objects.create(user=target_user, title=title, message=message_text, type=ntype)
         messages.success(request, 'Xabarnoma yuborildi' if target_user else "Xabarnoma barchaga yuborildi")
-        return redirect('panel:notifications')
+        return redirect('system:notifications')
 
     notifications = Notification.objects.select_related('user').order_by('-created_at')[:100]
     return render(request, 'panel/notifications.html', {'notifications': notifications})
@@ -2447,10 +2447,10 @@ def promocodes_list(request):
 
         if not code:
             messages.error(request, 'Kod kiritilishi shart')
-            return redirect('panel:promocodes')
+            return redirect('system:promocodes')
         if PromoCode.objects.filter(code=code).exists():
             messages.error(request, 'Bu kod allaqachon mavjud')
-            return redirect('panel:promocodes')
+            return redirect('system:promocodes')
 
         try:
             discount_amount = Decimal(request.POST.get('discount_amount') or '0')
@@ -2458,7 +2458,7 @@ def promocodes_list(request):
             max_uses = int(max_uses)
         except (InvalidOperation, ValueError):
             messages.error(request, "Chegirma/soni noto'g'ri formatda")
-            return redirect('panel:promocodes')
+            return redirect('system:promocodes')
 
         # Negative values would make TopUpView's bonus calculation reduce
         # (or zero out) the amount instead of adding to it — clamp to the
@@ -2483,10 +2483,10 @@ def promocodes_list(request):
             )
         except IntegrityError:
             messages.error(request, 'Bu kod allaqachon mavjud')
-            return redirect('panel:promocodes')
-        log_action(request, 'promocode', code, reverse('panel:promocodes'), 'Yaratildi')
+            return redirect('system:promocodes')
+        log_action(request, 'promocode', code, reverse('system:promocodes'), 'Yaratildi')
         messages.success(request, 'Promo kod yaratildi')
-        return redirect('panel:promocodes')
+        return redirect('system:promocodes')
 
     promocodes = PromoCode.objects.order_by('-created_at')
     return render(request, 'panel/promocodes.html', {'promocodes': promocodes})
@@ -2498,7 +2498,7 @@ def promocode_toggle(request, pk):
     promo = get_object_or_404(PromoCode, pk=pk)
     promo.is_active = not promo.is_active
     promo.save(update_fields=['is_active'])
-    log_action(request, 'promocode', promo.code, reverse('panel:promocodes'), 'Yoqildi' if promo.is_active else "O'chirildi")
+    log_action(request, 'promocode', promo.code, reverse('system:promocodes'), 'Yoqildi' if promo.is_active else "O'chirildi")
     return JsonResponse({'ok': True, 'is_active': promo.is_active})
 
 

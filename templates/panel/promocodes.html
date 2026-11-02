@@ -1,4 +1,4 @@
-{% extends 'panel/base.html' %}
+{% extends 'system/panel_base.html' %}
 {% block title %}Promo kodlar{% endblock %}
 {% block page_title %}Promo kodlar{% endblock %}
 {% block nav_promocodes %}active{% endblock %}
@@ -71,7 +71,7 @@
 {% block extra_js %}
 <script>
 async function togglePromo(pk){
-  const r=await fetch(`/panel/promocodes/${pk}/toggle/`,{method:'POST',headers:{'X-CSRFToken':csrf}});
+  const r=await fetch(`{% url 'system:promocodes' %}${pk}/toggle/`,{method:'POST',headers:{'X-CSRFToken':csrf}});
   const d=await r.json();
   document.getElementById('promo-status-'+pk).innerHTML = d.is_active
     ? '<span class="badge badge-green">Faol</span>'
@@ -80,7 +80,7 @@ async function togglePromo(pk){
 }
 async function deletePromo(pk){
   if(!confirm("O'chirilsinmi?")) return;
-  await fetch(`/panel/promocodes/${pk}/delete/`,{method:'POST',headers:{'X-CSRFToken':csrf}});
+  await fetch(`{% url 'system:promocodes' %}${pk}/delete/`,{method:'POST',headers:{'X-CSRFToken':csrf}});
   document.getElementById('promo-row-'+pk).remove();
   toast("O'chirildi",'#ef4444');
 }

@@ -18,7 +18,7 @@
 body{font-family:-apple-system,'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;display:flex}
 a{color:inherit;text-decoration:none}
 
-.sidebar{width:var(--sidebar);background:var(--surface);border-right:1px solid var(--border);position:fixed;height:100vh;padding:20px 12px;display:flex;flex-direction:column}
+.sidebar{width:var(--sidebar);background:var(--surface);border-right:1px solid var(--border);position:fixed;height:100vh;padding:20px 12px;display:flex;flex-direction:column;overflow-y:auto}
 .logo{display:flex;align-items:center;gap:8px;padding:8px 12px;margin-bottom:8px;font-weight:700;font-size:14px}
 .logo .tag{background:var(--primary);color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;text-transform:uppercase;letter-spacing:.04em}
 .nav-section{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;padding:0 12px;margin:14px 0 6px}
@@ -66,31 +66,7 @@ code.inline{background:var(--surface2);padding:2px 6px;border-radius:5px;font-si
 <body>
 <div class="sidebar">
   <div class="logo">🛠 Tizim <span class="tag">Superuser</span></div>
-  <span class="nav-section">Ops</span>
-  <a href="{% url 'system:dashboard' %}" class="nav-item {% block nav_dashboard %}{% endblock %}">
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-    Holat
-  </a>
-  <a href="{% url 'system:backups' %}" class="nav-item {% block nav_backups %}{% endblock %}">
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M21 8v13H3V8M1 3h22v5H1zM10 12h4"/></svg>
-    Zaxira nusxalar
-  </a>
-  <a href="{% url 'system:logs' %}" class="nav-item {% block nav_logs %}{% endblock %}">
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8" stroke-width="1.8"/><line x1="8" y1="13" x2="16" y2="13" stroke-width="1.8"/><line x1="8" y1="17" x2="16" y2="17" stroke-width="1.8"/></svg>
-    Loglar
-  </a>
-  <a href="{% url 'system:tasks' %}" class="nav-item {% block nav_tasks %}{% endblock %}">
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="1.8"/><polyline points="12,6 12,12 16,14" stroke-width="1.8"/></svg>
-    Vazifalar
-  </a>
-  <a href="{% url 'system:audit' %}" class="nav-item {% block nav_audit %}{% endblock %}">
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M9 11l3 3L22 4"/><path stroke-width="1.8" d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-    Audit
-  </a>
-  <a href="{% url 'system:files_root' %}" class="nav-item {% block nav_files %}{% endblock %}">
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-    Fayllar
-  </a>
+  {% include 'system/_nav.html' %}
   <div class="sidebar-footer">
     <a href="/panel/" class="back-link">← Admin panel</a>
     <a href="/admin/" class="back-link">← Django admin</a>

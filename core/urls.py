@@ -6,6 +6,7 @@ from django.contrib.auth import views as auth_views
 from django.views.generic import TemplateView
 from core.admin_site import AbExamAdminSite
 from core import system_views
+from panel import views as panel_views
 from exams.testlar import TestlarListView, testlar_file
 from tgbot.views import bot_page, schedule
 from users.views import (
@@ -38,6 +39,18 @@ urlpatterns = [
         path('files/', system_views.files, name='files_root'),
         path('files/download/<path:subpath>', system_views.files_download, name='files_download'),
         path('files/<path:subpath>/', system_views.files, name='files'),
+        # Moved here from /panel/ — superusers only, like the rest of /system/.
+        path('security/', system_views.system_required(panel_views.security_logs), name='security'),
+        path('staff-audit/', system_views.system_required(panel_views.audit_log), name='staff_audit'),
+        path('notifications/', system_views.system_required(panel_views.panel_notifications), name='notifications'),
+        path('notifications/<int:pk>/delete/', system_views.system_required(panel_views.notification_delete),
+             name='notification_delete'),
+        path('promocodes/', system_views.system_required(panel_views.promocodes_list), name='promocodes'),
+        path('promocodes/<int:pk>/toggle/', system_views.system_required(panel_views.promocode_toggle),
+             name='promocode_toggle'),
+        path('promocodes/<int:pk>/delete/', system_views.system_required(panel_views.promocode_delete),
+             name='promocode_delete'),
+        path('settings/', system_views.system_required(panel_views.site_settings), name='settings'),
     ], 'system'), namespace='system')),
     path('', HomeView.as_view(), name='home'),
     path('dashboard/', DashboardView.as_view(), name='dashboard'),

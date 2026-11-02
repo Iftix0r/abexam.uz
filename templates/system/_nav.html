@@ -1,0 +1,54 @@
+{% comment %}System panel menu — shared by system/base.html and system/panel_base.html.{% endcomment %}
+{% with here=request.resolver_match.url_name %}
+  <span class="nav-section">Ops</span>
+  <a href="{% url 'system:dashboard' %}" class="nav-item {% if here == 'dashboard' %}active{% endif %}">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+    Holat
+  </a>
+  <a href="{% url 'system:backups' %}" class="nav-item {% if here == 'backups' %}active{% endif %}">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M21 8v13H3V8M1 3h22v5H1zM10 12h4"/></svg>
+    Zaxira nusxalar
+  </a>
+  <a href="{% url 'system:logs' %}" class="nav-item {% if here == 'logs' %}active{% endif %}">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8" stroke-width="1.8"/><line x1="8" y1="13" x2="16" y2="13" stroke-width="1.8"/><line x1="8" y1="17" x2="16" y2="17" stroke-width="1.8"/></svg>
+    Loglar
+  </a>
+  <a href="{% url 'system:tasks' %}" class="nav-item {% if here == 'tasks' %}active{% endif %}">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="1.8"/><polyline points="12,6 12,12 16,14" stroke-width="1.8"/></svg>
+    Vazifalar
+  </a>
+  <a href="{% url 'system:audit' %}" class="nav-item {% if here == 'audit' %}active{% endif %}">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M9 11l3 3L22 4"/><path stroke-width="1.8" d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+    Audit
+  </a>
+  <a href="{% url 'system:files_root' %}" class="nav-item {% if here == 'files' or here == 'files_root' %}active{% endif %}">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+    Fayllar
+  </a>
+
+  <span class="nav-section">Xavfsizlik</span>
+  <a href="{% url 'system:security' %}" class="nav-item {% if here == 'security' %}active{% endif %}">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    Xavfsizlik loglari
+  </a>
+  <a href="{% url 'system:staff_audit' %}" class="nav-item {% if here == 'staff_audit' %}active{% endif %}">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1" stroke-width="1.8"/><path stroke-width="1.8" d="M9 12h6M9 16h4"/></svg>
+    Xodimlar harakatlari
+  </a>
+
+  <span class="nav-section">Marketing</span>
+  <a href="{% url 'system:notifications' %}" class="nav-item {% if here == 'notifications' %}active{% endif %}">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path stroke-width="1.8" d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+    Xabarnomalar
+  </a>
+  <a href="{% url 'system:promocodes' %}" class="nav-item {% if here == 'promocodes' %}active{% endif %}">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M20.59 13.41 11 3.83A2 2 0 0 0 9.59 3.24L3 3v6.59a2 2 0 0 0 .59 1.41l9.58 9.58a2 2 0 0 0 2.83 0l4.59-4.59a2 2 0 0 0 0-2.83z"/><circle cx="7.5" cy="7.5" r="1.5" stroke-width="1.8"/></svg>
+    Promo kodlar
+  </a>
+
+  <span class="nav-section">Sozlamalar</span>
+  <a href="{% url 'system:settings' %}" class="nav-item {% if here == 'settings' %}active{% endif %}">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" stroke-width="1.8"/><path stroke-width="1.8" d="M12 1v3M12 20v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M1 12h3M20 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>
+    Sayt sozlamalari
+  </a>
+{% endwith %}

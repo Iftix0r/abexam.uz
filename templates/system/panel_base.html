@@ -1,0 +1,13 @@
+{% extends 'panel/base.html' %}
+{% comment %}
+Pages that live in the system panel (security, staff audit, notifications,
+promo codes, site settings) but reuse the admin panel's page styles: same
+layout, with the system menu in the sidebar instead of the admin one.
+{% endcomment %}
+{% block logo_sub %}Tizim paneli{% endblock %}
+{% block sidebar_nav %}
+  {% include 'system/_nav.html' %}
+  <span class="nav-section">O'tish</span>
+  <a href="{% url 'panel:dashboard' %}" class="nav-item">← Admin panel</a>
+  <a href="/admin/" class="nav-item">← Django admin</a>
+{% endblock %}

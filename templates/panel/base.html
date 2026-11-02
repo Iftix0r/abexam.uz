@@ -284,13 +284,14 @@ a.tg-pill:hover{background:#229ed92e}
     <div class="logo-icon">A</div>
     <div>
       <div class="logo-text">AbExam</div>
-      <div class="logo-sub">Admin Panel</div>
+      <div class="logo-sub">{% block logo_sub %}Admin Panel{% endblock %}</div>
     </div>
     <button class="menu-toggle sidebar-close" onclick="closeSidebar()" aria-label="Yopish" style="margin-left:auto">
       <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18" stroke-width="2"/><line x1="6" y1="6" x2="18" y2="18" stroke-width="2"/></svg>
     </button>
   </div>
 
+  {% block sidebar_nav %}
   <span class="nav-section">Asosiy</span>
   <a href="{% url 'panel:dashboard' %}" class="nav-item {% block nav_dashboard %}{% endblock %}">
     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5" stroke-width="1.8"/><rect x="14" y="3" width="7" height="7" rx="1.5" stroke-width="1.8"/><rect x="3" y="14" width="7" height="7" rx="1.5" stroke-width="1.8"/><rect x="14" y="14" width="7" height="7" rx="1.5" stroke-width="1.8"/></svg>
@@ -354,45 +355,12 @@ a.tg-pill:hover{background:#229ed92e}
   </a>
   {% endcomment %}
 
-  <span class="nav-section">Xavfsizlik</span>
-  <a href="{% url 'panel:security' %}" class="nav-item {% block nav_security %}{% endblock %}">
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-    Xavfsizlik loglari
-  </a>
-  {% if request.user.is_superuser %}
-  <a href="{% url 'panel:audit' %}" class="nav-item {% block nav_audit %}{% endblock %}">
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1" stroke-width="1.8"/><path stroke-width="1.8" d="M9 12h6M9 16h4"/></svg>
-    Xodimlar harakatlari
-  </a>
-  {% endif %}
-
   <span class="nav-section">Analitika</span>
   <a href="{% url 'panel:analytics' %}" class="nav-item {% block nav_analytics %}{% endblock %}">
     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10" stroke-width="1.8"/><line x1="12" y1="20" x2="12" y2="4" stroke-width="1.8"/><line x1="6" y1="20" x2="6" y2="14" stroke-width="1.8"/></svg>
     Analitika
   </a>
-
-  <span class="nav-section">Marketing</span>
-  <a href="{% url 'panel:notifications' %}" class="nav-item {% block nav_notifications %}{% endblock %}">
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path stroke-width="1.8" d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-    Xabarnomalar
-  </a>
-  <a href="{% url 'panel:promocodes' %}" class="nav-item {% block nav_promocodes %}{% endblock %}">
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M20.59 13.41 11 3.83A2 2 0 0 0 9.59 3.24L3 3v6.59a2 2 0 0 0 .59 1.41l9.58 9.58a2 2 0 0 0 2.83 0l4.59-4.59a2 2 0 0 0 0-2.83z"/><circle cx="7.5" cy="7.5" r="1.5" stroke-width="1.8"/></svg>
-    Promo kodlar
-  </a>
-
-  <span class="nav-section">Tizim</span>
-  <a href="{% url 'panel:site_settings' %}" class="nav-item {% block nav_settings %}{% endblock %}">
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" stroke-width="1.8"/><path stroke-width="1.8" d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-    Sayt sozlamalari
-  </a>
-  {% if request.user.is_superuser %}
-  <a href="/system/" class="nav-item">
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-    Tizim paneli
-  </a>
-  {% endif %}
+  {% endblock %}
 
   <div class="sidebar-footer">
     <div class="user-card">
@@ -427,6 +395,7 @@ a.tg-pill:hover{background:#229ed92e}
       <svg class="icon-moon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
       <svg class="icon-sun" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" stroke-width="1.8"/><path stroke-width="1.8" stroke-linecap="round" d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
     </button>
+    {% if request.user.is_superuser %}<a href="{% url 'system:dashboard' %}" style="font-size:12px;color:var(--muted);white-space:nowrap" title="Xavfsizlik, xabarnomalar, promo kodlar, sozlamalar">🛠 Tizim</a>{% endif %}
     <a href="/" style="font-size:12px;color:var(--muted);white-space:nowrap">← Sayt</a>
   </div>
 

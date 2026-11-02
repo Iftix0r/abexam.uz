@@ -1,4 +1,4 @@
-{% extends 'panel/base.html' %}
+{% extends 'system/panel_base.html' %}
 {% block title %}Xabarnomalar{% endblock %}
 {% block page_title %}Xabarnomalar{% endblock %}
 {% block nav_notifications %}active{% endblock %}
@@ -67,7 +67,7 @@
 <script>
 async function deleteNotif(pk){
   if(!confirm("O'chirilsinmi?")) return;
-  await fetch(`/panel/notifications/${pk}/delete/`,{method:'POST',headers:{'X-CSRFToken':csrf}});
+  await fetch(`{% url 'system:notifications' %}${pk}/delete/`,{method:'POST',headers:{'X-CSRFToken':csrf}});
   document.getElementById('notif-row-'+pk).remove();
   toast("O'chirildi",'#ef4444');
 }
