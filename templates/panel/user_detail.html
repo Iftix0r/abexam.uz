@@ -3,6 +3,23 @@
 {% block page_title %}{{ obj.display_name }}{% endblock %}
 {% block nav_users %}active{% endblock %}
 
+{% block extra_css %}
+<style>
+.tgc-card{border-color:var(--border)}
+.tgc-card.on{border-color:#229ed955;background:linear-gradient(160deg,#229ed912,transparent 60%),var(--surface)}
+.tg-logo{width:32px;height:32px;border-radius:50%;background:#229ed9;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.tgc-card:not(.on) .tg-logo{background:var(--muted);opacity:.5}
+.tg-logo svg{width:16px;height:16px;fill:#fff;margin-left:-1px}
+.tg-rows{display:flex;flex-direction:column;gap:8px;font-size:13px}
+.tg-rows div{display:flex;justify-content:space-between;gap:10px}
+.tg-rows span{color:var(--muted)}
+.tg-rows b{font-weight:600;text-align:right;word-break:break-all}
+.tg-rows a{color:#229ed9}
+.tg-send{background:#229ed9;color:#fff;border:0}
+.tg-send:hover{background:#1b8bc2}
+</style>
+{% endblock %}
+
 {% block content %}
 <div style="margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
   <nav class="breadcrumb" style="margin-bottom:0">
@@ -47,6 +64,47 @@
       <button onclick="toggleUser({{ obj.pk }})" class="btn btn-ghost btn-sm" style="margin-top:14px;width:100%" id="toggle-btn">
         {% if obj.is_active %}⛔ Bloklash{% else %}✓ Faollashtirish{% endif %}
       </button>
+    </div>
+
+    <!-- Telegram -->
+    <div class="card tgc-card{% if tg %} on{% endif %}">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="tg-logo"><svg viewBox="0 0 24 24"><path d="M21.9 4.3 18.8 19c-.2 1-.8 1.3-1.7.8l-4.6-3.4-2.2 2.1c-.3.3-.5.5-1 .5l.3-4.7 8.6-7.8c.4-.3-.1-.5-.6-.2L6.9 13 2.4 11.6c-1-.3-1-1 .2-1.5L20.6 3.2c.8-.3 1.6.2 1.3 1.1z"/></svg></span>
+          <div style="font-size:14px;font-weight:700">Telegram bot</div>
+        </div>
+        {% if tg and tg.is_blocked %}<span class="badge badge-yellow">Botni bloklagan</span>
+        {% elif tg %}<span class="badge badge-green">● Ulangan</span>
+        {% else %}<span class="badge badge-gray">Ulanmagan</span>{% endif %}
+      </div>
+      {% if tg %}
+      <div class="tg-rows">
+        <div><span>Telegram</span><b>{% if tg.username %}<a href="https://t.me/{{ tg.username }}" target="_blank" rel="noopener">@{{ tg.username }}</a>{% else %}—{% endif %}</b></div>
+        <div><span>Ismi</span><b>{{ tg.first_name|default:"—" }}</b></div>
+        <div><span>Chat ID</span><b style="font-family:monospace;font-size:12px">{{ tg.chat_id }}</b></div>
+        <div><span>Botga kirgan</span><b>{{ tg.created_at|date:"d M Y" }}</b></div>
+        <div><span>Oxirgi faollik</span><b>{{ tg.last_seen_at|date:"d M Y, H:i" }}</b></div>
+        {% if tg.bookings_n %}<div><span>Imtihon navbatlari</span><b>{{ tg.bookings_n }} ta</b></div>{% endif %}
+        {% if tg.is_admin or tg.is_banned %}<div><span>Botda</span><b>{% if tg.is_admin %}👮 Bot admini{% endif %}{% if tg.is_banned %} 🚫 Bloklangan{% endif %}</b></div>{% endif %}
+      </div>
+      {% if tg.is_blocked %}<div style="font-size:12px;color:var(--yellow);margin-top:10px">Foydalanuvchi botni bloklagan — natija xabarlari bormaydi.</div>{% endif %}
+      {% if tg_enabled %}
+      <form method="post" action="{% url 'panel:user_tg_message' obj.pk %}" style="margin-top:14px">
+        {% csrf_token %}
+        <textarea name="text" class="form-input" rows="2" placeholder="Bot orqali xabar yozish..." required style="min-height:60px;font-size:13px"></textarea>
+        <button class="btn btn-sm tg-send" style="width:100%;margin-top:8px">✈ Telegramga yuborish</button>
+      </form>
+      {% endif %}
+      <form method="post" action="{% url 'panel:user_tg_unlink' obj.pk %}" onsubmit="return confirm('Telegram bot bu hisobdan uzilsinmi? Natija xabarlari bormay qoladi.')">
+        {% csrf_token %}
+        <button class="btn btn-ghost btn-sm" style="width:100%;margin-top:8px">Botdan uzish</button>
+      </form>
+      {% else %}
+      <div style="font-size:12.5px;color:var(--muted);line-height:1.6">
+        Natijalar Telegramga bormaydi. O'quvchi saytdagi <b>«Botni ulash»</b> tugmasini bosib, botda Start bossa ulanadi.
+      </div>
+      <button type="button" class="btn btn-ghost btn-sm" style="width:100%;margin-top:12px" onclick="navigator.clipboard?.writeText(location.origin + '/telegram/').then(() => toast('Havola nusxalandi'))">🔗 Ulash sahifasi havolasini nusxalash</button>
+      {% endif %}
     </div>
 
     <!-- Guruhlar -->

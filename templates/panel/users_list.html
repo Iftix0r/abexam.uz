@@ -15,6 +15,8 @@
       <a href="?filter=student" class="btn btn-sm {% if filter == 'student' %}btn-primary{% else %}btn-ghost{% endif %}">Talabalar</a>
       <a href="?filter=staff" class="btn btn-sm {% if filter == 'staff' %}btn-primary{% else %}btn-ghost{% endif %}">Adminlar</a>
       <a href="?filter=inactive" class="btn btn-sm {% if filter == 'inactive' %}btn-primary{% else %}btn-ghost{% endif %}">Bloklangan</a>
+      <a href="?filter=tg" class="btn btn-sm {% if filter == 'tg' %}btn-primary{% else %}btn-ghost{% endif %}" title="Telegram bot ulangan">✈ Telegram ulangan</a>
+      <a href="?filter=notg" class="btn btn-sm {% if filter == 'notg' %}btn-primary{% else %}btn-ghost{% endif %}">Ulanmagan</a>
     </div>
     {% if groups %}
     <select name="group" class="form-input" style="width:auto;padding:6px 10px" onchange="this.form.submit()">
@@ -25,6 +27,10 @@
     {% endif %}
   </form>
   <div style="display:flex;gap:8px;align-items:center">
+    <span class="tg-pill" title="Telegram botga ulangan foydalanuvchilar">
+      <span class="tg-ic"><svg viewBox="0 0 24 24"><path d="M21.9 4.3 18.8 19c-.2 1-.8 1.3-1.7.8l-4.6-3.4-2.2 2.1c-.3.3-.5.5-1 .5l.3-4.7 8.6-7.8c.4-.3-.1-.5-.6-.2L6.9 13 2.4 11.6c-1-.3-1-1 .2-1.5L20.6 3.2c.8-.3 1.6.2 1.3 1.1z"/></svg></span>
+      {{ tg_stats.linked }} ta ulangan · {{ tg_stats.pct }}%
+    </span>
     <span style="color:var(--muted);font-size:13px">{{ users.count }} ta</span>
     <a href="{% url 'panel:users_export' %}" class="btn btn-ghost btn-sm">↓ CSV</a>
   </div>
@@ -54,6 +60,7 @@
           <th style="width:36px"><input type="checkbox" id="select-all" onchange="toggleAll(this)" style="accent-color:var(--primary)"></th>
           <th>Foydalanuvchi</th>
           <th>Telefon</th>
+          <th>Telegram</th>
           <th>Balans</th>
           <th>IP manzil</th>
           <th>Status</th>
@@ -76,6 +83,7 @@
             </div>
           </div></td>
           <td style="color:var(--muted)">{{ u.phone_number|default:"—" }}</td>
+          <td>{% include 'panel/_tg_pill.html' with acc=u.telegram %}</td>
           <td style="font-weight:600;color:var(--green)">{{ u.balance|floatformat:0 }} so'm</td>
           <td style="font-family:monospace;font-size:11px;color:var(--muted)">{{ u.last_ip|default:"—" }}</td>
           <td>{% if u.is_active %}<span class="badge badge-green">Faol</span>{% else %}<span class="badge badge-red">Bloklangan</span>{% endif %}</td>
@@ -90,7 +98,7 @@
           </td>
         </tr>
         {% empty %}
-        <tr><td colspan="8"><div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">Foydalanuvchi topilmadi</div>Qidiruv yoki filtrni o'zgartirib ko'ring</div></td></tr>
+        <tr><td colspan="9"><div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">Foydalanuvchi topilmadi</div>Qidiruv yoki filtrni o'zgartirib ko'ring</div></td></tr>
         {% endfor %}
       </tbody>
     </table>

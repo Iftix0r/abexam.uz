@@ -139,13 +139,20 @@ def users_list(request):
         users = users.filter(is_active=False)
     elif filter_by == 'student':
         users = users.filter(is_active_student=True)
+    elif filter_by == 'tg':
+        users = users.filter(telegram__isnull=False)
+    elif filter_by == 'notg':
+        users = users.filter(telegram__isnull=True)
     group_id = request.GET.get('group', '')
     if group_id.isdigit():
         users = users.filter(study_groups=int(group_id))
     from users.models import StudyGroup
+    total = User.objects.count()
+    linked = User.objects.filter(telegram__isnull=False).count()
     return render(request, 'panel/users_list.html', {
-        'users': users.prefetch_related('study_groups'), 'q': q, 'filter': filter_by,
+        'users': users.select_related('telegram').prefetch_related('study_groups'), 'q': q, 'filter': filter_by,
         'groups': StudyGroup.objects.all(), 'group_id': group_id,
+        'tg_stats': {'linked': linked, 'pct': round(linked / total * 100) if total else 0},
     })
 
 
@@ -172,7 +179,39 @@ def user_detail(request, pk):
         'learn_stats': learn_done.aggregate(done=Count('id'), avg=Avg('best_score')),
         'learn_words': Vocabulary.objects.filter(user=user).count(),
         'app_tokens': ApiToken.objects.filter(user=user).order_by(F('last_used_at').desc(nulls_last=True)),
+        'tg': TelegramAccount.objects.filter(user=user).annotate(bookings_n=Count('bookings')).first(),
+        'tg_enabled': tg_api.enabled(),
     })
+
+
+@panel_required
+@require_POST
+def user_tg_message(request, pk):
+    """Staff write to a student through the bot (result questions, reminders)."""
+    from tgbot.services import escape
+    user = get_object_or_404(User, pk=pk)
+    acc = TelegramAccount.objects.filter(user=user).first()
+    text = request.POST.get('text', '').strip()[:3500]
+    if not acc or not text:
+        messages.error(request, "Xabar yuborilmadi: Telegram ulanmagan yoki matn bo'sh")
+    elif tg_api.send(acc.chat_id, f"💬 <b>AbExam admini:</b>\n\n{escape(text)}"):
+        log_action(request, 'tgbot', user.display_name, reverse('panel:user_detail', args=[pk]), f'Xabar: {text[:200]}')
+        messages.success(request, "Xabar Telegramga yuborildi")
+    else:
+        acc.is_blocked = True
+        acc.save(update_fields=['is_blocked'])
+        messages.error(request, "Yuborilmadi — foydalanuvchi botni bloklagan")
+    return redirect('panel:user_detail', pk=pk)
+
+
+@panel_required
+@require_POST
+def user_tg_unlink(request, pk):
+    user = get_object_or_404(User, pk=pk)
+    if TelegramAccount.objects.filter(user=user).update(user=None):
+        log_action(request, 'tgbot', user.display_name, reverse('panel:user_detail', args=[pk]), 'Telegram uzildi')
+        messages.success(request, "Telegram hisobdan uzildi")
+    return redirect('panel:user_detail', pk=pk)
 
 
 # ── Study groups (classes) ──────────────────────────────────────────────────
@@ -537,11 +576,13 @@ def users_export_csv(request):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="users.csv"'
     w = csv.writer(response)
-    w.writerow(['ID', 'Ism Familiya', 'Username', 'Email', 'Telefon', 'Balans', 'Faol', 'Qo\'shilgan'])
+    w.writerow(['ID', 'Ism Familiya', 'Username', 'Email', 'Telefon', 'Balans', 'Faol', 'Qo\'shilgan', 'Telegram'])
+    tg = dict(TelegramAccount.objects.filter(user__isnull=False).values_list('user_id', 'username'))
     for u in User.objects.only('pk', 'username', 'first_name', 'last_name', 'email', 'phone_number', 'balance',
                                'is_active', 'date_joined').order_by('-date_joined'):
         w.writerow([u.pk, u.get_full_name(), u.username, u.email, u.phone_number or '', u.balance, u.is_active,
-                    u.date_joined.strftime('%Y-%m-%d')])
+                    u.date_joined.strftime('%Y-%m-%d'),
+                    ('@' + tg[u.pk] if tg[u.pk] else 'ulangan') if u.pk in tg else ''])
     return response
 
 

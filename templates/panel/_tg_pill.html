@@ -1,0 +1,12 @@
+{% comment %}Telegram link status of a user, as a pill. Pass acc=user.telegram (may be empty).{% endcomment %}
+{% if acc %}
+  {% if acc.username %}<a class="tg-pill{% if acc.is_blocked %} warn{% endif %}" href="https://t.me/{{ acc.username }}" target="_blank" rel="noopener" title="Telegram ulangan{% if acc.is_blocked %}, lekin botni bloklagan — xabar bormaydi{% endif %}">{% else %}<span class="tg-pill{% if acc.is_blocked %} warn{% endif %}" title="Telegram ulangan{% if acc.is_blocked %}, lekin botni bloklagan{% endif %}">{% endif %}
+    <span class="tg-ic"><svg viewBox="0 0 24 24"><path d="M21.9 4.3 18.8 19c-.2 1-.8 1.3-1.7.8l-4.6-3.4-2.2 2.1c-.3.3-.5.5-1 .5l.3-4.7 8.6-7.8c.4-.3-.1-.5-.6-.2L6.9 13 2.4 11.6c-1-.3-1-1 .2-1.5L20.6 3.2c.8-.3 1.6.2 1.3 1.1z"/></svg></span>
+    {% if acc.username %}@{{ acc.username }}{% else %}{{ acc.first_name|default:"Ulangan"|truncatechars:18 }}{% endif %}{% if acc.is_blocked %} · bloklagan{% endif %}
+  {% if acc.username %}</a>{% else %}</span>{% endif %}
+{% else %}
+  <span class="tg-pill off" title="Telegram bot ulanmagan">
+    <span class="tg-ic"><svg viewBox="0 0 24 24"><path d="M21.9 4.3 18.8 19c-.2 1-.8 1.3-1.7.8l-4.6-3.4-2.2 2.1c-.3.3-.5.5-1 .5l.3-4.7 8.6-7.8c.4-.3-.1-.5-.6-.2L6.9 13 2.4 11.6c-1-.3-1-1 .2-1.5L20.6 3.2c.8-.3 1.6.2 1.3 1.1z"/></svg></span>
+    Ulanmagan
+  </span>
+{% endif %}

@@ -421,3 +421,33 @@ class PanelExamDayTests(TestCase):
         self.assertContains(self.client.get(reverse('panel:exam_day_detail', args=[day.pk])), 'Karimov Ali')
         self.client.post(reverse('panel:exam_day_delete', args=[day.pk]))
         self.assertFalse(ExamDay.objects.exists())
+
+    @override_settings(TELEGRAM_BOT_TOKEN='123:abc', TELEGRAM_BOT_USERNAME='abexam_bot')
+    def test_panel_shows_telegram_status_and_messages_user(self):
+        self.client.force_login(self.admin)
+        ali = User.objects.create_user('ali', password='pw', first_name='Ali')
+        vali = User.objects.create_user('vali', password='pw', first_name='Vali')
+        TelegramAccount.objects.create(chat_id=4242, user=vali, username='vali_tg', first_name='Vali')
+
+        listing = self.client.get(reverse('panel:users'))
+        self.assertContains(listing, '@vali_tg')
+        self.assertContains(listing, 'Ulanmagan')
+        self.assertContains(listing, '1 ta ulangan')
+        only_linked = self.client.get(reverse('panel:users'), {'filter': 'tg'})
+        self.assertNotContains(only_linked, reverse('panel:user_detail', args=[ali.pk]))
+        self.assertContains(self.client.get(reverse('panel:users_export')), '@vali_tg')
+
+        page = self.client.get(reverse('panel:user_detail', args=[vali.pk]))
+        self.assertContains(page, '● Ulangan')
+        self.assertContains(page, '4242')
+        self.assertContains(self.client.get(reverse('panel:user_detail', args=[ali.pk])), 'Ulanmagan')
+
+        with mock.patch('tgbot.api.requests.post') as post:
+            post.return_value.status_code = 200
+            self.client.post(reverse('panel:user_tg_message', args=[vali.pk]), {'text': 'Natijangiz <tayyor>'})
+        sent = post.call_args.kwargs['json']
+        self.assertEqual(sent['chat_id'], 4242)
+        self.assertIn('Natijangiz &lt;tayyor&gt;', sent['text'])
+
+        self.client.post(reverse('panel:user_tg_unlink', args=[vali.pk]))
+        self.assertIsNone(TelegramAccount.objects.get(chat_id=4242).user)
