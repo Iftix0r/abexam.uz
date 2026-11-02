@@ -22,6 +22,9 @@ class TelegramAccount(models.Model):
     is_blocked = models.BooleanField(default=False, help_text='Botni bloklagan — xabar yuborilmaydi')
     # Set by an admin: the bot ignores this chat (spam in «Adminga yozish»).
     is_banned = models.BooleanField(default=False, help_text='Admin bloklagan — bot javob bermaydi')
+    # Bot-only admin (stats, queue, broadcasts, replies) — gives no access to
+    # the site panel. Site staff who link their account are admins anyway.
+    is_admin = models.BooleanField(default=False, help_text="Bot admini — saytdagi panelga kirish huquqi bermaydi")
     created_at = models.DateTimeField(auto_now_add=True)
     last_seen_at = models.DateTimeField(default=timezone.now)
 

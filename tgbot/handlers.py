@@ -23,7 +23,7 @@ from .ui import (CANCEL, MENU_ACCOUNT, MENU_ADMIN, MENU_BOOK, MENU_HELP, MENU_MY
 
 SELF_STUDY = "Mustaqil tayyorlanaman"
 BOOKING_STATES = ('ask_name', 'ask_phone', 'ask_center')
-ADMIN_STATES = ('bc_text', 'reply')
+ADMIN_STATES = ('bc_text', 'reply', 'add_admin')
 
 
 def link_token_key(token):
@@ -135,7 +135,7 @@ def _help(acc):
     ]
     if is_admin(acc):
         lines.append(f"\n<b>Xodimlar uchun:</b> {MENU_ADMIN} — statistika, navbat ro'yxati, kelganlarni "
-                     "belgilash, hammaga xabar yuborish.")
+                     "belgilash, hammaga xabar yuborish, adminlarni boshqarish.")
     reply(acc, '\n'.join(lines))
 
 

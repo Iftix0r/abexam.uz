@@ -16,11 +16,11 @@ from users.models import User
 
 from . import api
 from .models import Booking, ExamDay, TelegramAccount
-from .services import booking_text, escape, fmt_day, notify_admins, site_url
-from .ui import CANCEL, keyboard, reply, set_state, who
+from .services import booking_text, escape, fmt_day, is_admin, is_owner, notify_admins, site_url
+from .ui import CANCEL, keyboard, main_menu, reply, set_state, who
 
 # Callback prefixes only staff may press.
-CALLBACKS = {'adm', 'day', 'came', 'bcame', 'acancel', 'ban', 'unban', 'reply'}
+CALLBACKS = {'adm', 'day', 'came', 'bcame', 'acancel', 'ban', 'unban', 'reply', 'rmadmin'}
 
 SOURCES = {'day': "jadvaldagi «Yozilish» tugmasi", 'link': "saytdagi «Telegramni ulash»"}
 
@@ -73,7 +73,7 @@ def menu(acc):
     reply(acc, "🛠 <b>Admin panel</b>", api.inline_keyboard([
         [('📊 Statistika', 'adm:stats'), ('📋 Navbatlar', 'adm:days')],
         [('📣 Xabar yuborish', 'adm:bc'), ("👥 Yangi a'zolar", 'adm:new')],
-        [('🌐 Saytdagi panel', site_url('/panel/'))],
+        [('👮 Adminlar', 'adm:admins'), ('🌐 Saytdagi panel', site_url('/panel/'))],
     ]))
 
 
@@ -134,6 +134,83 @@ def _new_members_text():
         + (' 🚫' if a.is_banned or a.is_blocked else '') for a in accs)
 
 
+# ── Bot admins ────────────────────────────────────────────────────────────────
+
+def _admins_view(actor):
+    staff = TelegramAccount.objects.select_related('user').filter(user__is_staff=True, user__is_active=True)
+    bot_admins = TelegramAccount.objects.select_related('user').filter(is_admin=True).exclude(pk__in=staff)
+    text = ("👮 <b>Bot adminlari</b>\n\n<b>Sayt xodimlari</b> (saytdagi panelda boshqariladi):\n"
+            + ('\n'.join(f"• {escape(who(a))}" + (' 👑' if a.user.is_superuser else '') for a in staff)
+               or "— botga ulangan xodim yo'q")
+            + "\n\n<b>Faqat bot adminlari:</b>\n"
+            + ('\n'.join(f"• {escape(who(a))}" for a in bot_admins) or "— yo'q"))
+    if not is_owner(actor):
+        return text + "\n\nAdmin qo'shish va olib tashlash faqat superadmin uchun.", None
+    rows = [[(f"❌ {who(a)[:40]}", f'rmadmin:{a.pk}')] for a in bot_admins]
+    rows.append([("➕ Admin qo'shish", 'adm:addadmin')])
+    return text, api.inline_keyboard(rows)
+
+
+def _ask_new_admin(actor):
+    set_state(actor, 'add_admin')
+    reply(actor,
+          "➕ <b>Yangi admin</b>\n\n"
+          "• pastdagi «👤 Kontaktlardan tanlash» tugmasini bosing,\n"
+          "• yoki uning Telegram ID raqamini yoki @username'ini yozing,\n"
+          "• yoki uning biror xabarini shu yerga forward qiling.\n\n"
+          "Admin bot orqali statistika, navbatlar, xabar yuborish va savollarga javob berishni boshqaradi. "
+          "Saytdagi panelga kirish huquqi berilmaydi.",
+          {'keyboard': [[{'text': '👤 Kontaktlardan tanlash',
+                          'request_users': {'request_id': 1, 'user_is_bot': False, 'max_quantity': 1}}],
+                        [CANCEL]],
+           'resize_keyboard': True, 'one_time_keyboard': True})
+
+
+def _new_admin_target(msg, text):
+    """The chat a new admin was picked by: shared contact, forwarded
+    message, numeric ID or @username. Returns (account, error)."""
+    shared = (msg.get('users_shared') or {}).get('users') or []
+    origin = msg.get('forward_origin') or {}
+    if shared:
+        chat_id = shared[0]['user_id']
+    elif origin.get('type') == 'hidden_user':
+        return None, "Bu odam profilini yashirgan — forward orqali aniqlab bo'lmaydi. ID yoki @username yozing."
+    elif origin.get('sender_user') or msg.get('forward_from'):
+        chat_id = (origin.get('sender_user') or msg.get('forward_from'))['id']
+    elif text.lstrip('-').isdigit():
+        chat_id = int(text)
+    elif text.startswith('@') and len(text) > 1:
+        acc = TelegramAccount.objects.filter(username__iexact=text[1:]).first()
+        return (acc, None) if acc else (None, f"{escape(text)} botga hali /start bosmagan. Avval botni ochsin.")
+    else:
+        return None, "Tushunmadim. Kontakt tanlang, ID yoki @username yozing."
+    # A private chat's id is the user's id, so someone who hasn't opened the
+    # bot yet can be made admin ahead of time.
+    acc, _ = TelegramAccount.objects.select_related('user').get_or_create(chat_id=chat_id)
+    return acc, None
+
+
+def _add_admin(actor, msg, text):
+    if not is_owner(actor):
+        set_state(actor)
+        return reply(actor, "Admin qo'shish faqat superadmin uchun.")
+    target, error = _new_admin_target(msg, text)
+    if error:
+        return reply(actor, error, keyboard([CANCEL]))
+    set_state(actor)
+    if is_admin(target):
+        return reply(actor, f"{escape(who(target))} allaqachon admin.")
+    target.is_admin = True
+    target.is_banned = False
+    target.save(update_fields=['is_admin', 'is_banned'])
+    _audit(actor, 'tgbot', who(target), "Bot admini qilindi")
+    api.send(target.chat_id, "👮 Siz <b>AbExam</b> botida admin qilindingiz.\n"
+                             "Menyudagi «🛠 Admin panel» tugmasidan foydalaning.", main_menu(target))
+    reply(actor, f"✅ {escape(who(target))} admin qilindi.")
+    text, markup = _admins_view(actor)
+    reply(actor, text, markup)
+
+
 # ── Broadcast ─────────────────────────────────────────────────────────────────
 
 def _audience():
@@ -168,6 +245,8 @@ def on_state_message(acc, msg, text):
         n = _audience().count()
         return reply(acc, f"📣 <b>Ko'rib chiqing:</b>\n\n{escape(text[:3500])}\n\n— {n} kishiga yuboriladi.",
                      api.inline_keyboard([[('✅ Yuborish', 'adm:bcgo'), ('❌ Bekor', 'adm:bcno')]]))
+    if acc.state == 'add_admin':
+        return _add_admin(acc, msg, text)
     if acc.state == 'reply':
         target = TelegramAccount.objects.filter(pk=acc.state_data.get('to')).first()
         set_state(acc)
@@ -202,6 +281,12 @@ def on_callback(actor, cq):
             return api.edit(chat_id, message_id, *_days_view())
         if arg == 'new':
             return api.edit(chat_id, message_id, _new_members_text())
+        if arg == 'admins':
+            return api.edit(chat_id, message_id, *_admins_view(actor))
+        if arg == 'addadmin':
+            if not is_owner(actor):
+                return None
+            return _ask_new_admin(actor)
         if arg == 'bc':
             set_state(actor, 'bc_text')
             return reply(actor, "📣 Barcha bot a'zolariga yuboriladigan xabar matnini yozing:", keyboard([CANCEL]))
@@ -253,6 +338,17 @@ def on_callback(actor, cq):
     target = TelegramAccount.objects.select_related('user').filter(pk=arg).first()
     if not target:
         return api.answer_callback(cq['id'], "Foydalanuvchi topilmadi", alert=True)
+    if kind == 'rmadmin':
+        if not is_owner(actor):
+            return api.answer_callback(cq['id'], "Faqat superadmin uchun", alert=True)
+        target.is_admin = False
+        target.save(update_fields=['is_admin'])
+        _audit(actor, 'tgbot', who(target), "Bot adminligidan olindi")
+        api.answer_callback(cq['id'], "Adminlikdan olindi")
+        api.send(target.chat_id, "Siz AbExam botida endi admin emassiz.", main_menu(target))
+        return api.edit(chat_id, message_id, *_admins_view(actor))
+    if kind == 'ban' and is_admin(target):
+        return api.answer_callback(cq['id'], "Adminni bloklab bo'lmaydi", alert=True)
     if kind in ('ban', 'unban'):
         target.is_banned = kind == 'ban'
         target.save(update_fields=['is_banned'])

@@ -254,6 +254,44 @@ class BotTests(TestCase):
         self.say('32')
         self.assertIn('band <b>7.5</b>', self.last_text())
 
+    def test_superadmin_adds_and_removes_bot_admin(self):
+        owner = User.objects.create_user('owner', password='pw', is_staff=True, is_superuser=True)
+        TelegramAccount.objects.create(chat_id=900, user=owner)
+        self.say('/start')
+        acc = TelegramAccount.objects.get(chat_id=CHAT)
+
+        self.press_as(900, 'adm:admins')
+        self.press_as(900, 'adm:addadmin')
+        self.say_as(900, str(CHAT))
+        acc.refresh_from_db()
+        self.assertTrue(acc.is_admin)
+        self.assertIn('admin qilindingiz', self.sent_to(CHAT)[-1])
+        # The new admin gets the admin menu but can't add more admins.
+        self.say('🛠 Admin panel')
+        self.assertIn('Admin panel', self.last_text())
+        self.press('adm:addadmin')
+        self.assertNotEqual(TelegramAccount.objects.get(chat_id=CHAT).state, 'add_admin')
+        self.press_as(900, f'ban:{acc.pk}')
+        acc.refresh_from_db()
+        self.assertFalse(acc.is_banned)
+
+        self.press_as(900, f'rmadmin:{acc.pk}')
+        acc.refresh_from_db()
+        self.assertFalse(acc.is_admin)
+
+        # Picking a contact who hasn't opened the bot yet.
+        self.press_as(900, 'adm:addadmin')
+        self._webhook({'message': {'message_id': 2, 'chat': {'id': 900, 'type': 'private'}, 'from': {'id': 900},
+                                   'users_shared': {'request_id': 1, 'users': [{'user_id': 4242}]}}})
+        self.assertTrue(TelegramAccount.objects.get(chat_id=4242).is_admin)
+
+    def test_staff_without_superuser_cannot_add_admins(self):
+        self.make_admin()
+        self.say('/start')
+        self.press_as(900, 'adm:addadmin')
+        self.say_as(900, str(CHAT))
+        self.assertFalse(TelegramAccount.objects.get(chat_id=CHAT).is_admin)
+
     def test_public_schedule(self):
         resp = self.client.get(reverse('schedule'))
         self.assertContains(resp, 'Chilonzor')

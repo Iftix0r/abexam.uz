@@ -1136,6 +1136,7 @@ def exam_days(request):
             'enabled': tg_api.enabled(), 'url': tg_api.deep_link(), 'webhook': webhook,
             'accounts': TelegramAccount.objects.count(),
             'linked': TelegramAccount.objects.filter(user__isnull=False).count(),
+            'admins': TelegramAccount.objects.filter(is_admin=True).count(),
         },
         'upcoming_bookings': Booking.objects.filter(day__date__gte=today, status=Booking.STATUS_BOOKED).count(),
     })

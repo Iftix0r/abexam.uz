@@ -5,9 +5,9 @@ from .models import Booking, ExamDay, TelegramAccount
 
 @admin.register(TelegramAccount)
 class TelegramAccountAdmin(admin.ModelAdmin):
-    list_display = ('chat_id', 'username', 'first_name', 'user', 'phone', 'is_blocked', 'last_seen_at')
+    list_display = ('chat_id', 'username', 'first_name', 'user', 'phone', 'is_admin', 'is_banned', 'is_blocked', 'last_seen_at')
     search_fields = ('username', 'first_name', 'full_name', 'phone', 'user__username')
-    list_filter = ('is_blocked',)
+    list_filter = ('is_admin', 'is_banned', 'is_blocked')
     raw_id_fields = ('user',)
 
 

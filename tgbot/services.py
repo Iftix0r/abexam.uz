@@ -5,7 +5,7 @@ import html
 
 from django.conf import settings
 from django.db import transaction
-from django.db.models import Max
+from django.db.models import Max, Q
 from django.utils import timezone
 
 from . import api
@@ -52,8 +52,8 @@ def admin_chat_ids():
         admin_chat = None
     if admin_chat and admin_chat < 0:
         return {admin_chat}
-    ids = set(TelegramAccount.objects.filter(user__is_staff=True, user__is_active=True, is_blocked=False)
-              .values_list('chat_id', flat=True))
+    ids = set(TelegramAccount.objects.filter(Q(user__is_staff=True, user__is_active=True) | Q(is_admin=True),
+                                             is_blocked=False).values_list('chat_id', flat=True))
     if admin_chat:
         ids.add(admin_chat)
     return ids
@@ -64,7 +64,13 @@ def is_admin_chat(chat_id):
 
 
 def is_admin(acc):
-    return bool(acc.user_id and acc.user.is_staff and acc.user.is_active) or is_admin_chat(acc.chat_id)
+    return acc.is_admin or bool(acc.user_id and acc.user.is_staff and acc.user.is_active) or is_admin_chat(acc.chat_id)
+
+
+def is_owner(acc):
+    """May add and remove bot admins — same rule as the site, where only a
+    superuser creates staff — or the configured admin chat itself."""
+    return bool(acc.user_id and acc.user.is_superuser and acc.user.is_active) or is_admin_chat(acc.chat_id)
 
 
 def notify_admins(text, markup=None):
