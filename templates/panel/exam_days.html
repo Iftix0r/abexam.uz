@@ -1,0 +1,90 @@
+{% extends 'panel/base.html' %}
+{% block title %}Imtihon kunlari{% endblock %}
+{% block page_title %}Imtihon kunlari{% endblock %}
+{% block nav_exam_days %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+.ed-fill{height:6px;border-radius:4px;background:var(--surface2);overflow:hidden;min-width:90px}
+.ed-fill span{display:block;height:100%;background:var(--green)}
+.ed-fill.is-full span{background:var(--red)}
+.ed-fill.is-high span{background:var(--yellow)}
+.ed-bot dl{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:13px;margin:0 0 14px}
+.ed-bot dt{color:var(--muted)}
+.ed-bot dd{margin:0;font-weight:600;word-break:break-all}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="grid-2">
+  <div class="card" style="padding:0">
+    <div class="section-header" style="padding:16px 20px 0">
+      <span class="section-title">{% if show_past %}O'tgan kunlar{% else %}Rejadagi kunlar{% endif %}</span>
+      <div style="display:flex;gap:8px">
+        <a href="/jadval/" target="_blank" class="btn btn-ghost btn-sm">Saytdagi jadval ↗</a>
+        {% if show_past %}<a href="{% url 'panel:exam_days' %}" class="btn btn-ghost btn-sm">Kelgusi kunlar</a>
+        {% else %}<a href="?past=1" class="btn btn-ghost btn-sm">O'tgan kunlar</a>{% endif %}
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Sana</th><th>Imtihon</th><th>Band</th><th>Holat</th><th></th></tr></thead>
+        <tbody>
+          {% for d in days %}
+          <tr>
+            <td style="white-space:nowrap"><strong>{{ d.date|date:"d.m.Y" }}</strong><br><span style="color:var(--muted);font-size:12px">{{ d.date|date:"l" }}, {{ d.start_time|time:"H:i" }}</span></td>
+            <td>{{ d.title }}{% if d.location %}<br><span style="color:var(--muted);font-size:12px">{{ d.location }}</span>{% endif %}</td>
+            <td style="min-width:120px">
+              <div style="font-size:12.5px;margin-bottom:4px">{{ d.booked }} / {{ d.capacity }}</div>
+              <div class="ed-fill {% if d.fill_pct >= 100 %}is-full{% elif d.fill_pct >= 80 %}is-high{% endif %}"><span style="width:{{ d.fill_pct }}%"></span></div>
+            </td>
+            <td>{% if not d.is_open %}<span class="badge badge-gray">Yopiq</span>{% elif d.seats_left %}<span class="badge badge-green">Ochiq</span>{% else %}<span class="badge badge-red">To'lgan</span>{% endif %}</td>
+            <td><a href="{% url 'panel:exam_day_detail' d.pk %}" class="btn btn-ghost btn-sm">Navbat →</a></td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="5" style="text-align:center;padding:32px;color:var(--muted)">{% if show_past %}O'tgan imtihon kunlari yo'q{% else %}Rejadagi imtihon kunlari yo'q — o'ngdagi formadan qo'shing{% endif %}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:20px">
+    <div class="card">
+      <div class="section-header"><span class="section-title">Yangi imtihon kuni</span></div>
+      <form method="post">
+        {% csrf_token %}
+        <div class="grid-2-eq">
+          <div class="form-group"><label class="form-label">Sana</label><input class="form-input" type="date" name="date" required></div>
+          <div class="form-group"><label class="form-label">Boshlanish</label><input class="form-input" type="time" name="start_time" value="10:00" required></div>
+        </div>
+        <div class="form-group"><label class="form-label">Nomi</label><input class="form-input" name="title" value="IELTS Mock imtihon" maxlength="150"></div>
+        <div class="form-group"><label class="form-label">Joylar soni</label><input class="form-input" type="number" name="capacity" min="1" value="30" required></div>
+        <div class="form-group"><label class="form-label">Manzil</label><input class="form-input" name="location" maxlength="255" placeholder="Toshkent, ... ko'chasi, 2-qavat"></div>
+        <div class="form-group"><label class="form-label">Izoh (botda ko'rinadi)</label><textarea class="form-input" name="note" rows="2" placeholder="Narxi, nima olib kelish kerak..."></textarea></div>
+        <button type="submit" class="btn btn-primary" style="width:100%">Qo'shish</button>
+      </form>
+    </div>
+
+    <div class="card ed-bot">
+      <div class="section-header"><span class="section-title">Telegram bot</span></div>
+      <dl>
+        <dt>Holat</dt><dd>{% if bot.enabled %}<span class="badge badge-green">Sozlangan</span>{% else %}<span class="badge badge-red">TELEGRAM_BOT_TOKEN yo'q</span>{% endif %}</dd>
+        {% if bot.url %}<dt>Bot</dt><dd><a href="{{ bot.url }}" target="_blank">{{ bot.url }}</a></dd>{% endif %}
+        <dt>Foydalanuvchilar</dt><dd>{{ bot.accounts }} ({{ bot.linked }} tasi sayt hisobiga ulangan)</dd>
+        <dt>Kutilayotgan navbatlar</dt><dd>{{ upcoming_bookings }}</dd>
+        {% if bot.webhook %}
+        <dt>Webhook</dt><dd>{{ bot.webhook.url|default:"o'rnatilmagan" }}</dd>
+        {% if bot.webhook.last_error_message %}<dt>Oxirgi xato</dt><dd style="color:var(--red)">{{ bot.webhook.last_error_message }}</dd>{% endif %}
+        {% endif %}
+      </dl>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <a href="?check=1" class="btn btn-ghost btn-sm">Webhookni tekshirish</a>
+        {% if request.user.is_superuser and bot.enabled %}
+        <form method="post" action="{% url 'panel:bot_set_webhook' %}">{% csrf_token %}<button class="btn btn-ghost btn-sm">Webhookni o'rnatish</button></form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

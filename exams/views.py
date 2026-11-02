@@ -18,6 +18,7 @@ from django.views import View
 from django.views.generic import DetailView
 
 from core.utils import get_client_ip, notify_staff_work, parse_json_body
+from tgbot.services import notify_result_ready
 from .models import Exam, ExamAttempt, UserAnswer, UserResult, Question
 from . import camera
 from .analysis import alert_suspect_keys
@@ -534,6 +535,8 @@ def create_result(user, exam, answers):
         notify_staff_work(
             f"✍️ <b>Writing baholash kerak</b>\n👤 {escape(user.display_name)} — {escape(exam.title)}"
         )
+    else:
+        transaction.on_commit(lambda: notify_result_ready(result))
     # A wrong answer key only shows once several students have taken the test.
     if UserResult.objects.filter(exam=exam).count() >= 5:
         alert_suspect_keys(exam)

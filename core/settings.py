@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     'payments',
     'panel',
     'learn',
+    'tgbot',
 ]
 
 MIDDLEWARE = [
@@ -175,6 +176,12 @@ LOGIN_REDIRECT_URL = '/dashboard/'
 # messaging the bot then checking https://api.telegram.org/bot<token>/getUpdates
 TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN', '')
 TELEGRAM_ADMIN_CHAT_ID = os.getenv('TELEGRAM_ADMIN_CHAT_ID', '')
+# The same bot also talks to students (tgbot app): exam-day booking, results.
+# It runs as a webhook on the site — `python manage.py tg_webhook set` once.
+TELEGRAM_BOT_USERNAME = os.getenv('TELEGRAM_BOT_USERNAME', '')
+TELEGRAM_WEBHOOK_SECRET = os.getenv('TELEGRAM_WEBHOOK_SECRET', '')
+# Public address used in links the bot sends and for the webhook URL.
+SITE_URL = os.getenv('SITE_URL', 'https://abexam.uz')
 
 # ── Logging (slow queries, background task history) ────────────────────────
 LOGS_DIR = BASE_DIR / 'logs'

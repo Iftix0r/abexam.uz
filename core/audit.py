@@ -33,6 +33,8 @@ ACTIONS = {
     'group': 'Guruh',
     'settings': 'Sayt sozlamalari',
     'promocode': 'Promokod',
+    'exam_day': 'Imtihon kuni',
+    'booking': 'Navbat',
 }
 
 

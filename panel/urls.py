@@ -47,6 +47,14 @@ urlpatterns = [
     path('questions/<int:pk>/move/', views.question_move, name='question_move'),
     path('questions/<int:pk>/duplicate/', views.question_duplicate, name='question_duplicate'),
 
+    path('exam-days/', views.exam_days, name='exam_days'),
+    path('exam-days/<int:pk>/', views.exam_day_detail, name='exam_day_detail'),
+    path('exam-days/<int:pk>/toggle/', views.exam_day_toggle, name='exam_day_toggle'),
+    path('exam-days/<int:pk>/delete/', views.exam_day_delete, name='exam_day_delete'),
+    path('exam-days/<int:pk>/export/', views.exam_day_export, name='exam_day_export'),
+    path('bookings/<int:pk>/status/', views.booking_status, name='booking_status'),
+    path('bot/webhook/', views.bot_set_webhook, name='bot_set_webhook'),
+
     path('transactions/', views.transactions_list, name='transactions'),
     path('transactions/<int:pk>/approve/', views.transaction_approve, name='tx_approve'),
     path('transactions/<int:pk>/reject/', views.transaction_reject, name='tx_reject'),

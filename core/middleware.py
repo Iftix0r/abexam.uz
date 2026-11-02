@@ -63,7 +63,7 @@ class MaintenanceModeMiddleware:
     """When SiteSettings.maintenance_mode is on, blocks everyone except
     staff (who still need /panel/ and /admin/ to turn it back off)."""
 
-    _ALLOWED_PREFIXES = ('/panel/', '/admin/', '/static/', '/media/', '/login/', '/users/logout/')
+    _ALLOWED_PREFIXES = ('/panel/', '/admin/', '/static/', '/media/', '/login/', '/users/logout/', '/tg/')
 
     def __init__(self, get_response):
         self.get_response = get_response

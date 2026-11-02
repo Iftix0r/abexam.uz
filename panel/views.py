@@ -36,6 +36,10 @@ from exams.views import finalize_attempt
 from learn.content import LEVEL_INFO, LEVELS, get_course, get_stories, validate_course
 from learn.models import ApiToken, AppRelease, DailyXP, LearnerProfile, LessonDraft, LessonProgress, Mistake
 from payments.models import Transaction
+from tgbot import api as tg_api
+from tgbot.models import Booking, ExamDay, TelegramAccount
+from tgbot.services import BookingError, book, notify_day_cancelled, notify_result_ready
+from users.backends import normalize_phone
 from users.models import LoginLog, User, Vocabulary
 
 logger = logging.getLogger(__name__)
@@ -1088,6 +1092,158 @@ def results_export_csv(request):
     return response
 
 
+# ── Exam days & bot queue ──────────────────────────────────────────────────────
+def _exam_day_from_post(post, day=None):
+    """Fills an ExamDay from the create/edit form; returns (day, error)."""
+    from django.utils.dateparse import parse_date, parse_time
+    day = day or ExamDay()
+    date, start = parse_date(post.get('date', '')), parse_time(post.get('start_time', ''))
+    if not date or not start:
+        return day, "Sana va vaqtni kiriting"
+    try:
+        capacity = int(post.get('capacity') or 0)
+    except ValueError:
+        capacity = 0
+    if capacity < 1:
+        return day, "Joylar soni kamida 1 bo'lishi kerak"
+    day.date, day.start_time, day.capacity = date, start, capacity
+    day.title = post.get('title', '').strip()[:150] or 'IELTS Mock imtihon'
+    day.location = post.get('location', '').strip()[:255]
+    day.note = post.get('note', '').strip()
+    return day, None
+
+
+@panel_required
+def exam_days(request):
+    if request.method == 'POST':
+        day, error = _exam_day_from_post(request.POST)
+        if error:
+            messages.error(request, error)
+            return redirect('panel:exam_days')
+        day.save()
+        log_action(request, 'exam_day', str(day), reverse('panel:exam_day_detail', args=[day.pk]), 'Yaratildi')
+        messages.success(request, "Imtihon kuni qo'shildi — bot va /jadval/ sahifasida ko'rinadi")
+        return redirect('panel:exam_days')
+
+    show_past = request.GET.get('past') == '1'
+    today = timezone.localdate()
+    days = ExamDay.objects.with_booked()
+    days = days.filter(date__lt=today).order_by('-date', '-start_time')[:60] if show_past else days.filter(date__gte=today)
+    webhook = tg_api.call('getWebhookInfo') if request.GET.get('check') == '1' else None
+    return render(request, 'panel/exam_days.html', {
+        'days': days, 'show_past': show_past,
+        'bot': {
+            'enabled': tg_api.enabled(), 'url': tg_api.deep_link(), 'webhook': webhook,
+            'accounts': TelegramAccount.objects.count(),
+            'linked': TelegramAccount.objects.filter(user__isnull=False).count(),
+        },
+        'upcoming_bookings': Booking.objects.filter(day__date__gte=today, status=Booking.STATUS_BOOKED).count(),
+    })
+
+
+@panel_required
+def exam_day_detail(request, pk):
+    day = get_object_or_404(ExamDay, pk=pk)
+    if request.method == 'POST':
+        if request.POST.get('form') == 'booking':
+            name = request.POST.get('full_name', '').strip()[:150]
+            phone = normalize_phone(request.POST.get('phone', ''))
+            if not name or not phone:
+                messages.error(request, "Ism va to'g'ri telefon raqamni kiriting")
+            else:
+                try:
+                    b = book(day.pk, name, phone, request.POST.get('center', '').strip()[:150])
+                    log_action(request, 'booking', f'{b.full_name} — {day}',
+                               reverse('panel:exam_day_detail', args=[day.pk]), "Panel orqali qo'shildi")
+                    messages.success(request, f"Navbatga qo'shildi: #{b.queue_number}")
+                except BookingError as e:
+                    messages.error(request, str(e))
+        else:
+            day, error = _exam_day_from_post(request.POST, day)
+            if error:
+                messages.error(request, error)
+            else:
+                day.save()
+                log_action(request, 'exam_day', str(day), reverse('panel:exam_day_detail', args=[day.pk]), 'Tahrirlandi')
+                messages.success(request, 'Saqlandi')
+        return redirect('panel:exam_day_detail', pk=day.pk)
+
+    bookings = day.bookings.select_related('account__user')
+    counts = dict(day.bookings.order_by().values_list('status').annotate(n=Count('id')))
+    status = request.GET.get('status', '')
+    if status:
+        bookings = bookings.filter(status=status)
+    return render(request, 'panel/exam_day_detail.html', {
+        'day': day, 'bookings': bookings, 'status': status,
+        'status_choices': Booking.STATUS_CHOICES,
+        'status_tabs': [(value, label, counts.get(value, 0)) for value, label in Booking.STATUS_CHOICES],
+    })
+
+
+@panel_required
+@require_POST
+def exam_day_toggle(request, pk):
+    day = get_object_or_404(ExamDay, pk=pk)
+    day.is_open = not day.is_open
+    day.save(update_fields=['is_open'])
+    log_action(request, 'exam_day', str(day), reverse('panel:exam_day_detail', args=[day.pk]),
+               'Yozilish ochildi' if day.is_open else 'Yozilish yopildi')
+    return redirect(request.POST.get('next') or reverse('panel:exam_day_detail', args=[day.pk]))
+
+
+@panel_required
+@require_POST
+def exam_day_delete(request, pk):
+    day = get_object_or_404(ExamDay, pk=pk)
+    queued = list(day.bookings.select_related('account').filter(status=Booking.STATUS_BOOKED))
+    if day.date >= timezone.localdate():
+        notify_day_cancelled(day, queued)
+    log_action(request, 'exam_day', str(day), '', f"O'chirildi ({len(queued)} ta navbat)")
+    day.delete()
+    messages.success(request, "Imtihon kuni o'chirildi" + (f", {len(queued)} kishiga Telegramda xabar yuborildi" if queued else ''))
+    return redirect('panel:exam_days')
+
+
+@panel_required
+def exam_day_export(request, pk):
+    day = get_object_or_404(ExamDay, pk=pk)
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="navbat_{day.date:%Y-%m-%d}.csv"'
+    response.write('\ufeff')  # Excel opens UTF-8 (Uzbek letters) correctly only with a BOM
+    w = csv.writer(response)
+    w.writerow(['#', 'Ism familiya', 'Telefon', "O'quv markaz", 'Holat', 'Manba', 'Yozilgan'])
+    for b in day.bookings.select_related('account'):
+        w.writerow([b.queue_number, b.full_name, b.phone, b.center, b.get_status_display(),
+                    'Telegram' if b.account_id else 'Panel', timezone.localtime(b.created_at).strftime('%Y-%m-%d %H:%M')])
+    return response
+
+
+@panel_required
+@require_POST
+def booking_status(request, pk):
+    b = get_object_or_404(Booking.objects.select_related('day'), pk=pk)
+    status = request.POST.get('status')
+    if status in dict(Booking.STATUS_CHOICES):
+        b.status = status
+        b.save(update_fields=['status'])
+        log_action(request, 'booking', f'{b.full_name} — {b.day}',
+                   reverse('panel:exam_day_detail', args=[b.day_id]), b.get_status_display())
+    return redirect(reverse('panel:exam_day_detail', args=[b.day_id]) + f"#b{b.pk}")
+
+
+@panel_required
+@require_POST
+def bot_set_webhook(request):
+    if not request.user.is_superuser:
+        messages.error(request, 'Faqat superadmin uchun')
+    elif not tg_api.enabled():
+        messages.error(request, ".env faylida TELEGRAM_BOT_TOKEN yo'q")
+    else:
+        call_command('tg_webhook', 'set', stdout=io.StringIO())
+        messages.success(request, "Webhook o'rnatildi")
+    return redirect(reverse('panel:exam_days') + '?check=1')
+
+
 # ── Transactions ───────────────────────────────────────────────────────────────
 @panel_required
 def transactions_list(request):
@@ -1397,6 +1553,7 @@ def result_grade(request, pk):
                     message=f"«{result.exam.title}» imtihoni natijasi chiqdi: umumiy ball {result.score:.1f}.",
                     type='success',
                 )
+                notify_result_ready(result)
             messages.success(request, f"Saqlandi. Umumiy ball: {result.score:.1f}")
             nxt = UserResult.objects.pending().order_by('completed_at').first()
             if request.POST.get('next') == '1' and nxt:

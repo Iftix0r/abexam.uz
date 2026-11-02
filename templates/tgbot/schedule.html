@@ -1,0 +1,47 @@
+{% extends 'public_base.html' %}
+{% block title %}Imtihon jadvali — AbExam{% endblock %}
+
+{% block content %}
+<style>
+    .sch-day { margin-top: 22px; }
+    .sch-date { font-weight: 800; font-size: 1.05rem; margin-bottom: 8px; }
+    .sch-item { border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+    .sch-time { font-size: 1.3rem; font-weight: 800; color: var(--primary); min-width: 64px; }
+    .sch-main { flex: 1; min-width: 180px; }
+    .sch-title { font-weight: 600; }
+    .sch-meta { color: var(--muted); font-size: .88rem; }
+    .sch-bar { height: 6px; border-radius: 4px; background: #eee; overflow: hidden; margin-top: 8px; max-width: 260px; }
+    .sch-bar span { display: block; height: 100%; background: #2e9e57; }
+    .sch-bar.is-high span { background: #e0a100; }
+    .sch-bar.is-full span { background: var(--primary); }
+    .sch-btn { display: inline-block; background: var(--primary); color: #fff; text-decoration: none; border-radius: 12px; padding: 10px 16px; font-weight: 700; white-space: nowrap; }
+    .sch-tag { display: inline-block; border-radius: 10px; padding: 8px 14px; background: #f1f1f4; color: var(--muted); font-weight: 600; white-space: nowrap; }
+</style>
+
+<h1>Imtihon jadvali</h1>
+<p class="muted">Rejadagi IELTS Mock imtihon kunlari va bo'sh joylar. Navbatga Telegram bot orqali yoziling — saytda ro'yxatdan o'tish shart emas.</p>
+{% if bot_url %}<p style="margin-top:10px"><a class="sch-btn" href="{{ bot_url }}" target="_blank" rel="noopener">Telegram botni ochish</a></p>{% endif %}
+
+{% for date_label, items in by_date %}
+<section class="sch-day">
+    <div class="sch-date">{{ date_label }}</div>
+    {% for d in items %}
+    <div class="sch-item">
+        <div class="sch-time">{{ d.start_time|time:"H:i" }}</div>
+        <div class="sch-main">
+            <div class="sch-title">{{ d.title }}</div>
+            {% if d.location %}<div class="sch-meta">📍 {{ d.location }}</div>{% endif %}
+            {% if d.note %}<div class="sch-meta">{{ d.note|linebreaksbr }}</div>{% endif %}
+            <div class="sch-meta" style="margin-top:4px">Band: {{ d.booked }} / {{ d.capacity }} · bo'sh joy: {{ d.seats_left }}</div>
+            <div class="sch-bar {% if d.fill_pct >= 100 %}is-full{% elif d.fill_pct >= 80 %}is-high{% endif %}"><span style="width:{{ d.fill_pct }}%"></span></div>
+        </div>
+        {% if d.book_url %}<a class="sch-btn" href="{{ d.book_url }}" target="_blank" rel="noopener">Yozilish</a>
+        {% elif not d.is_open %}<span class="sch-tag">Yozilish yopiq</span>
+        {% else %}<span class="sch-tag">Joy qolmagan</span>{% endif %}
+    </div>
+    {% endfor %}
+</section>
+{% empty %}
+<div class="box warn">Hozircha rejadagi imtihon kunlari yo'q. Tez orada e'lon qilinadi.</div>
+{% endfor %}
+{% endblock %}

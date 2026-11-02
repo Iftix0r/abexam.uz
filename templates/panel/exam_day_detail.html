@@ -1,0 +1,87 @@
+{% extends 'panel/base.html' %}
+{% block title %}Navbat — {{ day.date|date:"d.m.Y" }}{% endblock %}
+{% block page_title %}Navbat: {{ day.date|date:"d.m.Y" }}, {{ day.start_time|time:"H:i" }}{% endblock %}
+{% block nav_exam_days %}active{% endblock %}
+
+{% block content %}
+<div class="section-header">
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <a href="{% url 'panel:exam_days' %}" class="btn btn-ghost btn-sm">← Imtihon kunlari</a>
+    <a href="?" class="btn btn-ghost btn-sm {% if not status %}btn-primary{% endif %}">Hammasi</a>
+    {% for value, label, count in status_tabs %}
+    <a href="?status={{ value }}" class="btn btn-ghost btn-sm {% if status == value %}btn-primary{% endif %}">{{ label }} ({{ count }})</a>
+    {% endfor %}
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <a href="{% url 'panel:exam_day_export' day.pk %}" class="btn btn-ghost btn-sm">CSV yuklab olish</a>
+    <form method="post" action="{% url 'panel:exam_day_toggle' day.pk %}">{% csrf_token %}
+      <button class="btn btn-ghost btn-sm">{% if day.is_open %}Yozilishni yopish{% else %}Yozilishni ochish{% endif %}</button>
+    </form>
+    <form method="post" action="{% url 'panel:exam_day_delete' day.pk %}"
+          onsubmit="return confirm('Imtihon kuni o\'chirilsinmi? Navbatdagilarga Telegramda bekor qilingani haqida xabar boradi.')">{% csrf_token %}
+      <button class="btn btn-danger btn-sm">O'chirish</button>
+    </form>
+  </div>
+</div>
+
+<div class="grid-2">
+  <div class="card" style="padding:0">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Ism familiya</th><th>Telefon</th><th>O'quv markaz</th><th>Manba</th><th>Holat</th></tr></thead>
+        <tbody>
+          {% for b in bookings %}
+          <tr id="b{{ b.pk }}" {% if b.status == 'cancelled' %}style="opacity:.5"{% endif %}>
+            <td style="font-weight:700">{{ b.queue_number }}</td>
+            <td>{{ b.full_name }}{% if b.account.user %}<br><a href="{% url 'panel:user_detail' b.account.user.pk %}" style="font-size:12px">@{{ b.account.user.username }}</a>{% endif %}</td>
+            <td style="white-space:nowrap"><a href="tel:{{ b.phone }}">{{ b.phone }}</a></td>
+            <td>{{ b.center|default:"—" }}</td>
+            <td style="font-size:12px;color:var(--muted)">{% if b.account %}Telegram{% if b.account.username %}<br><a href="https://t.me/{{ b.account.username }}" target="_blank">@{{ b.account.username }}</a>{% endif %}{% else %}Panel{% endif %}</td>
+            <td>
+              <form method="post" action="{% url 'panel:booking_status' b.pk %}">{% csrf_token %}
+                <select name="status" class="form-input" style="padding:5px 8px;font-size:12px;width:auto" onchange="this.form.submit()">
+                  {% for value, label in status_choices %}<option value="{{ value }}" {% if b.status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+                </select>
+              </form>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="6" style="text-align:center;padding:32px;color:var(--muted)">Hali hech kim yozilmagan</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:20px">
+    <div class="card">
+      <div class="section-header"><span class="section-title">Qo'lda qo'shish</span></div>
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="form" value="booking">
+        <div class="form-group"><label class="form-label">Ism familiya</label><input class="form-input" name="full_name" maxlength="150" required></div>
+        <div class="form-group"><label class="form-label">Telefon</label><input class="form-input" name="phone" placeholder="+998901234567" required></div>
+        <div class="form-group"><label class="form-label">O'quv markaz</label><input class="form-input" name="center" maxlength="150"></div>
+        <button class="btn btn-primary" style="width:100%">Navbatga qo'shish</button>
+      </form>
+      <p style="font-size:11.5px;color:var(--muted);margin-top:10px">Telefon orqali yoki kelib yozilganlar uchun. Joy qolmagan yoki yozilish yopiq bo'lsa qo'shilmaydi.</p>
+    </div>
+
+    <div class="card">
+      <div class="section-header"><span class="section-title">Kun ma'lumotlari</span></div>
+      <form method="post">
+        {% csrf_token %}
+        <div class="grid-2-eq">
+          <div class="form-group"><label class="form-label">Sana</label><input class="form-input" type="date" name="date" value="{{ day.date|date:'Y-m-d' }}" required></div>
+          <div class="form-group"><label class="form-label">Boshlanish</label><input class="form-input" type="time" name="start_time" value="{{ day.start_time|time:'H:i' }}" required></div>
+        </div>
+        <div class="form-group"><label class="form-label">Nomi</label><input class="form-input" name="title" value="{{ day.title }}" maxlength="150"></div>
+        <div class="form-group"><label class="form-label">Joylar soni</label><input class="form-input" type="number" name="capacity" min="1" value="{{ day.capacity }}" required></div>
+        <div class="form-group"><label class="form-label">Manzil</label><input class="form-input" name="location" value="{{ day.location }}" maxlength="255"></div>
+        <div class="form-group"><label class="form-label">Izoh</label><textarea class="form-input" name="note" rows="2">{{ day.note }}</textarea></div>
+        <button class="btn btn-ghost" style="width:100%">Saqlash</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
