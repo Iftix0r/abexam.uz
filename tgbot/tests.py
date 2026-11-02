@@ -27,6 +27,10 @@ class BotTests(TestCase):
         self.post.return_value.status_code = 200
         self.post.return_value.json.return_value = {'ok': True, 'result': True}
         self.addCleanup(patcher.stop)
+        # Run "fire-and-forget" sends inline so tests can see them.
+        async_patcher = mock.patch('tgbot.api.send_async', side_effect=api.send)
+        async_patcher.start()
+        self.addCleanup(async_patcher.stop)
         self.day = ExamDay.objects.create(date=timezone.localdate() + timedelta(days=3), start_time=time(10),
                                           capacity=2, location='Chilonzor')
         self.update_id = 0
@@ -44,6 +48,23 @@ class BotTests(TestCase):
     def press(self, data):
         return self._webhook({'callback_query': {'id': 'q', 'data': data, 'from': {'id': CHAT},
                                                  'message': {'message_id': 9, 'chat': {'id': CHAT, 'type': 'private'}}}})
+
+    def sent_to(self, chat_id):
+        return [c.kwargs['json']['text'] for c in self.post.call_args_list
+                if c.kwargs.get('json', {}).get('chat_id') == chat_id and 'text' in c.kwargs['json']]
+
+    def make_admin(self, chat_id=900):
+        staff = User.objects.create_user('boss', password='pw', is_staff=True, first_name='Boss')
+        return TelegramAccount.objects.create(chat_id=chat_id, user=staff, first_name='Boss')
+
+    def press_as(self, chat_id, data):
+        return self._webhook({'callback_query': {'id': 'q', 'data': data, 'from': {'id': chat_id},
+                                                 'message': {'message_id': 9, 'text': 'alert',
+                                                             'chat': {'id': chat_id, 'type': 'private'}}}})
+
+    def say_as(self, chat_id, text):
+        return self._webhook({'message': {'message_id': 1, 'chat': {'id': chat_id, 'type': 'private'},
+                                          'from': {'id': chat_id}, 'text': text}})
 
     def last_text(self):
         return self.post.call_args.kwargs['json']['text']
@@ -143,6 +164,95 @@ class BotTests(TestCase):
         Booking.objects.create(day=tomorrow, account=acc, full_name='Vali', phone='+998901234567', queue_number=1)
         self.assertEqual(send_reminders(), 1)
         self.assertEqual(send_reminders(), 0)  # only once
+
+    def test_new_member_and_booking_alert_admins(self):
+        self.make_admin()
+        self.say('/start day_%d' % self.day.pk)
+        alert = self.sent_to(900)[-1]
+        self.assertIn("Botga yangi a'zo", alert)
+        self.assertIn('jadvaldagi', alert)
+        acc = TelegramAccount.objects.get(chat_id=CHAT)
+        acc.full_name, acc.phone = 'Vali', '+998901234567'
+        acc.state = ''
+        acc.save()
+        self.press(f'book:{self.day.pk}')
+        self.press('bok')
+        self.assertIn('Yangi navbat', self.sent_to(900)[-1])
+        b = Booking.objects.get()
+        self.press_as(900, f'bcame:{b.pk}')
+        b.refresh_from_db()
+        self.assertEqual(b.status, Booking.STATUS_CAME)
+        # Only staff can press admin buttons.
+        self.press(f'acancel:{b.pk}')
+        b.refresh_from_db()
+        self.assertEqual(b.status, Booking.STATUS_CAME)
+        self.press_as(900, f'acancel:{b.pk}')
+        b.refresh_from_db()
+        self.assertEqual(b.status, Booking.STATUS_CANCELLED)
+        self.assertIn('Navbatingiz bekor qilindi', self.sent_to(CHAT)[-1])
+
+    def test_support_question_reply_and_ban(self):
+        admin = self.make_admin()
+        self.say('/start')
+        self.say('✉️ Adminga yozish')
+        self.say('Imtihon narxi qancha?')
+        self.assertIn('Imtihon narxi qancha?', self.sent_to(900)[-1])
+        acc = TelegramAccount.objects.get(chat_id=CHAT)
+        self.press_as(900, f'reply:{acc.pk}')
+        self.say_as(900, '150 000 so\'m')
+        self.assertIn("150 000 so'm", self.sent_to(CHAT)[-1])
+        admin.refresh_from_db()
+        self.assertEqual(admin.state, '')
+
+        self.press_as(900, f'ban:{acc.pk}')
+        acc.refresh_from_db()
+        self.assertTrue(acc.is_banned)
+        before = len(self.sent_to(CHAT))
+        self.say('salom')
+        self.assertEqual(len(self.sent_to(CHAT)), before)  # banned chats get no answer
+
+    def test_admin_menu_stats_days_and_broadcast(self):
+        self.make_admin()
+        self.say('/start')
+        self.say_as(900, '🛠 Admin panel')
+        self.assertIn('Admin panel', self.sent_to(900)[-1])
+        self.say('🛠 Admin panel')  # students don't get it
+        self.assertNotIn('Admin panel', self.sent_to(CHAT)[-1])
+        self.press_as(900, 'adm:stats')
+        self.assertIn("A'zolar: 2", self.last_text())
+        Booking.objects.create(day=self.day, full_name='Ali', phone='+998900000001', queue_number=1)
+        self.press_as(900, f'day:{self.day.pk}')
+        self.assertIn('1. Ali', self.last_text())
+
+        self.press_as(900, 'adm:bc')
+        self.say_as(900, 'Ertaga imtihon kuni ochiladi')
+        self.assertIn("Ko'rib chiqing", self.sent_to(900)[-1])
+        with mock.patch('tgbot.admin_bot.threading.Thread') as thread:
+            self.press_as(900, 'adm:bcgo')
+        target, args = thread.call_args.kwargs['target'], thread.call_args.kwargs['args']
+        with mock.patch('tgbot.admin_bot.time.sleep'):
+            target(*args)
+        self.assertIn('Ertaga imtihon kuni ochiladi', self.sent_to(CHAT)[-1])
+        self.assertIn('Xabar yuborildi: 2', self.sent_to(900)[-1])
+
+    def test_result_pdf_and_band_calculator(self):
+        user = User.objects.create_user('vali', password='pw', first_name='Ваня', last_name="G'ulomov")
+        TelegramAccount.objects.create(chat_id=CHAT, user=user)
+        result = UserResult.objects.create(user=user, exam=Exam.objects.create(title='Mock 3'), score=6.5,
+                                           listening_score=7.0, writing_score=6.0,
+                                           writing_feedback={'manual': True, 'band': 6.0, 'tasks': [
+                                               {'task_num': 1, 'band': 6.0, 'feedback': 'Yaxshi, lekin…'}]})
+        other = UserResult.objects.create(user=User.objects.create_user('x'), exam=result.exam, score=5)
+        self.press(f'pdf:{other.pk}')  # someone else's result
+        self.assertFalse(any(c.kwargs.get('files') for c in self.post.call_args_list))
+        self.press(f'pdf:{result.pk}')
+        doc = next(c for c in self.post.call_args_list if c.kwargs.get('files'))
+        name, content, _ = doc.kwargs['files']['document']
+        self.assertEqual(name, f'AbExam-natija-{result.pk}.pdf')
+        self.assertTrue(content.startswith(b'%PDF'))
+
+        self.say('32')
+        self.assertIn('band <b>7.5</b>', self.last_text())
 
     def test_public_schedule(self):
         resp = self.client.get(reverse('schedule'))

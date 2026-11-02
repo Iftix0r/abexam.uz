@@ -20,6 +20,8 @@ class TelegramAccount(models.Model):
     state = models.CharField(max_length=30, blank=True)
     state_data = models.JSONField(default=dict, blank=True)
     is_blocked = models.BooleanField(default=False, help_text='Botni bloklagan — xabar yuborilmaydi')
+    # Set by an admin: the bot ignores this chat (spam in «Adminga yozish»).
+    is_banned = models.BooleanField(default=False, help_text='Admin bloklagan — bot javob bermaydi')
     created_at = models.DateTimeField(auto_now_add=True)
     last_seen_at = models.DateTimeField(default=timezone.now)
 

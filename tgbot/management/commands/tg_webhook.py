@@ -19,6 +19,8 @@ COMMANDS = [
     ('navbat', 'Navbatlarim'),
     ('natijalar', 'Natijalarim'),
     ('hisob', 'Hisobim'),
+    ('savol', 'Adminga yozish'),
+    ('ball', 'Ball kalkulyatori: /ball 32'),
     ('help', 'Yordam'),
 ]
 

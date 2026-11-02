@@ -2,41 +2,28 @@
 
 Dialogue state (which question the bot asked last) lives on
 TelegramAccount.state, because each webhook call is a fresh request.
+Staff-only features are in admin_bot.py.
 """
-from datetime import timedelta
-from html import escape
 
 from django.core.cache import cache
 from django.db.models import Avg, Count
 from django.utils import timezone
 
 from exams.models import UserResult
+from exams.views import calc_band
 from users.backends import normalize_phone
 from users.models import User
 
-from . import api
+from . import admin_bot, api
 from .models import Booking, ExamDay, TelegramAccount
-from .services import BookingError, book, booking_text, day_details, fmt_day, site_url
+from .services import (BookingError, book, booking_admin_markup, booking_text, day_details, escape, fmt_day,
+                       is_admin, is_admin_chat, notify_admins, site_url)
+from .ui import (CANCEL, MENU_ACCOUNT, MENU_ADMIN, MENU_BOOK, MENU_HELP, MENU_MY, MENU_RESULTS, MENU_SUPPORT,
+                 keyboard, reply, set_state, who)
 
-MENU_BOOK = '📅 Imtihonga yozilish'
-MENU_MY = '🎫 Navbatlarim'
-MENU_RESULTS = '📊 Natijalarim'
-MENU_ACCOUNT = '👤 Hisobim'
-MENU_HELP = 'ℹ️ Yordam'
-CANCEL = '❌ Bekor qilish'
 SELF_STUDY = "Mustaqil tayyorlanaman"
-
-MAIN_MENU = {
-    'keyboard': [[MENU_BOOK, MENU_MY], [MENU_RESULTS, MENU_ACCOUNT], [MENU_HELP]],
-    'resize_keyboard': True,
-}
-
-
-def _keyboard(*rows, contact=None):
-    rows = [list(r) for r in rows]
-    if contact:
-        rows.insert(0, [{'text': contact, 'request_contact': True}])
-    return {'keyboard': rows, 'resize_keyboard': True, 'one_time_keyboard': True}
+BOOKING_STATES = ('ask_name', 'ask_phone', 'ask_center')
+ADMIN_STATES = ('bc_text', 'reply')
 
 
 def link_token_key(token):
@@ -48,40 +35,47 @@ def link_token_key(token):
 def handle_update(update):
     if 'message' in update:
         msg = update['message']
-        if msg.get('chat', {}).get('type') == 'private':
-            _on_message(_account(msg['chat']), msg)
+        if msg.get('chat', {}).get('type') != 'private':
+            return
+        acc, created = _account(msg['chat'])
+        if created:
+            text = msg.get('text') or ''
+            admin_bot.notify_new_member(acc, text.split(maxsplit=1)[1] if text.startswith('/start ') else '')
+        if acc.is_banned and not is_admin(acc):
+            return
+        _on_message(acc, msg)
     elif 'callback_query' in update:
         cq = update['callback_query']
-        if cq.get('message', {}).get('chat', {}).get('type') == 'private':
-            _on_callback(_account(cq['message']['chat']), cq)
+        chat = cq.get('message', {}).get('chat', {})
+        # Buttons work in private chats and on alerts in the staff group.
+        if chat.get('type') != 'private' and not is_admin_chat(chat.get('id')):
+            return
+        actor, _ = _account(cq['from'])
+        kind = cq.get('data', '').partition(':')[0]
+        if kind in admin_bot.CALLBACKS:
+            if is_admin(actor) or is_admin_chat(chat.get('id')):
+                return admin_bot.on_callback(actor, cq)
+            return api.answer_callback(cq['id'], "Faqat adminlar uchun", alert=True)
+        if actor.is_banned:
+            return api.answer_callback(cq['id'])
+        _on_callback(actor, cq)
 
 
 def _account(chat):
-    acc, _ = TelegramAccount.objects.select_related('user').get_or_create(chat_id=chat['id'])
-    acc.username = chat.get('username', '')[:64]
-    acc.first_name = chat.get('first_name', '')[:128]
+    acc, created = TelegramAccount.objects.select_related('user').get_or_create(chat_id=chat['id'])
+    acc.username = (chat.get('username') or '')[:64]
+    acc.first_name = (chat.get('first_name') or '')[:128]
     acc.last_seen_at = timezone.now()
     acc.is_blocked = False
     acc.save(update_fields=['username', 'first_name', 'last_seen_at', 'is_blocked'])
-    return acc
-
-
-def _set_state(acc, state='', **data):
-    acc.state = state
-    acc.state_data = data
-    acc.save(update_fields=['state', 'state_data'])
-
-
-def _reply(acc, text, markup=None):
-    if not api.send(acc.chat_id, text, markup or MAIN_MENU):
-        TelegramAccount.objects.filter(pk=acc.pk).update(is_blocked=True)
+    return acc, created
 
 
 def _on_message(acc, msg):
     text = (msg.get('text') or '').strip()
 
     if text.startswith('/start'):
-        _set_state(acc)
+        set_state(acc)
         payload = text.split(maxsplit=1)[1] if ' ' in text else ''
         if payload.startswith('link_'):
             return _link_by_token(acc, payload[5:])
@@ -89,34 +83,42 @@ def _on_message(acc, msg):
             return _start_booking(acc, int(payload[4:]))
         return _welcome(acc)
     if text in (CANCEL, '/cancel'):
-        _set_state(acc)
-        return _reply(acc, "Bekor qilindi.")
+        set_state(acc)
+        return reply(acc, "Bekor qilindi.")
 
-    if acc.state in ('ask_name', 'ask_phone', 'ask_center') and text not in _MENU_ACTIONS:
-        return _booking_step(acc, msg, text)
+    if text not in _MENU_ACTIONS:
+        if acc.state in BOOKING_STATES:
+            return _booking_step(acc, msg, text)
+        if acc.state == 'support':
+            return _support_message(acc, msg)
+        if acc.state in ADMIN_STATES and is_admin(acc):
+            return admin_bot.on_state_message(acc, msg, text)
 
     if msg.get('contact'):
         return _link_by_contact(acc, msg)
 
-    action = _MENU_ACTIONS.get(text) or _COMMANDS.get(text.split('@')[0])
+    action = _MENU_ACTIONS.get(text) or _COMMANDS.get(text.split()[0].split('@')[0] if text else '')
     if action:
-        _set_state(acc)
-        return action(acc)
-    _reply(acc, "Quyidagi menyudan tanlang 👇")
+        set_state(acc)
+        return action(acc, text) if action in _TAKES_TEXT else action(acc)
+    if text.isdigit():
+        return _band(acc, f'/ball {text}')
+    reply(acc, "Quyidagi menyudan tanlang 👇")
 
 
 # ── Main menu ─────────────────────────────────────────────────────────────────
 
 def _welcome(acc):
     name = escape(acc.user.display_name if acc.user else acc.first_name or "do'stim")
-    _reply(acc,
-           f"Assalomu alaykum, <b>{name}</b>! 👋\n\n"
-           "<b>AbExam</b> — IELTS Mock imtihon markazi botiga xush kelibsiz.\n\n"
-           "📅 Imtihon kuniga navbatga yozilish\n"
-           "🎫 Navbatingizni ko'rish va bekor qilish\n"
-           "📊 Imtihon natijalaringizni olish\n"
-           "🔔 Natija chiqqanda va imtihondan bir kun oldin xabar\n\n"
-           f"Imtihon jadvali saytda: {site_url('/jadval/')}")
+    reply(acc,
+          f"Assalomu alaykum, <b>{name}</b>! 👋\n\n"
+          "<b>AbExam</b> — IELTS Mock imtihon markazi botiga xush kelibsiz.\n\n"
+          "📅 Imtihon kuniga navbatga yozilish\n"
+          "🎫 Navbatingizni ko'rish va bekor qilish\n"
+          "📊 Natijalaringiz va ularni 📄 PDF qilib olish\n"
+          "🔔 Natija chiqqanda va imtihondan bir kun oldin xabar\n"
+          "✉️ Adminga savol yuborish\n\n"
+          f"Imtihon jadvali saytda: {site_url('/jadval/')}")
 
 
 def _help(acc):
@@ -124,13 +126,26 @@ def _help(acc):
         "<b>Yordam</b>\n",
         f"{MENU_BOOK} — bo'sh kunlardan birini tanlab navbat oling. Saytda hisob shart emas.",
         f"{MENU_MY} — yozilgan kunlaringiz, navbatni bekor qilish.",
-        f"{MENU_RESULTS} — saytdagi hisobingizni ulasangiz, natijalar shu yerga keladi.",
-        "\nBuyruqlar: /start, /navbat, /natijalar, /cancel",
+        f"{MENU_RESULTS} — saytdagi hisobingizni ulang: natijalar va PDF varaqa shu yerga keladi.",
+        f"{MENU_SUPPORT} — savol, taklif yoki muammo; admin javobi shu chatga keladi.",
+        "🧮 Ball kalkulyatori — to'g'ri javoblar sonini yuboring (masalan <code>32</code>), "
+        "Listening/Reading bandini aytamiz.",
+        "\nBuyruqlar: /start, /yozilish, /navbat, /natijalar, /hisob, /ball 32, /cancel",
         f"\n🌐 Sayt: {site_url('/')}\n🗓 Jadval: {site_url('/jadval/')}",
     ]
-    if acc.user and acc.user.is_staff:
-        lines.append("\n<b>Xodimlar uchun:</b> /bugun — bugungi va ertangi navbatlar ro'yxati")
-    _reply(acc, '\n'.join(lines))
+    if is_admin(acc):
+        lines.append(f"\n<b>Xodimlar uchun:</b> {MENU_ADMIN} — statistika, navbat ro'yxati, kelganlarni "
+                     "belgilash, hammaga xabar yuborish.")
+    reply(acc, '\n'.join(lines))
+
+
+def _band(acc, text=''):
+    arg = text.split(maxsplit=1)[1] if ' ' in text else ''
+    if not arg.isdigit() or not 0 <= int(arg) <= 40:
+        return reply(acc, "To'g'ri javoblar sonini 0–40 oralig'ida yozing, masalan: <code>/ball 32</code>")
+    band = calc_band(int(arg), 40)
+    reply(acc, f"🧮 40 tadan <b>{arg}</b> ta to'g'ri → band <b>{band:.1f}</b>\n"
+               "(Listening va Academic Reading uchun taxminiy jadval)")
 
 
 def _days_message():
@@ -148,7 +163,7 @@ def _days_message():
 
 def _show_days(acc):
     text, markup = _days_message()
-    _reply(acc, text, markup)
+    reply(acc, text, markup)
 
 
 def _my_bookings_message(acc):
@@ -165,7 +180,7 @@ def _my_bookings_message(acc):
 
 def _my_bookings(acc):
     text, markup = _my_bookings_message(acc)
-    _reply(acc, text, markup)
+    reply(acc, text, markup)
 
 
 def _results(acc):
@@ -175,18 +190,34 @@ def _results(acc):
                   .order_by('-completed_at')[:5])
     pending = UserResult.objects.pending().filter(user=acc.user).count()
     if not graded and not pending:
-        return _reply(acc, "Hali natijalaringiz yo'q. Imtihon topshirganingizdan so'ng shu yerda ko'rinadi.")
+        return reply(acc, "Hali natijalaringiz yo'q. Imtihon topshirganingizdan so'ng shu yerda ko'rinadi.")
     blocks = []
-    for r in graded:
+    for i, r in enumerate(graded, 1):
         parts = [f"{n} {s:.1f}" for n, s in (('L', r.listening_score), ('R', r.reading_score),
                                              ('W', r.writing_score), ('S', r.speaking_score)) if s]
-        blocks.append(f"📝 {escape(r.exam.title)}\n"
+        blocks.append(f"{i}. 📝 {escape(r.exam.title)}\n"
                       f"   Umumiy: <b>{r.score:.1f}</b>" + (f"  ({' · '.join(parts)})" if parts else '')
                       + f"\n   {timezone.localtime(r.completed_at):%d.%m.%Y}")
     text = "<b>So'nggi natijalaringiz</b>\n\n" + '\n\n'.join(blocks)
     if pending:
         text += f"\n\n⏳ {pending} ta natija tekshirilmoqda (Writing). Chiqqanda xabar beramiz."
-    _reply(acc, text, api.inline_keyboard([[("Barcha natijalar", site_url('/results-list/'))]]))
+    if graded:
+        text += "\n\n📄 PDF varaqani olish uchun natija raqamini bosing."
+    pdf_buttons = [(f"📄 {i}. PDF ({r.score:.1f})", f'pdf:{r.pk}') for i, r in enumerate(graded, 1)]
+    rows = [pdf_buttons[i:i + 3] for i in range(0, len(pdf_buttons), 3)]
+    rows.append([("Barcha natijalar", site_url('/results-list/'))])
+    reply(acc, text, api.inline_keyboard(rows))
+
+
+def _send_pdf(acc, cq, result_id):
+    from exams.pdf import result_pdf
+    result = UserResult.objects.select_related('user', 'exam').filter(pk=result_id).first()
+    if not result or result.is_pending or not (result.user_id == acc.user_id or is_admin(acc)):
+        return api.answer_callback(cq['id'], "Natija topilmadi", alert=True)
+    api.answer_callback(cq['id'], "PDF tayyorlanmoqda…")
+    api.call('sendChatAction', chat_id=acc.chat_id, action='upload_document')
+    api.send_document(acc.chat_id, f'AbExam-natija-{result.pk}.pdf', result_pdf(result),
+                      caption=f"📄 «{escape(result.exam.title)}» — umumiy ball <b>{result.score:.1f}</b>")
 
 
 def _account_info(acc):
@@ -195,66 +226,73 @@ def _account_info(acc):
     u = acc.user
     stats = UserResult.objects.graded().filter(user=u).aggregate(n=Count('id'), avg=Avg('score'))
     balance = f"{u.balance:,.0f}".replace(',', ' ')
-    _reply(acc,
-           f"👤 <b>{escape(u.display_name)}</b> (@{escape(u.username)})\n"
-           f"📞 {escape(u.phone_number or '—')}\n"
-           f"💰 Balans: {balance} so'm\n"
-           f"📊 Imtihonlar: {stats['n']}" + (f", o'rtacha ball {stats['avg']:.1f}" if stats['avg'] else ''),
-           api.inline_keyboard([[("🌐 Saytga o'tish", site_url('/dashboard/'))],
-                                [("🔌 Hisobni botdan uzish", 'unlink')]]))
+    reply(acc,
+          f"👤 <b>{escape(u.display_name)}</b> (@{escape(u.username)})\n"
+          f"📞 {escape(u.phone_number or '—')}\n"
+          f"💰 Balans: {balance} so'm\n"
+          f"📊 Imtihonlar: {stats['n']}" + (f", o'rtacha ball {stats['avg']:.1f}" if stats['avg'] else ''),
+          api.inline_keyboard([[("🌐 Saytga o'tish", site_url('/dashboard/'))],
+                               [("🔌 Hisobni botdan uzish", 'unlink')]]))
 
 
-def _staff_today(acc):
-    if not (acc.user and acc.user.is_staff):
-        return _reply(acc, "Bu buyruq faqat xodimlar uchun.")
-    today = timezone.localdate()
-    days = ExamDay.objects.filter(date__range=(today, today + timedelta(days=1))).prefetch_related('bookings')
-    if not days:
-        return _reply(acc, "Bugun va ertaga imtihon kunlari yo'q.")
-    blocks = []
-    for d in days:
-        rows = [f"{b.queue_number}. {'✅' if b.status == Booking.STATUS_CAME else '▫️'} {escape(b.full_name)} — "
-                f"{escape(b.phone)}" + (f" ({escape(b.center)})" if b.center else '')
-                for b in d.bookings.all() if b.status != Booking.STATUS_CANCELLED]
-        blocks.append(f"<b>{fmt_day(d)}</b> — {escape(d.title)} ({len(rows)}/{d.capacity})\n"
-                      + ('\n'.join(rows) or "Hali hech kim yozilmagan"))
-    _reply(acc, '\n\n'.join(blocks))
+def _support(acc):
+    set_state(acc, 'support')
+    reply(acc, "✉️ Savol, taklif yoki muammoingizni yozing (rasm ham yuborishingiz mumkin).\n"
+               "Admin javobi shu chatga keladi.", keyboard([CANCEL]))
+
+
+def _support_message(acc, msg):
+    # One message per 20 s, so nobody floods the staff chat.
+    if not cache.add(f'tg_support:{acc.pk}', 1, 20):
+        return reply(acc, "Biroz kuting va qayta yuboring.", keyboard([CANCEL]))
+    set_state(acc)
+    admin_bot.forward_question(acc, msg)
+    reply(acc, "✅ Xabaringiz adminga yuborildi. Javob shu yerga keladi.")
+
+
+def _admin_menu(acc):
+    if not is_admin(acc):
+        return reply(acc, "Quyidagi menyudan tanlang 👇")
+    admin_bot.menu(acc)
 
 
 _MENU_ACTIONS = {
     MENU_BOOK: _show_days, MENU_MY: _my_bookings, MENU_RESULTS: _results,
-    MENU_ACCOUNT: _account_info, MENU_HELP: _help,
+    MENU_ACCOUNT: _account_info, MENU_SUPPORT: _support, MENU_HELP: _help, MENU_ADMIN: _admin_menu,
 }
 _COMMANDS = {
     '/menu': _welcome, '/help': _help, '/navbat': _my_bookings, '/yozilish': _show_days,
-    '/natijalar': _results, '/hisob': _account_info, '/bugun': _staff_today,
+    '/natijalar': _results, '/hisob': _account_info, '/savol': _support, '/ball': _band,
+    '/admin': _admin_menu,
 }
+_TAKES_TEXT = {_band}
 
 
 # ── Linking a site account ────────────────────────────────────────────────────
 
 def _ask_link(acc):
-    _reply(acc,
-           "Natijalarni ko'rish uchun saytdagi hisobingizni ulang:\n\n"
-           "1️⃣ Pastdagi «📱 Raqamni yuborish» tugmasini bosing — saytda shu raqam bilan "
-           "ro'yxatdan o'tgan bo'lsangiz, hisob darhol ulanadi.\n"
-           f"2️⃣ Yoki saytda Profil → «Telegramni ulash» tugmasini bosing: {site_url('/profile/')}",
-           _keyboard([CANCEL], contact='📱 Raqamni yuborish'))
+    reply(acc,
+          "Natijalarni ko'rish uchun saytdagi hisobingizni ulang:\n\n"
+          "1️⃣ Pastdagi «📱 Raqamni yuborish» tugmasini bosing — saytda shu raqam bilan "
+          "ro'yxatdan o'tgan bo'lsangiz, hisob darhol ulanadi.\n"
+          f"2️⃣ Yoki saytda Profil → «Telegramni ulash» tugmasini bosing: {site_url('/profile/')}",
+          keyboard([CANCEL], contact='📱 Raqamni yuborish'))
 
 
 def _link(acc, user):
     TelegramAccount.objects.filter(user=user).exclude(pk=acc.pk).update(user=None)
     acc.user = user
     acc.save(update_fields=['user'])
-    _reply(acc, f"✅ Hisob ulandi: <b>{escape(user.display_name)}</b>\n\n"
-                "Endi natijalaringiz chiqishi bilan shu yerga xabar keladi.")
+    reply(acc, f"✅ Hisob ulandi: <b>{escape(user.display_name)}</b>\n\n"
+               "Endi natijalaringiz chiqishi bilan shu yerga xabar keladi.")
+    notify_admins(f"🔗 <b>Hisob ulandi</b>\n{escape(who(acc))}", admin_bot.member_markup(acc))
 
 
 def _link_by_token(acc, token):
     user_id = cache.get(link_token_key(token))
     user = User.objects.filter(pk=user_id, is_active=True).first() if user_id else None
     if not user:
-        return _reply(acc, "Havola eskirgan. Saytda Profil → «Telegramni ulash» tugmasini qayta bosing.")
+        return reply(acc, "Havola eskirgan. Saytda Profil → «Telegramni ulash» tugmasini qayta bosing.")
     cache.delete(link_token_key(token))
     _link(acc, user)
 
@@ -263,12 +301,12 @@ def _link_by_contact(acc, msg):
     contact = msg['contact']
     # Telegram vouches for the number only when it's the sender's own contact.
     if contact.get('user_id') != msg.get('from', {}).get('id'):
-        return _reply(acc, "Iltimos, o'zingizning raqamingizni tugma orqali yuboring.")
+        return reply(acc, "Iltimos, o'zingizning raqamingizni tugma orqali yuboring.")
     phone = normalize_phone(contact.get('phone_number', ''))
     user = User.objects.filter(phone_number=phone, is_active=True).first() if phone else None
     if not user:
-        return _reply(acc, f"Bu raqam ({escape(phone or '?')}) bilan saytda hisob topilmadi.\n"
-                           f"Ro'yxatdan o'ting: {site_url('/register/')}")
+        return reply(acc, f"Bu raqam ({escape(phone or '?')}) bilan saytda hisob topilmadi.\n"
+                          f"Ro'yxatdan o'ting: {site_url('/register/')}")
     _link(acc, user)
 
 
@@ -277,39 +315,39 @@ def _link_by_contact(acc, msg):
 def _start_booking(acc, day_id):
     day = ExamDay.objects.filter(pk=day_id).first()
     if not day or not day.accepts_bookings():
-        return _reply(acc, "Bu kunga yozilish yopilgan yoki joy qolmagan. Boshqa kunni tanlang.")
+        return reply(acc, "Bu kunga yozilish yopilgan yoki joy qolmagan. Boshqa kunni tanlang.")
     existing = day.active_bookings().filter(account=acc).first()
     if existing:
-        return _reply(acc, f"Siz bu kunga allaqachon yozilgansiz.\n\n{booking_text(existing)}")
+        return reply(acc, f"Siz bu kunga allaqachon yozilgansiz.\n\n{booking_text(existing)}")
     name = acc.full_name or (acc.user.get_full_name() if acc.user else '')
     phone = acc.phone or (acc.user.phone_number if acc.user else '') or ''
     if name and phone:
-        _set_state(acc, 'confirm', day=day.pk, name=name, phone=phone, center=acc.center)
+        set_state(acc, 'confirm', day=day.pk, name=name, phone=phone, center=acc.center)
         return _send_confirm(acc)
-    _set_state(acc, 'ask_name', day=day.pk)
-    _reply(acc, f"{day_details(day)}\n\n✍️ Ism va familiyangizni yozing:", _keyboard([CANCEL]))
+    set_state(acc, 'ask_name', day=day.pk)
+    reply(acc, f"{day_details(day)}\n\n✍️ Ism va familiyangizni yozing:", keyboard([CANCEL]))
 
 
 def _booking_step(acc, msg, text):
     data = acc.state_data
     if acc.state == 'ask_name':
         if not 3 <= len(text) <= 150 or text.startswith('/'):
-            return _reply(acc, "Ism va familiyani to'liq yozing (masalan: Aliyev Vali).", _keyboard([CANCEL]))
-        _set_state(acc, 'ask_phone', **data, name=text)
-        return _reply(acc, "📞 Telefon raqamingizni yuboring yoki yozing (+998901234567):",
-                      _keyboard([CANCEL], contact='📱 Raqamni yuborish'))
+            return reply(acc, "Ism va familiyani to'liq yozing (masalan: Aliyev Vali).", keyboard([CANCEL]))
+        set_state(acc, 'ask_phone', **data, name=text)
+        return reply(acc, "📞 Telefon raqamingizni yuboring yoki yozing (+998901234567):",
+                     keyboard([CANCEL], contact='📱 Raqamni yuborish'))
     if acc.state == 'ask_phone':
         phone = normalize_phone(msg['contact']['phone_number'] if msg.get('contact') else text)
         if not phone:
-            return _reply(acc, "Raqam noto'g'ri. Masalan: +998901234567",
-                          _keyboard([CANCEL], contact='📱 Raqamni yuborish'))
-        _set_state(acc, 'ask_center', **data, phone=phone)
-        return _reply(acc, "🏫 Qaysi o'quv markazda o'qiysiz? Markaz nomini yozing:",
-                      _keyboard([SELF_STUDY], [CANCEL]))
+            return reply(acc, "Raqam noto'g'ri. Masalan: +998901234567",
+                         keyboard([CANCEL], contact='📱 Raqamni yuborish'))
+        set_state(acc, 'ask_center', **data, phone=phone)
+        return reply(acc, "🏫 Qaysi o'quv markazda o'qiysiz? Markaz nomini yozing:",
+                     keyboard([SELF_STUDY], [CANCEL]))
     if acc.state == 'ask_center':
         if len(text) > 150 or not text:
-            return _reply(acc, "Markaz nomini qisqaroq yozing.", _keyboard([SELF_STUDY], [CANCEL]))
-        _set_state(acc, 'confirm', **data, center='' if text == SELF_STUDY else text)
+            return reply(acc, "Markaz nomini qisqaroq yozing.", keyboard([SELF_STUDY], [CANCEL]))
+        set_state(acc, 'confirm', **data, center='' if text == SELF_STUDY else text)
         return _send_confirm(acc)
 
 
@@ -317,12 +355,12 @@ def _send_confirm(acc):
     data = acc.state_data
     day = ExamDay.objects.filter(pk=data['day']).first()
     if not day:
-        _set_state(acc)
-        return _reply(acc, "Bu imtihon kuni topilmadi.")
+        set_state(acc)
+        return reply(acc, "Bu imtihon kuni topilmadi.")
     text = (f"<b>Ma'lumotlarni tekshiring</b>\n\n{day_details(day)}\n\n"
             f"👤 {escape(data['name'])}\n📞 {escape(data['phone'])}\n"
             f"🏫 {escape(data.get('center') or 'Mustaqil')}")
-    _reply(acc, text, api.inline_keyboard([
+    reply(acc, text, api.inline_keyboard([
         [('✅ Tasdiqlash', 'bok')],
         [("✏️ O'zgartirish", 'bedit'), ('❌ Bekor', 'bcancel')],
     ]))
@@ -335,19 +373,20 @@ def _confirm_booking(acc, cq):
     try:
         booking = book(data['day'], data['name'], data['phone'], data.get('center', ''), account=acc)
     except BookingError as e:
-        _set_state(acc)
+        set_state(acc)
         api.answer_callback(cq['id'], str(e), alert=True)
         return api.edit(acc.chat_id, cq['message']['message_id'], f"❌ {escape(str(e))}")
     acc.full_name, acc.phone, acc.center = data['name'], data['phone'], data.get('center', '')
     acc.save(update_fields=['full_name', 'phone', 'center'])
-    _set_state(acc)
+    set_state(acc)
     api.answer_callback(cq['id'], 'Navbatga yozildingiz!')
     api.edit(acc.chat_id, cq['message']['message_id'],
              f"✅ <b>Siz navbatga yozildingiz!</b>\n\n{booking_text(booking)}\n\n"
              "Imtihondan bir kun oldin eslatma yuboramiz.")
-    _reply(acc, "Navbatlaringizni «🎫 Navbatlarim» bo'limida ko'rasiz.")
-    from core.utils import notify_staff_work
-    notify_staff_work(f"🎫 <b>Yangi navbat</b> (bot)\n{booking_text(booking)}")
+    reply(acc, "Navbatlaringizni «🎫 Navbatlarim» bo'limida ko'rasiz.")
+    left = booking.day.seats_left()
+    notify_admins(f"🎫 <b>Yangi navbat</b> (bot)\n{booking_text(booking)}\n"
+                  f"💬 {escape(who(acc))}\n🪑 Qolgan joy: {left}", booking_admin_markup(booking))
 
 
 # ── Inline buttons ────────────────────────────────────────────────────────────
@@ -359,6 +398,8 @@ def _on_callback(acc, cq):
     if data.startswith('book:') and data[5:].isdigit():
         api.answer_callback(cq['id'])
         return _start_booking(acc, int(data[5:]))
+    if data.startswith('pdf:') and data[4:].isdigit():
+        return _send_pdf(acc, cq, int(data[4:]))
     if data == 'bok':
         return _confirm_booking(acc, cq)
     if data == 'bedit':
@@ -367,13 +408,13 @@ def _on_callback(acc, cq):
         if not day_id:
             return None
         api.edit(acc.chat_id, message_id, "✏️ Ma'lumotlarni qayta kiritamiz.")
-        _set_state(acc, 'ask_name', day=day_id)
-        return _reply(acc, "✍️ Ism va familiyangizni yozing:", _keyboard([CANCEL]))
+        set_state(acc, 'ask_name', day=day_id)
+        return reply(acc, "✍️ Ism va familiyangizni yozing:", keyboard([CANCEL]))
     if data == 'bcancel':
-        _set_state(acc)
+        set_state(acc)
         api.answer_callback(cq['id'])
         api.edit(acc.chat_id, message_id, "Yozilish bekor qilindi.")
-        return _reply(acc, "Asosiy menyu 👇")
+        return reply(acc, "Asosiy menyu 👇")
     if data.startswith('unbook:') and data[7:].isdigit():
         booking = acc.bookings.select_related('day').filter(pk=int(data[7:]), status=Booking.STATUS_BOOKED,
                                                             day__date__gte=timezone.localdate()).first()
@@ -384,8 +425,10 @@ def _on_callback(acc, cq):
         api.answer_callback(cq['id'], "Navbat bekor qilindi")
         text, markup = _my_bookings_message(acc)
         api.edit(acc.chat_id, message_id, text, markup)
-        from core.utils import notify_staff_work
-        return notify_staff_work(f"🚫 <b>Navbat bekor qilindi</b> (bot)\n{booking_text(booking)}")
+        return notify_admins(f"🚫 <b>Navbat bekor qilindi</b> (o'quvchi o'zi)\n{booking_text(booking)}")
+    if data == 'support':
+        api.answer_callback(cq['id'])
+        return _support(acc)
     if data == 'unlink':
         acc.user = None
         acc.save(update_fields=['user'])

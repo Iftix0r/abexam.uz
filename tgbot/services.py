@@ -1,7 +1,7 @@
 """Booking logic and site → Telegram notifications, shared by the bot
 handlers, the panel and the cron command."""
 from datetime import timedelta
-from html import escape
+import html
 
 from django.conf import settings
 from django.db import transaction
@@ -14,6 +14,11 @@ from .models import Booking, ExamDay, TelegramAccount
 MONTHS = ('yanvar', 'fevral', 'mart', 'aprel', 'may', 'iyun', 'iyul',
           'avgust', 'sentabr', 'oktabr', 'noyabr', 'dekabr')
 WEEKDAYS = ('Dushanba', 'Seshanba', 'Chorshanba', 'Payshanba', 'Juma', 'Shanba', 'Yakshanba')
+
+
+def escape(text):
+    """Telegram HTML needs only <, > and & escaped; quotes stay readable."""
+    return html.escape(str(text), quote=False)
 
 
 def fmt_date(d):
@@ -35,6 +40,44 @@ def day_details(day):
     if day.note:
         lines.append(f"ℹ️ {escape(day.note)}")
     return '\n'.join(lines)
+
+
+def admin_chat_ids():
+    """Where admin alerts go. A group TELEGRAM_ADMIN_CHAT_ID (negative id)
+    is the one place staff read them; otherwise each staff member who linked
+    their account to the bot gets them privately, plus that chat."""
+    try:
+        admin_chat = int(settings.TELEGRAM_ADMIN_CHAT_ID)
+    except (TypeError, ValueError):
+        admin_chat = None
+    if admin_chat and admin_chat < 0:
+        return {admin_chat}
+    ids = set(TelegramAccount.objects.filter(user__is_staff=True, user__is_active=True, is_blocked=False)
+              .values_list('chat_id', flat=True))
+    if admin_chat:
+        ids.add(admin_chat)
+    return ids
+
+
+def is_admin_chat(chat_id):
+    return bool(settings.TELEGRAM_ADMIN_CHAT_ID) and str(chat_id) == str(settings.TELEGRAM_ADMIN_CHAT_ID)
+
+
+def is_admin(acc):
+    return bool(acc.user_id and acc.user.is_staff and acc.user.is_active) or is_admin_chat(acc.chat_id)
+
+
+def notify_admins(text, markup=None):
+    for chat_id in admin_chat_ids():
+        api.send_async(chat_id, text, markup)
+
+
+def booking_admin_markup(booking):
+    return api.inline_keyboard([
+        [('✅ Keldi', f'bcame:{booking.pk}'), ('❌ Bekor qilish', f'acancel:{booking.pk}')],
+        [("📋 Kun ro'yxati", f'day:{booking.day_id}')]
+        + ([('💬 Yozish', f'reply:{booking.account_id}')] if booking.account_id else []),
+    ])
 
 
 class BookingError(Exception):
@@ -73,7 +116,7 @@ def notify_result_ready(result):
     text = (f"🎉 <b>Natijangiz tayyor!</b>\n«{escape(result.exam.title)}»\n\n"
             f"Umumiy ball: <b>{result.score:.1f}</b>" + (f"\n{' · '.join(parts)}" if parts else ''))
     api.send_async(acc.chat_id, text, api.inline_keyboard([
-        [('Batafsil ko\'rish', site_url(f'/exams/result/{result.pk}/'))],
+        [('📄 PDF yuklab olish', f'pdf:{result.pk}'), ('Batafsil ko\'rish', site_url(f'/exams/result/{result.pk}/'))],
     ]))
 
 
@@ -91,7 +134,7 @@ def send_reminders(now=None):
     tomorrow = timezone.localdate(now) + timedelta(days=1)
     pending = (Booking.objects.select_related('day', 'account')
                .filter(day__date=tomorrow, status=Booking.STATUS_BOOKED, reminded_at__isnull=True,
-                       account__isnull=False, account__is_blocked=False))
+                       account__isnull=False, account__is_blocked=False, account__is_banned=False))
     sent = 0
     for b in pending:
         ok = api.send(b.account.chat_id,

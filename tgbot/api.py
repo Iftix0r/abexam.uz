@@ -63,6 +63,22 @@ def send_async(chat_id, text, reply_markup=None):
         threading.Thread(target=send, args=(chat_id, text, reply_markup), daemon=True).start()
 
 
+def send_document(chat_id, filename, content, caption=''):
+    if not enabled():
+        return None
+    try:
+        resp = requests.post(
+            f'https://api.telegram.org/bot{settings.TELEGRAM_BOT_TOKEN}/sendDocument',
+            data={'chat_id': chat_id, 'caption': caption, 'parse_mode': 'HTML'},
+            files={'document': (filename, content, 'application/pdf')},
+            timeout=30,
+        )
+        return resp.json().get('ok')
+    except (requests.RequestException, ValueError):
+        logger.warning('Telegram sendDocument failed', exc_info=True)
+        return None
+
+
 def edit(chat_id, message_id, text, reply_markup=None):
     return call('editMessageText', chat_id=chat_id, message_id=message_id, text=text,
                 parse_mode='HTML', disable_web_page_preview=True, reply_markup=reply_markup)
@@ -102,6 +118,7 @@ def deep_link(payload=''):
 def inline_keyboard(rows):
     """[[(text, callback_data_or_url), ...], ...] → InlineKeyboardMarkup."""
     return {'inline_keyboard': [
-        [{'text': text, ('url' if data.startswith('http') else 'callback_data'): data} for text, data in row]
-        for row in rows
+        [{'text': text, ('url' if data.startswith(('http', 'tg://')) else 'callback_data'): data}
+         for text, data in row]
+        for row in rows if row
     ]}

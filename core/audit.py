@@ -35,6 +35,7 @@ ACTIONS = {
     'promocode': 'Promokod',
     'exam_day': 'Imtihon kuni',
     'booking': 'Navbat',
+    'tgbot': 'Telegram bot',
 }
 
 
