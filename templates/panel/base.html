@@ -334,6 +334,7 @@ a.tg-pill:hover{background:#229ed92e}
     {% with pending=request.pending_tx_count %}{% if pending %}<span class="nav-badge">{{ pending }}</span>{% endif %}{% endwith %}
   </a>
 
+  {% comment %}Ingliz tili bo'limi vaqtincha yashirilgan — sahifalar ishlaydi, faqat menyuda ko'rinmaydi.
   <span class="nav-section">Ingliz tili</span>
   <a href="{% url 'panel:english' %}" class="nav-item {% block nav_english %}{% endblock %}">
     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path stroke-width="1.8" d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
@@ -351,6 +352,7 @@ a.tg-pill:hover{background:#229ed92e}
     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10" stroke-width="1.8"/><line x1="12" y1="15" x2="12" y2="3" stroke-width="1.8"/></svg>
     Ilova versiyalari
   </a>
+  {% endcomment %}
 
   <span class="nav-section">Xavfsizlik</span>
   <a href="{% url 'panel:security' %}" class="nav-item {% block nav_security %}{% endblock %}">
