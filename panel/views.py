@@ -1437,25 +1437,67 @@ def _parse_scored_block(post, prefix, criteria, required):
     return block
 
 
+def _option_text(question, key):
+    """Text of the option a letter/word answer points at ("B" → "deep excavations")."""
+    key = key.strip().lower()
+    for opt in question.options or []:
+        if isinstance(opt, dict) and str(opt.get('key', '')).strip().lower() == key:
+            text = str(opt.get('text', ''))
+            return '' if text.strip().lower() == key else text
+    return ''
+
+
 def _objective_stats(result):
-    """Per-skill correct/total for the auto-checked (listening/reading)
-    questions, plus a ✓/✗ strip so the grader sees the whole picture."""
+    """Per-skill picture of the auto-checked (listening/reading) answers:
+    every question with the student's answer next to the key, plus how
+    each passage/part and each question type went — so the grader sees
+    exactly where and how the student went wrong."""
+    from exams.views import _split_question_heading
+
+    type_labels = dict(Question.QUESTION_TYPES)
     stats = {}
     answers = (result.answers.select_related('question__section')
                .exclude(question__isnull=True)
-               .exclude(question__question_type__in=('writing_task', 'short_answer'))
+               .exclude(question__question_type='writing_task')
+               .filter(question__section__section_type__in=('listening', 'reading'))
                .order_by('question__section__order', 'question__order'))
     for ua in answers:
-        stype = ua.question.section.section_type
-        entry = stats.setdefault(stype, {'correct': 0, 'total': 0, 'marks': []})
+        q = ua.question
+        entry = stats.setdefault(q.section.section_type, {
+            'correct': 0, 'total': 0, 'empty': 0, 'items': [], 'parts': {}, 'types': {}, 'group': '',
+        })
+        title, instructions, text = _split_question_heading(q.text)
+        # A group header ("[Passage 2] …") names the passage the next questions belong to.
+        if title:
+            entry['group'] = title
+        given = ua.user_answer.strip()
         entry['total'] += 1
         entry['correct'] += ua.is_correct
-        entry['marks'].append(ua.is_correct)
+        entry['empty'] += not given
+        part = entry['group'] or q.section.title
+        entry['items'].append({
+            'n': entry['total'], 'id': ua.pk, 'ok': ua.is_correct, 'empty': not given,
+            'part': part, 'type': type_labels.get(q.question_type, q.question_type),
+            'instructions': instructions, 'text': text,
+            'given': given, 'given_text': _option_text(q, given) if given else '',
+            'key': q.correct_answer, 'key_text': _option_text(q, q.correct_answer),
+            'explanation': q.explanation,
+        })
+        for bucket, name in ((entry['parts'], part), (entry['types'], entry['items'][-1]['type'])):
+            row = bucket.setdefault(name, {'name': name, 'correct': 0, 'total': 0})
+            row['correct'] += ua.is_correct
+            row['total'] += 1
     band_field = {'listening': result.listening_score, 'reading': result.reading_score}
-    return [
-        {'type': t, 'label': t.capitalize(), 'band': band_field.get(t, 0), **stats[t]}
-        for t in ('listening', 'reading') if t in stats
-    ]
+    out = []
+    for t in ('listening', 'reading'):
+        if t not in stats:
+            continue
+        entry = stats[t]
+        entry['wrong'] = entry['total'] - entry['correct'] - entry['empty']
+        entry['parts'] = list(entry['parts'].values())
+        entry['types'] = sorted(entry['types'].values(), key=lambda r: r['correct'] / r['total'])
+        out.append({'type': t, 'label': t.capitalize(), 'band': band_field.get(t, 0), **entry})
+    return out
 
 
 @panel_required

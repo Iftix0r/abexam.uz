@@ -19,6 +19,30 @@
 .mark{width:22px;height:22px;border-radius:5px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center}
 .mark.ok{background:#22c55e22;color:var(--green)}
 .mark.no{background:#ef444422;color:var(--red)}
+.mark.empty{background:var(--bg);color:var(--muted);border:1px dashed var(--border)}
+a.mark{text-decoration:none}
+a.mark:hover{outline:2px solid currentColor}
+.an-sum{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-bottom:10px}
+.an-sum b{font-size:15px}
+.an-break{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,420px));gap:12px 40px;margin:14px 0}
+.an-break h4{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px}
+.an-line{display:grid;grid-template-columns:minmax(0,1fr) 54px 70px;gap:8px;align-items:center;font-size:12.5px;padding:3px 0}
+.an-line span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.an-bar{height:6px;border-radius:4px;background:var(--bg);overflow:hidden}
+.an-bar i{display:block;height:100%;background:var(--green)}
+.an-bar.low i{background:var(--red)}
+.an-bar.mid i{background:var(--yellow)}
+.an-table td{vertical-align:top;font-size:13px}
+.an-table .q-meta{font-size:11px;color:var(--muted);margin-bottom:3px}
+.an-table .q-instr{font-size:11.5px;color:var(--muted);font-style:italic;margin-bottom:3px}
+.an-table .opt{display:block;font-size:11.5px;color:var(--muted)}
+.an-table .given-no{color:var(--red);font-weight:700;text-decoration:line-through;text-decoration-thickness:1px}
+.an-table .given-ok{color:var(--green);font-weight:700}
+.an-table .key{color:var(--green);font-weight:700}
+.an-table tr.is-wrong td:first-child{box-shadow:inset 3px 0 var(--red)}
+.an-table tr.is-empty td:first-child{box-shadow:inset 3px 0 var(--muted)}
+.an-table tr:target td{background:var(--primary-dim)}
+.an-filter .btn.is-on{background:var(--primary);border-color:var(--primary);color:#fff}
 .g-card-title{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
 .g-card-title h3{font-size:15px;font-weight:700}
 .g-cols{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:18px}
@@ -93,12 +117,13 @@
     </div>
 
     {% for o in objective %}
-    <details style="margin-top:12px">
-      <summary style="cursor:pointer;font-size:13px;color:var(--muted)">{{ o.label }}: savollar bo'yicha ✓/✗</summary>
-      <div class="marks">
-        {% for ok in o.marks %}<span class="mark {% if ok %}ok{% else %}no{% endif %}" title="{{ forloop.counter }}-savol">{{ forloop.counter }}</span>{% endfor %}
-      </div>
-    </details>
+    <div style="margin-top:12px;font-size:13px;color:var(--muted)">
+      {{ o.label }}: {{ o.wrong }} ta xato, {{ o.empty }} ta bo'sh —
+      <a href="#answers-{{ o.type }}">savollar bo'yicha batafsil ↓</a>
+    </div>
+    <div class="marks">
+      {% for it in o.items %}<a href="#ua-{{ it.id }}" class="mark {% if it.ok %}ok{% elif it.empty %}empty{% else %}no{% endif %}" title="{{ it.n }}-savol{% if not it.ok %}: {{ it.given|default:"bo'sh" }} → {{ it.key }}{% endif %}">{{ it.n }}</a>{% endfor %}
+    </div>
     {% endfor %}
   </div>
 
@@ -207,6 +232,77 @@
       </div>
     </div>
   </form>
+
+  <div id="answers"></div>
+  {% for o in objective %}
+  <div class="card an-card" id="answers-{{ o.type }}" style="margin-top:16px">
+    <div class="g-card-title">
+      <h3>{% if o.type == 'listening' %}🎧{% else %}📖{% endif %} {{ o.label }} — javoblar tahlili</h3>
+      <div class="an-filter" style="display:flex;gap:6px">
+        <button type="button" class="btn btn-ghost btn-sm is-on" data-show="mistakes">Xatolar ({{ o.wrong|add:o.empty }})</button>
+        <button type="button" class="btn btn-ghost btn-sm" data-show="all">Hammasi ({{ o.total }})</button>
+      </div>
+    </div>
+    <div class="an-sum">
+      <span>Band <b>{{ o.band|floatformat:1 }}</b></span>
+      <span style="color:var(--green)">✓ <b>{{ o.correct }}</b> to'g'ri</span>
+      <span style="color:var(--red)">✗ <b>{{ o.wrong }}</b> xato</span>
+      <span>○ <b>{{ o.empty }}</b> bo'sh qoldirilgan</span>
+    </div>
+
+    <div class="an-break">
+      {% if o.parts|length > 1 %}
+      <div>
+        <h4>Qismlar bo'yicha</h4>
+        {% for p in o.parts %}
+        {% widthratio p.correct p.total 100 as pct %}
+        <div class="an-line" title="{{ p.name }}">
+          <span>{{ p.name }}</span><span>{{ p.correct }}/{{ p.total }}</span>
+          <div class="an-bar {% if pct|add:0 < 50 %}low{% elif pct|add:0 < 75 %}mid{% endif %}"><i style="width:{{ pct }}%"></i></div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      <div>
+        <h4>Savol turi bo'yicha (eng qiyini tepada)</h4>
+        {% for t in o.types %}
+        {% widthratio t.correct t.total 100 as pct %}
+        <div class="an-line">
+          <span>{{ t.name }}</span><span>{{ t.correct }}/{{ t.total }}</span>
+          <div class="an-bar {% if pct|add:0 < 50 %}low{% elif pct|add:0 < 75 %}mid{% endif %}"><i style="width:{{ pct }}%"></i></div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table class="an-table">
+        <thead><tr><th style="width:44px">#</th><th>Savol</th><th style="width:22%">O'quvchi javobi</th><th style="width:22%">To'g'ri javob</th></tr></thead>
+        <tbody>
+          {% for it in o.items %}
+          <tr id="ua-{{ it.id }}" class="{% if it.ok %}is-ok{% elif it.empty %}is-empty{% else %}is-wrong{% endif %}"{% if it.ok %} hidden{% endif %}>
+            <td style="font-weight:700">{{ it.n }}<br>{% if it.ok %}<span style="color:var(--green)">✓</span>{% elif it.empty %}<span style="color:var(--muted)">○</span>{% else %}<span style="color:var(--red)">✗</span>{% endif %}</td>
+            <td>
+              <div class="q-meta">{{ it.part }} · {{ it.type }}</div>
+              {% if it.instructions %}<div class="q-instr">{{ it.instructions|striptags|truncatechars:200 }}</div>{% endif %}
+              <div>{{ it.text|striptags|truncatechars:400 }}</div>
+              {% if it.explanation %}<details style="margin-top:4px"><summary style="cursor:pointer;font-size:12px;color:var(--muted)">Izoh</summary><div style="font-size:12.5px;margin-top:4px">{{ it.explanation|linebreaksbr }}</div></details>{% endif %}
+            </td>
+            <td>
+              {% if it.empty %}<span style="color:var(--muted)">— bo'sh</span>
+              {% else %}<span class="{% if it.ok %}given-ok{% else %}given-no{% endif %}">{{ it.given }}</span>{% if it.given_text %}<span class="opt">{{ it.given_text|truncatechars:120 }}</span>{% endif %}{% endif %}
+            </td>
+            <td><span class="key">{{ it.key|default:"—" }}</span>{% if it.key_text %}<span class="opt">{{ it.key_text|truncatechars:120 }}</span>{% endif %}</td>
+          </tr>
+          {% endfor %}
+          {% if not o.wrong and not o.empty %}
+          <tr class="an-none"><td colspan="4" style="text-align:center;padding:24px;color:var(--green)">Barcha javoblar to'g'ri 🎉</td></tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endfor %}
 </div>
 {{ present_types|json_script:"presentTypes" }}
 {{ fixed_bands|json_script:"fixedBands" }}
@@ -214,6 +310,23 @@
 
 {% block extra_js %}
 <script>
+// Answer review: "Xatolar" shows only wrong/blank rows; a ✓/✗ square jumps
+// to its row (switching to "Hammasi" if that row is filtered out).
+document.querySelectorAll('.an-card').forEach(card => {
+  const buttons = card.querySelectorAll('.an-filter .btn');
+  const show = mode => {
+    buttons.forEach(b => b.classList.toggle('is-on', b.dataset.show === mode));
+    card.querySelectorAll('tr.is-ok').forEach(tr => { tr.hidden = mode !== 'all'; });
+    const none = card.querySelector('.an-none'); if (none) none.hidden = mode === 'all';
+  };
+  buttons.forEach(b => b.addEventListener('click', () => show(b.dataset.show)));
+  card.showAll = () => show('all');
+});
+document.querySelectorAll('a.mark').forEach(a => a.addEventListener('click', () => {
+  const row = document.querySelector(a.getAttribute('href'));
+  if (row && row.hidden) row.closest('.an-card').showAll();
+}));
+
 // Mirrors exams.views (round_band / calc_writing_band / compute_overall_band)
 // so the grader sees exactly the band the student will get.
 const roundBand = v => Math.floor(v * 2 + 0.5) / 2;

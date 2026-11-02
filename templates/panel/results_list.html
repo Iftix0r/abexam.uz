@@ -55,6 +55,7 @@
             {% else %}
             <a href="{% url 'panel:result_grade' r.pk %}" class="btn btn-ghost btn-sm" title="Bahoni tahrirlash / Speaking qo'shish">✎ Baho</a>
             {% endif %}
+            <a href="{% url 'panel:result_grade' r.pk %}#answers" class="btn btn-ghost btn-sm" title="Listening/Reading: qaysi savolda qanday xato qilgan">🔍 Xatolar</a>
             <a href="{% url 'exams:result_detail' r.pk %}" target="_blank" class="btn btn-ghost btn-sm">Batafsil</a>
             <button onclick="deleteResult({{ r.pk }}, this)" class="btn btn-danger btn-sm">O'chir</button>
           </td>

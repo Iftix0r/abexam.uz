@@ -263,3 +263,39 @@ class PanelWorkflowTests(TestCase):
         self.assertContains(resp, 'IELTS progress hisoboti')
         self.assertEqual(len(resp.context['results']), 2)
         self.assertGreater(resp.context['change'], 0)
+
+
+class AnswerReviewTests(TestCase):
+    """Grade page shows every Listening/Reading question with the student's
+    answer next to the key, so staff see where and how they went wrong."""
+
+    def test_wrong_and_blank_answers_are_listed_with_the_key(self):
+        from exams.models import Exam, Question, Section, UserAnswer, UserResult
+        from exams.views import create_result
+
+        admin = User.objects.create_user('boss', password='pw', is_staff=True)
+        student = User.objects.create_user('ali', password='pw')
+        exam = Exam.objects.create(title='Mock')
+        reading = Section.objects.create(exam=exam, title='Reading', section_type='reading')
+        q1 = Question.objects.create(section=reading, order=1, question_type='mcq', correct_answer='B',
+                                     text='[Passage 1] Choose the correct letter.\nWhat does the writer think?',
+                                     options=[{'key': 'A', 'text': 'cities grow'}, {'key': 'B', 'text': 'rivers matter'}])
+        q2 = Question.objects.create(section=reading, order=2, question_type='gap_fill', text='Plants need ___.',
+                                     correct_answer='sunlight', explanation='Paragraph C, line 3')
+        q3 = Question.objects.create(section=reading, order=3, question_type='tfng', text='Bees sleep.',
+                                     correct_answer='TRUE')
+        result = create_result(student, exam, {str(q1.id): 'A', str(q2.id): '', str(q3.id): 'TRUE'})
+        self.assertEqual(UserAnswer.objects.filter(result=result).count(), 3)
+
+        self.client.force_login(admin)
+        page = self.client.get(reverse('panel:result_grade', args=[result.pk]))
+        reading_stats = page.context['objective'][0]
+        self.assertEqual((reading_stats['correct'], reading_stats['wrong'], reading_stats['empty']), (1, 1, 1))
+        self.assertEqual(reading_stats['items'][0]['part'], 'Passage 1')
+        self.assertContains(page, 'What does the writer think?')
+        self.assertContains(page, 'cities grow')    # what the student picked
+        self.assertContains(page, 'rivers matter')  # the right option
+        self.assertContains(page, 'sunlight')
+        self.assertContains(page, 'Paragraph C, line 3')
+        self.assertContains(page, "— bo'sh")
+        self.assertIsInstance(result, UserResult)
