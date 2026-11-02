@@ -5,6 +5,8 @@ TelegramAccount.state, because each webhook call is a fresh request.
 Staff-only features are in admin_bot.py.
 """
 
+from datetime import timedelta
+
 from django.core.cache import cache
 from django.db.models import Avg, Count
 from django.utils import timezone
@@ -17,7 +19,7 @@ from users.models import User
 from . import admin_bot, api
 from .models import Booking, ExamDay, TelegramAccount
 from .services import (BookingError, book, booking_admin_markup, booking_text, day_details, escape, fmt_day,
-                       is_admin, is_admin_chat, notify_admins, site_url)
+                       is_admin, is_admin_chat, notify_admins, result_message, site_url)
 from .ui import (CANCEL, MENU_ACCOUNT, MENU_ADMIN, MENU_BOOK, MENU_HELP, MENU_MY, MENU_RESULTS, MENU_SUPPORT,
                  keyboard, reply, set_state, who)
 
@@ -118,7 +120,12 @@ def _welcome(acc):
           "📊 Natijalaringiz va ularni 📄 PDF qilib olish\n"
           "🔔 Natija chiqqanda va imtihondan bir kun oldin xabar\n"
           "✉️ Adminga savol yuborish\n\n"
-          f"Imtihon jadvali saytda: {site_url('/jadval/')}")
+          + ("✅ Sayt hisobingiz ulangan — natijalaringiz chiqishi bilan shu yerga avtomatik keladi.\n\n"
+             if acc.user else
+             "🔗 <b>abexam.uz da imtihon topshirasizmi?</b> Natija avtomatik kelishi uchun hisobingizni ulang: "
+             "«📊 Natijalarim» → «📱 Raqamni yuborish», yoki saytda imtihondan keyin chiqadigan "
+             "«Botni ochish» tugmasini bosing.\n\n")
+          + f"Imtihon jadvali saytda: {site_url('/jadval/')}")
 
 
 def _help(acc):
@@ -284,8 +291,22 @@ def _link(acc, user):
     acc.user = user
     acc.save(update_fields=['user'])
     reply(acc, f"✅ Hisob ulandi: <b>{escape(user.display_name)}</b>\n\n"
-               "Endi natijalaringiz chiqishi bilan shu yerga xabar keladi.")
+               "🔔 Endi imtihon natijalaringiz chiqishi bilan shu yerga avtomatik keladi — "
+               "botni o'chirib qo'ymang.")
     notify_admins(f"🔗 <b>Hisob ulandi</b>\n{escape(who(acc))}", admin_bot.member_markup(acc))
+    _recent_results(acc)
+
+
+def _recent_results(acc):
+    """Right after linking — usually straight from the «exam finished»
+    screen: the newest result if it's fresh, and what's still being graded."""
+    latest = (UserResult.objects.graded().filter(user=acc.user, completed_at__gte=timezone.now() - timedelta(days=3))
+              .select_related('exam').order_by('-completed_at').first())
+    if latest:
+        reply(acc, *result_message(latest))
+    for r in UserResult.objects.pending().filter(user=acc.user).select_related('exam'):
+        reply(acc, f"⏳ «{escape(r.exam.title)}» — Writing qismingiz tekshirilmoqda.\n"
+                   "Natija chiqishi bilan shu yerga yuboramiz.")
 
 
 def _link_by_token(acc, token):

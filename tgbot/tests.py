@@ -324,6 +324,31 @@ class BotTests(TestCase):
         notify_staff_work('✍️ Writing baholash kerak')
         self.assertEqual(len(self.sent_to(777)), before)
 
+    def test_site_offers_bot_until_linked(self):
+        user = User.objects.create_user('vali', password='pw')
+        self.client.force_login(user)
+        self.assertContains(self.client.get(reverse('dashboard')), 'Natijangizni Telegramda oling')
+        TelegramAccount.objects.create(chat_id=CHAT, user=user)
+        self.assertNotContains(self.client.get(reverse('dashboard')), 'Natijangizni Telegramda oling')
+        with override_settings(TELEGRAM_BOT_TOKEN=''):
+            TelegramAccount.objects.all().delete()
+            self.assertNotContains(self.client.get(reverse('dashboard')), 'Natijangizni Telegramda oling')
+
+    def test_linking_after_exam_sends_result_right_away(self):
+        user = User.objects.create_user('vali', password='pw')
+        exam = Exam.objects.create(title='Mock 4')
+        UserResult.objects.create(user=user, exam=exam, score=7.0, listening_score=7.0)
+        UserResult.objects.create(user=user, exam=Exam.objects.create(title='Mock 5'),
+                                  status=UserResult.STATUS_PENDING)
+        self.client.force_login(user)
+        token = self.client.get(reverse('tgbot:link')).url.split('link_')[1]
+        self.say(f'/start link_{token}')
+        texts = self.sent_to(CHAT)
+        self.assertTrue(any('Hisob ulandi' in t for t in texts))
+        self.assertTrue(any('Natijangiz tayyor' in t and 'Mock 4' in t for t in texts))
+        self.assertIn('Mock 5', texts[-1])
+        self.assertIn('tekshirilmoqda', texts[-1])
+
     def test_public_schedule(self):
         resp = self.client.get(reverse('schedule'))
         self.assertContains(resp, 'Chilonzor')

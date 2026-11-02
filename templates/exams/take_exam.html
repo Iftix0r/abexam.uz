@@ -1493,6 +1493,7 @@
         <a href="{% url 'results_list' %}" style="display:block; color:#777; text-decoration:none; font-size:13px;">
             Barcha natijalarga o'tish →
         </a>
+        {% if tg_needs_link %}{% include 'partials/tg_connect.html' %}{% endif %}
     </div>
 </div>
 

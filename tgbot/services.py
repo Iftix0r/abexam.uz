@@ -110,20 +110,24 @@ def booking_text(booking):
             + (f"\n🏫 {escape(booking.center)}" if booking.center else ''))
 
 
-def notify_result_ready(result):
-    """Tells a student linked to the bot that their result is out — right
-    after submitting, or once staff have graded their Writing."""
-    acc = TelegramAccount.objects.filter(user_id=result.user_id, is_blocked=False).first()
-    if not acc:
-        return
+def result_message(result):
+    """«Your result is out» text and its PDF / details buttons."""
     parts = [f"{name} {score:.1f}" for name, score in (
         ('L', result.listening_score), ('R', result.reading_score),
         ('W', result.writing_score), ('S', result.speaking_score)) if score]
     text = (f"🎉 <b>Natijangiz tayyor!</b>\n«{escape(result.exam.title)}»\n\n"
             f"Umumiy ball: <b>{result.score:.1f}</b>" + (f"\n{' · '.join(parts)}" if parts else ''))
-    api.send_async(acc.chat_id, text, api.inline_keyboard([
+    return text, api.inline_keyboard([
         [('📄 PDF yuklab olish', f'pdf:{result.pk}'), ('Batafsil ko\'rish', site_url(f'/exams/result/{result.pk}/'))],
-    ]))
+    ])
+
+
+def notify_result_ready(result):
+    """Tells a student linked to the bot that their result is out — right
+    after submitting, or once staff have graded their Writing."""
+    acc = TelegramAccount.objects.filter(user_id=result.user_id, is_blocked=False).first()
+    if acc:
+        api.send_async(acc.chat_id, *result_message(result))
 
 
 def notify_day_cancelled(day, bookings):
