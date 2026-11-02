@@ -7,7 +7,7 @@ from django.views.generic import TemplateView
 from core.admin_site import AbExamAdminSite
 from core import system_views
 from exams.testlar import TestlarListView, testlar_file
-from tgbot.views import schedule
+from tgbot.views import bot_page, schedule
 from users.views import (
     HomeView, DashboardView, CustomLoginView, RegisterView,
     ExamsListView, ResultsListView, VocabularyView, FinanceView,
@@ -45,6 +45,7 @@ urlpatterns = [
     path('exams-list/', ExamsListView.as_view(), name='exams_list'),
     path('results-list/', ResultsListView.as_view(), name='results_list'),
     path('jadval/', schedule, name='schedule'),
+    path('telegram/', bot_page, name='telegram'),
     path('testlar/', TestlarListView.as_view(), name='testlar'),
     path('testlar/<int:folder>/<str:filename>', testlar_file, name='testlar_file'),
     path('vocabulary/', VocabularyView.as_view(), name='vocabulary'),

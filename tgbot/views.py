@@ -14,8 +14,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
 from . import api, handlers
-from .models import ExamDay
-from .services import fmt_date
+from .models import ExamDay, TelegramAccount
+from .services import fmt_date, site_url
 
 logger = logging.getLogger(__name__)
 
@@ -39,6 +39,26 @@ def webhook(request):
         except Exception:
             logger.exception('Telegram update %s failed', update.get('update_id'))
     return JsonResponse({'ok': True})
+
+
+def bot_page(request):
+    """/telegram/ — what the bot does and how to connect it; signed-in users
+    see their own link status here and can connect or disconnect."""
+    return render(request, 'tgbot/bot_page.html', {
+        'base_template': 'base.html' if request.user.is_authenticated else 'public_base.html',
+    })
+
+
+@login_required
+@require_POST
+def unlink(request):
+    acc = TelegramAccount.objects.filter(user=request.user).first()
+    if acc:
+        acc.user = None
+        acc.save(update_fields=['user'])
+        api.send_async(acc.chat_id, f"🔌 Sayt hisobingiz botdan uzildi. Qayta ulash: {site_url('/telegram/')}")
+        messages.success(request, "Telegram bot hisobingizdan uzildi.")
+    return redirect('telegram')
 
 
 @login_required

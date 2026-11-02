@@ -3,12 +3,19 @@ from .models import TelegramAccount
 
 
 def telegram(request):
-    """For the «get your results in Telegram» card: shown only while the bot
-    is set up and the signed-in user hasn't linked it yet. Both values are
-    callables, so the lookup only runs on pages that show the card."""
-    if not (api.enabled() and request.user.is_authenticated):
+    """Bot links and the signed-in user's link status for the sidebar,
+    dashboard and result pages. Values are callables, so nothing is looked
+    up unless a template uses them — and the account only once a request."""
+    if not api.enabled():
         return {}
-    return {
-        'tg_bot_username': api.bot_username,
-        'tg_needs_link': lambda: not TelegramAccount.objects.filter(user=request.user).exists(),
-    }
+    context = {'tg_bot_username': api.bot_username, 'tg_bot_url': api.deep_link}
+    if request.user.is_authenticated:
+        found = []
+
+        def account():
+            if not found:
+                found.append(TelegramAccount.objects.filter(user=request.user).first())
+            return found[0]
+
+        context.update(tg_account=account, tg_needs_link=lambda: account() is None)
+    return context

@@ -324,15 +324,41 @@ class BotTests(TestCase):
         notify_staff_work('✍️ Writing baholash kerak')
         self.assertEqual(len(self.sent_to(777)), before)
 
-    def test_site_offers_bot_until_linked(self):
+    def test_site_shows_bot_status_everywhere(self):
         user = User.objects.create_user('vali', password='pw')
         self.client.force_login(user)
-        self.assertContains(self.client.get(reverse('dashboard')), 'Natijangizni Telegramda oling')
-        TelegramAccount.objects.create(chat_id=CHAT, user=user)
-        self.assertNotContains(self.client.get(reverse('dashboard')), 'Natijangizni Telegramda oling')
+        dash = self.client.get(reverse('dashboard'))
+        self.assertContains(dash, 'Ulanmagan')
+        self.assertContains(dash, reverse('tgbot:link'))
+        self.assertContains(dash, 'ULASH')  # sidebar badge
+        self.assertContains(self.client.get(reverse('results_list')), 'Natijangizni Telegramda oling')
+        self.assertContains(self.client.get(reverse('telegram')), 'Bot hali ulanmagan')
+
+        TelegramAccount.objects.create(chat_id=CHAT, user=user, username='vali_tg')
+        dash = self.client.get(reverse('dashboard'))
+        self.assertContains(dash, '✓ Ulangan')
+        self.assertContains(dash, '@vali_tg')
+        self.assertNotContains(self.client.get(reverse('results_list')), 'Natijangizni Telegramda oling')
+        page = self.client.get(reverse('telegram'))
+        self.assertContains(page, 'Bot ulangan')
+
+        self.client.post(reverse('tgbot:unlink'))
+        self.assertIsNone(TelegramAccount.objects.get(chat_id=CHAT).user)
+        self.assertIn('uzildi', self.sent_to(CHAT)[-1])
+
         with override_settings(TELEGRAM_BOT_TOKEN=''):
-            TelegramAccount.objects.all().delete()
-            self.assertNotContains(self.client.get(reverse('dashboard')), 'Natijangizni Telegramda oling')
+            dash = self.client.get(reverse('dashboard'))
+            self.assertContains(dash, 'hisobingizdan uzildi')  # the flash message from unlinking
+            self.assertNotContains(dash, 'class="tgd')
+            self.assertNotContains(dash, reverse('telegram'))
+
+    def test_public_pages_promote_the_bot(self):
+        page = self.client.get(reverse('telegram'))
+        self.assertContains(page, 'Kirish va ulash')
+        self.assertContains(page, 'https://t.me/abexam_bot')
+        home = self.client.get(reverse('home'))
+        if home.status_code == 200:
+            self.assertContains(home, 'Natijangiz <span>Telegramga</span> keladi')
 
     def test_pending_result_page_always_shows_telegram_status(self):
         user = User.objects.create_user('vali', password='pw')

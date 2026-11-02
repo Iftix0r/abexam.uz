@@ -1,11 +1,7 @@
-{% comment %}
-«Get your results in Telegram» card. Include only when tg_needs_link.
-  dismissible=True — adds «Keyinroq» (hidden for 3 days, per browser)
-{% endcomment %}
-<div class="tgc" data-tgc{% if dismissible %} data-tgc-dismissible hidden{% endif %}>
+{% comment %}«Get your results in Telegram» card. Include only when tg_needs_link.{% endcomment %}
+<div class="tgc" data-tgc>
   <style>
     .tgc{display:flex;gap:14px;align-items:flex-start;text-align:left;background:rgba(34,158,217,.08);border:1px solid rgba(34,158,217,.35);border-radius:14px;padding:16px 18px;margin:16px 0;color:inherit}
-    .tgc[hidden]{display:none}
     .tgc-icon{width:42px;height:42px;border-radius:50%;background:#229ed9;display:flex;align-items:center;justify-content:center;flex-shrink:0}
     .tgc-icon svg{width:22px;height:22px;fill:#fff;margin-left:-2px}
     .tgc-title{font-weight:700;font-size:15px;margin-bottom:4px}
@@ -13,7 +9,6 @@
     .tgc-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px}
     .tgc-btn{display:inline-flex;align-items:center;gap:6px;background:#229ed9;color:#fff !important;text-decoration:none;font-weight:700;font-size:13.5px;padding:9px 16px;border-radius:10px}
     .tgc-btn:hover{background:#1b8bc2}
-    .tgc-later{background:none;border:0;color:inherit;opacity:.6;font-size:13px;cursor:pointer;padding:6px}
     .tgc-done{font-size:13px;font-weight:600;color:#1b8bc2}
   </style>
   <div class="tgc-icon" aria-hidden="true">
@@ -27,23 +22,12 @@
     </div>
     <div class="tgc-actions">
       <a class="tgc-btn" href="{% url 'tgbot:link' %}" target="_blank" rel="noopener" data-tgc-open>Botni ochish</a>
-      {% if dismissible %}<button type="button" class="tgc-later" data-tgc-later>Keyinroq</button>{% endif %}
+      <a href="{% url 'telegram' %}" style="font-size:13px;color:inherit;opacity:.7">Batafsil →</a>
     </div>
   </div>
   <script>
   (function () {
     const card = document.currentScript.closest('[data-tgc]');
-    const KEY = 'tgcHiddenUntil';
-    if (card.hasAttribute('data-tgc-dismissible')) {
-      let until = 0;
-      try { until = parseInt(localStorage.getItem(KEY), 10) || 0; } catch (e) {}
-      card.hidden = Date.now() < until;
-      const later = card.querySelector('[data-tgc-later]');
-      later.addEventListener('click', () => {
-        try { localStorage.setItem(KEY, Date.now() + 3 * 86400000); } catch (e) {}
-        card.hidden = true;
-      });
-    }
     const open = card.querySelector('[data-tgc-open]');
     open.addEventListener('click', () => {
       // After the link has opened the new tab, not before.

@@ -1,0 +1,49 @@
+{% comment %}Dashboard: Telegram bot status — always visible, connect or connected.{% endcomment %}
+{% if tg_bot_username %}
+<style>
+  .tgd{display:flex;gap:18px;align-items:center;flex-wrap:wrap;border-radius:18px;padding:18px 20px;margin:20px 0;border:1px solid rgba(34,158,217,.35);background:linear-gradient(135deg,rgba(34,158,217,.13),rgba(34,158,217,.04))}
+  .tgd.on{border-color:rgba(34,197,94,.35);background:rgba(34,197,94,.07)}
+  .tgd-icon{width:52px;height:52px;border-radius:50%;background:#229ed9;display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative}
+  .tgd-icon svg{width:26px;height:26px;fill:#fff;margin-left:-2px}
+  .tgd-icon i{position:absolute;right:-2px;bottom:-2px;width:16px;height:16px;border-radius:50%;border:3px solid var(--card-bg,#fff);background:#ef4444}
+  .tgd.on .tgd-icon i{background:#22c55e}
+  .tgd-body{flex:1;min-width:220px}
+  .tgd-title{font-weight:700;font-size:16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .tgd-pill{font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;background:#ef444418;color:#ef4444}
+  .tgd.on .tgd-pill{background:#22c55e1f;color:#16a34a}
+  .tgd-text{font-size:13px;color:var(--text-muted);margin-top:4px;line-height:1.55}
+  .tgd-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+  .tgd-chips span{font-size:11.5px;padding:3px 9px;border-radius:14px;background:var(--card-bg);border:1px solid var(--border-color)}
+  .tgd-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .tgd-btn{display:inline-flex;align-items:center;gap:7px;background:#229ed9;color:#fff !important;font-weight:700;font-size:14px;padding:11px 18px;border-radius:12px;text-decoration:none;white-space:nowrap}
+  .tgd-btn:hover{background:#1b8bc2}
+  .tgd-link{font-size:13px;color:var(--text-muted);text-decoration:none;padding:8px}
+  .tgd-link:hover{color:var(--text-color)}
+</style>
+{% if tg_needs_link %}
+<section class="tgd">
+  <div class="tgd-icon"><svg viewBox="0 0 24 24"><path d="M21.9 4.3 18.8 19c-.2 1-.8 1.3-1.7.8l-4.6-3.4-2.2 2.1c-.3.3-.5.5-1 .5l.3-4.7 8.6-7.8c.4-.3-.1-.5-.6-.2L6.9 13 2.4 11.6c-1-.3-1-1 .2-1.5L20.6 3.2c.8-.3 1.6.2 1.3 1.1z"/></svg><i></i></div>
+  <div class="tgd-body">
+    <div class="tgd-title">Telegram bot <span class="tgd-pill">Ulanmagan</span></div>
+    <div class="tgd-text">Ulang — natijangiz chiqishi bilan <b>@{{ tg_bot_username }}</b> botiga xabar keladi. Tugmani bosing va botda <b>Start</b> bosing, hammasi shu.</div>
+    <div class="tgd-chips"><span>🔔 Natija avtomatik</span><span>📄 PDF varaqa</span><span>📅 Imtihonga navbat</span><span>⏰ Eslatma</span></div>
+  </div>
+  <div class="tgd-actions">
+    <a class="tgd-btn" href="{% url 'tgbot:link' %}" target="_blank" rel="noopener">Botni ulash</a>
+    <a class="tgd-link" href="{% url 'telegram' %}">Batafsil →</a>
+  </div>
+</section>
+{% else %}
+<section class="tgd on">
+  <div class="tgd-icon"><svg viewBox="0 0 24 24"><path d="M21.9 4.3 18.8 19c-.2 1-.8 1.3-1.7.8l-4.6-3.4-2.2 2.1c-.3.3-.5.5-1 .5l.3-4.7 8.6-7.8c.4-.3-.1-.5-.6-.2L6.9 13 2.4 11.6c-1-.3-1-1 .2-1.5L20.6 3.2c.8-.3 1.6.2 1.3 1.1z"/></svg><i></i></div>
+  <div class="tgd-body">
+    <div class="tgd-title">Telegram bot <span class="tgd-pill">✓ Ulangan</span></div>
+    <div class="tgd-text">{% if tg_account.username %}@{{ tg_account.username }}{% else %}{{ tg_account.first_name|default:"Telegram hisobingiz" }}{% endif %} — natijalaringiz <b>@{{ tg_bot_username }}</b> botiga avtomatik keladi.</div>
+  </div>
+  <div class="tgd-actions">
+    {% if tg_bot_url %}<a class="tgd-btn" href="{{ tg_bot_url }}" target="_blank" rel="noopener">Botni ochish</a>{% endif %}
+    <a class="tgd-link" href="{% url 'telegram' %}">Sozlamalar →</a>
+  </div>
+</section>
+{% endif %}
+{% endif %}

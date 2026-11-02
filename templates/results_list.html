@@ -25,6 +25,7 @@
   </div>
   <a href="{% url 'exams_list' %}" style="background:var(--primary-color);color:#fff;padding:9px 20px;border-radius:10px;font-weight:600;font-size:13px">+ Yangi imtihon</a>
 </div>
+{% if tg_needs_link %}{% include 'partials/tg_connect.html' %}{% endif %}
 
 <!-- Stats -->
 <div class="stats-grid">

@@ -1,0 +1,114 @@
+{% extends base_template %}
+{% block title %}Telegram bot — AbExam{% endblock %}
+{% block page_title %}Telegram bot{% endblock %}
+
+{% block content %}
+<style>
+  .tgp{--tg:#229ed9;--tg-dark:#1b8bc2;--line:var(--border-color,rgba(0,0,0,.09));--soft:var(--tint-a,#f5f6f8);--mut:var(--text-muted,#6b6b73);max-width:980px;margin:0 auto}
+  .tgp-hero{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:24px;align-items:center;background:linear-gradient(135deg,rgba(34,158,217,.12),rgba(34,158,217,.03));border:1px solid rgba(34,158,217,.3);border-radius:22px;padding:30px}
+  @media(max-width:760px){.tgp-hero{grid-template-columns:1fr;padding:22px}}
+  .tgp-badge{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:var(--tg-dark);background:rgba(34,158,217,.12);border-radius:20px;padding:5px 12px;margin-bottom:12px}
+  .tgp-hero h1{font-size:28px;line-height:1.2;font-weight:800;margin:0 0 10px}
+  .tgp-hero p{color:var(--mut);font-size:15px;line-height:1.65;margin:0}
+  .tgp-logo{width:22px;height:22px;border-radius:50%;background:var(--tg);display:inline-flex;align-items:center;justify-content:center}
+  .tgp-logo svg{width:13px;height:13px;fill:#fff;margin-left:-1px}
+  .tgp-status{background:var(--card-bg,#fff);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:0 10px 30px rgba(0,0,0,.06)}
+  .tgp-status h3{font-size:14px;font-weight:700;margin:0 0 4px;display:flex;align-items:center;gap:8px}
+  .tgp-status p{font-size:13px;color:var(--mut);line-height:1.55;margin:0 0 14px}
+  .tgp-dot{width:10px;height:10px;border-radius:50%;background:#ef4444;box-shadow:0 0 0 4px rgba(239,68,68,.15)}
+  .tgp-dot.on{background:#22c55e;box-shadow:0 0 0 4px rgba(34,197,94,.18)}
+  .tgp-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:var(--tg);color:#fff !important;text-decoration:none;font-weight:700;font-size:15px;padding:13px 18px;border-radius:12px;border:0;cursor:pointer;margin:0}
+  .tgp-btn:hover{background:var(--tg-dark)}
+  .tgp-btn svg{width:18px;height:18px;fill:#fff}
+  .tgp-ghost{display:block;width:100%;text-align:center;margin-top:8px;background:none;border:1px solid var(--line);color:inherit;border-radius:12px;padding:10px;font-size:13px;cursor:pointer;text-decoration:none}
+  .tgp-acc{display:flex;align-items:center;gap:10px;background:var(--soft);border-radius:12px;padding:10px 12px;margin-bottom:12px;font-size:13px}
+  .tgp-acc b{display:block;font-size:14px}
+  .tgp-section{margin-top:34px}
+  .tgp-section h2{font-size:20px;font-weight:800;margin:0 0 14px}
+  .tgp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+  .tgp-card{background:var(--card-bg,#fff);border:1px solid var(--line);border-radius:16px;padding:18px}
+  .tgp-card .ic{font-size:26px;line-height:1;margin-bottom:10px}
+  .tgp-card h3{font-size:15px;font-weight:700;margin:0 0 6px}
+  .tgp-card p{font-size:13px;color:var(--mut);line-height:1.6;margin:0}
+  .tgp-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;counter-reset:s}
+  .tgp-step{position:relative;background:var(--card-bg,#fff);border:1px solid var(--line);border-radius:16px;padding:18px 18px 18px 64px}
+  .tgp-step::before{counter-increment:s;content:counter(s);position:absolute;left:18px;top:18px;width:32px;height:32px;border-radius:50%;background:var(--tg);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center}
+  .tgp-step b{display:block;font-size:14px;margin-bottom:4px}
+  .tgp-step span{font-size:13px;color:var(--mut);line-height:1.55}
+  .tgp-faq details{background:var(--card-bg,#fff);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:10px}
+  .tgp-faq summary{cursor:pointer;font-weight:600;font-size:14px}
+  .tgp-faq p{font-size:13px;color:var(--mut);line-height:1.6;margin:8px 0 0}
+  .tgp-note{font-size:12.5px;color:var(--mut);margin-top:12px;line-height:1.55}
+</style>
+
+<div class="tgp">
+  <section class="tgp-hero">
+    <div>
+      <span class="tgp-badge"><span class="tgp-logo"><svg viewBox="0 0 24 24"><path d="M21.9 4.3 18.8 19c-.2 1-.8 1.3-1.7.8l-4.6-3.4-2.2 2.1c-.3.3-.5.5-1 .5l.3-4.7 8.6-7.8c.4-.3-.1-.5-.6-.2L6.9 13 2.4 11.6c-1-.3-1-1 .2-1.5L20.6 3.2c.8-.3 1.6.2 1.3 1.1z"/></svg></span>@{{ tg_bot_username|default:"examabbot" }}</span>
+      <h1>Natijalaringiz endi Telegramga keladi</h1>
+      <p>AbExam boti imtihon natijangiz chiqishi bilan xabar beradi, natija varaqasini PDF qilib yuboradi, imtihon kuniga navbatga yozadi va imtihondan oldin eslatadi. Bepul.</p>
+    </div>
+
+    <div class="tgp-status">
+      {% if user.is_authenticated %}
+        {% if tg_needs_link %}
+          <h3><span class="tgp-dot"></span>Bot hali ulanmagan</h3>
+          <p>Tugmani bosing — Telegram ochiladi, <b>Start</b> bosing. Hisobingiz avtomatik ulanadi.</p>
+          <a class="tgp-btn" href="{% url 'tgbot:link' %}" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24"><path d="M21.9 4.3 18.8 19c-.2 1-.8 1.3-1.7.8l-4.6-3.4-2.2 2.1c-.3.3-.5.5-1 .5l.3-4.7 8.6-7.8c.4-.3-.1-.5-.6-.2L6.9 13 2.4 11.6c-1-.3-1-1 .2-1.5L20.6 3.2c.8-.3 1.6.2 1.3 1.1z"/></svg>
+            Botni ulash
+          </a>
+          <a class="tgp-ghost" href="{% url 'telegram' %}">Ulab bo'ldim — yangilash</a>
+        {% else %}
+          <h3><span class="tgp-dot on"></span>Bot ulangan</h3>
+          <div class="tgp-acc">
+            <span style="font-size:22px">✅</span>
+            <div><b>{{ tg_account.first_name|default:"Telegram hisobingiz" }}</b>{% if tg_account.username %}@{{ tg_account.username }} · {% endif %}{{ tg_account.created_at|date:"d.m.Y" }} dan beri</div>
+          </div>
+          <p>Natijalaringiz chiqishi bilan botga avtomatik xabar keladi.</p>
+          {% if tg_bot_url %}<a class="tgp-btn" href="{{ tg_bot_url }}" target="_blank" rel="noopener">Botni ochish</a>{% endif %}
+          <form method="post" action="{% url 'tgbot:unlink' %}" onsubmit="return confirm('Telegram botni hisobingizdan uzasizmi? Natijalar botga kelmay qoladi.')">
+            {% csrf_token %}
+            <button type="submit" class="tgp-ghost">Botni uzish</button>
+          </form>
+        {% endif %}
+      {% else %}
+        <h3><span class="tgp-dot"></span>Saytga kiring</h3>
+        <p>Natijalar avtomatik kelishi uchun avval saytga kiring, so'ng shu sahifada «Botni ulash» tugmasini bosing.</p>
+        <a class="tgp-btn" href="{% url 'login' %}?next={% url 'telegram' %}">Kirish va ulash</a>
+        {% if tg_bot_url %}<a class="tgp-ghost" href="{{ tg_bot_url }}" target="_blank" rel="noopener">Botni ochish (imtihonga navbat)</a>{% endif %}
+      {% endif %}
+    </div>
+  </section>
+
+  <section class="tgp-section">
+    <h2>Bot nimalar qiladi</h2>
+    <div class="tgp-grid">
+      <div class="tgp-card"><div class="ic">🔔</div><h3>Natija avtomatik keladi</h3><p>Imtihon natijangiz chiqishi bilan xabar oladi. Writing tekshirilgach ham darhol bildiradi — saytni qayta-qayta ochish shart emas.</p></div>
+      <div class="tgp-card"><div class="ic">📄</div><h3>PDF natija varaqasi</h3><p>Listening, Reading, Writing ballari va izohlar bilan PDF. Ota-onangiz yoki o'qituvchingizga yuborish oson.</p></div>
+      <div class="tgp-card"><div class="ic">📅</div><h3>Imtihonga navbat</h3><p>Rejadagi imtihon kunlarini ko'ring va bir necha bosishda yoziling. Boshqa o'quv markaz o'quvchilari ham yoziladi.</p></div>
+      <div class="tgp-card"><div class="ic">⏰</div><h3>Eslatma</h3><p>Imtihondan bir kun oldin bot navbat raqamingiz va manzil bilan eslatadi.</p></div>
+      <div class="tgp-card"><div class="ic">✉️</div><h3>Admin bilan aloqa</h3><p>Savolingizni yoki to'lov chekini botga yuboring — admin javobi shu yerga keladi.</p></div>
+      <div class="tgp-card"><div class="ic">🧮</div><h3>Ball kalkulyatori</h3><p>To'g'ri javoblar sonini yuboring (masalan <b>32</b>) — Listening/Reading bandini darhol aytadi.</p></div>
+    </div>
+  </section>
+
+  <section class="tgp-section">
+    <h2>Qanday ulanadi — 3 qadam</h2>
+    <div class="tgp-steps">
+      <div class="tgp-step"><b>«Botni ulash» tugmasini bosing</b><span>Saytga kirgan holda — shu sahifada, bosh sahifada yoki imtihondan keyin.</span></div>
+      <div class="tgp-step"><b>Telegramda Start bosing</b><span>@{{ tg_bot_username|default:"examabbot" }} ochiladi. Faqat Start — boshqa hech narsa yozish shart emas.</span></div>
+      <div class="tgp-step"><b>Tayyor!</b><span>Bot «✅ Hisob ulandi» deb yozadi va oxirgi natijangizni yuboradi.</span></div>
+    </div>
+    <p class="tgp-note">Boshqa yo'l: botda «📊 Natijalarim» → «📱 Raqamni yuborish». Saytda shu raqam bilan ro'yxatdan o'tgan bo'lsangiz, hisob ulanadi.</p>
+  </section>
+
+  <section class="tgp-section tgp-faq">
+    <h2>Savollar</h2>
+    <details><summary>Bot pullikmi?</summary><p>Yo'q, bot butunlay bepul.</p></details>
+    <details><summary>Telegram raqamim saytdagidan boshqa bo'lsa-chi?</summary><p>Muammo emas: «Botni ulash» tugmasi raqamga qaramaydi, hisobingizni to'g'ridan-to'g'ri ulaydi.</p></details>
+    <details><summary>Xabarlar kelmayapti</summary><p>Botni bloklamaganingizni tekshiring va botga /start yozing. Shu sahifada holat «Bot ulangan» bo'lishi kerak.</p></details>
+    <details><summary>Qanday uzaman?</summary><p>Shu sahifada «Botni uzish» tugmasi yoki botda «👤 Hisobim» → «Hisobni botdan uzish».</p></details>
+  </section>
+</div>
+{% endblock %}

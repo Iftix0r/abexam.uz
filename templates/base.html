@@ -380,6 +380,17 @@
                 <i data-lucide="credit-card" style="width: 20px;"></i>
                 <span class="nav-toggle-text">Moliya</span>
             </a>
+            {% if tg_bot_username %}
+            <a href="{% url 'telegram' %}" class="nav-link {% if request.resolver_match.url_name == 'telegram' %}active{% endif %}">
+                <i data-lucide="send" style="width: 20px;"></i>
+                <span class="nav-toggle-text">Telegram bot</span>
+                {% if tg_needs_link %}
+                <span style="margin-left: auto; font-size: 0.6rem; font-weight: 700; background: #229ed9; color: #fff; border-radius: 6px; padding: 2px 6px;" title="Bot hali ulanmagan">ULASH</span>
+                {% else %}
+                <span style="margin-left: auto; width: 8px; height: 8px; border-radius: 50%; background: #22c55e;" title="Bot ulangan"></span>
+                {% endif %}
+            </a>
+            {% endif %}
         </nav>
 
         <div class="bottom-section" id="sidebar-footer">
