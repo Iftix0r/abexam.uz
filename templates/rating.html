@@ -4,39 +4,172 @@
 
 {% block extra_css %}
 <style>
-.rating{max-width:640px;margin:0 auto}
-.rating-head{text-align:center;margin-bottom:20px}
-.rating-head .big{font-size:44px;line-height:1}
-.rating-head h1{font-size:22px;font-weight:700;margin-top:8px}
-.rating-head p{font-size:13px;color:var(--text-muted);margin-top:4px}
-.rating-tabs{display:flex;justify-content:center;gap:8px;margin-bottom:16px}
-.rating-tabs a{padding:7px 16px;border-radius:20px;font-size:13px;font-weight:600;border:1px solid var(--border-color);color:var(--text-muted);text-decoration:none}
-.rating-tabs a.active{background:var(--primary-color);border-color:var(--primary-color);color:#fff}
-.rating-me{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;border-radius:12px;background:var(--tint-a);margin-bottom:14px;font-size:14px}
-.rating-empty{text-align:center;color:var(--text-muted);padding:32px 16px;border:1px dashed var(--border-color);border-radius:14px;font-size:14px}
+.rk{width:100%;max-width:1060px;margin:0 auto}
+.rk-hero{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;padding:26px 30px;border-radius:20px;color:#fff;background:linear-gradient(115deg,#a81818 0%,#d32f2f 58%,#ef5a4f 100%);box-shadow:0 12px 30px #b71c1c2e;margin-bottom:22px}
+.rk-hero::after{content:'';position:absolute;right:-70px;top:-150px;width:400px;height:400px;background:radial-gradient(closest-side,rgba(255,255,255,.18),transparent);pointer-events:none}
+.rk-hero>*{position:relative;z-index:1}
+.rk-title{display:flex;align-items:center;gap:16px}
+.rk-title .ic{width:54px;height:54px;border-radius:16px;background:rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center;font-size:27px;flex-shrink:0}
+.rk-title .ic i{color:#fff}
+.rk-title h1{font-size:23px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.rk-title p{font-size:13px;opacity:.88;margin-top:2px}
+.rk-tabs{display:inline-flex;gap:3px;padding:4px;border-radius:12px;background:rgba(0,0,0,.18)}
+.rk-tabs a{padding:8px 16px;border-radius:9px;font-size:13px;font-weight:600;color:rgba(255,255,255,.85);text-decoration:none;white-space:nowrap}
+.rk-tabs a.active{background:#fff;color:#b71c1c}
+
+.rk-grid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:20px;align-items:start}
+.rk-card{background:var(--card-bg);border:1px solid var(--border-color);border-radius:18px;padding:18px}
+.rk-side{display:flex;flex-direction:column;gap:16px;position:sticky;top:90px}
+.rk-label{font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted)}
+
+/* Podium */
+.pd{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:end;margin-bottom:20px}
+.pd-card{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;padding:20px 12px 16px;border-radius:18px;background:var(--card-bg);border:1px solid var(--border-color);min-width:0}
+.pd-card.me{border-color:var(--primary-color)}
+.pd-1{padding-top:34px;background:linear-gradient(180deg,#eab30822,var(--card-bg) 70%);border-color:#eab30866;box-shadow:0 10px 26px #eab30822}
+.pd-2{background:linear-gradient(180deg,#94a3b81f,var(--card-bg) 70%)}
+.pd-3{background:linear-gradient(180deg,#c2712d1f,var(--card-bg) 70%)}
+.pd-crown{position:absolute;top:8px;font-size:22px;color:#eab308}
+.pd-card .ab-logo{width:64px;height:64px;font-size:20px;box-shadow:0 0 0 3px var(--card-bg),0 0 0 5px var(--pd)}
+.pd-1 .ab-logo{width:78px;height:78px;font-size:24px}
+.pd-1{--pd:#eab308}.pd-2{--pd:#94a3b8}.pd-3{--pd:#c2712d}
+.pd-num{width:24px;height:24px;margin-top:-11px;position:relative;border-radius:50%;background:var(--pd);color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px var(--card-bg)}
+.pd-name{max-width:100%;margin-top:8px;font-size:14.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pd-band{font-size:24px;font-weight:800;letter-spacing:-.02em;line-height:1.2;margin-top:2px;font-variant-numeric:tabular-nums}
+.pd-1 .pd-band{font-size:30px}
+.pd-sub{font-size:11.5px;color:var(--text-muted)}
+
+/* Side */
+.rk-me{display:flex;align-items:baseline;gap:6px;margin-top:6px}
+.rk-me b{font-size:38px;font-weight:800;letter-spacing:-.03em;line-height:1;color:var(--primary-color)}
+.rk-me span{font-size:14px;color:var(--text-muted)}
+.rk-note{margin-top:10px;padding:10px 12px;border-radius:11px;background:var(--tint-a);font-size:12.5px;line-height:1.45}
+.rk-cta{display:block;margin-top:12px;padding:10px;border-radius:11px;background:var(--primary-color);color:#fff;font-size:13px;font-weight:600;text-align:center;text-decoration:none}
+.rk-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}
+.rk-stats b{display:block;font-size:19px;font-weight:800;font-variant-numeric:tabular-nums}
+.rk-stats span{font-size:11px;color:var(--text-muted)}
+.rk-rules{margin-top:8px;padding-left:16px;font-size:12.5px;line-height:1.6;color:var(--text-muted)}
+.rk-empty{text-align:center;color:var(--text-muted);padding:44px 16px;font-size:14px}
+.rk-empty i{display:block;margin:0 auto 10px;font-size:34px;opacity:.5}
+
+@media (max-width:900px){
+  .rk-grid{grid-template-columns:minmax(0,1fr)}
+  /* Only the student's own place goes above the podium */
+  .rk-side{display:contents}
+  .rk-mine{order:-1}
+}
+@media (max-width:560px){
+  .rk-hero{padding:20px}
+  .rk-title h1{font-size:20px}
+  .rk-tabs{width:100%}
+  .rk-tabs a{flex:1;text-align:center}
+  .pd{gap:8px}
+  .pd-card{padding:14px 6px 12px}
+  .pd-1{padding-top:30px}
+  .pd-card .ab-logo{width:50px;height:50px;font-size:16px}
+  .pd-1 .ab-logo{width:60px;height:60px;font-size:19px}
+  .pd-name{font-size:12.5px}
+  .pd-band{font-size:20px}
+  .pd-1 .pd-band{font-size:24px}
+}
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="rating">
-  <div class="rating-head">
-    <div class="big"><i class=lc-trophy></i></div>
-    <h1>IELTS reytingi</h1>
-    <p>Mock testlardagi eng yaxshi natija bo'yicha</p>
+<div class="rk">
+  <div class="rk-hero">
+    <div class="rk-title">
+      <div class="ic"><i class=lc-trophy></i></div>
+      <div>
+        <h1>IELTS reytingi</h1>
+        <p>Mock testlardagi eng yaxshi natijalar</p>
+      </div>
+    </div>
+    <div class="rk-tabs">
+      <a href="?" class="{% if board.period != 'all' %}active{% endif %}">Bu oy</a>
+      <a href="?period=all" class="{% if board.period == 'all' %}active{% endif %}">Barcha vaqt</a>
+    </div>
   </div>
-  <div class="rating-tabs">
-    <a href="?" class="{% if board.period != 'all' %}active{% endif %}">Bu oy</a>
-    <a href="?period=all" class="{% if board.period == 'all' %}active{% endif %}">Barcha vaqt</a>
+
+  <div class="rk-grid">
+    <div>
+      {% if board.rows|length >= 3 %}
+      <div class="pd">
+        {% with r=board.rows.1 %}
+        <div class="pd-card pd-2{% if r.me %} me{% endif %}">
+          {% include 'partials/logo.html' with o=r %}
+          <div class="pd-num">2</div>
+          <div class="pd-name">{{ r.name }}</div>
+          <div class="pd-band">{{ r.best|floatformat:1 }}</div>
+          <div class="pd-sub">{{ r.tests }} ta test</div>
+        </div>
+        {% endwith %}
+        {% with r=board.rows.0 %}
+        <div class="pd-card pd-1{% if r.me %} me{% endif %}">
+          <i class="lc-crown pd-crown"></i>
+          {% include 'partials/logo.html' with o=r %}
+          <div class="pd-num">1</div>
+          <div class="pd-name">{{ r.name }}</div>
+          <div class="pd-band">{{ r.best|floatformat:1 }}</div>
+          <div class="pd-sub">{{ r.tests }} ta test</div>
+        </div>
+        {% endwith %}
+        {% with r=board.rows.2 %}
+        <div class="pd-card pd-3{% if r.me %} me{% endif %}">
+          {% include 'partials/logo.html' with o=r %}
+          <div class="pd-num">3</div>
+          <div class="pd-name">{{ r.name }}</div>
+          <div class="pd-band">{{ r.best|floatformat:1 }}</div>
+          <div class="pd-sub">{{ r.tests }} ta test</div>
+        </div>
+        {% endwith %}
+      </div>
+      {% if board.rows|length > 3 %}
+      <div class="rk-card" style="padding:8px">{% include 'partials/rating_rows.html' with from_rank=4 %}</div>
+      {% endif %}
+      {% elif board.rows %}
+      <div class="rk-card" style="padding:8px">{% include 'partials/rating_rows.html' %}</div>
+      {% else %}
+      <div class="rk-card rk-empty"><i class=lc-trophy></i>Bu davrda hali natija yo'q. Birinchi bo'ling!</div>
+      {% endif %}
+    </div>
+
+    <aside class="rk-side">
+      {% if board.me %}
+      <div class="rk-card rk-mine">
+        <div class="rk-label">Sizning o'rningiz</div>
+        <div class="rk-me"><b>#{{ board.me.rank }}</b><span>/ {{ board.total }}</span></div>
+        <div class="rk-note">
+          {% if board.me.rank == 1 %}Siz birinchi o'rindasiz, shunday davom eting!
+          {% elif board.me.gap %}Yuqoriga ko'tarilish uchun <b>+{{ board.me.gap|floatformat:1 }} band</b> kerak. Eng yaxshi natijangiz: {{ board.me.best|floatformat:1 }}.
+          {% else %}Yuqoridagi talaba bilan ballingiz teng ({{ board.me.best|floatformat:1 }}). Yana bir test natijani hal qiladi.{% endif %}
+        </div>
+      </div>
+      {% elif not user.is_staff %}
+      <div class="rk-card rk-mine">
+        <div class="rk-label">Sizning o'rningiz</div>
+        <div class="rk-note">{% if board.period == 'all' %}Hali{% else %}Bu oy hali{% endif %} mock test topshirmadingiz. Bitta test va siz ro'yxatdasiz!</div>
+        <a href="{% url 'exams_list' %}" class="rk-cta">Test topshirish</a>
+      </div>
+      {% endif %}
+      {% if board.total %}
+      <div class="rk-card">
+        <div class="rk-stats">
+          <div><b>{{ board.total }}</b><span>Talaba</span></div>
+          <div><b>{{ board.top_band|floatformat:1 }}</b><span>Eng yuqori</span></div>
+          <div><b>{{ board.average|floatformat:1 }}</b><span>O'rtacha</span></div>
+        </div>
+      </div>
+      {% endif %}
+      <div class="rk-card">
+        <div class="rk-label">Qanday hisoblanadi</div>
+        <ul class="rk-rules">
+          <li>Mock testdagi eng yaxshi ball olinadi</li>
+          <li>Ball teng bo'lsa, o'rtacha ball hal qiladi</li>
+          <li>Writing baholangach natija qo'shiladi</li>
+        </ul>
+      </div>
+    </aside>
   </div>
-  {% if board.me %}
-  <div class="rating-me"><span>Sizning o'rningiz: <b>#{{ board.me.rank }}</b> / {{ board.total }}</span><b>{{ board.me.best|floatformat:1 }} band</b></div>
-  {% elif not user.is_staff %}
-  <div class="rating-me"><span>{% if board.period == 'all' %}Hali{% else %}Bu oy hali{% endif %} mock test topshirmadingiz. Bitta test — va siz ro'yxatdasiz!</span><a href="{% url 'exams_list' %}" style="color:var(--primary-color);font-weight:600;text-decoration:none">Boshlash →</a></div>
-  {% endif %}
-  {% if board.rows %}
-  {% include 'partials/rating_rows.html' %}
-  {% else %}
-  <div class="rating-empty">Bu davrda hali natija yo'q. Birinchi bo'ling!</div>
-  {% endif %}
 </div>
 {% endblock %}

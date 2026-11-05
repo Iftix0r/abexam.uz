@@ -1,34 +1,28 @@
 # Session state (auto-saved — last known reality)
 
-_Updated: 2026-11-02 17:05:45_  ·  branch: `main`
+_Updated: 2026-11-05 08:12:14_  ·  branch: `main`
 
 ## Uncommitted changes
 ```
  M .anchor/session-state.md
- M templates/login.html
- M users/tests.py
- M users/views.py
 ```
 
 Diff stat:
 ```
- .anchor/session-state.md | 48 ++++--------------------------------------------
- templates/login.html     | 40 ++++++++++++++++++++++++++++++++++++++--
- users/tests.py           | 21 +++++++++++++++++++++
- users/views.py           | 11 +++++++++++
- 4 files changed, 74 insertions(+), 46 deletions(-)
+ .anchor/session-state.md | 27 +--------------------------
+ 1 file changed, 1 insertion(+), 26 deletions(-)
 ```
 
 ## Recent commits
 ```
+e9b4b5d feat: replace emoji with Lucide line icons across the site
+444b96f feat(tgbot): use Telegram profile photo as avatar, serve new media files
+fd2bde5 feat(panel): Telegram-style avatars, fit tables on laptops
+b1c1eae fix(panel): move sidebar toggle into menu, align topbar
+50cb403 saa
+0998533 wfa
 f6f6bc1 awf
 2e8d6c4 chore(panel): hide English section from sidebar menu
-c498d2f qdwa
-21db515 sa
-8453ac7 acsc
-224c148 refactor(tgbot): always show Telegram status on result pages
-a9f6088 feat(tgbot): prompt site users to link Telegram and send results on link
-2ca6b3c ss
 ```
 
 ## Resume
