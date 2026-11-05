@@ -21,6 +21,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.safestring import mark_safe
 from django.utils.dateparse import parse_date
 from django.utils.formats import date_format
 from django.utils.http import url_has_allowed_host_and_scheme
@@ -553,7 +554,29 @@ def user_report(request, pk):
 def user_login_logs(request, pk):
     user = get_object_or_404(User, pk=pk)
     logs = LoginLog.objects.filter(user=user).order_by('-created_at')[:50]
-    return render(request, 'panel/login_logs.html', {'obj': user, 'logs': logs})
+    status_labels = dict(LoginLog.STATUS_CHOICES)
+    rows = []
+    for log in logs:
+        has_location = log.latitude is not None and log.longitude is not None
+        location_html = '<span class="meta">Saqlanmagan</span>'
+        if has_location:
+            accuracy = f"Aniqlik: {log.location_accuracy:.0f} m<br>" if log.location_accuracy is not None else ''
+            captured_at = date_format(log.location_captured_at, 'd M Y, H:i:s') if log.location_captured_at else ''
+            location_html = (
+                f'<a class="maps" target="_blank" rel="noopener noreferrer" '
+                f'href="https://www.google.com/maps?q={log.latitude},{log.longitude}">'
+                f'{log.location_text}<br>Xaritada ochish</a><div class="meta">'
+                f'{accuracy}{captured_at}</div>'
+            )
+        rows.append({
+            'status': status_labels.get(log.status, log.status),
+            'status_class': 'ok' if log.status == 'success' else ('danger' if log.status == 'blocked' else 'warning'),
+            'ip': log.ip,
+            'location_html': mark_safe(location_html),
+            'user_agent': log.user_agent,
+            'created_at': date_format(log.created_at, 'd M Y, H:i'),
+        })
+    return render(request, 'panel/login_logs.html', {'obj': user, 'rows': rows})
 
 
 @panel_required
