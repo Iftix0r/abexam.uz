@@ -4,6 +4,7 @@ javob tekshiruvi bor mustaqil sahifa, shuning uchun ularni shunchaki fayl
 sifatida beramiz — faqat tizimga kirgan foydalanuvchilarga."""
 import mimetypes
 import re
+import zlib
 from pathlib import Path
 
 from django.conf import settings
@@ -13,6 +14,8 @@ from django.contrib import messages
 from django.http import FileResponse, Http404, HttpResponse, StreamingHttpResponse
 from django.shortcuts import redirect, render
 from django.views.generic import TemplateView
+
+from users.models import User
 
 from .passwords import is_unlocked, password_required_for, testlar_scope, try_unlock
 
@@ -60,11 +63,23 @@ class TestlarListView(LoginRequiredMixin, TemplateView):
                 if files:
                     groups.append({
                         'number': int(folder.name),
-                        'files': [{'name': f, 'title': f[:-5], 'kind': _kind(f)} for f in files],
+                        'files': [_file_info(folder.name, f) for f in files],
                     })
         context['groups'] = groups
         context['password_required'] = password_required_for(self.request.user)
         return context
+
+
+def _file_info(folder, name):
+    title, kind = name[:-5], _kind(name)
+    numbers = re.findall(r'\d+', title)
+    colors = User.AVATAR_COLORS
+    return {
+        'name': name, 'title': title, 'kind': kind,
+        # Logo: "Listening (4)" -> L4, in a colour that stays with the file.
+        'initials': (kind or title)[:1].upper() + (numbers[-1][-2:] if numbers else ''),
+        'avatar_color': colors[zlib.crc32(f'{folder}/{name}'.encode()) % len(colors)],
+    }
 
 
 def _file_iter(fh, length):

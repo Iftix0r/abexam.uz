@@ -587,3 +587,19 @@ class StoryIconTests(TestCase):
         self.assertEqual(story_icon('❄️'), '<i class="lc-snowflake"></i>')
         self.assertEqual(story_icon('🦄'), '<i class="lc-book-open"></i>')
         self.assertEqual(story_icon(None), '<i class="lc-book-open"></i>')
+
+
+class LeaderboardPrivacyTests(TestCase):
+    def test_rows_show_initials_and_no_photo(self):
+        from django.utils import timezone
+        from learn.models import DailyXP
+        from learn.services import leaderboard
+        from users.models import User
+        student = User.objects.create_user('ali', password='pw', first_name='Ali', last_name='Valiyev',
+                                           avatar='avatars/tg_1_abc.jpg')
+        DailyXP.objects.create(user=student, date=timezone.localdate(), xp=10)
+        row = leaderboard(student)['rows'][0]
+        self.assertEqual(row['initials'], 'AV')
+        self.assertEqual(row['avatar_color'], student.avatar_color)
+        self.assertFalse(any('avatars/' in str(value) for value in row.values()))
+

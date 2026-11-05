@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load panel_ui %}
 {% block title %}Imtihonlar — AbExam{% endblock %}
 {% block page_title %}Imtihonlar{% endblock %}
 
@@ -20,11 +21,11 @@
 .btn-start{background:var(--primary-color);color:#fff;padding:9px 22px;border-radius:10px;font-weight:600;font-size:13px;text-decoration:none;transition:.15s}
 .btn-start:hover{opacity:.85}
 .filter-pill{padding:7px 16px;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border-color);background:var(--card-bg);color:var(--text-muted);transition:.15s}
-.filter-pill.active{background:#fff;color:#000;border-color:#fff;font-weight:600}
+.filter-pill.active{background:var(--primary-color);color:#fff;border-color:var(--primary-color);font-weight:600}
 .search-wrap{position:relative;max-width:320px}
 .search-wrap input{width:100%;background:var(--card-bg);border:1px solid var(--border-color);border-radius:12px;padding:10px 14px 10px 38px;color:var(--text-color);font-size:13px;outline:none}
 .search-wrap input:focus{border-color:var(--primary-color)}
-.search-wrap i{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:15px;color:var(--text-muted)}
+.search-wrap i,.search-wrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:15px;color:var(--text-muted)}
 .completed-badge{position:absolute;top:16px;right:16px;background:#22c55e18;color:#22c55e;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px}
 </style>
 {% endblock %}
@@ -54,9 +55,9 @@
   {% for exam in exams %}
   <div class="exam-card" data-type="{{ exam.exam_type }}" data-price="{{ exam.price }}" data-title="{{ exam.title|lower }}">
     {% if exam.pk in completed_ids %}<span class="completed-badge">✓ Topshirilgan</span>{% endif %}
-    <div style="display:flex;justify-content:space-between;align-items:center">
+    <div style="display:flex;align-items:center;gap:10px">
+      {% include 'partials/logo.html' with o=exam %}
       <span class="exam-badge">{{ exam.get_exam_type_display }}</span>
-      <i data-lucide="{% if exam.exam_type == 'listening' %}headphones{% elif exam.exam_type == 'reading' %}book-open{% elif exam.exam_type == 'writing' %}pen-line{% elif exam.exam_type == 'speaking' %}mic{% else %}clipboard-check{% endif %}" style="width:18px;color:var(--text-muted)"></i>
     </div>
     <h2 class="exam-title">{{ exam.title }}</h2>
     <p class="exam-desc">{{ exam.description|default:"Ushbu imtihon sizning bilim darajangizni aniqlashga yordam beradi."|truncatechars:90 }}</p>
@@ -67,7 +68,7 @@
     </div>
     <div class="exam-footer">
       <span class="{% if exam.price == 0 %}price-free{% else %}price-paid{% endif %}">
-        {% if exam.price == 0 %}Bepul{% else %}{{ exam.price|floatformat:0 }} so'm{% endif %}
+        {% if exam.price == 0 %}Bepul{% else %}{{ exam.price|som }} so'm{% endif %}
       </span>
       <a href="{% url 'exams:exam_detail' exam.id %}" class="btn-start">Boshlash →</a>
     </div>

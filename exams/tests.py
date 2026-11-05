@@ -708,3 +708,12 @@ class ExamLogoTests(TestCase):
     def test_title_without_number_uses_initials(self):
         self.assertEqual(Exam(title='Academic writing').initials, 'AW')
         self.assertEqual(Exam(title='').initials, '?')
+
+
+class TestFileLogoTests(TestCase):
+    def test_logo_comes_from_kind_and_number(self):
+        from .testlar import _file_info
+        info = _file_info('3', 'Listening (4).html')
+        self.assertEqual(info['initials'], 'L4')
+        self.assertEqual(info['avatar_color'], _file_info('3', 'Listening (4).html')['avatar_color'])
+

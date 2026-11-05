@@ -90,6 +90,7 @@
     <div style="width:72px;height:72px;border-radius:50%;background:#eab30818;display:flex;align-items:center;justify-content:center;margin:0 auto 18px">
       <i data-lucide="hourglass" style="width:34px;height:34px;color:#eab308"></i>
     </div>
+    <div style="margin-bottom:10px">{% include 'partials/logo.html' with o=result.exam %}</div>
     <h1 style="font-size:18px;font-weight:700;margin-bottom:6px">{{ result.exam.title }}</h1>
     <p style="color:var(--text-muted);font-size:13px;margin-bottom:20px">{{ result.completed_at|date:"d M Y, H:i" }}</p>
     <div style="font-size:16px;font-weight:600;margin-bottom:8px">Natija hisoblanmoqda...</div>
@@ -110,6 +111,7 @@
 
   <!-- Score card -->
   <div class="print-card" style="background:var(--card-bg);border:1px solid var(--border-color);border-radius:20px;padding:32px;text-align:center;margin-bottom:20px">
+    <div style="margin-bottom:10px">{% include 'partials/logo.html' with o=result.exam %}</div>
     <h1 style="font-size:18px;font-weight:600;margin-bottom:4px">{{ result.exam.title }}</h1>
     <p style="color:var(--text-muted);font-size:13px;margin-bottom:24px">{{ result.completed_at|date:"d M Y, H:i" }}</p>
 

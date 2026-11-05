@@ -352,7 +352,7 @@
             {% for r in recent_results %}
             <li>
                 <a href="{% url 'exams:result_detail' r.pk %}">
-                    <div class="dash-stat-icon tone-violet"><i data-lucide="file-text" style="width:18px;"></i></div>
+                    {% include 'partials/logo.html' with o=r.exam %}
                     <div class="info">
                         <div class="name">{{ r.exam.title }}</div>
                         <div class="date">{{ r.completed_at|date:"d.m.Y, H:i" }} · L {{ r.listening_score|floatformat:1 }} · R {{ r.reading_score|floatformat:1 }}{% if r.writing_score %} · W {{ r.writing_score|floatformat:1 }}{% endif %}</div>

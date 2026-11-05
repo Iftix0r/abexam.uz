@@ -151,7 +151,7 @@
   <div class="an-card">
     <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em"><i class=lc-trophy></i>&nbsp;Eng yaxshi natija</div>
     <div style="font-size:22px;font-weight:700;color:#22c55e;margin-bottom:4px">{{ best_result.score|floatformat:1 }}</div>
-    <div style="font-size:13px;font-weight:500">{{ best_result.exam.title|truncatechars:35 }}</div>
+    <div style="font-size:13px;font-weight:500;display:flex;align-items:center;gap:8px">{% include 'partials/logo.html' with o=best_result.exam size='sm' %}<span>{{ best_result.exam.title|truncatechars:35 }}</span></div>
     <div style="font-size:11px;color:var(--text-muted);margin-top:4px">{{ best_result.completed_at|date:"d M Y" }}</div>
     <a href="{% url 'exams:result_detail' best_result.pk %}" style="font-size:12px;color:var(--primary-color);margin-top:8px;display:block">Ko'rish →</a>
   </div>
@@ -160,7 +160,7 @@
   <div class="an-card">
     <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em"><i class=lc-trending-up></i>&nbsp;Yaxshilash kerak</div>
     <div style="font-size:22px;font-weight:700;color:#ef4444;margin-bottom:4px">{{ worst_result.score|floatformat:1 }}</div>
-    <div style="font-size:13px;font-weight:500">{{ worst_result.exam.title|truncatechars:35 }}</div>
+    <div style="font-size:13px;font-weight:500;display:flex;align-items:center;gap:8px">{% include 'partials/logo.html' with o=worst_result.exam size='sm' %}<span>{{ worst_result.exam.title|truncatechars:35 }}</span></div>
     <div style="font-size:11px;color:var(--text-muted);margin-top:4px">{{ worst_result.completed_at|date:"d M Y" }}</div>
     <a href="{% url 'exams:exam_detail' worst_result.exam.pk %}" style="font-size:12px;color:var(--primary-color);margin-top:8px;display:block">Qayta topshirish →</a>
   </div>
@@ -178,6 +178,7 @@
     <div class="score-dot" style="background:{% if r.score >= 7.5 %}#22c55e18{% elif r.score >= 6.0 %}#eab30818{% else %}#ef444418{% endif %};color:{% if r.score >= 7.5 %}#22c55e{% elif r.score >= 6.0 %}#eab308{% else %}#ef4444{% endif %}">
       {{ r.score|floatformat:1 }}
     </div>
+    {% include 'partials/logo.html' with o=r.exam size='sm' %}
     <div style="flex:1">
       <div style="font-size:13px;font-weight:500">{{ r.exam.title|truncatechars:40 }}</div>
       <div style="font-size:11px;color:var(--text-muted);margin-top:2px">

@@ -1,0 +1,2 @@
+{% comment %}Telegram-style logo: initials on the object's own colour. Pass `o` (an exam, a test file, a leaderboard row), optionally `size` ('sm' or 'lg').{% endcomment %}
+<span class="ab-logo{% if size %} ab-logo-{{ size }}{% endif %}" style="background-color:{{ o.avatar_color }}" aria-hidden="true">{{ o.initials }}</span>

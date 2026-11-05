@@ -63,6 +63,7 @@
 <div style="font-size:14px;font-weight:600;margin-bottom:12px">Barcha natijalar ({{ results|length }})</div>
 {% for r in results %}
 <div class="result-row">
+  {% include 'partials/logo.html' with o=r.exam %}
   {% if r.is_pending %}
   <div class="score-circle" style="background:#eab30818;color:#eab308" title="Writing tekshirilmoqda">
     <i data-lucide="hourglass" style="width:20px"></i>

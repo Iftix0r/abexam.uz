@@ -15,7 +15,6 @@
     .lb-row.me { border: 2px solid #3b82f6; }
     .lb-rank { width: 34px; text-align: center; font-weight: 800; color: var(--text-muted); font-size: 1rem; }
     .lb-row:nth-child(1) .lb-rank, .lb-row:nth-child(2) .lb-rank, .lb-row:nth-child(3) .lb-rank { font-size: 1.4rem; }
-    .lb-av { width: 36px; height: 36px; border-radius: 50%; background: var(--primary-color); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; }
     .lb-name { flex: 1; font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .lb-xp { font-weight: 700; color: #f59e0b; white-space: nowrap; }
     .lb-empty { text-align: center; color: var(--text-muted); padding: 30px; background: var(--card-bg); border-radius: 14px; border: 1px dashed var(--border-color); }
@@ -38,7 +37,7 @@
         {% for r in board.rows %}
         <div class="lb-row {% if r.me %}me{% endif %}">
             <div class="lb-rank">{% if r.rank == 1 %}<i class=lc-medal-gold></i>{% elif r.rank == 2 %}<i class=lc-medal-silver></i>{% elif r.rank == 3 %}<i class=lc-medal-bronze></i>{% else %}{{ r.rank }}{% endif %}</div>
-            <div class="lb-av">{{ r.name|first|upper }}</div>
+            {% include 'partials/logo.html' with o=r size='sm' %}
             <div class="lb-name">{{ r.name }}{% if r.me %} (siz){% endif %}</div>
             <div class="lb-xp">{{ r.xp }} XP</div>
         </div>

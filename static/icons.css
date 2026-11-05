@@ -88,3 +88,8 @@ i[class^="lc-"]{display:inline-block;width:1.1em;height:1.1em;vertical-align:-.1
 .lc-wrench{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z'/%3E%3C/svg%3E")}
 .lc-medal-gold,.lc-medal-silver,.lc-medal-bronze{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15'/%3E%3Cpath d='M11 12 5.12 2.2'/%3E%3Cpath d='m13 12 5.88-9.8'/%3E%3Cpath d='M8 7h8'/%3E%3Ccircle cx='12' cy='17' r='5'/%3E%3Cpath d='M12 18v-2h-.5'/%3E%3C/svg%3E")}
 .lc-medal-gold{color:#eab308}.lc-medal-silver{color:#94a3b8}.lc-medal-bronze{color:#c2712d}.lc-flame{color:#f97316}.lc-trophy{color:#eab308}
+
+/* Telegram-style logos: see templates/partials/logo.html */
+.ab-logo{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:50%;flex-shrink:0;color:#fff;font-size:13.5px;font-weight:700;line-height:1;letter-spacing:.02em;text-shadow:0 1px 1px rgba(0,0,0,.15);background-image:linear-gradient(180deg,rgba(255,255,255,.2),rgba(0,0,0,.08));user-select:none;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.ab-logo-sm{width:30px;height:30px;font-size:10.5px}
+.ab-logo-lg{width:60px;height:60px;font-size:19px}
