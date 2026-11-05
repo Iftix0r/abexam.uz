@@ -68,61 +68,75 @@
       <button id="request-location" type="button">Joylashuvni aniqlash</button>
     </main>
     <script>
-      const status = document.getElementById('status');
-      const button = document.getElementById('request-location');
+      const status = document.getElementById("status");
+      const button = document.getElementById("request-location");
       const nextUrl = "{{ next|escapejs }}";
 
       async function saveLocation(position) {
         button.disabled = true;
-        status.className = '';
-        status.textContent = 'Joylashuv saqlanmoqda...';
+        status.className = "";
+        status.textContent = "Joylashuv saqlanmoqda...";
         try {
-          const response = await fetch('/panel/location-required/', {
-            method: 'POST',
-            credentials: 'same-origin',
-            headers: {'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken')},
+          const response = await fetch("/panel/location-required/", {
+            method: "POST",
+            credentials: "same-origin",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": getCookie("csrftoken"),
+            },
             body: JSON.stringify({
               latitude: position.coords.latitude,
               longitude: position.coords.longitude,
-              accuracy: position.coords.accuracy
-            })
+              accuracy: position.coords.accuracy,
+            }),
           });
           const result = await response.json();
-          if (!response.ok || !result.ok) throw new Error(result.error || 'Joylashuv saqlanmadi');
+          if (!response.ok || !result.ok)
+            throw new Error(result.error || "Joylashuv saqlanmadi");
           window.location.assign(nextUrl);
         } catch (error) {
           button.disabled = false;
-          status.className = 'error';
+          status.className = "error";
           status.textContent = error.message;
         }
       }
 
       function requestLocation() {
-        status.className = '';
-        status.textContent = 'Brauzer joylashuv ruxsatini kutmoqda...';
+        status.className = "";
+        status.textContent = "Brauzer joylashuv ruxsatini kutmoqda...";
         if (!navigator.geolocation) {
-          status.className = 'error';
-          status.textContent = 'Bu brauzer joylashuvni qo‘llamaydi.';
+          status.className = "error";
+          status.textContent = "Bu brauzer joylashuvni qo‘llamaydi.";
           return;
         }
-        navigator.geolocation.getCurrentPosition(saveLocation, error => {
-          status.className = 'error';
-          button.disabled = false;
-          if (error.code === 1) {
-            status.textContent = 'Joylashuv ruxsati rad etildi. Paneldan foydalanish uchun ruxsat bering.';
-          } else if (error.code === 3) {
-            status.textContent = 'Joylashuvni aniqlab bo‘lmadi. Iltimos, qayta urinib ko‘ring.';
-          } else {
-            status.textContent = 'Joylashuv mavjud emas yoki aniqlanmadi: ' + error.message;
-          }
-        }, {enableHighAccuracy: true, timeout: 15000, maximumAge: 0});
+        navigator.geolocation.getCurrentPosition(
+          saveLocation,
+          (error) => {
+            status.className = "error";
+            button.disabled = false;
+            if (error.code === 1) {
+              status.textContent =
+                "Joylashuv ruxsati rad etildi. Paneldan foydalanish uchun ruxsat bering.";
+            } else if (error.code === 3) {
+              status.textContent =
+                "Joylashuvni aniqlab bo‘lmadi. Iltimos, qayta urinib ko‘ring.";
+            } else {
+              status.textContent =
+                "Joylashuv mavjud emas yoki aniqlanmadi: " + error.message;
+            }
+          },
+          { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 },
+        );
       }
 
       function getCookie(name) {
-      const cookie = document.cookie.split('; ').find(value => value.startsWith(name + '='));
-      return cookie ? decodeURIComponent(cookie.slice(name.length + 1)) : '';
+        const cookie = document.cookie
+          .split("; ")
+          .find((value) => value.startsWith(name + "="));
+        return cookie ? decodeURIComponent(cookie.slice(name.length + 1)) : "";
+      }
 
-      button.addEventListener('click', requestLocation);
+      button.addEventListener("click", requestLocation);
       requestLocation();
     </script>
   </body>
