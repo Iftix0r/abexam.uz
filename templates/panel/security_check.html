@@ -1,0 +1,52 @@
+{% extends 'panel/base.html' %}
+{% block title %}Xavfsizlik tekshiruvi{% endblock %}
+{% block page_title %}Xavfsizlik tekshiruvi{% endblock %}
+{% block nav_alerts %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+.sc-score{display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-bottom:16px}
+.sc-ring{width:96px;height:96px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;flex-shrink:0}
+.sc-ring.good{background:conic-gradient(var(--green) calc(var(--p)*1%),var(--surface2) 0)}
+.sc-ring.mid{background:conic-gradient(#eab308 calc(var(--p)*1%),var(--surface2) 0)}
+.sc-ring.low{background:conic-gradient(var(--red) calc(var(--p)*1%),var(--surface2) 0)}
+.sc-ring span{width:76px;height:76px;border-radius:50%;background:var(--surface);display:flex;align-items:center;justify-content:center}
+.sc-item{display:flex;gap:13px;padding:14px 18px;border-bottom:1px solid var(--border)}
+.sc-item:last-child{border-bottom:none}
+.sc-dot{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;color:#fff;margin-top:1px}
+.sc-dot.ok{background:var(--green)}.sc-dot.warn{background:#eab308}.sc-dot.bad{background:var(--red)}
+.sc-text{min-width:0;flex:1}
+.sc-text b{font-size:14px}
+.sc-text p{font-size:13px;color:var(--muted);margin-top:2px;overflow-wrap:anywhere}
+.sc-fix{font-size:12.5px;margin-top:6px;padding:8px 10px;border-radius:8px;background:var(--surface2);overflow-wrap:anywhere}
+</style>
+{% endblock %}
+
+{% block content %}
+<nav class="breadcrumb">
+  <a href="{% url 'panel:alerts' %}?tab=security">Xavfsizlik</a>
+  <span class="bc-sep">/</span>
+  <span class="bc-current">Tekshiruv</span>
+</nav>
+
+<div class="card sc-score">
+  <div class="sc-ring {% if check.score >= 85 %}good{% elif check.score >= 60 %}mid{% else %}low{% endif %}" style="--p:{{ check.score }}"><span>{{ check.score }}%</span></div>
+  <div>
+    <div class="section-title">{{ check.passed }} / {{ check.total }} tekshiruv o'tdi</div>
+    <p style="font-size:13px;color:var(--muted);margin-top:4px;line-height:1.6">Sahifa har ochilganda qaytadan tekshiriladi. Sariq va qizil qatorlarning tagida nima qilish kerakligi yozilgan.</p>
+  </div>
+</div>
+
+<div class="card" style="padding:0;overflow:hidden">
+  {% for i in check.items %}
+  <div class="sc-item">
+    <span class="sc-dot {{ i.status }}"><i class={% if i.status == 'ok' %}lc-check{% elif i.status == 'warn' %}lc-triangle-alert{% else %}lc-x{% endif %}></i></span>
+    <div class="sc-text">
+      <b>{{ i.title }}</b>
+      <p>{{ i.detail }}</p>
+      {% if i.fix %}<div class="sc-fix">{{ i.fix }}</div>{% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -6,6 +6,11 @@
   </div>
 </div>
 
+<div class="th-links">
+  <a href="{% url 'panel:blocked_ips' %}" class="btn btn-ghost btn-sm"><i class=lc-ban></i>Bloklangan IP lar{% if threats.blocked_count %} <span class="nav-badge">{{ threats.blocked_count }}</span>{% endif %}</a>
+  {% if request.user.is_superuser %}<a href="{% url 'panel:security_check' %}" class="btn btn-ghost btn-sm"><i class=lc-shield-check></i>Xavfsizlik tekshiruvi</a>{% endif %}
+</div>
+
 <div class="stat-grid">
   <div class="stat-card"><div class="stat-icon" style="background:#dc262618;color:#dc2626;font-size:20px"><i class=lc-triangle-alert></i></div><div><div class="stat-val">{{ threats.count }}</div><div class="stat-label">Hodisa (24 soat)</div></div></div>
   <div class="stat-card"><div class="stat-icon" style="background:#f9731618;color:#f97316;font-size:20px"><i class=lc-zap></i></div><div><div class="stat-val">{{ threats.hits }}</div><div class="stat-label">Urinishlar soni</div></div></div>
@@ -34,7 +39,7 @@
   <div class="al-day">Aniqlangan hodisalar</div>
   {% for i in threats.incidents %}
   <a class="th-row" href="{% url 'panel:threat_detail' i.pk %}">
-    <span class="badge {{ i.badge }}">{{ i.severity_label }}</span>
+    <span class="badge {{ i.badge }}">{{ i.severity_label }}</span>{% if i.ip in threats.blocked_ips %}<span class="badge badge-gray" title="Bu IP bloklangan"><i class=lc-ban></i></span>{% endif %}
     <div class="al-text">
       <div class="al-title">{{ i.label }}</div>
       <div class="al-body">IP {{ i.ip }}{% if i.samples %} · {{ i.samples|last|truncatechars:70 }}{% endif %}</div>

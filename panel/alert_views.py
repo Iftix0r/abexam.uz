@@ -4,13 +4,19 @@ from datetime import timedelta
 from django.core.paginator import Paginator
 from django.db.models import Count, Exists, Max, OuterRef, Q, Sum
 from django.http import JsonResponse
+from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+from django.urls import reverse
 from django.views.decorators.http import require_POST
 
 from core.alerts import device_label
 from core.honeypot import DECOY_PATHS
-from core.models import CanaryToken, SecurityIncident, StaffAlert
+from core import blocking
+from core.audit import log_action
+from core.models import BlockedIP, CanaryToken, SecurityIncident, StaffAlert
+from core.security_check import run_checks
+from core.utils import get_client_ip
 from users.models import LoginLog
 
 from .views import panel_required
@@ -36,6 +42,10 @@ def _day_label(moment, today):
     return None
 
 
+def _blocked_now():
+    return BlockedIP.objects.filter(Q(expires_at__isnull=True) | Q(expires_at__gt=timezone.now()))
+
+
 def _threat_overview():
     now = timezone.now()
     recent = SecurityIncident.objects.filter(last_seen__gte=now - timedelta(hours=24))
@@ -57,6 +67,8 @@ def _threat_overview():
                    'total': k['total'], 'pct': round(k['total'] / largest * 100)} for k in by_kind],
         'incidents': SecurityIncident.objects.all()[:THREAT_ROWS],
         'canaries': CanaryToken.objects.order_by('kind'),
+        'blocked_ips': set(_blocked_now().values_list('network', flat=True)),
+        'blocked_count': _blocked_now().count(),
         'decoys': DECOY_PATHS,
     }
 
@@ -111,7 +123,57 @@ def threat_detail(request, pk):
                      for a in accounts],
         'tried': logins.exclude(status='success').values('username_attempt').annotate(n=Count('id')).order_by('-n')[:15],
         'others': SecurityIncident.objects.filter(ip=incident.ip).exclude(pk=pk)[:10],
+        'ip_block': _blocked_now().filter(network__in=[incident.ip, f'{incident.ip}/32', f'{incident.ip}/128']).first(),
+        'durations': BlockedIP.DURATIONS,
     })
+
+
+def _back(request, fallback='panel:blocked_ips'):
+    back = str(request.POST.get('back', ''))
+    return redirect(back if back.startswith('/panel/') else fallback)
+
+
+@panel_required
+def blocked_ips(request):
+    return render(request, 'panel/blocked_ips.html', {
+        'blocks': BlockedIP.objects.select_related('created_by'),
+        'durations': BlockedIP.DURATIONS, 'own_ip': get_client_ip(request),
+    })
+
+
+@panel_required
+@require_POST
+def ip_block(request):
+    network, error = blocking.parse_network(request.POST.get('network', ''), get_client_ip(request))
+    if error:
+        messages.error(request, error)
+        return _back(request)
+    reason = request.POST.get('reason', '').strip()[:200]
+    BlockedIP.objects.update_or_create(network=network, defaults={
+        'reason': reason, 'created_by': request.user, 'expires_at': BlockedIP.expiry(request.POST.get('duration')),
+        'hits': 0, 'last_hit_at': None})
+    blocking.forget()
+    log_action(request, 'ip_block', network, reverse('panel:blocked_ips'), reason)
+    messages.success(request, f'{network} bloklandi. Boshqa server jarayonlarida 30 soniyagacha kechikishi mumkin.')
+    return _back(request)
+
+
+@panel_required
+@require_POST
+def ip_unblock(request, pk):
+    block = get_object_or_404(BlockedIP, pk=pk)
+    block.delete()
+    blocking.forget()
+    log_action(request, 'ip_unblock', block.network, reverse('panel:blocked_ips'))
+    messages.success(request, f'{block.network} blokdan chiqarildi')
+    return _back(request)
+
+
+@panel_required
+def security_check(request):
+    if not request.user.is_superuser:  # it lists the site's weak spots
+        return redirect('panel:alerts')
+    return render(request, 'panel/security_check.html', {'check': run_checks()})
 
 
 @panel_required

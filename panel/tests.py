@@ -1102,3 +1102,146 @@ class HoneypotTests(TestCase):
         self.client.force_login(self.ali)
         self.assertNotContains(self.client.get('/dashboard/'), self.key)
 
+
+class IpBlockAndCheckTests(TestCase):
+    def setUp(self):
+        from datetime import timedelta
+        from unittest.mock import patch
+        from django.core.cache import cache
+        from core import blocking, security
+        from core.models import AuditLog, BlockedIP
+        cache.clear()
+        security._writes.clear()
+        blocking.forget()
+        self.addCleanup(blocking.forget)
+        patcher = patch.object(security, 'WRITE_EVERY', 0)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+        self.timedelta = timedelta
+        self.Blocked = BlockedIP
+        self.Audit = AuditLog
+        self.boss = User.objects.create_superuser('boss', password='Very-Strong-77')
+        self.helper = User.objects.create_user('yordamchi', password='Very-Strong-77', is_staff=True)
+        self.ali = User.objects.create_user('ali', password='Very-Strong-77')
+
+    def _block(self, network='5.5.5.5', **fields):
+        from core import blocking
+        block = self.Blocked.objects.create(network=network, **fields)
+        blocking.forget()
+        return block
+
+    def test_blocked_ip_gets_403_and_others_do_not(self):
+        block = self._block()
+        self.assertEqual(self.client.get('/privacy/', REMOTE_ADDR='5.5.5.5').status_code, 403)
+        self.assertEqual(self.client.get('/privacy/', REMOTE_ADDR='6.6.6.6').status_code, 200)
+        block.refresh_from_db()
+        self.assertEqual(block.hits, 1)
+
+    def test_a_range_blocks_every_address_in_it(self):
+        self._block('5.5.5.0/24')
+        self.assertEqual(self.client.get('/privacy/', REMOTE_ADDR='5.5.5.200').status_code, 403)
+
+    def test_signed_in_staff_always_pass(self):
+        self._block()
+        self.client.force_login(self.helper)
+        self.assertEqual(self.client.get('/panel/', REMOTE_ADDR='5.5.5.5').status_code, 200)
+
+    def test_blocked_students_cannot_get_in(self):
+        self._block()
+        self.client.force_login(self.ali)
+        self.assertEqual(self.client.get('/dashboard/', REMOTE_ADDR='5.5.5.5').status_code, 403)
+
+    def test_an_expired_block_lets_people_through(self):
+        from django.utils import timezone
+        self._block(expires_at=timezone.now() - self.timedelta(minutes=1))
+        self.assertEqual(self.client.get('/privacy/', REMOTE_ADDR='5.5.5.5').status_code, 200)
+
+    def test_staff_block_from_the_panel_and_it_is_logged(self):
+        self.client.force_login(self.helper)
+        self.client.post(reverse('panel:ip_block'), {'network': '5.5.5.5', 'duration': '1h', 'reason': 'Skaner'})
+        block = self.Blocked.objects.get()
+        from django.utils import timezone
+        self.assertLess(block.expires_at - timezone.now(), self.timedelta(hours=1, minutes=1))
+        self.assertTrue(self.Audit.objects.filter(action='ip_block', target='5.5.5.5/32').exists())
+        self.client.logout()
+        self.assertEqual(self.client.get('/privacy/', REMOTE_ADDR='5.5.5.5').status_code, 403)
+
+    def test_forever_has_no_end(self):
+        self.client.force_login(self.helper)
+        self.client.post(reverse('panel:ip_block'), {'network': '5.5.5.5', 'duration': 'forever'})
+        self.assertIsNone(self.Blocked.objects.get().expires_at)
+
+    def test_unblock(self):
+        block = self._block()
+        self.client.force_login(self.helper)
+        self.client.post(reverse('panel:ip_unblock', args=[block.pk]))
+        self.client.logout()
+        self.assertEqual(self.client.get('/privacy/', REMOTE_ADDR='5.5.5.5').status_code, 200)
+        self.assertTrue(self.Audit.objects.filter(action='ip_unblock').exists())
+
+    def test_refuses_blocks_that_would_lock_people_out(self):
+        self.client.force_login(self.helper)
+        for network in ('127.0.0.1', '5.0.0.0/8', 'not-an-ip', '10.1.2.3'):
+            self.client.post(reverse('panel:ip_block'), {'network': network}, REMOTE_ADDR='10.1.2.3')
+        self.assertFalse(self.Blocked.objects.exists())
+
+    def test_students_cannot_block(self):
+        self.client.force_login(self.ali)
+        self.client.post(reverse('panel:ip_block'), {'network': '5.5.5.5'})
+        self.assertFalse(self.Blocked.objects.exists())
+
+    def test_incident_page_warns_when_students_share_the_ip(self):
+        from core.models import SecurityIncident
+        from django.utils import timezone
+        from users.models import LoginLog
+        LoginLog.objects.create(user=self.ali, username_attempt='ali', ip='5.5.5.5', status='success')
+        incident = SecurityIncident.objects.create(kind='scan', ip='5.5.5.5', last_seen=timezone.now())
+        self.client.force_login(self.helper)
+        page = self.client.get(reverse('panel:threat_detail', args=[incident.pk]))
+        self.assertContains(page, "1 ta hisob kirgan")
+        self.assertContains(page, 'Bu IP ni bloklash')
+        self.assertNotContains(page, 'Blokdan chiqarish')
+
+    def test_incident_page_shows_an_existing_block(self):
+        from core.models import SecurityIncident
+        from django.utils import timezone
+        self._block()
+        incident = SecurityIncident.objects.create(kind='scan', ip='5.5.5.5', last_seen=timezone.now())
+        self.client.force_login(self.helper)
+        self.assertContains(self.client.get(reverse('panel:threat_detail', args=[incident.pk])), 'Blokdan chiqarish')
+
+    def test_telegram_webhook_is_never_blocked(self):
+        self._block('5.5.5.5')
+        status = self.client.post('/tg/webhook/', data='{}', content_type='application/json',
+                                  REMOTE_ADDR='5.5.5.5').status_code
+        self.assertNotIn(b'Kirish vaqtincha cheklangan', self.client.post('/tg/webhook/', data='{}',
+                         content_type='application/json', REMOTE_ADDR='5.5.5.5').content)
+        self.assertIn(status, (200, 403))  # the webhook's own secret check still applies
+
+    def test_permissions_policy_header(self):
+        header = self.client.get('/privacy/')['Permissions-Policy']
+        self.assertIn('camera=(self)', header)
+        self.assertIn('geolocation=()', header)
+
+    def test_checklist_is_for_superusers_only(self):
+        self.client.force_login(self.helper)
+        self.assertEqual(self.client.get(reverse('panel:security_check')).status_code, 302)
+        self.client.force_login(self.boss)
+        page = self.client.get(reverse('panel:security_check'))
+        self.assertEqual(page.status_code, 200)
+        self.assertIn('score', page.context['check'])
+
+    def test_checklist_flags_a_guessable_admin_login(self):
+        User.objects.create_user('admin', password='Very-Strong-77', is_staff=True)
+        self.client.force_login(self.boss)
+        items = {i['title']: i for i in self.client.get(reverse('panel:security_check')).context['check']['items']}
+        self.assertEqual(items['Admin loginlari taxmin qilinmaydi']['status'], 'warn')
+        self.assertIn('admin', items['Admin loginlari taxmin qilinmaydi']['detail'])
+
+    def test_checklist_flags_a_used_canary(self):
+        from core.models import CanaryToken
+        CanaryToken.objects.filter(kind='login').update(hits=1)
+        self.client.force_login(self.boss)
+        items = {i['title']: i for i in self.client.get(reverse('panel:security_check')).context['check']['items']}
+        self.assertEqual(items['Canary tokenlar tegilmagan']['status'], 'bad')
+

@@ -44,10 +44,21 @@ class ThreatWatchMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
 
+    PERMISSIONS = 'camera=(self), microphone=(self), geolocation=(), payment=(), usb=()'
+
     def __call__(self, request):
+        from .blocking import refuse_blocked
         from .security import inspect_request
+        from .utils import get_client_ip
+        if not request.path.startswith('/tg/'):  # Telegram's servers, never a visitor
+            refused = refuse_blocked(request, get_client_ip(request))
+            if refused is not None:
+                return refused
         inspect_request(request)
-        return self.get_response(request)
+        response = self.get_response(request)
+        # Only this site may ask for the camera (exam proctoring) or the microphone.
+        response.headers.setdefault('Permissions-Policy', self.PERMISSIONS)
+        return response
 
 
 class PanelBadgeMiddleware:

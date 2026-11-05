@@ -39,6 +39,8 @@ ACTIONS = {
     'booking': 'Navbat',
     'tgbot': 'Telegram bot',
     'chat': 'AbChat moderatsiya',
+    'ip_block': 'IP bloklandi',
+    'ip_unblock': 'IP blokdan chiqarildi',
     'premium': 'AB Premium',
 }
 

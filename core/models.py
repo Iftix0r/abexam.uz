@@ -272,6 +272,39 @@ class SecurityIncident(models.Model):
         return [kind for kind, details in cls.KINDS.items() if details[1] == severity]
 
 
+class BlockedIP(models.Model):
+    """An IP or range staff shut out from the site. Signed-in staff still pass."""
+    DURATIONS = (('1h', '1 soat', timedelta(hours=1)), ('24h', '24 soat', timedelta(hours=24)),
+                 ('7d', '7 kun', timedelta(days=7)), ('30d', '30 kun', timedelta(days=30)),
+                 ('forever', 'Muddatsiz', None))
+
+    network = models.CharField(max_length=50, unique=True, help_text='203.0.113.7 yoki 203.0.113.0/24')
+    reason = models.CharField(max_length=200, blank=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True,
+                                   related_name='+')
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField(null=True, blank=True)
+    hits = models.PositiveIntegerField(default=0)
+    last_hit_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = 'Bloklangan IP'
+        verbose_name_plural = 'Bloklangan IP lar'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return self.network
+
+    @property
+    def is_active(self):
+        return self.expires_at is None or self.expires_at > timezone.now()
+
+    @classmethod
+    def expiry(cls, code):
+        length = next((d[2] for d in cls.DURATIONS if d[0] == code), timedelta(hours=24))
+        return timezone.now() + length if length else None
+
+
 class CanaryToken(models.Model):
     """A value no one should ever send. It is created once per install and
     also sits in the decoy `admin_passwords` table."""

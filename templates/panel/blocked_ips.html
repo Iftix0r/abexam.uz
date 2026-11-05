@@ -1,0 +1,60 @@
+{% extends 'panel/base.html' %}
+{% block title %}Bloklangan IP lar{% endblock %}
+{% block page_title %}Bloklangan IP lar{% endblock %}
+{% block nav_alerts %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+.bl-row{display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.bl-row:last-child{border-bottom:none}
+.bl-row code{font-size:13.5px;font-weight:700}
+.bl-main{flex:1;min-width:180px}
+.bl-meta{font-size:12px;color:var(--muted);margin-top:3px;overflow-wrap:anywhere}
+.bl-row.expired{opacity:.55}
+.bl-form .form-group{margin-bottom:12px}
+</style>
+{% endblock %}
+
+{% block content %}
+<nav class="breadcrumb">
+  <a href="{% url 'panel:alerts' %}?tab=security">Xavfsizlik</a>
+  <span class="bc-sep">/</span>
+  <span class="bc-current">Bloklangan IP lar</span>
+</nav>
+
+<div class="grid-sidebar-r">
+  <div class="card" style="padding:0;overflow:hidden;align-self:start">
+    {% for b in blocks %}
+    <div class="bl-row{% if not b.is_active %} expired{% endif %}">
+      <div class="bl-main">
+        <code>{{ b.network }}</code>
+        {% if b.is_active %}<span class="badge badge-red" style="margin-left:6px">{% if b.expires_at %}{{ b.expires_at|date:"d M, H:i" }} gacha{% else %}Muddatsiz{% endif %}</span>
+        {% else %}<span class="badge badge-gray" style="margin-left:6px">Muddati tugagan</span>{% endif %}
+        <div class="bl-meta">{% if b.reason %}{{ b.reason }} · {% endif %}{{ b.created_by.display_name|default:"—" }} · {{ b.created_at|date:"d M Y, H:i" }}{% if b.hits %} · {{ b.hits }} marta to'sildi{% endif %}</div>
+      </div>
+      <form method="post" action="{% url 'panel:ip_unblock' b.pk %}" data-confirm="{{ b.network }} blokdan chiqarilsinmi?">
+        {% csrf_token %}<button class="btn btn-ghost btn-sm">{% if b.is_active %}Blokdan chiqarish{% else %}O'chirish{% endif %}</button>
+      </form>
+    </div>
+    {% empty %}
+    <div class="empty-state"><div class="empty-icon"><i class=lc-shield-check></i></div><div class="empty-title">Bloklangan IP yo'q</div>Hujum qilgan IP ni hodisa sahifasidan yoki o'ng tomondan bloklashingiz mumkin</div>
+    {% endfor %}
+  </div>
+
+  <div class="card bl-form" style="align-self:start">
+    <div class="section-title" style="margin-bottom:12px">IP ni bloklash</div>
+    <form method="post" action="{% url 'panel:ip_block' %}">
+      {% csrf_token %}
+      <div class="form-group"><label class="form-label">IP yoki diapazon</label><input class="form-input" name="network" required placeholder="203.0.113.7 yoki 203.0.113.0/24"></div>
+      <div class="form-group"><label class="form-label">Muddat</label>
+        <select class="form-input" name="duration">{% for code, label, _ in durations %}<option value="{{ code }}" {% if code == '24h' %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+      <div class="form-group"><label class="form-label">Sabab</label><input class="form-input" name="reason" maxlength="200" placeholder="Masalan: SQL injection urinishlari"></div>
+      <button class="btn btn-danger" style="width:100%;justify-content:center">Bloklash</button>
+    </form>
+    <p style="font-size:12px;color:var(--muted);line-height:1.6;margin-top:14px">
+      Bloklangan manzildan sayt ochilmaydi. Panelga kirgan xodimlar bloklanmaydi, shuning uchun o'zingizni qulflab qo'ymaysiz.
+      Sizning hozirgi IP: <code>{{ own_ip }}</code>. Bir sinf bitta Wi-Fi dan kirsa, uning IP sini bloklasangiz o'quvchilar ham kira olmaydi.
+    </p>
+  </div>
+</div>
+{% endblock %}

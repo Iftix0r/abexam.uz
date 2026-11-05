@@ -58,6 +58,25 @@
 
   <aside class="td-side">
     <div class="card">
+      {% if ip_block %}
+      <div class="section-title" style="margin-bottom:6px">IP bloklangan</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:12px">{% if ip_block.expires_at %}{{ ip_block.expires_at|date:"d M Y, H:i" }} gacha{% else %}Muddatsiz{% endif %}{% if ip_block.hits %} · {{ ip_block.hits }} marta to'sildi{% endif %}</p>
+      <form method="post" action="{% url 'panel:ip_unblock' ip_block.pk %}" data-confirm="{{ incident.ip }} blokdan chiqarilsinmi?">
+        {% csrf_token %}<input type="hidden" name="back" value="{{ request.path }}">
+        <button class="btn btn-ghost btn-sm" style="width:100%;justify-content:center">Blokdan chiqarish</button>
+      </form>
+      {% else %}
+      <div class="section-title" style="margin-bottom:10px">Bu IP ni bloklash</div>
+      {% if accounts %}<p style="font-size:12.5px;color:var(--yellow);line-height:1.5;margin-bottom:10px"><i class=lc-triangle-alert></i> Bu IP dan {{ accounts|length }} ta hisob kirgan. Bu sinf yoki o'quv markazi Wi-Fi si bo'lsa, o'quvchilar ham kira olmaydi.</p>{% endif %}
+      <form method="post" action="{% url 'panel:ip_block' %}" data-confirm="{{ incident.ip }} bloklansinmi?">
+        {% csrf_token %}<input type="hidden" name="network" value="{{ incident.ip }}"><input type="hidden" name="back" value="{{ request.path }}">
+        <input type="hidden" name="reason" value="{{ incident.label }}">
+        <select class="form-input" name="duration" aria-label="Muddat" style="margin-bottom:8px">{% for code, label, _ in durations %}<option value="{{ code }}" {% if code == '24h' %}selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+        <button class="btn btn-danger btn-sm" style="width:100%;justify-content:center">Bloklash</button>
+      </form>
+      {% endif %}
+    </div>
+    <div class="card">
       <div class="td-rows">
         <div><span>IP manzil</span><b style="font-family:monospace">{{ incident.ip }}</b></div>
         <div><span>Urinishlar</span><b>{{ incident.hits }}</b></div>
