@@ -18,6 +18,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.formats import date_format
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
 
@@ -43,6 +44,9 @@ from users.backends import normalize_phone
 from users.models import LoginLog, User, Vocabulary
 
 logger = logging.getLogger(__name__)
+
+
+PAGE_SIZE = 50
 
 
 def is_staff(user):
@@ -126,9 +130,9 @@ def _user_search(q):
     return cond
 
 
-@panel_required
-def users_list(request):
-    q = request.GET.get('q', '')
+def _filtered_users(request):
+    """The users matching the list page's filters; the CSV export reuses it."""
+    q = request.GET.get('q', '').strip()
     filter_by = request.GET.get('filter', '')
     users = User.objects.order_by('-date_joined')
     if q:
@@ -146,12 +150,19 @@ def users_list(request):
     group_id = request.GET.get('group', '')
     if group_id.isdigit():
         users = users.filter(study_groups=int(group_id))
+    return users
+
+
+@panel_required
+def users_list(request):
     from users.models import StudyGroup
     total = User.objects.count()
     linked = User.objects.filter(telegram__isnull=False).count()
+    users = _filtered_users(request).select_related('telegram').prefetch_related('study_groups')
+    page = Paginator(users, PAGE_SIZE).get_page(request.GET.get('page'))
     return render(request, 'panel/users_list.html', {
-        'users': users.select_related('telegram').prefetch_related('study_groups'), 'q': q, 'filter': filter_by,
-        'groups': StudyGroup.objects.all(), 'group_id': group_id,
+        'users': page, 'page': page, 'q': request.GET.get('q', ''), 'filter': request.GET.get('filter', ''),
+        'groups': StudyGroup.objects.all(), 'group_id': request.GET.get('group', ''),
         'tg_stats': {'linked': linked, 'pct': round(linked / total * 100) if total else 0},
     })
 
@@ -575,11 +586,12 @@ def users_bulk_action(request):
 def users_export_csv(request):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="users.csv"'
+    response.write('\ufeff')  # Excel reads the file as UTF-8 only with a BOM
     w = csv.writer(response)
     w.writerow(['ID', 'Ism Familiya', 'Username', 'Email', 'Telefon', 'Balans', 'Faol', 'Qo\'shilgan', 'Telegram'])
     tg = dict(TelegramAccount.objects.filter(user__isnull=False).values_list('user_id', 'username'))
-    for u in User.objects.only('pk', 'username', 'first_name', 'last_name', 'email', 'phone_number', 'balance',
-                               'is_active', 'date_joined').order_by('-date_joined'):
+    for u in _filtered_users(request).only('pk', 'username', 'first_name', 'last_name', 'email', 'phone_number',
+                                           'balance', 'is_active', 'date_joined'):
         w.writerow([u.pk, u.get_full_name(), u.username, u.email, u.phone_number or '', u.balance, u.is_active,
                     u.date_joined.strftime('%Y-%m-%d'),
                     ('@' + tg[u.pk] if tg[u.pk] else 'ulangan') if u.pk in tg else ''])
@@ -1126,9 +1138,10 @@ def section_duplicate(request, pk):
 def results_export_csv(request):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="results.csv"'
+    response.write('\ufeff')  # Excel reads the file as UTF-8 only with a BOM
     w = csv.writer(response)
     w.writerow(['ID', 'Foydalanuvchi', 'Imtihon', 'Holat', 'Ball', 'Listening', 'Reading', 'Writing', 'Speaking', 'Sana'])
-    for r in UserResult.objects.select_related('user', 'exam').order_by('-completed_at'):
+    for r in _filtered_results(request):
         w.writerow([r.pk, r.user.username, r.exam.title, r.get_status_display(), r.score, r.listening_score, r.reading_score, r.writing_score, r.speaking_score, r.completed_at.strftime('%Y-%m-%d %H:%M')])
     return response
 
@@ -1290,11 +1303,19 @@ def bot_set_webhook(request):
 @panel_required
 def transactions_list(request):
     status = request.GET.get('status', '')
+    q = request.GET.get('q', '').strip()
     txs = Transaction.objects.select_related('user').order_by('-created_at')
     if status:
         txs = txs.filter(status=status)
-    total = txs.filter(status='success').aggregate(t=Sum('amount'))['t'] or 0
-    return render(request, 'panel/transactions_list.html', {'txs': txs, 'status': status, 'total': total})
+    if q:
+        txs = txs.filter(user__in=User.objects.filter(_user_search(q)))
+    # "All" sums only money actually received; a status tab sums that status.
+    summed = txs if status else txs.filter(status='success')
+    total = summed.aggregate(t=Sum('amount'))['t'] or 0
+    page = Paginator(txs, PAGE_SIZE).get_page(request.GET.get('page'))
+    return render(request, 'panel/transactions_list.html', {
+        'txs': page, 'page': page, 'status': status, 'total': total, 'q': request.GET.get('q', ''),
+    })
 
 
 @panel_required
@@ -1314,12 +1335,13 @@ def transaction_approve(request, pk):
 @panel_required
 @require_POST
 def transaction_reject(request, pk):
-    tx = get_object_or_404(Transaction, pk=pk)
-    if tx.status == 'pending':
-        tx.status = 'failed'
-        tx.save(update_fields=['status'])
-        log_action(request, 'tx_reject', tx.user.display_name, reverse('panel:user_detail', args=[tx.user_id]),
-                   f"{tx.amount:,.0f} so'm · {tx.get_method_display()}")
+    with db_transaction.atomic():
+        tx = get_object_or_404(Transaction.objects.select_for_update(), pk=pk)
+        if tx.status == 'pending':
+            tx.status = 'failed'
+            tx.save(update_fields=['status'])
+            log_action(request, 'tx_reject', tx.user.display_name, reverse('panel:user_detail', args=[tx.user_id]),
+                       f"{tx.amount:,.0f} so'm · {tx.get_method_display()}")
     return JsonResponse({'status': tx.status})
 
 
@@ -1407,23 +1429,31 @@ def analytics(request):
 from itertools import chain
 
 # ── Results ────────────────────────────────────────────────────────────────────
-@panel_required
-def results_list(request):
-    exam_id = request.GET.get('exam', '')
-    status = request.GET.get('status', '')
+def _filtered_results(request):
+    """The results matching the list page's filters; the CSV export reuses it."""
     results = UserResult.objects.select_related('user', 'exam').order_by('-completed_at')
-    if exam_id:
-        results = results.filter(exam_id=exam_id)
+    q = request.GET.get('q', '').strip()
+    if q:
+        results = results.filter(Q(user__in=User.objects.filter(_user_search(q))) | Q(exam__title__icontains=q))
+    exam_id = request.GET.get('exam', '')
+    if exam_id.isdigit():
+        results = results.filter(exam_id=int(exam_id))
     group_id = request.GET.get('group', '')
     if group_id.isdigit():
         results = results.filter(user__study_groups=int(group_id))
-    if status == UserResult.STATUS_PENDING:
+    if request.GET.get('status', '') == UserResult.STATUS_PENDING:
         # Oldest first — whoever has been waiting longest gets graded first.
         results = results.pending().order_by('completed_at')
-    exams = Exam.objects.all()
+    return results
+
+
+@panel_required
+def results_list(request):
+    page = Paginator(_filtered_results(request), PAGE_SIZE).get_page(request.GET.get('page'))
     return render(request, 'panel/results_list.html', {
-        'results': results[:100], 'exams': exams, 'exam_id': exam_id, 'status': status,
-        'groups': _groups(), 'group_id': group_id,
+        'results': page, 'page': page, 'exams': Exam.objects.all(), 'q': request.GET.get('q', ''),
+        'exam_id': request.GET.get('exam', ''), 'status': request.GET.get('status', ''),
+        'groups': _groups(), 'group_id': request.GET.get('group', ''),
         'pending_count': UserResult.objects.pending().count(),
     })
 
@@ -2550,7 +2580,7 @@ def english_overview(request):
               .annotate(users=Count('user', filter=Q(xp__gt=0)), xp=Sum('xp'))}
     days = [start + timedelta(days=i) for i in range(14)]
     chart = {
-        'labels': [d.strftime('%d %b') for d in days],
+        'labels': [date_format(d, 'd M') for d in days],
         'users': [by_day.get(d, {}).get('users', 0) for d in days],
         'xp': [by_day.get(d, {}).get('xp', 0) or 0 for d in days],
     }

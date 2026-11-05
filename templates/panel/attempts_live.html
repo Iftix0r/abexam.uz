@@ -117,7 +117,7 @@ tr.row-alert td { animation: rowAlert 1s ease-in-out 6; }
         {% for a in attempts %}
         <tr id="attempt-row-{{ a.pk }}" data-user="{{ a.user.username }}" data-flags="{{ a.leave_count }}|{{ a.pasted_chars }}">
           <td>{% if not a.is_submitted %}<input type="checkbox" class="attempt-checkbox" value="{{ a.pk }}" data-answered="{{ a.answered_count }}" onchange="updateBulk()">{% endif %}</td>
-          <td><a href="{% url 'panel:user_detail' a.user.pk %}" style="color:var(--primary);font-weight:500">{{ a.user.display_name }}</a>
+          <td><a href="{% url 'panel:user_detail' a.user.pk %}" class="link">{{ a.user.display_name }}</a>
             {% if a.user.get_full_name %}<div style="font-size:12px;color:var(--muted)">{{ a.user.get_full_name }}</div>{% endif %}
             {% if a.multi_device %}<div><span class="badge badge-red" title="Shu akkaunt hozir boshqa kompyuterda ham test yozmoqda">⚠ 2 qurilma</span></div>{% endif %}</td>
           <td style="color:var(--muted)">{{ a.exam.title|truncatechars:28 }}</td>
@@ -383,7 +383,7 @@ function extraTimeSelected(){ sendCommand({ids: selectedIds()}, 'extra_time'); }
 
 async function finishAll(){
   if (!EXAM_ID) { toast('Avval yuqoridan imtihonni tanlang', '#eab308'); return; }
-  if (!confirm("Shu imtihonning BARCHA yuborilmagan urinishlaridan (hozir yozayotganlar ham) natija yaratilsinmi? Ochiq test sahifalari to'xtaydi.")) return;
+  if (!await panelConfirm("Shu imtihonning BARCHA yuborilmagan urinishlaridan (hozir yozayotganlar ham) natija yaratilsinmi? Ochiq test sahifalari to'xtaydi.")) return;
   const d = await postJSON('/panel/live/finish-all/', {exam: EXAM_ID});
   if (d.ok) { toast(`${d.done} ta natija yaratildi`); setTimeout(() => refreshLive(true), 700); }
   else toast(d.error || 'Xatolik yuz berdi', '#ef4444');
@@ -392,7 +392,7 @@ async function finalizeAttempt(pk, state){
   const warn = state === 'active'
     ? "Bu o'quvchi hozir ham test yozmoqda! Hozirgi javoblaridan natija yaratilsinmi? Uning test sahifasi to'xtaydi."
     : "Saqlangan javoblardan natija yaratilsinmi?";
-  if (!confirm(warn)) return;
+  if (!await panelConfirm(warn)) return;
   const d = await postJSON(`/panel/live/${pk}/finalize/`);
   if (d.ok) { toast('Natija yaratildi'); setTimeout(() => refreshLive(true), 600); }
   else toast(d.error || 'Xatolik yuz berdi', '#ef4444');
@@ -401,13 +401,13 @@ async function bulkFinalize(){
   const ids = Array.from(document.querySelectorAll('.attempt-checkbox:checked'))
     .filter(cb => Number(cb.dataset.answered) > 0).map(cb => Number(cb.value));
   if (!ids.length) { toast("Tanlanganlarda javob yo'q", '#eab308'); return; }
-  if (!confirm(`${ids.length} ta urinishning saqlangan javoblaridan natija yaratilsinmi?`)) return;
+  if (!await panelConfirm(`${ids.length} ta urinishning saqlangan javoblaridan natija yaratilsinmi?`)) return;
   const d = await postJSON('/panel/live/bulk-finalize/', {ids});
   if (d.ok) { toast(`${d.done} ta natija yaratildi`); setTimeout(() => refreshLive(true), 600); }
   else toast('Xatolik yuz berdi', '#ef4444');
 }
 async function deleteAttempt(pk){
-  if (!confirm("Bu urinish va uning saqlangan javoblari o'chirilsinmi?")) return;
+  if (!await panelConfirm("Bu urinish va uning saqlangan javoblari o'chirilsinmi?")) return;
   const d = await postJSON(`/panel/live/${pk}/delete/`);
   if (d.ok) { document.getElementById('attempt-row-'+pk).remove(); toast("O'chirildi", '#ef4444'); }
 }

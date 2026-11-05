@@ -18,7 +18,7 @@
       <button class="btn btn-ghost btn-sm">{% if day.is_open %}Yozilishni yopish{% else %}Yozilishni ochish{% endif %}</button>
     </form>
     <form method="post" action="{% url 'panel:exam_day_delete' day.pk %}"
-          onsubmit="return confirm('Imtihon kuni o\'chirilsinmi? Navbatdagilarga Telegramda bekor qilingani haqida xabar boradi.')">{% csrf_token %}
+          data-confirm="Imtihon kuni o'chirilsinmi? Navbatdagilarga Telegramda bekor qilingani haqida xabar boradi.">{% csrf_token %}
       <button class="btn btn-danger btn-sm">O'chirish</button>
     </form>
   </div>

@@ -8,6 +8,7 @@ from django.conf import settings
 from django.db.models.functions import TruncDate, TruncMonth
 from django.http import JsonResponse
 from django.utils import timezone
+from django.utils.formats import date_format
 
 logger = logging.getLogger(__name__)
 
@@ -194,7 +195,7 @@ def daily_series(queryset, date_field, days, agg):
     labels, values = [], []
     for i in range(days - 1, -1, -1):
         day = (now - timedelta(days=i)).date()
-        labels.append(day.strftime('%d %b'))
+        labels.append(date_format(day, 'd M'))
         values.append(by_bucket.get(day) or 0)
     return labels, values
 
@@ -221,7 +222,7 @@ def monthly_series(queryset, date_field, months, agg):
         total_months = now.year * 12 + (now.month - 1) - i
         y, m = divmod(total_months, 12)
         m += 1
-        labels.append(date(y, m, 1).strftime('%b %Y'))
+        labels.append(date_format(date(y, m, 1), 'M Y'))
         values.append(by_bucket.get((y, m)) or 0)
     return labels, values
 

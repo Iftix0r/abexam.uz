@@ -1,32 +1,38 @@
 {% extends 'panel/base.html' %}
+{% load panel_ui %}
 {% block title %}Natijalar{% endblock %}
 {% block page_title %}Natijalar{% endblock %}
 {% block nav_results %}active{% endblock %}
 
 {% block content %}
 <div class="section-header">
-  <form method="get" style="display:flex;gap:10px;max-width:100%;flex-wrap:wrap;align-items:center">
-    <a href="?{% if exam_id %}exam={{ exam_id }}{% endif %}{% if group_id %}&group={{ group_id }}{% endif %}" class="btn btn-sm {% if status != 'pending' %}btn-primary{% else %}btn-ghost{% endif %}">Barchasi</a>
-    <a href="?status=pending{% if exam_id %}&exam={{ exam_id }}{% endif %}{% if group_id %}&group={{ group_id }}{% endif %}" class="btn btn-sm {% if status == 'pending' %}btn-primary{% else %}btn-ghost{% endif %}">
-      Tekshirilishi kerak{% if pending_count %} <span class="nav-badge" style="margin-left:4px">{{ pending_count }}</span>{% endif %}
-    </a>
+  <form method="get" class="toolbar">
+    <div class="search-box">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke-width="1.8"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke-width="1.8"/></svg>
+      <input name="q" value="{{ q }}" placeholder="Talaba yoki imtihon...">
+    </div>
+    <div class="seg">
+      <a href="{% qs status='' %}" class="{% if status != 'pending' %}active{% endif %}">Barchasi</a>
+      <a href="{% qs status='pending' %}" class="{% if status == 'pending' %}active{% endif %}">Tekshirilishi kerak{% if pending_count %} <span class="nav-badge">{{ pending_count }}</span>{% endif %}</a>
+    </div>
     {% if status %}<input type="hidden" name="status" value="{{ status }}">{% endif %}
-    <select name="exam" class="form-input" style="width:auto;max-width:100%" onchange="this.form.submit()">
+    <select name="exam" class="form-input" aria-label="Imtihon" onchange="this.form.submit()">
       <option value="">Barcha imtihonlar</option>
       {% for e in exams %}
       <option value="{{ e.pk }}" {% if exam_id == e.pk|stringformat:"s" %}selected{% endif %}>{{ e.title }}</option>
       {% endfor %}
     </select>
     {% if groups %}
-    <select name="group" class="form-input" style="width:auto;max-width:100%" onchange="this.form.submit()">
+    <select name="group" class="form-input" aria-label="Guruh" onchange="this.form.submit()">
       <option value="">Barcha guruhlar</option>
       {% for g in groups %}<option value="{{ g.pk }}" {% if group_id == g.pk|stringformat:"d" %}selected{% endif %}>{{ g.name }}</option>{% endfor %}
     </select>
     {% endif %}
   </form>
-  <div style="display:flex;gap:10px">
+  <div class="toolbar-end">
     <button id="bulkDeleteBtn" onclick="bulkDeleteResults()" class="btn btn-danger btn-sm" style="display:none">Tanlanganlarni o'chirish (<span id="bulkDeleteCount">0</span>)</button>
-    <a href="{% url 'panel:results_export' %}" class="btn btn-ghost btn-sm">↓ CSV yuklab olish</a>
+    <span class="count-note">{{ page.paginator.count }} ta</span>
+    <a href="{% url 'panel:results_export' %}{% qs %}" class="btn btn-ghost btn-sm" title="Joriy filtr bo'yicha yuklab olish">↓ CSV</a>
   </div>
 </div>
 
@@ -41,23 +47,25 @@
         {% for r in results %}
         <tr id="result-row-{{ r.pk }}">
           <td><input type="checkbox" class="result-checkbox" value="{{ r.pk }}" onchange="updateBulkDeleteBtn()"></td>
-          <td><a href="{% url 'panel:user_detail' r.user.pk %}" style="color:var(--primary);font-weight:500">{{ r.user.display_name }}</a></td>
+          <td><a href="{% url 'panel:user_detail' r.user.pk %}" class="link">{{ r.user.display_name }}</a></td>
           <td><a href="{% url 'panel:exam_detail' r.exam.pk %}" style="color:var(--muted)">{{ r.exam.title|truncatechars:26 }}</a></td>
           <td>{% if r.is_pending %}<span class="badge badge-yellow">⏳ Tekshirilmoqda</span>{% elif r.score >= 7.5 %}<span class="badge badge-green">{{ r.score }}</span>{% elif r.score >= 6.0 %}<span class="badge badge-yellow">{{ r.score }}</span>{% else %}<span class="badge badge-red">{{ r.score }}</span>{% endif %}</td>
-          <td style="color:var(--muted)">{{ r.listening_score }}</td>
-          <td style="color:var(--muted)">{{ r.reading_score }}</td>
-          <td style="color:var(--muted)">{% if r.is_pending %}—{% else %}{{ r.writing_score }}{% endif %}</td>
-          <td style="color:var(--muted)">{{ r.speaking_score }}</td>
-          <td style="color:var(--muted);font-size:12px">{{ r.completed_at|date:"d M Y, H:i" }}</td>
-          <td style="white-space:nowrap">
-            {% if r.is_pending %}
-            <a href="{% url 'panel:result_grade' r.pk %}" class="btn btn-primary btn-sm">Baholash</a>
-            {% else %}
-            <a href="{% url 'panel:result_grade' r.pk %}" class="btn btn-ghost btn-sm" title="Bahoni tahrirlash / Speaking qo'shish">✎ Baho</a>
-            {% endif %}
-            <a href="{% url 'panel:result_grade' r.pk %}#answers" class="btn btn-ghost btn-sm" title="Listening/Reading: qaysi savolda qanday xato qilgan">🔍 Xatolar</a>
-            <a href="{% url 'exams:result_detail' r.pk %}" target="_blank" class="btn btn-ghost btn-sm">Batafsil</a>
-            <button onclick="deleteResult({{ r.pk }}, this)" class="btn btn-danger btn-sm">O'chir</button>
+          <td class="td-num">{{ r.listening_score|default:"—" }}</td>
+          <td class="td-num">{{ r.reading_score|default:"—" }}</td>
+          <td class="td-num">{% if r.is_pending %}—{% else %}{{ r.writing_score|default:"—" }}{% endif %}</td>
+          <td class="td-num">{{ r.speaking_score|default:"—" }}</td>
+          <td class="td-date">{{ r.completed_at|date:"d M Y, H:i" }}</td>
+          <td>
+            <div class="row-actions">
+              {% if r.is_pending %}
+              <a href="{% url 'panel:result_grade' r.pk %}" class="btn btn-primary btn-sm">Baholash</a>
+              {% else %}
+              <a href="{% url 'panel:result_grade' r.pk %}" class="icon-btn" title="Bahoni tahrirlash / Speaking qo'shish" aria-label="Bahoni tahrirlash"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></a>
+              {% endif %}
+              <a href="{% url 'panel:result_grade' r.pk %}#answers" class="icon-btn" title="Xatolar: qaysi savolda qanday xato qilgan" aria-label="Xatolar"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" stroke-width="1.8"/><path stroke-width="1.8" d="m21 21-4.3-4.3"/></svg></a>
+              <a href="{% url 'exams:result_detail' r.pk %}" target="_blank" class="icon-btn" title="Batafsil (yangi oynada)" aria-label="Batafsil"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/></svg></a>
+              <button onclick="deleteResult({{ r.pk }}, this)" class="icon-btn danger" title="O'chirish" aria-label="O'chirish"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+            </div>
           </td>
         </tr>
         {% empty %}
@@ -66,6 +74,7 @@
       </tbody>
     </table>
   </div>
+  {% include 'panel/_pagination.html' %}
 </div>
 {% endblock %}
 
@@ -82,7 +91,7 @@ function updateBulkDeleteBtn(){
   btn.style.display = checked.length ? 'inline-flex' : 'none';
 }
 async function deleteResult(pk, btn){
-  if(!confirm('Bu natijani o\'chirishni tasdiqlaysizmi?')) return;
+  if(!await panelConfirm('Bu natijani o\'chirishni tasdiqlaysizmi?')) return;
   const r = await fetch(`/panel/results/${pk}/delete/`, {method:'POST', headers:{'X-CSRFToken':csrf}});
   const d = await r.json();
   if(d.ok){ document.getElementById('result-row-'+pk).remove(); toast('Natija o\'chirildi', '#ef4444'); }
@@ -90,7 +99,7 @@ async function deleteResult(pk, btn){
 async function bulkDeleteResults(){
   const ids = Array.from(document.querySelectorAll('.result-checkbox:checked')).map(cb => Number(cb.value));
   if(!ids.length) return;
-  if(!confirm(`${ids.length} ta natijani o'chirishni tasdiqlaysizmi?`)) return;
+  if(!await panelConfirm(`${ids.length} ta natijani o'chirishni tasdiqlaysizmi?`)) return;
   const r = await fetch('/panel/results/bulk-delete/', {
     method: 'POST',
     headers: {'X-CSRFToken': csrf, 'Content-Type': 'application/json'},

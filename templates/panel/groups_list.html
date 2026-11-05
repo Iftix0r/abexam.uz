@@ -13,7 +13,7 @@
         <tbody>
           {% for g in groups %}
           <tr>
-            <td><a href="{% url 'panel:group_detail' g.pk %}" style="color:var(--primary);font-weight:600">{{ g.name }}</a>
+            <td><a href="{% url 'panel:group_detail' g.pk %}" class="link">{{ g.name }}</a>
               {% if g.description %}<div style="font-size:11.5px;color:var(--muted)">{{ g.description }}</div>{% endif %}</td>
             <td>{{ g.member_count }}</td>
             <td style="color:var(--muted)">{{ g.results }}</td>

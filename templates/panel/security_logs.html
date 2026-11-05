@@ -46,7 +46,7 @@
         {% for log in logs %}
         <tr>
           <td style="font-weight:500">
-            {% if log.user %}<a href="{% url 'panel:user_detail' log.user.pk %}" style="color:var(--primary)">{{ log.username_attempt }}</a>
+            {% if log.user %}<a href="{% url 'panel:user_detail' log.user.pk %}" class="link">{{ log.username_attempt }}</a>
             {% else %}<span style="color:var(--muted)">{{ log.username_attempt }}</span>{% endif %}
           </td>
           <td style="font-family:monospace;font-size:12px;color:var(--red)">{{ log.ip }}</td>

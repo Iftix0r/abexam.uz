@@ -1,4 +1,5 @@
 {% extends 'system/panel_base.html' %}
+{% load panel_ui %}
 {% block title %}Promo kodlar{% endblock %}
 {% block page_title %}Promo kodlar{% endblock %}
 {% block nav_promocodes %}active{% endblock %}
@@ -16,7 +17,7 @@
             <td>
               {% if p.discount_percent %}{{ p.discount_percent }}%{% endif %}
               {% if p.discount_percent and p.discount_amount %} + {% endif %}
-              {% if p.discount_amount %}{{ p.discount_amount|floatformat:0 }} so'm{% endif %}
+              {% if p.discount_amount %}{{ p.discount_amount|som }} so'm{% endif %}
               {% if not p.discount_percent and not p.discount_amount %}—{% endif %}
             </td>
             <td>{{ p.used_count }} / {{ p.max_uses }}</td>
@@ -79,7 +80,7 @@ async function togglePromo(pk){
   toast(d.is_active ? 'Faollashtirildi' : "O'chirildi");
 }
 async function deletePromo(pk){
-  if(!confirm("O'chirilsinmi?")) return;
+  if(!await panelConfirm("O'chirilsinmi?")) return;
   await fetch(`{% url 'system:promocodes' %}${pk}/delete/`,{method:'POST',headers:{'X-CSRFToken':csrf}});
   document.getElementById('promo-row-'+pk).remove();
   toast("O'chirildi",'#ef4444');

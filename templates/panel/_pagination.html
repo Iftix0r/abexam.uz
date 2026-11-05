@@ -1,0 +1,16 @@
+{% load panel_ui %}
+{% if page.has_other_pages %}
+<nav class="pager" aria-label="Sahifalar">
+  <span class="pager-info">{{ page.start_index }}–{{ page.end_index }} / {{ page.paginator.count }}</span>
+  <div class="pager-links">
+    {% if page.has_previous %}<a class="pager-btn" href="{% qs page=page.previous_page_number %}" aria-label="Oldingi sahifa">‹</a>{% endif %}
+    {% page_numbers page as numbers %}
+    {% for n in numbers %}
+      {% if n == page.paginator.ELLIPSIS %}<span class="pager-gap">…</span>
+      {% elif n == page.number %}<span class="pager-btn active" aria-current="page">{{ n }}</span>
+      {% else %}<a class="pager-btn" href="{% qs page=n %}">{{ n }}</a>{% endif %}
+    {% endfor %}
+    {% if page.has_next %}<a class="pager-btn" href="{% qs page=page.next_page_number %}" aria-label="Keyingi sahifa">›</a>{% endif %}
+  </div>
+</nav>
+{% endif %}

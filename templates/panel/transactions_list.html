@@ -1,17 +1,28 @@
 {% extends 'panel/base.html' %}
+{% load panel_ui %}
 {% block title %}Tranzaksiyalar{% endblock %}
 {% block page_title %}Tranzaksiyalar{% endblock %}
 {% block nav_tx %}active{% endblock %}
 
 {% block content %}
 <div class="section-header">
-  <div style="display:flex;gap:8px;flex-wrap:wrap">
-    <a href="?status=" class="btn btn-sm {% if not status %}btn-primary{% else %}btn-ghost{% endif %}">Barchasi</a>
-    <a href="?status=pending" class="btn btn-sm {% if status == 'pending' %}btn-primary{% else %}btn-ghost{% endif %}">Kutilmoqda</a>
-    <a href="?status=success" class="btn btn-sm {% if status == 'success' %}btn-primary{% else %}btn-ghost{% endif %}">Muvaffaqiyatli</a>
-    <a href="?status=failed" class="btn btn-sm {% if status == 'failed' %}btn-primary{% else %}btn-ghost{% endif %}">Xato</a>
+  <form method="get" class="toolbar">
+    <div class="search-box">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke-width="1.8"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke-width="1.8"/></svg>
+      <input name="q" value="{{ q }}" placeholder="Ism yoki telefon...">
+    </div>
+    <div class="seg">
+      <a href="{% qs status='' %}" class="{% if not status %}active{% endif %}">Barchasi</a>
+      <a href="{% qs status='pending' %}" class="{% if status == 'pending' %}active{% endif %}">Kutilmoqda</a>
+      <a href="{% qs status='success' %}" class="{% if status == 'success' %}active{% endif %}">Muvaffaqiyatli</a>
+      <a href="{% qs status='failed' %}" class="{% if status == 'failed' %}active{% endif %}">Xato</a>
+    </div>
+    {% if status %}<input type="hidden" name="status" value="{{ status }}">{% endif %}
+  </form>
+  <div class="toolbar-end">
+    <span class="count-note">{{ page.paginator.count }} ta</span>
+    <span style="font-size:13px;font-weight:600;white-space:nowrap" title="{% if status %}Tanlangan holatdagi summa{% else %}Faqat muvaffaqiyatli to'lovlar{% endif %}">{% if status %}Summa{% else %}Tushum{% endif %}: {{ total|som }} so'm</span>
   </div>
-  <div style="font-size:13px;color:var(--green);font-weight:600">Jami: {{ total|floatformat:0 }} so'm</div>
 </div>
 
 <div class="card" style="padding:0">
@@ -21,8 +32,8 @@
       <tbody>
         {% for tx in txs %}
         <tr id="tx-row-{{ tx.pk }}">
-          <td><a href="{% url 'panel:user_detail' tx.user.pk %}" style="color:var(--primary);font-weight:500">{{ tx.user.display_name }}</a></td>
-          <td style="font-weight:700;color:var(--green)">+{{ tx.amount|floatformat:0 }} so'm</td>
+          <td><a href="{% url 'panel:user_detail' tx.user.pk %}" class="link">{{ tx.user.display_name }}</a></td>
+          <td style="font-weight:700;white-space:nowrap;{% if tx.status == 'success' %}color:var(--green){% elif tx.status == 'failed' %}color:var(--muted);text-decoration:line-through{% endif %}">{{ tx.amount|som }} so'm</td>
           <td><span class="badge badge-blue">{{ tx.get_method_display }}</span></td>
           <td id="tx-status-{{ tx.pk }}">
             {% if tx.status == 'success' %}<span class="badge badge-green">Muvaffaqiyatli</span>
@@ -30,7 +41,7 @@
             {% else %}<span class="badge badge-red">Xato</span>{% endif %}
           </td>
           <td style="color:var(--muted);font-size:12px">{{ tx.description|default:"—" }}</td>
-          <td style="color:var(--muted);font-size:12px">{{ tx.created_at|date:"d M Y, H:i" }}</td>
+          <td class="td-date">{{ tx.created_at|date:"d M Y, H:i" }}</td>
           <td>
             {% if tx.status == 'pending' %}
             <div style="display:flex;gap:6px">
@@ -46,22 +57,38 @@
       </tbody>
     </table>
   </div>
+  {% include 'panel/_pagination.html' %}
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
+// The server answers with the payment's real status; the row shows that, not
+// what was asked for (another admin may have decided first, or the post failed).
+const TX_BADGES = {
+  success: '<span class="badge badge-green">Muvaffaqiyatli</span>',
+  failed: '<span class="badge badge-red">Rad etildi</span>',
+};
+async function decideTx(pk, action){
+  let status;
+  try {
+    const r = await fetch(`/panel/transactions/${pk}/${action}/`, {method:'POST', headers:{'X-CSRFToken':csrf}});
+    if (!r.ok) throw new Error(r.status);
+    status = (await r.json()).status;
+  } catch (e) {
+    toast("Saqlanmadi. Sahifani yangilab, qayta urinib ko'ring", '#ef4444');
+    return;
+  }
+  document.getElementById('tx-status-'+pk).innerHTML = TX_BADGES[status] || '';
+  document.querySelector(`#tx-row-${pk} td:last-child`).innerHTML = '';
+  if (status === 'success') toast('Tasdiqlandi');
+  else toast('Rad etildi', '#ef4444');
+}
 async function approveTx(pk){
-  await fetch(`/panel/transactions/${pk}/approve/`,{method:'POST',headers:{'X-CSRFToken':csrf}});
-  document.getElementById('tx-status-'+pk).innerHTML='<span class="badge badge-green">Muvaffaqiyatli</span>';
-  document.querySelector(`#tx-row-${pk} td:last-child`).innerHTML='';
-  toast('Tasdiqlandi');
+  if (await panelConfirm("To'lov tasdiqlansinmi? Summa foydalanuvchi balansiga qo'shiladi.")) decideTx(pk, 'approve');
 }
 async function rejectTx(pk){
-  await fetch(`/panel/transactions/${pk}/reject/`,{method:'POST',headers:{'X-CSRFToken':csrf}});
-  document.getElementById('tx-status-'+pk).innerHTML='<span class="badge badge-red">Rad etildi</span>';
-  document.querySelector(`#tx-row-${pk} td:last-child`).innerHTML='';
-  toast('Rad etildi','#ef4444');
+  if (await panelConfirm("To'lov rad etilsinmi?")) decideTx(pk, 'reject');
 }
 </script>
 {% endblock %}

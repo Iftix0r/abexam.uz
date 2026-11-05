@@ -327,3 +327,73 @@ class SystemMovedPagesTests(TestCase):
         self.client.force_login(helper)
         self.assertEqual(self.client.get(reverse('system:promocodes')).status_code, 302)
         self.assertNotContains(self.client.get(reverse('panel:dashboard')), 'Tizim</a>')
+
+
+class PanelListTests(TestCase):
+    """Paging, filters and CSV exports on the users/results/payments lists."""
+
+    def setUp(self):
+        from exams.models import Exam, UserResult
+        from payments.models import Transaction
+        self.admin = User.objects.create_superuser('boss', password='pw')
+        self.client.force_login(self.admin)
+        self.students = [User.objects.create_user(f's{i}', password='pw', first_name=f'Talaba{i}') for i in range(60)]
+        self.blocked = User.objects.create_user('blok', password='pw', first_name='Bloklangan', is_active=False)
+        self.exam = Exam.objects.create(title='Cambridge 17')
+        self.other_exam = Exam.objects.create(title='Boshqa test')
+        for student in self.students:
+            UserResult.objects.create(user=student, exam=self.exam, score=6)
+        UserResult.objects.create(user=self.blocked, exam=self.other_exam, score=7)
+        Transaction.objects.create(user=self.blocked, amount=1000, status='success')
+        Transaction.objects.create(user=self.blocked, amount=300, status='pending')
+        self.pending_tx = Transaction.objects.create(user=self.students[0], amount=200, status='pending')
+
+    def test_users_are_paged(self):
+        first = self.client.get(reverse('panel:users'))
+        self.assertEqual(len(first.context['users']), 50)
+        self.assertEqual(first.context['page'].paginator.count, 62)
+        self.assertEqual(len(self.client.get(reverse('panel:users'), {'page': 2}).context['users']), 12)
+
+    def test_page_links_keep_the_filters(self):
+        resp = self.client.get(reverse('panel:users'), {'q': 'Talaba', 'filter': 'student', 'page': 1})
+        self.assertContains(resp, '?q=Talaba&amp;filter=student&amp;page=2')
+        # Switching a filter keeps the search but goes back to page 1.
+        self.assertContains(resp, 'href="?q=Talaba&amp;filter=staff"')
+
+    def test_users_csv_follows_the_filter(self):
+        body = self.client.get(reverse('panel:users_export'), {'filter': 'inactive'}).content.decode('utf-8-sig')
+        self.assertEqual(len(body.strip().splitlines()), 2)
+        self.assertIn('blok', body)
+
+    def test_results_search_page_and_csv(self):
+        self.assertEqual(self.client.get(reverse('panel:results')).context['page'].paginator.count, 61)
+        found = self.client.get(reverse('panel:results'), {'q': 'Bloklangan'})
+        self.assertEqual(found.context['page'].paginator.count, 1)
+        by_exam = self.client.get(reverse('panel:results'), {'q': 'Boshqa'})
+        self.assertEqual(by_exam.context['page'].paginator.count, 1)
+        body = self.client.get(reverse('panel:results_export'), {'exam': self.other_exam.pk}).content.decode('utf-8-sig')
+        self.assertEqual(len(body.strip().splitlines()), 2)
+
+    def test_bad_exam_filter_is_ignored(self):
+        self.assertEqual(self.client.get(reverse('panel:results'), {'exam': 'abc'}).status_code, 200)
+
+    def test_transaction_totals(self):
+        everything = self.client.get(reverse('panel:transactions'))
+        self.assertEqual(everything.context['total'], 1000)  # money received only
+        pending = self.client.get(reverse('panel:transactions'), {'status': 'pending'})
+        self.assertEqual(pending.context['total'], 500)
+        mine = self.client.get(reverse('panel:transactions'), {'q': 'Bloklangan'})
+        self.assertEqual(mine.context['page'].paginator.count, 2)
+
+    def test_deciding_a_payment_twice_keeps_the_first_decision(self):
+        approve = reverse('panel:tx_approve', args=[self.pending_tx.pk])
+        reject = reverse('panel:tx_reject', args=[self.pending_tx.pk])
+        self.assertEqual(self.client.post(approve).json()['status'], 'success')
+        self.assertEqual(self.client.post(reject).json()['status'], 'success')
+        self.students[0].refresh_from_db()
+        self.assertEqual(self.students[0].balance, 200)
+
+    def test_money_format(self):
+        from panel.templatetags.panel_ui import som
+        self.assertEqual(som('2200000.00'), '2 200 000')
+        self.assertEqual(som(None), '0')

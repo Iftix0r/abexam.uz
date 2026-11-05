@@ -31,7 +31,7 @@
     <a href="?sort=hard" class="btn btn-sm {% if sort == 'hard' %}btn-primary{% else %}btn-ghost{% endif %}">Eng qiyinlari</a>
     {% if results_count %}
     <form method="post" action="{% url 'panel:exam_regrade' exam.pk %}" style="display:inline"
-          onsubmit="return confirm('Barcha {{ results_count }} ta natija joriy kalit bilan qayta hisoblanadi (Listening/Reading). Writing baholari saqlanadi. Davom etasizmi?')">
+          data-confirm="Barcha {{ results_count }} ta natija joriy kalit bilan qayta hisoblanadi (Listening/Reading). Writing baholari saqlanadi. Davom etasizmi?">
       {% csrf_token %}
       <button type="submit" class="btn btn-sm btn-success" title="Kalit tuzatilgandan keyin talabalarning ballarini yangilash">↻ Ballarni qayta hisoblash</button>
     </form>

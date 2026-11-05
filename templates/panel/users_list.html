@@ -1,49 +1,50 @@
 {% extends 'panel/base.html' %}
+{% load panel_ui %}
 {% block title %}Foydalanuvchilar{% endblock %}
 {% block page_title %}Foydalanuvchilar{% endblock %}
 {% block nav_users %}active{% endblock %}
 
 {% block content %}
 <div class="section-header">
-  <form method="get" style="display:flex;gap:10px;flex-wrap:wrap">
+  <form method="get" class="toolbar">
     <div class="search-box">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke-width="1.8"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke-width="1.8"/></svg>
       <input name="q" value="{{ q }}" placeholder="Ism, telefon yoki username...">
     </div>
-    <div style="display:flex;gap:6px">
-      <a href="?" class="btn btn-sm {% if not filter %}btn-primary{% else %}btn-ghost{% endif %}">Barchasi</a>
-      <a href="?filter=student" class="btn btn-sm {% if filter == 'student' %}btn-primary{% else %}btn-ghost{% endif %}">Talabalar</a>
-      <a href="?filter=staff" class="btn btn-sm {% if filter == 'staff' %}btn-primary{% else %}btn-ghost{% endif %}">Adminlar</a>
-      <a href="?filter=inactive" class="btn btn-sm {% if filter == 'inactive' %}btn-primary{% else %}btn-ghost{% endif %}">Bloklangan</a>
-      <a href="?filter=tg" class="btn btn-sm {% if filter == 'tg' %}btn-primary{% else %}btn-ghost{% endif %}" title="Telegram bot ulangan">✈ Telegram ulangan</a>
-      <a href="?filter=notg" class="btn btn-sm {% if filter == 'notg' %}btn-primary{% else %}btn-ghost{% endif %}">Ulanmagan</a>
+    <div class="seg">
+      <a href="{% qs filter='' %}" class="{% if not filter %}active{% endif %}">Barchasi</a>
+      <a href="{% qs filter='student' %}" class="{% if filter == 'student' %}active{% endif %}">Talabalar</a>
+      <a href="{% qs filter='staff' %}" class="{% if filter == 'staff' %}active{% endif %}">Adminlar</a>
+      <a href="{% qs filter='inactive' %}" class="{% if filter == 'inactive' %}active{% endif %}">Bloklangan</a>
+      <a href="{% qs filter='tg' %}" class="{% if filter == 'tg' %}active{% endif %}" title="Telegram bot ulangan">Telegram ulangan</a>
+      <a href="{% qs filter='notg' %}" class="{% if filter == 'notg' %}active{% endif %}">Ulanmagan</a>
     </div>
     {% if groups %}
-    <select name="group" class="form-input" style="width:auto;padding:6px 10px" onchange="this.form.submit()">
+    <select name="group" class="form-input" aria-label="Guruh" onchange="this.form.submit()">
       <option value="">Barcha guruhlar</option>
       {% for g in groups %}<option value="{{ g.pk }}" {% if group_id == g.pk|stringformat:"d" %}selected{% endif %}>{{ g.name }}</option>{% endfor %}
     </select>
-    {% if filter %}<input type="hidden" name="filter" value="{{ filter }}">{% endif %}
     {% endif %}
+    {% if filter %}<input type="hidden" name="filter" value="{{ filter }}">{% endif %}
   </form>
-  <div style="display:flex;gap:8px;align-items:center">
+  <div class="toolbar-end">
     <span class="tg-pill" title="Telegram botga ulangan foydalanuvchilar">
       <span class="tg-ic"><svg viewBox="0 0 24 24"><path d="M21.9 4.3 18.8 19c-.2 1-.8 1.3-1.7.8l-4.6-3.4-2.2 2.1c-.3.3-.5.5-1 .5l.3-4.7 8.6-7.8c.4-.3-.1-.5-.6-.2L6.9 13 2.4 11.6c-1-.3-1-1 .2-1.5L20.6 3.2c.8-.3 1.6.2 1.3 1.1z"/></svg></span>
       {{ tg_stats.linked }} ta ulangan · {{ tg_stats.pct }}%
     </span>
-    <span style="color:var(--muted);font-size:13px">{{ users.count }} ta</span>
-    <a href="{% url 'panel:users_export' %}" class="btn btn-ghost btn-sm">↓ CSV</a>
+    <span class="count-note">{{ page.paginator.count }} ta</span>
+    <a href="{% url 'panel:users_export' %}{% qs %}" class="btn btn-ghost btn-sm" title="Joriy filtr bo'yicha yuklab olish">↓ CSV</a>
   </div>
 </div>
 
 <!-- Bulk actions (hidden until selection) -->
-<div id="bulk-bar" style="display:none;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 16px;margin-bottom:14px;display:none;align-items:center;gap:12px">
+<div id="bulk-bar" class="bulk-bar">
   <span id="bulk-count" style="font-size:13px;color:var(--muted)">0 ta tanlandi</span>
   <button onclick="bulkAction('unblock')" class="btn btn-success btn-sm">✓ Faollashtirish</button>
   <button onclick="bulkAction('block')" class="btn btn-ghost btn-sm">⛔ Bloklash</button>
   <button onclick="bulkAction('delete')" class="btn btn-danger btn-sm">O'chirish</button>
   {% if groups %}
-  <select id="bulk-group" class="form-input" style="width:auto;padding:5px 10px;font-size:12px">
+  <select id="bulk-group" class="form-input" aria-label="Guruh">
     <option value="">Guruhni tanlang…</option>
     {% for g in groups %}<option value="{{ g.pk }}">{{ g.name }}</option>{% endfor %}
   </select>
@@ -57,7 +58,7 @@
     <table class="table-cards">
       <thead>
         <tr>
-          <th style="width:36px"><input type="checkbox" id="select-all" onchange="toggleAll(this)" style="accent-color:var(--primary)"></th>
+          <th style="width:36px"><input type="checkbox" id="select-all" onchange="toggleAll(this)"></th>
           <th>Foydalanuvchi</th>
           <th>Telefon</th>
           <th>Telegram</th>
@@ -71,11 +72,11 @@
       <tbody>
         {% for u in users %}
         <tr id="user-row-{{ u.pk }}">
-          <td><input type="checkbox" class="row-check" value="{{ u.pk }}" onchange="updateBulk()" style="accent-color:var(--primary)"></td>
+          <td><input type="checkbox" class="row-check" value="{{ u.pk }}" onchange="updateBulk()"></td>
           <td><div class="u-info">
             <div class="u-avatar">{% if u.avatar %}<img src="{{ u.avatar.url }}">{% else %}{{ u.display_name|first|upper }}{% endif %}</div>
             <div>
-              <a href="{% url 'panel:user_detail' u.pk %}" style="color:var(--primary);font-weight:500">{{ u.display_name }}</a>
+              <a href="{% url 'panel:user_detail' u.pk %}" class="link">{{ u.display_name }}</a>
               {% if u.is_superuser %}<span class="badge badge-purple" style="margin-left:4px;font-size:10px">Super</span>
               {% elif u.is_staff %}<span class="badge badge-blue" style="margin-left:4px;font-size:10px">Admin</span>{% endif %}
               {% if u.has_own_username %}<div style="font-size:11px;color:var(--muted)">@{{ u.username }}</div>{% endif %}
@@ -84,15 +85,15 @@
           </div></td>
           <td style="color:var(--muted)">{{ u.phone_number|default:"—" }}</td>
           <td>{% include 'panel/_tg_pill.html' with acc=u.telegram %}</td>
-          <td style="font-weight:600;color:var(--green)">{{ u.balance|floatformat:0 }} so'm</td>
+          <td style="font-weight:600;color:var(--green);white-space:nowrap">{{ u.balance|som }} so'm</td>
           <td style="font-family:monospace;font-size:11px;color:var(--muted)">{{ u.last_ip|default:"—" }}</td>
           <td>{% if u.is_active %}<span class="badge badge-green">Faol</span>{% else %}<span class="badge badge-red">Bloklangan</span>{% endif %}</td>
-          <td style="color:var(--muted);font-size:12px">{{ u.date_joined|date:"d M Y" }}</td>
+          <td class="td-date">{{ u.date_joined|date:"d M Y" }}</td>
           <td>
-            <div style="display:flex;gap:6px">
-              <a href="{% url 'panel:user_detail' u.pk %}" class="btn btn-ghost btn-sm">Ko'rish</a>
+            <div class="row-actions">
+              <a href="{% url 'panel:user_detail' u.pk %}" class="icon-btn" title="Ko'rish" aria-label="Ko'rish"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3" stroke-width="1.8"/></svg></a>
               {% if not u.is_superuser %}
-              <button onclick="quickDelete({{ u.pk }})" class="btn btn-danger btn-sm">✕</button>
+              <button onclick="quickDelete({{ u.pk }})" class="icon-btn danger" title="O'chirish" aria-label="O'chirish"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
               {% endif %}
             </div>
           </td>
@@ -103,6 +104,7 @@
       </tbody>
     </table>
   </div>
+  {% include 'panel/_pagination.html' %}
 </div>
 {% endblock %}
 
@@ -117,7 +119,7 @@ function updateBulk(){
   const checked=document.querySelectorAll('.row-check:checked');
   const bar=document.getElementById('bulk-bar');
   document.getElementById('bulk-count').textContent=checked.length+' ta tanlandi';
-  bar.style.display=checked.length?'flex':'none';
+  bar.classList.toggle('show',checked.length>0);
 }
 
 function clearSelection(){
@@ -129,7 +131,7 @@ function clearSelection(){
 async function bulkAction(action){
   const ids=[...document.querySelectorAll('.row-check:checked')].map(c=>c.value);
   if(!ids.length)return;
-  if(action==='delete'&&!confirm(ids.length+' ta foydalanuvchini o\'chirishni tasdiqlaysizmi?'))return;
+  if(action==='delete'&&!await panelConfirm(ids.length+' ta foydalanuvchini o\'chirishni tasdiqlaysizmi?'))return;
   const r=await fetch('/panel/users/bulk/',{method:'POST',headers:{'X-CSRFToken':csrf,'Content-Type':'application/json'},body:JSON.stringify({action,ids})});
   const d=await r.json();
   if(d.ok){
@@ -152,7 +154,7 @@ async function bulkAddGroup(){
 }
 
 async function quickDelete(pk){
-  if(!confirm('O\'chirishni tasdiqlaysizmi?'))return;
+  if(!await panelConfirm('O\'chirishni tasdiqlaysizmi?'))return;
   const r=await fetch(`/panel/users/${pk}/delete/`,{method:'POST',headers:{'X-CSRFToken':csrf}});
   const d=await r.json();
   if(d.ok){document.getElementById('user-row-'+pk).remove();toast('O\'chirildi','#ef4444');}

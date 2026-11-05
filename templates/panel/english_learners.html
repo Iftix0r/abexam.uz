@@ -31,7 +31,7 @@
         {% for r in rows %}
         <tr>
           <td>
-            <a href="{% url 'panel:user_detail' r.p.user.pk %}" style="color:var(--primary);font-weight:600">{{ r.p.user.display_name }}</a>
+            <a href="{% url 'panel:user_detail' r.p.user.pk %}" class="link">{{ r.p.user.display_name }}</a>
             <div style="font-size:11px;color:var(--muted)">@{{ r.p.user.username }}</div>
           </td>
           <td>{% if r.p.level %}<span class="badge badge-blue">{{ r.p.level }}</span>{% else %}<span style="color:var(--muted)">—</span>{% endif %}</td>
@@ -53,11 +53,5 @@
   </div>
 </div>
 
-{% if page.has_other_pages %}
-<div style="display:flex;gap:8px;justify-content:center;align-items:center;margin-top:16px">
-  {% if page.has_previous %}<a class="btn btn-ghost btn-sm" href="?q={{ q|urlencode }}&level={{ level }}&sort={{ sort }}&page={{ page.previous_page_number }}">← Oldingi</a>{% endif %}
-  <span style="font-size:12px;color:var(--muted)">{{ page.number }} / {{ page.paginator.num_pages }}</span>
-  {% if page.has_next %}<a class="btn btn-ghost btn-sm" href="?q={{ q|urlencode }}&level={{ level }}&sort={{ sort }}&page={{ page.next_page_number }}">Keyingi →</a>{% endif %}
-</div>
-{% endif %}
+{% include 'panel/_pagination.html' %}
 {% endblock %}

@@ -45,7 +45,7 @@
             {% endif %}
           </td>
           <td style="text-align:right">
-            <form method="post" class="import-form" style="display:inline" {% if not r.is_new %}data-reload="1"{% endif %}>
+            <form method="post" class="import-form" style="display:inline" {% if not r.is_new %}data-confirm="Imtihon JSON'dagi holatga qayta yangilanadi. Panelda qo'lda qilingan o'zgarishlar (savol matni, kalit) yo'qoladi. Davom etasizmi?"{% endif %}>
               {% csrf_token %}
               <input type="hidden" name="file" value="{{ r.name }}">
               <button type="submit" class="btn btn-sm {% if r.is_new %}btn-primary{% else %}btn-ghost{% endif %}">
@@ -68,10 +68,6 @@
 <script>
 // Loading copies the audio too and takes a few seconds — one click only.
 document.querySelectorAll('.import-form').forEach(form => form.addEventListener('submit', e => {
-  if (form.dataset.reload && !confirm("Imtihon JSON'dagi holatga qayta yangilanadi. Panelda qo'lda qilingan o'zgarishlar (savol matni, kalit) yo'qoladi. Davom etasizmi?")) {
-    e.preventDefault();
-    return;
-  }
   const btn = form.querySelector('button');
   btn.disabled = true;
   btn.textContent = 'Yuklanmoqda…';

@@ -46,14 +46,14 @@
             {% for r in rows %}
             <tr>
               <td><span class="rank {% if forloop.counter <= 3 and r.last %}top{% endif %}">{{ forloop.counter }}</span></td>
-              <td><a href="{% url 'panel:user_detail' r.user.pk %}" style="color:var(--primary);font-weight:500">{{ r.user.display_name }}</a>
+              <td><a href="{% url 'panel:user_detail' r.user.pk %}" class="link">{{ r.user.display_name }}</a>
                 {% if r.last %}<div style="font-size:11px;color:var(--muted)">{{ r.last.exam.title|truncatechars:30 }} · {{ r.last.completed_at|date:"d M" }}</div>{% endif %}</td>
               <td>{% if r.last %}<span class="badge {% if r.last.score >= 7 %}badge-green{% elif r.last.score >= 5.5 %}badge-yellow{% else %}badge-red{% endif %}">{{ r.last.score }}</span>{% else %}<span style="color:var(--muted)">—</span>{% endif %}</td>
               <td style="color:var(--muted)">{{ r.avg|floatformat:1|default:"—" }}</td>
               <td style="color:var(--muted)">{{ r.best|default:"—" }}</td>
               <td style="color:var(--muted)">{{ r.count }}</td>
               <td>
-                <form method="post" onsubmit="return confirm('{{ r.user.display_name|escapejs }} guruhdan chiqarilsinmi?')">
+                <form method="post" data-confirm="{{ r.user.display_name }} guruhdan chiqarilsinmi?">
                   {% csrf_token %}<input type="hidden" name="action" value="remove"><input type="hidden" name="user_id" value="{{ r.user.pk }}">
                   <button class="btn btn-ghost btn-sm" title="Guruhdan chiqarish">✕</button>
                 </form>
@@ -88,7 +88,7 @@
         <div class="form-group"><label class="form-label">Tavsif</label><input class="form-input" name="description" value="{{ group.description }}" maxlength="255"></div>
         <button class="btn btn-primary btn-sm">Saqlash</button>
       </form>
-      <form method="post" style="margin-top:14px" onsubmit="return confirm('Guruh o\'chirilsinmi? Talabalar va ularning natijalari saqlanib qoladi.')">
+      <form method="post" style="margin-top:14px" data-confirm="Guruh o'chirilsinmi? Talabalar va ularning natijalari saqlanib qoladi.">
         {% csrf_token %}<input type="hidden" name="action" value="delete">
         <button class="btn btn-danger btn-sm">Guruhni o'chirish</button>
       </form>

@@ -1,4 +1,5 @@
 {% extends 'panel/base.html' %}
+{% load panel_ui %}
 {% block title %}{{ obj.display_name }}{% endblock %}
 {% block page_title %}{{ obj.display_name }}{% endblock %}
 {% block nav_users %}active{% endblock %}
@@ -95,7 +96,7 @@
         <button class="btn btn-sm tg-send" style="width:100%;margin-top:8px">✈ Telegramga yuborish</button>
       </form>
       {% endif %}
-      <form method="post" action="{% url 'panel:user_tg_unlink' obj.pk %}" onsubmit="return confirm('Telegram bot bu hisobdan uzilsinmi? Natija xabarlari bormay qoladi.')">
+      <form method="post" action="{% url 'panel:user_tg_unlink' obj.pk %}" data-confirm="Telegram bot bu hisobdan uzilsinmi? Natija xabarlari bormay qoladi.">
         {% csrf_token %}
         <button class="btn btn-ghost btn-sm" style="width:100%;margin-top:8px">Botdan uzish</button>
       </form>
@@ -147,7 +148,7 @@
     <!-- Balans -->
     <div class="card">
       <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.06em">Balans</div>
-      <div style="font-size:26px;font-weight:700;color:var(--green)" id="balance-val">{{ obj.balance|floatformat:0 }} so'm</div>
+      <div style="font-size:26px;font-weight:700;color:var(--green)" id="balance-val">{{ obj.balance|som }} so'm</div>
       <div style="display:flex;gap:8px;margin-top:12px">
         <input type="number" id="add-amount" placeholder="Summa (+/-)" style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-size:13px;outline:none">
         <button onclick="addBalance({{ obj.pk }})" class="btn btn-primary btn-sm">Qo'shish</button>
@@ -205,7 +206,7 @@
               <td style="color:var(--muted);font-size:12px">{{ t.created_at|date:"d M Y, H:i" }}</td>
               <td style="color:var(--muted);font-size:12px">{{ t.last_used_at|date:"d M Y, H:i"|default:"—" }}</td>
               <td>
-                <form method="post" action="{% url 'panel:english_device_revoke' t.pk %}" onsubmit="return confirm('Bu qurilmani ilovadan chiqarasizmi?')">
+                <form method="post" action="{% url 'panel:english_device_revoke' t.pk %}" data-confirm="Bu qurilmani ilovadan chiqarasizmi?">
                   {% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
                   <button class="btn btn-danger btn-sm">Chiqarish</button>
                 </form>
@@ -267,7 +268,7 @@
           <tbody>
             {% for tx in transactions %}
             <tr>
-              <td style="font-weight:600;color:var(--green)">+{{ tx.amount|floatformat:0 }} so'm</td>
+              <td style="font-weight:600;color:var(--green)">+{{ tx.amount|som }} so'm</td>
               <td><span class="badge badge-blue" style="font-size:10px">{{ tx.get_method_display }}</span></td>
               <td>{% if tx.status == 'success' %}<span class="badge badge-green" style="font-size:10px">OK</span>{% elif tx.status == 'pending' %}<span class="badge badge-yellow" style="font-size:10px">Kutilmoqda</span>{% else %}<span class="badge badge-red" style="font-size:10px">Xato</span>{% endif %}</td>
               <td style="color:var(--muted);font-size:12px">{{ tx.description|default:"—"|truncatechars:30 }}</td>
@@ -396,7 +397,7 @@ async function makeStaff(pk){
 }
 
 async function deleteUser(pk){
-  if(!confirm('Foydalanuvchini o\'chirishni tasdiqlaysizmi?'))return;
+  if(!await panelConfirm('Foydalanuvchini o\'chirishni tasdiqlaysizmi?'))return;
   const r=await fetch(`/panel/users/${pk}/delete/`,{method:'POST',headers:{'X-CSRFToken':csrf}});
   const d=await r.json();
   if(d.ok){toast('O\'chirildi','#ef4444');setTimeout(()=>location.href='/panel/users/',800);}

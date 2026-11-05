@@ -1,4 +1,5 @@
 {% extends 'panel/base.html' %}
+{% load panel_ui %}
 {% block title %}Imtihonlar{% endblock %}
 {% block page_title %}Imtihonlar{% endblock %}
 {% block nav_exams %}active{% endblock %}
@@ -13,7 +14,6 @@
 .toggle-switch input:checked + .toggle-slider::before{transform:translateX(16px)}
 .toggle-switch input:disabled + .toggle-slider{opacity:.5;cursor:not-allowed}
 .exam-warn{color:var(--yellow);font-size:12px;margin-left:6px;cursor:help}
-.filter-pill{font-size:12px;padding:6px 14px;border-radius:8px;font-weight:600}
 </style>
 
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
@@ -67,28 +67,28 @@
 {% endif %}
 
 <div class="section-header">
-  <form method="get" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+  <form method="get" class="toolbar">
     <div class="search-box">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke-width="1.8"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke-width="1.8"/></svg>
       <input name="q" value="{{ q }}" placeholder="Qidirish...">
     </div>
-    <select name="type" class="form-input" style="width:auto" onchange="this.form.submit()">
+    <select name="type" class="form-input" aria-label="Turi" onchange="this.form.submit()">
       <option value="">Barcha turlar</option>
       {% for val, label in exam_types %}
       <option value="{{ val }}" {% if etype == val %}selected{% endif %}>{{ label }}</option>
       {% endfor %}
     </select>
-    <button class="btn btn-ghost btn-sm" type="submit">Filter</button>
+    {% if show %}<input type="hidden" name="show" value="{{ show }}">{% endif %}
   </form>
-  <div style="display:flex;gap:6px">
-    <a href="?" class="btn filter-pill {% if not show %}btn-primary{% else %}btn-ghost{% endif %}">Barchasi</a>
-    <a href="?show=active" class="btn filter-pill {% if show == 'active' %}btn-primary{% else %}btn-ghost{% endif %}">Faol</a>
-    <a href="?show=draft" class="btn filter-pill {% if show == 'draft' %}btn-primary{% else %}btn-ghost{% endif %}">Draft</a>
+  <div class="seg">
+    <a href="{% qs show='' %}" class="{% if not show %}active{% endif %}">Barchasi</a>
+    <a href="{% qs show='active' %}" class="{% if show == 'active' %}active{% endif %}">Faol</a>
+    <a href="{% qs show='draft' %}" class="{% if show == 'draft' %}active{% endif %}">Draft</a>
   </div>
 </div>
 
 <!-- Bulk actions (hidden until selection) -->
-<div id="bulk-bar" style="display:none;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 16px;margin-bottom:14px;align-items:center;gap:12px">
+<div id="bulk-bar" class="bulk-bar">
   <span id="bulk-count" style="font-size:13px;color:var(--muted)">0 ta tanlandi</span>
   <button onclick="bulkAction('activate')" class="btn btn-success btn-sm">✓ Faollashtirish</button>
   <button onclick="bulkAction('deactivate')" class="btn btn-ghost btn-sm">Nofaollashtirish</button>
@@ -100,15 +100,15 @@
   <div class="table-wrap">
     <table>
       <thead><tr>
-        <th style="width:36px"><input type="checkbox" id="select-all" onchange="toggleAll(this)" style="accent-color:var(--primary)"></th>
+        <th style="width:36px"><input type="checkbox" id="select-all" onchange="toggleAll(this)"></th>
         <th>Nomi</th><th>Turi</th><th>Narxi</th><th>Bo'limlar</th><th>Savollar</th><th>Natijalar</th><th>Status</th><th>Sana</th><th></th>
       </tr></thead>
       <tbody>
         {% for e in exams %}
         <tr id="exam-row-{{ e.pk }}" {% if e.is_ai_generated and not e.is_reviewed %}style="background:rgba(245,158,11,.05)"{% endif %}>
-          <td><input type="checkbox" class="row-check" value="{{ e.pk }}" onchange="updateBulk()" style="accent-color:var(--primary)"></td>
+          <td><input type="checkbox" class="row-check" value="{{ e.pk }}" onchange="updateBulk()"></td>
           <td>
-            <a href="{% url 'panel:exam_detail' e.pk %}" style="color:var(--primary);font-weight:500">{{ e.title }}</a>
+            <a href="{% url 'panel:exam_detail' e.pk %}" class="link">{{ e.title }}</a>
             {% if e.is_ai_generated %}
               {% if e.is_reviewed %}
                 <span style="font-size:10px;background:rgba(34,197,94,.15);color:#22c55e;border-radius:4px;padding:1px 5px;margin-left:4px">✓ AI</span>
@@ -117,8 +117,8 @@
               {% endif %}
             {% endif %}
           </td>
-          <td><span class="badge badge-blue">{{ e.get_exam_type_display }}</span></td>
-          <td>{% if e.price == 0 %}<span style="color:var(--green)">Bepul</span>{% else %}<span style="font-weight:600">{{ e.price|floatformat:0 }} so'm</span>{% endif %}</td>
+          <td><span class="badge badge-blue" style="white-space:nowrap">{{ e.get_exam_type_display }}</span></td>
+          <td>{% if e.price == 0 %}<span style="color:var(--green)">Bepul</span>{% else %}<span style="font-weight:600;white-space:nowrap">{{ e.price|som }} so'm</span>{% endif %}</td>
           <td style="color:var(--muted)">{{ e.sections_count }}</td>
           <td style="color:var(--muted)">{{ e.questions_count }}</td>
           <td style="color:var(--muted)">{{ e.results_count }}</td>
@@ -130,34 +130,34 @@
             <span class="exam-warn" title="Faol, lekin birorta savoli yo'q — talabalar bo'sh imtihonga duch keladi">⚠️</span>
             {% endif %}
           </td>
-          <td style="color:var(--muted);font-size:12px">{{ e.created_at|date:"d M Y" }}</td>
+          <td class="td-date">{{ e.created_at|date:"d M Y" }}</td>
           <td>
-            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <div class="row-actions">
               {% if e.is_ai_generated and not e.is_reviewed %}
                 <form method="post" action="{% url 'panel:exam_review' e.pk %}" style="display:inline">
                   {% csrf_token %}
                   <input type="hidden" name="action" value="approve">
                   <button type="submit" class="btn btn-sm" style="background:#22c55e;color:#fff;border:none;font-weight:600">✓ Tasdiqlash</button>
                 </form>
-                <form method="post" action="{% url 'panel:exam_review' e.pk %}" style="display:inline" onsubmit="return confirm('Rad etilsa imtihon o\'chiriladi. Davom etasizmi?')">
+                <form method="post" action="{% url 'panel:exam_review' e.pk %}" style="display:inline" data-confirm="Rad etilsa imtihon o'chiriladi. Davom etasizmi?">
                   {% csrf_token %}
                   <input type="hidden" name="action" value="reject">
                   <button type="submit" class="btn btn-danger btn-sm">✕ Rad</button>
                 </form>
               {% else %}
-                <a href="{% url 'panel:exam_detail' e.pk %}" class="btn btn-ghost btn-sm">Ko'rish</a>
-                <a href="{% url 'panel:exam_edit' e.pk %}" class="btn btn-ghost btn-sm">Tahrir</a>
-                <label class="toggle-switch" title="{% if e.is_active %}Nofaollashtirish{% else %}Faollashtirish{% endif %}">
+                <label class="toggle-switch" style="margin-right:6px" title="{% if e.is_active %}Nofaollashtirish{% else %}Faollashtirish{% endif %}">
                   <input type="checkbox" {% if e.is_active %}checked{% endif %} onchange="toggleExam({{ e.pk }}, this)">
                   <span class="toggle-slider"></span>
                 </label>
-                <button onclick="deleteExam({{ e.pk }}, this)" class="btn btn-danger btn-sm">O'chir</button>
+                <a href="{% url 'panel:exam_detail' e.pk %}" class="icon-btn" title="Ko'rish" aria-label="Ko'rish"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3" stroke-width="1.8"/></svg></a>
+                <a href="{% url 'panel:exam_edit' e.pk %}" class="icon-btn" title="Tahrirlash" aria-label="Tahrirlash"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></a>
+                <button onclick="deleteExam({{ e.pk }}, this)" class="icon-btn danger" title="O'chirish" aria-label="O'chirish"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
               {% endif %}
             </div>
           </td>
         </tr>
         {% empty %}
-        <tr><td colspan="9" style="text-align:center;padding:32px;color:var(--muted)">Imtihon topilmadi</td></tr>
+        <tr><td colspan="10"><div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">Imtihon topilmadi</div>Qidiruv yoki filtrni o'zgartirib ko'ring</div></td></tr>
         {% endfor %}
       </tbody>
     </table>
@@ -175,7 +175,7 @@ function updateBulk(){
   const checked=document.querySelectorAll('.row-check:checked');
   const bar=document.getElementById('bulk-bar');
   document.getElementById('bulk-count').textContent=checked.length+' ta tanlandi';
-  bar.style.display=checked.length?'flex':'none';
+  bar.classList.toggle('show',checked.length>0);
 }
 function clearSelection(){
   document.querySelectorAll('.row-check').forEach(c=>c.checked=false);
@@ -185,7 +185,7 @@ function clearSelection(){
 async function bulkAction(action){
   const ids=[...document.querySelectorAll('.row-check:checked')].map(c=>c.value);
   if(!ids.length)return;
-  if(action==='delete'&&!confirm(ids.length+' ta imtihonni o\'chirishni tasdiqlaysizmi?'))return;
+  if(action==='delete'&&!await panelConfirm(ids.length+' ta imtihonni o\'chirishni tasdiqlaysizmi?'))return;
   const r=await fetch('/panel/exams/bulk/',{method:'POST',headers:{'X-CSRFToken':csrf,'Content-Type':'application/json'},body:JSON.stringify({action,ids})});
   const d=await r.json();
   if(d.ok){
@@ -210,7 +210,7 @@ async function toggleExam(pk, checkbox){
   toast(d.active?'Yoqildi':'O\'chirildi');
 }
 async function deleteExam(pk, btn){
-  if(!confirm('Imtihonni o\'chirishni tasdiqlaysizmi?')) return;
+  if(!await panelConfirm('Imtihonni o\'chirishni tasdiqlaysizmi?')) return;
   const r=await fetch(`/panel/exams/${pk}/delete/`,{method:'POST',headers:{'X-CSRFToken':csrf}});
   const d=await r.json();
   if(d.ok){btn.closest('tr').remove();toast('Imtihon o\'chirildi','#ef4444');}

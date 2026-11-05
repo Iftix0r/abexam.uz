@@ -32,7 +32,7 @@
           <td style="color:var(--muted);font-size:12px;white-space:nowrap">{{ e.created_at|date:"d M Y, H:i" }}</td>
           <td style="font-weight:600;font-size:13px">{{ e.staff_name }}</td>
           <td><span class="badge {% if 'delete' in e.action or e.action == 'tx_reject' %}badge-red{% elif e.action == 'balance' or e.action == 'question_key' or e.action == 'exam_regrade' %}badge-yellow{% else %}badge-blue{% endif %}">{{ e.label }}</span></td>
-          <td style="font-size:13px">{% if e.target_url %}<a href="{{ e.target_url }}" style="color:var(--primary)">{{ e.target|truncatechars:60 }}</a>{% else %}{{ e.target|truncatechars:60 }}{% endif %}</td>
+          <td style="font-size:13px">{% if e.target_url %}<a href="{{ e.target_url }}" class="link">{{ e.target|truncatechars:60 }}</a>{% else %}{{ e.target|truncatechars:60 }}{% endif %}</td>
           <td style="font-size:12px;color:var(--muted)">{{ e.details|truncatechars:140 }}</td>
         </tr>
         {% empty %}
@@ -41,12 +41,6 @@
       </tbody>
     </table>
   </div>
-  {% if page.has_other_pages %}
-  <div style="display:flex;gap:8px;justify-content:center;margin-top:16px">
-    {% if page.has_previous %}<a href="?page={{ page.previous_page_number }}&staff={{ staff_id }}&action={{ action }}&q={{ q|urlencode }}" class="btn btn-ghost btn-sm">← Oldingi</a>{% endif %}
-    <span style="font-size:12px;color:var(--muted);align-self:center">{{ page.number }} / {{ page.paginator.num_pages }}</span>
-    {% if page.has_next %}<a href="?page={{ page.next_page_number }}&staff={{ staff_id }}&action={{ action }}&q={{ q|urlencode }}" class="btn btn-ghost btn-sm">Keyingi →</a>{% endif %}
-  </div>
-  {% endif %}
+{% include 'panel/_pagination.html' %}
 </div>
 {% endblock %}
