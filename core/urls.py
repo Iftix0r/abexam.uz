@@ -6,7 +6,7 @@ from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
 from django.views.generic import TemplateView
 from core.admin_site import AbExamAdminSite
-from core import system_views
+from core import honeypot, system_views
 from panel import views as panel_views
 from exams.testlar import TestlarListView, testlar_file
 from payments.views import PremiumBuyView, PremiumView
@@ -21,6 +21,9 @@ admin.site.__class__ = AbExamAdminSite
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('robots.txt', honeypot.robots_txt),
+    path('administrator/', honeypot.decoy_login),
+    path('backup/', honeypot.decoy_folder),
     path('panel/', include('panel.urls', namespace='panel')),
     path('system/', include(([
         path('', system_views.dashboard, name='dashboard'),

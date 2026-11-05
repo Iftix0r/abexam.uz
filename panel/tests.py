@@ -1010,3 +1010,95 @@ class ThreatDetectionTests(TestCase):
         self.client.force_login(self.ali)
         self.assertEqual(self.client.get(reverse('panel:threat_detail', args=[self.Incident.objects.first().pk])).status_code, 302)
 
+
+class HoneypotTests(TestCase):
+    def setUp(self):
+        from unittest.mock import patch
+        from django.core.cache import cache
+        from core import honeypot, security
+        from core.models import CanaryToken, DecoyAdminPassword, SecurityIncident
+        cache.clear()
+        security._writes.clear()
+        honeypot._known['at'] = 0.0
+        patcher = patch.object(security, 'WRITE_EVERY', 0)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+        self.Incident = SecurityIncident
+        self.Canary = CanaryToken
+        self.login = CanaryToken.objects.get(kind='login').value
+        self.key = CanaryToken.objects.get(kind='api_key').value
+        self.decoy = DecoyAdminPassword.objects.get()
+        self.boss = User.objects.create_superuser('boss', password='Very-Strong-77')
+        self.ali = User.objects.create_user('ali', password='Very-Strong-77')
+
+    def _kinds(self):
+        return set(self.Incident.objects.values_list('kind', flat=True))
+
+    def test_install_has_its_own_bait_in_admin_passwords(self):
+        from django.db import connection
+        self.assertIn('admin_passwords', connection.introspection.table_names())
+        self.assertEqual((self.decoy.username, self.decoy.api_key), (self.login, self.key))
+        self.assertTrue(self.login.startswith('superadmin_backup_'))
+
+    def test_visiting_a_decoy_page_is_noted(self):
+        self.assertEqual(self.client.get('/administrator/').status_code, 200)
+        self.client.get('/backup/')
+        self.assertEqual(self._kinds(), {'honeypot_visit'})
+
+    def test_typing_into_the_decoy_login_is_high_risk_and_keeps_no_password(self):
+        page = self.client.post('/administrator/', {'username': 'root', 'password': 'Secret-123'})
+        self.assertContains(page, 'Invalid username or password')
+        incident = self.Incident.objects.get(kind='honeypot_login')
+        self.assertEqual(incident.severity, 'high')
+        self.assertIn('login: root', incident.samples[0])
+        self.assertFalse(any('Secret-123' in s for s in incident.samples))
+
+    def test_robots_hides_the_decoys_from_honest_crawlers(self):
+        body = self.client.get('/robots.txt').content.decode()
+        self.assertIn('Disallow: /administrator/', body)
+        self.assertIn('Disallow: /backup/', body)
+
+    def test_canary_login_on_the_site_is_caught(self):
+        self.client.post('/login/', {'username': self.login, 'password': self.decoy.password})
+        self.assertIn('canary', self._kinds())
+        self.assertEqual(self.Canary.objects.get(kind='login').hits, 1)
+
+    def test_canary_login_in_the_app_is_caught(self):
+        import json
+        self.client.post('/api/learn/auth/login/', data=json.dumps({'username': self.login, 'password': 'x'}),
+                         content_type='application/json')
+        self.assertIn('canary', self._kinds())
+
+    def test_canary_login_on_django_admin_is_caught(self):
+        from django.conf import settings
+        from django.test import override_settings
+        storages = {**settings.STORAGES, 'staticfiles': {'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage'}}
+        with override_settings(STORAGES=storages):  # tests run without collectstatic's manifest
+            self.client.post('/admin/login/', {'username': self.login, 'password': 'x'})
+        self.assertIn('canary', self._kinds())
+
+    def test_canary_password_never_logs_anyone_in(self):
+        self.client.post('/login/', {'username': self.login, 'password': self.decoy.password})
+        self.assertNotIn('_auth_user_id', self.client.session)
+
+    def test_canary_api_key_is_caught_anywhere(self):
+        self.client.get('/api/learn/me/', HTTP_AUTHORIZATION=f'Bearer {self.key}')
+        self.client.get('/privacy/', HTTP_X_API_TOKEN=self.key)
+        self.assertEqual(self.Incident.objects.get(kind='canary').hits, 2)
+        self.assertEqual(self.Canary.objects.get(kind='api_key').hits, 2)
+
+    def test_ordinary_logins_trip_nothing(self):
+        self.client.post('/login/', {'username': 'ali', 'password': 'wrong'})
+        self.client.post('/login/', {'username': 'ali', 'password': 'Very-Strong-77'})
+        self.assertNotIn('canary', self._kinds())
+
+    def test_security_tab_lists_the_bait(self):
+        self.client.force_login(self.boss)
+        page = self.client.get(reverse('panel:alerts'), {'tab': 'security'})
+        self.assertContains(page, self.key)
+        self.assertContains(page, '/administrator/')
+
+    def test_students_never_see_the_bait(self):
+        self.client.force_login(self.ali)
+        self.assertNotContains(self.client.get('/dashboard/'), self.key)
+

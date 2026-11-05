@@ -6,4 +6,4 @@ class CoreConfig(AppConfig):
     name = 'core'
 
     def ready(self):
-        from . import signals  # noqa: F401
+        from . import honeypot, signals  # noqa: F401

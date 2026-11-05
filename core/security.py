@@ -145,6 +145,8 @@ def inspect_request(request):
     path = request.path
     if path.startswith(_SKIP_PREFIXES):
         return
+    from .honeypot import check_request
+    check_request(request)
     ip = get_client_ip(request)
     if _too_many_requests(request, ip):
         record_threat('flood', request)

@@ -207,6 +207,18 @@ class SecurityIncident(models.Model):
         'bad_host': ('Noto\'g\'ri domen bilan so\'rov', 'low',
                      "Saytga boshqa domen nomi yoki to'g'ridan-to'g'ri IP orqali murojaat bo'ldi. Bu avtomatik botlarda ko'p uchraydi.",
                      "So'rov rad etildi. Hech narsa qilish shart emas."),
+        'honeypot_visit': ('Tuzoq sahifa ochildi', 'medium',
+                           "Hech qayerda ko'rsatilmagan soxta sahifa ochildi (/administrator/ yoki /backup/). "
+                           "Oddiy foydalanuvchi u yerga bormaydi, bu bot yoki saytni o'rganayotgan odam.",
+                           "Hozircha xavfsiz. Shu IP dan boshqa hodisalar ham bo'lsa, hosting firewall'ida bloklang."),
+        'honeypot_login': ('Soxta admin sahifasiga login kiritildi', 'high',
+                           "Kimdir soxta admin sahifasiga login va parol kiritdi. Bu ataylab kirishga urinish.",
+                           "IP ni bloklang. Kiritilgan login sizning xodimingizniki bo'lsa, uning parolini almashtiring."),
+        'canary': ('Canary token ishlatildi', 'high',
+                   "Faqat admin_passwords tuzoq jadvalida turgan soxta login yoki API kalit ishlatildi. "
+                   "Demak kimdir ma'lumotlar bazasini yoki uning zaxira nusxasini o'qigan.",
+                   "Jiddiy holat. Bazaga va hostingga kirish parollarini, SECRET_KEY va API kalitlarni almashtiring, "
+                   "zaxira nusxalar qayerda saqlanishini tekshiring."),
         'panel_probe': ('Talaba panelga kirishga urindi', 'low',
                         "Xodim bo'lmagan foydalanuvchi admin panel sahifasini ochdi va rad etildi.",
                         "Tasodif bo'lishi mumkin. Tez-tez takrorlansa, hisobni tekshiring."),
@@ -258,6 +270,42 @@ class SecurityIncident(models.Model):
     @classmethod
     def kinds_of(cls, severity):
         return [kind for kind, details in cls.KINDS.items() if details[1] == severity]
+
+
+class CanaryToken(models.Model):
+    """A value no one should ever send. It is created once per install and
+    also sits in the decoy `admin_passwords` table."""
+    KINDS = (('login', 'Soxta admin login'), ('api_key', 'Soxta API kalit'))
+
+    kind = models.CharField(max_length=10, choices=KINDS)
+    value = models.CharField(max_length=100, unique=True)
+    hits = models.PositiveIntegerField(default=0)
+    last_hit_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Canary token'
+        verbose_name_plural = 'Canary tokenlar'
+
+    def __str__(self):
+        return self.get_kind_display()
+
+
+class DecoyAdminPassword(models.Model):
+    """Bait for whoever reads the database: none of these credentials work,
+    and using them raises a «canary» incident."""
+    username = models.CharField(max_length=100)
+    password = models.CharField(max_length=100)
+    api_key = models.CharField(max_length=100)
+    note = models.CharField(max_length=200, blank=True)
+
+    class Meta:
+        db_table = 'admin_passwords'
+        verbose_name = 'Tuzoq (admin_passwords)'
+        verbose_name_plural = 'Tuzoq (admin_passwords)'
+
+    def __str__(self):
+        return self.username
 
 
 class AuditLog(models.Model):

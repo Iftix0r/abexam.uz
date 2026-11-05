@@ -9,7 +9,8 @@ from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from core.alerts import device_label
-from core.models import SecurityIncident, StaffAlert
+from core.honeypot import DECOY_PATHS
+from core.models import CanaryToken, SecurityIncident, StaffAlert
 from users.models import LoginLog
 
 from .views import panel_required
@@ -55,6 +56,8 @@ def _threat_overview():
         'kinds': [{'label': SecurityIncident.KINDS[k['kind']][0], 'severity': SecurityIncident.KINDS[k['kind']][1],
                    'total': k['total'], 'pct': round(k['total'] / largest * 100)} for k in by_kind],
         'incidents': SecurityIncident.objects.all()[:THREAT_ROWS],
+        'canaries': CanaryToken.objects.order_by('kind'),
+        'decoys': DECOY_PATHS,
     }
 
 

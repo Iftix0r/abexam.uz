@@ -46,3 +46,24 @@
   <div class="empty-state"><div class="empty-icon"><i class=lc-shield-check></i></div>Hujum aniqlanmagan</div>
   {% endfor %}
 </div>
+
+<div class="card" style="margin-bottom:16px">
+  <div class="section-header" style="margin-bottom:6px">
+    <span class="section-title">Tuzoqlar (honeypot va canary token)</span>
+  </div>
+  <p style="font-size:12.5px;color:var(--muted);line-height:1.6;margin-bottom:12px">
+    Bu qiymatlar bazadagi <code>admin_passwords</code> tuzoq jadvalida turadi va hech qayerda ishlamaydi.
+    Ularni kim ishlatsa, bazani yoki zaxira nusxasini o'qigan bo'ladi. Xohlasangiz, nusxalab eski zaxira yoki eslatmalarga ham qo'yib qo'ying.
+  </p>
+  {% for c in threats.canaries %}
+  <div class="th-line">
+    <span style="min-width:120px">{{ c.get_kind_display }}</span>
+    <code id="canary-{{ c.pk }}">{{ c.value }}</code>
+    <button type="button" class="icon-btn" title="Nusxalash" aria-label="Nusxalash" onclick="navigator.clipboard?.writeText(document.getElementById('canary-{{ c.pk }}').textContent).then(() => toast('Nusxalandi'))"><i class=lc-link></i></button>
+    <b style="{% if c.hits %}color:var(--red){% endif %}">{% if c.hits %}{{ c.hits }} marta ishlatildi{% else %}Tegilmagan{% endif %}</b>
+  </div>
+  {% endfor %}
+  {% for path in threats.decoys %}
+  <div class="th-line"><span style="min-width:120px">Tuzoq sahifa</span><code>{{ path }}</code><span>robots.txt da yashirilgan</span></div>
+  {% endfor %}
+</div>
