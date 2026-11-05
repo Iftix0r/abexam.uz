@@ -167,9 +167,11 @@ class TestlarFilesTests(TestCase):
         dashboard = self.client.get(reverse('dashboard'))
         self.assertNotContains(dashboard, reverse('testlar'))
 
-    def test_menu_link_stays_for_staff(self):
+    def test_staff_reach_it_from_the_panel_not_the_site_menu(self):
         self.client.force_login(self.user)
-        self.assertContains(self.client.get(reverse('dashboard')), reverse('testlar'))
+        self.assertNotContains(self.client.get(reverse('dashboard')), reverse('testlar'))
+        self.assertContains(self.client.get(reverse('panel:exam_passwords')), reverse('testlar'))
+        self.assertEqual(self.client.get(reverse('testlar')).status_code, 200)
 
     def test_requires_login(self):
         self.assertEqual(self.client.get(reverse('testlar')).status_code, 302)
