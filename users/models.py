@@ -10,6 +10,10 @@ def validate_phone(value):
         raise ValidationError("To'g'ri telefon raqam kiriting (masalan: +998901234567)")
 
 
+def age_on(birth_date, day):
+    return day.year - birth_date.year - ((day.month, day.day) < (birth_date.month, birth_date.day))
+
+
 class User(AbstractUser):
     phone_number = models.CharField(
         max_length=15, unique=True, null=True, blank=True,
@@ -21,9 +25,22 @@ class User(AbstractUser):
     bio = models.TextField(max_length=500, blank=True)
     last_ip = models.GenericIPAddressField(null=True, blank=True)
     premium_until = models.DateTimeField(null=True, blank=True)
+    birth_date = models.DateField(null=True, blank=True)
+    region = models.CharField(max_length=40, blank=True, db_index=True)
+    district = models.CharField(max_length=40, blank=True)
 
     def __str__(self):
         return self.username
+
+    @property
+    def needs_details(self):
+        return not (self.birth_date and self.region and self.district)
+
+    @property
+    def age(self):
+        if not self.birth_date:
+            return None
+        return age_on(self.birth_date, timezone.localdate())
 
     @property
     def display_name(self):

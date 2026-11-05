@@ -4,7 +4,13 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 
+from datetime import date
+
+from django.utils import timezone
+
 from .backends import is_uz_mobile, normalize_phone, phone_variants
+from .models import age_on
+from .regions import REGIONS
 
 User = get_user_model()
 
@@ -59,6 +65,46 @@ class RegisterForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+
+MIN_AGE = 13  # the privacy policy: the service is not for younger children
+MAX_AGE = 100
+
+
+class DetailsForm(forms.Form):
+    """Birth date and region, asked in the welcome window and on the profile."""
+    birth_day = forms.IntegerField(min_value=1, max_value=31)
+    birth_month = forms.IntegerField(min_value=1, max_value=12)
+    birth_year = forms.IntegerField()
+    region = forms.ChoiceField(choices=[(r, r) for r in REGIONS])
+    district = forms.CharField(max_length=40)
+
+    def clean(self):
+        data = super().clean()
+        if self.errors:
+            raise forms.ValidationError("Barcha maydonlarni to'ldiring.")
+        try:
+            birth_date = date(data['birth_year'], data['birth_month'], data['birth_day'])
+        except ValueError:
+            raise forms.ValidationError("Bunday sana yo'q. Kun va oyni tekshiring.")
+        age = age_on(birth_date, timezone.localdate())
+        if age < MIN_AGE:
+            raise forms.ValidationError(f"AbExam {MIN_AGE} yoshdan katta foydalanuvchilar uchun.")
+        if age > MAX_AGE:
+            raise forms.ValidationError("Tug'ilgan yilni tekshiring.")
+        if data['district'] not in REGIONS[data['region']]:
+            raise forms.ValidationError("Tuman tanlangan viloyatga tegishli emas.")
+        data['birth_date'] = birth_date
+        return data
+
+    def apply_to(self, user):
+        user.birth_date = self.cleaned_data['birth_date']
+        user.region = self.cleaned_data['region']
+        user.district = self.cleaned_data['district']
+
+    @property
+    def error_text(self):
+        return ' '.join(self.non_field_errors())
 
 
 def _free_username(base):

@@ -20,7 +20,7 @@ from core.utils import (
 from exams.models import Exam, UserResult
 from exams.rating import ALL_TIME, MONTH, exam_rating
 from .backends import normalize_phone
-from .forms import LoginForm, RegisterForm
+from .forms import DetailsForm, LoginForm, RegisterForm
 from .models import LoginLog, User, Vocabulary
 from payments.models import Transaction
 
@@ -343,6 +343,12 @@ class ProfileView(LoginRequiredMixin, View):
 
     def post(self, request):
         user = request.user
+        if any(request.POST.get(name) for name in DetailsForm.base_fields):
+            details = DetailsForm(request.POST)
+            if not details.is_valid():
+                messages.error(request, details.error_text)
+                return redirect('profile')
+            details.apply_to(user)
         user.first_name = request.POST.get('first_name', user.first_name)
         user.last_name = request.POST.get('last_name', user.last_name)
         user.email = request.POST.get('email', user.email)
@@ -359,6 +365,17 @@ class ProfileView(LoginRequiredMixin, View):
             user.avatar = avatar
         user.save()
         return redirect('profile')
+
+
+class ProfileDetailsView(LoginRequiredMixin, View):
+    """Saves the welcome window's birth date and region."""
+    def post(self, request):
+        form = DetailsForm(request.POST)
+        if not form.is_valid():
+            return JsonResponse({'ok': False, 'error': form.error_text})
+        form.apply_to(request.user)
+        request.user.save(update_fields=['birth_date', 'region', 'district'])
+        return JsonResponse({'ok': True})
 
 
 class NotificationsView(LoginRequiredMixin, View):

@@ -1,8 +1,10 @@
+from users.regions import REGIONS
+
 from .models import SiteSettings
 
 
 def site(request):
-    context = {'site_settings': SiteSettings.get()}
+    context = {'site_settings': SiteSettings.get(), 'uz_regions': REGIONS}
     if request.user.is_authenticated:
         from .models import Notification
         # Broadcast notifications (user=None) share one is_read flag across

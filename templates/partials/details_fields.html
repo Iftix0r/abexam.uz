@@ -1,0 +1,19 @@
+{# Birth date and region pickers; details_script.html fills them. Pass `required=1` to require every field. #}
+<div class="details-fields" data-day="{{ user.birth_date.day|default:'' }}" data-month="{{ user.birth_date.month|default:'' }}" data-year="{{ user.birth_date.year|default:'' }}" data-region="{{ user.region }}" data-district="{{ user.district }}">
+  <div class="details-row">
+    <label class="details-label">Tug'ilgan sana</label>
+    <div class="details-date">
+      <select name="birth_day" class="form-input" aria-label="Kun"{% if required %} required{% endif %}></select>
+      <select name="birth_month" class="form-input" aria-label="Oy"{% if required %} required{% endif %}></select>
+      <select name="birth_year" class="form-input" aria-label="Yil"{% if required %} required{% endif %}></select>
+    </div>
+  </div>
+  <div class="details-row">
+    <label class="details-label">Viloyat</label>
+    <select name="region" class="form-input" aria-label="Viloyat"{% if required %} required{% endif %}></select>
+  </div>
+  <div class="details-row">
+    <label class="details-label">Tuman yoki shahar</label>
+    <select name="district" class="form-input" aria-label="Tuman yoki shahar" disabled{% if required %} required{% endif %}></select>
+  </div>
+</div>

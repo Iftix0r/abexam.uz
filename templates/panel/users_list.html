@@ -20,6 +20,10 @@
       <a href="{% qs filter='notg' %}" class="{% if filter == 'notg' %}active{% endif %}">Ulanmagan</a>
     </div>
     {% if groups %}
+    <select name="region" class="form-input" aria-label="Viloyat" onchange="this.form.submit()">
+      <option value="">Barcha viloyatlar</option>
+      {% for r in uz_regions %}<option value="{{ r }}" {% if region == r %}selected{% endif %}>{{ r }}</option>{% endfor %}
+    </select>
     <select name="group" class="form-input" aria-label="Guruh" onchange="this.form.submit()">
       <option value="">Barcha guruhlar</option>
       {% for g in groups %}<option value="{{ g.pk }}" {% if group_id == g.pk|stringformat:"d" %}selected{% endif %}>{{ g.name }}</option>{% endfor %}

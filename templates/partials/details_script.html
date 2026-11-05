@@ -1,0 +1,41 @@
+{# Fills every .details-fields on the page. Included once per page. #}
+{{ uz_regions|json_script:"uz-regions" }}
+<style>
+.details-row{margin-bottom:14px}
+.details-label{display:block;font-size:12px;font-weight:500;color:var(--text-muted);margin-bottom:6px}
+.details-date{display:grid;grid-template-columns:1fr 1.35fr 1.1fr;gap:8px}
+.details-fields select{width:100%;min-width:0;height:44px;padding:0 8px;border-radius:10px;border:1px solid var(--border-color);background:var(--tint-a);color:var(--text-color);font-size:14px;font-family:inherit;outline:none}
+.details-fields select:focus{border-color:var(--primary-color)}
+.details-fields select:disabled{opacity:.55}
+.details-fields option{background:var(--bg-color);color:var(--text-color)}
+</style>
+<script>
+(function () {
+  const regions = JSON.parse(document.getElementById('uz-regions').textContent);
+  const months = ['Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'Iyun', 'Iyul', 'Avgust', 'Sentabr', 'Oktabr', 'Noyabr', 'Dekabr'];
+  const thisYear = new Date().getFullYear();
+  function fill(select, placeholder, items, chosen) {
+    select.textContent = '';
+    select.add(new Option(placeholder, ''));
+    items.forEach(([value, label]) => select.add(new Option(label, value)));
+    select.value = chosen || '';
+  }
+  document.querySelectorAll('.details-fields').forEach(box => {
+    const pick = name => box.querySelector(`[name=${name}]`);
+    const days = Array.from({length: 31}, (_, i) => [i + 1, i + 1]);
+    const years = Array.from({length: 88}, (_, i) => [thisYear - 13 - i, thisYear - 13 - i]);
+    fill(pick('birth_day'), 'Kun', days, box.dataset.day);
+    fill(pick('birth_month'), 'Oy', months.map((m, i) => [i + 1, m]), box.dataset.month);
+    fill(pick('birth_year'), 'Yil', years, box.dataset.year);
+    fill(pick('region'), 'Viloyatni tanlang', Object.keys(regions).map(r => [r, r]), box.dataset.region);
+    const district = pick('district');
+    function fillDistricts(chosen) {
+      const list = regions[pick('region').value] || [];
+      fill(district, 'Tumanni tanlang', list.map(d => [d, d]), chosen);
+      district.disabled = !list.length;
+    }
+    fillDistricts(box.dataset.district);
+    pick('region').addEventListener('change', () => fillDistricts(''));
+  });
+})();
+</script>

@@ -154,6 +154,9 @@ def _filtered_users(request):
     group_id = request.GET.get('group', '')
     if group_id.isdigit():
         users = users.filter(study_groups=int(group_id))
+    region = request.GET.get('region', '')
+    if region:
+        users = users.filter(region=region)
     return users
 
 
@@ -167,6 +170,7 @@ def users_list(request):
     return render(request, 'panel/users_list.html', {
         'users': page, 'page': page, 'q': request.GET.get('q', ''), 'filter': request.GET.get('filter', ''),
         'groups': StudyGroup.objects.all(), 'group_id': request.GET.get('group', ''),
+        'region': request.GET.get('region', ''),
         'tg_stats': {'linked': linked, 'pct': round(linked / total * 100) if total else 0},
     })
 
@@ -703,13 +707,15 @@ def users_export_csv(request):
     response['Content-Disposition'] = 'attachment; filename="users.csv"'
     response.write('\ufeff')  # Excel reads the file as UTF-8 only with a BOM
     w = csv.writer(response)
-    w.writerow(['ID', 'Ism Familiya', 'Username', 'Email', 'Telefon', 'Balans', 'Faol', 'Qo\'shilgan', 'Telegram'])
+    w.writerow(['ID', 'Ism Familiya', 'Username', 'Email', 'Telefon', 'Balans', 'Faol', 'Qo\'shilgan', 'Telegram',
+                'Tug\'ilgan sana', 'Viloyat', 'Tuman'])
     tg = dict(TelegramAccount.objects.filter(user__isnull=False).values_list('user_id', 'username'))
     for u in _filtered_users(request).only('pk', 'username', 'first_name', 'last_name', 'email', 'phone_number',
-                                           'balance', 'is_active', 'date_joined'):
+                                           'balance', 'is_active', 'date_joined', 'birth_date', 'region', 'district'):
         w.writerow([u.pk, u.get_full_name(), u.username, u.email, u.phone_number or '', u.balance, u.is_active,
                     u.date_joined.strftime('%Y-%m-%d'),
-                    ('@' + tg[u.pk] if tg[u.pk] else 'ulangan') if u.pk in tg else ''])
+                    ('@' + tg[u.pk] if tg[u.pk] else 'ulangan') if u.pk in tg else '',
+                    u.birth_date.isoformat() if u.birth_date else '', u.region, u.district])
     return response
 
 

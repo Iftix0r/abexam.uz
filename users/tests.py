@@ -175,3 +175,89 @@ class AdminPanelLinkTests(TestCase):
         self.assertContains(page, reverse('panel:dashboard'))
         self.assertContains(self.client.get(reverse('learn:hub')), 'Admin panel')
 
+
+class ProfileDetailsTests(TestCase):
+    def setUp(self):
+        from django.core.cache import cache
+        cache.clear()
+        self.user = User.objects.create_user('ali', password='pw', first_name='Ali')
+        self.client.force_login(self.user)
+        self.good = {'birth_day': 15, 'birth_month': 3, 'birth_year': 2000,
+                     'region': "Farg'ona viloyati", 'district': "Qo'qon shahri"}
+
+    def _save(self, **changes):
+        return self.client.post(reverse('profile_details'), {**self.good, **changes}).json()
+
+    def test_window_shows_until_the_details_are_saved(self):
+        self.assertContains(self.client.get(reverse('dashboard')), 'detailsAsk')
+        self.assertTrue(self._save()['ok'])
+        self.assertNotContains(self.client.get(reverse('dashboard')), 'detailsAsk')
+
+    def test_details_are_stored(self):
+        self._save()
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.birth_date.isoformat(), '2000-03-15')
+        self.assertEqual((self.user.region, self.user.district), ("Farg'ona viloyati", "Qo'qon shahri"))
+        self.assertFalse(self.user.needs_details)
+
+    def test_staff_are_not_asked(self):
+        self.user.is_staff = True
+        self.user.save()
+        self.assertNotContains(self.client.get(reverse('dashboard')), 'detailsAsk')
+
+    def test_impossible_date_is_refused(self):
+        self.assertFalse(self._save(birth_day=31, birth_month=2)['ok'])
+
+    def test_children_under_thirteen_are_refused_and_not_stored(self):
+        from django.utils import timezone
+        self.assertFalse(self._save(birth_year=timezone.localdate().year - 5)['ok'])
+        self.user.refresh_from_db()
+        self.assertIsNone(self.user.birth_date)
+
+    def test_district_must_belong_to_the_region(self):
+        self.assertFalse(self._save(district='Chilonzor')['ok'])
+
+    def test_missing_field_is_refused(self):
+        self.assertFalse(self._save(region='')['ok'])
+
+    def test_anonymous_visitors_cannot_save(self):
+        self.client.logout()
+        self.assertEqual(self.client.post(reverse('profile_details'), self.good).status_code, 302)
+
+    def test_profile_page_edits_details_without_a_window(self):
+        page = self.client.get(reverse('profile'))
+        self.assertContains(page, 'birth_year')
+        self.assertNotContains(page, 'detailsAsk')
+        self.client.post(reverse('profile'), {'first_name': 'Ali', **self.good})
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.district, "Qo'qon shahri")
+
+    def test_profile_form_without_details_still_saves(self):
+        self.client.post(reverse('profile'), {'first_name': 'Vali', 'birth_day': '', 'region': ''})
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.first_name, 'Vali')
+
+    def test_bad_details_on_the_profile_save_nothing(self):
+        self.client.post(reverse('profile'), {'first_name': 'Vali', **self.good, 'district': 'Chilonzor'})
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.first_name, 'Ali')
+
+    def test_other_students_never_see_the_details(self):
+        self._save()
+        # The other student has filled theirs in, so no window lists the districts.
+        other = User.objects.create_user('vali', password='pw', birth_date='2000-01-01',
+                                         region='Toshkent shahri', district='Chilonzor')
+        self.client.force_login(other)
+        self.assertNotContains(self.client.get(reverse('rating')), "Qo&#x27;qon shahri")
+        self.assertNotContains(self.client.get(reverse('rating')), "Qo'qon shahri")
+
+    def test_admin_sees_filters_and_exports_them(self):
+        self._save()
+        boss = User.objects.create_superuser('boss', password='pw')
+        self.client.force_login(boss)
+        self.assertContains(self.client.get(reverse('panel:user_detail', args=[self.user.pk])), "Qo&#x27;qon shahri")
+        page = self.client.get(reverse('panel:users'), {'region': "Farg'ona viloyati"})
+        self.assertEqual([u.pk for u in page.context['users']], [self.user.pk])
+        body = self.client.get(reverse('panel:users_export')).content.decode('utf-8-sig')
+        self.assertIn('2000-03-15', body)
+

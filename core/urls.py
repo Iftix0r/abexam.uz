@@ -14,7 +14,7 @@ from tgbot.views import bot_page, schedule
 from users.views import (
     HomeView, DashboardView, CustomLoginView, RegisterView,
     ExamsListView, RatingView, ResultsListView, VocabularyView,
-    ChatAIView, ProfileView, NotificationsView, AccountDeleteView
+    ChatAIView, ProfileView, ProfileDetailsView, NotificationsView, AccountDeleteView
 )
 
 admin.site.__class__ = AbExamAdminSite
@@ -57,6 +57,7 @@ urlpatterns = [
     path('', HomeView.as_view(), name='home'),
     path('dashboard/', DashboardView.as_view(), name='dashboard'),
     path('profile/', ProfileView.as_view(), name='profile'),
+    path('profile/details/', ProfileDetailsView.as_view(), name='profile_details'),
     path('exams-list/', ExamsListView.as_view(), name='exams_list'),
     path('results-list/', ResultsListView.as_view(), name='results_list'),
     path('reyting/', RatingView.as_view(), name='rating'),

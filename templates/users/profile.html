@@ -121,6 +121,7 @@
           <label>Telefon raqam</label>
           <input type="text" name="phone_number" class="form-input" value="{{ user.phone_number|default:'' }}" placeholder="+998901234567">
         </div>
+        {% include 'partials/details_fields.html' %}
         <div class="form-group">
           <label>O'zingiz haqingizda</label>
           <textarea name="bio" class="form-input" rows="3" placeholder="Qisqacha bio...">{{ user.bio }}</textarea>
@@ -155,6 +156,8 @@
   </div>
 </div>
 {% endblock %}
+
+{% block details_prompt %}{% include 'partials/details_script.html' %}{% endblock %}
 
 {% block extra_js %}
 <script>

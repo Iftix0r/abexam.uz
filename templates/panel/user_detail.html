@@ -376,6 +376,9 @@
       <div class="pf-label">Ma'lumotlar</div>
       <div class="tg-rows">
         <div><span>Telefon</span><b>{{ obj.phone_number|default:"—" }}</b></div>
+        <div><span>Tug'ilgan sana</span><b>{% if obj.birth_date %}{{ obj.birth_date|date:"d M Y" }} ({{ obj.age }} yosh){% else %}—{% endif %}</b></div>
+        <div><span>Viloyat</span><b>{{ obj.region|default:"—" }}</b></div>
+        <div><span>Tuman</span><b>{{ obj.district|default:"—" }}</b></div>
         <div><span>Qo'shilgan</span><b>{{ obj.date_joined|date:"d M Y" }}</b></div>
         <div><span>Oxirgi kirish</span><b>{{ obj.last_login|date:"d M Y, H:i"|default:"—" }}</b></div>
         <div><span>IP manzil</span><b style="font-family:monospace;font-size:12px">{{ obj.last_ip|default:"—" }}</b></div>
