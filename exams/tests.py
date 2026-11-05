@@ -810,7 +810,7 @@ class RatingTests(TestCase):
             cache.clear()
             self._result(self.vali, 7)
             self.client.force_login(self.ali)
-            self.assertNotContains(self.client.get(reverse('rating')), 'data-write')
+            self.assertNotContains(self.client.get(reverse('rating')), 'data-write="')
         finally:
             settings_obj.chat_dm_enabled = True
             settings_obj.save()

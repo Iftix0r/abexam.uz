@@ -19,6 +19,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.dateparse import parse_date
 from django.utils.formats import date_format
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
@@ -37,8 +38,8 @@ from exams.testlar import testlar_folders
 from exams.views import finalize_attempt
 from learn.content import LEVEL_INFO, LEVELS, get_course, get_stories, validate_course
 from learn.models import ApiToken, AppRelease, DailyXP, LearnerProfile, LessonDraft, LessonProgress, Mistake
-from payments import premium
-from payments.models import Transaction
+from payments import decisions, premium
+from payments.models import PremiumPurchase, Transaction
 from tgbot import api as tg_api, avatars as tg_avatars
 from tgbot.models import Booking, ExamDay, TelegramAccount
 from tgbot.services import BookingError, book, notify_day_cancelled, notify_result_ready
@@ -1347,48 +1348,111 @@ def bot_set_webhook(request):
 
 # ── Transactions ───────────────────────────────────────────────────────────────
 @panel_required
-def transactions_list(request):
-    status = request.GET.get('status', '')
+def _filtered_transactions(request):
+    """The payments matching the list page's filters; the CSV export reuses it."""
+    txs = Transaction.objects.select_related('user', 'decided_by').order_by('-created_at')
+    status, method = request.GET.get('status', ''), request.GET.get('method', '')
     q = request.GET.get('q', '').strip()
-    txs = Transaction.objects.select_related('user').order_by('-created_at')
+    start, end = parse_date(request.GET.get('from', '') or ''), parse_date(request.GET.get('to', '') or '')
     if status:
         txs = txs.filter(status=status)
+    if method:
+        txs = txs.filter(method=method)
     if q:
         txs = txs.filter(user__in=User.objects.filter(_user_search(q)))
+    if start:
+        txs = txs.filter(created_at__date__gte=start)
+    if end:
+        txs = txs.filter(created_at__date__lte=end)
+    return txs
+
+
+def _money_stats():
+    now = timezone.localtime()
+    today = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    month = today.replace(day=1)
+    received = Transaction.objects.filter(status='success')
+    pending = Transaction.objects.filter(status='pending').aggregate(n=Count('id'), t=Sum('amount'))
+    sold = PremiumPurchase.objects.filter(created_at__gte=month, amount__gt=0).aggregate(n=Count('id'), t=Sum('amount'))
+    return {
+        'today': received.filter(created_at__gte=today).aggregate(t=Sum('amount'))['t'] or 0,
+        'month': received.filter(created_at__gte=month).aggregate(t=Sum('amount'))['t'] or 0,
+        'pending_count': pending['n'], 'pending_sum': pending['t'] or 0,
+        'premium_count': sold['n'], 'premium_sum': sold['t'] or 0,
+    }
+
+
+@panel_required
+def transactions_list(request):
+    status = request.GET.get('status', '')
+    context = {
+        'status': status, 'q': request.GET.get('q', ''), 'method': request.GET.get('method', ''),
+        'date_from': request.GET.get('from', ''), 'date_to': request.GET.get('to', ''),
+        'methods': Transaction.PAYMENT_METHODS, 'stats': _money_stats(),
+    }
+    if status == 'premium':
+        rows = PremiumPurchase.objects.select_related('user', 'granted_by').order_by('-created_at')
+        page = Paginator(rows, PAGE_SIZE).get_page(request.GET.get('page'))
+        return render(request, 'panel/transactions_list.html', {**context, 'purchases': page, 'page': page})
+    txs = _filtered_transactions(request)
     # "All" sums only money actually received; a status tab sums that status.
     summed = txs if status else txs.filter(status='success')
     total = summed.aggregate(t=Sum('amount'))['t'] or 0
     page = Paginator(txs, PAGE_SIZE).get_page(request.GET.get('page'))
-    return render(request, 'panel/transactions_list.html', {
-        'txs': page, 'page': page, 'status': status, 'total': total, 'q': request.GET.get('q', ''),
-    })
+    return render(request, 'panel/transactions_list.html', {**context, 'txs': page, 'page': page, 'total': total})
+
+
+@panel_required
+def transactions_export_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="transactions.csv"'
+    response.write('\ufeff')  # Excel reads the file as UTF-8 only with a BOM
+    w = csv.writer(response)
+    w.writerow(['ID', 'Foydalanuvchi', 'Telefon', 'Summa', 'Usul', 'Holat', 'Izoh', 'Sana', 'Kim hal qildi', 'Rad sababi'])
+    for tx in _filtered_transactions(request):
+        w.writerow([tx.pk, tx.user.display_name, tx.user.phone_number or '', tx.amount, tx.get_method_display(),
+                    tx.get_status_display(), tx.description, timezone.localtime(tx.created_at).strftime('%Y-%m-%d %H:%M'),
+                    tx.decided_by.display_name if tx.decided_by else '', tx.reject_reason])
+    return response
+
+
+def _decide_and_log(request, pk, approve, reason=''):
+    tx, changed = decisions.decide(pk, approve, request.user, reason)
+    if changed:
+        log_action(request, 'tx_approve' if approve else 'tx_reject', tx.user.display_name,
+                   reverse('panel:user_detail', args=[tx.user_id]),
+                   f"{tx.amount:,.0f} so'm · {tx.get_method_display()}" + (f' · {reason}' if reason else ''))
+    return tx, changed
 
 
 @panel_required
 @require_POST
 def transaction_approve(request, pk):
-    with db_transaction.atomic():
-        tx = get_object_or_404(Transaction.objects.select_for_update(), pk=pk)
-        if tx.status == 'pending':
-            tx.status = 'success'
-            tx.save(update_fields=['status'])
-            User.objects.filter(pk=tx.user_id).update(balance=F('balance') + tx.amount)
-            log_action(request, 'tx_approve', tx.user.display_name, reverse('panel:user_detail', args=[tx.user_id]),
-                       f"{tx.amount:,.0f} so'm · {tx.get_method_display()}")
+    get_object_or_404(Transaction, pk=pk)
+    tx, _ = _decide_and_log(request, pk, True)
     return JsonResponse({'status': tx.status})
 
 
 @panel_required
 @require_POST
 def transaction_reject(request, pk):
-    with db_transaction.atomic():
-        tx = get_object_or_404(Transaction.objects.select_for_update(), pk=pk)
-        if tx.status == 'pending':
-            tx.status = 'failed'
-            tx.save(update_fields=['status'])
-            log_action(request, 'tx_reject', tx.user.display_name, reverse('panel:user_detail', args=[tx.user_id]),
-                       f"{tx.amount:,.0f} so'm · {tx.get_method_display()}")
+    get_object_or_404(Transaction, pk=pk)
+    tx, _ = _decide_and_log(request, pk, False, request.POST.get('reason', '').strip())
     return JsonResponse({'status': tx.status})
+
+
+@panel_required
+@require_POST
+def transactions_bulk(request):
+    data, err = parse_json_body(request, error_message="Noto'g'ri JSON", ok_field=True)
+    if err:
+        return err
+    ids = [pk for pk in data.get('ids', []) if isinstance(pk, int)][:PAGE_SIZE]
+    approve = data.get('action') == 'approve'
+    reason = str(data.get('reason', '')).strip()
+    existing = Transaction.objects.filter(pk__in=ids).values_list('pk', flat=True)
+    changed = sum(1 for pk in existing if _decide_and_log(request, pk, approve, '' if approve else reason)[1])
+    return JsonResponse({'ok': True, 'count': changed})
 
 
 # ── Analytics ──────────────────────────────────────────────────────────────────

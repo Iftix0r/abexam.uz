@@ -5,74 +5,181 @@
 {% block nav_tx %}active{% endblock %}
 
 {% block content %}
+<div class="stat-grid">
+  <div class="stat-card">
+    <div class="stat-icon" style="background:#22c55e18;color:var(--green);font-size:20px"><i class=lc-credit-card></i></div>
+    <div><div class="stat-val">{{ stats.today|som }} <small>so'm</small></div><div class="stat-label">Bugungi tushum</div></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon" style="background:#3b82f618;color:var(--blue);font-size:20px"><i class=lc-trending-up></i></div>
+    <div><div class="stat-val">{{ stats.month|som }} <small>so'm</small></div><div class="stat-label">Shu oy tushumi</div></div>
+  </div>
+  <a href="?status=pending" class="stat-card">
+    <div class="stat-icon" style="background:#eab30818;color:var(--yellow);font-size:20px"><i class=lc-hourglass></i></div>
+    <div><div class="stat-val">{{ stats.pending_count }} <small>ta</small></div><div class="stat-label">Kutilmoqda</div><div class="stat-change" style="color:var(--muted)">{{ stats.pending_sum|som }} so'm</div></div>
+  </a>
+  <a href="?status=premium" class="stat-card">
+    <div class="stat-icon" style="background:#f59e0b18;color:#f59e0b;font-size:20px"><i class=lc-gem></i></div>
+    <div><div class="stat-val">{{ stats.premium_count }} <small>ta</small></div><div class="stat-label">Shu oy Premium</div><div class="stat-change" style="color:var(--muted)">{{ stats.premium_sum|som }} so'm</div></div>
+  </a>
+</div>
+
 <div class="section-header">
-  <form method="get" class="toolbar">
-    <div class="search-box">
-      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke-width="1.8"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke-width="1.8"/></svg>
-      <input name="q" value="{{ q }}" placeholder="Ism yoki telefon...">
-    </div>
-    <div class="seg">
-      <a href="{% qs status='' %}" class="{% if not status %}active{% endif %}">Barchasi</a>
-      <a href="{% qs status='pending' %}" class="{% if status == 'pending' %}active{% endif %}">Kutilmoqda</a>
-      <a href="{% qs status='success' %}" class="{% if status == 'success' %}active{% endif %}">Muvaffaqiyatli</a>
-      <a href="{% qs status='failed' %}" class="{% if status == 'failed' %}active{% endif %}">Xato</a>
-    </div>
-    {% if status %}<input type="hidden" name="status" value="{{ status }}">{% endif %}
-  </form>
+  <div class="seg">
+    <a href="{% qs status='' %}" class="{% if not status %}active{% endif %}">Barchasi</a>
+    <a href="{% qs status='pending' %}" class="{% if status == 'pending' %}active{% endif %}">Kutilmoqda{% if stats.pending_count %} <span class="nav-badge">{{ stats.pending_count }}</span>{% endif %}</a>
+    <a href="{% qs status='success' %}" class="{% if status == 'success' %}active{% endif %}">Muvaffaqiyatli</a>
+    <a href="{% qs status='failed' %}" class="{% if status == 'failed' %}active{% endif %}">Rad etilgan</a>
+    <a href="{% qs status='premium' %}" class="{% if status == 'premium' %}active{% endif %}">Premium</a>
+  </div>
+  {% if status != 'premium' %}
   <div class="toolbar-end">
     <span class="count-note">{{ page.paginator.count }} ta</span>
     <span style="font-size:13px;font-weight:600;white-space:nowrap" title="{% if status %}Tanlangan holatdagi summa{% else %}Faqat muvaffaqiyatli to'lovlar{% endif %}">{% if status %}Summa{% else %}Tushum{% endif %}: {{ total|som }} so'm</span>
+    <a href="{% url 'panel:transactions_export' %}{% qs %}" class="btn btn-ghost btn-sm" title="Joriy filtr bo'yicha yuklab olish">↓ CSV</a>
   </div>
+  {% endif %}
+</div>
+
+{% if status != 'premium' %}
+<form method="get" class="toolbar" style="margin-bottom:14px">
+  {% if status %}<input type="hidden" name="status" value="{{ status }}">{% endif %}
+  <div class="search-box">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke-width="1.8"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke-width="1.8"/></svg>
+    <input name="q" value="{{ q }}" placeholder="Ism yoki telefon...">
+  </div>
+  <select name="method" class="form-input" aria-label="To'lov usuli" onchange="this.form.submit()">
+    <option value="">Barcha usullar</option>
+    {% for value, label in methods %}<option value="{{ value }}" {% if method == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+  </select>
+  <input type="date" name="from" value="{{ date_from }}" class="form-input" style="width:auto;height:36px;padding-block:0" aria-label="Boshlanish sanasi" onchange="this.form.submit()">
+  <input type="date" name="to" value="{{ date_to }}" class="form-input" style="width:auto;height:36px;padding-block:0" aria-label="Tugash sanasi" onchange="this.form.submit()">
+  {% if q or method or date_from or date_to %}<a href="{% if status %}?status={{ status }}{% else %}?{% endif %}" class="btn btn-ghost btn-sm">Tozalash</a>{% endif %}
+</form>
+
+<div id="bulk-bar" class="bulk-bar">
+  <span id="bulk-count" style="font-size:13px;color:var(--muted)">0 ta tanlandi</span>
+  <button onclick="bulkDecide('approve')" class="btn btn-success btn-sm">✓ Tasdiqlash</button>
+  <button onclick="bulkDecide('reject')" class="btn btn-danger btn-sm">✕ Rad etish</button>
+  <button onclick="clearChecks()" class="btn btn-ghost btn-sm" style="margin-left:auto">Bekor</button>
 </div>
 
 <div class="card" style="padding:0">
   <div class="table-wrap">
     <table class="table-cards">
-      <thead><tr><th>Foydalanuvchi</th><th>Summa</th><th>Usul</th><th>Holat</th><th>Izoh</th><th>Sana</th><th></th></tr></thead>
+      <thead><tr><th style="width:36px"><input type="checkbox" id="check-all" onchange="checkAll(this)" aria-label="Hammasini tanlash"></th><th>Foydalanuvchi</th><th>Summa</th><th>Usul</th><th>Holat</th><th>Izoh</th><th>Sana</th><th></th></tr></thead>
       <tbody>
         {% for tx in txs %}
         <tr id="tx-row-{{ tx.pk }}">
-          <td><a href="{% url 'panel:user_detail' tx.user.pk %}" class="link">{{ tx.user.display_name }}</a></td>
+          <td>{% if tx.status == 'pending' %}<input type="checkbox" class="tx-check" value="{{ tx.pk }}" onchange="paintBulk()" aria-label="Tanlash">{% endif %}</td>
+          <td><div class="u-info">
+            {% include 'panel/_avatar.html' with u=tx.user %}
+            <div><a href="{% url 'panel:user_detail' tx.user.pk %}" class="link">{{ tx.user.display_name }}</a>
+            {% if tx.user.phone_number %}<div style="font-size:11.5px;color:var(--muted)">{{ tx.user.phone_number }}</div>{% endif %}</div>
+          </div></td>
           <td style="font-weight:700;white-space:nowrap;{% if tx.status == 'success' %}color:var(--green){% elif tx.status == 'failed' %}color:var(--muted);text-decoration:line-through{% endif %}">{{ tx.amount|som }} so'm</td>
           <td><span class="badge badge-blue">{{ tx.get_method_display }}</span></td>
           <td id="tx-status-{{ tx.pk }}">
             {% if tx.status == 'success' %}<span class="badge badge-green">Muvaffaqiyatli</span>
             {% elif tx.status == 'pending' %}<span class="badge badge-yellow">Kutilmoqda</span>
-            {% else %}<span class="badge badge-red">Xato</span>{% endif %}
+            {% else %}<span class="badge badge-red">Rad etilgan</span>{% endif %}
+            {% if tx.decided_by %}<div style="font-size:11px;color:var(--muted);margin-top:3px">{{ tx.decided_by.display_name }}</div>{% endif %}
           </td>
-          <td style="color:var(--muted);font-size:12px">{{ tx.description|default:"—" }}</td>
+          <td style="color:var(--muted);font-size:12px;max-width:220px">{{ tx.description|default:"—" }}{% if tx.reject_reason %}<div style="color:var(--red)">Sabab: {{ tx.reject_reason }}</div>{% endif %}</td>
           <td class="td-date">{{ tx.created_at|date:"d M Y, H:i" }}</td>
           <td>
-            {% if tx.status == 'pending' %}
-            <div style="display:flex;gap:6px">
+            <div class="row-actions">
+              {% if tx.status == 'pending' %}
               <button onclick="approveTx({{ tx.pk }})" class="btn btn-success btn-sm">✓ Tasdiqlash</button>
-              <button onclick="rejectTx({{ tx.pk }})" class="btn btn-danger btn-sm">✗ Rad</button>
+              <button onclick="rejectTx({{ tx.pk }})" class="btn btn-danger btn-sm">✕ Rad</button>
+              {% endif %}
+              <a href="{% url 'panel:chat_open' tx.user.pk %}" class="icon-btn" title="AB Admin orqali yozish" aria-label="AB Admin orqali yozish"><i class=lc-send></i></a>
             </div>
-            {% endif %}
           </td>
         </tr>
         {% empty %}
-        <tr><td colspan="7"><div class="empty-state"><div class="empty-icon"><i class=lc-credit-card></i></div><div class="empty-title">Tranzaksiya topilmadi</div>Boshqa holat filtrini tanlab ko'ring</div></td></tr>
+        <tr><td colspan="8"><div class="empty-state"><div class="empty-icon"><i class=lc-credit-card></i></div><div class="empty-title">Tranzaksiya topilmadi</div>Boshqa filtrni tanlab ko'ring</div></td></tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
   {% include 'panel/_pagination.html' %}
 </div>
+{% else %}
+<div class="card" style="padding:0">
+  <div class="table-wrap">
+    <table class="table-cards">
+      <thead><tr><th>Foydalanuvchi</th><th>Summa</th><th>Muddat</th><th>Turi</th><th>Sana</th></tr></thead>
+      <tbody>
+        {% for p in purchases %}
+        <tr>
+          <td><div class="u-info">{% include 'panel/_avatar.html' with u=p.user %}<a href="{% url 'panel:user_detail' p.user.pk %}" class="link">{{ p.user.display_name }}</a></div></td>
+          <td style="font-weight:700;white-space:nowrap">{% if p.amount %}{{ p.amount|som }} so'm{% else %}—{% endif %}</td>
+          <td class="td-num">{{ p.days }} kun</td>
+          <td>{% if p.granted_by %}<span class="badge badge-purple">Sovg'a · {{ p.granted_by.display_name }}</span>{% else %}<span class="badge badge-green">Sotib olingan</span>{% endif %}</td>
+          <td class="td-date">{{ p.created_at|date:"d M Y, H:i" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5"><div class="empty-state"><div class="empty-icon"><i class=lc-gem></i></div><div class="empty-title">Hali Premium xaridi yo'q</div></div></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% include 'panel/_pagination.html' %}
+</div>
+{% endif %}
+
+<div class="modal-overlay" id="reject-modal" role="dialog" aria-modal="true" aria-labelledby="reject-title">
+  <div class="modal">
+    <div class="modal-title" id="reject-title">To'lovni rad etish</div>
+    <div class="form-group" style="margin-bottom:0">
+      <label class="form-label" for="reject-reason">Sabab (talabaga yuboriladi)</label>
+      <input class="form-input" id="reject-reason" maxlength="200" placeholder="Masalan: to'lov topilmadi">
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-ghost" id="reject-no">Bekor</button>
+      <button type="button" class="btn btn-primary" id="reject-yes">Rad etish</button>
+    </div>
+  </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
+const checks = () => [...document.querySelectorAll('.tx-check:checked')];
+function paintBulk(){
+  const bar = document.getElementById('bulk-bar');
+  if (!bar) return;
+  document.getElementById('bulk-count').textContent = checks().length + ' ta tanlandi';
+  bar.classList.toggle('show', checks().length > 0);
+}
+function checkAll(box){ document.querySelectorAll('.tx-check').forEach(c => { c.checked = box.checked; }); paintBulk(); }
+function clearChecks(){ document.getElementById('check-all').checked = false; checkAll({checked: false}); }
+
+function askReason(){
+  const modal = document.getElementById('reject-modal'), input = document.getElementById('reject-reason');
+  input.value = '';
+  modal.classList.add('show');
+  input.focus();
+  return new Promise(resolve => {
+    const finish = value => { modal.classList.remove('show'); resolve(value); };
+    document.getElementById('reject-yes').onclick = () => finish(input.value.trim());
+    document.getElementById('reject-no').onclick = () => finish(null);
+  });
+}
+
 // The server answers with the payment's real status; the row shows that, not
 // what was asked for (another admin may have decided first, or the post failed).
 const TX_BADGES = {
   success: '<span class="badge badge-green">Muvaffaqiyatli</span>',
-  failed: '<span class="badge badge-red">Rad etildi</span>',
+  failed: '<span class="badge badge-red">Rad etilgan</span>',
 };
-async function decideTx(pk, action){
+async function decideTx(pk, action, reason){
+  const body = new FormData();
+  if (reason) body.append('reason', reason);
   let status;
   try {
-    const r = await fetch(`/panel/transactions/${pk}/${action}/`, {method:'POST', headers:{'X-CSRFToken':csrf}});
+    const r = await fetch(`/panel/transactions/${pk}/${action}/`, {method:'POST', headers:{'X-CSRFToken':csrf}, body});
     if (!r.ok) throw new Error(r.status);
     status = (await r.json()).status;
   } catch (e) {
@@ -80,15 +187,32 @@ async function decideTx(pk, action){
     return;
   }
   document.getElementById('tx-status-'+pk).innerHTML = TX_BADGES[status] || '';
-  document.querySelector(`#tx-row-${pk} td:last-child`).innerHTML = '';
-  if (status === 'success') toast('Tasdiqlandi');
-  else toast('Rad etildi', '#ef4444');
+  document.querySelectorAll(`#tx-row-${pk} .btn, #tx-row-${pk} .tx-check`).forEach(n => n.remove());
+  paintBulk();
+  if (status === 'success') toast('Tasdiqlandi'); else toast('Rad etildi', '#ef4444');
 }
 async function approveTx(pk){
-  if (await panelConfirm("To'lov tasdiqlansinmi? Summa foydalanuvchi balansiga qo'shiladi.")) decideTx(pk, 'approve');
+  if (await panelConfirm("To'lov tasdiqlansinmi? Summa foydalanuvchi balansiga qo'shiladi va unga xabar boradi.")) decideTx(pk, 'approve');
 }
 async function rejectTx(pk){
-  if (await panelConfirm("To'lov rad etilsinmi?")) decideTx(pk, 'reject');
+  const reason = await askReason();
+  if (reason !== null) decideTx(pk, 'reject', reason);
+}
+async function bulkDecide(action){
+  const ids = checks().map(c => Number(c.value));
+  if (!ids.length) return;
+  let reason = '';
+  if (action === 'approve') {
+    if (!await panelConfirm(`${ids.length} ta to'lov tasdiqlansinmi? Summalar balanslarga qo'shiladi.`)) return;
+  } else {
+    reason = await askReason();
+    if (reason === null) return;
+  }
+  const r = await fetch("{% url 'panel:transactions_bulk' %}", {method:'POST', headers:{'X-CSRFToken':csrf, 'Content-Type':'application/json'}, body: JSON.stringify({ids, action, reason})});
+  if (!r.ok) { toast('Saqlanmadi', '#ef4444'); return; }
+  const d = await r.json();
+  toast(`${d.count} ta to'lov ${action === 'approve' ? 'tasdiqlandi' : 'rad etildi'}`);
+  setTimeout(() => location.reload(), 900);
 }
 </script>
 {% endblock %}

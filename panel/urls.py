@@ -72,6 +72,8 @@ urlpatterns = [
     path('chat/<int:pk>/messages/', chat_views.inbox_messages, name='chat_messages'),
     path('chat/<int:pk>/send/', chat_views.inbox_send, name='chat_send'),
     path('transactions/', views.transactions_list, name='transactions'),
+    path('transactions/export/', views.transactions_export_csv, name='transactions_export'),
+    path('transactions/bulk/', views.transactions_bulk, name='transactions_bulk'),
     path('transactions/<int:pk>/approve/', views.transaction_approve, name='tx_approve'),
     path('transactions/<int:pk>/reject/', views.transaction_reject, name='tx_reject'),
 

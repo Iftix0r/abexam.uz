@@ -1,3 +1,5 @@
+import json
+
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
@@ -446,4 +448,92 @@ class DropSuperuserTests(TestCase):
         self.assertEqual(self.client.post(reverse('panel:user_make_staff', args=[self.other.pk])).status_code, 400)
         self.other.refresh_from_db()
         self.assertTrue(self.other.is_staff)
+
+
+class TransactionPanelTests(TestCase):
+    def setUp(self):
+        from django.core.cache import cache
+        from payments.models import PremiumPurchase, Transaction
+        cache.clear()
+        self.Transaction = Transaction
+        self.boss = User.objects.create_superuser('boss', password='pw', first_name='Bosh')
+        self.ali = User.objects.create_user('ali', password='pw', first_name='Ali', phone_number='+998901112233')
+        self.vali = User.objects.create_user('vali', password='pw', first_name='Vali')
+        self.a = Transaction.objects.create(user=self.ali, amount=50000, method='manual', status='pending')
+        self.b = Transaction.objects.create(user=self.vali, amount=20000, method='click', status='pending')
+        self.c = Transaction.objects.create(user=self.vali, amount=70000, method='payme', status='success')
+        PremiumPurchase.objects.create(user=self.ali, amount=99000, days=30)
+        self.client.force_login(self.boss)
+
+    def _balance(self, user):
+        user.refresh_from_db()
+        return user.balance
+
+    def test_stats_cards(self):
+        stats = self.client.get(reverse('panel:transactions')).context['stats']
+        self.assertEqual((stats['today'], stats['month'], stats['pending_count'], stats['pending_sum']), (70000, 70000, 2, 70000))
+        self.assertEqual((stats['premium_count'], stats['premium_sum']), (1, 99000))
+
+    def test_filters_by_method_and_date(self):
+        url = reverse('panel:transactions')
+        self.assertEqual(self.client.get(url, {'method': 'click'}).context['page'].paginator.count, 1)
+        self.assertEqual(self.client.get(url, {'from': '2000-01-01', 'to': '2000-01-02'}).context['page'].paginator.count, 0)
+        today = timezone.localdate().isoformat()
+        self.assertEqual(self.client.get(url, {'from': today, 'to': today}).context['page'].paginator.count, 3)
+        self.assertEqual(self.client.get(url, {'from': 'not-a-date'}).status_code, 200)
+
+    def test_csv_follows_the_filters(self):
+        body = self.client.get(reverse('panel:transactions_export'), {'method': 'click'}).content.decode('utf-8-sig')
+        self.assertEqual(len(body.strip().splitlines()), 2)
+        self.assertIn('Vali', body)
+
+    def test_approve_records_who_and_tells_the_student(self):
+        from chat.models import ChatMessage
+        self.client.post(reverse('panel:tx_approve', args=[self.a.pk]))
+        self.a.refresh_from_db()
+        self.assertEqual(self.a.decided_by, self.boss)
+        self.assertIsNotNone(self.a.decided_at)
+        self.assertEqual(self._balance(self.ali), 50000)
+        message = ChatMessage.objects.filter(support__user=self.ali).latest('pk')
+        self.assertTrue(message.is_auto)
+        self.assertIn("50 000 so'm", message.text)
+
+    def test_reject_reason_reaches_the_student(self):
+        from chat.models import ChatMessage
+        self.client.post(reverse('panel:tx_reject', args=[self.a.pk]), {'reason': "To'lov topilmadi"})
+        self.a.refresh_from_db()
+        self.assertEqual((self.a.status, self.a.reject_reason), ('failed', "To'lov topilmadi"))
+        self.assertEqual(self._balance(self.ali), 0)
+        self.assertIn("Sabab: To'lov topilmadi", ChatMessage.objects.filter(support__user=self.ali).latest('pk').text)
+        self.assertContains(self.client.get(reverse('panel:transactions')), "To&#x27;lov topilmadi")
+
+    def test_bulk_approves_pending_only_and_once(self):
+        url = reverse('panel:transactions_bulk')
+        ids = [self.a.pk, self.b.pk, self.c.pk, 99999]
+        body = json.dumps({'ids': ids, 'action': 'approve'})
+        self.assertEqual(self.client.post(url, body, content_type='application/json').json()['count'], 2)
+        self.assertEqual(self.client.post(url, body, content_type='application/json').json()['count'], 0)
+        self.assertEqual(self._balance(self.ali), 50000)
+        self.assertEqual(self._balance(self.vali), 20000)
+
+    def test_bulk_reject_keeps_balances(self):
+        body = json.dumps({'ids': [self.a.pk], 'action': 'reject', 'reason': 'Xato'})
+        self.client.post(reverse('panel:transactions_bulk'), body, content_type='application/json')
+        self.assertEqual(self._balance(self.ali), 0)
+
+    def test_students_cannot_decide_or_export(self):
+        self.client.force_login(self.ali)
+        self.assertEqual(self.client.post(reverse('panel:tx_approve', args=[self.a.pk])).status_code, 302)
+        self.assertEqual(self.client.get(reverse('panel:transactions_export')).status_code, 302)
+        body = json.dumps({'ids': [self.a.pk], 'action': 'approve'})
+        self.assertEqual(self.client.post(reverse('panel:transactions_bulk'), body, content_type='application/json').status_code, 302)
+        self.assertEqual(self._balance(self.ali), 0)
+
+    def test_premium_tab(self):
+        page = self.client.get(reverse('panel:transactions'), {'status': 'premium'})
+        self.assertContains(page, 'Sotib olingan')
+        self.assertContains(page, "99\u00a0000 so'm")
+
+    def test_missing_payment_is_404(self):
+        self.assertEqual(self.client.post(reverse('panel:tx_approve', args=[99999])).status_code, 404)
 
