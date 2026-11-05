@@ -23,5 +23,6 @@ urlpatterns = [
     path('<slug:slug>/', views.room_page, name='room'),
     path('<slug:slug>/messages/', views.message_list, name='messages'),
     path('<slug:slug>/members/', views.members, name='members'),
+    path('<slug:slug>/search/', views.search, name='search'),
     path('<slug:slug>/send/', views.send, name='send'),
 ]

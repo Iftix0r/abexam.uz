@@ -21,6 +21,7 @@ from .models import ChatBlock, ChatMessage, ChatMute, ChatReaction, ChatRoom, Ch
 
 PAGE = 50
 RECENT_REACTIONS = 40
+SEARCH_LIMIT = 30
 REMOVED_WINDOW = timedelta(minutes=10)
 ADMIN_NAME = 'AB Admin'
 
@@ -66,13 +67,22 @@ def _reply(message):
             'text': target.text[:90]}
 
 
+def _day_label(moment):
+    day, today = timezone.localtime(moment).date(), timezone.localdate()
+    if day == today:
+        return 'Bugun'
+    if day == today - timedelta(days=1):
+        return 'Kecha'
+    return date_format(day, 'j F')
+
+
 def _payload(message, viewer, reactions):
     author = message.user
     # Short name and initials only, as on the rating: no photos, phones or usernames.
     payload = {
         'id': message.pk, 'user_id': author.pk, 'name': author.short_name, 'initials': author.initials,
         'color': author.avatar_color, 'text': message.text, 'premium': author.is_premium,
-        'time': date_format(timezone.localtime(message.created_at), 'd M, H:i'),
+        'time': date_format(timezone.localtime(message.created_at), 'H:i'), 'day': _day_label(message.created_at),
         'mine': author.pk == viewer.pk, 'staff': author.is_staff,
         'can_delete': author.pk == viewer.pk or viewer.is_staff,
         'reply': _reply(message), 'reactions': reactions.get(message.pk),
@@ -173,12 +183,28 @@ def message_list(request, slug):
 @require_GET
 def members(request, slug):
     room = _room(slug)
+    services.touch_presence(room, request.user)  # this can arrive before the first message poll
     since = services.online_since()
     rows = room.presence.select_related('user').order_by('-last_seen')[:60]
     return JsonResponse({'members': [{
         'id': p.user_id, 'name': p.user.short_name, 'initials': p.user.initials, 'color': p.user.avatar_color,
         'online': p.last_seen >= since, 'staff': p.user.is_staff, 'premium': p.user.is_premium,
     } for p in rows]})
+
+
+@login_required
+@require_GET
+def search(request, slug):
+    room = _room(slug)
+    query = request.GET.get('q', '').strip()
+    if len(query) < 2:
+        return JsonResponse({'results': []})
+    found = (room.messages.filter(deleted_at__isnull=True, text__icontains=query)
+             .select_related('user').order_by('-pk')[:SEARCH_LIMIT])
+    return JsonResponse({'results': [{
+        'id': m.pk, 'name': m.user.short_name, 'initials': m.user.initials, 'color': m.user.avatar_color,
+        'text': m.text[:140], 'time': date_format(timezone.localtime(m.created_at), 'd M, H:i'),
+    } for m in found]})
 
 
 def _checked_text(request, support=False):

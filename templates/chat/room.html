@@ -39,7 +39,31 @@ button.ch-sub:hover{color:var(--text-color)}
 .ch-pin[hidden]{display:none}
 .ch-pin i{color:var(--primary-color);flex-shrink:0}
 .ch-pin span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ch-list{flex:1;min-height:0;overflow-y:auto;padding:14px 18px;display:flex;flex-direction:column;gap:10px}
+.ch-stories{display:flex;gap:14px;padding:10px 18px;overflow-x:auto;border-bottom:1px solid var(--border-color);scrollbar-width:none}
+.ch-stories::-webkit-scrollbar{display:none}
+.ch-stories[hidden]{display:none}
+.ch-story{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;width:60px;flex-shrink:0;border:none;background:none;padding:0;color:var(--text-color);font:inherit;cursor:pointer}
+.ch-ring{position:relative;display:flex;padding:2px;border-radius:50%;box-shadow:0 0 0 2px var(--border-color)}
+.ch-story.online .ch-ring{box-shadow:0 0 0 2px #22c55e}
+.ch-story.premium .ch-ring{box-shadow:0 0 0 2px #2aabee}
+.ch-ring .ab-logo{width:44px;height:44px;font-size:14px}
+.ch-ring .ch-on{position:absolute;right:0;bottom:0;width:12px;height:12px;border:2px solid var(--card-bg)}
+.ch-story span.nm{max-width:100%;font-size:11.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ch-story.all .ch-ring{width:48px;height:48px;align-items:center;justify-content:center;font-size:12.5px;font-weight:700;background:var(--tint-a)}
+.ch-wrap{position:relative;flex:1;min-height:0;display:flex}
+.ch-list{flex:1;min-width:0;min-height:0;overflow-y:auto;padding:14px 18px;display:flex;flex-direction:column;gap:10px}
+.ch-day{align-self:center;padding:3px 12px;border-radius:12px;background:var(--tint-b);color:var(--text-muted);font-size:12px;font-weight:600}
+.ch-jump{position:absolute;right:18px;bottom:14px;z-index:6;display:flex;align-items:center;gap:6px;height:40px;min-width:40px;justify-content:center;padding:0 10px;border:1px solid var(--border-color);border-radius:20px;background:var(--bg-color);color:var(--text-color);box-shadow:var(--shadow);font:inherit;font-size:13px;font-weight:700;cursor:pointer}
+.ch-jump[hidden]{display:none}
+.ch-jump b{color:var(--primary-color)}
+.ch-hbtn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border-color);border-radius:10px;background:none;color:var(--text-color);font-size:16px;cursor:pointer}
+.ch-hbtn:hover{background:var(--tint-a)}
+.ch-find{width:100%;margin:10px 0;padding:10px 14px;border-radius:11px;border:1px solid var(--border-color);background:var(--tint-a);color:var(--text-color);font:inherit;font-size:14px;outline:none}
+.ch-hit{display:flex;gap:10px;width:100%;padding:8px;border:none;border-radius:10px;background:none;color:var(--text-color);font:inherit;text-align:left;cursor:pointer}
+.ch-hit:hover{background:var(--tint-a)}
+.ch-hit div{flex:1;min-width:0;font-size:13.5px;line-height:1.35}
+.ch-hit small{display:block;font-size:11.5px;color:var(--text-muted)}
+.ch-dialog.wide{max-width:440px;text-align:left}
 .ch-more{align-self:center;padding:6px 14px;border-radius:20px;border:1px solid var(--border-color);background:none;color:var(--text-muted);font:inherit;font-size:12.5px;cursor:pointer}
 .ch-empty{margin:auto;text-align:center;color:var(--text-muted);font-size:14px}
 .ch-empty i{display:block;margin:0 auto 10px;font-size:36px;opacity:.5}
@@ -176,10 +200,15 @@ button.ch-sub:hover{color:var(--text-color)}
       <div class="ch-head-info"><b>{{ other.short_name }}{% if other.is_premium %}<i class=lc-premium></i>{% endif %}</b><span class="ch-sub" id="chStatus"></span></div>
       {% else %}
       <div class="ch-head-info"><b>{{ room.title }}</b><button class="ch-sub" id="chCounts" type="button" title="So'nggi faollarni ko'rish">{{ room.description }}</button></div>
+      <button class="ch-hbtn" id="chFind" type="button" title="Xonadan qidirish" aria-label="Xonadan qidirish"><i class=lc-search></i></button>
       {% endif %}
     </div>
     <button class="ch-pin" id="chPin" type="button" hidden><i class=lc-pin></i><span id="chPinText"></span></button>
-    <div class="ch-list" id="chList" aria-live="polite"></div>
+    {% if room %}<div class="ch-stories" id="chStories" aria-label="A'zolar" hidden></div>{% endif %}
+    <div class="ch-wrap">
+      <div class="ch-list" id="chList" aria-live="polite"></div>
+      <button class="ch-jump" id="chJump" type="button" aria-label="Pastga tushish" hidden><i class=lc-arrow-down></i><b id="chJumpN"></b></button>
+    </div>
 
     {% if incoming %}
     <div class="ch-request">
@@ -224,7 +253,7 @@ button.ch-sub:hover{color:var(--text-color)}
     ? {list: `${ROOT}yordam/messages/`, send: `${ROOT}yordam/send/`}
     : THREAD
     ? {list: `${ROOT}lichka/${THREAD}/messages/`, send: `${ROOT}lichka/${THREAD}/send/`}
-    : {% if room %}{list: "{% url 'chat:messages' room.slug %}", send: "{% url 'chat:send' room.slug %}", members: "{% url 'chat:members' room.slug %}"}{% else %}{}{% endif %};
+    : {% if room %}{list: "{% url 'chat:messages' room.slug %}", send: "{% url 'chat:send' room.slug %}", members: "{% url 'chat:members' room.slug %}", search: "{% url 'chat:search' room.slug %}"}{% else %}{}{% endif %};
   const KINDS = [['like', 'thumbs-up'], ['heart', 'heart'], ['flame', 'flame'], ['party', 'party-popper']];
   const FAST = 5000, SLOW = 15000, PAGE = 50;
 
@@ -294,6 +323,7 @@ button.ch-sub:hover{color:var(--text-color)}
     const row = el('div', 'ch-msg' + (m.mine ? ' mine' : ''));
     row.id = 'm' + m.id;
     row.dataset.mine = m.mine ? '1' : '';
+    row.dataset.day = m.day;
     if (!m.mine && !PRIVATE) {
       const who = el('button', 'ch-who');
       who.type = 'button'; who.setAttribute('aria-label', m.name);
@@ -364,16 +394,45 @@ button.ch-sub:hover{color:var(--text-color)}
     list.append(box);
   }
 
+  function paintDays() {
+    list.querySelectorAll('.ch-day').forEach(n => n.remove());
+    let day = null;
+    list.querySelectorAll('.ch-msg').forEach(row => {
+      if (row.dataset.day !== day) {
+        day = row.dataset.day;
+        row.before(el('div', 'ch-day', day));
+      }
+    });
+  }
+
+  const jump = document.getElementById('chJump'), jumpN = document.getElementById('chJumpN');
+  let missed = 0;
+  function paintJump() {
+    if (nearBottom()) missed = 0;
+    jump.hidden = nearBottom();
+    jumpN.textContent = missed || '';
+  }
+  jump.onclick = toBottom;
+  // The list shrinks when the member row or the pin bar appears; whoever was
+  // reading the newest messages stays on them.
+  let atBottom = true;
+  list.addEventListener('scroll', () => { atBottom = nearBottom(); paintJump(); }, {passive: true});
+  new ResizeObserver(() => { if (atBottom) toBottom(); paintJump(); }).observe(list);
+
   function add(items) {
     const stick = nearBottom();
+    let fresh = 0;
     items.forEach(m => {
       if (document.getElementById('m' + m.id)) return;
       list.querySelector('.ch-empty')?.remove();
       list.append(bubble(m));
       lastId = Math.max(lastId, m.id);
       if (!firstId) firstId = m.id;
+      if (!m.mine) fresh++;
     });
-    if (stick) toBottom();
+    paintDays();
+    if (stick) toBottom(); else missed += fresh;
+    paintJump();
   }
 
   function apply(d) {
@@ -423,6 +482,7 @@ button.ch-sub:hover{color:var(--text-color)}
       d.messages.forEach(m => list.insertBefore(bubble(m), anchor));
       if (d.messages.length) firstId = d.messages[0].id;
       if (d.messages.length === PAGE) list.prepend(moreButton());
+      paintDays();
       paintTicks();
       list.scrollTop += list.scrollHeight - height;
     };
@@ -445,7 +505,7 @@ button.ch-sub:hover{color:var(--text-color)}
   document.addEventListener('visibilitychange', () => { if (!document.hidden) { quietPolls = 0; poll(); } });
 
   // Profile card and member list
-  const closeLayer = () => { layer.hidden = true; dialog.replaceChildren(); };
+  const closeLayer = () => { layer.hidden = true; dialog.replaceChildren(); dialog.classList.remove('wide'); };
   layer.addEventListener('click', e => { if (e.target === layer) closeLayer(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLayer(); });
 
@@ -487,10 +547,9 @@ button.ch-sub:hover{color:var(--text-color)}
   }
 
   document.getElementById('chOther')?.addEventListener('click', e => openCard(e.currentTarget.dataset.user));
-  document.getElementById('chCounts')?.addEventListener('click', async () => {
-    const d = await (await fetch(URLS.members)).json();
+  function showMembers(members) {
     dialog.replaceChildren(el('h3', '', "So'nggi faollar"));
-    d.members.forEach(u => {
+    members.forEach(u => {
       const row = el('button', 'ch-member');
       row.type = 'button';
       const label = el('span', '', u.name);
@@ -501,6 +560,68 @@ button.ch-sub:hover{color:var(--text-color)}
       dialog.append(row);
     });
     layer.hidden = false;
+  }
+
+  // Row of members above the chat, online ones first.
+  const stories = document.getElementById('chStories');
+  let members = [];
+  async function loadMembers() {
+    if (!stories || document.hidden) return;
+    try { members = (await (await fetch(URLS.members)).json()).members; } catch (e) { return; }
+    stories.replaceChildren();
+    stories.hidden = !members.length;
+    members.slice(0, 24).forEach(u => {
+      const item = el('button', 'ch-story' + (u.online ? ' online' : '') + (u.premium ? ' premium' : ''));
+      item.type = 'button'; item.title = u.name;
+      const ring = el('span', 'ch-ring');
+      ring.append(logo(u.initials, u.color));
+      if (u.online) ring.append(el('i', 'ch-on'));
+      item.append(ring, el('span', 'nm', u.name));
+      item.onclick = () => openCard(u.id);
+      stories.append(item);
+    });
+    if (members.length > 24) {
+      const all = el('button', 'ch-story all');
+      all.type = 'button';
+      all.append(el('span', 'ch-ring', `+${members.length - 24}`), el('span', 'nm', 'Barchasi'));
+      all.onclick = () => showMembers(members);
+      stories.append(all);
+    }
+  }
+  if (stories) { loadMembers(); setInterval(loadMembers, 30000); }
+
+  document.getElementById('chCounts')?.addEventListener('click', async () => {
+    showMembers((await (await fetch(URLS.members)).json()).members);
+  });
+
+  document.getElementById('chFind')?.addEventListener('click', () => {
+    dialog.replaceChildren(el('h3', '', 'Xonadan qidirish'));
+    dialog.classList.add('wide');
+    const input = el('input', 'ch-find'), results = el('div');
+    input.placeholder = "Kamida 2 ta harf..."; input.setAttribute('aria-label', 'Qidirish');
+    dialog.append(input, results);
+    layer.hidden = false;
+    input.focus();
+    let wait, asked = 0;
+    input.addEventListener('input', () => {
+      clearTimeout(wait);
+      wait = setTimeout(async () => {
+        const seq = ++asked;
+        const d = await (await fetch(`${URLS.search}?q=${encodeURIComponent(input.value.trim())}`)).json();
+        if (seq !== asked) return;  // a newer search is on its way
+        results.replaceChildren();
+        if (!d.results.length && input.value.trim().length >= 2) results.append(el('p', 'ch-hint', 'Hech narsa topilmadi'));
+        d.results.forEach(m => {
+          const hit = el('button', 'ch-hit');
+          hit.type = 'button';
+          const text = el('div', '', m.text);
+          text.prepend(el('small', '', `${m.name} · ${m.time}`));
+          hit.append(logo(m.initials, m.color, 'sm'), text);
+          hit.onclick = () => { closeLayer(); jumpTo(m.id); };
+          results.append(hit);
+        });
+      }, 250);
+    });
   });
 
   document.querySelectorAll('[data-answer]').forEach(b => b.addEventListener('click', async () => {

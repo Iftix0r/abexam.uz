@@ -455,3 +455,54 @@ class SupportTests(TestCase):
         ChatMessage.objects.create(thread=thread, user=self.ali, text='maxfiy')
         self.client.force_login(self.boss)
         self.assertEqual(self.client.get(reverse('panel:chat_threads')).json()['threads'], [])
+
+
+@override_settings(CACHES={'default': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'}})
+class RoomExtrasTests(TestCase):
+    def setUp(self):
+        cache.clear()
+        self.room = ChatRoom.objects.get(slug='umumiy')
+        self.ali = User.objects.create_user('ali', password='pw', first_name='Ali')
+        self.client.force_login(self.ali)
+
+    def test_members_come_online_first_without_contacts(self):
+        old = User.objects.create_user('998901112233', password='pw', phone_number='+998901112233')
+        new = User.objects.create_user('vali', password='pw', first_name='Vali')
+        ChatPresence.objects.create(room=self.room, user=old, last_seen=timezone.now() - timedelta(days=2))
+        ChatPresence.objects.create(room=self.room, user=new, last_seen=timezone.now())
+        data = self.client.get(reverse('chat:members', args=['umumiy'])).json()['members']
+        self.assertEqual([m['online'] for m in data], [True, True, False])  # the viewer, Vali, then the old one
+        self.assertEqual(data[1]['name'], 'Vali')
+        self.assertNotIn('998901112233', str(data))
+
+    def test_i_am_online_in_the_first_member_list(self):
+        data = self.client.get(reverse('chat:members', args=['umumiy'])).json()['members']
+        self.assertEqual([(m['name'], m['online']) for m in data], [('Ali', True)])
+
+    def test_search_finds_visible_messages_of_this_room(self):
+        other = ChatRoom.objects.get(slug='speaking')
+        ChatMessage.objects.create(room=self.room, user=self.ali, text='Cambridge 17 kitobi')
+        ChatMessage.objects.create(room=other, user=self.ali, text='Cambridge boshqa xonada')
+        ChatMessage.objects.create(room=self.room, user=self.ali, text='Cambridge ochirilgan', deleted_at=timezone.now())
+        url = reverse('chat:search', args=['umumiy'])
+        rows = self.client.get(url, {'q': 'cambridge'}).json()['results']
+        self.assertEqual([r['text'] for r in rows], ['Cambridge 17 kitobi'])
+        self.assertEqual(self.client.get(url, {'q': 'c'}).json()['results'], [])
+
+    def test_search_never_reaches_private_chats(self):
+        vali = User.objects.create_user('vali', password='pw')
+        thread = ChatThread.objects.create(user_a=self.ali, user_b=vali, requested_by=self.ali)
+        ChatMessage.objects.create(thread=thread, user=vali, text='maxfiy gap')
+        self.assertEqual(self.client.get(reverse('chat:search', args=['umumiy']), {'q': 'maxfiy'}).json()['results'], [])
+
+    def test_day_labels(self):
+        today = ChatMessage.objects.create(room=self.room, user=self.ali, text='a')
+        old = ChatMessage.objects.create(room=self.room, user=self.ali, text='b')
+        yesterday = ChatMessage.objects.create(room=self.room, user=self.ali, text='c')
+        ChatMessage.objects.filter(pk=old.pk).update(created_at=timezone.now() - timedelta(days=5))
+        ChatMessage.objects.filter(pk=yesterday.pk).update(created_at=timezone.now() - timedelta(days=1))
+        rows = {m['id']: m['day'] for m in self.client.get(reverse('chat:messages', args=['umumiy'])).json()['messages']}
+        self.assertEqual(rows[today.pk], 'Bugun')
+        self.assertEqual(rows[yesterday.pk], 'Kecha')
+        self.assertNotIn(rows[old.pk], ('Bugun', 'Kecha'))
+
