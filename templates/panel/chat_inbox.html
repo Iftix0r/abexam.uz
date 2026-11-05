@@ -12,8 +12,9 @@
 </div>
 <div class="ib" id="ib">
   <div class="ib-list">
-    <div class="ib-search"><input class="form-input" id="ibQ" placeholder="Ism yoki telefon..." aria-label="Qidirish"></div>
+    <div class="ib-search"><input class="form-input" id="ibQ" placeholder="Foydalanuvchini qidirish..." aria-label="Qidirish"></div>
     <div class="ib-threads" id="ibThreads"></div>
+    <button class="btn btn-ghost btn-sm" id="ibMore" type="button" style="margin:8px;justify-content:center" hidden>Yana yuklash</button>
   </div>
   <div class="ib-chat">
     <div class="ib-head" id="ibHead" hidden>
@@ -38,7 +39,8 @@
   const ROOT = "{% url 'panel:chat_inbox' %}";
   const box = document.getElementById('ib'), threadsEl = document.getElementById('ibThreads'), msgs = document.getElementById('ibMsgs');
   const form = document.getElementById('ibForm'), input = document.getElementById('ibText'), err = document.getElementById('ibErr');
-  let current = {% if open_thread %}{{ open_thread }}{% else %}null{% endif %}, lastId = 0, msgTimer = null, listTimer = null, q = '', busy = false;
+  let current = {% if open_thread %}{{ open_thread }}{% else %}null{% endif %}, lastId = 0, msgTimer = null, listTimer = null, q = '', busy = false, limit = 60;
+  const more = document.getElementById('ibMore');
 
   const el = (tag, cls, text) => {
     const n = document.createElement(tag);
@@ -77,8 +79,12 @@
     clearTimeout(listTimer);
     if (!document.hidden) {
       try {
-        const d = await (await fetch(`${ROOT}threads/?q=${encodeURIComponent(q)}`)).json();
+        const d = await (await fetch(`${ROOT}threads/?limit=${limit}&q=${encodeURIComponent(q)}`)).json();
+        const top = threadsEl.scrollTop;
         renderThreads(d.threads);
+        threadsEl.scrollTop = top;  // the 8-second refresh must not throw the list back to the top
+        more.hidden = d.threads.length >= d.total;
+        more.textContent = `Yana yuklash (${d.total - d.threads.length})`;
       } catch (e) { /* next round */ }
     }
     listTimer = setTimeout(loadThreads, 8000);
@@ -141,9 +147,11 @@
   }
 
   document.getElementById('ibBack').onclick = () => box.classList.remove('open');
+  more.onclick = () => { limit += 60; loadThreads(); };
   let searchTimer;
   document.getElementById('ibQ').addEventListener('input', e => {
     q = e.target.value.trim();
+    limit = 60;
     clearTimeout(searchTimer);
     searchTimer = setTimeout(loadThreads, 250);
   });

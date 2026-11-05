@@ -2,7 +2,7 @@ from datetime import timedelta
 
 from django.contrib import messages as flash
 from django.contrib.auth.decorators import login_required
-from django.db.models import Avg, Count, F, Max, OuterRef, Q, Subquery
+from django.db.models import Avg, Case, Count, F, IntegerField, Max, OuterRef, Q, Subquery, Value, When
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -427,23 +427,29 @@ def support_send(request):
 
 
 # ── AB Admin inbox (panel) ─────────────────────────────────────────────────────
-def _inbox_rows(query):
-    threads = SupportThread.objects.filter(last_message__isnull=False).select_related('user', 'last_message')
+INBOX_PAGE = 60
+
+
+def _inbox_rows(query, limit):
+    """Waiting chats first, Premium students ahead of them, then the latest."""
+    waiting = Q(last_message__user=F('user'), last_message_id__gt=F('staff_read'))
+    threads = (SupportThread.objects.filter(last_message__isnull=False).select_related('user', 'last_message')
+               .annotate(rank=Case(When(waiting & Q(user__premium_until__gt=timezone.now()), then=Value(2)),
+                                   When(waiting, then=Value(1)), default=Value(0), output_field=IntegerField()))
+               .order_by('-rank', '-updated_at'))
     if query:
         threads = threads.filter(user__in=User.objects.filter(_user_search(query)))
     rows = []
-    for thread in threads[:80]:
+    for thread in threads[:limit]:
         user, last = thread.user, thread.last_message
         rows.append({
             'id': thread.pk, 'name': user.display_name, 'initials': user.initials, 'color': user.avatar_color,
             'premium': user.is_premium, 'preview': last.text[:60],
-            'mine': last.user_id != user.pk,
+            'mine': last.user_id != user.pk and not last.is_auto,
             'time': date_format(timezone.localtime(last.created_at), 'd M, H:i'),
             'unread': last.user_id == user.pk and last.pk > thread.staff_read,
         })
-    # Waiting chats first, Premium students ahead of the rest.
-    rows.sort(key=lambda r: (not r['unread'], not (r['unread'] and r['premium'])))
-    return rows
+    return rows, threads.count()
 
 
 @panel_required
@@ -454,7 +460,9 @@ def inbox(request):
 @panel_required
 @require_GET
 def inbox_threads(request):
-    return JsonResponse({'threads': _inbox_rows(request.GET.get('q', '').strip())})
+    limit = min(_int(request.GET.get('limit')) or INBOX_PAGE, 1000)
+    rows, total = _inbox_rows(request.GET.get('q', '').strip(), limit)
+    return JsonResponse({'threads': rows, 'total': total})
 
 
 @panel_required
@@ -467,7 +475,7 @@ def _inbox_payload(message, thread):
     from_student = message.user_id == thread.user_id
     return {
         'id': message.pk, 'text': message.text, 'mine': not from_student,
-        'author': '' if from_student else message.user.display_name,
+        'author': '' if from_student else ('Avtomatik xabar' if message.is_auto else message.user.display_name),
         'time': date_format(timezone.localtime(message.created_at), 'd M, H:i'),
     }
 

@@ -614,3 +614,71 @@ class TeamChatTests(TestCase):
         self.assertEqual(self._send('group', '   ').status_code, 400)
         self.assertEqual(self._send('group', 'a' * 2001).status_code, 400)
 
+
+@override_settings(CACHES={'default': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'}})
+class WelcomeTests(TestCase):
+    def setUp(self):
+        cache.clear()
+        self.boss = User.objects.create_superuser('boss', password='pw', first_name='Bosh')
+
+    def test_new_student_gets_a_greeting_by_name(self):
+        ali = User.objects.create_user('ali', password='pw', first_name='Ali')
+        message = ChatMessage.objects.get(support__user=ali)
+        self.assertTrue(message.is_auto)
+        self.assertIn('Salom, Ali!', message.text)
+        self.assertIn('Qanday yordam bera olaman', message.text)
+
+    def test_student_sees_it_from_ab_admin_as_unread(self):
+        ali = User.objects.create_user('ali', password='pw', first_name='Ali')
+        self.assertEqual(services.unread_count(ali), 1)
+        self.client.force_login(ali)
+        row = self.client.get(reverse('chat:support_messages'), {'seen': 1}).json()['messages'][0]
+        self.assertEqual(row['name'], 'AB Admin')
+        self.assertNotIn('Bosh', str(row))
+        self.assertEqual(services.unread_count(ali), 0)
+
+    def test_greeting_needs_no_answer_and_alerts_nobody(self):
+        with mock.patch('chat.services.notify_staff_work') as alert:
+            User.objects.create_user('ali', password='pw')
+        alert.assert_not_called()
+        self.assertEqual(services.support_unread_total(), 0)
+
+    def test_sent_only_once_and_not_to_staff(self):
+        ali = User.objects.create_user('ali', password='pw')
+        services.send_welcome(ali)
+        ali.first_name = 'Ali'
+        ali.save()
+        self.assertEqual(ChatMessage.objects.filter(support__user=ali).count(), 1)
+        admin = User.objects.create_user('admin2', password='pw', is_staff=True)
+        self.assertFalse(SupportThread.objects.filter(user=admin).exists())
+
+    def test_failed_greeting_does_not_stop_registration(self):
+        from django.db import DatabaseError
+        with mock.patch('chat.services.send_welcome', side_effect=DatabaseError):
+            self.assertTrue(User.objects.create_user('ali', password='pw').pk)
+
+    def test_everyone_is_in_the_inbox_and_it_pages(self):
+        for i in range(65):
+            User.objects.create_user(f'u{i}', password='pw', first_name=f'T{i}')
+        self.client.force_login(self.boss)
+        url = reverse('panel:chat_threads')
+        first = self.client.get(url).json()
+        self.assertEqual((len(first['threads']), first['total']), (60, 65))
+        self.assertEqual(len(self.client.get(url, {'limit': 120}).json()['threads']), 65)
+        self.assertFalse(first['threads'][0]['mine'])  # the greeting is not "Siz:"
+
+    def test_a_waiting_chat_jumps_over_later_ones(self):
+        users = [User.objects.create_user(f'u{i}', password='pw', first_name=f'T{i}') for i in range(70)]
+        self.client.force_login(users[0])
+        self.client.post(reverse('chat:support_send'), {'text': 'Yordam kerak'})
+        self.client.force_login(self.boss)
+        row = self.client.get(reverse('panel:chat_threads')).json()['threads'][0]
+        self.assertEqual((row['name'], row['unread']), ('T0', True))
+
+    def test_panel_labels_the_automatic_message(self):
+        ali = User.objects.create_user('ali', password='pw')
+        self.client.force_login(self.boss)
+        thread = SupportThread.objects.get(user=ali)
+        data = self.client.get(reverse('panel:chat_messages', args=[thread.pk])).json()
+        self.assertEqual(data['messages'][0]['author'], 'Avtomatik xabar')
+

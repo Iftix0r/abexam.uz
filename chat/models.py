@@ -82,6 +82,7 @@ class ChatMessage(models.Model):
     reply_to = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='+')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='chat_messages')
     text = models.TextField(max_length=1000)
+    is_auto = models.BooleanField(default=False, help_text="AB Admin'ning avtomatik salomlashuvi")
     created_at = models.DateTimeField(auto_now_add=True)
     # Soft delete, so moderators can still see what a report was about.
     # deleted_by empty on a deleted message means reports hid it automatically.

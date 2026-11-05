@@ -256,6 +256,26 @@ def support_of(user):
     return SupportThread.objects.get_or_create(user=user)[0]
 
 
+def welcome_text(user):
+    name = user.first_name.strip()
+    greeting = f'Salom, {name}!' if name else 'Salom!'
+    return f"{greeting} AbExam'ga xush kelibsiz. Men AB Admin. Qanday yordam bera olaman?"
+
+
+def send_welcome(user):
+    """Opens the student's AB Admin chat with a greeting. It needs an author,
+    so it waits until the site has a superuser; the student sees "AB Admin"."""
+    sender = User.objects.filter(is_superuser=True).order_by('pk').first()
+    if sender is None or user.is_staff:
+        return
+    thread = support_of(user)
+    if thread.messages.exists():
+        return
+    message = ChatMessage.objects.create(support=thread, user=sender, text=welcome_text(user), is_auto=True)
+    # staff_read too: nobody has to answer a greeting.
+    SupportThread.objects.filter(pk=thread.pk).update(last_message=message, staff_read=message.pk)
+
+
 def _waiting_for_staff():
     return SupportThread.objects.filter(last_message__user=F('user'), last_message_id__gt=F('staff_read'))
 
