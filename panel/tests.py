@@ -397,3 +397,13 @@ class PanelListTests(TestCase):
         from panel.templatetags.panel_ui import som
         self.assertEqual(som('2200000.00'), '2 200 000')
         self.assertEqual(som(None), '0')
+
+
+class ExamPasswordsPlaceTests(TestCase):
+    def test_passwords_open_from_the_exams_page_not_the_menu(self):
+        self.client.force_login(User.objects.create_user('boss', password='pw', is_staff=True))
+        url = reverse('panel:exam_passwords')
+        exams = self.client.get(reverse('panel:exams')).content.decode()
+        self.assertEqual(exams.count(f'href="{url}"'), 1)  # the button, and no menu link
+        self.assertContains(self.client.get(url), 'Test parollari')
+
