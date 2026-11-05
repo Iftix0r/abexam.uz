@@ -1,0 +1,19 @@
+{% comment %}"Yozish" buttons of the rating: they open the private chat with that student.{% endcomment %}
+<div class="rt-toast" id="rtToast" role="status" hidden></div>
+<script>
+document.addEventListener('click', async e => {
+  const btn = e.target.closest('[data-write]');
+  if (!btn) return;
+  btn.disabled = true;
+  try {
+    const r = await fetch(`{% url 'chat:home' %}u/${btn.dataset.write}/start/`, {method: 'POST', headers: {'X-CSRFToken': '{{ csrf_token }}'}});
+    const d = await r.json();
+    if (r.ok) { location.href = d.url; return; }
+    const toast = document.getElementById('rtToast');
+    toast.textContent = d.error;
+    toast.hidden = false;
+    setTimeout(() => { toast.hidden = true; }, 3500);
+  } catch (err) { /* offline: the button comes back below */ }
+  btn.disabled = false;
+});
+</script>

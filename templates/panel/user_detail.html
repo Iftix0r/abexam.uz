@@ -32,6 +32,9 @@
     <a href="{% url 'panel:user_report' obj.pk %}" target="_blank" class="btn btn-ghost btn-sm"><i class=lc-file-text></i>&nbsp;Progress hisoboti</a>
     <button onclick="openEditModal()" class="btn btn-ghost btn-sm"><i class=lc-pencil></i>&nbsp;Tahrirlash</button>
     <button onclick="openPasswordModal()" class="btn btn-ghost btn-sm"><i class=lc-key-round></i>&nbsp;Parol</button>
+    {% if obj.is_superuser and request.user.is_superuser and obj.pk != request.user.pk %}
+    <button onclick="dropSuperuser({{ obj.pk }})" class="btn btn-ghost btn-sm">Oddiy admin qilish</button>
+    {% endif %}
     {% if not obj.is_superuser and obj.pk != request.user.pk %}
     <button onclick="makeStaff({{ obj.pk }})" class="btn btn-ghost btn-sm" id="staff-btn">
       {% if obj.is_staff %}Admin olib tashlash{% else %}Admin qilish{% endif %}
@@ -404,6 +407,12 @@ async function resetPassword(pk){
   else toast(d.error,'#ef4444');
 }
 
+async function dropSuperuser(pk){
+  if(!await panelConfirm("Superadmin huquqi olinadi. U oddiy admin bo'lib qoladi: panelga kiradi, lekin Tizim bo'limiga kira olmaydi.")) return;
+  const r=await fetch(`/panel/users/${pk}/drop-superuser/`,{method:'POST',headers:{'X-CSRFToken':csrf}});
+  const d=await r.json();
+  if(d.ok) location.reload(); else toast(d.error||'Xatolik','#ef4444');
+}
 async function makeStaff(pk){
   const r=await fetch(`/panel/users/${pk}/make-staff/`,{method:'POST',headers:{'X-CSRFToken':csrf}});
   const d=await r.json();

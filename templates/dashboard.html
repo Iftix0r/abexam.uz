@@ -373,6 +373,7 @@
         </div>
         {% if rating.rows %}
         {% include 'partials/rating_rows.html' with board=rating %}
+        {% include 'partials/rating_write.html' %}
         {% if rating.me and rating.me.rank > 5 %}<p style="font-size:13px;color:var(--text-muted);margin-top:4px">Sizning o'rningiz: <b>#{{ rating.me.rank }}</b> / {{ rating.total }} · {{ rating.me.best|floatformat:1 }} band</p>{% endif %}
         {% else %}
         <p style="font-size:13px;color:var(--text-muted)">Bu oy hali mock test natijasi yo'q. Birinchi bo'ling!</p>

@@ -38,6 +38,7 @@
 .pd-band{font-size:24px;font-weight:800;letter-spacing:-.02em;line-height:1.2;margin-top:2px;font-variant-numeric:tabular-nums}
 .pd-1 .pd-band{font-size:30px}
 .pd-sub{font-size:11.5px;color:var(--text-muted)}
+.pd-write{margin-top:10px}
 
 /* Side */
 .rk-me{display:flex;align-items:baseline;gap:6px;margin-top:6px}
@@ -102,6 +103,7 @@
           <div class="pd-name">{{ r.name }}{% if r.premium %}<i class=lc-premium></i>{% endif %}</div>
           <div class="pd-band">{{ r.best|floatformat:1 }}</div>
           <div class="pd-sub">{{ r.tests }} ta test</div>
+          {% if board.dm and not r.me %}<button class="rt-write pd-write" type="button" data-write="{{ r.id }}" aria-label="{{ r.name }}ga yozish"><i class=lc-send></i><span>Yozish</span></button>{% endif %}
         </div>
         {% endwith %}
         {% with r=board.rows.0 %}
@@ -112,6 +114,7 @@
           <div class="pd-name">{{ r.name }}{% if r.premium %}<i class=lc-premium></i>{% endif %}</div>
           <div class="pd-band">{{ r.best|floatformat:1 }}</div>
           <div class="pd-sub">{{ r.tests }} ta test</div>
+          {% if board.dm and not r.me %}<button class="rt-write pd-write" type="button" data-write="{{ r.id }}" aria-label="{{ r.name }}ga yozish"><i class=lc-send></i><span>Yozish</span></button>{% endif %}
         </div>
         {% endwith %}
         {% with r=board.rows.2 %}
@@ -121,12 +124,11 @@
           <div class="pd-name">{{ r.name }}{% if r.premium %}<i class=lc-premium></i>{% endif %}</div>
           <div class="pd-band">{{ r.best|floatformat:1 }}</div>
           <div class="pd-sub">{{ r.tests }} ta test</div>
+          {% if board.dm and not r.me %}<button class="rt-write pd-write" type="button" data-write="{{ r.id }}" aria-label="{{ r.name }}ga yozish"><i class=lc-send></i><span>Yozish</span></button>{% endif %}
         </div>
         {% endwith %}
       </div>
-      {% if board.rows|length > 3 %}
-      <div class="rk-card" style="padding:8px">{% include 'partials/rating_rows.html' with from_rank=4 %}</div>
-      {% endif %}
+      <div class="rk-card"{% if board.rows|length > 3 %} style="padding:8px"{% else %} hidden{% endif %}>{% include 'partials/rating_rows.html' with from_rank=4 %}</div>
       {% elif board.rows %}
       <div class="rk-card" style="padding:8px">{% include 'partials/rating_rows.html' %}</div>
       {% else %}
@@ -172,4 +174,5 @@
     </aside>
   </div>
 </div>
+{% include 'partials/rating_write.html' %}
 {% endblock %}

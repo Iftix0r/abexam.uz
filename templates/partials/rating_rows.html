@@ -14,6 +14,12 @@
 .rt-bar{flex:1;max-width:220px;height:5px;border-radius:5px;background:var(--tint-b);overflow:hidden}
 .rt-bar b{display:block;height:100%;border-radius:5px;background:currentColor}
 .rt-band{min-width:46px;text-align:center;padding:5px 9px;border-radius:9px;font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;background:color-mix(in srgb,currentColor 12%,transparent)}
+.rt-write{display:inline-flex;align-items:center;gap:5px;flex-shrink:0;height:34px;padding:0 11px;border:1px solid var(--border-color);border-radius:10px;background:none;color:var(--text-color);font:inherit;font-size:12.5px;font-weight:600;cursor:pointer}
+.rt-write:hover{border-color:var(--primary-color);color:var(--primary-color)}
+.rt-write:disabled{opacity:.5;cursor:default}
+.rt-toast{position:fixed;left:50%;bottom:84px;z-index:200;transform:translateX(-50%);max-width:calc(100vw - 32px);padding:10px 16px;border-radius:12px;background:#17181f;color:#fff;font-size:13.5px;font-weight:600}
+.rt-toast[hidden]{display:none}
+@media (max-width:560px){.rt-write span{display:none}.rt-write{width:36px;justify-content:center;padding:0}}
 .rt-hi{color:#16a34a}.rt-mid{color:#d97706}.rt-lo{color:#dc2626}
 :root:not([data-theme="light"]) .rt-hi{color:#4ade80}
 :root:not([data-theme="light"]) .rt-mid{color:#fbbf24}
@@ -31,5 +37,6 @@
     </div>
   </div>
   <div class="rt-band {% if r.best >= 7 %}rt-hi{% elif r.best >= 5.5 %}rt-mid{% else %}rt-lo{% endif %}">{{ r.best|floatformat:1 }}</div>
+  {% if board.dm and not r.me %}<button class="rt-write" type="button" data-write="{{ r.id }}" aria-label="{{ r.name }}ga yozish"><i class=lc-send></i><span>Yozish</span></button>{% endif %}
 </div>
 {% endif %}{% endfor %}
