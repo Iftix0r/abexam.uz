@@ -9,7 +9,6 @@ tarixi{% endblock %} {% block nav_users %}active{% endblock %} {% block content
   <span class="bc-sep">/</span>
   <span class="bc-current">Login tarixi</span>
 </nav>
-
 <div class="card" style="padding: 0">
   <div class="table-wrap">
     <table>
@@ -26,15 +25,12 @@ tarixi{% endblock %} {% block nav_users %}active{% endblock %} {% block content
         {% for log in logs %}
         <tr>
           <td>
-            {% if log.status == 'success' %}
-            <span class="badge badge-green">✓ Kirdi</span>
-            {% elif log.status == 'failed' %}
-            <span class="badge badge-yellow">✗ Xato parol</span>
-            {% else %}
-            <span class="badge badge-red"
-              ><i class="lc-ban"></i>&nbsp;Bloklangan</span
-            >
-            {% endif %}
+            {% if log.status == 'success' %}<span class="badge badge-green"
+              >Kirdi</span
+            >{% elif log.status == 'failed' %}<span class="badge badge-yellow"
+              >Xato parol</span
+            >{% else %}<span class="badge badge-red">Bloklangan</span>{% endif
+            %}
           </td>
           <td style="font-family: monospace; font-size: 12px">{{ log.ip }}</td>
           <td>
@@ -44,16 +40,8 @@ tarixi{% endblock %} {% block nav_users %}active{% endblock %} {% block content
               target="_blank"
               rel="noopener noreferrer"
               href="https://www.google.com/maps?q={{ log.latitude }},{{ log.longitude }}"
-              title="Xaritada ochish"
+              >{{ log.latitude }}, {{ log.longitude }}</a
             >
-              {{ log.latitude }}, {{ log.longitude }}
-            </a>
-            <div style="color: var(--muted); font-size: 11px; margin-top: 3px">
-              {% if log.location_accuracy != None %}Aniqlik: {{
-              log.location_accuracy }} m{% endif %} {% if
-              log.location_captured_at %}<br />{{
-              log.location_captured_at|date:"d M Y, H:i:s" }}{% endif %}
-            </div>
             {% else %}
             <span style="color: var(--muted); font-size: 12px"
               >Saqlanmagan</span
