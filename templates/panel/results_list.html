@@ -41,13 +41,16 @@
     <table class="table-cards">
       <thead><tr>
         <th style="width:32px"><input type="checkbox" id="selectAllResults" onchange="toggleAllResults(this)"></th>
-        <th>Foydalanuvchi</th><th>Imtihon</th><th>Ball</th><th>Listening</th><th>Reading</th><th>Writing</th><th>Speaking</th><th>Sana</th><th></th>
+        <th>Foydalanuvchi</th><th>Imtihon</th><th>Ball</th><th title="Listening">L</th><th title="Reading">R</th><th title="Writing">W</th><th title="Speaking">S</th><th>Sana</th><th></th>
       </tr></thead>
       <tbody>
         {% for r in results %}
         <tr id="result-row-{{ r.pk }}">
           <td><input type="checkbox" class="result-checkbox" value="{{ r.pk }}" onchange="updateBulkDeleteBtn()"></td>
-          <td><a href="{% url 'panel:user_detail' r.user.pk %}" class="link">{{ r.user.display_name }}</a></td>
+          <td><div class="u-info">
+            {% include 'panel/_avatar.html' with u=r.user %}
+            <a href="{% url 'panel:user_detail' r.user.pk %}" class="link">{{ r.user.display_name }}</a>
+          </div></td>
           <td><a href="{% url 'panel:exam_detail' r.exam.pk %}" style="color:var(--muted)">{{ r.exam.title|truncatechars:26 }}</a></td>
           <td>{% if r.is_pending %}<span class="badge badge-yellow"><i class=lc-hourglass></i>&nbsp;Tekshirilmoqda</span>{% elif r.score >= 7.5 %}<span class="badge badge-green">{{ r.score }}</span>{% elif r.score >= 6.0 %}<span class="badge badge-yellow">{{ r.score }}</span>{% else %}<span class="badge badge-red">{{ r.score }}</span>{% endif %}</td>
           <td class="td-num">{{ r.listening_score|default:"—" }}</td>
