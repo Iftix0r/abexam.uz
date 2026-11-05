@@ -1,6 +1,9 @@
+from datetime import timedelta
+
 from django.core.cache import cache
 from django.db import models
 from django.conf import settings
+from django.utils import timezone
 
 
 class SiteSettings(models.Model):
@@ -105,6 +108,55 @@ class PromoCode(models.Model):
         if self.expires_at and self.expires_at < timezone.now():
             return False
         return True
+
+
+class StaffAlert(models.Model):
+    """Something on the site staff may want to know about, for the panel's
+    notifications page. `user` is who it is about: deleting that account
+    deletes these too, since the text carries their name and phone."""
+    LABELS = {
+        'signup': 'Yangi talabalar', 'login': 'Kirishlar', 'payment': "To'lovlar", 'exam': 'Imtihonlar',
+        'support': 'Xabarlar', 'report': 'Shikoyatlar', 'security': 'Xavfsizlik',
+    }
+    ICONS = {
+        'signup': 'lc-user', 'login': 'lc-key-round', 'payment': 'lc-credit-card', 'exam': 'lc-pen-line',
+        'support': 'lc-message-circle', 'report': 'lc-flag', 'security': 'lc-shield-check',
+    }
+    COLORS = {
+        'signup': '#16a34a', 'login': '#6366f1', 'payment': '#ca8a04', 'exam': '#3b82f6',
+        'support': '#0ea5e9', 'report': '#f97316', 'security': '#dc2626',
+    }
+    QUIET = ('login',)  # listed, but too frequent to count as unread
+    UNREAD_DAYS = 30
+
+    kind = models.CharField(max_length=20, choices=list(LABELS.items()), db_index=True)
+    title = models.CharField(max_length=200)
+    body = models.CharField(max_length=300, blank=True)
+    url = models.CharField(max_length=255, blank=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True, related_name='+')
+    read_by = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, related_name='+')
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        verbose_name = 'Xodimlar bildirishnomasi'
+        verbose_name_plural = 'Xodimlar bildirishnomalari'
+        ordering = ['-created_at', '-id']
+
+    def __str__(self):
+        return self.title
+
+    @property
+    def icon(self):
+        return self.ICONS[self.kind]
+
+    @property
+    def color(self):
+        return self.COLORS[self.kind]
+
+    @classmethod
+    def unread_for(cls, staff):
+        since = timezone.now() - timedelta(days=cls.UNREAD_DAYS)
+        return cls.objects.exclude(kind__in=cls.QUIET).exclude(read_by=staff).filter(created_at__gte=since)
 
 
 class AuditLog(models.Model):

@@ -68,6 +68,9 @@ def notify_new_signup(user, source='saytda'):
     """«New member» alert for every admin, with today's signup count."""
     from html import escape
     from users.models import User
+    from .alerts import record_alert
+    record_alert('signup', f'Yangi talaba: {user.display_name}',
+                 f"{user.phone_number or '—'} · {source} ro'yxatdan o'tdi", f'/panel/users/{user.pk}/', user)
     today = User.objects.filter(date_joined__date=timezone.localdate()).count()
     notify_admins(
         f"🆕 <b>Yangi a'zo</b> ({source} ro'yxatdan o'tdi)\n"

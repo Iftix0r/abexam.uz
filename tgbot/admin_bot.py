@@ -9,6 +9,7 @@ from django.db import close_old_connections
 from django.db.models import Q
 from django.utils import timezone
 
+from core.alerts import record_alert
 from core.models import AuditLog
 from exams.models import UserResult
 from payments.models import Transaction
@@ -45,6 +46,7 @@ def notify_new_member(acc, payload=''):
     total = TelegramAccount.objects.count()
     new_today = TelegramAccount.objects.filter(created_at__date=today).count()
     source = SOURCES.get(payload.split('_')[0]) if payload else None
+    record_alert('signup', f"Botga yangi a'zo: {who(acc)}", f'Qayerdan: {source}' if source else '')
     notify_admins(
         f"🆕 <b>Botga yangi a'zo</b>\n"
         f"👤 {escape(who(acc))}\n🆔 <code>{acc.chat_id}</code>\n"
@@ -57,6 +59,7 @@ def notify_new_member(acc, payload=''):
 def forward_question(acc, msg):
     """«✉️ Adminga yozish»: the student's message goes to staff with a reply button."""
     header = f"✉️ <b>Savol</b> — {escape(who(acc))}\n🆔 <code>{acc.chat_id}</code>"
+    record_alert('support', f'Botdan savol: {who(acc)}', (msg.get('text') or '')[:200], user=acc.user)
     markup = api.inline_keyboard([[('↩️ Javob berish', f'reply:{acc.pk}'), ('🚫 Bloklash', f'ban:{acc.pk}')]])
     if msg.get('text'):
         return notify_admins(f"{header}\n\n{escape(msg['text'][:3500])}", markup)

@@ -10,6 +10,9 @@ from datetime import timedelta
 from django.core.cache import cache
 from django.db.models import Avg, Count
 from django.utils import timezone
+from django.utils.html import strip_tags
+
+from core.alerts import record_alert
 
 from exams.models import UserResult
 from exams.views import calc_band
@@ -297,6 +300,7 @@ def _link(acc, user):
     reply(acc, f"✅ Hisob ulandi: <b>{escape(user.display_name)}</b>\n\n"
                "🔔 Endi imtihon natijalaringiz chiqishi bilan shu yerga avtomatik keladi — "
                "botni o'chirib qo'ymang.")
+    record_alert('login', f'Telegram ulandi: {who(acc)}', user=acc.user)
     notify_admins(f"🔗 <b>Hisob ulandi</b>\n{escape(who(acc))}", admin_bot.member_markup(acc))
     _recent_results(acc)
 
@@ -410,6 +414,7 @@ def _confirm_booking(acc, cq):
              "Imtihondan bir kun oldin eslatma yuboramiz.")
     reply(acc, "Navbatlaringizni «🎫 Navbatlarim» bo'limida ko'rasiz.")
     left = booking.day.seats_left()
+    record_alert('exam', 'Yangi navbat', strip_tags(booking_text(booking)).replace('\n', ' · '), '/panel/exam-days/')
     notify_admins(f"🎫 <b>Yangi navbat</b> (bot)\n{booking_text(booking)}\n"
                   f"💬 {escape(who(acc))}\n🪑 Qolgan joy: {left}", booking_admin_markup(booking))
 
@@ -450,6 +455,7 @@ def _on_callback(acc, cq):
         api.answer_callback(cq['id'], "Navbat bekor qilindi")
         text, markup = _my_bookings_message(acc)
         api.edit(acc.chat_id, message_id, text, markup)
+        record_alert('exam', 'Navbat bekor qilindi', strip_tags(booking_text(booking)).replace('\n', ' · '), '/panel/exam-days/')
         return notify_admins(f"🚫 <b>Navbat bekor qilindi</b> (o'quvchi o'zi)\n{booking_text(booking)}")
     if data == 'support':
         api.answer_callback(cq['id'])

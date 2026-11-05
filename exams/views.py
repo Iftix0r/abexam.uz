@@ -17,6 +17,7 @@ from django.utils.safestring import mark_safe
 from django.views import View
 from django.views.generic import DetailView
 
+from core.alerts import record_alert
 from core.utils import get_client_ip, notify_staff_work, parse_json_body, site_link
 from tgbot.services import notify_result_ready
 from .models import Exam, ExamAttempt, UserAnswer, UserResult, Question
@@ -536,6 +537,8 @@ def create_result(user, exam, answers):
     UserAnswer.objects.bulk_create(answer_objs, ignore_conflicts=True)
 
     if pending:
+        record_alert('exam', f'Writing baholash kerak: {user.display_name}', exam.title,
+                     f'/panel/results/{result.pk}/grade/', user)
         notify_staff_work(
             f"✍️ <b>Writing baholash kerak</b>\n👤 {escape(user.display_name)} — {escape(exam.title)}",
             [[('✍️ Baholash', site_link(f'/panel/results/{result.pk}/grade/'))]],

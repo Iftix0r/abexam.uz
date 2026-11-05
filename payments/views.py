@@ -9,6 +9,7 @@ from django.shortcuts import redirect
 from django.views import View
 from django.views.generic import TemplateView
 from core.models import PromoCode, SiteSettings
+from core.alerts import record_alert
 from core.utils import notify_staff_work, parse_json_body, site_link
 from . import premium
 from .models import PremiumPurchase, Transaction
@@ -60,6 +61,9 @@ class TopUpView(LoginRequiredMixin, View):
             status='pending',
             description=description,
         )
+        record_alert('payment', f"To'lov tasdiqlash kutmoqda: {request.user.display_name}",
+                     f"{amount:,.0f} so'm · {tx.get_method_display()}".replace(',', ' '),
+                     '/panel/transactions/?status=pending', request.user)
         notify_staff_work(
             f"💳 <b>To'lov tasdiqlash kutmoqda</b>\n"
             f"👤 {escape(request.user.display_name)} (@{escape(request.user.username)})\n"

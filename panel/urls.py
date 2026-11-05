@@ -1,7 +1,7 @@
 from django.urls import path
 from django.views.generic import RedirectView
 from chat import views as chat_views
-from . import views
+from . import alert_views, views
 
 app_name = 'panel'
 
@@ -113,6 +113,11 @@ urlpatterns = [
     path('security/', RedirectView.as_view(pattern_name='system:security')),
     path('audit/', RedirectView.as_view(pattern_name='system:staff_audit')),
     path('notifications/', RedirectView.as_view(pattern_name='system:notifications')),
+    path('alerts/', alert_views.alerts_list, name='alerts'),
+    path('alerts/poll/', alert_views.alerts_poll, name='alerts_poll'),
+    path('alerts/read-all/', alert_views.alerts_read_all, name='alerts_read_all'),
+    path('alerts/<int:pk>/open/', alert_views.alert_open, name='alert_open'),
+    path('alerts/<int:pk>/read/', alert_views.alert_read, name='alert_read'),
     path('promocodes/', RedirectView.as_view(pattern_name='system:promocodes')),
     path('settings/', RedirectView.as_view(pattern_name='system:settings')),
 ]

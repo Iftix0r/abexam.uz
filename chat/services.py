@@ -8,6 +8,7 @@ from django.db import DatabaseError
 from django.db.models import F, Max, Q
 from django.utils import timezone
 
+from core.alerts import record_alert
 from core.utils import notify_staff_work, site_link
 from users.models import User
 
@@ -82,6 +83,8 @@ def report(message, reporter):
         return False
     open_reports = message.reports.filter(resolved_at__isnull=True).count()
     if open_reports == 1:
+        record_alert('report', f'AbChat shikoyati: {message.user.display_name}', message.text[:200],
+                     '/panel/chat/reports/', message.user)
         notify_staff_work(
             f"🚩 <b>AbChat shikoyati</b> — {escape(message.room.title if message.room else 'Lichka')}\n"
             f"{escape(message.user.display_name)}: {escape(message.text[:200])}",
@@ -306,6 +309,8 @@ def after_support_message(thread, message):
     thread.save(update_fields=['last_message', field, 'updated_at'])
     if from_student and not already_waiting:  # one alert per waiting chat, not per message
         tag = ' ⭐ Premium' if thread.user.is_premium else ''
+        record_alert('support', f'AB Admin chatiga xabar: {thread.user.display_name}', message.text[:200],
+                     f'/panel/chat/?t={thread.pk}', thread.user)
         notify_staff_work(f"💬 <b>AB Admin</b>{tag}\n{escape(thread.user.display_name)}: {escape(message.text[:200])}",
                           [[("Javob berish", site_link(f'/panel/chat/?t={thread.pk}'))]])
 

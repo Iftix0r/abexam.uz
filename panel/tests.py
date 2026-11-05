@@ -713,3 +713,117 @@ class LiveExamPageTests(TestCase):
     def test_page_has_no_browser_prompts(self):
         self.assertNotContains(self.client.get(self.url), 'prompt(')
 
+
+class StaffAlertTests(TestCase):
+    def setUp(self):
+        from django.core.cache import cache
+        from core.alerts import record_alert
+        from core.models import StaffAlert
+        cache.clear()
+        self.StaffAlert = StaffAlert
+        self.record = record_alert
+        self.boss = User.objects.create_superuser('boss', password='pw')
+        self.other = User.objects.create_user('xodim', password='pw', is_staff=True)
+        self.ali = User.objects.create_user('ali', password='pw', first_name='Ali', phone_number='+998901112233')
+        self.client.force_login(self.boss)
+
+    def _alert(self, kind='signup', **fields):
+        self.record(kind, fields.pop('title', 'Yangi talaba: Ali'), **fields)
+        return self.StaffAlert.objects.first()
+
+    def test_page_lists_alerts_and_filters_by_tab(self):
+        self._alert('payment', title="To'lov keldi")
+        self._alert('signup', title='Talaba keldi')
+        page = self.client.get(reverse('panel:alerts'), {'tab': 'payment'})
+        self.assertContains(page, 'To&#x27;lov keldi')
+        self.assertNotContains(page, 'Talaba keldi')
+
+    def test_search_finds_the_phone(self):
+        self._alert(body='+998901112233')
+        self._alert(title='Boshqa', body='+998907777777')
+        self.assertEqual(len(self.client.get(reverse('panel:alerts'), {'q': '901112233'}).context['alerts']), 1)
+
+    def test_each_staff_member_reads_separately(self):
+        alert = self._alert()
+        self.client.post(reverse('panel:alert_read', args=[alert.pk]))
+        self.assertEqual(self.StaffAlert.unread_for(self.boss).count(), 0)
+        self.assertEqual(self.StaffAlert.unread_for(self.other).count(), 1)
+
+    def test_opening_marks_read_and_goes_to_the_target(self):
+        alert = self._alert(url='/panel/users/')
+        resp = self.client.get(reverse('panel:alert_open', args=[alert.pk]))
+        self.assertRedirects(resp, '/panel/users/', fetch_redirect_response=False)
+        self.assertEqual(self.StaffAlert.unread_for(self.boss).count(), 0)
+
+    def test_read_all_can_stay_within_a_tab(self):
+        self._alert('payment')
+        self._alert('signup')
+        self.client.post(reverse('panel:alerts_read_all'), {'tab': 'payment'})
+        self.assertEqual(list(self.StaffAlert.unread_for(self.boss).values_list('kind', flat=True)), ['signup'])
+
+    def test_read_all_never_redirects_off_the_page(self):
+        resp = self.client.post(reverse('panel:alerts_read_all'), {'back': 'https://evil.example/'})
+        self.assertEqual(resp.url, reverse('panel:alerts'))
+
+    def test_logins_are_listed_but_not_counted(self):
+        self._alert('login', title='Kirish: Ali')
+        self.assertEqual(self.client.get(reverse('panel:alerts_poll')).json()['unread'], 0)
+        self.assertContains(self.client.get(reverse('panel:alerts')), 'Kirish: Ali')
+
+    def test_poll_returns_count_and_latest(self):
+        self._alert()
+        data = self.client.get(reverse('panel:alerts_poll')).json()
+        self.assertEqual(data['unread'], 1)
+        self.assertEqual(data['alerts'][0]['title'], 'Yangi talaba: Ali')
+
+    def test_deleting_an_account_deletes_its_alerts(self):
+        self._alert(user=self.ali, body='+998901112233')
+        self.ali.delete()
+        self.assertFalse(self.StaffAlert.objects.exists())
+
+    def test_a_broken_alert_never_reaches_the_caller(self):
+        from unittest.mock import patch
+        from django.db import DatabaseError
+        with patch.object(self.StaffAlert.objects, 'create', side_effect=DatabaseError):
+            self.record('signup', 'x')
+
+    def test_students_cannot_reach_it(self):
+        self._alert()
+        self.client.force_login(self.ali)
+        self.assertEqual(self.client.get(reverse('panel:alerts')).status_code, 302)
+        self.assertEqual(self.client.get(reverse('panel:alerts_poll')).status_code, 302)
+
+    def test_web_signup_is_recorded(self):
+        self.client.logout()
+        self.client.post(reverse('register'), {'first_name': 'Vali', 'last_name': 'Aliyev',
+                                               'phone_number': '+998 90 412 09 77', 'password': 'Xk9#mQ2vL7pz'})
+        alert = self.StaffAlert.objects.get(kind='signup')
+        self.assertIn('Vali Aliyev', alert.title)
+        self.assertIn('+998904120977', alert.body)
+
+    def test_student_login_is_quiet(self):
+        self.client.logout()
+        self.client.post(reverse('login'), {'username': 'ali', 'password': 'pw'})
+        self.assertEqual(self.StaffAlert.objects.get().kind, 'login')
+
+    def test_staff_login_from_a_new_device_is_a_security_alert(self):
+        from core.alerts import record_login
+        from users.models import LoginLog
+        chrome = 'Mozilla/5.0 (X11; Linux x86_64) Chrome/156.0 Safari/537.36'
+        LoginLog.objects.create(user=self.boss, username_attempt='boss', ip='1.1.1.1', user_agent=chrome, status='success')
+        record_login(self.boss, '1.1.1.1', chrome.replace('156', '157'))
+        self.assertEqual(self.StaffAlert.objects.first().kind, 'login')  # a browser update is not a new device
+        record_login(self.boss, '2.2.2.2', 'Mozilla/5.0 (Windows NT 10.0) Firefox/140.0')
+        alert = self.StaffAlert.objects.first()
+        self.assertEqual(alert.kind, 'security')
+        self.assertIn('Firefox 140 · Windows', alert.body)
+
+    def test_support_message_is_recorded_once_per_waiting_chat(self):
+        from chat import services
+        from chat.models import ChatMessage
+        thread = services.support_of(self.ali)
+        before = self.StaffAlert.objects.filter(kind='support').count()
+        for text in ('Salom', 'Yordam kerak'):
+            services.after_support_message(thread, ChatMessage.objects.create(support=thread, user=self.ali, text=text))
+        self.assertEqual(self.StaffAlert.objects.filter(kind='support').count(), before + 1)
+

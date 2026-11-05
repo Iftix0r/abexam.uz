@@ -1,0 +1,115 @@
+{% extends 'panel/base.html' %}
+{% load panel_ui %}
+{% block title %}Bildirishnomalar{% endblock %}
+{% block page_title %}Bildirishnomalar{% endblock %}
+{% block nav_alerts %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+.al-head{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.al-head .search-box{width:260px;max-width:100%}
+.al-head .end{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.al-check{font-size:13px;color:var(--muted);display:flex;gap:6px;align-items:center;cursor:pointer}
+.al-tabs{margin-bottom:14px}
+.al-fresh{display:block;text-align:center;font-size:13px;font-weight:600;padding:9px;margin-bottom:12px;border-radius:10px;background:var(--primary-dim);color:var(--primary)}
+.al-fresh[hidden]{display:none}
+.al-card{padding:0;overflow:hidden}
+.al-day{padding:9px 18px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--tint1);border-bottom:1px solid var(--border)}
+.al-row{display:flex;align-items:center;gap:6px;padding-right:12px;border-bottom:1px solid var(--border);transition:background .12s}
+.al-row:last-child{border-bottom:none}
+.al-row:hover{background:var(--tint1)}
+.al-row.unread{background:var(--primary-dim)}
+.al-main{flex:1;min-width:0;display:flex;align-items:center;gap:13px;padding:13px 6px 13px 18px}
+.al-icon{position:relative;width:40px;height:40px;flex-shrink:0}
+.al-icon>span:first-child{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.al-icon .u-avatar{width:40px;height:40px;font-size:14px}
+.al-kind{position:absolute;right:-5px;bottom:-5px;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;box-shadow:0 0 0 2px var(--surface)}
+.al-text{flex:1;min-width:0}
+.al-title{font-size:13.5px;font-weight:600;overflow-wrap:anywhere}
+.al-row.unread .al-title{font-weight:700}
+.al-body{font-size:12.5px;color:var(--muted);margin-top:2px;overflow-wrap:anywhere}
+.al-time{font-size:12px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.al-dot{width:8px;height:8px;border-radius:50%;background:var(--primary);flex-shrink:0}
+@media (max-width:560px){
+  .al-head .end{margin-left:0;width:100%;justify-content:space-between}
+  .al-head .search-box{width:100%}
+  .al-main{padding-left:12px;gap:11px}
+  .al-row{padding-right:6px}
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="stat-grid">
+  {% for t in today %}
+  <div class="stat-card"><div class="stat-icon" style="background:{{ t.color }}18;color:{{ t.color }};font-size:20px"><i class={{ t.icon }}></i></div><div><div class="stat-val">{{ t.n }}</div><div class="stat-label">{{ t.label }} (bugun)</div></div></div>
+  {% endfor %}
+</div>
+
+<div class="seg al-tabs">
+  <a href="?{% if only_unread %}unread=1{% endif %}{% if q %}&q={{ q|urlencode }}{% endif %}" class="{% if not tab %}active{% endif %}">Hammasi{% if unread_total %} <span class="nav-badge">{{ unread_total }}</span>{% endif %}</a>
+  {% for t in tabs %}
+  <a href="?tab={{ t.key }}{% if only_unread %}&unread=1{% endif %}{% if q %}&q={{ q|urlencode }}{% endif %}" class="{% if tab == t.key %}active{% endif %}">{{ t.label }}{% if t.unread %} <span class="nav-badge">{{ t.unread }}</span>{% endif %}</a>
+  {% endfor %}
+</div>
+
+<div class="al-head">
+  <form method="get" id="alFilter" style="display:contents">
+    {% if tab %}<input type="hidden" name="tab" value="{{ tab }}">{% endif %}
+    <div class="search-box"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke-width="1.8"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke-width="1.8"/></svg><input name="q" value="{{ q }}" placeholder="Ism, telefon yoki matn..." aria-label="Qidirish"></div>
+    <label class="al-check"><input type="checkbox" name="unread" value="1" {% if only_unread %}checked{% endif %} onchange="this.form.submit()"> Faqat o'qilmaganlar</label>
+  </form>
+  <div class="end">
+    {% if unread_total %}
+    <form method="post" action="{% url 'panel:alerts_read_all' %}">
+      {% csrf_token %}<input type="hidden" name="tab" value="{{ tab }}"><input type="hidden" name="back" value="{{ request.get_full_path }}">
+      <button class="btn btn-ghost btn-sm"><i class=lc-check-check></i>Hammasini o'qilgan qilish</button>
+    </form>
+    {% endif %}
+  </div>
+</div>
+
+<a href="" class="al-fresh" id="alFresh" hidden>Yangi bildirishnoma keldi. Ko'rish uchun bosing</a>
+
+<div class="card al-card">
+  {% for a in alerts %}
+  {% ifchanged a.created_at|date:"Y-m-d" %}<div class="al-day">{% if a.day %}{{ a.day }}{% else %}{{ a.created_at|date:"d F Y" }}{% endif %}</div>{% endifchanged %}
+  <div class="al-row{% if a.unread %} unread{% endif %}" data-id="{{ a.pk }}">
+    <a class="al-main" href="{% url 'panel:alert_open' a.pk %}">
+      <div class="al-icon">
+        {% if a.user %}
+          {% include 'panel/_avatar.html' with u=a.user %}
+          <span class="al-kind" style="background:{{ a.color }}"><i class={{ a.icon }}></i></span>
+        {% else %}
+          <span style="background:{{ a.color }}18;color:{{ a.color }}"><i class={{ a.icon }}></i></span>
+        {% endif %}
+      </div>
+      <div class="al-text">
+        <div class="al-title">{{ a.title }}</div>
+        {% if a.body %}<div class="al-body">{{ a.body }}</div>{% endif %}
+      </div>
+      <span class="al-time" title="{{ a.created_at|date:'d M Y, H:i' }}">{{ a.created_at|date:"H:i" }}</span>
+    </a>
+    {% if a.unread %}<button type="button" class="icon-btn" title="O'qilgan qilish" aria-label="O'qilgan qilish" onclick="markRead(this)"><i class=lc-check></i></button>{% endif %}
+  </div>
+  {% empty %}
+  <div class="empty-state"><div class="empty-icon"><i class=lc-bell></i></div><div class="empty-title">{% if q or tab or only_unread %}Hech narsa topilmadi{% else %}Hali bildirishnoma yo'q{% endif %}</div>{% if not q and not tab and not only_unread %}Yangi talaba, to'lov, xabar yoki shikoyat bo'lsa shu yerda chiqadi{% endif %}</div>
+  {% endfor %}
+</div>
+{% include 'panel/_pagination.html' %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+async function markRead(button){
+  const row = button.closest('.al-row');
+  const r = await fetch(`/panel/alerts/${row.dataset.id}/read/`, {method:'POST', headers:{'X-CSRFToken':csrf}});
+  if (!r.ok) { toast('Saqlanmadi', '#ef4444'); return; }
+  const d = await r.json();
+  row.classList.remove('unread');
+  button.remove();
+  setBellCount(d.unread);
+}
+document.addEventListener('staffalerts', () => { document.getElementById('alFresh').hidden = false; });
+</script>
+{% endblock %}

@@ -130,6 +130,7 @@ def regrade_exam(exam):
 def alert_suspect_keys(exam):
     """Telegram heads-up for questions that newly look like they have a
     wrong key. Called after each submission; never raises."""
+    from core.alerts import record_alert
     from core.utils import notify_staff_work, site_link
     try:
         suspects = [r for g in question_stats(exam) for r in g['rows'] if r['suspect']]
@@ -142,6 +143,7 @@ def alert_suspect_keys(exam):
             f"• №{r['number']}: kalit <b>{escape(r['q'].correct_answer)}</b>, "
             f"ko'pchilik yozgan: <b>{escape(r['top_wrong'][0][0])}</b> ({r['top_wrong'][0][1]} ta)"
             for r in new[:8])
+        record_alert('exam', f'Kalitni tekshiring: {exam.title}', url=f'/panel/exams/{exam.pk}/')
         notify_staff_work(f"⚠ <b>Kalitni tekshiring</b> — {escape(exam.title)}\n{lines}",
                           [[('🔍 Tahlilni ochish', site_link(f'/panel/exams/{exam.pk}/analysis/'))]])
         cache.set(cache_key, alerted | {r['q'].pk for r in new}, 60 * 60 * 24 * 30)

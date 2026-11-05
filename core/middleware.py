@@ -62,6 +62,10 @@ class PanelBadgeMiddleware:
             from chat.services import support_unread_total, team_unread
             request.chat_support_unread = support_unread_total()
             request.chat_team_unread = team_unread(request.user)
+            from .models import StaffAlert
+            request.staff_alerts_unread = StaffAlert.unread_for(request.user).count()
+            request.staff_alerts_last = (StaffAlert.objects.exclude(kind__in=StaffAlert.QUIET).order_by('-id')
+                                         .values_list('id', flat=True).first() or 0)
         return self.get_response(request)
 
 
