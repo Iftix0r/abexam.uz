@@ -774,6 +774,10 @@ class RatingTests(TestCase):
         board = exam_rating(self.vali, limit=1)
         self.assertEqual(len(board['rows']), 1)
         self.assertEqual(board['me']['rank'], 2)
+        self.assertEqual(board['me']['gap'], 2)
+        self.assertIsNone(exam_rating(self.ali)['me']['gap'])
+        self.assertEqual(board['top_band'], 8)
+        self.assertEqual(board['average'], 7)
 
     def test_phone_number_never_shows(self):
         phone_user = User.objects.create_user('998901234567', password='pw', phone_number='+998901234567')
