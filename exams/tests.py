@@ -789,6 +789,25 @@ class RatingTests(TestCase):
         self.assertContains(page, 'Talaba')
         self.assertNotContains(page, '998901234567')
 
+    def test_write_button_for_others_only(self):
+        self._result(self.ali, 8)
+        self._result(self.vali, 7)
+        self.client.force_login(self.ali)
+        page = self.client.get(reverse('rating')).content.decode()
+        self.assertIn(f'data-write="{self.vali.pk}"', page)
+        self.assertNotIn(f'data-write="{self.ali.pk}"', page)
+
+    def test_write_button_hides_when_private_chats_are_off(self):
+        from core.models import SiteSettings
+        from django.core.cache import cache
+        settings_obj = SiteSettings.get()
+        settings_obj.chat_dm_enabled = False
+        settings_obj.save()
+        cache.clear()
+        self._result(self.vali, 7)
+        self.client.force_login(self.ali)
+        self.assertNotContains(self.client.get(reverse('rating')), 'data-write')
+
     def test_dashboard_shows_the_top_of_the_rating(self):
         self._result(self.vali, 8)
         self.client.force_login(self.ali)

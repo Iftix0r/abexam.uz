@@ -407,3 +407,43 @@ class ExamPasswordsPlaceTests(TestCase):
         self.assertEqual(exams.count(f'href="{url}"'), 1)  # the button, and no menu link
         self.assertContains(self.client.get(url), 'Test parollari')
 
+
+class DropSuperuserTests(TestCase):
+    def setUp(self):
+        self.boss = User.objects.create_superuser('boss', password='pw')
+        self.other = User.objects.create_superuser('zufar', password='pw')
+        self.client.force_login(self.boss)
+
+    def _drop(self, user):
+        return self.client.post(reverse('panel:user_drop_superuser', args=[user.pk]))
+
+    def test_superuser_becomes_plain_admin(self):
+        self.assertTrue(self._drop(self.other).json()['ok'])
+        self.other.refresh_from_db()
+        self.assertFalse(self.other.is_superuser)
+        self.assertTrue(self.other.is_staff)
+        self.client.force_login(self.other)
+        self.assertEqual(self.client.get(reverse('panel:dashboard')).status_code, 200)
+        self.assertNotEqual(self.client.get(reverse('system:dashboard')).status_code, 200)
+
+    def test_cannot_drop_yourself(self):
+        self.assertEqual(self._drop(self.boss).status_code, 400)
+        self.boss.refresh_from_db()
+        self.assertTrue(self.boss.is_superuser)
+
+    def test_plain_admin_cannot_do_it(self):
+        admin = User.objects.create_user('admin1', password='pw', is_staff=True)
+        self.client.force_login(admin)
+        self.assertEqual(self._drop(self.other).status_code, 403)
+        self.other.refresh_from_db()
+        self.assertTrue(self.other.is_superuser)
+
+    def test_button_shows_only_for_another_superuser(self):
+        self.assertContains(self.client.get(reverse('panel:user_detail', args=[self.other.pk])), 'Oddiy admin qilish')
+        self.assertNotContains(self.client.get(reverse('panel:user_detail', args=[self.boss.pk])), 'Oddiy admin qilish')
+
+    def test_make_staff_cannot_lock_a_superuser_out(self):
+        self.assertEqual(self.client.post(reverse('panel:user_make_staff', args=[self.other.pk])).status_code, 400)
+        self.other.refresh_from_db()
+        self.assertTrue(self.other.is_staff)
+

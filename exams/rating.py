@@ -7,6 +7,7 @@ by the number of tests taken.
 from django.db.models import Avg, Count, Max
 from django.utils import timezone
 
+from core.models import SiteSettings
 from users.models import User
 
 from .models import UserResult
@@ -30,7 +31,7 @@ def exam_rating(user, period=MONTH, limit=50):
     users = User.objects.in_bulk([r['user'] for r in ranked[:limit]])
 
     # Name and initials only: this list is visible to every student.
-    rows = [{'rank': rank, 'name': users[r['user']].public_name, 'initials': users[r['user']].initials,
+    rows = [{'rank': rank, 'id': r['user'], 'name': users[r['user']].public_name, 'initials': users[r['user']].initials,
              'avatar_color': users[r['user']].avatar_color, 'best': r['best'], 'tests': r['tests'],
              'pct': round(r['best'] / 9 * 100), 'me': r['user'] == user.pk,
              'premium': users[r['user']].is_premium}
@@ -39,6 +40,6 @@ def exam_rating(user, period=MONTH, limit=50):
                 # Bands to reach the student just above; 0 when level on band.
                 'gap': ranked[rank - 2]['best'] - r['best'] if rank > 1 else None}
                for rank, r in enumerate(ranked, 1) if r['user'] == user.pk), None)
-    return {'rows': rows, 'me': me, 'total': len(ranked), 'period': period,
+    return {'rows': rows, 'me': me, 'total': len(ranked), 'period': period, 'dm': SiteSettings.get().chat_dm_enabled,
             'top_band': ranked[0]['best'] if ranked else None,
             'average': sum(r['best'] for r in ranked) / len(ranked) if ranked else None}

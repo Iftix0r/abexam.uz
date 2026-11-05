@@ -567,10 +567,31 @@ def user_make_staff(request, pk):
     user = get_object_or_404(User, pk=pk)
     if user.pk == request.user.pk:
         return JsonResponse({'ok': False, 'error': 'O\'zingizni o\'zgartira olmaysiz'})
+    if user.is_superuser:
+        return JsonResponse({'ok': False, 'error': 'Avval superadmin huquqini oling'}, status=400)
     user.is_staff = not user.is_staff
     user.save(update_fields=['is_staff'])
     log_action(request, 'user_staff', user.display_name, reverse('panel:user_detail', args=[user.pk]), 'Admin qilindi' if user.is_staff else 'Admin huquqi olindi')
     return JsonResponse({'ok': True, 'is_staff': user.is_staff})
+
+
+@panel_required
+@require_POST
+def user_drop_superuser(request, pk):
+    """Superadmin to plain admin: the person keeps the panel, not the system part."""
+    if not request.user.is_superuser:
+        return JsonResponse({'ok': False, 'error': 'Faqat superadmin bajara oladi'}, status=403)
+    user = get_object_or_404(User, pk=pk)
+    if user.pk == request.user.pk:
+        return JsonResponse({'ok': False, 'error': "O'zingizni o'zgartira olmaysiz"}, status=400)
+    if not user.is_superuser:
+        return JsonResponse({'ok': False, 'error': 'Bu foydalanuvchi superadmin emas'}, status=400)
+    user.is_superuser = False
+    user.is_staff = True
+    user.save(update_fields=['is_superuser', 'is_staff'])
+    log_action(request, 'user_staff', user.display_name, reverse('panel:user_detail', args=[user.pk]),
+               'Superadmin huquqi olindi, oddiy admin qoldi')
+    return JsonResponse({'ok': True})
 
 
 @panel_required

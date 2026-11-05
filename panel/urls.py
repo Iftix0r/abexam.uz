@@ -23,6 +23,7 @@ urlpatterns = [
     path('users/<int:pk>/telegram/message/', views.user_tg_message, name='user_tg_message'),
     path('users/<int:pk>/telegram/unlink/', views.user_tg_unlink, name='user_tg_unlink'),
     path('users/<int:pk>/make-staff/', views.user_make_staff, name='user_make_staff'),
+    path('users/<int:pk>/drop-superuser/', views.user_drop_superuser, name='user_drop_superuser'),
     path('users/bulk/', views.users_bulk_action, name='users_bulk'),
     path('groups/', views.groups_list, name='groups'),
     path('groups/<int:pk>/', views.group_detail, name='group_detail'),
