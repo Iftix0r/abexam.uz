@@ -146,3 +146,12 @@ class StaffLoginFieldTests(TestCase):
     def test_failed_username_attempt_keeps_the_text_field(self):
         page = self.client.post(reverse('login'), {'username': 'boss', 'password': 'wrong'})
         self.assertContains(page, 'type="text" autocomplete="username"')
+
+
+class HiddenSectionsTests(TestCase):
+    def test_vocabulary_is_off_the_menu_but_still_opens(self):
+        user = User.objects.create_user('ali', password='pw')
+        self.client.force_login(user)
+        self.assertNotContains(self.client.get(reverse('dashboard')), reverse('vocabulary'))
+        self.assertEqual(self.client.get(reverse('vocabulary')).status_code, 200)
+
