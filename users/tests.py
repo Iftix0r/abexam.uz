@@ -155,3 +155,11 @@ class HiddenSectionsTests(TestCase):
         self.assertNotContains(self.client.get(reverse('dashboard')), reverse('vocabulary'))
         self.assertEqual(self.client.get(reverse('vocabulary')).status_code, 200)
 
+
+class PublicNameTests(TestCase):
+    def test_full_name_and_no_phone_number(self):
+        self.assertEqual(User(username='x', first_name='Ali', last_name='Valiyev').public_name, 'Ali Valiyev')
+        self.assertEqual(User(username='alijon').public_name, 'alijon')
+        phone_signup = User(username='998901234567', phone_number='+998901234567')
+        self.assertEqual(phone_signup.public_name, 'Talaba')
+

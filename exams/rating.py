@@ -29,8 +29,8 @@ def exam_rating(user, period=MONTH, limit=50):
                   .order_by('-best', '-avg', '-tests', 'user'))
     users = User.objects.in_bulk([r['user'] for r in ranked[:limit]])
 
-    # Short name and initials only: this list is visible to every student.
-    rows = [{'rank': rank, 'name': users[r['user']].short_name, 'initials': users[r['user']].initials,
+    # Name and initials only: this list is visible to every student.
+    rows = [{'rank': rank, 'name': users[r['user']].public_name, 'initials': users[r['user']].initials,
              'avatar_color': users[r['user']].avatar_color, 'best': r['best'], 'tests': r['tests'],
              'pct': round(r['best'] / 9 * 100), 'me': r['user'] == user.pk,
              'premium': users[r['user']].is_premium}

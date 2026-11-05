@@ -47,12 +47,10 @@ class User(AbstractUser):
         return (self.premium_until - timezone.now()).days + 1
 
     @property
-    def short_name(self):
-        """For lists other students see: first name + last initial. Never the
-        username of a phone signup, which is their phone number."""
-        if self.first_name:
-            return f'{self.first_name} {self.last_name[:1]}.' if self.last_name else self.first_name
-        return self.username if self.has_own_username else 'Talaba'
+    def public_name(self):
+        """For lists other students see. Never the username of a phone signup,
+        which is their phone number."""
+        return self.get_full_name() or (self.username if self.has_own_username else 'Talaba')
 
     # Telegram-style letter avatar: up to two initials on a colour that stays
     # the same for a user (picked from the pk).

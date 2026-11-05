@@ -750,7 +750,7 @@ class RatingTests(TestCase):
         self._result(self.ali, 5)
         self._result(self.vali, 7)
         board = exam_rating(self.vali)
-        self.assertEqual([r['name'] for r in board['rows']], ['Vali', 'Ali V.'])
+        self.assertEqual([r['name'] for r in board['rows']], ['Vali', 'Ali Valiyev'])
         self.assertEqual(board['me']['rank'], 1)
         self.assertTrue(board['rows'][0]['me'])
 

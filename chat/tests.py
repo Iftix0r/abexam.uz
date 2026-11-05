@@ -46,11 +46,11 @@ class ChatTests(TestCase):
         self.assertEqual(data['messages'][0]['text'], 'Salom, hammaga')
         self.assertTrue(data['messages'][0]['mine'])
 
-    def test_only_short_name_reaches_other_students(self):
+    def test_only_public_name_reaches_other_students(self):
         self._message(self.ali)
         self.client.force_login(self.vali)
         row = self.client.get(reverse('chat:messages', args=['umumiy'])).json()['messages'][0]
-        self.assertEqual(row['name'], 'Ali V.')
+        self.assertEqual(row['name'], 'Ali Valiyev')
         self.assertNotIn('998901112233', str(row))
         self.assertFalse(row['can_delete'])
 

@@ -82,7 +82,7 @@ class PracticeTests(TestCase):
         award_xp(other, 30)
         award_xp(self.user, 10)
         board = leaderboard(self.user)
-        self.assertEqual([r['name'] for r in board['rows']], ['Ali V.', 'p'])
+        self.assertEqual([r['name'] for r in board['rows']], ['Ali Valiyev', 'p'])
         self.assertEqual(board['me'], {'rank': 2, 'xp': 10})
 
 

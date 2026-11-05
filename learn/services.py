@@ -313,9 +313,9 @@ def leaderboard(user, limit=20):
     for rank, r in enumerate(rows, 1):
         if rank <= limit:
             u = names[r['user']]
-            # Initials only, never the photo: classmates see a short name here on
-            # purpose, and an avatar may be someone's own Telegram picture.
-            board.append({'rank': rank, 'name': u.short_name, 'xp': r['total'], 'me': u.pk == user.pk,
+            # Initials, never the photo: an avatar may be someone's own Telegram
+            # picture, and everyone can read this list.
+            board.append({'rank': rank, 'name': u.public_name, 'xp': r['total'], 'me': u.pk == user.pk,
                           'initials': u.initials, 'avatar_color': u.avatar_color})
     my = next(({'rank': i, 'xp': r['total']} for i, r in enumerate(rows, 1) if r['user'] == user.pk), None)
     return {'rows': board, 'me': my, 'total': len(rows), 'start': start, 'end': start + timedelta(days=6)}

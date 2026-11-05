@@ -64,7 +64,7 @@ def _reply(message):
     target = message.reply_to
     if target is None or target.deleted_at:
         return None
-    return {'id': target.pk, 'name': ADMIN_NAME if _from_admin(target) else target.user.short_name,
+    return {'id': target.pk, 'name': ADMIN_NAME if _from_admin(target) else target.user.public_name,
             'text': target.text[:90]}
 
 
@@ -79,9 +79,9 @@ def _day_label(moment):
 
 def _payload(message, viewer, reactions):
     author = message.user
-    # Short name and initials only, as on the rating: no photos, phones or usernames.
+    # Name and initials only, as on the rating: no photos, phones or usernames.
     payload = {
-        'id': message.pk, 'user_id': author.pk, 'name': author.short_name, 'initials': author.initials,
+        'id': message.pk, 'user_id': author.pk, 'name': author.public_name, 'initials': author.initials,
         'color': author.avatar_color, 'text': message.text, 'premium': author.is_premium,
         'time': date_format(timezone.localtime(message.created_at), 'H:i'), 'day': _day_label(message.created_at),
         'mine': author.pk == viewer.pk, 'staff': author.is_staff,
@@ -126,7 +126,7 @@ def _thread_rows(user):
         other = thread.other(user)
         last = thread.last_message
         rows.append({
-            'id': thread.pk, 'name': other.short_name, 'initials': other.initials, 'avatar_color': other.avatar_color,
+            'id': thread.pk, 'name': other.public_name, 'initials': other.initials, 'avatar_color': other.avatar_color,
             'preview': last.text[:40] if not last.deleted_at else "Xabar o'chirilgan",
             'unread': last.user_id != user.pk and last.pk > thread.read_id(user),
             'incoming': thread.status == ChatThread.REQUEST and thread.requested_by_id != user.pk,
@@ -176,7 +176,7 @@ def message_list(request, slug):
         'removed': _removed(room.messages.all()),
         'reactions': _recent_reactions(room.messages.all(), request.user),
         'counts': services.room_counts(room),
-        'pinned': {'id': pinned.pk, 'name': pinned.user.short_name, 'text': pinned.text[:140]} if pinned else None,
+        'pinned': {'id': pinned.pk, 'name': pinned.user.public_name, 'text': pinned.text[:140]} if pinned else None,
     })
 
 
@@ -200,7 +200,7 @@ def members(request, slug):
     return JsonResponse({
         'total': total, 'total_label': services.compact_number(total), 'next': offset + MEMBER_PAGE,
         'members': [{
-            'id': u.pk, 'name': u.short_name, 'initials': u.initials, 'color': u.avatar_color,
+            'id': u.pk, 'name': u.public_name, 'initials': u.initials, 'color': u.avatar_color,
             'online': bool(u.seen and u.seen >= since), 'staff': u.is_staff, 'premium': u.is_premium,
         } for u in people[offset:offset + MEMBER_PAGE]],
     })
@@ -216,7 +216,7 @@ def search(request, slug):
     found = (room.messages.filter(deleted_at__isnull=True, text__icontains=query)
              .select_related('user').order_by('-pk')[:SEARCH_LIMIT])
     return JsonResponse({'results': [{
-        'id': m.pk, 'name': m.user.short_name, 'initials': m.user.initials, 'color': m.user.avatar_color,
+        'id': m.pk, 'name': m.user.public_name, 'initials': m.user.initials, 'color': m.user.avatar_color,
         'text': m.text[:140], 'time': date_format(timezone.localtime(m.created_at), 'd M, H:i'),
     } for m in found]})
 
@@ -308,7 +308,7 @@ def user_card(request, pk):
     stats = (UserResult.objects.graded().filter(user=other, exam__exam_type='mock', score__gt=0)
              .aggregate(best=Max('score'), avg=Avg('score'), tests=Count('id')))
     return JsonResponse({
-        'id': other.pk, 'name': other.short_name, 'initials': other.initials, 'color': other.avatar_color,
+        'id': other.pk, 'name': other.public_name, 'initials': other.initials, 'color': other.avatar_color,
         'staff': other.is_staff, 'premium': other.is_premium, 'online': services.is_online(other), 'best': stats['best'], 'tests': stats['tests'],
         'me': other.pk == request.user.pk, 'dm': _dm_enabled(),
         'blocked': ChatBlock.objects.filter(blocker=request.user, blocked=other).exists(),
