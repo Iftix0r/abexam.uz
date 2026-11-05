@@ -306,7 +306,7 @@ def pin(request, pk):
 @require_GET
 def user_card(request, pk):
     other = get_object_or_404(User, pk=pk, is_active=True)
-    stats = (UserResult.objects.graded().filter(user=other, exam__exam_type='mock', score__gt=0)
+    stats = (UserResult.objects.graded().filter(user=other, score__gte=0)
              .aggregate(best=Max('score'), avg=Avg('score'), tests=Count('id')))
     return JsonResponse({
         'id': other.pk, 'name': other.public_name, 'initials': other.initials, 'color': other.avatar_color,

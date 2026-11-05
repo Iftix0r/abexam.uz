@@ -736,6 +736,8 @@ class TestFileLogoTests(TestCase):
 
 class RatingTests(TestCase):
     def setUp(self):
+        from django.core.cache import cache
+        cache.clear()
         self.mock = Exam.objects.create(title='Mock 1', exam_type='mock')
         self.practice = Exam.objects.create(title='Reading 1', exam_type='reading')
         self.ali = User.objects.create_user('ali', password='pw', first_name='Ali', last_name='Valiyev')
@@ -754,19 +756,20 @@ class RatingTests(TestCase):
         self.assertEqual(board['me']['rank'], 1)
         self.assertTrue(board['rows'][0]['me'])
 
-    def test_only_graded_mock_results_of_students_count(self):
+    def test_only_graded_results_of_students_count(self):
         from .rating import exam_rating
         boss = User.objects.create_user('boss', password='pw', is_staff=True)
         self._result(boss, 9)
-        self._result(self.ali, 9, exam=self.practice)
         self._result(self.vali, 8, status=UserResult.STATUS_PENDING)
         self.assertEqual(exam_rating(self.ali)['total'], 0)
+        self._result(self.ali, 0, exam=self.practice)
+        self.assertEqual(exam_rating(self.ali)['total'], 1)
 
     def test_month_view_drops_old_results(self):
-        from .rating import ALL_TIME, exam_rating
+        from .rating import ALL_TIME, MONTH, exam_rating
         old = self._result(self.ali, 8)
         UserResult.objects.filter(pk=old.pk).update(completed_at=timezone.now() - timedelta(days=70))
-        self.assertEqual(exam_rating(self.ali)['total'], 0)
+        self.assertEqual(exam_rating(self.ali, MONTH)['total'], 0)
         self.assertEqual(exam_rating(self.ali, ALL_TIME)['total'], 1)
 
     def test_my_place_is_known_outside_the_shown_rows(self):
@@ -801,15 +804,36 @@ class RatingTests(TestCase):
         from core.models import SiteSettings
         from django.core.cache import cache
         settings_obj = SiteSettings.get()
-        settings_obj.chat_dm_enabled = False
-        settings_obj.save()
-        cache.clear()
-        self._result(self.vali, 7)
-        self.client.force_login(self.ali)
-        self.assertNotContains(self.client.get(reverse('rating')), 'data-write')
+        try:
+            settings_obj.chat_dm_enabled = False
+            settings_obj.save()
+            cache.clear()
+            self._result(self.vali, 7)
+            self.client.force_login(self.ali)
+            self.assertNotContains(self.client.get(reverse('rating')), 'data-write')
+        finally:
+            settings_obj.chat_dm_enabled = True
+            settings_obj.save()
+            cache.clear()
 
     def test_dashboard_shows_the_top_of_the_rating(self):
         self._result(self.vali, 8)
         self.client.force_login(self.ali)
         self.assertContains(self.client.get(reverse('dashboard')), reverse('rating'))
+
+    def test_rating_page_defaults_to_all_time_and_shows_all_rows(self):
+        for i in range(55):
+            u = User.objects.create_user(f'student{i}', password='pw')
+            self._result(u, 5.0)
+        self.client.force_login(self.ali)
+        resp = self.client.get(reverse('rating'))
+        self.assertEqual(resp.context['board']['period'], 'all')
+        self.assertEqual(len(resp.context['board']['rows']), 55)
+
+    def test_zero_and_low_scores_are_included(self):
+        from .rating import exam_rating
+        self._result(self.ali, 0.0)
+        board = exam_rating(self.ali)
+        self.assertEqual(board['total'], 1)
+        self.assertEqual(board['rows'][0]['best'], 0.0)
 

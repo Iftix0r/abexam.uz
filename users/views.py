@@ -187,7 +187,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         learner = LearnerProfile.objects.filter(user=user).first()
         context['learn_streak'] = learner.current_streak if learner else 0
         context['learn_due'] = due_queryset(user).count()
-        context['rating'] = exam_rating(user, limit=5)
+        context['rating'] = exam_rating(user, period=MONTH, limit=5)
         return context
 
 
@@ -196,8 +196,8 @@ class RatingView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        period = ALL_TIME if self.request.GET.get('period') == ALL_TIME else MONTH
-        context['board'] = exam_rating(self.request.user, period)
+        period = MONTH if self.request.GET.get('period') == MONTH else ALL_TIME
+        context['board'] = exam_rating(self.request.user, period, limit=None)
         return context
 
 

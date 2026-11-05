@@ -83,12 +83,12 @@
       <div class="ic"><i class=lc-trophy></i></div>
       <div>
         <h1>IELTS reytingi</h1>
-        <p>Mock testlardagi eng yaxshi natijalar</p>
+        <p>Imtihonlardagi eng yaxshi natijalar</p>
       </div>
     </div>
     <div class="rk-tabs">
-      <a href="?" class="{% if board.period != 'all' %}active{% endif %}">Bu oy</a>
-      <a href="?period=all" class="{% if board.period == 'all' %}active{% endif %}">Barcha vaqt</a>
+      <a href="?" class="{% if board.period == 'all' %}active{% endif %}">Barcha vaqt</a>
+      <a href="?period=month" class="{% if board.period == 'month' %}active{% endif %}">Bu oy</a>
     </div>
   </div>
 
@@ -150,7 +150,7 @@
       {% elif not user.is_staff %}
       <div class="rk-card rk-mine">
         <div class="rk-label">Sizning o'rningiz</div>
-        <div class="rk-note">{% if board.period == 'all' %}Hali{% else %}Bu oy hali{% endif %} mock test topshirmadingiz. Bitta test va siz ro'yxatdasiz!</div>
+        <div class="rk-note">{% if board.period == 'all' %}Hali{% else %}Bu oy hali{% endif %} test topshirmadingiz. Bitta test va siz ro'yxatdasiz!</div>
         <a href="{% url 'exams_list' %}" class="rk-cta">Test topshirish</a>
       </div>
       {% endif %}
@@ -166,7 +166,7 @@
       <div class="rk-card">
         <div class="rk-label">Qanday hisoblanadi</div>
         <ul class="rk-rules">
-          <li>Mock testdagi eng yaxshi ball olinadi</li>
+          <li>Imtihondagi eng yaxshi ball olinadi</li>
           <li>Ball teng bo'lsa, o'rtacha ball hal qiladi</li>
           <li>Writing baholangach natija qo'shiladi</li>
         </ul>
@@ -174,5 +174,5 @@
     </aside>
   </div>
 </div>
-{% include 'partials/rating_write.html' %}
+{% if board.dm %}{% include 'partials/rating_write.html' %}{% endif %}
 {% endblock %}
