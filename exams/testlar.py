@@ -49,10 +49,17 @@ def testlar_folders():
     return sorted((int(d.name) for d in folders), reverse=True)
 
 
+def _staff_only(user):
+    """The section is hidden from students: to them it does not exist."""
+    if not user.is_staff:
+        raise Http404
+
+
 class TestlarListView(LoginRequiredMixin, TemplateView):
     template_name = 'testlar_list.html'
 
     def get_context_data(self, **kwargs):
+        _staff_only(self.request.user)
         context = super().get_context_data(**kwargs)
         groups = []
         root = _root()
@@ -96,6 +103,7 @@ def _file_iter(fh, length):
 
 @login_required
 def testlar_file(request, folder, filename):
+    _staff_only(request.user)
     root = _root().resolve()
     path = (root / str(folder) / filename).resolve()
     if path.parent != root / str(folder) or path.suffix.lower() not in _ALLOWED_EXT or not path.is_file():

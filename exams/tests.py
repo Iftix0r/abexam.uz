@@ -149,7 +149,7 @@ class TestlarFilesTests(TestCase):
         (root / 'notes.html').write_text('top-level')
         self.override = override_settings(TESTLAR_DIR=root)
         self.override.enable()
-        self.user = User.objects.create_user('student', password='pw')
+        self.user = User.objects.create_user('admin1', password='pw', is_staff=True)
 
     def tearDown(self):
         self.override.disable()
@@ -157,6 +157,19 @@ class TestlarFilesTests(TestCase):
 
     def _url(self, name):
         return reverse('testlar_file', args=[7, name])
+
+    def test_hidden_from_students(self):
+        student = User.objects.create_user('student', password='pw')
+        self.client.force_login(student)
+        self.assertEqual(self.client.get(reverse('testlar')).status_code, 404)
+        self.assertEqual(self.client.get(self._url('Listening 1.html')).status_code, 404)
+        self.assertEqual(self.client.get(self._url('listening1.mp3')).status_code, 404)
+        dashboard = self.client.get(reverse('dashboard'))
+        self.assertNotContains(dashboard, reverse('testlar'))
+
+    def test_menu_link_stays_for_staff(self):
+        self.client.force_login(self.user)
+        self.assertContains(self.client.get(reverse('dashboard')), reverse('testlar'))
 
     def test_requires_login(self):
         self.assertEqual(self.client.get(reverse('testlar')).status_code, 302)
