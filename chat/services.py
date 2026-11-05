@@ -8,6 +8,7 @@ from django.db.models import F, Q
 from django.utils import timezone
 
 from core.utils import notify_staff_work, site_link
+from users.models import User
 
 from .models import ChatBlock, ChatMessage, ChatMute, ChatPresence, ChatReaction, ChatReport, ChatThread
 
@@ -112,9 +113,25 @@ def online_since():
     return timezone.now() - ONLINE_WINDOW
 
 
+def compact_number(number):
+    """999, 1k, 2,5k, 100k, 1 mln. Rounded down, so 999 999 never reads as 1000k."""
+    if number < 1000:
+        return str(number)
+    divisor, unit = (1000, 'k') if number < 1_000_000 else (1_000_000, ' mln')
+    tenths = number * 10 // divisor
+    whole, part = divmod(tenths, 10)
+    return f'{whole},{part}{unit}' if part else f'{whole}{unit}'
+
+
+def member_total():
+    """Every room is open to all, so its members are all active accounts.
+    Cached: this is read on each poll."""
+    return cache.get_or_set('chat_member_total', lambda: User.objects.filter(is_active=True).count(), 300)
+
+
 def room_counts(room):
-    presence = room.presence.all()
-    return {'members': presence.count(), 'online': presence.filter(last_seen__gte=online_since()).count()}
+    online = room.presence.filter(last_seen__gte=online_since()).count()
+    return {'members': compact_number(member_total()), 'online': compact_number(online)}
 
 
 def is_online(user):

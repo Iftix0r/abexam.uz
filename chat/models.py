@@ -121,7 +121,7 @@ class ChatReaction(models.Model):
 
 
 class ChatPresence(models.Model):
-    """Who has opened a room (its members) and when they last had it open."""
+    """Who has opened a room and when they last had it open."""
     room = models.ForeignKey(ChatRoom, on_delete=models.CASCADE, related_name='presence')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='+')
     last_seen = models.DateTimeField(db_index=True)

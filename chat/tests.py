@@ -188,8 +188,16 @@ class SocialTests(TestCase):
     def test_room_shows_online_and_member_counts(self):
         ChatPresence.objects.create(room=self.room, user=self.vali, last_seen=timezone.now())
         ChatPresence.objects.create(room=self.room, user=self.gani, last_seen=timezone.now() - timedelta(hours=2))
+        User.objects.create_user('blocked', password='pw', is_active=False)
         counts = self.client.get(reverse('chat:messages', args=['umumiy'])).json()['counts']
-        self.assertEqual(counts, {'members': 3, 'online': 2})
+        # Members are all active accounts, whether or not they opened the chat.
+        self.assertEqual(counts, {'members': '4', 'online': '2'})
+
+    def test_compact_numbers(self):
+        cases = {0: '0', 999: '999', 1000: '1k', 1250: '1,2k', 2500: '2,5k', 3000: '3k', 100_000: '100k',
+                 999_999: '999,9k', 1_000_000: '1 mln', 1_500_000: '1,5 mln', 12_000_000: '12 mln'}
+        for number, text in cases.items():
+            self.assertEqual(services.compact_number(number), text)
 
     def test_presence_is_not_written_on_every_poll(self):
         url = reverse('chat:messages', args=['umumiy'])

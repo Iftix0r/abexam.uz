@@ -166,7 +166,7 @@ button.ch-sub:hover{color:var(--text-color)}
       <button class="ch-who" id="chOther" data-user="{{ other.pk }}" type="button" aria-label="Profil"><span class="ab-logo ab-logo-sm" style="background-color:{{ other.avatar_color }}">{{ other.initials }}</span></button>
       <div class="ch-head-info"><b>{{ other.short_name }}</b><span class="ch-sub" id="chStatus"></span></div>
       {% else %}
-      <div class="ch-head-info"><b>{{ room.title }}</b><button class="ch-sub" id="chCounts" type="button" title="A'zolarni ko'rish">{{ room.description }}</button></div>
+      <div class="ch-head-info"><b>{{ room.title }}</b><button class="ch-sub" id="chCounts" type="button" title="So'nggi faollarni ko'rish">{{ room.description }}</button></div>
       {% endif %}
     </div>
     <button class="ch-pin" id="chPin" type="button" hidden><i class=lc-pin></i><span id="chPinText"></span></button>
@@ -470,7 +470,7 @@ button.ch-sub:hover{color:var(--text-color)}
   document.getElementById('chOther')?.addEventListener('click', e => openCard(e.currentTarget.dataset.user));
   document.getElementById('chCounts')?.addEventListener('click', async () => {
     const d = await (await fetch(URLS.members)).json();
-    dialog.replaceChildren(el('h3', '', "A'zolar"));
+    dialog.replaceChildren(el('h3', '', "So'nggi faollar"));
     d.members.forEach(u => {
       const row = el('button', 'ch-member');
       row.type = 'button';
