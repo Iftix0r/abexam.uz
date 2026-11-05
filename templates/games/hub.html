@@ -36,8 +36,31 @@
 .gm-row.me{background:color-mix(in srgb,var(--primary-color) 10%,transparent)}
 .gm-row .rk{width:22px;text-align:center;font-weight:700;color:var(--text-muted)}
 .gm-row .nm{flex:1;min-width:0;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gm-sum{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:12px;margin-bottom:16px}
+.gm-box{padding:14px 16px;border-radius:16px;background:var(--card-bg);border:1px solid var(--border-color);color:var(--text-color);text-decoration:none;min-width:0}
+.gm-box small{display:block;font-size:12px;color:var(--text-muted)}
+.gm-box b{font-size:17px;font-weight:800}
+.gm-rankbar{height:7px;margin:7px 0 5px;border-radius:7px;background:var(--tint-b);overflow:hidden}
+.gm-rankbar i{display:block;height:100%;border-radius:7px;background:linear-gradient(90deg,#7c3aed,#db2777)}
+.gm-daily{display:flex;align-items:center;gap:14px;padding:14px 18px;border-radius:16px;margin-bottom:16px;color:var(--text-color);text-decoration:none;background:color-mix(in srgb,var(--c) 12%,var(--card-bg));border:1px solid color-mix(in srgb,var(--c) 40%,var(--border-color))}
+.gm-daily .gm-ic{flex-shrink:0}
+.gm-daily div.t{flex:1;min-width:0}
+.gm-daily b{display:block;font-size:15px}
+.gm-daily span.s{font-size:13px;color:var(--text-muted)}
+.gm-tag{font-size:12px;font-weight:700;padding:4px 10px;border-radius:12px;background:var(--c);color:#fff;white-space:nowrap}
+.gm-tag.done{background:#16a34a}
+.gm-card.today{box-shadow:0 0 0 2px var(--c)}
+.gm-review{--c:#d32f2f}
+.gm-badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-top:14px}
+.gm-badge{padding:12px 8px;border-radius:14px;background:var(--card-bg);border:1px solid var(--border-color);text-align:center}
+.gm-badge i{font-size:22px;color:#f59e0b}
+.gm-badge b{display:block;margin-top:5px;font-size:12.5px}
+.gm-badge small{display:block;font-size:11px;line-height:1.3;color:var(--text-muted)}
+.gm-badge.off{opacity:.45}
+.gm-badge.off i{color:var(--text-muted)}
+.gm-h{font-size:15px;font-weight:700;margin:20px 0 0}
 .gm-note{font-size:13px;color:var(--text-muted);line-height:1.45}
-@media (max-width:900px){.gm-grid{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:900px){.gm-grid{grid-template-columns:minmax(0,1fr)}.gm-sum{grid-template-columns:1fr 1fr}.gm-sum>:first-child{grid-column:1/-1}}
 @media (max-width:560px){.gm-hero{padding:20px}.gm-cards{grid-template-columns:minmax(0,1fr)}.gm-xp{flex-basis:100%}}
 </style>
 {% endblock %}
@@ -55,6 +78,27 @@
     </div>
   </div>
 
+  <div class="gm-sum">
+    <div class="gm-box">
+      <small>O'yinchi darajasi</small>
+      <b>{{ rank.title }}</b>
+      <div class="gm-rankbar"><i style="width:{{ rank.pct }}%"></i></div>
+      <small>{% if rank.next %}{{ rank.next }} uchun yana {{ rank.left }} ball{% else %}Eng yuqori daraja!{% endif %}</small>
+    </div>
+    <div class="gm-box"><small>Kunlik seriya</small><b><i class=lc-flame></i>&nbsp;{{ streak }} kun</b></div>
+    {% if mistakes %}
+    <a class="gm-box" href="{% url 'games:play' 'review' %}?level={{ level }}"><small>Xatolar ustida</small><b><i class=lc-rotate-ccw></i>&nbsp;{{ mistakes }} ta so'z</b></a>
+    {% else %}
+    <div class="gm-box"><small>Xatolar ustida</small><b><i class=lc-circle-check></i>&nbsp;Toza</b></div>
+    {% endif %}
+  </div>
+
+  <a class="gm-daily" href="{% url 'games:play' daily.slug %}?level={{ level }}" style="--c:{{ daily.color }}">
+    <div class="gm-ic"><i class="lc-{{ daily.icon }}"></i></div>
+    <div class="t"><b>Kunlik topshiriq: {{ daily.title }}</b><span class="s">Kamida {{ daily.min }} ta to'g'ri javob toping</span></div>
+    {% if daily.done %}<span class="gm-tag done">Bajarildi</span>{% else %}<span class="gm-tag">+{{ daily.bonus }} XP</span>{% endif %}
+  </a>
+
   <div class="gm-levels">
     <span>Daraja:</span>
     {% for l in levels %}<a href="?level={{ l }}" class="{% if l == level %}active{% endif %}">{{ l }}</a>{% endfor %}
@@ -63,7 +107,7 @@
   <div class="gm-grid">
     <div class="gm-cards">
       {% for g in games %}
-      <a href="{% url 'games:play' g.slug %}?level={{ level }}" class="gm-card" style="--c:{{ g.color }}">
+      <a href="{% url 'games:play' g.slug %}?level={{ level }}" class="gm-card{% if g.today %} today{% endif %}" style="--c:{{ g.color }}">
         <div class="gm-ic"><i class="lc-{{ g.icon }}"></i></div>
         <h3>{{ g.title }}</h3>
         <p>{{ g.text }}</p>
@@ -85,6 +129,13 @@
       {% endfor %}
       {% if board.me and board.me.rank > 10 %}<p class="gm-note" style="margin-top:8px">Sizning o'rningiz: <b>#{{ board.me.rank }}</b> · {{ board.me.total }} ball</p>{% endif %}
     </aside>
+  </div>
+
+  <h2 class="gm-h">Yutuqlar</h2>
+  <div class="gm-badges">
+    {% for b in badges %}
+    <div class="gm-badge{% if not b.on %} off{% endif %}" title="{{ b.text }}"><i class="lc-{{ b.icon }}"></i><b>{{ b.title }}</b><small>{{ b.text }}</small></div>
+    {% endfor %}
   </div>
 </div>
 {% endblock %}

@@ -36,6 +36,27 @@
 .pl-tiles{display:flex;justify-content:center;flex-wrap:wrap;gap:6px;margin-bottom:16px}
 .pl-tile{width:46px;height:50px;border:none;border-radius:11px;background:var(--c);color:#fff;font:inherit;font-size:21px;font-weight:800;text-transform:uppercase;cursor:pointer}
 .pl-tile:disabled{opacity:.18;cursor:default}
+.pl-combo{padding:6px 11px;border-radius:11px;background:#f973161f;color:#ea580c;font-size:14px;font-weight:800;white-space:nowrap}
+.pl-combo[hidden]{display:none}
+.pl-snd{width:38px;height:38px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border-color);border-radius:11px;background:none;color:var(--text-color);font-size:16px;cursor:pointer}
+.pl-say{width:84px;height:84px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;border:none;border-radius:50%;background:var(--c);color:#fff;font-size:36px;cursor:pointer}
+.pl-tf{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+.pl-tf button{min-height:64px;border:none;border-radius:14px;color:#fff;font:inherit;font-size:17px;font-weight:800;cursor:pointer}
+.pl-tf .yes{background:#16a34a}.pl-tf .no{background:#dc2626}
+.pl-tf button:disabled{opacity:.45}
+.pl-pair{font-size:17px;font-weight:600;color:var(--text-muted);overflow-wrap:anywhere}
+.pl-mask{display:flex;justify-content:center;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.pl-mask span{width:36px;height:44px;display:flex;align-items:center;justify-content:center;border-bottom:3px solid var(--c);font-size:23px;font-weight:800;text-transform:uppercase}
+.pl-lives{display:flex;justify-content:center;gap:4px;margin-bottom:12px;color:#dc2626;font-size:18px}
+.pl-lives i.off{color:var(--text-muted);opacity:.3}
+.pl-keys{display:flex;justify-content:center;flex-wrap:wrap;gap:5px}
+.pl-key{width:36px;height:40px;border:1px solid var(--border-color);border-radius:9px;background:none;color:var(--text-color);font:inherit;font-size:15px;font-weight:700;text-transform:uppercase;cursor:pointer}
+.pl-key.hit{background:#16a34a;border-color:#16a34a;color:#fff}
+.pl-key.off{background:var(--tint-b);color:var(--text-muted);text-decoration:line-through}
+.pl-chips{display:flex;justify-content:center;flex-wrap:wrap;gap:6px;margin-top:8px}
+.pl-chip{padding:4px 12px;border-radius:14px;background:#7c3aed1f;color:#7c3aed;font-size:13px;font-weight:700}
+.pl-fall{position:fixed;top:-14px;width:9px;height:14px;z-index:400;pointer-events:none;animation:plFall 1.5s ease-in forwards}
+@keyframes plFall{to{transform:translateY(105vh) rotate(540deg);opacity:.7}}
 .pl-input{width:100%;max-width:380px;padding:13px 16px;border-radius:13px;border:2px solid var(--border-color);background:var(--tint-a);color:var(--text-color);font:inherit;font-size:18px;font-weight:600;text-align:center;outline:none}
 .pl-input:focus{border-color:var(--c)}
 .pl-input.bad{border-color:#dc2626}
@@ -55,7 +76,7 @@
 .pl-miss span{color:var(--text-muted);text-align:right}
 @keyframes plShake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
 .shake{animation:plShake .22s linear}
-@media (prefers-reduced-motion:reduce){.shake{animation:none}}
+@media (prefers-reduced-motion:reduce){.shake{animation:none}.pl-fall{display:none}}
 @media (max-width:560px){.pl-box{padding:20px 14px}.pl-q{font-size:23px}.pl-slot{width:34px;height:42px;font-size:18px}.pl-tile{width:38px;height:44px;font-size:18px}}
 </style>
 {% endblock %}
@@ -65,8 +86,10 @@
   <div class="pl-top">
     <a class="pl-back" href="{% url 'games:hub' %}?level={{ level }}" aria-label="Orqaga"><i class=lc-reply></i></a>
     <h1>{{ game.title }} · {{ level }}</h1>
+    <span class="pl-combo" id="plCombo" hidden></span>
     <span class="pl-stat" id="plTimer" hidden></span>
     <span class="pl-stat" id="plCount"></span>
+    <button class="pl-snd" id="plSnd" type="button" aria-label="Ovoz"><i class=lc-volume-2></i></button>
   </div>
   <div class="pl-bar"><i id="plBar"></i></div>
   <div class="pl-box" id="plBox">
@@ -85,7 +108,38 @@
   const URLS = {start: "{% url 'games:start' slug %}", finish: "{% url 'games:finish' %}", hub: "{% url 'games:hub' %}?level={{ level }}"};
   const box = document.getElementById('plBox'), timerEl = document.getElementById('plTimer');
   const countEl = document.getElementById('plCount'), bar = document.getElementById('plBar');
+  const comboEl = document.getElementById('plCombo'), sndBtn = document.getElementById('plSnd');
   let token = '', items = [], index = 0, correct = 0, mistakes = 0, missed = [], clock = null, ended = false;
+  let combo = 0, bestCombo = 0, solved = [];
+
+  // Sound: short tones, no audio files. Off stays off on this device.
+  let soundOn = true, audio = null;
+  try { soundOn = localStorage.getItem('abgame-sound') !== 'off'; } catch (e) {}
+  const paintSound = () => { sndBtn.firstElementChild.className = soundOn ? 'lc-volume-2' : 'lc-volume-x'; };
+  paintSound();
+  sndBtn.onclick = () => {
+    soundOn = !soundOn;
+    paintSound();
+    try { localStorage.setItem('abgame-sound', soundOn ? 'on' : 'off'); } catch (e) {}
+  };
+  function tone(freq, at, length) {
+    const osc = audio.createOscillator(), gain = audio.createGain();
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0.08, audio.currentTime + at);
+    gain.gain.exponentialRampToValueAtTime(0.001, audio.currentTime + at + length);
+    osc.connect(gain).connect(audio.destination);
+    osc.start(audio.currentTime + at);
+    osc.stop(audio.currentTime + at + length);
+  }
+  function sfx(kind) {
+    if (!soundOn) return;
+    try {
+      audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+      if (kind === 'ok') { tone(660, 0, .09); tone(880, .08, .12); }
+      else if (kind === 'bad') tone(190, 0, .2);
+      else [523, 659, 784, 1047].forEach((f, i) => tone(f, i * .1, .2));
+    } catch (e) { /* no sound is fine */ }
+  }
 
   const el = (tag, cls, text) => {
     const n = document.createElement(tag);
@@ -106,7 +160,15 @@
     countEl.textContent = GAME === 'match' ? `${correct} / ${items.length}` : `${correct} ta`;
     bar.style.width = (GAME === 'match' ? correct : index) / Math.max(items.length, 1) * 100 + '%';
   };
-  const miss = w => { mistakes++; if (!missed.some(m => m.en === w.en)) missed.push({en: w.en, uz: w.uz}); };
+  const paintCombo = () => { comboEl.hidden = combo < 2; comboEl.textContent = `x${combo}`; };
+  const hit = w => {
+    correct++; combo++;
+    bestCombo = Math.max(bestCombo, combo);
+    solved.push(w.en);
+    paintCombo(); sfx('ok');
+  };
+  const slip = () => { mistakes++; combo = 0; paintCombo(); sfx('bad'); };
+  const miss = w => { slip(); if (!missed.some(m => m.en === w.en)) missed.push({en: w.en, uz: w.uz}); };
   const shake = n => { n.classList.remove('shake'); void n.offsetWidth; n.classList.add('shake'); };
   const next = delay => setTimeout(() => {
     if (ended) return;
@@ -115,21 +177,112 @@
     if (index >= items.length) finish(); else RENDER[GAME]();
   }, delay);
 
-  const RENDER = {
-    quiz() {
-      const w = items[index];
-      const opts = el('div', 'pl-opts');
-      box.replaceChildren(el('div', 'pl-q', w.q), opts);
-      w.options.forEach(text => {
+  function options(w) {
+    const opts = el('div', 'pl-opts');
+    w.options.forEach(text => {
         const b = el('button', 'pl-opt', text);
         b.type = 'button';
         b.onclick = () => {
           opts.querySelectorAll('button').forEach(o => { o.disabled = true; if (o.textContent === w.a) o.classList.add('good'); });
-          if (text === w.a) correct++; else { b.classList.add('bad'); miss(w); }
+          if (text === w.a) hit(w); else { b.classList.add('bad'); miss(w); }
           next(text === w.a ? 280 : 750);
         };
         opts.append(b);
       });
+    return opts;
+  }
+
+  function say(text) {
+    if (!('speechSynthesis' in window)) return false;
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'en-US'; u.rate = 0.9;
+    speechSynthesis.speak(u);
+    return true;
+  }
+
+  const RENDER = {
+    quiz() {
+      const w = items[index];
+      box.replaceChildren(el('div', 'pl-q', w.q), options(w));
+    },
+    review() { RENDER.quiz(); },
+    listen() {
+      const w = items[index];
+      const play = el('button', 'pl-say');
+      play.type = 'button'; play.setAttribute('aria-label', 'Yana eshitish');
+      play.append(el('i', 'lc-volume-2'));
+      play.onclick = () => say(w.en);
+      const heard = say(w.en);
+      // Without a speech engine the word is shown, so the game still works.
+      box.replaceChildren(play, el('div', 'pl-hint', heard ? 'Tugmani bosib qayta eshiting' : w.en), options(w));
+    },
+    truefalse() {
+      const w = items[index];
+      const row = el('div', 'pl-tf'), yes = el('button', 'yes', 'Ha'), no = el('button', 'no', "Yo'q");
+      const answer = said => {
+        yes.disabled = no.disabled = true;
+        if (said === w.ok) { hit(w); next(200); return; }
+        miss(w);
+        shake(row);
+        next(650);
+      };
+      yes.type = no.type = 'button';
+      yes.onclick = () => answer(true);
+      no.onclick = () => answer(false);
+      row.append(yes, no);
+      box.replaceChildren(el('div', 'pl-q', w.en), el('div', 'pl-pair', w.shown), row);
+      RENDER.keys = e => {
+        if (e.key === 'ArrowLeft') yes.click();
+        if (e.key === 'ArrowRight') no.click();
+      };
+    },
+    hunter() {
+      const w = items[index], target = w.en.toLowerCase();
+      const guessed = new Set(), keys = el('div', 'pl-keys'), mask = el('div', 'pl-mask'), lives = el('div', 'pl-lives');
+      const feedback = el('div', 'pl-feedback');
+      let left = 6, over = false;
+      const paintWord = () => {
+        mask.replaceChildren(...[...target].map(ch => el('span', '', guessed.has(ch) || over ? ch : '')));
+        lives.replaceChildren(...Array.from({length: 6}, (_, i) => el('i', 'lc-heart' + (i < left ? '' : ' off'))));
+      };
+      const guess = (letter, key) => {
+        if (over || guessed.has(letter) || key.disabled) return;
+        key.disabled = true;
+        if (target.includes(letter)) {
+          guessed.add(letter);
+          key.classList.add('hit');
+          if ([...target].every(ch => guessed.has(ch))) {
+            over = true;
+            hit(w);
+            feedback.textContent = "To'g'ri!"; feedback.className = 'pl-feedback good';
+            next(650);
+          }
+        } else {
+          left--;
+          key.classList.add('off');
+          shake(lives);
+          if (left === 0) {
+            over = true;
+            miss(w);
+            feedback.textContent = `To'g'ri javob: ${w.en}`; feedback.className = 'pl-feedback bad';
+            next(1300);
+          }
+        }
+        paintWord();
+      };
+      [...'abcdefghijklmnopqrstuvwxyz'].forEach(letter => {
+        const key = el('button', 'pl-key', letter);
+        key.type = 'button';
+        key.onclick = () => guess(letter, key);
+        keys.append(key);
+      });
+      paintWord();
+      box.replaceChildren(el('div', 'pl-hint', w.uz), mask, lives, keys, feedback);
+      RENDER.keys = e => {
+        const key = [...keys.children].find(k => k.textContent === e.key.toLowerCase());
+        if (key) guess(key.textContent, key);
+      };
     },
     scramble() {
       const w = items[index], target = w.en.toLowerCase();
@@ -146,12 +299,12 @@
       const check = () => {
         const word = chosen.map(c => c.letter).join('');
         if (word === target) {
-          correct++;
+          hit(w);
           feedback.textContent = "To'g'ri!"; feedback.className = 'pl-feedback good';
           tiles.querySelectorAll('button').forEach(t => { t.disabled = true; });
           next(450);
         } else {
-          mistakes++;
+          slip();
           feedback.textContent = "Yana urinib ko'ring"; feedback.className = 'pl-feedback bad';
           shake(slots);
           chosen.splice(0).forEach(c => { c.tile.disabled = false; });
@@ -197,7 +350,7 @@
           picked.b.classList.remove('on');
           [picked.b, b].forEach(n => { n.classList.add('good'); n.disabled = true; });
           picked = null;
-          correct++; index = correct; paint();
+          hit(w); index = correct; paint();
           if (correct === items.length) setTimeout(finish, 350);
         } else if (picked && picked.b.parentNode !== b.parentNode) {
           miss(w);
@@ -246,7 +399,7 @@
         if (locked || !input.value.trim()) return;
         if (clean(input.value) === clean(w.en)) {
           locked = true;
-          if (!lost) correct++;
+          if (!lost) hit(w);
           input.className = 'pl-input good';
           feedback.textContent = "To'g'ri!"; feedback.className = 'pl-feedback good';
           next(450);
@@ -267,7 +420,7 @@
     },
   };
 
-  document.addEventListener('keydown', e => { if (GAME === 'scramble' && RENDER.keys && !e.ctrlKey && !e.metaKey) RENDER.keys(e); });
+  document.addEventListener('keydown', e => { if (RENDER.keys && !ended && !e.ctrlKey && !e.metaKey) RENDER.keys(e); });
 
   async function begin() {
     const body = new FormData();
@@ -281,7 +434,8 @@
       return;
     }
     token = d.token; items = d.items; index = 0; correct = 0; mistakes = 0; missed = []; ended = false;
-    if (!items.length) { box.replaceChildren(el('p', '', "Bu darajada so'z topilmadi")); return; }
+    combo = 0; bestCombo = 0; solved = []; RENDER.keys = null; paintCombo();
+    if (!items.length) { box.replaceChildren(el('p', '', "Bu yerda hozircha so'z yo'q")); return; }
     if (d.seconds) {
       let left = d.seconds;
       timerEl.hidden = false; timerEl.textContent = `${left} s`; timerEl.classList.remove('warn');
@@ -307,21 +461,40 @@
     try {
       r = await fetch(URLS.finish, {
         method: 'POST', headers: {'Content-Type': 'application/json', 'X-CSRFToken': CSRF},
-        body: JSON.stringify({token, correct, mistakes}),
+        body: JSON.stringify({token, correct, mistakes, combo: bestCombo, missed: missed.map(m => m.en), solved}),
       });
       d = await r.json();
     } catch (e) { r = {ok: false}; d = {error: "Natija saqlanmadi"}; }
-    showResult(r.ok ? d : {score: Math.max(0, correct * 10 - mistakes * 3), correct, mistakes, xp: 0, error: d.error});
+    showResult(r.ok ? d : {score: Math.max(0, correct * 10 - mistakes * 3), correct, mistakes, combo: bestCombo, xp: 0, error: d.error});
+  }
+
+  function confetti() {
+    const colors = ['#f59e0b', '#ec4899', '#3b82f6', '#10b981', '#8b5cf6', '#ef4444'];
+    for (let i = 0; i < 46; i++) {
+      const piece = el('i', 'pl-fall');
+      piece.style.left = Math.random() * 100 + 'vw';
+      piece.style.background = colors[i % colors.length];
+      piece.style.animationDelay = Math.random() * .5 + 's';
+      document.body.append(piece);
+      setTimeout(() => piece.remove(), 2200);
+    }
   }
 
   function showResult(d) {
+    comboEl.hidden = true;
+    RENDER.keys = null;
+    if (d.new_best) { confetti(); sfx('win'); }
     const nums = el('div', 'pl-nums');
-    [[d.correct, "To'g'ri"], [d.mistakes, 'Xato'], [`+${d.xp}`, 'XP']].forEach(([v, l]) => {
+    [[d.correct, "To'g'ri"], [d.mistakes, 'Xato'], [`x${d.combo || 0}`, 'Seriya'], [`+${d.xp}`, 'XP']].forEach(([v, l]) => {
       const c = el('div'); c.append(el('b', '', String(v)), el('span', '', l)); nums.append(c);
     });
     const nodes = [el('div', 'pl-score', String(d.score)), el('p', '', 'ball')];
     nodes[1].style.margin = '2px 0 0';
     if (d.new_best) nodes.push(el('div', 'pl-best', 'Yangi rekord!'));
+    const chips = el('div', 'pl-chips');
+    if (d.daily_bonus) chips.append(el('span', 'pl-chip', `Kunlik topshiriq +${d.daily_bonus} XP`));
+    (d.new_badges || []).forEach(title => chips.append(el('span', 'pl-chip', `Yangi yutuq: ${title}`)));
+    if (chips.children.length) nodes.push(chips);
     nodes.push(nums);
     if (d.error) nodes.push(el('p', '', d.error));
     else if (d.xp_limit_reached) nodes.push(el('p', '', "Bugungi XP chegarasiga yetdingiz. Ball hisoblanaveradi, XP ertaga davom etadi."));
