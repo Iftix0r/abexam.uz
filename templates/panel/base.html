@@ -69,7 +69,7 @@ input,select,textarea{font-family:inherit}
 
 /* Main */
 .main{margin-left:var(--sidebar);transition:margin-left .2s ease;flex:1;display:flex;flex-direction:column;min-height:100vh;min-width:0}
-.topbar{background:color-mix(in srgb,var(--surface) 85%,transparent);backdrop-filter:saturate(1.6) blur(10px);-webkit-backdrop-filter:saturate(1.6) blur(10px);border-bottom:1px solid var(--border);padding:0 28px;height:60px;display:flex;align-items:center;position:sticky;top:0;z-index:40;gap:16px}
+.topbar{background:color-mix(in srgb,var(--surface) 85%,transparent);backdrop-filter:saturate(1.6) blur(10px);-webkit-backdrop-filter:saturate(1.6) blur(10px);border-bottom:1px solid var(--border);padding:0 max(32px,calc((100% - 1480px)/2 + 32px));height:60px;display:flex;align-items:center;position:sticky;top:0;z-index:40;gap:16px}
 .topbar-title{font-size:16px;font-weight:700;white-space:nowrap;letter-spacing:-.01em;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .top-actions{margin-left:auto;display:flex;align-items:center;gap:8px;flex-shrink:0}
 .top-link{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 10px;border:1px solid var(--border);border-radius:8px;font-size:12.5px;font-weight:600;color:var(--muted);white-space:nowrap;transition:color .15s,background-color .15s}
@@ -89,12 +89,16 @@ a:focus-visible,button:focus-visible,.btn:focus-visible,.nav-item:focus-visible,
 .sidebar-overlay{display:none;position:fixed;inset:0;background:#000a;z-index:49}
 .sidebar-overlay.show{display:block}
 .sidebar-close{display:none}
-.topbar .menu-toggle{display:flex}
+.sidebar-collapse{margin-left:auto;width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:none;border:1px solid transparent;border-radius:7px;color:var(--sb-faint);cursor:pointer;transition:color .15s,background-color .15s}
+.sidebar-collapse:hover{background:var(--sb-hover);border-color:var(--sb-border);color:var(--sb-text)}
+.sidebar-collapse svg{width:15px;height:15px;transition:transform .2s ease}
 
 /* Collapsed sidebar (desktop only, remembered per browser) */
 @media (min-width:961px){
   :root[data-sidebar="mini"]{--sidebar:68px}
-  :root[data-sidebar="mini"] .logo{justify-content:center;padding-inline:0}
+  :root[data-sidebar="mini"] .logo{flex-direction:column;gap:10px;padding-inline:0}
+  :root[data-sidebar="mini"] .sidebar-collapse{margin-left:0}
+  :root[data-sidebar="mini"] .sidebar-collapse svg{transform:rotate(180deg)}
   :root[data-sidebar="mini"] .logo>div:not(.logo-icon){display:none}
   :root[data-sidebar="mini"] .nav-section{font-size:0;height:1px;background:var(--sb-border);margin:12px 8px;padding:0}
   :root[data-sidebar="mini"] .nav-item{font-size:0;gap:0;justify-content:center;padding:10px 0}
@@ -322,6 +326,7 @@ a.tg-pill:hover{background:#229ed92e}
   .sidebar.open{transform:translateX(0)}
   .main{margin-left:0}
   .menu-toggle{display:flex}
+  .sidebar-collapse{display:none}
   .topbar{padding:0 16px}
   .content{padding:18px}
   .stat-grid{grid-template-columns:repeat(2,1fr)}
@@ -391,6 +396,9 @@ a.tg-pill:hover{background:#229ed92e}
       <div class="logo-text">AbExam</div>
       <div class="logo-sub">{% block logo_sub %}Admin Panel{% endblock %}</div>
     </div>
+    <button class="sidebar-collapse" type="button" onclick="toggleSidebar()" title="Menyuni yig'ish / ochish" aria-label="Menyuni yig'ish yoki ochish">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="m11 17-5-5 5-5M18 17l-5-5 5-5"/></svg>
+    </button>
     <button class="menu-toggle sidebar-close" onclick="closeSidebar()" aria-label="Yopish" style="margin-left:auto">
       <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18" stroke-width="2"/><line x1="6" y1="6" x2="18" y2="18" stroke-width="2"/></svg>
     </button>
@@ -485,7 +493,7 @@ a.tg-pill:hover{background:#229ed92e}
 
 <main class="main">
   <div class="topbar">
-    <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Menyu" title="Menyuni ochish / yig'ish">
+    <button class="menu-toggle" onclick="openSidebar()" aria-label="Menyu">
       <svg width="17" height="17" fill="none" stroke="currentColor" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6" stroke-width="2"/><line x1="3" y1="12" x2="21" y2="12" stroke-width="2"/><line x1="3" y1="18" x2="21" y2="18" stroke-width="2"/></svg>
     </button>
     <span class="topbar-title">{% block page_title %}{% endblock %}</span>
@@ -564,9 +572,8 @@ const csrf=getCookie('csrftoken');
 
 // Mobile sidebar
 function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('sidebar-overlay').classList.add('show')}
-// Same button: slides the menu in on small screens, collapses it to icons on desktop.
+// Desktop only: collapses the menu to icons.
 function toggleSidebar(){
-  if (window.matchMedia('(max-width:960px)').matches) return openSidebar();
   const root = document.documentElement;
   const mini = root.dataset.sidebar !== 'mini';
   if (mini) root.dataset.sidebar = 'mini'; else delete root.dataset.sidebar;
