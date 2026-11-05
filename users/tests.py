@@ -163,3 +163,15 @@ class PublicNameTests(TestCase):
         phone_signup = User(username='998901234567', phone_number='+998901234567')
         self.assertEqual(phone_signup.public_name, 'Talaba')
 
+
+class AdminPanelLinkTests(TestCase):
+    def test_only_staff_see_the_link(self):
+        self.client.force_login(User.objects.create_user('ali', password='pw'))
+        self.assertNotContains(self.client.get(reverse('dashboard')), 'Admin panel')
+        self.assertNotContains(self.client.get(reverse('learn:hub')), 'Admin panel')
+        self.client.force_login(User.objects.create_user('boss', password='pw', is_staff=True))
+        page = self.client.get(reverse('dashboard'))
+        self.assertContains(page, 'Admin panel')
+        self.assertContains(page, reverse('panel:dashboard'))
+        self.assertContains(self.client.get(reverse('learn:hub')), 'Admin panel')
+

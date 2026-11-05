@@ -199,6 +199,7 @@
                         <a href="{% url 'learn:achievements' %}"><i data-lucide="award"></i>Yutuqlar</a>
                         <a href="{% url 'learn:placement' %}"><i data-lucide="target"></i>Darajani aniqlash</a>
                         <a href="{% url 'dashboard' %}"><i data-lucide="layout-grid"></i>IELTS platforma</a>
+                        {% if user.is_staff %}<a href="{% url 'panel:dashboard' %}"><i data-lucide="shield-check"></i>Admin panel</a>{% endif %}
                         <a href="{% url 'profile' %}"><i data-lucide="user"></i>Profil</a>
                         <a href="{% url 'learn:app' %}"><i data-lucide="smartphone"></i>Mobil ilova</a>
                         <a href="{% url 'users:logout' %}" class="danger"><i data-lucide="log-out"></i>Chiqish</a>
