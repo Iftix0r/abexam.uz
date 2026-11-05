@@ -1,9 +1,7 @@
-{% extends 'panel/base.html' %}
-{% block title %}{{ obj.display_name }} — Login loglari{% endblock %}
-{% block page_title %}{{ obj.display_name }} — Login tarixi{% endblock %}
-{% block nav_users %}active{% endblock %}
-
-{% block content %}
+{% extends 'panel/base.html' %} {% block title %}{{ obj.display_name }} — Login
+loglari{% endblock %} {% block page_title %}{{ obj.display_name }} — Login
+tarixi{% endblock %} {% block nav_users %}active{% endblock %} {% block content
+%}
 <nav class="breadcrumb">
   <a href="{% url 'panel:users' %}">Foydalanuvchilar</a>
   <span class="bc-sep">/</span>
@@ -12,24 +10,72 @@
   <span class="bc-current">Login tarixi</span>
 </nav>
 
-<div class="card" style="padding:0">
+<div class="card" style="padding: 0">
   <div class="table-wrap">
     <table>
-      <thead><tr><th>Holat</th><th>IP manzil</th><th>Brauzer</th><th>Vaqt</th></tr></thead>
+      <thead>
+        <tr>
+          <th>Holat</th>
+          <th>IP manzil</th>
+          <th>Joylashuv</th>
+          <th>Brauzer</th>
+          <th>Vaqt</th>
+        </tr>
+      </thead>
       <tbody>
         {% for log in logs %}
         <tr>
           <td>
-            {% if log.status == 'success' %}<span class="badge badge-green">✓ Kirdi</span>
-            {% elif log.status == 'failed' %}<span class="badge badge-yellow">✗ Xato parol</span>
-            {% else %}<span class="badge badge-red"><i class=lc-ban></i>&nbsp;Bloklangan</span>{% endif %}
+            {% if log.status == 'success' %}<span class="badge badge-green"
+              >✓ Kirdi</span
+            >
+            {% elif log.status == 'failed' %}<span class="badge badge-yellow"
+              >✗ Xato parol</span
+            >
+            {% else %}<span class="badge badge-red"
+              ><i class="lc-ban"></i>&nbsp;Bloklangan</span
+            >{% endif %}
           </td>
-          <td style="font-family:monospace;font-size:12px">{{ log.ip }}</td>
-          <td style="color:var(--muted);font-size:11px">{{ log.user_agent|truncatechars:60 }}</td>
-          <td style="color:var(--muted);font-size:12px">{{ log.created_at|date:"d M Y, H:i:s" }}</td>
+          <td style="font-family: monospace; font-size: 12px">{{ log.ip }}</td>
+          <td>
+            {% if log.latitude != None and log.longitude != None %}
+            <a
+              class="link"
+              target="_blank"
+              rel="noopener noreferrer"
+              href="https://www.google.com/maps?q={{ log.latitude|stringformat:'f' }},{{ log.longitude|stringformat:'f' }}"
+              title="Xaritada ochish"
+            >
+              {{ log.latitude|stringformat:".6f" }}, {{
+              log.longitude|stringformat:".6f" }}
+            </a>
+            <div style="color: var(--muted); font-size: 11px; margin-top: 3px">
+              Aniqlik: {{ log.location_accuracy|stringformat:".0f" }} m {% if
+              log.location_captured_at %}<br />{{
+              log.location_captured_at|date:"d M Y, H:i:s" }}{% endif %}
+            </div>
+            {% else %}
+            <span style="color: var(--muted); font-size: 12px"
+              >Saqlanmagan</span
+            >
+            {% endif %}
+          </td>
+          <td style="color: var(--muted); font-size: 11px">
+            {{ log.user_agent|truncatechars:60 }}
+          </td>
+          <td style="color: var(--muted); font-size: 12px">
+            {{ log.created_at|date:"d M Y, H:i:s" }}
+          </td>
         </tr>
         {% empty %}
-        <tr><td colspan="4" style="text-align:center;padding:32px;color:var(--muted)">Log yo'q</td></tr>
+        <tr>
+          <td
+            colspan="5"
+            style="text-align: center; padding: 32px; color: var(--muted)"
+          >
+            Log yo'q
+          </td>
+        </tr>
         {% endfor %}
       </tbody>
     </table>
