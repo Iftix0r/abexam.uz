@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% block title %}AB Game — AbExam{% endblock %}
+{% block page_title %}AB Game{% endblock %}
+
+{% block extra_css %}
+<style>
+.gm{width:100%;max-width:1060px;margin:0 auto;min-width:0}
+.gm-grid>*{min-width:0}
+.gm-hero{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;padding:26px 30px;border-radius:20px;color:#fff;background:linear-gradient(115deg,#4c1d95 0%,#7c3aed 55%,#db2777 100%);box-shadow:0 12px 30px #7c3aed2e;margin-bottom:20px}
+.gm-hero::after{content:'';position:absolute;right:-70px;top:-150px;width:400px;height:400px;background:radial-gradient(closest-side,rgba(255,255,255,.2),transparent);pointer-events:none}
+.gm-hero>*{position:relative;z-index:1}
+.gm-title{display:flex;align-items:center;gap:16px}
+.gm-title .ic{width:56px;height:56px;border-radius:16px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0}
+.gm-title h1{font-size:24px;font-weight:800;letter-spacing:-.02em}
+.gm-title p{font-size:13.5px;opacity:.9;margin-top:2px}
+.gm-xp{flex:0 1 190px;min-width:0}
+.gm-xp b{display:block;font-size:13px;margin-bottom:6px}
+.gm-xp div{height:8px;border-radius:8px;background:rgba(255,255,255,.25);overflow:hidden}
+.gm-xp i{display:block;height:100%;border-radius:8px;background:#fff}
+.gm-levels{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.gm-levels span{font-size:13px;color:var(--text-muted);margin-right:4px}
+.gm-levels a{padding:6px 14px;border-radius:20px;border:1px solid var(--border-color);font-size:13px;font-weight:700;color:var(--text-muted);text-decoration:none}
+.gm-levels a.active{background:var(--primary-color);border-color:var(--primary-color);color:#fff}
+.gm-grid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:18px;align-items:start}
+.gm-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.gm-card{display:flex;flex-direction:column;padding:20px;border-radius:18px;background:var(--card-bg);border:1px solid var(--border-color);color:var(--text-color);text-decoration:none;transition:transform .15s,border-color .15s}
+.gm-card:hover{transform:translateY(-3px);border-color:var(--c)}
+.gm-ic{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:23px;color:#fff;background:var(--c)}
+.gm-card h3{font-size:16.5px;font-weight:700;margin-top:12px}
+.gm-card p{flex:1;font-size:13px;line-height:1.45;color:var(--text-muted);margin:4px 0 14px}
+.gm-foot{display:flex;align-items:center;justify-content:space-between;font-size:12.5px;color:var(--text-muted)}
+.gm-play{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:10px;background:var(--c);color:#fff;font-weight:700}
+.gm-board{padding:16px;border-radius:18px;background:var(--card-bg);border:1px solid var(--border-color)}
+.gm-board h2{font-size:15px;font-weight:700;margin-bottom:10px}
+.gm-row{display:flex;align-items:center;gap:9px;padding:7px 8px;border-radius:10px;font-size:13.5px}
+.gm-row.me{background:color-mix(in srgb,var(--primary-color) 10%,transparent)}
+.gm-row .rk{width:22px;text-align:center;font-weight:700;color:var(--text-muted)}
+.gm-row .nm{flex:1;min-width:0;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gm-note{font-size:13px;color:var(--text-muted);line-height:1.45}
+@media (max-width:900px){.gm-grid{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:560px){.gm-hero{padding:20px}.gm-cards{grid-template-columns:minmax(0,1fr)}.gm-xp{flex-basis:100%}}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="gm">
+  <div class="gm-hero">
+    <div class="gm-title">
+      <div class="ic"><i class=lc-gamepad-2></i></div>
+      <div><h1>AB Game</h1><p>O'ynab ingliz tilini o'rganing</p></div>
+    </div>
+    <div class="gm-xp">
+      <b>Bugungi XP: {{ xp_today }} / {{ xp_limit }}</b>
+      <div><i style="width:{% widthratio xp_today xp_limit 100 %}%"></i></div>
+    </div>
+  </div>
+
+  <div class="gm-levels">
+    <span>Daraja:</span>
+    {% for l in levels %}<a href="?level={{ l }}" class="{% if l == level %}active{% endif %}">{{ l }}</a>{% endfor %}
+  </div>
+
+  <div class="gm-grid">
+    <div class="gm-cards">
+      {% for g in games %}
+      <a href="{% url 'games:play' g.slug %}?level={{ level }}" class="gm-card" style="--c:{{ g.color }}">
+        <div class="gm-ic"><i class="lc-{{ g.icon }}"></i></div>
+        <h3>{{ g.title }}</h3>
+        <p>{{ g.text }}</p>
+        <div class="gm-foot"><span>{% if g.best %}Rekord: <b>{{ g.best }}</b>{% else %}Hali o'ynalmagan{% endif %}</span><span class="gm-play"><i class=lc-play></i>O'ynash</span></div>
+      </a>
+      {% endfor %}
+    </div>
+    <aside class="gm-board">
+      <h2><i class=lc-trophy></i>&nbsp;Haftalik reyting</h2>
+      {% for r in board.rows %}
+      <div class="gm-row{% if r.me %} me{% endif %}">
+        <span class="rk">{% if r.rank == 1 %}<i class=lc-medal-gold></i>{% elif r.rank == 2 %}<i class=lc-medal-silver></i>{% elif r.rank == 3 %}<i class=lc-medal-bronze></i>{% else %}{{ r.rank }}{% endif %}</span>
+        {% include 'partials/logo.html' with o=r size='sm' %}
+        <span class="nm">{{ r.name }}{% if r.premium %}<i class=lc-premium></i>{% endif %}</span>
+        <b>{{ r.total }}</b>
+      </div>
+      {% empty %}
+      <p class="gm-note">Bu hafta hali hech kim o'ynamadi. Birinchi bo'ling!</p>
+      {% endfor %}
+      {% if board.me and board.me.rank > 10 %}<p class="gm-note" style="margin-top:8px">Sizning o'rningiz: <b>#{{ board.me.rank }}</b> · {{ board.me.total }} ball</p>{% endif %}
+    </aside>
+  </div>
+</div>
+{% endblock %}

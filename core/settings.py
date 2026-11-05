@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     'learn',
     'tgbot',
     'chat',
+    'games',
 ]
 
 MIDDLEWARE = [

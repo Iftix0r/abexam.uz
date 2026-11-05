@@ -1,0 +1,347 @@
+{% extends 'base.html' %}
+{% block title %}{{ game.title }} — AB Game{% endblock %}
+{% block page_title %}AB Game{% endblock %}
+
+{% block extra_css %}
+<style>
+.pl{width:100%;max-width:680px;margin:0 auto;--c:{{ game.color }}}
+.pl-top{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.pl-back{width:38px;height:38px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border-color);border-radius:11px;color:var(--text-color);text-decoration:none;flex-shrink:0}
+.pl-top h1{flex:1;min-width:0;font-size:18px;font-weight:700}
+.pl-stat{padding:6px 12px;border-radius:11px;background:var(--tint-a);font-size:14px;font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
+.pl-stat.warn{background:#dc26261f;color:#dc2626}
+.pl-bar{height:7px;border-radius:7px;background:var(--tint-b);overflow:hidden;margin-bottom:16px}
+.pl-bar i{display:block;height:100%;width:0;border-radius:7px;background:var(--c);transition:width .2s}
+.pl-box{padding:26px 22px;border-radius:20px;background:var(--card-bg);border:1px solid var(--border-color);text-align:center}
+.pl-ic{width:68px;height:68px;margin:0 auto 12px;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:32px;color:#fff;background:var(--c)}
+.pl-box h2{font-size:21px;font-weight:800}
+.pl-box p{font-size:14px;color:var(--text-muted);line-height:1.5;margin:6px 0 18px}
+.pl-go{padding:12px 30px;border:none;border-radius:13px;background:var(--c);color:#fff;font:inherit;font-size:15px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block}
+.pl-alt{padding:12px 22px;border:1px solid var(--border-color);border-radius:13px;background:none;color:var(--text-color);font:inherit;font-size:15px;font-weight:600;text-decoration:none;display:inline-block}
+.pl-q{font-size:28px;font-weight:800;letter-spacing:-.01em;overflow-wrap:anywhere;margin-bottom:6px}
+.pl-hint{font-size:14.5px;color:var(--text-muted);margin-bottom:16px;min-height:20px}
+.pl-opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
+.pl-opt{min-height:62px;padding:10px;border:2px solid var(--border-color);border-radius:14px;background:none;color:var(--text-color);font:inherit;font-size:15px;font-weight:600;cursor:pointer;overflow-wrap:anywhere}
+.pl-opt:hover:not(:disabled){border-color:var(--c)}
+.pl-opt.good{border-color:#16a34a;background:#16a34a1f;color:#16a34a}
+.pl-opt.bad{border-color:#dc2626;background:#dc26261f;color:#dc2626}
+.pl-opt.gone{visibility:hidden}
+.pl-opt.on{border-color:var(--c);background:color-mix(in srgb,var(--c) 14%,transparent)}
+.pl-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.pl-cols>div{display:flex;flex-direction:column;gap:8px}
+.pl-cols .pl-opt{min-height:52px;font-size:14px}
+.pl-slots{display:flex;justify-content:center;flex-wrap:wrap;gap:6px;min-height:50px;margin-bottom:14px}
+.pl-slot{width:42px;height:48px;display:flex;align-items:center;justify-content:center;border-radius:11px;border:2px dashed var(--border-color);font-size:21px;font-weight:800;text-transform:uppercase}
+.pl-slot.full{border-style:solid;border-color:var(--c);cursor:pointer}
+.pl-tiles{display:flex;justify-content:center;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.pl-tile{width:46px;height:50px;border:none;border-radius:11px;background:var(--c);color:#fff;font:inherit;font-size:21px;font-weight:800;text-transform:uppercase;cursor:pointer}
+.pl-tile:disabled{opacity:.18;cursor:default}
+.pl-input{width:100%;max-width:380px;padding:13px 16px;border-radius:13px;border:2px solid var(--border-color);background:var(--tint-a);color:var(--text-color);font:inherit;font-size:18px;font-weight:600;text-align:center;outline:none}
+.pl-input:focus{border-color:var(--c)}
+.pl-input.bad{border-color:#dc2626}
+.pl-input.good{border-color:#16a34a}
+.pl-row{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:14px}
+.pl-skip{padding:9px 18px;border:1px solid var(--border-color);border-radius:11px;background:none;color:var(--text-muted);font:inherit;font-size:13.5px;font-weight:600;cursor:pointer}
+.pl-feedback{min-height:22px;margin-top:12px;font-size:14px;font-weight:700}
+.pl-feedback.good{color:#16a34a}.pl-feedback.bad{color:#dc2626}
+.pl-score{font-size:52px;font-weight:800;letter-spacing:-.03em;line-height:1;color:var(--c)}
+.pl-nums{display:flex;justify-content:center;gap:26px;margin:14px 0}
+.pl-nums b{display:block;font-size:20px;font-weight:800}
+.pl-nums span{font-size:12px;color:var(--text-muted)}
+.pl-best{display:inline-block;margin-top:8px;padding:4px 12px;border-radius:14px;background:#f59e0b24;color:#d97706;font-size:13px;font-weight:700}
+.pl-miss{margin:6px 0 16px;text-align:left}
+.pl-miss h3{font-size:14px;font-weight:700;margin-bottom:6px}
+.pl-miss div{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid var(--border-color);font-size:14px}
+.pl-miss span{color:var(--text-muted);text-align:right}
+@keyframes plShake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.shake{animation:plShake .22s linear}
+@media (prefers-reduced-motion:reduce){.shake{animation:none}}
+@media (max-width:560px){.pl-box{padding:20px 14px}.pl-q{font-size:23px}.pl-slot{width:34px;height:42px;font-size:18px}.pl-tile{width:38px;height:44px;font-size:18px}}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="pl">
+  <div class="pl-top">
+    <a class="pl-back" href="{% url 'games:hub' %}?level={{ level }}" aria-label="Orqaga"><i class=lc-reply></i></a>
+    <h1>{{ game.title }} · {{ level }}</h1>
+    <span class="pl-stat" id="plTimer" hidden></span>
+    <span class="pl-stat" id="plCount"></span>
+  </div>
+  <div class="pl-bar"><i id="plBar"></i></div>
+  <div class="pl-box" id="plBox">
+    <div class="pl-ic"><i class="lc-{{ game.icon }}"></i></div>
+    <h2>{{ game.title }}</h2>
+    <p>{{ game.text }}</p>
+    <button class="pl-go" id="plStart" type="button">Boshlash</button>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(() => {
+  const GAME = "{{ slug }}", LEVEL = "{{ level }}", CSRF = "{{ csrf_token }}";
+  const URLS = {start: "{% url 'games:start' slug %}", finish: "{% url 'games:finish' %}", hub: "{% url 'games:hub' %}?level={{ level }}"};
+  const box = document.getElementById('plBox'), timerEl = document.getElementById('plTimer');
+  const countEl = document.getElementById('plCount'), bar = document.getElementById('plBar');
+  let token = '', items = [], index = 0, correct = 0, mistakes = 0, missed = [], clock = null, ended = false;
+
+  const el = (tag, cls, text) => {
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text !== undefined) n.textContent = text;
+    return n;
+  };
+  const shuffle = list => {
+    const a = [...list];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  };
+  const clean = text => text.trim().toLowerCase().replace(/\s+/g, ' ');
+  const paint = () => {
+    countEl.textContent = GAME === 'match' ? `${correct} / ${items.length}` : `${correct} ta`;
+    bar.style.width = (GAME === 'match' ? correct : index) / Math.max(items.length, 1) * 100 + '%';
+  };
+  const miss = w => { mistakes++; if (!missed.some(m => m.en === w.en)) missed.push({en: w.en, uz: w.uz}); };
+  const shake = n => { n.classList.remove('shake'); void n.offsetWidth; n.classList.add('shake'); };
+  const next = delay => setTimeout(() => {
+    if (ended) return;
+    index++;
+    paint();
+    if (index >= items.length) finish(); else RENDER[GAME]();
+  }, delay);
+
+  const RENDER = {
+    quiz() {
+      const w = items[index];
+      const opts = el('div', 'pl-opts');
+      box.replaceChildren(el('div', 'pl-q', w.q), opts);
+      w.options.forEach(text => {
+        const b = el('button', 'pl-opt', text);
+        b.type = 'button';
+        b.onclick = () => {
+          opts.querySelectorAll('button').forEach(o => { o.disabled = true; if (o.textContent === w.a) o.classList.add('good'); });
+          if (text === w.a) correct++; else { b.classList.add('bad'); miss(w); }
+          next(text === w.a ? 280 : 750);
+        };
+        opts.append(b);
+      });
+    },
+    scramble() {
+      const w = items[index], target = w.en.toLowerCase();
+      const slots = el('div', 'pl-slots'), tiles = el('div', 'pl-tiles'), feedback = el('div', 'pl-feedback');
+      const chosen = [];
+      const paintSlots = () => {
+        slots.replaceChildren();
+        for (let i = 0; i < target.length; i++) {
+          const s = el('div', 'pl-slot' + (chosen[i] ? ' full' : ''), chosen[i] ? chosen[i].letter : '');
+          if (chosen[i]) s.onclick = () => { chosen.splice(i).forEach(c => { c.tile.disabled = false; }); paintSlots(); };
+          slots.append(s);
+        }
+      };
+      const check = () => {
+        const word = chosen.map(c => c.letter).join('');
+        if (word === target) {
+          correct++;
+          feedback.textContent = "To'g'ri!"; feedback.className = 'pl-feedback good';
+          tiles.querySelectorAll('button').forEach(t => { t.disabled = true; });
+          next(450);
+        } else {
+          mistakes++;
+          feedback.textContent = "Yana urinib ko'ring"; feedback.className = 'pl-feedback bad';
+          shake(slots);
+          chosen.splice(0).forEach(c => { c.tile.disabled = false; });
+          paintSlots();
+        }
+      };
+      const pick = tile => {
+        if (tile.disabled || chosen.length >= target.length) return;
+        tile.disabled = true;
+        chosen.push({letter: tile.textContent, tile});
+        paintSlots();
+        if (chosen.length === target.length) check();
+      };
+      w.letters.forEach(letter => {
+        const t = el('button', 'pl-tile', letter);
+        t.type = 'button';
+        t.onclick = () => pick(t);
+        tiles.append(t);
+      });
+      const skip = el('button', 'pl-skip', "O'tkazib yuborish");
+      skip.type = 'button';
+      skip.onclick = () => {
+        miss(w);
+        feedback.textContent = w.en; feedback.className = 'pl-feedback bad';
+        tiles.querySelectorAll('button').forEach(t => { t.disabled = true; });
+        skip.disabled = true;
+        next(1100);
+      };
+      const row = el('div', 'pl-row'); row.append(skip);
+      paintSlots();
+      box.replaceChildren(el('div', 'pl-hint', w.uz), slots, tiles, row, feedback);
+      RENDER.keys = e => {
+        const tile = [...tiles.querySelectorAll('button:not(:disabled)')].find(t => t.textContent === e.key.toLowerCase());
+        if (tile) pick(tile);
+      };
+    },
+    match() {
+      const left = el('div'), right = el('div'), cols = el('div', 'pl-cols');
+      cols.append(left, right);
+      let picked = null;
+      const choose = (b, w) => {
+        if (picked && picked.w === w && picked.b.parentNode !== b.parentNode) {
+          picked.b.classList.remove('on');
+          [picked.b, b].forEach(n => { n.classList.add('good'); n.disabled = true; });
+          picked = null;
+          correct++; index = correct; paint();
+          if (correct === items.length) setTimeout(finish, 350);
+        } else if (picked && picked.b.parentNode !== b.parentNode) {
+          miss(w);
+          const first = picked.b;
+          first.classList.remove('on');
+          [first, b].forEach(n => { n.classList.add('bad'); setTimeout(() => n.classList.remove('bad'), 350); });
+          picked = null;
+        } else {
+          if (picked) picked.b.classList.remove('on');
+          b.classList.add('on');
+          picked = {b, w};
+        }
+      };
+      const add = (column, list, key) => shuffle(list).forEach(w => {
+        const b = el('button', 'pl-opt', w[key]);
+        b.type = 'button';
+        b.onclick = () => choose(b, w);
+        column.append(b);
+      });
+      add(left, items, 'en'); add(right, items, 'uz');
+      box.replaceChildren(cols);
+      let seconds = 0;
+      timerEl.hidden = false; timerEl.textContent = '0 s';
+      clock = setInterval(() => { timerEl.textContent = `${++seconds} s`; }, 1000);
+    },
+    spell() {
+      const w = items[index];
+      const input = el('input', 'pl-input'), feedback = el('div', 'pl-feedback');
+      input.setAttribute('autocomplete', 'off'); input.setAttribute('autocapitalize', 'none');
+      input.setAttribute('spellcheck', 'false'); input.setAttribute('aria-label', 'Inglizcha javob');
+      input.placeholder = 'Inglizcha yozing...';
+      const form = el('form'), row = el('div', 'pl-row');
+      const check = el('button', 'pl-go', 'Tekshirish'), hint = el('button', 'pl-skip', 'Birinchi harf'), skip = el('button', 'pl-skip', "O'tkazish");
+      hint.type = 'button'; skip.type = 'button';
+      let lost = false, locked = false;
+      const reveal = () => {
+        locked = true;
+        feedback.textContent = `To'g'ri javob: ${w.en}`; feedback.className = 'pl-feedback bad';
+        input.disabled = true;
+        next(1300);
+      };
+      hint.onclick = () => { input.value = w.en[0]; input.focus(); hint.disabled = true; };
+      skip.onclick = () => { if (locked) return; if (!lost) miss(w); reveal(); };
+      form.onsubmit = e => {
+        e.preventDefault();
+        if (locked || !input.value.trim()) return;
+        if (clean(input.value) === clean(w.en)) {
+          locked = true;
+          if (!lost) correct++;
+          input.className = 'pl-input good';
+          feedback.textContent = "To'g'ri!"; feedback.className = 'pl-feedback good';
+          next(450);
+        } else if (!lost) {
+          lost = true;
+          miss(w);
+          input.className = 'pl-input bad';
+          shake(input);
+          feedback.textContent = 'Yana bir urinish'; feedback.className = 'pl-feedback bad';
+        } else {
+          reveal();
+        }
+      };
+      row.append(check, hint, skip);
+      form.append(input, row, feedback);
+      box.replaceChildren(el('div', 'pl-q', w.uz), form);
+      input.focus();
+    },
+  };
+
+  document.addEventListener('keydown', e => { if (GAME === 'scramble' && RENDER.keys && !e.ctrlKey && !e.metaKey) RENDER.keys(e); });
+
+  async function begin() {
+    const body = new FormData();
+    body.append('level', LEVEL);
+    let d;
+    try {
+      const r = await fetch(URLS.start, {method: 'POST', headers: {'X-CSRFToken': CSRF}, body});
+      d = await r.json();
+    } catch (e) {
+      box.replaceChildren(el('p', '', "O'yin ochilmadi. Internetni tekshirib, qayta urinib ko'ring"));
+      return;
+    }
+    token = d.token; items = d.items; index = 0; correct = 0; mistakes = 0; missed = []; ended = false;
+    if (!items.length) { box.replaceChildren(el('p', '', "Bu darajada so'z topilmadi")); return; }
+    if (d.seconds) {
+      let left = d.seconds;
+      timerEl.hidden = false; timerEl.textContent = `${left} s`; timerEl.classList.remove('warn');
+      clock = setInterval(() => {
+        left--;
+        timerEl.textContent = `${left} s`;
+        timerEl.classList.toggle('warn', left <= 10);
+        if (left <= 0) finish();
+      }, 1000);
+    }
+    paint();
+    RENDER[GAME]();
+  }
+
+  async function finish() {
+    if (ended) return;
+    ended = true;
+    clearInterval(clock);
+    timerEl.hidden = true;
+    bar.style.width = '100%';
+    box.replaceChildren(el('p', '', 'Natija saqlanmoqda...'));
+    let r, d;
+    try {
+      r = await fetch(URLS.finish, {
+        method: 'POST', headers: {'Content-Type': 'application/json', 'X-CSRFToken': CSRF},
+        body: JSON.stringify({token, correct, mistakes}),
+      });
+      d = await r.json();
+    } catch (e) { r = {ok: false}; d = {error: "Natija saqlanmadi"}; }
+    showResult(r.ok ? d : {score: Math.max(0, correct * 10 - mistakes * 3), correct, mistakes, xp: 0, error: d.error});
+  }
+
+  function showResult(d) {
+    const nums = el('div', 'pl-nums');
+    [[d.correct, "To'g'ri"], [d.mistakes, 'Xato'], [`+${d.xp}`, 'XP']].forEach(([v, l]) => {
+      const c = el('div'); c.append(el('b', '', String(v)), el('span', '', l)); nums.append(c);
+    });
+    const nodes = [el('div', 'pl-score', String(d.score)), el('p', '', 'ball')];
+    nodes[1].style.margin = '2px 0 0';
+    if (d.new_best) nodes.push(el('div', 'pl-best', 'Yangi rekord!'));
+    nodes.push(nums);
+    if (d.error) nodes.push(el('p', '', d.error));
+    else if (d.xp_limit_reached) nodes.push(el('p', '', "Bugungi XP chegarasiga yetdingiz. Ball hisoblanaveradi, XP ertaga davom etadi."));
+    if (missed.length) {
+      const list = el('div', 'pl-miss');
+      list.append(el('h3', '', "Takrorlash uchun so'zlar"));
+      missed.forEach(w => { const row = el('div'); row.append(el('b', '', w.en), el('span', '', w.uz)); list.append(row); });
+      nodes.push(list);
+    }
+    const row = el('div', 'pl-row');
+    const again = el('button', 'pl-go', 'Yana o\'ynash');
+    again.type = 'button'; again.onclick = begin;
+    const back = el('a', 'pl-alt', "O'yinlar");
+    back.href = URLS.hub;
+    row.append(again, back);
+    nodes.push(row);
+    box.replaceChildren(...nodes);
+  }
+
+  document.getElementById('plStart').onclick = begin;
+})();
+</script>
+{% endblock %}

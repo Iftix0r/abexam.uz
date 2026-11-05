@@ -331,7 +331,7 @@
         .announcement-banner button:hover { opacity: 1; }
     </style>
     {% block extra_css %}{% endblock %}
-<link rel="stylesheet" href="/static/icons.css?v=7">
+<link rel="stylesheet" href="/static/icons.css?v=8">
 </head>
 <body>
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -372,6 +372,10 @@
             <a href="{% url 'rating' %}" class="nav-link {% if request.resolver_match.url_name == 'rating' %}active{% endif %}">
                 <i data-lucide="crown" style="width: 20px;"></i>
                 <span class="nav-toggle-text">Reyting</span>
+            </a>
+            <a href="{% url 'games:hub' %}" class="nav-link {% if request.resolver_match.namespace == 'games' %}active{% endif %}">
+                <i data-lucide="gamepad-2" style="width: 20px;"></i>
+                <span class="nav-toggle-text">AB Game</span>
             </a>
             <a href="{% url 'chat:home' %}" class="nav-link {% if request.resolver_match.namespace == 'chat' %}active{% endif %}">
                 <i data-lucide="messages-square" style="width: 20px;"></i>
