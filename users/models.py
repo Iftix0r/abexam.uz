@@ -137,6 +137,12 @@ class LoginLog(models.Model):
     location_captured_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    @property
+    def location_text(self):
+        if self.latitude is None or self.longitude is None:
+            return 'Saqlanmagan'
+        return f"{self.latitude:.6f}, {self.longitude:.6f}"
+
     def __str__(self):
         return f"{self.username_attempt} | {self.ip} | {self.status}"
 
