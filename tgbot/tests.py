@@ -3,6 +3,7 @@ from datetime import time, timedelta
 from unittest import mock
 
 from django.core.cache import cache
+from django.core.files.base import ContentFile
 from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
@@ -10,7 +11,7 @@ from django.utils import timezone
 from exams.models import Exam, UserResult
 from users.models import User
 
-from . import api
+from . import api, avatars, handlers
 from .models import Booking, ExamDay, TelegramAccount
 from .services import notify_result_ready, send_reminders
 
@@ -31,6 +32,9 @@ class BotTests(TestCase):
         async_patcher = mock.patch('tgbot.api.send_async', side_effect=api.send)
         async_patcher.start()
         self.addCleanup(async_patcher.stop)
+        avatar_patcher = mock.patch('tgbot.avatars.refresh_async')
+        self.refresh_avatar = avatar_patcher.start()
+        self.addCleanup(avatar_patcher.stop)
         self.day = ExamDay.objects.create(date=timezone.localdate() + timedelta(days=3), start_time=time(10),
                                           capacity=2, location='Chilonzor')
         self.update_id = 0
@@ -451,3 +455,113 @@ class PanelExamDayTests(TestCase):
 
         self.client.post(reverse('panel:user_tg_unlink', args=[vali.pk]))
         self.assertIsNone(TelegramAccount.objects.get(chat_id=4242).user)
+
+
+@override_settings(TELEGRAM_BOT_TOKEN='123:abc', TELEGRAM_ADMIN_CHAT_ID='')
+class TelegramAvatarTests(TestCase):
+    def setUp(self):
+        import shutil
+        import tempfile
+        cache.clear()
+        media = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, media, ignore_errors=True)
+        override = override_settings(MEDIA_ROOT=media)
+        override.enable()
+        self.addCleanup(override.disable)
+        self.user = User.objects.create_user('ali', password='pw', first_name='Ali')
+        self.acc = TelegramAccount.objects.create(chat_id=777, user=self.user)
+        self.photo_id = 'AAA'
+
+        post = mock.patch('tgbot.api.requests.post', side_effect=self._bot_api)
+        post.start()
+        self.addCleanup(post.stop)
+        get = mock.patch('tgbot.avatars.requests.get')
+        self.download = get.start()
+        self.download.return_value.status_code = 200
+        self.download.return_value.content = b'jpeg-bytes'
+        self.addCleanup(get.stop)
+
+    def _bot_api(self, url, json=None, **kwargs):
+        resp = mock.Mock()
+        if url.endswith('/getUserProfilePhotos'):
+            sizes = [{'file_id': f'{w}-id', 'file_unique_id': f'{self.photo_id}{w}', 'width': w} for w in (160, 320, 640)]
+            result = {'total_count': 1, 'photos': [sizes]} if self.photo_id else {'total_count': 0, 'photos': []}
+        elif url.endswith('/getFile'):
+            result = {'file_path': 'photos/file_1.jpg'}
+        else:
+            result = True
+        resp.json.return_value = {'ok': True, 'result': result}
+        return resp
+
+    def _avatar(self):
+        self.user.refresh_from_db()
+        return self.user.avatar.name if self.user.avatar else ''
+
+    def test_takes_the_medium_photo_from_telegram(self):
+        self.assertEqual(avatars.refresh(self.acc), avatars.UPDATED)
+        self.assertEqual(self._avatar(), f'avatars/tg_{self.user.pk}_AAA320.jpg')
+        self.assertEqual(self.user.avatar.read(), b'jpeg-bytes')
+
+    def test_same_photo_is_not_downloaded_again(self):
+        avatars.refresh(self.acc)
+        self.download.reset_mock()
+        self.acc.user.refresh_from_db()
+        self.assertEqual(avatars.refresh(self.acc), avatars.UNCHANGED)
+        self.download.assert_not_called()
+
+    def test_new_photo_replaces_the_old_file(self):
+        avatars.refresh(self.acc)
+        first = self.user.avatar
+        old_name, storage = self._avatar(), first.storage
+        self.photo_id = 'BBB'
+        self.assertEqual(avatars.refresh(self.acc), avatars.UPDATED)
+        self.assertIn('BBB320', self._avatar())
+        self.assertFalse(storage.exists(old_name))
+
+    def test_own_upload_is_never_replaced(self):
+        self.user.avatar.save('me.jpg', ContentFile(b'mine'))
+        self.assertEqual(avatars.refresh(self.acc), avatars.SKIPPED)
+        self.assertEqual(self._avatar(), 'avatars/me.jpg')
+        self.assertFalse(avatars.clear(self.user))
+        self.assertEqual(self._avatar(), 'avatars/me.jpg')
+
+    def test_photo_removed_in_telegram_is_removed_here(self):
+        avatars.refresh(self.acc)
+        self.photo_id = ''
+        self.assertEqual(avatars.refresh(self.acc), avatars.REMOVED)
+        self.assertEqual(self._avatar(), '')
+
+    def test_failures_keep_the_current_photo(self):
+        avatars.refresh(self.acc)
+        kept = self._avatar()
+        with mock.patch('tgbot.api.call', return_value=None):
+            self.assertEqual(avatars.refresh(self.acc), avatars.FAILED)
+        self.photo_id = 'BBB'
+        self.download.return_value.status_code = 500
+        self.assertEqual(avatars.refresh(self.acc), avatars.FAILED)
+        self.assertEqual(self._avatar(), kept)
+
+    def test_unlink_removes_the_telegram_photo(self):
+        avatars.refresh(self.acc)
+        self.client.force_login(self.user)
+        self.client.post(reverse('tgbot:unlink'))
+        self.assertEqual(self._avatar(), '')
+
+    def test_panel_unlink_removes_the_telegram_photo(self):
+        avatars.refresh(self.acc)
+        self.client.force_login(User.objects.create_superuser('boss', password='pw'))
+        self.client.post(reverse('panel:user_tg_unlink', args=[self.user.pk]))
+        self.assertEqual(self._avatar(), '')
+
+    def test_background_check_runs_once_a_day_unless_forced(self):
+        with mock.patch('tgbot.avatars.threading.Thread') as thread:
+            avatars.refresh_async(self.acc)
+            avatars.refresh_async(self.acc)
+            self.assertEqual(thread.call_count, 1)
+            avatars.refresh_async(self.acc, force=True)
+            self.assertEqual(thread.call_count, 2)
+
+    def test_linking_fetches_the_photo(self):
+        with mock.patch('tgbot.avatars.refresh_async') as refresh:
+            handlers._link(self.acc, User.objects.create_user('vali', password='pw'))
+        refresh.assert_called_once_with(self.acc, force=True)

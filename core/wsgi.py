@@ -22,4 +22,6 @@ application = get_wsgi_application()
 from django.conf import settings
 from whitenoise import WhiteNoise
 
-application = WhiteNoise(application, root=str(settings.MEDIA_ROOT), prefix=settings.MEDIA_URL)
+# autorefresh: without it WhiteNoise lists the folder once at startup, and
+# anything uploaded later 404s until the app restarts.
+application = WhiteNoise(application, root=str(settings.MEDIA_ROOT), prefix=settings.MEDIA_URL, autorefresh=True)

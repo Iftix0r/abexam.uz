@@ -37,7 +37,7 @@ from exams.views import finalize_attempt
 from learn.content import LEVEL_INFO, LEVELS, get_course, get_stories, validate_course
 from learn.models import ApiToken, AppRelease, DailyXP, LearnerProfile, LessonDraft, LessonProgress, Mistake
 from payments.models import Transaction
-from tgbot import api as tg_api
+from tgbot import api as tg_api, avatars as tg_avatars
 from tgbot.models import Booking, ExamDay, TelegramAccount
 from tgbot.services import BookingError, book, notify_day_cancelled, notify_result_ready
 from users.backends import normalize_phone
@@ -220,6 +220,7 @@ def user_tg_message(request, pk):
 def user_tg_unlink(request, pk):
     user = get_object_or_404(User, pk=pk)
     if TelegramAccount.objects.filter(user=user).update(user=None):
+        tg_avatars.clear(user)
         log_action(request, 'tgbot', user.display_name, reverse('panel:user_detail', args=[pk]), 'Telegram uzildi')
         messages.success(request, "Telegram hisobdan uzildi")
     return redirect('panel:user_detail', pk=pk)

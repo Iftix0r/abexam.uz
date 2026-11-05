@@ -13,7 +13,7 @@ from django.utils.crypto import constant_time_compare
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
-from . import api, handlers
+from . import api, avatars, handlers
 from .models import ExamDay, TelegramAccount
 from .services import fmt_date, site_url
 
@@ -54,6 +54,7 @@ def bot_page(request):
 def unlink(request):
     acc = TelegramAccount.objects.filter(user=request.user).first()
     if acc:
+        avatars.clear(request.user)
         acc.user = None
         acc.save(update_fields=['user'])
         api.send_async(acc.chat_id, f"🔌 Sayt hisobingiz botdan uzildi. Qayta ulash: {site_url('/telegram/')}")

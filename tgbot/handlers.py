@@ -16,7 +16,7 @@ from exams.views import calc_band
 from users.backends import normalize_phone
 from users.models import User
 
-from . import admin_bot, api
+from . import admin_bot, api, avatars
 from .models import Booking, ExamDay, TelegramAccount
 from .services import (BookingError, book, booking_admin_markup, booking_text, day_details, escape, fmt_day,
                        is_admin, is_admin_chat, notify_admins, result_message, site_url)
@@ -70,6 +70,7 @@ def _account(chat):
     acc.last_seen_at = timezone.now()
     acc.is_blocked = False
     acc.save(update_fields=['username', 'first_name', 'last_seen_at', 'is_blocked'])
+    avatars.refresh_async(acc)
     return acc, created
 
 
@@ -288,8 +289,11 @@ def _ask_link(acc):
 
 def _link(acc, user):
     TelegramAccount.objects.filter(user=user).exclude(pk=acc.pk).update(user=None)
+    if acc.user_id and acc.user_id != user.pk:
+        avatars.clear(acc.user)  # this Telegram moves to another site account
     acc.user = user
     acc.save(update_fields=['user'])
+    avatars.refresh_async(acc, force=True)
     reply(acc, f"✅ Hisob ulandi: <b>{escape(user.display_name)}</b>\n\n"
                "🔔 Endi imtihon natijalaringiz chiqishi bilan shu yerga avtomatik keladi — "
                "botni o'chirib qo'ymang.")
@@ -451,6 +455,7 @@ def _on_callback(acc, cq):
         api.answer_callback(cq['id'])
         return _support(acc)
     if data == 'unlink':
+        avatars.clear(acc.user)
         acc.user = None
         acc.save(update_fields=['user'])
         api.answer_callback(cq['id'], "Hisob uzildi")
