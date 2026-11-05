@@ -579,3 +579,11 @@ class CheckpointTests(TestCase):
         bad = self.client.post(reverse('learn:explain'), data=json.dumps({'slug': 'a1-hello', 'step': words, 'answer': 'x'}),
                                content_type='application/json')
         self.assertEqual(bad.status_code, 503)
+
+
+class StoryIconTests(TestCase):
+    def test_story_emoji_becomes_a_line_icon(self):
+        from learn.templatetags.learn_ui import story_icon
+        self.assertEqual(story_icon('❄️'), '<i class="lc-snowflake"></i>')
+        self.assertEqual(story_icon('🦄'), '<i class="lc-book-open"></i>')
+        self.assertEqual(story_icon(None), '<i class="lc-book-open"></i>')

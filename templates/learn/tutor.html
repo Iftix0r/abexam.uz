@@ -130,10 +130,10 @@
             typing.remove();
             if (!r.ok) { add(esc(d.error || 'Xatolik'), 'tt-typing'); return; }
             history.push({ role: 'user', content: text }, { role: 'assistant', content: d.reply });
-            if (d.correction) add(`✏️ <b>${esc(d.correction.corrected)}</b><span>${esc(d.correction.explain_uz || '')}</span>`, 'tt-fix');
+            if (d.correction) add(`<i class=lc-pencil></i>&nbsp;<b>${esc(d.correction.corrected)}</b><span>${esc(d.correction.explain_uz || '')}</span>`, 'tt-fix');
             addAI(d.reply);
             if (d.tip) {
-                const t = add(`💡 <b>${esc(d.tip.phrase)}</b> — ${esc(d.tip.uz || '')}<button>Lug'atga</button>`, 'tt-tip');
+                const t = add(`<i class=lc-lightbulb></i>&nbsp;<b>${esc(d.tip.phrase)}</b> — ${esc(d.tip.uz || '')}<button>Lug'atga</button>`, 'tt-tip');
                 t.querySelector('button').onclick = async ev => {
                     const fd = new FormData();
                     fd.append('english', d.tip.phrase); fd.append('translation', d.tip.uz || '-'); fd.append('csrfmiddlewaretoken', CSRF);

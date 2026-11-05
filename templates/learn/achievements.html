@@ -34,13 +34,13 @@
 {% block content %}
 <div class="ac-head">
     <div>
-        <h1>🏅 Yutuqlar</h1>
+        <h1><i class=lc-medal></i>&nbsp;Yutuqlar</h1>
         <p>Har bir nishonning bir necha darajasi bor — o'qishda davom eting va oltin darajaga yeting.</p>
     </div>
     <div class="ac-sum">
         <div><b>{{ unlocked }} / {{ total }}</b>daraja ochilgan</div>
-        <div><b>🔥 {{ profile.current_streak }}</b>kunlik seriya</div>
-        <div><b>❄️ {{ profile.streak_freezes }}</b>muzlatgich</div>
+        <div><b><i class=lc-flame></i>&nbsp;{{ profile.current_streak }}</b>kunlik seriya</div>
+        <div><b><i class=lc-snowflake></i>&nbsp;{{ profile.streak_freezes }}</b>muzlatgich</div>
     </div>
 </div>
 
@@ -53,7 +53,7 @@
         </div>
         <div class="ac-body">
             <b>{{ b.title_uz }}</b>
-            <p>{% if b.next %}Keyingi daraja: {{ b.desc_uz }}{% else %}Eng yuqori daraja olingan! 🎉{% endif %}</p>
+            <p>{% if b.next %}Keyingi daraja: {{ b.desc_uz }}{% else %}Eng yuqori daraja olingan! <i class=lc-party-popper></i>{% endif %}</p>
             <div class="ac-bar"><div style="width:{% if b.pct > 100 %}100{% else %}{{ b.pct }}{% endif %}%"></div></div>
             <div class="ac-meta"><span>{{ b.value }}{% if b.next %} / {{ b.next }}{% endif %}</span><span>{{ b.tier }}/{{ b.tiers }}</span></div>
             <div class="ac-dots">{% for i in "12345"|make_list|slice:b.tiers %}<span class="{% if forloop.counter <= b.tier %}on{% endif %}"></span>{% endfor %}</div>

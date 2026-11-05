@@ -188,12 +188,12 @@
     }
 
     function done() {
-        stage.innerHTML = total ? `<div class="rv-done"><div class="big">🎯</div>
+        stage.innerHTML = total ? `<div class="rv-done"><div class="big"><i class=lc-target></i></div>
             <h2>Takrorlash tugadi!</h2>
             <p>${remembered} ta so'z mustahkamlandi. Yangi takrorlashlar so'zlarni unutish arafasida avtomatik paydo bo'ladi.</p>
             <a href="{% url 'learn:hub' %}" style="background:var(--primary-color);color:#fff">Kursga qaytish</a>
             <a href="{% url 'vocabulary' %}" style="background:var(--tint-a);color:var(--text-color);border:1px solid var(--border-color)">Lug'atim</a></div>`
-            : `<div class="rv-done"><div class="big">✅</div>
+            : `<div class="rv-done"><div class="big"><i class=lc-circle-check></i></div>
             <h2>Hozircha takrorlash yo'q</h2>
             <p>Barcha so'zlar o'z vaqtida takrorlangan. Yangi dars o'ting yoki lug'atingizga so'z qo'shing.</p>
             <a href="{% url 'learn:hub' %}" style="background:var(--primary-color);color:#fff">Darslarga o'tish</a>

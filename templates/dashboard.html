@@ -223,7 +223,7 @@
     <!-- Hero -->
     <section class="dash-hero">
         <div>
-            <p class="dash-hello">Salom, {{ user.first_name|default:user.username }} 👋</p>
+            <p class="dash-hello">Salom, {{ user.first_name|default:user.username }} <i class=lc-hand></i></p>
             {% if stats.total_tests %}
             <h1>Davom etamizmi? <span>Keyingi bandga</span> bir qadam.</h1>
             <p class="dash-lead">Yangi mock test topshiring yoki oldingi natijalaringizni tahlil qilib, zaif bo'limlarni mustahkamlang.</p>
@@ -372,7 +372,7 @@
             <div class="dash-stat-icon tone-sky"><i data-lucide="graduation-cap" style="width:20px;"></i></div>
             <div class="txt">
                 <b>Ingliz tili kursi</b>
-                <span>{% if learn_due %}{{ learn_due }} ta so'z takrorlashni kutmoqda{% elif learn_streak %}🔥 {{ learn_streak }} kun ketma-ket{% else %}Har kuni 10 daqiqa mashq{% endif %}</span>
+                <span>{% if learn_due %}{{ learn_due }} ta so'z takrorlashni kutmoqda{% elif learn_streak %}<i class=lc-flame></i>&nbsp;{{ learn_streak }} kun ketma-ket{% else %}Har kuni 10 daqiqa mashq{% endif %}</span>
             </div>
             <i data-lucide="chevron-right" class="chev" style="width:18px;"></i>
         </a>

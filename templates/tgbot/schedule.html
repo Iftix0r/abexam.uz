@@ -30,7 +30,7 @@
         <div class="sch-time">{{ d.start_time|time:"H:i" }}</div>
         <div class="sch-main">
             <div class="sch-title">{{ d.title }}</div>
-            {% if d.location %}<div class="sch-meta">📍 {{ d.location }}</div>{% endif %}
+            {% if d.location %}<div class="sch-meta"><i class=lc-map-pin></i>&nbsp;{{ d.location }}</div>{% endif %}
             {% if d.note %}<div class="sch-meta">{{ d.note|linebreaksbr }}</div>{% endif %}
             <div class="sch-meta" style="margin-top:4px">Band: {{ d.booked }} / {{ d.capacity }} · bo'sh joy: {{ d.seats_left }}</div>
             <div class="sch-bar {% if d.fill_pct >= 100 %}is-full{% elif d.fill_pct >= 80 %}is-high{% endif %}"><span style="width:{{ d.fill_pct }}%"></span></div>

@@ -41,14 +41,14 @@
 <div id="bulk-bar" class="bulk-bar">
   <span id="bulk-count" style="font-size:13px;color:var(--muted)">0 ta tanlandi</span>
   <button onclick="bulkAction('unblock')" class="btn btn-success btn-sm">✓ Faollashtirish</button>
-  <button onclick="bulkAction('block')" class="btn btn-ghost btn-sm">⛔ Bloklash</button>
+  <button onclick="bulkAction('block')" class="btn btn-ghost btn-sm"><i class=lc-ban></i>&nbsp;Bloklash</button>
   <button onclick="bulkAction('delete')" class="btn btn-danger btn-sm">O'chirish</button>
   {% if groups %}
   <select id="bulk-group" class="form-input" aria-label="Guruh">
     <option value="">Guruhni tanlang…</option>
     {% for g in groups %}<option value="{{ g.pk }}">{{ g.name }}</option>{% endfor %}
   </select>
-  <button onclick="bulkAddGroup()" class="btn btn-ghost btn-sm">👥 Guruhga qo'shish</button>
+  <button onclick="bulkAddGroup()" class="btn btn-ghost btn-sm"><i class=lc-users></i>&nbsp;Guruhga qo'shish</button>
   {% endif %}
   <button onclick="clearSelection()" class="btn btn-ghost btn-sm" style="margin-left:auto">Bekor</button>
 </div>
@@ -99,7 +99,7 @@
           </td>
         </tr>
         {% empty %}
-        <tr><td colspan="9"><div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">Foydalanuvchi topilmadi</div>Qidiruv yoki filtrni o'zgartirib ko'ring</div></td></tr>
+        <tr><td colspan="9"><div class="empty-state"><div class="empty-icon"><i class=lc-search></i></div><div class="empty-title">Foydalanuvchi topilmadi</div>Qidiruv yoki filtrni o'zgartirib ko'ring</div></td></tr>
         {% endfor %}
       </tbody>
     </table>

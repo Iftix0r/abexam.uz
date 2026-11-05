@@ -57,11 +57,12 @@ footer{margin-top:26px;padding-top:12px;border-top:1px solid var(--border);displ
   .kpis,.skills,.weak,.chart,tr{break-inside:avoid}
 }
 </style>
+<link rel="stylesheet" href="/static/icons.css?v=1">
 </head>
 <body>
 <div class="toolbar">
   <button class="ghost" onclick="window.close()">Yopish</button>
-  <button onclick="window.print()">🖨 Chop etish / PDF</button>
+  <button onclick="window.print()"><i class=lc-printer></i>&nbsp;Chop etish / PDF</button>
 </div>
 
 <div class="sheet">
@@ -116,7 +117,7 @@ footer{margin-top:26px;padding-top:12px;border-top:1px solid var(--border);displ
     {% endfor %}
   </div>
   {% elif accuracy %}
-  <div class="empty">Barcha savol turlarida natija 70% dan yuqori — zo'r! 👏</div>
+  <div class="empty">Barcha savol turlarida natija 70% dan yuqori — zo'r! <i class=lc-party-popper></i></div>
   {% else %}
   <div class="empty">Savol turlari bo'yicha xulosa uchun ma'lumot hali yetarli emas.</div>
   {% endif %}

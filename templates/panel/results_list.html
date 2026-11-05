@@ -49,7 +49,7 @@
           <td><input type="checkbox" class="result-checkbox" value="{{ r.pk }}" onchange="updateBulkDeleteBtn()"></td>
           <td><a href="{% url 'panel:user_detail' r.user.pk %}" class="link">{{ r.user.display_name }}</a></td>
           <td><a href="{% url 'panel:exam_detail' r.exam.pk %}" style="color:var(--muted)">{{ r.exam.title|truncatechars:26 }}</a></td>
-          <td>{% if r.is_pending %}<span class="badge badge-yellow">⏳ Tekshirilmoqda</span>{% elif r.score >= 7.5 %}<span class="badge badge-green">{{ r.score }}</span>{% elif r.score >= 6.0 %}<span class="badge badge-yellow">{{ r.score }}</span>{% else %}<span class="badge badge-red">{{ r.score }}</span>{% endif %}</td>
+          <td>{% if r.is_pending %}<span class="badge badge-yellow"><i class=lc-hourglass></i>&nbsp;Tekshirilmoqda</span>{% elif r.score >= 7.5 %}<span class="badge badge-green">{{ r.score }}</span>{% elif r.score >= 6.0 %}<span class="badge badge-yellow">{{ r.score }}</span>{% else %}<span class="badge badge-red">{{ r.score }}</span>{% endif %}</td>
           <td class="td-num">{{ r.listening_score|default:"—" }}</td>
           <td class="td-num">{{ r.reading_score|default:"—" }}</td>
           <td class="td-num">{% if r.is_pending %}—{% else %}{{ r.writing_score|default:"—" }}{% endif %}</td>
@@ -69,7 +69,7 @@
           </td>
         </tr>
         {% empty %}
-        <tr><td colspan="10"><div class="empty-state">{% if status == 'pending' %}<div class="empty-icon">🎉</div><div class="empty-title">Hammasi baholangan</div>Tekshirilishi kerak bo'lgan natija yo'q{% else %}<div class="empty-icon">📝</div><div class="empty-title">Natija yo'q</div>Talabalar test topshirgach shu yerda ko'rinadi{% endif %}</div></td></tr>
+        <tr><td colspan="10"><div class="empty-state">{% if status == 'pending' %}<div class="empty-icon"><i class=lc-party-popper></i></div><div class="empty-title">Hammasi baholangan</div>Tekshirilishi kerak bo'lgan natija yo'q{% else %}<div class="empty-icon"><i class=lc-notebook-pen></i></div><div class="empty-title">Natija yo'q</div>Talabalar test topshirgach shu yerda ko'rinadi{% endif %}</div></td></tr>
         {% endfor %}
       </tbody>
     </table>

@@ -36,13 +36,13 @@
           </td>
           <td>{% if r.p.level %}<span class="badge badge-blue">{{ r.p.level }}</span>{% else %}<span style="color:var(--muted)">—</span>{% endif %}</td>
           <td style="font-weight:700;color:var(--yellow)">{{ r.p.xp }}</td>
-          <td>{% if r.p.current_streak %}🔥 {{ r.p.current_streak }}{% else %}<span style="color:var(--muted)">0</span>{% endif %} <span style="color:var(--muted);font-size:11px">/ {{ r.p.best_streak }}</span></td>
+          <td>{% if r.p.current_streak %}<i class=lc-flame></i>&nbsp;{{ r.p.current_streak }}{% else %}<span style="color:var(--muted)">0</span>{% endif %} <span style="color:var(--muted);font-size:11px">/ {{ r.p.best_streak }}</span></td>
           <td>{{ r.done }}</td>
           <td>{% if r.avg is not None %}<span class="badge {% if r.avg >= 80 %}badge-green{% elif r.avg >= 60 %}badge-yellow{% else %}badge-red{% endif %}">{{ r.avg|floatformat:0 }}%</span>{% else %}—{% endif %}</td>
           <td>{{ r.stories }}</td>
           <td>{{ r.words }}</td>
           <td>{% if r.mistakes %}<span class="badge badge-red">{{ r.mistakes }}</span>{% else %}0{% endif %}</td>
-          <td style="font-size:12px">{% if r.device %}📱 {{ r.device.device|default:"Ilova"|truncatechars:22 }}{% else %}<span style="color:var(--muted)">Sayt</span>{% endif %}</td>
+          <td style="font-size:12px">{% if r.device %}<i class=lc-smartphone></i>&nbsp;{{ r.device.device|default:"Ilova"|truncatechars:22 }}{% else %}<span style="color:var(--muted)">Sayt</span>{% endif %}</td>
           <td style="color:var(--muted);font-size:12px">{{ r.p.last_active|date:"d M Y"|default:"—" }}</td>
         </tr>
         {% empty %}

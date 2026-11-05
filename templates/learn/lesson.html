@@ -449,7 +449,7 @@
         } else {
             if (!state.hinted) combo++;
             sfx.ok();
-            const title = combo >= 3 ? `🔥 ${combo} ta ketma-ket to'g'ri!` : PRAISE[Math.floor(Math.random() * PRAISE.length)];
+            const title = combo >= 3 ? `${combo} ta ketma-ket to'g'ri!` : PRAISE[Math.floor(Math.random() * PRAISE.length)];
             setFoot('ok', title, step.explain_uz || '');
         }
         updateCombo();
@@ -461,7 +461,7 @@
     // it is a valid alternative after all, in which case it counts as right.
     async function explain(idx, step, given, firstAttempt) {
         side(null);
-        fb.insertAdjacentHTML('beforeend', `<div class="lp-ex" id="lpEx">🤖 AI javobingizni tahlil qilmoqda...</div>`);
+        fb.insertAdjacentHTML('beforeend', `<div class="lp-ex" id="lpEx"><i class=lc-bot></i>&nbsp;AI javobingizni tahlil qilmoqda...</div>`);
         try {
             const r = await fetch(URLS.explain, {
                 method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF },
@@ -471,10 +471,10 @@
             const box = $('lpEx');
             if (!box) return;
             if (!r.ok) { box.textContent = d.error || 'Xatolik'; return; }
-            const head = d.verdict === 'correct' ? "✅ <b>Javobingiz ham to'g'ri ekan!</b> " : d.verdict === 'almost' ? "✏️ <b>Deyarli to'g'ri.</b> " : '🤖 ';
+            const head = d.verdict === 'correct' ? "<i class=lc-circle-check></i>&nbsp;<b>Javobingiz ham to'g'ri ekan!</b> " : d.verdict === 'almost' ? "<i class=lc-pencil></i>&nbsp;<b>Deyarli to'g'ri.</b> " : '<i class=lc-bot></i>&nbsp;';
             box.innerHTML = head + md(d.explain_uz)
-                + (d.rule_uz ? `<div class="lp-ex-rule">📌 ${md(d.rule_uz)}</div>` : '')
-                + (d.example ? `<div class="lp-ex-rule">✍️ ${esc(d.example)}</div>` : '');
+                + (d.rule_uz ? `<div class="lp-ex-rule"><i class=lc-pin></i>&nbsp;${md(d.rule_uz)}</div>` : '')
+                + (d.example ? `<div class="lp-ex-rule"><i class=lc-pen-line></i>&nbsp;${esc(d.example)}</div>` : '');
             if (d.verdict === 'correct' && firstAttempt && firstTry[idx] === false) {
                 firstTry[idx] = true;
                 const qi = queue.lastIndexOf(idx);
@@ -492,7 +492,7 @@
         let badge = b.querySelector('.lp-combo');
         if (combo >= 3) {
             if (!badge) { badge = document.createElement('span'); badge.className = 'lp-combo'; b.appendChild(badge); }
-            badge.textContent = '🔥' + combo;
+            badge.innerHTML = '<i class=lc-flame></i>' + combo;
         } else if (badge) badge.remove();
     }
 
@@ -649,7 +649,7 @@
                     if (my !== token || !turn.isConnected) return;
                     if (i >= s.lines.length) {
                         mark(-1);
-                        turn.innerHTML = `<b>🎭 Barakalla! Dialogni oxirigacha o'ynadingiz.</b><div class="lp-tools" style="margin:0"><button class="lp-tool" id="again">${icon('rotate-ccw')} Boshqa rol</button></div>`;
+                        turn.innerHTML = `<b><i class=lc-drama></i>&nbsp;Barakalla! Dialogni oxirigacha o'ynadingiz.</b><div class="lp-tools" style="margin:0"><button class="lp-tool" id="again">${icon('rotate-ccw')} Boshqa rol</button></div>`;
                         lucide.createIcons(); sfx.win();
                         $('again').onclick = () => $('rolePlay').click();
                         return;
@@ -707,7 +707,7 @@
             body.innerHTML = `<div class="lp-kicker">${icon('lightbulb')} Grammatika</div>
                 <h2 class="lp-h">${esc(s.title_uz || '')}</h2>
                 ${grammarCard(s)}
-                <p class="lp-hint">Bu qoidani mashqlar paytida ham yuqoridagi 📖 tugmasi orqali ochishingiz mumkin.</p>`;
+                <p class="lp-hint">Bu qoidani mashqlar paytida ham yuqoridagi <i class=lc-book-open></i>&nbsp;tugmasi orqali ochishingiz mumkin.</p>`;
         },
 
         tip(s) {
@@ -894,7 +894,7 @@
                     const box = $('ai');
                     box.style.display = 'block';
                     box.innerHTML = `<div style="display:flex;align-items:center;gap:10px"><b style="font-size:1.6rem;color:${d.score >= 70 ? '#22c55e' : d.score >= 40 ? '#f59e0b' : '#ef4444'}">${d.score}</b><span style="color:var(--text-muted);font-size:.85rem">/ 100</span></div>
-                        ${d.praise_uz ? `<p style="margin-top:8px">👍 ${esc(d.praise_uz)}</p>` : ''}
+                        ${d.praise_uz ? `<p style="margin-top:8px"><i class=lc-thumbs-up></i>&nbsp;${esc(d.praise_uz)}</p>` : ''}
                         ${d.mistakes.length ? `<h5>Xatolar</h5>${d.mistakes.map(m => `<div class="mist"><s>${esc(m.wrong)}</s> → <ins>${esc(m.right)}</ins><br><span style="color:var(--text-muted)">${esc(m.why_uz || '')}</span></div>`).join('')}` : '<p style="margin-top:8px;color:#22c55e">Jiddiy xato topilmadi!</p>'}
                         ${d.corrected ? `<h5>Tuzatilgan matn</h5><p style="line-height:1.6">${esc(d.corrected)}</p>` : ''}
                         ${d.next_uz ? `<h5>Keyingi qadam</h5><p>${esc(d.next_uz)}</p>` : ''}`;
@@ -935,7 +935,7 @@
         return best;
     }
     const SR_ERRORS = {
-        'not-allowed': "Mikrofonga ruxsat berilmagan. Manzil satridagi 🔒 belgisidan ruxsat bering.",
+        'not-allowed': "Mikrofonga ruxsat berilmagan. Manzil satridagi qulf belgisidan ruxsat bering.",
         'audio-capture': "Mikrofon topilmadi. Ulanganini tekshiring.",
         'no-speech': "Ovoz eshitilmadi. Mikrofonni bosib, balandroq ayting.",
     };
@@ -1088,7 +1088,7 @@
         const right = graded.filter(k => firstTry[k]).length;
         const score = graded.length ? Math.round(right * 100 / graded.length) : 100;
         foot.style.display = 'none';
-        body.innerHTML = `<div class="lp-center"><div class="big">⏳</div><h2 class="lp-h">Natija saqlanmoqda...</h2></div>`;
+        body.innerHTML = `<div class="lp-center"><div class="big"><i class=lc-hourglass></i></div><h2 class="lp-h">Natija saqlanmoqda...</h2></div>`;
         let d = {};
         const payload = PRACTICE || TEST
             ? { results: graded.map(k => ({ slug: L.steps[k]._src.slug, step: L.steps[k]._src.idx, ok: firstTry[k] })) }
@@ -1098,15 +1098,15 @@
             d = await r.json();
             if (r.ok) store.del(SAVE_KEY);
         } catch (e) { d = { error: true }; }
-        let emoji = score >= 90 ? '🏆' : score >= 70 ? '🎉' : '💪';
+        let emoji = score >= 90 ? '<i class=lc-trophy></i>' : score >= 70 ? '<i class=lc-party-popper></i>' : '<i class=lc-biceps-flexed></i>';
         const done = PRACTICE ? 'Mashq tugallandi!' : 'Dars tugallandi!';
         let msg = score >= 90 ? 'Mukammal!' : score >= 70 ? done : `${done} Har bir xato — yangi bilim.`;
         let testNote = '';
         if (TEST && d.score !== undefined) {
-            emoji = d.passed ? '🎓' : '📚';
+            emoji = d.passed ? '<i class=lc-graduation-cap></i>' : '<i class=lc-library></i>';
             msg = d.passed ? 'Test topshirildi!' : `Bu safar ${d.score}% — o'tish uchun ${d.pass_mark}% kerak`;
             testNote = d.passed
-                ? (d.tested_out ? `🚀 ${d.tested_out} ta dars ochildi — bilganingiz uchun ularni o'tkazib yubordingiz.` : '✅ Bilimingiz tasdiqlandi.')
+                ? (d.tested_out ? `<i class=lc-rocket></i>&nbsp;${d.tested_out} ta dars ochildi — bilganingiz uchun ularni o'tkazib yubordingiz.` : '<i class=lc-circle-check></i>&nbsp;Bilimingiz tasdiqlandi.')
                 : "Xatolar aralash mashqqa qo'shildi. Ularni ishlab, testni qayta topshiring.";
         }
         const review = mistakes.filter(m => L.steps[m.idx]);
@@ -1117,14 +1117,14 @@
             <div class="lp-stats">
                 <div class="lp-stat" style="border-color:#f59e0b"><small>XP</small><b style="color:#f59e0b">+${d.xp ?? 0}</b></div>
                 <div class="lp-stat" style="border-color:#22c55e"><small>Aniqlik</small><b style="color:#22c55e">${TEST && d.score !== undefined ? d.score : score}%</b></div>
-                <div class="lp-stat" style="border-color:#f97316"><small>Streak</small><b style="color:#f97316">🔥 ${d.streak ?? '—'}</b></div>
+                <div class="lp-stat" style="border-color:#f97316"><small>Streak</small><b style="color:#f97316"><i class=lc-flame></i>&nbsp;${d.streak ?? '—'}</b></div>
             </div>
             ${testNote ? `<p class="lp-hint" style="margin-bottom:20px">${testNote}</p>` : ''}
-            ${PRACTICE && d.mistakes_left !== undefined ? `<p class="lp-hint" style="margin-bottom:20px">${d.mistakes_left ? `🎯 Yana ${d.mistakes_left} ta mashq ustida ishlash kerak. Har birini 2 marta ketma-ket to'g'ri yechsangiz, ro'yxatdan o'chadi.` : "🎉 Barcha xatolaringiz tuzatildi!"}</p>` : ''}
-            ${d.words_added ? `<p class="lp-hint" style="margin-bottom:20px">📚 ${d.words_added} ta yangi so'z lug'atingizga qo'shildi — ertaga takrorlash uchun tayyor bo'ladi.</p>` : ''}
-            ${review.length ? `<div class="lp-review"><h4>📝 Xatolar ustida ishlash</h4>${review.map(m => `<div><span>${esc(describe(L.steps[m.idx]))}</span>${m.right ? `<b>${esc(m.right)}</b>` : ''}${L.steps[m.idx].explain_uz ? ` — ${md(L.steps[m.idx].explain_uz)}` : ''}</div>`).join('')}</div>` : ''}
+            ${PRACTICE && d.mistakes_left !== undefined ? `<p class="lp-hint" style="margin-bottom:20px">${d.mistakes_left ? `<i class=lc-target></i>&nbsp;Yana ${d.mistakes_left} ta mashq ustida ishlash kerak. Har birini 2 marta ketma-ket to'g'ri yechsangiz, ro'yxatdan o'chadi.` : "<i class=lc-party-popper></i>&nbsp;Barcha xatolaringiz tuzatildi!"}</p>` : ''}
+            ${d.words_added ? `<p class="lp-hint" style="margin-bottom:20px"><i class=lc-library></i>&nbsp;${d.words_added} ta yangi so'z lug'atingizga qo'shildi — ertaga takrorlash uchun tayyor bo'ladi.</p>` : ''}
+            ${review.length ? `<div class="lp-review"><h4><i class=lc-notebook-pen></i>&nbsp;Xatolar ustida ishlash</h4>${review.map(m => `<div><span>${esc(describe(L.steps[m.idx]))}</span>${m.right ? `<b>${esc(m.right)}</b>` : ''}${L.steps[m.idx].explain_uz ? ` — ${md(L.steps[m.idx].explain_uz)}` : ''}</div>`).join('')}</div>` : ''}
             ${d.error ? `<p class="lp-hint" style="color:#ef4444">Natijani saqlab bo'lmadi — internetni tekshiring.</p>` : ''}
-            ${(d.new_badges || []).map(b => `<a href="${URLS.achievements}" class="lp-badge">🏅 Yangi yutuq: <b>${esc(b.title_uz)}</b> · ${b.tier}-daraja</a>`).join('')}
+            ${(d.new_badges || []).map(b => `<a href="${URLS.achievements}" class="lp-badge"><i class=lc-medal></i>&nbsp;Yangi yutuq: <b>${esc(b.title_uz)}</b> · ${b.tier}-daraja</a>`).join('')}
             <div class="lp-actions">
                 ${URLS.next ? `<a href="${URLS.next}" class="lp-main-btn" style="text-transform:none">Keyingi dars →</a>` : ''}
                 ${PRACTICE ? `<a href="" class="lp-main-btn" style="text-transform:none">Yana mashq qilish ↻</a>` : ''}
@@ -1141,13 +1141,13 @@
         .filter(Boolean).sort((a, b) => (b.at || 0) - (a.at || 0))[0] || null;
     if (!L.steps.length) {
         foot.style.display = 'none';
-        body.innerHTML = `<div class="lp-center"><div class="big">📚</div>
+        body.innerHTML = `<div class="lp-center"><div class="big"><i class=lc-library></i></div>
             <h2 class="lp-h">Hozircha mashq uchun material yo'q</h2>
             <p class="lp-sub">Avval bir-ikkita dars o'ting — keyin bu yerda xatolaringiz va o'tilgan mavzulardan aralash mashq paydo bo'ladi.</p>
             <div class="lp-actions"><a class="lp-main-btn" href="${URLS.hub}" style="text-transform:none">Darslarga o'tish</a></div></div>`;
     } else if (saved && saved.sig === SIG && saved.pos > 0 && saved.pos < saved.queue.length && Date.now() - saved.at < 7 * 864e5) {
         foot.style.display = 'none';
-        body.innerHTML = `<div class="lp-center"><div class="big">📍</div>
+        body.innerHTML = `<div class="lp-center"><div class="big"><i class=lc-map-pin></i></div>
             <h2 class="lp-h">Bu darsni ${saved.pos} / ${saved.queue.length} qadamda to'xtatgansiz</h2>
             <p class="lp-sub">Qolgan joyidan davom ettirasizmi?</p>
             <div class="lp-actions"><button class="lp-main-btn" id="resume" style="text-transform:none">Davom ettirish</button>

@@ -226,12 +226,12 @@
 
         <div class="ln-duo">
             <a href="{% url 'learn:practice' %}" class="ln-mini {% if not can_practice %}off{% endif %}">
-                <div class="ic" style="background:rgba(245,158,11,.15)">🎯</div>
+                <div class="ic" style="background:rgba(245,158,11,.15)"><i class=lc-target></i></div>
                 <div><b>Aralash mashq</b>
                     <span>{% if mistake_count %}{{ mistake_count }} ta xato ustida ishlash + o'tilgan mavzular{% elif can_practice %}O'tilgan darslardan aralash takrorlash, 3 daqiqa{% else %}Birinchi darsdan keyin ochiladi{% endif %}</span></div>
             </a>
             <a href="{% url 'learn:stories' %}" class="ln-mini">
-                <div class="ic" style="background:rgba(59,130,246,.15)">📚</div>
+                <div class="ic" style="background:rgba(59,130,246,.15)"><i class=lc-library></i></div>
                 <div><b>Hikoyalar</b><span>{{ level_code }} darajasida {{ story_count }} ta qisqa hikoya — tinglab o'qing</span></div>
             </a>
         </div>
@@ -253,7 +253,7 @@
 
         {% if units %}
         <a href="{% url 'learn:checkpoint' 'level' level_code %}" class="ln-exam {% if level_exam.state == 'passed' %}passed{% endif %}">
-            <span class="ln-exam-ic">🎓</span>
+            <span class="ln-exam-ic"><i class=lc-graduation-cap></i></span>
             <span class="ln-exam-tx">
                 {% if level_exam.state == 'passed' %}
                 <b>{{ level_code }} darajasi tasdiqlangan · {{ level_exam.score }}%</b>
@@ -320,8 +320,8 @@
             <summary><i data-lucide="sparkles" style="width:18px;color:var(--primary-color)"></i> Bu kurs qanday o'rgatadi?</summary>
             <ol>
                 <li><b>O'z darajangizdan boshlash.</b> Qisqa test mos darajani topadi — juda oson ham, juda qiyin ham emas. Hamma narsani tushunish shart emas: biroz qiyinroq material eng tez o'stiradi.</li>
-                <li><b>Avval tushunish, keyin qoida.</b> Har dars real dialog yoki matndan boshlanadi. Notanish so'zni bossangiz — tarjimasi chiqadi, sekin ovoz (🐌) bilan qayta tinglash mumkin.</li>
-                <li><b>Grammatika o'zbekcha va kontekstda.</b> Qoida misollardan keyin, o'zbek o'quvchilari ko'p qiladigan xatolarga urg'u bilan beriladi. Mashq paytida 📖 tugmasi bilan qayta ochiladi.</li>
+                <li><b>Avval tushunish, keyin qoida.</b> Har dars real dialog yoki matndan boshlanadi. Notanish so'zni bossangiz — tarjimasi chiqadi, sekin ovoz (<i class=lc-snail></i>) bilan qayta tinglash mumkin.</li>
+                <li><b>Grammatika o'zbekcha va kontekstda.</b> Qoida misollardan keyin, o'zbek o'quvchilari ko'p qiladigan xatolarga urg'u bilan beriladi. Mashq paytida <i class=lc-book-open></i>&nbsp;tugmasi bilan qayta ochiladi.</li>
                 <li><b>Qiynalmasdan mashq.</b> Qiyin joyda "Yordam" maslahat beradi, boshlang'ich darajada tarjimani so'zlardan yig'asiz, kichik imlo xatosi xato hisoblanmaydi. Xato qilingan savol dars oxirida yana bir bor so'raladi.</li>
                 <li><b>Gapirishdan qo'rqmaslik.</b> Mikrofon bilan talaffuz mashqi va "Rolni o'ynash": dialogda bir qahramon o'rniga o'zingiz gapirasiz.</li>
                 <li><b>Unutmaslik.</b> Darsdagi so'zlar lug'atingizga tushadi va unutishingiz oldidan qayta so'raladi (oraliq takrorlash). Har kuni ozgina — haftada bir marta ko'pdan ko'ra samaraliroq.</li>
@@ -344,7 +344,7 @@
                 <div>
                     <div style="font-size:1.25rem;font-weight:700">{{ xp_today }} / {{ profile.daily_goal }} XP</div>
                     <div style="font-size:0.8rem;color:var(--text-muted);margin-top:2px">
-                        {% if goal_pct >= 100 %}Maqsad bajarildi! 🎉{% else %}Dars ≈ 10–20 XP · takrorlash 1 XP/so'z{% endif %}
+                        {% if goal_pct >= 100 %}Maqsad bajarildi! <i class=lc-party-popper></i>{% else %}Dars ≈ 10–20 XP · takrorlash 1 XP/so'z{% endif %}
                     </div>
                 </div>
             </div>
@@ -378,11 +378,11 @@
             </div>
             {% endfor %}
             {% if daily.chest_opened %}
-            <div class="ln-chest opened">🎁 Sandiq ochildi: +{{ daily.chest_xp }} XP. Ertaga yangi topshiriqlar!</div>
+            <div class="ln-chest opened"><i class=lc-gift></i>&nbsp;Sandiq ochildi: +{{ daily.chest_xp }} XP. Ertaga yangi topshiriqlar!</div>
             {% elif daily.all_done %}
-            <button class="ln-chest ready" id="chestBtn">🎁 Sandiqni ochish (+{{ daily.chest_xp }} XP)</button>
+            <button class="ln-chest ready" id="chestBtn"><i class=lc-gift></i>&nbsp;Sandiqni ochish (+{{ daily.chest_xp }} XP)</button>
             {% else %}
-            <div class="ln-chest">🎁 Hammasini bajaring — sandiqda +{{ daily.chest_xp }} XP</div>
+            <div class="ln-chest"><i class=lc-gift></i>&nbsp;Hammasini bajaring — sandiqda +{{ daily.chest_xp }} XP</div>
             {% endif %}
             {% if daily.all_done and not daily.chest_opened %}
             <script>
@@ -393,7 +393,7 @@
                         const r = await fetch('{% url "learn:chest" %}', { method: 'POST', headers: { 'X-CSRFToken': '{{ csrf_token }}' } });
                         const d = await r.json();
                         btn.outerHTML = r.ok
-                            ? `<div class="ln-chest opened">🎉 +${d.xp} XP! Ertaga yangi topshiriqlar.</div>`
+                            ? `<div class="ln-chest opened"><i class=lc-party-popper></i>&nbsp;+${d.xp} XP! Ertaga yangi topshiriqlar.</div>`
                             : `<div class="ln-chest">${d.error || 'Xatolik'}</div>`;
                     } catch (err) { btn.disabled = false; }
                 });
@@ -429,7 +429,7 @@
         <div class="ln-card">
             <h4><i data-lucide="trophy" style="width:16px;color:#f59e0b"></i> Haftalik reyting</h4>
             {% for r in board.rows %}
-            <div class="ln-lb-row {% if r.me %}me{% endif %}"><span>{% if r.rank == 1 %}🥇{% elif r.rank == 2 %}🥈{% elif r.rank == 3 %}🥉{% else %}{{ r.rank }}{% endif %}</span><span>{{ r.name }}</span><b>{{ r.xp }} XP</b></div>
+            <div class="ln-lb-row {% if r.me %}me{% endif %}"><span>{% if r.rank == 1 %}<i class=lc-medal-gold></i>{% elif r.rank == 2 %}<i class=lc-medal-silver></i>{% elif r.rank == 3 %}<i class=lc-medal-bronze></i>{% else %}{{ r.rank }}{% endif %}</span><span>{{ r.name }}</span><b>{{ r.xp }} XP</b></div>
             {% empty %}
             <p style="font-size:.82rem;color:var(--text-muted)">Bu hafta birinchi bo'ling!</p>
             {% endfor %}

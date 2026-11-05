@@ -50,7 +50,7 @@ textarea.nb-editor{width:100%;min-height:560px;font-family:monospace;font-size:1
 
 {% if errors %}
 <div style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:var(--red);border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:16px">
-  {% for e in errors %}⚠ {{ e }}<br>{% endfor %}
+  {% for e in errors %}<i class=lc-triangle-alert></i>&nbsp;{{ e }}<br>{% endfor %}
 </div>
 {% endif %}
 
@@ -70,7 +70,7 @@ textarea.nb-editor{width:100%;min-height:560px;font-family:monospace;font-size:1
   <div style="display:flex;gap:10px;margin-bottom:16px">
     <button type="submit" class="btn btn-primary">Saqlash</button>
     <button type="button" class="btn btn-ghost" onclick="addBlock()">+ Yangi blok</button>
-    <a href="{% url 'exams:take_exam' exam.pk %}?preview=1" target="_blank" class="btn btn-ghost">👁 Talaba sifatida ko'rish</a>
+    <a href="{% url 'exams:take_exam' exam.pk %}?preview=1" target="_blank" class="btn btn-ghost"><i class=lc-eye></i>&nbsp;Talaba sifatida ko'rish</a>
     <a href="{% url 'panel:exam_detail' exam.pk %}" class="btn btn-ghost">Orqaga</a>
   </div>
 </form>

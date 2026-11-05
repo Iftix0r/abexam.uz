@@ -23,12 +23,12 @@
     <tbody>
       {% for e in entries %}
       <tr>
-        <td style="width:28px">{% if e.is_dir %}📁{% else %}📄{% endif %}</td>
+        <td style="width:28px">{% if e.is_dir %}<i class=lc-folder></i>{% else %}<i class=lc-file-text></i>{% endif %}</td>
         <td>
           {% if e.is_dir %}
             <a href="{% url 'system:files' subpath=e.path %}" style="color:var(--primary);font-weight:500">{{ e.name }}</a>
           {% elif e.sensitive %}
-            <span style="color:var(--muted)">{{ e.name }}</span> <span class="badge badge-red" style="margin-left:4px">🔒 maxfiy</span>
+            <span style="color:var(--muted)">{{ e.name }}</span> <span class="badge badge-red" style="margin-left:4px"><i class=lc-lock></i>&nbsp;maxfiy</span>
           {% else %}
             <a href="{% url 'system:files' subpath=e.path %}" style="color:var(--text)">{{ e.name }}</a>
           {% endif %}
@@ -59,7 +59,7 @@
     {% endif %}
   </div>
   {% if sensitive %}
-  <p style="color:var(--red);font-size:13px">🔒 Bu fayl maxfiy ma'lumot saqlaydi — ko'rsatilmaydi va yuklab olinmaydi.</p>
+  <p style="color:var(--red);font-size:13px"><i class=lc-lock></i>&nbsp;Bu fayl maxfiy ma'lumot saqlaydi — ko'rsatilmaydi va yuklab olinmaydi.</p>
   {% elif too_large %}
   <p style="color:var(--muted);font-size:13px">Fayl juda katta — faqat yuklab olish mumkin.</p>
   {% elif is_text %}

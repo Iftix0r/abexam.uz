@@ -15,7 +15,7 @@
 {% if exam.is_ai_generated and not exam.is_active %}
 <div style="background:linear-gradient(135deg,rgba(99,102,241,.12),rgba(245,158,11,.08));border:1px solid rgba(99,102,241,.3);border-radius:14px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
   <div style="display:flex;align-items:center;gap:12px">
-    <div style="font-size:24px">🤖</div>
+    <div style="font-size:24px"><i class=lc-bot></i></div>
     <div>
       <div style="font-size:14px;font-weight:700;color:#a5b4fc">AI tomonidan yaratilgan test — Ko'rib chiqish kerak</div>
       <div style="font-size:12px;color:var(--muted);margin-top:2px">
@@ -48,11 +48,11 @@
         <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
           <span class="badge badge-blue">{{ exam.get_exam_type_display }}</span>
           {% if exam.is_active %}<span class="badge badge-green">Faol</span>{% else %}<span class="badge badge-gray">Draft</span>{% endif %}
-          {% if exam.is_ai_generated %}<span style="background:rgba(99,102,241,.15);color:#a5b4fc;border:1px solid rgba(99,102,241,.3);border-radius:20px;padding:2px 10px;font-size:11px;font-weight:700">🤖 AI Generated</span>{% endif %}
+          {% if exam.is_ai_generated %}<span style="background:rgba(99,102,241,.15);color:#a5b4fc;border:1px solid rgba(99,102,241,.3);border-radius:20px;padding:2px 10px;font-size:11px;font-weight:700"><i class=lc-bot></i>&nbsp;AI Generated</span>{% endif %}
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <a href="{% url 'exams:take_exam' exam.pk %}?preview=1" target="_blank" class="btn btn-ghost btn-sm">👁 Talaba sifatida ko'rish</a>
-          <a href="{% url 'panel:exam_analysis' exam.pk %}" class="btn btn-ghost btn-sm">📊 Savollar tahlili</a>
+          <a href="{% url 'exams:take_exam' exam.pk %}?preview=1" target="_blank" class="btn btn-ghost btn-sm"><i class=lc-eye></i>&nbsp;Talaba sifatida ko'rish</a>
+          <a href="{% url 'panel:exam_analysis' exam.pk %}" class="btn btn-ghost btn-sm"><i class=lc-chart-column></i>&nbsp;Savollar tahlili</a>
           <a href="{% url 'panel:exam_edit' exam.pk %}" class="btn btn-ghost btn-sm">Tahrirlash</a>
           <button onclick="toggleExam({{ exam.pk }})" class="btn btn-ghost btn-sm" id="toggle-btn">
             {% if exam.is_active %}O'chirish{% else %}Yoqish{% endif %}
@@ -71,7 +71,7 @@
 
     {% if not sections %}
     <div class="card" style="border-color:rgba(211,47,47,.25);background:rgba(211,47,47,.04)">
-      <div style="font-size:14px;font-weight:700;margin-bottom:10px">📋 Qo'lda test qanday yaratiladi?</div>
+      <div style="font-size:14px;font-weight:700;margin-bottom:10px"><i class=lc-clipboard-list></i>&nbsp;Qo'lda test qanday yaratiladi?</div>
       <div style="font-size:13px;color:var(--muted);line-height:1.8">
         IELTS testi odatda 4 bo'limdan iborat: <strong style="color:var(--text)">Listening</strong> (4 qism, ~40 savol),
         <strong style="color:var(--text)">Reading</strong> (3 passage, ~40 savol),
@@ -80,7 +80,7 @@
         <strong style="color:var(--text)">1-qadam:</strong> pastdagi "+ Bo'lim qo'shish" tugmasi bilan kerakli bo'lim(lar)ni qo'shing. Bo'lim turini tanlaganda, nima kiritish kerakligi haqida ko'rsatma chiqadi.<br>
         <strong style="color:var(--text)">2-qadam:</strong> har bir bo'lim ichida "+ Savol qo'shish" orqali savollarni birma-bir kiriting — savol turini tanlaganingizda uni qanday to'ldirish kerakligi tushuntiriladi.<br>
         <strong style="color:var(--text)">3-qadam:</strong> barcha savollar tayyor bo'lgach, yuqoridagi "Tahrirlash" sahifasida testni <strong style="color:var(--text)">Faol</strong> qiling — shundagina talabalar uni ko'radi.<br><br>
-        💡 Har bir bo'lim va savolni "👁 Talaba sifatida ko'rish" orqali tekshirib borishingiz mumkin.
+        <i class=lc-lightbulb></i>&nbsp;Har bir bo'lim va savolni "<i class=lc-eye></i>&nbsp;Talaba sifatida ko'rish" orqali tekshirib borishingiz mumkin.
       </div>
     </div>
     {% endif %}
@@ -98,13 +98,13 @@
           <button onclick="moveSection({{ section.pk }},'down')" class="btn btn-ghost btn-sm" title="Pastga">▼</button>
           <a href="{% url 'panel:section_edit' section.pk %}" class="btn btn-ghost btn-sm">✎ Tahrirlash</a>
           {% if section.section_type == 'listening' or section.section_type == 'reading' %}
-          <a href="{% url 'panel:section_notes' section.pk %}" class="btn btn-ghost btn-sm" title="To'rtburchak ichidagi notes bloklari">▭ Notes{% if section.extra_data.notes %} ({{ section.extra_data.notes|length }}){% endif %}</a>
+          <a href="{% url 'panel:section_notes' section.pk %}" class="btn btn-ghost btn-sm" title="To'rtburchak ichidagi notes bloklari"><i class=lc-rectangle-horizontal></i>&nbsp;Notes{% if section.extra_data.notes %} ({{ section.extra_data.notes|length }}){% endif %}</a>
           {% endif %}
           <form method="post" action="{% url 'panel:section_duplicate' section.pk %}" style="display:inline">
             {% csrf_token %}
             <button type="submit" class="btn btn-ghost btn-sm" title="Nusxalash">⧉ Nusxalash</button>
           </form>
-          <button onclick="deleteSection({{ section.pk }})" class="btn btn-ghost btn-sm" style="color:var(--red)">🗑 O'chirish</button>
+          <button onclick="deleteSection({{ section.pk }})" class="btn btn-ghost btn-sm" style="color:var(--red)"><i class=lc-trash-2></i>&nbsp;O'chirish</button>
         </div>
       </div>
 
@@ -176,7 +176,7 @@
 
     {% if exam.is_ai_generated %}
     <div class="card" style="border-color:rgba(99,102,241,.2)">
-      <div style="font-size:12px;font-weight:700;color:#a5b4fc;margin-bottom:12px;text-transform:uppercase;letter-spacing:.06em">🤖 AI Ma'lumotlari</div>
+      <div style="font-size:12px;font-weight:700;color:#a5b4fc;margin-bottom:12px;text-transform:uppercase;letter-spacing:.06em"><i class=lc-bot></i>&nbsp;AI Ma'lumotlari</div>
       {% if exam.ai_metadata %}
       <div style="display:flex;flex-direction:column;gap:8px;font-size:12px">
         <div><span style="color:var(--muted)">Variant:</span> <strong>{{ exam.ai_metadata.variant|title }}</strong></div>
@@ -194,7 +194,7 @@
       {% for r in results %}
       <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
         <a href="{% url 'panel:user_detail' r.user.pk %}" style="font-size:13px;color:var(--primary)">{{ r.user.display_name }}</a>
-        {% if r.is_pending %}<a href="{% url 'panel:result_grade' r.pk %}" class="badge badge-yellow">⏳ Baholash</a>{% elif r.score >= 7.5 %}<span class="badge badge-green">{{ r.score }}</span>{% elif r.score >= 6.0 %}<span class="badge badge-yellow">{{ r.score }}</span>{% else %}<span class="badge badge-red">{{ r.score }}</span>{% endif %}
+        {% if r.is_pending %}<a href="{% url 'panel:result_grade' r.pk %}" class="badge badge-yellow"><i class=lc-hourglass></i>&nbsp;Baholash</a>{% elif r.score >= 7.5 %}<span class="badge badge-green">{{ r.score }}</span>{% elif r.score >= 6.0 %}<span class="badge badge-yellow">{{ r.score }}</span>{% else %}<span class="badge badge-red">{{ r.score }}</span>{% endif %}
       </div>
       {% empty %}<div style="color:var(--muted);font-size:13px;padding:12px 0">Natija yo'q</div>{% endfor %}
     </div>

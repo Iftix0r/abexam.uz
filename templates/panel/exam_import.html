@@ -49,7 +49,7 @@
               {% csrf_token %}
               <input type="hidden" name="file" value="{{ r.name }}">
               <button type="submit" class="btn btn-sm {% if r.is_new %}btn-primary{% else %}btn-ghost{% endif %}">
-                {% if r.is_new %}📥 Yuklash{% else %}↻ Qayta yuklash{% endif %}
+                {% if r.is_new %}<i class=lc-download></i>&nbsp;Yuklash{% else %}↻ Qayta yuklash{% endif %}
               </button>
             </form>
           </td>

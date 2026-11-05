@@ -171,7 +171,7 @@
       {# Only the student's own essays — never the per-question answer key #}
       {% for q in questions_data %}{% if q.question_type == 'writing_task' %}
       <div class="q-item">
-        <div style="font-size:13px;font-weight:500;margin-bottom:6px">✍ {{ q.text|truncatechars:150 }}</div>
+        <div style="font-size:13px;font-weight:500;margin-bottom:6px"><i class=lc-pen-line></i>&nbsp;{{ q.text|truncatechars:150 }}</div>
         <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">Yozgan javobingiz (so'zlar: {{ q.user_answer|wordcount }}):</div>
         <div style="background:var(--tint-a);border:1px solid var(--border-color);border-radius:8px;padding:10px;font-size:12px;line-height:1.6;white-space:pre-wrap;max-height:200px;overflow-y:auto">{{ q.user_answer|default:"(Javob berilmagan)" }}</div>
       </div>
@@ -422,7 +422,7 @@
         <!-- Transcript -->
         {% if entry.transcript %}
         <details style="margin-top:8px">
-          <summary style="font-size:12px;color:var(--text-muted);cursor:pointer">📝 Transkript ko'rish ({{ entry.word_count|default:0 }} so'z)</summary>
+          <summary style="font-size:12px;color:var(--text-muted);cursor:pointer"><i class=lc-notebook-pen></i>&nbsp;Transkript ko'rish ({{ entry.word_count|default:0 }} so'z)</summary>
           <div style="margin-top:8px;padding:10px;background:var(--tint-a);border-radius:6px;font-size:12px;line-height:1.6;color:var(--text-muted);white-space:pre-wrap">{{ entry.transcript }}</div>
         </details>
         {% endif %}
@@ -430,7 +430,7 @@
         <!-- Sample phrases -->
         {% if entry.sample_phrases %}
         <div style="margin-top:10px">
-          <div style="font-size:11px;color:#9b72cb;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">💡 Tavsiya etilgan iboralar</div>
+          <div style="font-size:11px;color:#9b72cb;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px"><i class=lc-lightbulb></i>&nbsp;Tavsiya etilgan iboralar</div>
           {% for phrase in entry.sample_phrases %}
           <div style="display:inline-block;background:rgba(155,114,203,.1);border:1px solid rgba(155,114,203,.2);border-radius:20px;padding:3px 12px;font-size:12px;color:#9b72cb;margin:2px">{{ phrase }}</div>
           {% endfor %}

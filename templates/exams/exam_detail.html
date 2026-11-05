@@ -195,7 +195,7 @@
                     </div>
                     {% if exam.price > 0 %}
                     <div class="test-meta-item">
-                        💳 <strong>{{ exam.price|floatformat:0 }} so'm</strong>
+                        <i class=lc-credit-card></i>&nbsp;<strong>{{ exam.price|floatformat:0 }} so'm</strong>
                     </div>
                     {% else %}
                     <div class="test-meta-item" style="color:#22c55e;">
@@ -261,10 +261,10 @@
             </div>
 
             <div class="section-type-icon {{ stype }}">
-                {% if stype == 'listening' %}🎧
-                {% elif stype == 'reading' %}📖
-                {% elif stype == 'writing' %}✏️
-                {% else %}🎤{% endif %}
+                {% if stype == 'listening' %}<i class=lc-headphones></i>
+                {% elif stype == 'reading' %}<i class=lc-book-open></i>
+                {% elif stype == 'writing' %}<i class=lc-pencil></i>
+                {% else %}<i class=lc-mic></i>{% endif %}
             </div>
 
             <div class="section-info">
@@ -284,7 +284,7 @@
     {% if exam.price > 0 and request.user.balance < exam.price %}
     <div style="background:rgba(239,68,68,.08); border:1px solid rgba(239,68,68,.2); border-radius:10px; padding:14px 20px; margin-bottom:16px; display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
         <div style="font-size:13px;">
-            💳 Balans yetarli emas: <strong>{{ request.user.balance|floatformat:0 }} so'm</strong> / kerak: <strong>{{ exam.price|floatformat:0 }} so'm</strong>
+            <i class=lc-credit-card></i>&nbsp;Balans yetarli emas: <strong>{{ request.user.balance|floatformat:0 }} so'm</strong> / kerak: <strong>{{ exam.price|floatformat:0 }} so'm</strong>
         </div>
         <a href="{% url 'finance' %}" style="background:#ef4444; color:#fff; padding:8px 18px; border-radius:7px; text-decoration:none; font-size:12px; font-weight:700;">Balansni to'ldirish →</a>
     </div>
@@ -293,7 +293,7 @@
     <!-- ── Previous attempts ────────────────────────── -->
     {% if user_results %}
     <div class="card" style="padding: 20px 28px;">
-        <div style="font-size:13px; font-weight:700; margin-bottom:14px;">📊 Oldingi natijalar</div>
+        <div style="font-size:13px; font-weight:700; margin-bottom:14px;"><i class=lc-chart-column></i>&nbsp;Oldingi natijalar</div>
         {% for result in user_results %}
         <div class="attempt-row">
             <div>
@@ -308,7 +308,7 @@
             </div>
             <div style="display:flex; align-items:center; gap:12px;">
                 {% if result.is_pending %}
-                <span class="band-chip band-mid" title="Natija hisoblanmoqda">⏳</span>
+                <span class="band-chip band-mid" title="Natija hisoblanmoqda"><i class=lc-hourglass></i></span>
                 {% else %}
                 <span class="band-chip {% if result.score >= 7.0 %}band-high{% elif result.score >= 5.5 %}band-mid{% else %}band-low{% endif %}">
                     {{ result.score|floatformat:1 }}

@@ -425,7 +425,7 @@
            test) — a locked tab can't be jumped to ahead of time, and a
            completed one can't be revisited once its time is used. */
         .section-tab.tab-locked { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
-        .section-tab.tab-locked::after { content: ' 🔒'; }
+        .section-tab.tab-locked::after { content: ''; display: inline-block; width: .9em; height: .9em; margin-left: 5px; vertical-align: -.1em; background: currentColor; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='11' x='3' y='11' rx='2' ry='2'/%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'/%3E%3C/svg%3E") center/contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='11' x='3' y='11' rx='2' ry='2'/%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'/%3E%3C/svg%3E") center/contain no-repeat; }
         .section-tab.tab-completed { opacity: 0.65; }
         .section-tab.tab-completed::after { content: ' ✓'; }
 
@@ -711,8 +711,8 @@
             cursor: pointer;
         }
         .note-mark::after {
-            content: '📝'; font-size: 10px; vertical-align: super;
-            margin-left: 1px; line-height: 0;
+            content: ''; display: inline-block; width: 10px; height: 10px; vertical-align: super;
+            margin-left: 1px; background: currentColor; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M13.4 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7.4'/%3E%3Cpath d='M2 6h4'/%3E%3Cpath d='M2 10h4'/%3E%3Cpath d='M2 14h4'/%3E%3Cpath d='M2 18h4'/%3E%3Cpath d='M21.378 5.626a1 1 0 1 0-3.004-3.004l-5.01 5.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z'/%3E%3C/svg%3E") center/contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M13.4 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7.4'/%3E%3Cpath d='M2 6h4'/%3E%3Cpath d='M2 10h4'/%3E%3Cpath d='M2 14h4'/%3E%3Cpath d='M2 18h4'/%3E%3Cpath d='M21.378 5.626a1 1 0 1 0-3.004-3.004l-5.01 5.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z'/%3E%3C/svg%3E") center/contain no-repeat;
         }
 
         #note-popup {
@@ -898,6 +898,7 @@
         .vs-row .vs-state { margin-left: auto; font-size: 11px; font-weight: 700; color: #90a4ae; }
         .vs-row.on .vs-state { color: var(--success); }
     </style>
+<link rel="stylesheet" href="/static/icons.css?v=1">
 </head>
 <body>
 
@@ -969,7 +970,7 @@
 
     {% if request.user.is_superuser %}
     <button id="demoFillBtn" onclick="demoFillAndSubmit()" title="Superadmin QA: to'g'ri javoblarni avtomatik to'ldiradi (yubormaydi) — 'Yakunlash'ni o'zingiz bosasiz" class="header-demo-btn" style="background:#6a1b9a; color:#fff; border:none; border-radius:6px; padding:0 14px; height:38px; font-size:12px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:6px;">
-        🧪 Demo to'ldirish
+        <i class=lc-flask-conical></i>&nbsp;Demo to'ldirish
     </button>
     {% endif %}
 
@@ -1012,7 +1013,7 @@
      button that silently did nothing (pendingSectionId was still null). -->
 <div id="sectionInstrOverlay">
     <div class="instr-card">
-        <div class="instr-icon-big" id="instrIcon">🎧</div>
+        <div class="instr-icon-big" id="instrIcon"><i class=lc-headphones></i></div>
         <div class="instr-section-label" id="instrLabel">SECTION 1 OF {{ tab_groups|length }}</div>
         <h2 id="instrTitle">{{ tab_groups.0.title }}</h2>
         <div class="instr-meta">
@@ -1027,7 +1028,7 @@
         </div>
         <div class="instr-rules" id="instrRules"></div>
         {% if site_settings.camera_proctoring %}
-        <div id="camStatus" class="cam-status">📷 Kamera yoqilmoqda…</div>
+        <div id="camStatus" class="cam-status"><i class=lc-camera></i>&nbsp;Kamera yoqilmoqda…</div>
         {% endif %}
         <button class="btn-start-section" id="instrStartBtn" onclick="closeInstructionAndStart()">START</button>
     </div>
@@ -1053,7 +1054,7 @@
 <div id="proctorWarning" style="display:none; position:fixed; inset:0; z-index:2550; background:rgba(198,40,40,.92);
      align-items:center; justify-content:center; padding:16px;">
     <div style="max-width:480px; text-align:center; color:#fff;">
-        <div style="font-size:56px; line-height:1;">⚠</div>
+        <div style="font-size:56px; line-height:1;"><i class=lc-triangle-alert></i></div>
         <h2 style="font-size:1.5rem; font-weight:800; margin:12px 0 10px;">DIQQAT!</h2>
         <p id="proctorWarningText" style="font-size:15px; line-height:1.6; margin-bottom:20px;"></p>
         <button onclick="closeProctorWarning()" style="background:#fff; color:#c62828; border:none; padding:12px 28px;
@@ -1073,7 +1074,7 @@
 <!-- ─── PRE-SUBMIT REVIEW MODAL ───────────────────────── -->
 <div class="overlay-modal" id="reviewModal">
     <div class="review-card">
-        <h3 id="reviewTitle">⚠️ Testni yakunlash</h3>
+        <h3 id="reviewTitle"><i class=lc-triangle-alert></i>&nbsp;Testni yakunlash</h3>
         <div id="reviewBody"></div>
         <div class="review-actions">
             <button class="btn-back" onclick="document.getElementById('reviewModal').classList.remove('active')">
@@ -1185,15 +1186,15 @@
             <div class="speaking-guide">
                 <h4><i data-lucide="mic" style="width:14px;"></i> Speaking Test Guide</h4>
                 <div class="speaking-guide-part">
-                    <h5>🎤 Part 1 — Introduction (4–5 min)</h5>
+                    <h5><i class=lc-mic></i>&nbsp;Part 1 — Introduction (4–5 min)</h5>
                     <p>Examiner siz haqingizda va tanish mavzular: oila, uy, ish, qiziqishlar haqida savol beradi.</p>
                 </div>
                 <div class="speaking-guide-part">
-                    <h5>📋 Part 2 — Cue Card (3–4 min)</h5>
+                    <h5><i class=lc-clipboard-list></i>&nbsp;Part 2 — Cue Card (3–4 min)</h5>
                     <p><strong>1 daqiqa</strong> tayyorlanish vaqti beriladi. Keyin <strong>1–2 daqiqa</strong> gaplashishingiz kerak.</p>
                 </div>
                 <div class="speaking-guide-part">
-                    <h5>💬 Part 3 — Discussion (4–5 min)</h5>
+                    <h5><i class=lc-message-circle></i>&nbsp;Part 3 — Discussion (4–5 min)</h5>
                     <p>Part 2 mavzusiga bog'liq murakkab savollar. Fikringizni asoslang.</p>
                 </div>
                 <div style="margin-top:10px; font-size:11px; color:#795548; background:#fff8e1; border-radius:6px; padding:8px 10px;">
@@ -1363,14 +1364,14 @@
                 <div id="speaking-ui-{{ question.id }}">
                     {% if question.explanation %}
                     <div style="font-size:12px;color:#546e7a;margin-bottom:8px;padding:8px 10px;background:#e3f2fd;border-radius:5px;border-left:3px solid #1565c0;">
-                        💡 {{ question.explanation }}
+                        <i class=lc-lightbulb></i>&nbsp;{{ question.explanation }}
                     </div>
                     {% endif %}
 
                     {# Part 2 cue card + prep timer #}
                     {% if section.section_type == 'speaking' and forloop.counter == 4 %}
                     <div class="cue-card-box">
-                        <h6>📋 Cue Card — tayyorlanish vaqti: 1 daqiqa</h6>
+                        <h6><i class=lc-clipboard-list></i>&nbsp;Cue Card — tayyorlanish vaqti: 1 daqiqa</h6>
                         <p style="font-size:12.5px; color:#5d4037; line-height:1.7;">{{ question.text|safe }}</p>
                     </div>
                     <div class="prep-timer-display" id="prep-timer-{{ question.id }}">
@@ -1399,7 +1400,7 @@
                             <span id="rec-label-{{ question.id }}">Yozishni boshlash</span>
                         </button>
                         <span id="rec-timer-{{ question.id }}" style="font-size:12px;color:#777;display:none;">
-                            ⏱ <span>0</span>s
+                            <i class=lc-timer></i>&nbsp;<span>0</span>s
                         </span>
                         <span id="rec-status-{{ question.id }}" style="font-size:12px;color:#2e7d32;display:none;">
                             ✓ Audio saqlandi
@@ -1890,27 +1891,27 @@ document.addEventListener('DOMContentLoaded', () => {
     // ─── SECTION INSTRUCTION ─────────────────────────────
     const SECTION_INFO = {
         listening: {
-            icon: '🎧', label: 'Audio-based Comprehension',
+            icon: '<i class=lc-headphones></i>', label: 'Audio-based Comprehension',
             rules: [
-                '🔊 Audio <strong>faqat bir marta</strong> o\'ynaladi — diqqat bilan tinglang.',
-                '⏱ Vaqt: <strong>30 daqiqa</strong>. Taymer avtomatik boshlanadi.',
-                '✍ Gap-fill, MCQ va matching savollar mavjud.',
+                '<i class=lc-volume-2></i>&nbsp;Audio <strong>faqat bir marta</strong> o\'ynaladi — diqqat bilan tinglang.',
+                '<i class=lc-timer></i>&nbsp;Vaqt: <strong>30 daqiqa</strong>. Taymer avtomatik boshlanadi.',
+                '<i class=lc-pen-line></i>&nbsp;Gap-fill, MCQ va matching savollar mavjud.',
             ],
         },
         reading: {
-            icon: '📖', label: 'Academic Reading Comprehension',
+            icon: '<i class=lc-book-open></i>', label: 'Academic Reading Comprehension',
             rules: [
-                '📄 3 ta o\'qish matni va 40 ta savol.',
-                '⏱ Vaqt: <strong>60 daqiqa</strong>. Sahifalar o\'rtasida o\'tish erkin.',
-                '✍ True/False/NG, matching headings, gap-fill va MCQ.',
+                '<i class=lc-file-text></i>&nbsp;3 ta o\'qish matni va 40 ta savol.',
+                '<i class=lc-timer></i>&nbsp;Vaqt: <strong>60 daqiqa</strong>. Sahifalar o\'rtasida o\'tish erkin.',
+                '<i class=lc-pen-line></i>&nbsp;True/False/NG, matching headings, gap-fill va MCQ.',
             ],
         },
         writing: {
-            icon: '✏️', label: 'Written Task Assessment',
+            icon: '<i class=lc-pencil></i>', label: 'Written Task Assessment',
             rules: [
-                '📝 Task 1: kamida <strong>150 so\'z</strong> (20 daqiqa tavsiya).',
-                '📝 Task 2: kamida <strong>250 so\'z</strong> (40 daqiqa tavsiya).',
-                '🤖 Javobingiz AI tomonidan baholanadi.',
+                '<i class=lc-notebook-pen></i>&nbsp;Task 1: kamida <strong>150 so\'z</strong> (20 daqiqa tavsiya).',
+                '<i class=lc-notebook-pen></i>&nbsp;Task 2: kamida <strong>250 so\'z</strong> (40 daqiqa tavsiya).',
+                '<i class=lc-bot></i>&nbsp;Javobingiz AI tomonidan baholanadi.',
             ],
         },
     };
@@ -1928,8 +1929,8 @@ document.addEventListener('DOMContentLoaded', () => {
         pendingSectionId = id;
         pendingTabEl = el;
         pendingDurationMinutes = Number(duration) || 60;
-        const info = SECTION_INFO[sectionType] || { icon: '📋', label: sectionType, rules: [] };
-        document.getElementById('instrIcon').textContent = info.icon;
+        const info = SECTION_INFO[sectionType] || { icon: '<i class=lc-clipboard-list></i>', label: sectionType, rules: [] };
+        document.getElementById('instrIcon').innerHTML = info.icon;
         document.getElementById('instrTitle').textContent = sectionTitle;
         // find index
         const tabs = Array.from(document.querySelectorAll('.section-tab'));
@@ -2128,11 +2129,11 @@ document.addEventListener('DOMContentLoaded', () => {
         let hasMessage = false;
         (data.commands || []).filter(c => c.id > lastCmd).forEach(c => {
             if (c.type === 'message') {
-                lines.push('📢 Administrator: ' + c.text);
+                lines.push('Administrator: ' + c.text);
                 hasMessage = true;
             } else if (c.type === 'extra_time') {
                 timeLeft += Number(c.seconds) || 0;
-                lines.push(`⏱ Sizga qo'shimcha ${Math.round((Number(c.seconds) || 0) / 60)} daqiqa berildi.`);
+                lines.push(`Sizga qo'shimcha ${Math.round((Number(c.seconds) || 0) / 60)} daqiqa berildi.`);
             }
             lastCmd = Math.max(lastCmd, c.id);
         });
@@ -2687,12 +2688,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const body = document.getElementById('reviewBody');
         if (!body) return;
 
-        document.getElementById('reviewTitle').innerText = isLast ? '⚠️ Testni yakunlash' : "⚠️ Bo'limni yakunlash";
+        document.getElementById('reviewTitle').innerHTML = isLast ? '<i class=lc-triangle-alert></i>&nbsp;Testni yakunlash' : "<i class=lc-triangle-alert></i>&nbsp;Bo'limni yakunlash";
         document.getElementById('reviewConfirmBtn').innerText = isLast ? 'Ha, yakunlash' : "Ha, keyingi bo'limga o'tish";
         const confirmQuestion = isLast ? 'Testni yakunlashni tasdiqlaysizmi?' : "Bu bo'limga qaytib bo'lmaydi. Keyingi bo'limga o'tishni tasdiqlaysizmi?";
 
         if (unanswered.length === 0) {
-            body.innerHTML = `<p style="color:#2e7d32; font-weight:600; margin-bottom:8px;">✅ Barcha savollar javoblandi.</p>
+            body.innerHTML = `<p style="color:#2e7d32; font-weight:600; margin-bottom:8px;"><i class=lc-circle-check></i>&nbsp;Barcha savollar javoblandi.</p>
                               <p style="font-size:13px; color:#555;">${confirmQuestion}</p>`;
         } else {
             const listItems = unanswered.map((q, i) => {
@@ -2702,7 +2703,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return `<li>${sectionType.toUpperCase()} — Savol ${num}</li>`;
             }).join('');
             body.innerHTML = `<p style="color:#e65100; font-weight:600; margin-bottom:8px;">
-                ⚠️ ${unanswered.length} ta savol javobsiz qoldi:</p>
+                <i class=lc-triangle-alert></i>&nbsp;${unanswered.length} ta savol javobsiz qoldi:</p>
                 <ul class="unanswered-list">${listItems}</ul>
                 <p style="font-size:13px; color:#555;">${confirmQuestion}</p>`;
         }
@@ -2766,7 +2767,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         } finally {
-            if (btn) { btn.disabled = false; btn.innerText = "🧪 Demo to'ldirish"; }
+            if (btn) { btn.disabled = false; btn.innerHTML = "<i class=lc-flask-conical></i>&nbsp;Demo to'ldirish"; }
         }
     };
 
@@ -2901,7 +2902,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (data.pending) {
             // Writing is graded by hand — no score exists yet, so the
             // modal just says the result is being calculated.
-            document.getElementById('resultScore').innerText = '⏳';
+            document.getElementById('resultScore').innerHTML = '<i class=lc-hourglass></i>';
             const bl = document.getElementById('bandLabel');
             if (bl) bl.innerText = "Natija hisoblanmoqda. Writing qismi mutaxassis tomonidan tekshirilgach natijangiz chiqadi va sizga xabar yuboriladi.";
             document.getElementById('sectionScores').innerHTML = '';
@@ -3040,10 +3041,10 @@ document.addEventListener('DOMContentLoaded', () => {
     async function startCamera() {
         if (!CAMERA_ENABLED || cameraOn() || examSubmitted) return;
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-            setCamStatus('err', "📷 Bu brauzer kamerani qo'llamaydi. Chrome yoki Edge'da oching.");
+            setCamStatus('err', "<i class=lc-camera></i>&nbsp;Bu brauzer kamerani qo'llamaydi. Chrome yoki Edge'da oching.");
             return;
         }
-        setCamStatus('', '📷 Kamera yoqilmoqda…');
+        setCamStatus('', '<i class=lc-camera></i>&nbsp;Kamera yoqilmoqda…');
         try {
             camStream = await navigator.mediaDevices.getUserMedia({
                 video: { width: { ideal: 640 }, height: { ideal: 480 }, frameRate: { ideal: 15, max: 24 }, facingMode: 'user' },
@@ -3053,8 +3054,8 @@ document.addEventListener('DOMContentLoaded', () => {
             camStream = null;
             const denied = e && (e.name === 'NotAllowedError' || e.name === 'SecurityError');
             setCamStatus('err', (denied
-                ? "📷 Kameraga ruxsat berilmadi — test kamerasiz boshlanadi"
-                : "📷 Kamera topilmadi — test kamerasiz boshlanadi") + ' <button type="button" onclick="startCamera()">Qayta urinish</button>');
+                ? "<i class=lc-camera></i>&nbsp;Kameraga ruxsat berilmadi — test kamerasiz boshlanadi"
+                : "<i class=lc-camera></i>&nbsp;Kamera topilmadi — test kamerasiz boshlanadi") + ' <button type="button" onclick="startCamera()">Qayta urinish</button>');
             // A camera plugged in later is picked up by itself.
             if (!denied && !camRetry) camRetry = setInterval(startCamera, 15000);
             return;
@@ -3070,7 +3071,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('camPreview').style.display = 'block';
         track.addEventListener('ended', cameraLost);
         closeAllLive();
-        setCamStatus('ok', '📷 Kamera yoqilgan — nazoratchi sizni ko\'radi');
+        setCamStatus('ok', '<i class=lc-camera></i>&nbsp;Kamera yoqilgan — nazoratchi sizni ko\'radi');
         clearInterval(camRetry);
         camRetry = null;
         clearTimeout(camTimer);
@@ -3082,9 +3083,9 @@ document.addEventListener('DOMContentLoaded', () => {
         camStream = null;
         closeAllLive();
         stopRelay();
-        setCamStatus('err', "📷 Kamera o'chdi <button type=\"button\" onclick=\"startCamera()\">Qayta yoqish</button>");
+        setCamStatus('err', "<i class=lc-camera></i>&nbsp;Kamera o'chdi <button type=\"button\" onclick=\"startCamera()\">Qayta yoqish</button>");
         if (examStarted) {
-            showStaffBanner("📷 Kamera o'chdi! Kamerani qayta yoqing — nazoratchi buni ko'radi.", '#c62828');
+            showStaffBanner("Kamera o'chdi! Kamerani qayta yoqing — nazoratchi buni ko'radi.", '#c62828');
             clearInterval(camRetry);
             camRetry = setInterval(startCamera, 5000);
         }

@@ -60,7 +60,7 @@
               </td>
             </tr>
             {% empty %}
-            <tr><td colspan="7"><div class="empty-state"><div class="empty-icon">👤</div><div class="empty-title">Guruhda hali talaba yo'q</div>O'ng tomondagi qidiruv orqali qo'shing</div></td></tr>
+            <tr><td colspan="7"><div class="empty-state"><div class="empty-icon"><i class=lc-user></i></div><div class="empty-title">Guruhda hali talaba yo'q</div>O'ng tomondagi qidiruv orqali qo'shing</div></td></tr>
             {% endfor %}
           </tbody>
         </table>
@@ -99,7 +99,7 @@
       {% for r in recent %}
       <div style="display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12.5px">
         <span><a href="{% url 'panel:user_detail' r.user.pk %}">{{ r.user.display_name }}</a><br><span style="color:var(--muted);font-size:11px">{{ r.exam.title|truncatechars:26 }}</span></span>
-        {% if r.is_pending %}<a href="{% url 'panel:result_grade' r.pk %}" class="badge badge-yellow" style="align-self:center">⏳ Baholash</a>{% else %}<span class="badge badge-blue" style="align-self:center">{{ r.score }}</span>{% endif %}
+        {% if r.is_pending %}<a href="{% url 'panel:result_grade' r.pk %}" class="badge badge-yellow" style="align-self:center"><i class=lc-hourglass></i>&nbsp;Baholash</a>{% else %}<span class="badge badge-blue" style="align-self:center">{{ r.score }}</span>{% endif %}
       </div>
       {% empty %}<div class="empty-state" style="padding:12px">Hali natija yo'q</div>{% endfor %}
     </div>

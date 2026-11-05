@@ -171,7 +171,7 @@
                 <label>O'zbekcha tarjimasi</label>
                 <div style="position:relative">
                     <input type="text" name="translation" id="translation-input" class="form-input" placeholder="Masalan: Chidamli" required>
-                    <button type="button" onclick="aiTranslate()" id="ai-btn" title="AI bilan tarjima qilish" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:var(--primary-color);border:none;border-radius:6px;padding:4px 10px;color:#fff;font-size:11px;font-weight:600;cursor:pointer">AI ✨</button>
+                    <button type="button" onclick="aiTranslate()" id="ai-btn" title="AI bilan tarjima qilish" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:var(--primary-color);border:none;border-radius:6px;padding:4px 10px;color:#fff;font-size:11px;font-weight:600;cursor:pointer">AI <i class=lc-sparkles></i></button>
                 </div>
             </div>
             <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.75rem; border-radius: 10px; font-weight: 600;">
@@ -301,7 +301,7 @@ async function aiTranslate(){
         const d = await r.json();
         document.getElementById('translation-input').value = d.response.trim().replace(/["""]/g,'');
     } catch(e){ alert('AI xatolik'); }
-    btn.textContent = 'AI ✨';
+    btn.innerHTML = 'AI <i class=lc-sparkles></i>';
     btn.disabled = false;
 }
 function clearAI(){ document.getElementById('translation-input').value = ''; }

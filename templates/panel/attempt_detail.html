@@ -28,10 +28,10 @@
 {% if site_settings.camera_proctoring and not attempt.is_submitted %}
 <div class="card" style="margin-bottom:16px">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:10px;flex-wrap:wrap">
-    <b>📷 Kamera (jonli)</b>
+    <b><i class=lc-camera></i>&nbsp;Kamera (jonli)</b>
     <span style="display:flex;align-items:center;gap:10px">
       <span id="camInfo" style="font-size:12px;color:var(--muted)">Ulanmoqda…</span>
-      <button type="button" id="camRecBtn" class="btn btn-ghost btn-sm" title="Kamerani yozib olish (kompyuteringizga video bo'lib tushadi)">⏺ Yozib olish</button>
+      <button type="button" id="camRecBtn" class="btn btn-ghost btn-sm" title="Kamerani yozib olish (kompyuteringizga video bo'lib tushadi)"><i class=lc-circle-dot></i>&nbsp;Yozib olish</button>
     </span>
   </div>
   <div style="position:relative;max-width:640px;aspect-ratio:4/3;background:#111;border-radius:10px;overflow:hidden">
@@ -40,7 +40,7 @@
     <img id="camLive" alt="O'quvchi kamerasi" style="width:100%;height:100%;object-fit:contain;display:none">
     <div id="camOff" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#ef4444;font-weight:600">Kamera hozir o'chiq yoki o'quvchi sahifani yopgan</div>
   </div>
-  <p style="font-size:12px;color:var(--muted);margin-top:8px">Kamera to'g'ridan-to'g'ri jonli video bo'lib keladi. Tarmoq bunga yo'l qo'ymasa — server orqali video (bir necha soniya orqada, lekin qotmasdan). Server hech narsani yozib qolmaydi; «⏺ Yozib olish» bosilsa, ko'rib turgan videongiz to'xtatguningizcha faqat sizning kompyuteringizga yoziladi va fayl bo'lib yuklanadi.</p>
+  <p style="font-size:12px;color:var(--muted);margin-top:8px">Kamera to'g'ridan-to'g'ri jonli video bo'lib keladi. Tarmoq bunga yo'l qo'ymasa — server orqali video (bir necha soniya orqada, lekin qotmasdan). Server hech narsani yozib qolmaydi; «<i class=lc-circle-dot></i>&nbsp;Yozib olish» bosilsa, ko'rib turgan videongiz to'xtatguningizcha faqat sizning kompyuteringizga yoziladi va fayl bo'lib yuklanadi.</p>
 </div>
 {% include 'panel/_live_camera_js.html' %}
 <script>
@@ -102,7 +102,7 @@
   });
   window.__camRecordersActive = () => recorder.recording;
   function paintRec() {
-    recBtn.textContent = recorder.recording ? `■ To'xtatish va saqlash (${recorder.elapsed()})` : '⏺ Yozib olish';
+    recBtn.innerHTML = recorder.recording ? `■ To'xtatish va saqlash (${recorder.elapsed()})` : '<i class=lc-circle-dot></i>&nbsp;Yozib olish';
     recBtn.style.color = recorder.recording ? '#fff' : '';
     recBtn.style.background = recorder.recording ? '#dc2626' : '';
   }
@@ -135,7 +135,7 @@
           </td>
           {% else %}
           <td style="color:var(--muted)">{{ item.question.text|striptags|truncatechars:90 }}</td>
-          <td style="font-weight:600;white-space:nowrap">{% if item.answer == '__audio__' %}🎤 audio{% else %}{{ item.answer|default:"—" }}{% endif %}</td>
+          <td style="font-weight:600;white-space:nowrap">{% if item.answer == '__audio__' %}<i class=lc-mic></i>&nbsp;audio{% else %}{{ item.answer|default:"—" }}{% endif %}</td>
           {% endif %}
         </tr>
         {% endfor %}

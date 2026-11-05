@@ -29,9 +29,9 @@
     <span class="bc-current">{{ obj.display_name }}</span>
   </nav>
   <div style="display:flex;gap:8px;flex-wrap:wrap">
-    <a href="{% url 'panel:user_report' obj.pk %}" target="_blank" class="btn btn-ghost btn-sm">📄 Progress hisoboti</a>
-    <button onclick="openEditModal()" class="btn btn-ghost btn-sm">✏ Tahrirlash</button>
-    <button onclick="openPasswordModal()" class="btn btn-ghost btn-sm">🔑 Parol</button>
+    <a href="{% url 'panel:user_report' obj.pk %}" target="_blank" class="btn btn-ghost btn-sm"><i class=lc-file-text></i>&nbsp;Progress hisoboti</a>
+    <button onclick="openEditModal()" class="btn btn-ghost btn-sm"><i class=lc-pencil></i>&nbsp;Tahrirlash</button>
+    <button onclick="openPasswordModal()" class="btn btn-ghost btn-sm"><i class=lc-key-round></i>&nbsp;Parol</button>
     {% if not obj.is_superuser and obj.pk != request.user.pk %}
     <button onclick="makeStaff({{ obj.pk }})" class="btn btn-ghost btn-sm" id="staff-btn">
       {% if obj.is_staff %}Admin olib tashlash{% else %}Admin qilish{% endif %}
@@ -63,7 +63,7 @@
       <div style="font-size:12px;color:var(--muted);margin-top:10px;line-height:1.5">{{ obj.bio }}</div>
       {% endif %}
       <button onclick="toggleUser({{ obj.pk }})" class="btn btn-ghost btn-sm" style="margin-top:14px;width:100%" id="toggle-btn">
-        {% if obj.is_active %}⛔ Bloklash{% else %}✓ Faollashtirish{% endif %}
+        {% if obj.is_active %}<i class=lc-ban></i>&nbsp;Bloklash{% else %}✓ Faollashtirish{% endif %}
       </button>
     </div>
 
@@ -86,7 +86,7 @@
         <div><span>Botga kirgan</span><b>{{ tg.created_at|date:"d M Y" }}</b></div>
         <div><span>Oxirgi faollik</span><b>{{ tg.last_seen_at|date:"d M Y, H:i" }}</b></div>
         {% if tg.bookings_n %}<div><span>Imtihon navbatlari</span><b>{{ tg.bookings_n }} ta</b></div>{% endif %}
-        {% if tg.is_admin or tg.is_banned %}<div><span>Botda</span><b>{% if tg.is_admin %}👮 Bot admini{% endif %}{% if tg.is_banned %} 🚫 Bloklangan{% endif %}</b></div>{% endif %}
+        {% if tg.is_admin or tg.is_banned %}<div><span>Botda</span><b>{% if tg.is_admin %}<i class=lc-shield-check></i>&nbsp;Bot admini{% endif %}{% if tg.is_banned %} <i class=lc-ban></i>&nbsp;Bloklangan{% endif %}</b></div>{% endif %}
       </div>
       {% if tg.is_blocked %}<div style="font-size:12px;color:var(--yellow);margin-top:10px">Foydalanuvchi botni bloklagan — natija xabarlari bormaydi.</div>{% endif %}
       {% if tg_enabled %}
@@ -104,7 +104,7 @@
       <div style="font-size:12.5px;color:var(--muted);line-height:1.6">
         Natijalar Telegramga bormaydi. O'quvchi saytdagi <b>«Botni ulash»</b> tugmasini bosib, botda Start bossa ulanadi.
       </div>
-      <button type="button" class="btn btn-ghost btn-sm" style="width:100%;margin-top:12px" onclick="navigator.clipboard?.writeText(location.origin + '/telegram/').then(() => toast('Havola nusxalandi'))">🔗 Ulash sahifasi havolasini nusxalash</button>
+      <button type="button" class="btn btn-ghost btn-sm" style="width:100%;margin-top:12px" onclick="navigator.clipboard?.writeText(location.origin + '/telegram/').then(() => toast('Havola nusxalandi'))"><i class=lc-link></i>&nbsp;Ulash sahifasi havolasini nusxalash</button>
       {% endif %}
     </div>
 
@@ -142,7 +142,7 @@
           <span style="font-family:monospace;font-size:11px;color:var(--primary)">{{ obj.last_ip|default:"—" }}</span>
         </div>
       </div>
-      <a href="{% url 'panel:user_logs' obj.pk %}" class="btn btn-ghost btn-sm" style="margin-top:12px;width:100%">🔍 Login tarixi</a>
+      <a href="{% url 'panel:user_logs' obj.pk %}" class="btn btn-ghost btn-sm" style="margin-top:12px;width:100%"><i class=lc-search></i>&nbsp;Login tarixi</a>
     </div>
 
     <!-- Balans -->
@@ -179,21 +179,21 @@
     {% if learner or app_tokens %}
     <div class="card">
       <div class="section-header">
-        <span class="section-title">🇬🇧 Ingliz tili kursi</span>
+        <span class="section-title"><i class=lc-languages></i>&nbsp;Ingliz tili kursi</span>
         <a href="{% url 'panel:english_learners' %}?q={{ obj.username|urlencode }}" class="btn btn-ghost btn-sm">O'quvchilar ro'yxati</a>
       </div>
       {% if learner %}
       <div class="grid-6-stat" style="margin-bottom:{% if app_tokens %}16px{% else %}0{% endif %}">
         <div style="background:var(--surface2);border-radius:8px;padding:12px;text-align:center"><div style="font-size:18px;font-weight:700;color:var(--primary)">{{ learner.level|default:"—" }}</div><div style="font-size:11px;color:var(--muted)">Daraja</div></div>
         <div style="background:var(--surface2);border-radius:8px;padding:12px;text-align:center"><div style="font-size:18px;font-weight:700;color:var(--yellow)">{{ learner.xp }}</div><div style="font-size:11px;color:var(--muted)">XP</div></div>
-        <div style="background:var(--surface2);border-radius:8px;padding:12px;text-align:center"><div style="font-size:18px;font-weight:700;color:#f97316">🔥 {{ learner.current_streak }}</div><div style="font-size:11px;color:var(--muted)">Seriya (eng uzun {{ learner.best_streak }})</div></div>
+        <div style="background:var(--surface2);border-radius:8px;padding:12px;text-align:center"><div style="font-size:18px;font-weight:700;color:#f97316"><i class=lc-flame></i>&nbsp;{{ learner.current_streak }}</div><div style="font-size:11px;color:var(--muted)">Seriya (eng uzun {{ learner.best_streak }})</div></div>
         <div style="background:var(--surface2);border-radius:8px;padding:12px;text-align:center"><div style="font-size:18px;font-weight:700;color:var(--green)">{{ learn_stats.done }}</div><div style="font-size:11px;color:var(--muted)">Darslar</div></div>
         <div style="background:var(--surface2);border-radius:8px;padding:12px;text-align:center"><div style="font-size:18px;font-weight:700">{{ learn_stats.avg|floatformat:0|default:"—" }}%</div><div style="font-size:11px;color:var(--muted)">O'rtacha ball</div></div>
         <div style="background:var(--surface2);border-radius:8px;padding:12px;text-align:center"><div style="font-size:18px;font-weight:700;color:var(--blue)">{{ learn_words }}</div><div style="font-size:11px;color:var(--muted)">So'zlar</div></div>
       </div>
       {% endif %}
       {% if app_tokens %}
-      <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">📱 Ilova qurilmalari</div>
+      <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em"><i class=lc-smartphone></i>&nbsp;Ilova qurilmalari</div>
       <div class="table-wrap">
         <table>
           <thead><tr><th>Qurilma</th><th>Tizim</th><th>IP</th><th>Kirgan</th><th>Oxirgi faollik</th><th></th></tr></thead>
@@ -243,7 +243,7 @@
             {% for r in results %}
             <tr>
               <td><a href="{% url 'panel:exam_detail' r.exam.pk %}" style="color:var(--text)">{{ r.exam.title|truncatechars:28 }}</a></td>
-              <td>{% if r.is_pending %}<a href="{% url 'panel:result_grade' r.pk %}" class="badge badge-yellow">⏳ Baholash</a>{% elif r.score >= 7.5 %}<span class="badge badge-green">{{ r.score }}</span>{% elif r.score >= 6.0 %}<span class="badge badge-yellow">{{ r.score }}</span>{% else %}<span class="badge badge-red">{{ r.score }}</span>{% endif %}</td>
+              <td>{% if r.is_pending %}<a href="{% url 'panel:result_grade' r.pk %}" class="badge badge-yellow"><i class=lc-hourglass></i>&nbsp;Baholash</a>{% elif r.score >= 7.5 %}<span class="badge badge-green">{{ r.score }}</span>{% elif r.score >= 6.0 %}<span class="badge badge-yellow">{{ r.score }}</span>{% else %}<span class="badge badge-red">{{ r.score }}</span>{% endif %}</td>
               <td style="color:var(--muted);font-size:12px">{{ r.listening_score }}</td>
               <td style="color:var(--muted);font-size:12px">{{ r.reading_score }}</td>
               <td style="color:var(--muted);font-size:12px">{{ r.writing_score }}</td>
@@ -303,7 +303,7 @@
 <!-- Password Modal -->
 <div class="modal-overlay" id="password-modal">
   <div class="modal">
-    <div class="modal-title">🔑 Parolni tiklash</div>
+    <div class="modal-title"><i class=lc-key-round></i>&nbsp;Parolni tiklash</div>
     <div class="form-group"><label class="form-label">Yangi parol</label><input class="form-input" id="new-pass" type="password" placeholder="Kamida 6 ta belgi"></div>
     <div class="form-group"><label class="form-label">Tasdiqlash</label><input class="form-input" id="new-pass2" type="password" placeholder="Qayta kiriting"></div>
     <div class="modal-actions">
@@ -352,7 +352,7 @@ function closeModal(id){document.getElementById(id).classList.remove('show')}
 async function toggleUser(pk){
   const r=await fetch(`/panel/users/${pk}/toggle/`,{method:'POST',headers:{'X-CSRFToken':csrf}});
   const d=await r.json();
-  document.getElementById('toggle-btn').textContent=d.active?'⛔ Bloklash':'✓ Faollashtirish';
+  document.getElementById('toggle-btn').innerHTML=d.active?'<i class=lc-ban></i>&nbsp;Bloklash':'✓ Faollashtirish';
   toast(d.active?'Faollashtirildi':'Bloklandi', d.active?'#22c55e':'#ef4444');
 }
 

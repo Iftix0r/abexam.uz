@@ -3,7 +3,7 @@
 {% if user.is_authenticated and site_settings.camera_proctoring %}
 <div id="camAsk" class="cam-ask-overlay" style="display:none" role="dialog" aria-modal="true" aria-labelledby="camAskTitle">
   <div class="cam-ask-card">
-    <div style="font-size:40px;line-height:1">📷</div>
+    <div style="font-size:40px;line-height:1"><i class=lc-camera></i></div>
     <h3 id="camAskTitle">Kameraga ruxsat bering</h3>
     <p id="camAskText">Imtihon paytida nazorat uchun kamerangiz yoqiladi va uni faqat imtihon nazoratchisi ko'radi. Nazoratchi kerak bo'lsa videoni yozib olishi mumkin.</p>
     <div class="cam-ask-actions">
@@ -34,7 +34,7 @@
   if (state === null) { try { if (localStorage.getItem(GRANTED)) return; } catch (e) {} }
 
   const box = document.getElementById('camAsk'), text = document.getElementById('camAskText');
-  const blockedText = "Kamera bloklangan. Manzil satridagi 🔒 belgisini bosing → Kamera → «Ruxsat berish», so'ng sahifani yangilang.";
+  const blockedText = "Kamera bloklangan. Manzil satridagi qulf belgisini bosing → Kamera → «Ruxsat berish», so'ng sahifani yangilang.";
   if (state === 'denied') text.textContent = blockedText;
   box.style.display = 'flex';
 

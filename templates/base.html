@@ -331,6 +331,7 @@
         .announcement-banner button:hover { opacity: 1; }
     </style>
     {% block extra_css %}{% endblock %}
+<link rel="stylesheet" href="/static/icons.css?v=1">
 </head>
 <body>
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -428,7 +429,7 @@
     <main class="main-content" id="main-content">
         {% if site_settings.announcement_active and site_settings.announcement %}
         <div class="announcement-banner" id="announcementBanner" data-key="announcement-dismissed-{{ site_settings.updated_at|date:'U' }}">
-            <span>📢 {{ site_settings.announcement }}</span>
+            <span><i class=lc-megaphone></i>&nbsp;{{ site_settings.announcement }}</span>
             <button id="announcementDismiss" aria-label="Yopish">
                 <i data-lucide="x" style="width: 16px;"></i>
             </button>

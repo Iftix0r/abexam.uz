@@ -1,4 +1,5 @@
 {% extends 'learn/base.html' %}
+{% load learn_ui %}
 
 {% block title %}Hikoyalar - AbExam{% endblock %}
 {% block page_title %}Hikoyalar{% endblock %}
@@ -23,7 +24,7 @@
 
 {% block content %}
 <div class="st-head">
-    <h1>📚 Hikoyalar kutubxonasi</h1>
+    <h1><i class=lc-library></i>&nbsp;Hikoyalar kutubxonasi</h1>
     <p>Darajangizga mos qisqa hikoyalar. Eng yaxshi usul: avval tarjimasiz o'qing va tinglang, notanish so'zni bosing, oxirida savollarga javob bering. Ko'p o'qish — lug'atni oshirishning eng tabiiy yo'li.</p>
 </div>
 {% for g in groups %}
@@ -32,7 +33,7 @@
     <div class="st-grid">
         {% for it in g.items %}
         <a class="st-card" href="{% url 'learn:story' it.story.slug %}">
-            <div class="st-emoji">{{ it.story.emoji }}</div>
+            <div class="st-emoji">{{ it.story.emoji|story_icon }}</div>
             <div>
                 <b>{{ it.story.title }}</b>
                 <span>{{ it.story.title_uz }} · {{ it.story.minutes }} daq</span>

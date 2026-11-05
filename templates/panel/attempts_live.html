@@ -72,18 +72,18 @@ tr.row-alert td { animation: rowAlert 1s ease-in-out 6; }
       <input type="checkbox" id="autoRefresh"> Har 10 soniyada yangilash
     </label>
     <label style="font-size:13px;color:var(--muted);display:flex;gap:6px;align-items:center;cursor:pointer" title="Kimdir test oynasidan chiqsa yoki matn joylasa, shu kompyuterda ovoz chiqadi">
-      <input type="checkbox" id="soundAlerts"> 🔔 Shubhali harakatda ovoz
+      <input type="checkbox" id="soundAlerts"> <i class=lc-bell></i>&nbsp;Shubhali harakatda ovoz
     </label>
   </div>
 </div>
 
 <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
-  <button onclick="messageAll()" class="btn btn-ghost btn-sm">📢 Hammaga xabar</button>
-  <button onclick="extraTimeAll()" class="btn btn-ghost btn-sm">⏱ Hammaga qo'shimcha vaqt</button>
-  <button onclick="finishAll()" class="btn btn-danger btn-sm" title="Tanlangan imtihonning barcha yuborilmagan urinishlaridan natija yaratadi">⏹ Hammasini yakunlash</button>
+  <button onclick="messageAll()" class="btn btn-ghost btn-sm"><i class=lc-megaphone></i>&nbsp;Hammaga xabar</button>
+  <button onclick="extraTimeAll()" class="btn btn-ghost btn-sm"><i class=lc-timer></i>&nbsp;Hammaga qo'shimcha vaqt</button>
+  <button onclick="finishAll()" class="btn btn-danger btn-sm" title="Tanlangan imtihonning barcha yuborilmagan urinishlaridan natija yaratadi"><i class=lc-square></i>&nbsp;Hammasini yakunlash</button>
   <span id="bulkBar" style="display:none;gap:8px;align-items:center">
     <span style="color:var(--muted);font-size:13px">Tanlangan: <b id="bulkCount">0</b></span>
-    <button onclick="messageSelected()" class="btn btn-ghost btn-sm">✉ Xabar</button>
+    <button onclick="messageSelected()" class="btn btn-ghost btn-sm"><i class=lc-mail></i>&nbsp;Xabar</button>
     <button onclick="extraTimeSelected()" class="btn btn-ghost btn-sm">+ Vaqt</button>
     <button onclick="bulkFinalize()" class="btn btn-primary btn-sm">Natija yaratish</button>
   </span>
@@ -95,11 +95,11 @@ tr.row-alert td { animation: rowAlert 1s ease-in-out 6; }
     {% for a in attempts %}{% if a.state == 'active' %}
     <a class="cam-tile" href="{% url 'panel:attempt_detail' a.pk %}" title="Kamerani kattaroq ko'rish"
        data-attempt="{{ a.pk }}" data-name="{{ a.user.display_name }}" data-live="{% url 'panel:attempt_camera_live' a.pk %}">
-      <span class="cam-rec" role="button" tabindex="0" title="Kamerani yozib olish (kompyuteringizga video bo'lib tushadi)">⏺ Yozish</span>
+      <span class="cam-rec" role="button" tabindex="0" title="Kamerani yozib olish (kompyuteringizga video bo'lib tushadi)"><i class=lc-circle-dot></i>&nbsp;Yozish</span>
       <video muted autoplay playsinline></video>
       <img data-cam="{% url 'panel:attempt_camera' a.pk %}" alt="">
-      <span class="cam-none">📷 Kamera yo'q</span>
-      <span class="cam-name">{{ a.user.display_name }}{% if a.suspicious %} ⚠{% endif %}</span>
+      <span class="cam-none"><i class=lc-camera></i>&nbsp;Kamera yo'q</span>
+      <span class="cam-name">{{ a.user.display_name }}{% if a.suspicious %} <i class=lc-triangle-alert></i>{% endif %}</span>
     </a>
     {% endif %}{% endfor %}
   </div>
@@ -119,7 +119,7 @@ tr.row-alert td { animation: rowAlert 1s ease-in-out 6; }
           <td>{% if not a.is_submitted %}<input type="checkbox" class="attempt-checkbox" value="{{ a.pk }}" data-answered="{{ a.answered_count }}" onchange="updateBulk()">{% endif %}</td>
           <td><a href="{% url 'panel:user_detail' a.user.pk %}" class="link">{{ a.user.display_name }}</a>
             {% if a.user.get_full_name %}<div style="font-size:12px;color:var(--muted)">{{ a.user.get_full_name }}</div>{% endif %}
-            {% if a.multi_device %}<div><span class="badge badge-red" title="Shu akkaunt hozir boshqa kompyuterda ham test yozmoqda">⚠ 2 qurilma</span></div>{% endif %}</td>
+            {% if a.multi_device %}<div><span class="badge badge-red" title="Shu akkaunt hozir boshqa kompyuterda ham test yozmoqda"><i class=lc-triangle-alert></i>&nbsp;2 qurilma</span></div>{% endif %}</td>
           <td style="color:var(--muted)">{{ a.exam.title|truncatechars:28 }}</td>
           <td>
             {% if a.state == 'submitted' %}<span class="badge badge-green">✓ Yuborildi</span>
@@ -130,7 +130,7 @@ tr.row-alert td { animation: rowAlert 1s ease-in-out 6; }
           </td>
           <td>
             <div style="color:var(--muted)">{{ a.section_label }}</div>
-            {% if a.time_left_label %}<div style="font-weight:600;font-variant-numeric:tabular-nums">⏱ {{ a.time_left_label }}</div>{% endif %}
+            {% if a.time_left_label %}<div style="font-weight:600;font-variant-numeric:tabular-nums"><i class=lc-timer></i>&nbsp;{{ a.time_left_label }}</div>{% endif %}
           </td>
           <td>
             <b>{{ a.answered_count }}</b><span style="color:var(--muted)"> / {{ a.total_questions }}</span>
@@ -138,18 +138,18 @@ tr.row-alert td { animation: rowAlert 1s ease-in-out 6; }
           </td>
           <td style="font-size:12px;{% if a.suspicious %}color:var(--red);font-weight:600{% else %}color:var(--muted){% endif %}">
             {% if a.leave_count %}<div title="Test oynasidan chiqishlar soni va jami vaqti">↗ {{ a.leave_count }} marta, {{ a.away_seconds }} s</div>{% endif %}
-            {% if a.pasted_chars %}<div title="Writing'ga joylangan (paste) belgilar">📋 {{ a.pasted_chars }} belgi</div>{% endif %}
+            {% if a.pasted_chars %}<div title="Writing'ga joylangan (paste) belgilar"><i class=lc-clipboard-list></i>&nbsp;{{ a.pasted_chars }} belgi</div>{% endif %}
             {% if not a.leave_count and not a.pasted_chars %}—{% endif %}
           </td>
           <td style="color:var(--muted);font-size:12px" title="{{ a.last_seen_at|date:'d M Y, H:i:s' }}{% if a.ip %} · IP {{ a.ip }}{% endif %}">{{ a.seen_ago }}</td>
           <td style="white-space:nowrap">
-            <a href="{% url 'panel:attempt_detail' a.pk %}" class="btn btn-ghost btn-sm" title="Javoblarni ko'rish">👁</a>
+            <a href="{% url 'panel:attempt_detail' a.pk %}" class="btn btn-ghost btn-sm" title="Javoblarni ko'rish"><i class=lc-eye></i></a>
             {% if a.is_submitted %}
               {% if a.result_id %}<a href="{% url 'exams:result_detail' a.result_id %}" target="_blank" class="btn btn-ghost btn-sm">Natija</a>{% endif %}
             {% else %}
               {% if a.state == 'active' %}
-              <button onclick="sendCommand({ids:[{{ a.pk }}]}, 'message')" class="btn btn-ghost btn-sm" title="Xabar yuborish">✉</button>
-              <button onclick="sendCommand({ids:[{{ a.pk }}]}, 'extra_time')" class="btn btn-ghost btn-sm" title="Qo'shimcha vaqt">+⏱</button>
+              <button onclick="sendCommand({ids:[{{ a.pk }}]}, 'message')" class="btn btn-ghost btn-sm" title="Xabar yuborish"><i class=lc-mail></i></button>
+              <button onclick="sendCommand({ids:[{{ a.pk }}]}, 'extra_time')" class="btn btn-ghost btn-sm" title="Qo'shimcha vaqt">+<i class=lc-timer></i></button>
               {% endif %}
               {% if a.answered_count %}<button onclick="finalizeAttempt({{ a.pk }}, '{{ a.state }}')" class="btn btn-primary btn-sm">Natija yaratish</button>{% endif %}
               <button onclick="deleteAttempt({{ a.pk }})" class="btn btn-danger btn-sm" title="Urinishni o'chirish">✕</button>
@@ -157,7 +157,7 @@ tr.row-alert td { animation: rowAlert 1s ease-in-out 6; }
           </td>
         </tr>
         {% empty %}
-        <tr><td colspan="9" style="text-align:center;padding:32px;color:var(--muted)">{% if tab == 'unsent' %}Yuborilmagan urinish yo'q 🎉{% elif tab == 'active' %}Hozir hech kim test yozmayapti{% else %}Oxirgi 24 soatda urinish yo'q{% endif %}</td></tr>
+        <tr><td colspan="9" style="text-align:center;padding:32px;color:var(--muted)">{% if tab == 'unsent' %}Yuborilmagan urinish yo'q <i class=lc-party-popper></i>{% elif tab == 'active' %}Hozir hech kim test yozmayapti{% else %}Oxirgi 24 soatda urinish yo'q{% endif %}</td></tr>
         {% endfor %}
       </tbody>
     </table>
@@ -256,7 +256,7 @@ async function refreshLive(force){
     }
   });
   if (alerts.length) {
-    toast('⚠ ' + alerts.join(', '), '#ef4444');
+    toast(alerts.join(', '), '#ef4444');
     if (soundAlerts.checked) beep(3);
   }
 }
@@ -296,7 +296,7 @@ refreshCameras();
 setInterval(refreshCameras, 3000);
 syncTileVideos();
 
-// ⏺ Yozish on a tile records that student's camera (see CamRecorder); it
+// The record button on a tile records that student's camera (see CamRecorder); it
 // keeps going across grid refreshes and saves when stopped or when the
 // student finishes.
 const recorders = new Map();  // attempt id → CamRecorder
@@ -327,7 +327,7 @@ function syncRecorders(){
     const r = recorders.get(tile.dataset.attempt), btn = tile.querySelector('.cam-rec');
     if (!btn) return;
     btn.classList.toggle('on', !!(r && r.recording));
-    btn.textContent = r && r.recording ? `■ ${r.elapsed()}` : '⏺ Yozish';
+    btn.innerHTML = r && r.recording ? `■ ${r.elapsed()}` : '<i class=lc-circle-dot></i>&nbsp;Yozish';
     btn.title = r && r.recording ? "To'xtatish va videoni saqlash" : "Kamerani yozib olish (kompyuteringizga video bo'lib tushadi)";
   });
 }

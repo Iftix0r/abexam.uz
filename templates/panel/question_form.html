@@ -18,7 +18,7 @@
   <div class="card">
     {% if error %}
     <div style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:var(--red);border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:16px">
-      ⚠ {{ error }}
+      <i class=lc-triangle-alert></i>&nbsp;{{ error }}
     </div>
     {% endif %}
     <form method="post" onsubmit="prepareMcqSubmit(this)">
@@ -40,22 +40,22 @@
       </div>
 
       <div id="qtype-hint-mcq" class="qtype-hint" hidden>
-        ✅ <strong>Multiple Choice:</strong> talaba bir nechta variantdan bittasini tanlaydi. Savol matni oddiy savol shaklida yoziladi (masalan: "What is the capital of France?"). Pastda variantlarni kiriting va chap tomondagi doiracha bilan to'g'ri javobni belgilang.
+        <i class=lc-circle-check></i>&nbsp;<strong>Multiple Choice:</strong> talaba bir nechta variantdan bittasini tanlaydi. Savol matni oddiy savol shaklida yoziladi (masalan: "What is the capital of France?"). Pastda variantlarni kiriting va chap tomondagi doiracha bilan to'g'ri javobni belgilang.
       </div>
       <div id="qtype-hint-tfng" class="qtype-hint" hidden>
-        ✅ <strong>True/False/Not Given:</strong> savol matni matndagi bir fikr/da'vo bo'lishi kerak (savol emas), masalan: "The museum was built in 1990." Talaba buni True, False yoki Not Given deb belgilaydi.
+        <i class=lc-circle-check></i>&nbsp;<strong>True/False/Not Given:</strong> savol matni matndagi bir fikr/da'vo bo'lishi kerak (savol emas), masalan: "The museum was built in 1990." Talaba buni True, False yoki Not Given deb belgilaydi.
       </div>
       <div id="qtype-hint-gapfill" class="qtype-hint" hidden>
-        ✅ <strong>Gap Fill:</strong> savol matnida bo'sh joy o'rniga <code>___</code> yozing, masalan: "The train leaves at ___." To'g'ri javobni pastda kiriting (bir nechta to'g'ri variant bo'lsa <code>/</code> bilan ajrating, masalan: colour/color).
+        <i class=lc-circle-check></i>&nbsp;<strong>Gap Fill:</strong> savol matnida bo'sh joy o'rniga <code>___</code> yozing, masalan: "The train leaves at ___." To'g'ri javobni pastda kiriting (bir nechta to'g'ri variant bo'lsa <code>/</code> bilan ajrating, masalan: colour/color).
       </div>
       <div id="qtype-hint-matching" class="qtype-hint" hidden>
-        ✅ <strong>Matching:</strong> ikki ro'yxatni mosligini tekshirish uchun. Savol matnida nimani moslashtirish kerakligini yozing (masalan: "Match the person to their opinion: Dr. Smith ___"), to'g'ri javob sifatida mos harf/raqamni kiriting (masalan: C).
+        <i class=lc-circle-check></i>&nbsp;<strong>Matching:</strong> ikki ro'yxatni mosligini tekshirish uchun. Savol matnida nimani moslashtirish kerakligini yozing (masalan: "Match the person to their opinion: Dr. Smith ___"), to'g'ri javob sifatida mos harf/raqamni kiriting (masalan: C).
       </div>
       <div id="qtype-hint-writing" class="qtype-hint" hidden>
-        ✅ <strong>Writing Task:</strong> savol matniga insho/topshiriq mavzusini yozing. Talaba javobni erkin matn ko'rinishida yozadi — tizim avtomatik tekshirmaydi, keyinroq baholanadi. "Namunaviy javob" — talabalarga emas, faqat o'qituvchiga ko'rsatma sifatida.
+        <i class=lc-circle-check></i>&nbsp;<strong>Writing Task:</strong> savol matniga insho/topshiriq mavzusini yozing. Talaba javobni erkin matn ko'rinishida yozadi — tizim avtomatik tekshirmaydi, keyinroq baholanadi. "Namunaviy javob" — talabalarga emas, faqat o'qituvchiga ko'rsatma sifatida.
       </div>
       <div id="qtype-hint-short" class="qtype-hint" hidden>
-        ✅ <strong>Short Answer:</strong> ko'pincha Speaking savollari yoki ochiq javobli qisqa savollar uchun. To'g'ri javob avtomatik tekshirilmaydi — "Izoh" maydoniga talabaga ko'rsatma/maslahat yozishingiz mumkin.
+        <i class=lc-circle-check></i>&nbsp;<strong>Short Answer:</strong> ko'pincha Speaking savollari yoki ochiq javobli qisqa savollar uchun. To'g'ri javob avtomatik tekshirilmaydi — "Izoh" maydoniga talabaga ko'rsatma/maslahat yozishingiz mumkin.
       </div>
 
       <!-- MCQ -->
@@ -83,7 +83,7 @@
         </div>
         <input type="hidden" name="correct_option" id="correct_option_hidden" value="-1">
         <button type="button" class="btn btn-ghost btn-sm" onclick="addOption()">+ Variant qo'shish</button>
-        <div style="font-size:11px;color:var(--muted);margin-top:6px">Chap tomondagi doiracha (⭘) — to'g'ri javobni belgilash uchun.</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:6px">Chap tomondagi doiracha (<i class=lc-circle></i>) — to'g'ri javobni belgilash uchun.</div>
         <label class="form-label" style="margin-top:14px">Bir nechta to'g'ri javob — faqat "Choose TWO" savollar uchun</label>
         <input class="form-input" name="correct_answer_multi" value="{% if '/' in question.correct_answer %}{{ question.correct_answer }}{% endif %}" placeholder="Masalan: C/E" style="max-width:200px">
         <div style="font-size:11px;color:var(--muted);margin-top:4px">To'ldirilsa, doiracha hisobga olinmaydi. Juftlikdagi ikkala savolga (masalan 11 va 12) bir xil yozing.</div>

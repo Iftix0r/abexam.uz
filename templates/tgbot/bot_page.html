@@ -62,7 +62,7 @@
         {% else %}
           <h3><span class="tgp-dot on"></span>Bot ulangan</h3>
           <div class="tgp-acc">
-            <span style="font-size:22px">✅</span>
+            <span style="font-size:22px"><i class=lc-circle-check></i></span>
             <div><b>{{ tg_account.first_name|default:"Telegram hisobingiz" }}</b>{% if tg_account.username %}@{{ tg_account.username }} · {% endif %}{{ tg_account.created_at|date:"d.m.Y" }} dan beri</div>
           </div>
           <p>Natijalaringiz chiqishi bilan botga avtomatik xabar keladi.</p>
@@ -84,12 +84,12 @@
   <section class="tgp-section">
     <h2>Bot nimalar qiladi</h2>
     <div class="tgp-grid">
-      <div class="tgp-card"><div class="ic">🔔</div><h3>Natija avtomatik keladi</h3><p>Imtihon natijangiz chiqishi bilan xabar oladi. Writing tekshirilgach ham darhol bildiradi — saytni qayta-qayta ochish shart emas.</p></div>
-      <div class="tgp-card"><div class="ic">📄</div><h3>PDF natija varaqasi</h3><p>Listening, Reading, Writing ballari va izohlar bilan PDF. Ota-onangiz yoki o'qituvchingizga yuborish oson.</p></div>
-      <div class="tgp-card"><div class="ic">📅</div><h3>Imtihonga navbat</h3><p>Rejadagi imtihon kunlarini ko'ring va bir necha bosishda yoziling. Boshqa o'quv markaz o'quvchilari ham yoziladi.</p></div>
-      <div class="tgp-card"><div class="ic">⏰</div><h3>Eslatma</h3><p>Imtihondan bir kun oldin bot navbat raqamingiz va manzil bilan eslatadi.</p></div>
-      <div class="tgp-card"><div class="ic">✉️</div><h3>Admin bilan aloqa</h3><p>Savolingizni yoki to'lov chekini botga yuboring — admin javobi shu yerga keladi.</p></div>
-      <div class="tgp-card"><div class="ic">🧮</div><h3>Ball kalkulyatori</h3><p>To'g'ri javoblar sonini yuboring (masalan <b>32</b>) — Listening/Reading bandini darhol aytadi.</p></div>
+      <div class="tgp-card"><div class="ic"><i class=lc-bell></i></div><h3>Natija avtomatik keladi</h3><p>Imtihon natijangiz chiqishi bilan xabar oladi. Writing tekshirilgach ham darhol bildiradi — saytni qayta-qayta ochish shart emas.</p></div>
+      <div class="tgp-card"><div class="ic"><i class=lc-file-text></i></div><h3>PDF natija varaqasi</h3><p>Listening, Reading, Writing ballari va izohlar bilan PDF. Ota-onangiz yoki o'qituvchingizga yuborish oson.</p></div>
+      <div class="tgp-card"><div class="ic"><i class=lc-calendar-days></i></div><h3>Imtihonga navbat</h3><p>Rejadagi imtihon kunlarini ko'ring va bir necha bosishda yoziling. Boshqa o'quv markaz o'quvchilari ham yoziladi.</p></div>
+      <div class="tgp-card"><div class="ic"><i class=lc-alarm-clock></i></div><h3>Eslatma</h3><p>Imtihondan bir kun oldin bot navbat raqamingiz va manzil bilan eslatadi.</p></div>
+      <div class="tgp-card"><div class="ic"><i class=lc-mail></i></div><h3>Admin bilan aloqa</h3><p>Savolingizni yoki to'lov chekini botga yuboring — admin javobi shu yerga keladi.</p></div>
+      <div class="tgp-card"><div class="ic"><i class=lc-calculator></i></div><h3>Ball kalkulyatori</h3><p>To'g'ri javoblar sonini yuboring (masalan <b>32</b>) — Listening/Reading bandini darhol aytadi.</p></div>
     </div>
   </section>
 
@@ -98,9 +98,9 @@
     <div class="tgp-steps">
       <div class="tgp-step"><b>«Botni ulash» tugmasini bosing</b><span>Saytga kirgan holda — shu sahifada, bosh sahifada yoki imtihondan keyin.</span></div>
       <div class="tgp-step"><b>Telegramda Start bosing</b><span>@{{ tg_bot_username|default:"examabbot" }} ochiladi. Faqat Start — boshqa hech narsa yozish shart emas.</span></div>
-      <div class="tgp-step"><b>Tayyor!</b><span>Bot «✅ Hisob ulandi» deb yozadi va oxirgi natijangizni yuboradi.</span></div>
+      <div class="tgp-step"><b>Tayyor!</b><span>Bot «Hisob ulandi» deb yozadi va oxirgi natijangizni yuboradi.</span></div>
     </div>
-    <p class="tgp-note">Boshqa yo'l: botda «📊 Natijalarim» → «📱 Raqamni yuborish». Saytda shu raqam bilan ro'yxatdan o'tgan bo'lsangiz, hisob ulanadi.</p>
+    <p class="tgp-note">Boshqa yo'l: botda «Natijalarim» → «Raqamni yuborish». Saytda shu raqam bilan ro'yxatdan o'tgan bo'lsangiz, hisob ulanadi.</p>
   </section>
 
   <section class="tgp-section tgp-faq">
@@ -108,7 +108,7 @@
     <details><summary>Bot pullikmi?</summary><p>Yo'q, bot butunlay bepul.</p></details>
     <details><summary>Telegram raqamim saytdagidan boshqa bo'lsa-chi?</summary><p>Muammo emas: «Botni ulash» tugmasi raqamga qaramaydi, hisobingizni to'g'ridan-to'g'ri ulaydi.</p></details>
     <details><summary>Xabarlar kelmayapti</summary><p>Botni bloklamaganingizni tekshiring va botga /start yozing. Shu sahifada holat «Bot ulangan» bo'lishi kerak.</p></details>
-    <details><summary>Qanday uzaman?</summary><p>Shu sahifada «Botni uzish» tugmasi yoki botda «👤 Hisobim» → «Hisobni botdan uzish».</p></details>
+    <details><summary>Qanday uzaman?</summary><p>Shu sahifada «Botni uzish» tugmasi yoki botda «Hisobim» → «Hisobni botdan uzish».</p></details>
   </section>
 </div>
 {% endblock %}

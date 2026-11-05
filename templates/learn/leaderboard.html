@@ -25,7 +25,7 @@
 {% block content %}
 <div class="lb">
     <div class="lb-head">
-        <div class="big">🏆</div>
+        <div class="big"><i class=lc-trophy></i></div>
         <h1>Haftaning eng faol o'quvchilari</h1>
         <p>{{ board.start|date:"d.m" }} – {{ board.end|date:"d.m" }} · har dushanba yangidan boshlanadi</p>
     </div>
@@ -37,7 +37,7 @@
     <div>
         {% for r in board.rows %}
         <div class="lb-row {% if r.me %}me{% endif %}">
-            <div class="lb-rank">{% if r.rank == 1 %}🥇{% elif r.rank == 2 %}🥈{% elif r.rank == 3 %}🥉{% else %}{{ r.rank }}{% endif %}</div>
+            <div class="lb-rank">{% if r.rank == 1 %}<i class=lc-medal-gold></i>{% elif r.rank == 2 %}<i class=lc-medal-silver></i>{% elif r.rank == 3 %}<i class=lc-medal-bronze></i>{% else %}{{ r.rank }}{% endif %}</div>
             <div class="lb-av">{{ r.name|first|upper }}</div>
             <div class="lb-name">{{ r.name }}{% if r.me %} (siz){% endif %}</div>
             <div class="lb-xp">{{ r.xp }} XP</div>

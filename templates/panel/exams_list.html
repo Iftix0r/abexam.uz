@@ -20,10 +20,10 @@
   <a href="{% url 'panel:exam_generate' %}"
     style="display:flex;align-items:center;gap:8px;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:700;text-decoration:none;transition:.15s"
     onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
-    🤖 AI bilan Test Yaratish
+    <i class=lc-bot></i>&nbsp;AI bilan Test Yaratish
   </a>
   <div style="display:flex;gap:8px">
-    <a href="{% url 'panel:exam_import' %}" class="btn btn-ghost btn-sm">📥 Testni yuklash{% if import_new_count %} <span class="badge badge-yellow" style="margin-left:4px">{{ import_new_count }} yangi</span>{% endif %}</a>
+    <a href="{% url 'panel:exam_import' %}" class="btn btn-ghost btn-sm"><i class=lc-download></i>&nbsp;Testni yuklash{% if import_new_count %} <span class="badge badge-yellow" style="margin-left:4px">{{ import_new_count }} yangi</span>{% endif %}</a>
     <a href="{% url 'panel:exam_create' %}" class="btn btn-primary btn-sm">+ Qo'lda yaratish</a>
   </div>
 </div>
@@ -58,7 +58,7 @@
 {% if pending_review_count %}
 <div style="background:linear-gradient(135deg,rgba(245,158,11,.12),rgba(245,158,11,.06));border:1px solid rgba(245,158,11,.3);border-radius:12px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
   <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-    <span style="font-size:20px">⚠️</span>
+    <span style="font-size:20px"><i class=lc-triangle-alert></i></span>
     <span style="font-size:14px;font-weight:600;color:#f59e0b">{{ pending_review_count }} ta AI imtihon ko'rib chiqishni kutmoqda</span>
     <span style="font-size:12px;color:var(--muted)">— Mutaxassis tekshiruvidan o'tmagan, foydalanuvchilarga ko'rsatilmaydi</span>
   </div>
@@ -113,7 +113,7 @@
               {% if e.is_reviewed %}
                 <span style="font-size:10px;background:rgba(34,197,94,.15);color:#22c55e;border-radius:4px;padding:1px 5px;margin-left:4px">✓ AI</span>
               {% else %}
-                <span style="font-size:10px;background:rgba(245,158,11,.2);color:#f59e0b;border-radius:4px;padding:1px 5px;margin-left:4px">⏳ Tekshirish kerak</span>
+                <span style="font-size:10px;background:rgba(245,158,11,.2);color:#f59e0b;border-radius:4px;padding:1px 5px;margin-left:4px"><i class=lc-hourglass></i>&nbsp;Tekshirish kerak</span>
               {% endif %}
             {% endif %}
           </td>
@@ -127,7 +127,7 @@
               {% if e.is_active %}Faol{% else %}Nofaol{% endif %}
             </span>
             {% if e.is_active and e.questions_count == 0 %}
-            <span class="exam-warn" title="Faol, lekin birorta savoli yo'q — talabalar bo'sh imtihonga duch keladi">⚠️</span>
+            <span class="exam-warn" title="Faol, lekin birorta savoli yo'q — talabalar bo'sh imtihonga duch keladi"><i class=lc-triangle-alert></i></span>
             {% endif %}
           </td>
           <td class="td-date">{{ e.created_at|date:"d M Y" }}</td>
@@ -157,7 +157,7 @@
           </td>
         </tr>
         {% empty %}
-        <tr><td colspan="10"><div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">Imtihon topilmadi</div>Qidiruv yoki filtrni o'zgartirib ko'ring</div></td></tr>
+        <tr><td colspan="10"><div class="empty-state"><div class="empty-icon"><i class=lc-search></i></div><div class="empty-title">Imtihon topilmadi</div>Qidiruv yoki filtrni o'zgartirib ko'ring</div></td></tr>
         {% endfor %}
       </tbody>
     </table>

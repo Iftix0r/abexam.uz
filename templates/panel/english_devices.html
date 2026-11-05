@@ -26,7 +26,7 @@
         {% for t in page %}
         <tr>
           <td><a href="{% url 'panel:user_detail' t.user.pk %}" class="link">{{ t.user.display_name }}</a></td>
-          <td style="font-weight:500" title="{{ t.user_agent }}">📱 {{ t.device|default:"Noma'lum" }}</td>
+          <td style="font-weight:500" title="{{ t.user_agent }}"><i class=lc-smartphone></i>&nbsp;{{ t.device|default:"Noma'lum" }}</td>
           <td>{% if t.platform %}<span class="badge {% if 'ndroid' in t.platform %}badge-green{% else %}badge-gray{% endif %}">{{ t.platform }}</span>{% else %}—{% endif %}</td>
           <td style="font-size:12px">{{ t.app_version|default:"—" }}</td>
           <td style="font-family:monospace;font-size:12px">{{ t.ip|default:"—" }}</td>

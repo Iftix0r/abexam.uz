@@ -24,7 +24,7 @@
     <strong style="color:var(--text)">{{ results_count }}</strong> ta natija bo'yicha.
     To'g'rilik <strong style="color:var(--text)">joriy kalit</strong> bilan hisoblanadi — kalitni tuzatsangiz, bu sahifa darhol yangilanadi
     (talabalarning ballarini yangilash uchun kalitni tuzatgach "Ballarni qayta hisoblash" ni bosing).
-    {% if flagged %}<br><span style="color:var(--yellow);font-weight:700">⚠ {{ flagged }} ta savolda kalitni tekshiring</span> — ko'pchilik bir xil "noto'g'ri" javob yozgan.{% endif %}
+    {% if flagged %}<br><span style="color:var(--yellow);font-weight:700"><i class=lc-triangle-alert></i>&nbsp;{{ flagged }} ta savolda kalitni tekshiring</span> — ko'pchilik bir xil "noto'g'ri" javob yozgan.{% endif %}
   </div>
   <div style="display:flex;gap:6px;flex-wrap:wrap">
     <a href="?" class="btn btn-sm {% if not sort %}btn-primary{% else %}btn-ghost{% endif %}">Tartib bo'yicha</a>
@@ -50,7 +50,7 @@
         <tr {% if r.suspect %}class="an-row-suspect"{% endif %}>
           <td style="color:var(--muted);font-size:12px">{{ r.number }}</td>
           <td style="font-size:12.5px">
-            {% if r.suspect %}<span title="Kalitni tekshiring" style="color:var(--yellow)">⚠</span>{% endif %}
+            {% if r.suspect %}<span title="Kalitni tekshiring" style="color:var(--yellow)"><i class=lc-triangle-alert></i></span>{% endif %}
             {{ r.q.text|truncatechars:90 }}
           </td>
           <td style="font-size:12px;font-weight:700;color:var(--green)">{{ r.q.correct_answer }}</td>

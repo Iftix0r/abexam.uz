@@ -7,7 +7,7 @@ the account isn't linked, a short confirmation once it is.
     {% include 'partials/tg_connect.html' %}
   {% else %}
     <div style="display:flex;gap:10px;align-items:center;justify-content:center;text-align:left;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.35);border-radius:12px;padding:11px 14px;margin:16px 0;font-size:13px;line-height:1.5">
-      <span style="font-size:18px">✅</span>
+      <span style="font-size:18px"><i class=lc-circle-check></i></span>
       <span><b>Telegram ulangan</b> — natijalaringiz chiqishi bilan <b>@{{ tg_bot_username }}</b> botiga avtomatik xabar keladi.</span>
     </div>
   {% endif %}

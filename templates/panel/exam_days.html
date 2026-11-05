@@ -72,7 +72,7 @@
         <dt>Holat</dt><dd>{% if bot.enabled %}<span class="badge badge-green">Sozlangan</span>{% else %}<span class="badge badge-red">TELEGRAM_BOT_TOKEN yo'q</span>{% endif %}</dd>
         {% if bot.url %}<dt>Bot</dt><dd><a href="{{ bot.url }}" target="_blank">{{ bot.url }}</a></dd>{% endif %}
         <dt>Foydalanuvchilar</dt><dd>{{ bot.accounts }} ({{ bot.linked }} tasi sayt hisobiga ulangan)</dd>
-        <dt>Bot adminlari</dt><dd>{{ bot.admins }} <span style="font-weight:400;color:var(--muted)">(+ botga ulangan xodimlar; botda 🛠 Admin panel → 👮 Adminlar)</span></dd>
+        <dt>Bot adminlari</dt><dd>{{ bot.admins }} <span style="font-weight:400;color:var(--muted)">(+ botga ulangan xodimlar; botda Admin panel → Adminlar)</span></dd>
         <dt>Kutilayotgan navbatlar</dt><dd>{{ upcoming_bookings }}</dd>
         {% if bot.webhook %}
         <dt>Webhook</dt><dd>{{ bot.webhook.url|default:"o'rnatilmagan" }}</dd>

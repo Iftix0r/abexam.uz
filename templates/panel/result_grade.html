@@ -158,7 +158,7 @@ a.mark:hover{outline:2px solid currentColor}
           <a href="{% url 'panel:user_detail' result.user.pk %}" class="g-name">{{ result.user.display_name }}</a>
           <div class="g-meta">{{ result.exam.title }} · {{ result.completed_at|date:"d M Y, H:i" }}</div>
           <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">
-            {% if result.is_pending %}<span class="badge badge-yellow">⏳ Tekshirilmoqda</span>
+            {% if result.is_pending %}<span class="badge badge-yellow"><i class=lc-hourglass></i>&nbsp;Tekshirilmoqda</span>
             {% else %}<span class="badge badge-green">✓ Baholangan{% if result.graded_by %} · {{ result.graded_by.display_name }}{% endif %}</span>{% endif %}
             {% if pending_count %}<span class="badge badge-gray">Navbatda yana {{ pending_count }} ta</span>{% endif %}
           </div>
@@ -172,11 +172,11 @@ a.mark:hover{outline:2px solid currentColor}
 
     {% if attempt %}
     <div class="g-chips">
-      {% if attempt_time %}<span class="g-chip">⏱ Vaqt: <b>{{ attempt_time }}</b></span>{% endif %}
-      <span class="g-chip {% if attempt.leave_count >= 3 %}bad{% elif attempt.leave_count %}warn{% endif %}" title="Test oynasidan chiqqanlar soni">🚪 Oynadan chiqish: <b>{{ attempt.leave_count }}</b>{% if attempt.away_seconds %} ({{ attempt.away_seconds }} s){% endif %}</span>
-      <span class="g-chip {% if attempt.pasted_chars >= 200 %}bad{% elif attempt.pasted_chars %}warn{% endif %}" title="Writing'ga boshqa joydan joylangan (paste) belgilar">📋 Joylangan matn: <b>{{ attempt.pasted_chars }} belgi</b></span>
-      {% if attempt.ip %}<span class="g-chip">🌐 <b>{{ attempt.ip }}</b></span>{% endif %}
-      <a class="g-chip" href="{% url 'panel:attempt_detail' attempt.pk %}">🎥 Urinish tafsilotlari →</a>
+      {% if attempt_time %}<span class="g-chip"><i class=lc-timer></i>&nbsp;Vaqt: <b>{{ attempt_time }}</b></span>{% endif %}
+      <span class="g-chip {% if attempt.leave_count >= 3 %}bad{% elif attempt.leave_count %}warn{% endif %}" title="Test oynasidan chiqqanlar soni"><i class=lc-log-out></i>&nbsp;Oynadan chiqish: <b>{{ attempt.leave_count }}</b>{% if attempt.away_seconds %} ({{ attempt.away_seconds }} s){% endif %}</span>
+      <span class="g-chip {% if attempt.pasted_chars >= 200 %}bad{% elif attempt.pasted_chars %}warn{% endif %}" title="Writing'ga boshqa joydan joylangan (paste) belgilar"><i class=lc-clipboard-list></i>&nbsp;Joylangan matn: <b>{{ attempt.pasted_chars }} belgi</b></span>
+      {% if attempt.ip %}<span class="g-chip"><i class=lc-globe></i>&nbsp;<b>{{ attempt.ip }}</b></span>{% endif %}
+      <a class="g-chip" href="{% url 'panel:attempt_detail' attempt.pk %}"><i class=lc-video></i>&nbsp;Urinish tafsilotlari →</a>
     </div>
     {% endif %}
 
@@ -219,7 +219,7 @@ a.mark:hover{outline:2px solid currentColor}
   </nav>
 
   {% if error %}
-  <div style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:var(--red);border-radius:10px;padding:12px 16px;font-size:13px;margin-bottom:16px">⚠ {{ error }}</div>
+  <div style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:var(--red);border-radius:10px;padding:12px 16px;font-size:13px;margin-bottom:16px"><i class=lc-triangle-alert></i>&nbsp;{{ error }}</div>
   {% endif %}
 
   <form method="post" id="gradeForm">
@@ -229,7 +229,7 @@ a.mark:hover{outline:2px solid currentColor}
     {% for t in tasks %}
     <div class="card g-card" id="task-{{ t.num }}">
       <div class="g-card-title">
-        <h3>✍️ Writing Task {{ t.num }}</h3>
+        <h3><i class=lc-pen-line></i>&nbsp;Writing Task {{ t.num }}</h3>
         <div class="g-tags">
           <span class="g-tag {% if t.question.word_limit and t.word_count < t.question.word_limit %}bad{% elif t.question.word_limit %}ok{% endif %}">
             {{ t.word_count }} so'z{% if t.question.word_limit %} / min {{ t.question.word_limit }}{% endif %}
@@ -291,7 +291,7 @@ a.mark:hover{outline:2px solid currentColor}
     <!-- Speaking (held in person) -->
     <div class="card g-card" id="speaking">
       <div class="g-card-title" style="margin-bottom:0">
-        <h3>🎤 Speaking <span style="font-size:12px;font-weight:500;color:var(--muted)">yuzma-yuz o'tkazilgan bo'lsa</span></h3>
+        <h3><i class=lc-mic></i>&nbsp;Speaking <span style="font-size:12px;font-weight:500;color:var(--muted)">yuzma-yuz o'tkazilgan bo'lsa</span></h3>
         <button type="button" class="btn btn-ghost btn-sm" id="spToggle">{% if speaking.band == None %}＋ Speaking bahosini kiritish{% else %}Yashirish{% endif %}</button>
       </div>
       <div class="sp-body" id="spBody" {% if speaking.band == None %}hidden{% endif %} style="margin-top:14px">
@@ -350,10 +350,10 @@ a.mark:hover{outline:2px solid currentColor}
 
   {% if objective %}
   <div class="card g-card" id="answers" style="margin-top:16px">
-    <div class="g-card-title"><h3>🔍 Listening / Reading — javoblar tahlili</h3></div>
+    <div class="g-card-title"><h3><i class=lc-search></i>&nbsp;Listening / Reading — javoblar tahlili</h3></div>
     {% if objective|length > 1 %}
     <div class="an-tabs" role="tablist">
-      {% for o in objective %}<button type="button" role="tab" data-tab="{{ o.type }}" {% if forloop.first %}class="on"{% endif %}>{% if o.type == 'listening' %}🎧{% else %}📖{% endif %} {{ o.label }}</button>{% endfor %}
+      {% for o in objective %}<button type="button" role="tab" data-tab="{{ o.type }}" {% if forloop.first %}class="on"{% endif %}>{% if o.type == 'listening' %}<i class=lc-headphones></i>{% else %}<i class=lc-book-open></i>{% endif %} {{ o.label }}</button>{% endfor %}
     </div>
     {% endif %}
 
@@ -423,7 +423,7 @@ a.mark:hover{outline:2px solid currentColor}
             </tr>
             {% endfor %}
             {% if not o.wrong and not o.empty %}
-            <tr class="an-none"><td colspan="4" style="text-align:center;padding:24px;color:var(--green)">Barcha javoblar to'g'ri 🎉</td></tr>
+            <tr class="an-none"><td colspan="4" style="text-align:center;padding:24px;color:var(--green)">Barcha javoblar to'g'ri <i class=lc-party-popper></i></td></tr>
             {% endif %}
           </tbody>
         </table>
@@ -543,7 +543,7 @@ const CHIPS = {
   task2: ["Savolga to'liq javob berilmagan", "Pozitsiya aniq emas", "Fikrlar misol bilan asoslanmagan",
           "Xulosa yo'q", "So'z soni 250 tadan kam"],
   common: ["Paragraflarga bo'linmagan", "Bog'lovchi so'zlar kam", "So'z boyligi cheklangan, takrorlar ko'p",
-           "Imlo xatolari ko'p", "Grammatik xatolar ko'p", "Murakkab gaplar kam", "Yaxshi tuzilgan, mantiqiy javob 👍"],
+           "Imlo xatolari ko'p", "Grammatik xatolar ko'p", "Murakkab gaplar kam", "Yaxshi tuzilgan, mantiqiy javob"],
   speaking: ["Ravon gapirdi", "Ko'p to'xtalishlar bo'ldi", "Talaffuz tushunarli", "Talaffuzda xatolar bor",
              "So'z boyligi yetarli emas", "Grammatik xatolar ko'p", "Javoblar qisqa, kengaytirilmagan"],
 };

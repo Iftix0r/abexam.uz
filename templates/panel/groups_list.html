@@ -20,7 +20,7 @@
             <td>{% if g.avg %}<span class="badge {% if g.avg >= 7 %}badge-green{% elif g.avg >= 5.5 %}badge-yellow{% else %}badge-red{% endif %}">{{ g.avg|floatformat:1 }}</span>{% else %}<span style="color:var(--muted)">—</span>{% endif %}</td>
           </tr>
           {% empty %}
-          <tr><td colspan="4"><div class="empty-state"><div class="empty-icon">👥</div><div class="empty-title">Hali guruh yo'q</div>O'ng tomondan birinchi guruhni yarating, keyin talabalarni qo'shing</div></td></tr>
+          <tr><td colspan="4"><div class="empty-state"><div class="empty-icon"><i class=lc-users></i></div><div class="empty-title">Hali guruh yo'q</div>O'ng tomondan birinchi guruhni yarating, keyin talabalarni qo'shing</div></td></tr>
           {% endfor %}
         </tbody>
       </table>

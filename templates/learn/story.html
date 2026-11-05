@@ -1,4 +1,5 @@
 {% extends 'learn/base.html' %}
+{% load learn_ui %}
 {% block body_class %}focus{% endblock %}
 
 {% block title %}{{ story.title }} - AbExam{% endblock %}
@@ -52,7 +53,7 @@
         <button class="sr-btn" id="uzAll"><i data-lucide="languages"></i> Tarjima</button>
     </div>
     <div class="sr-title">
-        <div class="e">{{ story.emoji }}</div>
+        <div class="e">{{ story.emoji|story_icon }}</div>
         <h1>{{ story.title }}</h1>
         <p>{{ story.title_uz }} · {{ story.minutes }} daqiqa</p>
     </div>
@@ -169,7 +170,7 @@
         } catch (e) {}
         const res = $('result');
         res.style.display = 'block';
-        res.innerHTML = `<div class="big">${score >= 75 ? '🎉' : '📖'}</div>
+        res.innerHTML = `<div class="big">${score >= 75 ? '<i class=lc-party-popper></i>' : '<i class=lc-book-open></i>'}</div>
             <h2 style="margin:8px 0 4px">${right} / ${S.questions.length} to'g'ri</h2>
             <p style="color:var(--text-muted)">${score >= 75 ? "Ajoyib tushunish!" : "Hikoyani yana bir bor tinglab o'qing — ikkinchi o'qishda ko'proq tushunasiz."} ${d.xp ? `+${d.xp} XP` : ''}</p>
             <a class="sr-main" href="{% url 'learn:stories' %}" style="max-width:320px;margin:20px auto 0">Boshqa hikoyalar</a>`;

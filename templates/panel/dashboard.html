@@ -7,12 +7,12 @@
 {% block content %}
 <div class="page-hero">
   <div>
-    <div class="hero-title">{{ greeting }}, {{ request.user.first_name|default:request.user.username }} 👋</div>
+    <div class="hero-title">{{ greeting }}, {{ request.user.first_name|default:request.user.username }} <i class=lc-hand></i></div>
     <div class="hero-sub">{{ today|date:"j F, l" }}{% if todo_any %} · sizni kutayotgan ishlar bor{% else %} · hammasi joyida{% endif %}</div>
   </div>
   <div class="hero-actions">
     <a href="{% url 'panel:exam_create' %}" class="btn btn-sm">+ Test yaratish</a>
-    <a href="{% url 'panel:exam_import' %}" class="btn btn-sm">📥 Testni yuklash</a>
+    <a href="{% url 'panel:exam_import' %}" class="btn btn-sm"><i class=lc-download></i>&nbsp;Testni yuklash</a>
     <a href="{% url 'panel:attempts_live' %}" class="btn btn-sm">● Jonli imtihon</a>
   </div>
 </div>
@@ -126,10 +126,10 @@
               <a href="{% url 'panel:user_detail' r.user.pk %}" class="link">{{ r.user.display_name }}</a>
             </div></td>
             <td style="color:var(--muted)">{{ r.exam.title|truncatechars:26 }}</td>
-            <td>{% if r.is_pending %}<a href="{% url 'panel:result_grade' r.pk %}" class="badge badge-yellow">⏳ Baholash</a>{% elif r.score >= 7.5 %}<span class="badge badge-green">{{ r.score }}</span>{% elif r.score >= 6.0 %}<span class="badge badge-yellow">{{ r.score }}</span>{% else %}<span class="badge badge-red">{{ r.score }}</span>{% endif %}</td>
+            <td>{% if r.is_pending %}<a href="{% url 'panel:result_grade' r.pk %}" class="badge badge-yellow"><i class=lc-hourglass></i>&nbsp;Baholash</a>{% elif r.score >= 7.5 %}<span class="badge badge-green">{{ r.score }}</span>{% elif r.score >= 6.0 %}<span class="badge badge-yellow">{{ r.score }}</span>{% else %}<span class="badge badge-red">{{ r.score }}</span>{% endif %}</td>
             <td class="td-date">{{ r.completed_at|date:"d M, H:i" }}</td>
           </tr>
-          {% empty %}<tr><td colspan="4"><div class="empty-state"><div class="empty-icon">📝</div><div class="empty-title">Hali natija yo'q</div>Talabalar test topshirgach shu yerda ko'rinadi</div></td></tr>
+          {% empty %}<tr><td colspan="4"><div class="empty-state"><div class="empty-icon"><i class=lc-notebook-pen></i></div><div class="empty-title">Hali natija yo'q</div>Talabalar test topshirgach shu yerda ko'rinadi</div></td></tr>
           {% endfor %}
         </tbody>
       </table>
