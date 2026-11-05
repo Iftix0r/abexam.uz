@@ -62,6 +62,10 @@ urlpatterns = [
 
     path('chat/', chat_views.inbox, name='chat_inbox'),
     path('chat/reports/', chat_views.moderation, name='chat_moderation'),
+    path('chat/team/', chat_views.team, name='chat_team'),
+    path('chat/team/list/', chat_views.team_list, name='chat_team_list'),
+    path('chat/team/<str:key>/messages/', chat_views.team_messages, name='chat_team_messages'),
+    path('chat/team/<str:key>/send/', chat_views.team_send, name='chat_team_send'),
     path('chat/threads/', chat_views.inbox_threads, name='chat_threads'),
     path('chat/user/<int:pk>/', chat_views.inbox_open, name='chat_open'),
     path('chat/<int:pk>/messages/', chat_views.inbox_messages, name='chat_messages'),

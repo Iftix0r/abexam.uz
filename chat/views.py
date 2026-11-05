@@ -17,7 +17,8 @@ from panel.views import _user_search, panel_required
 from users.models import User
 
 from . import services
-from .models import ChatBlock, ChatMessage, ChatMute, ChatPresence, ChatReaction, ChatRoom, ChatThread, SupportThread
+from .models import (ChatBlock, ChatMessage, ChatMute, ChatPresence, ChatReaction, ChatRoom, ChatThread, StaffMessage,
+                     SupportThread)
 
 PAGE = 50
 RECENT_REACTIONS = 40
@@ -501,6 +502,65 @@ def inbox_send(request, pk):
     message = ChatMessage.objects.create(support=thread, user=request.user, text=text)
     services.after_support_message(thread, message)
     return JsonResponse({'message': _inbox_payload(message, thread)})
+
+
+# ── Admins among themselves (panel) ────────────────────────────────────────────
+def _team_peer(request, key):
+    """The other admin of a conversation; None for the group."""
+    if key == services.GROUP:
+        return None
+    other = User.objects.filter(pk=_int(key) or 0, is_staff=True, is_active=True).exclude(pk=request.user.pk).first()
+    if other is None:
+        raise Http404
+    return other
+
+
+def _team_payload(message, viewer):
+    sender = message.sender
+    return {
+        'id': message.pk, 'text': message.text, 'mine': message.sender_id == viewer.pk, 'name': sender.display_name,
+        'initials': sender.initials, 'color': sender.avatar_color,
+        'time': date_format(timezone.localtime(message.created_at), 'd M, H:i'),
+    }
+
+
+@panel_required
+def team(request):
+    return render(request, 'panel/chat_team.html', {'max_length': services.STAFF_MAX_LENGTH})
+
+
+@panel_required
+@require_GET
+def team_list(request):
+    services.touch_staff(request.user)
+    return JsonResponse({'rows': services.staff_rows(request.user)})
+
+
+@panel_required
+@require_GET
+def team_messages(request, key):
+    other = _team_peer(request, key)
+    messages = services.staff_conversation(request.user, other).select_related('sender')
+    after = _int(request.GET.get('after'))
+    if after is not None:
+        items = list(messages.filter(pk__gt=after).order_by('pk')[:PAGE])
+    else:
+        items = list(messages.order_by('-pk')[:PAGE])[::-1]
+    if items and request.GET.get('seen') == '1':
+        services.mark_staff_read(request.user, key, items[-1].pk)
+    return JsonResponse({'messages': [_team_payload(m, request.user) for m in items]})
+
+
+@panel_required
+@require_POST
+def team_send(request, key):
+    other = _team_peer(request, key)
+    text = services.clean_text(request.POST.get('text'))
+    if not text or len(text) > services.STAFF_MAX_LENGTH:
+        return JsonResponse({'error': f"Xabar 1–{services.STAFF_MAX_LENGTH} belgi bo'lsin"}, status=400)
+    message = StaffMessage.objects.create(sender=request.user, recipient=other, text=text)
+    services.mark_staff_read(request.user, key, message.pk)
+    return JsonResponse({'message': _team_payload(message, request.user)})
 
 
 # ── Moderation (panel) ─────────────────────────────────────────────────────────

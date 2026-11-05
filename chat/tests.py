@@ -10,7 +10,7 @@ from users.models import User
 
 from . import services
 from .models import (ChatBlock, ChatMessage, ChatMute, ChatPresence, ChatReaction, ChatReport, ChatRoom, ChatThread,
-                     SupportThread)
+                     StaffMessage, SupportThread)
 
 
 @override_settings(CACHES={'default': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'}})
@@ -531,4 +531,86 @@ class RoomExtrasTests(TestCase):
         self.assertEqual(rows[today.pk], 'Bugun')
         self.assertEqual(rows[yesterday.pk], 'Kecha')
         self.assertNotIn(rows[old.pk], ('Bugun', 'Kecha'))
+
+
+@override_settings(CACHES={'default': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'}})
+class TeamChatTests(TestCase):
+    def setUp(self):
+        cache.clear()
+        self.a = User.objects.create_user('a', password='pw', is_staff=True, first_name='Anvar')
+        self.b = User.objects.create_user('b', password='pw', is_staff=True, first_name='Bobur')
+        self.c = User.objects.create_user('c', password='pw', is_staff=True, first_name='Karim')
+        self.student = User.objects.create_user('s', password='pw', first_name='Talaba')
+        self.client.force_login(self.a)
+
+    def _send(self, key, text='Salom'):
+        return self.client.post(reverse('panel:chat_team_send', args=[key]), {'text': text})
+
+    def _rows(self):
+        return {r['key']: r for r in self.client.get(reverse('panel:chat_team_list')).json()['rows']}
+
+    def test_every_admin_is_listed_with_the_group(self):
+        rows = self.client.get(reverse('panel:chat_team_list')).json()['rows']
+        self.assertEqual(rows[0]['key'], 'group')
+        self.assertEqual({r['name'] for r in rows[1:]}, {'Bobur', 'Karim'})
+
+    def test_blocked_or_former_admins_are_not_listed(self):
+        User.objects.filter(pk=self.c.pk).update(is_active=False)
+        self.assertNotIn(str(self.c.pk), self._rows())
+        self.assertEqual(self._send(self.c.pk).status_code, 404)
+
+    def test_group_reaches_all_admins(self):
+        self._send('group', 'Hammaga salom')
+        self.client.force_login(self.b)
+        self.assertEqual(self._rows()['group']['unread'], 1)
+        data = self.client.get(reverse('panel:chat_team_messages', args=['group']), {'seen': 1}).json()
+        self.assertEqual(data['messages'][0]['name'], 'Anvar')
+        self.assertEqual(self._rows()['group']['unread'], 0)
+
+    def test_private_chat_stays_between_two_admins(self):
+        self._send(self.b.pk, 'maxfiy')
+        self.client.force_login(self.c)
+        self.assertEqual(self.client.get(reverse('panel:chat_team_messages', args=[self.a.pk])).json()['messages'], [])
+        self.client.force_login(self.b)
+        rows = self.client.get(reverse('panel:chat_team_messages', args=[self.a.pk])).json()['messages']
+        self.assertEqual(rows[0]['text'], 'maxfiy')
+
+    def test_cannot_write_to_a_student_or_yourself(self):
+        self.assertEqual(self._send(self.student.pk).status_code, 404)
+        self.assertEqual(self._send(self.a.pk).status_code, 404)
+        self.assertEqual(self._send('junk').status_code, 404)
+
+    def test_students_are_kept_out(self):
+        self._send('group', 'ichki gap')
+        self.client.force_login(self.student)
+        for url in (reverse('panel:chat_team'), reverse('panel:chat_team_list'),
+                    reverse('panel:chat_team_messages', args=['group'])):
+            self.assertEqual(self.client.get(url).status_code, 302, url)
+        self.assertEqual(self._send('group').status_code, 302)
+        self.assertEqual(StaffMessage.objects.count(), 1)
+
+    def test_team_talk_never_reaches_student_views(self):
+        self._send('group', 'ichki gap')
+        self.client.force_login(self.student)
+        data = self.client.get(reverse('chat:search', args=['umumiy']), {'q': 'ichki'}).json()
+        self.assertEqual(data['results'], [])
+        self.assertNotContains(self.client.get(reverse('chat:home')), 'ichki gap')
+
+    def test_panel_badge_counts_conversations(self):
+        self._send('group')
+        self._send(self.b.pk)
+        cache.delete(f'chat_gap:{self.a.pk}')
+        self._send(self.b.pk, 'yana')
+        self.assertEqual(services.team_unread(self.b), 2)
+        self.assertEqual(services.team_unread(self.a), 0)
+
+    def test_online_marks(self):
+        self.client.get(reverse('panel:chat_team_list'))
+        self.client.force_login(self.b)
+        self.assertTrue(self._rows()[str(self.a.pk)]['online'])
+        self.assertFalse(self._rows()[str(self.c.pk)]['online'])
+
+    def test_empty_message_is_refused(self):
+        self.assertEqual(self._send('group', '   ').status_code, 400)
+        self.assertEqual(self._send('group', 'a' * 2001).status_code, 400)
 

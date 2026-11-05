@@ -1,0 +1,5 @@
+<div class="seg">
+  <a href="{% url 'panel:chat_inbox' %}" class="{% if tab == 'inbox' %}active{% endif %}">Suhbatlar{% if request.chat_support_unread %} <span class="nav-badge">{{ request.chat_support_unread }}</span>{% endif %}</a>
+  <a href="{% url 'panel:chat_team' %}" class="{% if tab == 'team' %}active{% endif %}">Adminlar{% if request.chat_team_unread %} <span class="nav-badge">{{ request.chat_team_unread }}</span>{% endif %}</a>
+  <a href="{% url 'panel:chat_moderation' %}" class="{% if tab == 'reports' %}active{% endif %}">Shikoyatlar{% if request.chat_reports_count %} <span class="nav-badge">{{ request.chat_reports_count }}</span>{% endif %}</a>
+</div>

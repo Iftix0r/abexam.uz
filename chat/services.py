@@ -5,14 +5,14 @@ from html import escape
 
 from django.core.cache import cache
 from django.db import DatabaseError
-from django.db.models import F, Q
+from django.db.models import F, Max, Q
 from django.utils import timezone
 
 from core.utils import notify_staff_work, site_link
 from users.models import User
 
 from .models import (ChatBlock, ChatMessage, ChatMute, ChatPresence, ChatReaction, ChatReport, ChatThread,
-                     SupportThread)
+                     StaffMessage, StaffRead, SupportThread)
 
 MAX_LENGTH = 1000
 MIN_SECONDS_BETWEEN = 2
@@ -282,3 +282,63 @@ def mark_support_read(thread, message_id, staff):
     if message_id > getattr(thread, field):
         setattr(thread, field, message_id)
         SupportThread.objects.filter(pk=thread.pk).update(**{field: message_id})
+
+
+# ── Admins among themselves ────────────────────────────────────────────────────
+GROUP = 'group'
+STAFF_ONLINE_SECONDS = 40
+STAFF_MAX_LENGTH = 2000
+
+
+def touch_staff(user):
+    cache.set(f'staff_seen:{user.pk}', 1, STAFF_ONLINE_SECONDS)
+
+
+def staff_online(user_ids):
+    found = cache.get_many([f'staff_seen:{pk}' for pk in user_ids])
+    return {pk for pk in user_ids if f'staff_seen:{pk}' in found}
+
+
+def staff_conversation(user, other):
+    """Messages of the group (other is None) or of a private chat."""
+    if other is None:
+        return StaffMessage.objects.filter(recipient__isnull=True)
+    return StaffMessage.objects.filter(Q(sender=user, recipient=other) | Q(sender=other, recipient=user))
+
+
+def _read_map(user):
+    return dict(StaffRead.objects.filter(user=user).values_list('conversation', 'last_id'))
+
+
+def mark_staff_read(user, conversation, message_id):
+    StaffRead.objects.update_or_create(user=user, conversation=str(conversation), defaults={'last_id': message_id})
+
+
+def staff_rows(user):
+    """The group, then every other admin; conversations waiting to be read first."""
+    reads = _read_map(user)
+    others = list(User.objects.filter(is_staff=True, is_active=True).exclude(pk=user.pk))
+    online = staff_online([u.pk for u in others])
+
+    def row(key, other, name, initials, color):
+        messages = staff_conversation(user, other)
+        last = messages.select_related('sender').order_by('-pk').first()
+        unread = messages.filter(pk__gt=reads.get(str(key), 0)).exclude(sender=user).count()
+        return {
+            'key': str(key), 'name': name, 'initials': initials, 'color': color, 'unread': unread,
+            'online': other is not None and other.pk in online, 'last_id': last.pk if last else 0,
+            'preview': (('Siz: ' if last.sender_id == user.pk else '') + last.text[:60]) if last else '',
+        }
+
+    people = [row(u.pk, u, u.display_name, u.initials, u.avatar_color) for u in others]
+    people.sort(key=lambda r: (-bool(r['unread']), -r['last_id'], not r['online'], r['name']))
+    return [row(GROUP, None, 'Adminlar guruhi', 'AD', '#d32f2f')] + people
+
+
+def team_unread(user):
+    """Conversations with something new, for the panel badge."""
+    reads = _read_map(user)
+    latest = (StaffMessage.objects.filter(recipient=user).values('sender').annotate(last=Max('id')))
+    private = sum(1 for r in latest if r['last'] > reads.get(str(r['sender']), 0))
+    group = StaffMessage.objects.filter(recipient__isnull=True, pk__gt=reads.get(GROUP, 0)).exclude(sender=user).exists()
+    return private + int(group)

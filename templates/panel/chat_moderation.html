@@ -5,10 +5,7 @@
 
 {% block content %}
 <div class="section-header">
-  <div class="seg">
-    <a href="{% url 'panel:chat_inbox' %}">Suhbatlar{% if request.chat_support_unread %} <span class="nav-badge">{{ request.chat_support_unread }}</span>{% endif %}</a>
-    <a href="{% url 'panel:chat_moderation' %}" class="active">Shikoyatlar{% if request.chat_reports_count %} <span class="nav-badge">{{ request.chat_reports_count }}</span>{% endif %}</a>
-  </div>
+  {% include 'panel/_chat_tabs.html' with tab='reports' %}
   <a href="{% url 'chat:home' %}" target="_blank" class="btn btn-ghost btn-sm">Chatni ochish</a>
 </div>
 <div class="card" style="padding:0;margin-bottom:20px">

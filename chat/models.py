@@ -153,3 +153,27 @@ class ChatBlock(models.Model):
 
     class Meta:
         constraints = [models.UniqueConstraint(fields=['blocker', 'blocked'], name='chat_block_once')]
+
+
+class StaffMessage(models.Model):
+    """Admins among themselves. Kept apart from ChatMessage on purpose, so no
+    student-facing view can ever reach it. No recipient means the admin group."""
+    sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='+')
+    recipient = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True,
+                                  related_name='+')
+    text = models.TextField(max_length=2000)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Adminlar xabari'
+        verbose_name_plural = 'Adminlar xabarlari'
+
+
+class StaffRead(models.Model):
+    """How far an admin has read a conversation: 'group', or the other admin's id."""
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='+')
+    conversation = models.CharField(max_length=20)
+    last_id = models.BigIntegerField(default=0)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=['user', 'conversation'], name='staff_read_once')]

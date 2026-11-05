@@ -1,0 +1,173 @@
+{% extends 'panel/base.html' %}
+{% block title %}Adminlar chati{% endblock %}
+{% block page_title %}AbChat{% endblock %}
+{% block nav_chat %}active{% endblock %}
+{% block extra_css %}{% include 'panel/_chat_css.html' %}{% endblock %}
+
+{% block content %}
+<div class="ib-top">
+  {% include 'panel/_chat_tabs.html' with tab='team' %}
+</div>
+<div class="ib" id="ib">
+  <div class="ib-list"><div class="ib-threads" id="tmRows"></div></div>
+  <div class="ib-chat">
+    <div class="ib-head" id="tmHead" hidden>
+      <button class="icon-btn ib-back" id="tmBack" type="button" aria-label="Orqaga"><i class=lc-reply></i></button>
+      <span id="tmLogo"></span>
+      <div class="ib-head-info"><div class="ib-name"><b id="tmName"></b></div><div class="ib-head-sub" id="tmSub"></div></div>
+    </div>
+    <div class="ib-msgs" id="tmMsgs"><div class="ib-empty"><i class=lc-messages-square></i>Suhbatni tanlang</div></div>
+    <div class="ib-err" id="tmErr" role="alert"></div>
+    <form class="ib-form" id="tmForm" hidden>
+      <textarea class="form-input" id="tmText" rows="1" maxlength="{{ max_length }}" placeholder="Xabar yozing..." aria-label="Xabar"></textarea>
+      <button class="ib-send" type="submit" aria-label="Yuborish"><i class=lc-send></i></button>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(() => {
+  const ROOT = "{% url 'panel:chat_team' %}";
+  const box = document.getElementById('ib'), rowsEl = document.getElementById('tmRows'), msgs = document.getElementById('tmMsgs');
+  const form = document.getElementById('tmForm'), input = document.getElementById('tmText'), err = document.getElementById('tmErr');
+  let current = new URLSearchParams(location.search).get('c'), lastId = 0, msgTimer = null, listTimer = null, busy = false, rows = [];
+
+  const el = (tag, cls, text) => {
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text !== undefined) n.textContent = text;
+    return n;
+  };
+  const logo = (initials, color, size) => {
+    const n = el('span', 'u-avatar', initials);
+    n.style.backgroundColor = color;
+    n.style.width = n.style.height = size + 'px';
+    return n;
+  };
+  const nearBottom = () => msgs.scrollHeight - msgs.scrollTop - msgs.clientHeight < 90;
+
+  function paintRows() {
+    rowsEl.replaceChildren();
+    rows.forEach(t => {
+      const row = el('button', 'ib-row' + (t.key === current ? ' active' : ''));
+      row.type = 'button';
+      const info = el('div', 'ib-info'), name = el('div', 'ib-name');
+      name.append(el('b', '', t.name));
+      if (t.online) name.append(el('span', 'ib-on'));
+      info.append(name, el('div', 'ib-prev', t.preview || (t.key === 'group' ? 'Barcha adminlar' : 'Hali yozishma yo\'q')));
+      row.append(logo(t.initials, t.color, 40), info);
+      if (t.unread && t.key !== current) row.append(el('span', 'ib-count', String(t.unread)));
+      row.onclick = () => openChat(t.key);
+      rowsEl.append(row);
+    });
+    paintHead();
+  }
+
+  function paintHead() {
+    const t = rows.find(r => r.key === current);
+    if (!t) return;
+    document.getElementById('tmHead').hidden = false;
+    document.getElementById('tmLogo').replaceChildren(logo(t.initials, t.color, 40));
+    document.getElementById('tmName').textContent = t.name;
+    const online = rows.filter(r => r.online).length + 1;
+    document.getElementById('tmSub').textContent = t.key === 'group' ? `${rows.length} admin · ${online} onlayn` : (t.online ? 'onlayn' : 'oflayn');
+  }
+
+  async function loadRows() {
+    clearTimeout(listTimer);
+    if (!document.hidden) {
+      try {
+        rows = (await (await fetch(`${ROOT}list/`)).json()).rows;
+        paintRows();
+      } catch (e) { /* next round */ }
+    }
+    listTimer = setTimeout(loadRows, 8000);
+  }
+
+  function line(m) {
+    const row = el('div', 'ib-line' + (m.mine ? ' mine' : ''));
+    row.id = 'tm' + m.id;
+    const bubble = el('div', 'ib-msg' + (m.mine ? ' mine' : ''));
+    if (!m.mine && current === 'group') {
+      row.append(logo(m.initials, m.color, 32));
+      bubble.append(el('div', 'ib-who', m.name));
+    }
+    bubble.append(el('div', 'ib-text', m.text), el('div', 'ib-meta', m.time));
+    row.append(bubble);
+    return row;
+  }
+  function add(items) {
+    const stick = nearBottom();
+    items.forEach(m => {
+      if (document.getElementById('tm' + m.id)) return;
+      msgs.querySelector('.ib-empty')?.remove();
+      msgs.append(line(m));
+      lastId = Math.max(lastId, m.id);
+    });
+    if (stick) msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  async function poll(first) {
+    clearTimeout(msgTimer);
+    if (!current) return;
+    if (!document.hidden) {
+      const asked = current;
+      try {
+        const r = await fetch(`${ROOT}${asked}/messages/?seen=1${first ? '' : '&after=' + lastId}`);
+        if (r.ok && asked === current) {
+          const d = await r.json();
+          add(d.messages);
+          if (first) {
+            if (!d.messages.length) msgs.replaceChildren(el('div', 'ib-empty', 'Birinchi xabarni yozing'));
+            msgs.scrollTop = msgs.scrollHeight;
+          }
+        }
+      } catch (e) { /* next round */ }
+    }
+    msgTimer = setTimeout(() => poll(false), 5000);
+  }
+
+  function openChat(key) {
+    current = key; lastId = 0;
+    msgs.replaceChildren();
+    box.classList.add('open');
+    form.hidden = false;
+    err.style.display = 'none';
+    history.replaceState(null, '', `?c=${key}`);
+    poll(true).then(loadRows);
+    input.focus();
+  }
+
+  document.getElementById('tmBack').onclick = () => box.classList.remove('open');
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); form.requestSubmit(); }
+  });
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const text = input.value.trim();
+    if (!text || busy || !current) return;
+    busy = true;
+    const body = new FormData();
+    body.append('text', text);
+    try {
+      const r = await fetch(`${ROOT}${current}/send/`, {method: 'POST', headers: {'X-CSRFToken': csrf}, body});
+      const d = await r.json();
+      if (r.ok) {
+        input.value = '';
+        err.style.display = 'none';
+        add([d.message]);
+        msgs.scrollTop = msgs.scrollHeight;
+        loadRows();
+      } else { err.textContent = d.error; err.style.display = 'block'; }
+    } catch (e2) { err.textContent = 'Yuborilmadi'; err.style.display = 'block'; }
+    busy = false;
+  });
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) { loadRows(); poll(false); } });
+
+  loadRows();
+  openChat(current || 'group');
+})();
+</script>
+{% endblock %}

@@ -458,7 +458,7 @@ a.tg-pill:hover{background:#229ed92e}
   <a href="{% url 'panel:chat_inbox' %}" class="nav-item {% block nav_chat %}{% endblock %}">
     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M14 9a2 2 0 0 1-2 2H6l-4 4V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2z"/><path stroke-width="1.8" d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1"/></svg>
     AbChat
-    {% with a=request.chat_support_unread|default:0 b=request.chat_reports_count|default:0 %}{% if a or b %}<span class="nav-badge" title="Javob kutayotgan suhbatlar va shikoyatlar">{{ a|add:b }}</span>{% endif %}{% endwith %}
+    {% with a=request.chat_support_unread|default:0 b=request.chat_reports_count|default:0 c=request.chat_team_unread|default:0 %}{% if a or b or c %}<span class="nav-badge" title="Javob kutayotgan suhbatlar, shikoyatlar va adminlar xabarlari">{{ a|add:b|add:c }}</span>{% endif %}{% endwith %}
   </a>
   <a href="{% url 'panel:transactions' %}" class="nav-item {% block nav_tx %}{% endblock %}">
     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" stroke-width="1.8"/><line x1="1" y1="10" x2="23" y2="10" stroke-width="1.8"/></svg>

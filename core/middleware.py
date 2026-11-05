@@ -59,8 +59,9 @@ class PanelBadgeMiddleware:
             from chat.models import ChatReport
             request.chat_reports_count = (ChatReport.objects.filter(resolved_at__isnull=True)
                                           .values('message').distinct().count())
-            from chat.services import support_unread_total
+            from chat.services import support_unread_total, team_unread
             request.chat_support_unread = support_unread_total()
+            request.chat_team_unread = team_unread(request.user)
         return self.get_response(request)
 
 
