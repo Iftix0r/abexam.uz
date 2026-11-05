@@ -94,6 +94,7 @@ urlpatterns = [
     path('learn/', include('learn.urls', namespace='learn')),
     path('api/learn/', include('learn.api')),
     path('tg/', include('tgbot.urls', namespace='tgbot')),
+    path('abchat/', include('chat.urls', namespace='chat')),
 ]
 
 if settings.DEBUG:

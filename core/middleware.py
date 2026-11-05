@@ -56,6 +56,9 @@ class PanelBadgeMiddleware:
             request.active_attempts_count = ExamAttempt.objects.filter(
                 submitted_at__isnull=True, last_seen_at__gte=timezone.now() - ATTEMPT_ONLINE_WINDOW,
             ).count()
+            from chat.models import ChatReport
+            request.chat_reports_count = (ChatReport.objects.filter(resolved_at__isnull=True)
+                                          .values('message').distinct().count())
         return self.get_response(request)
 
 

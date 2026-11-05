@@ -1,0 +1,82 @@
+{% extends 'panel/base.html' %}
+{% block title %}AbChat moderatsiya{% endblock %}
+{% block page_title %}AbChat moderatsiya{% endblock %}
+{% block nav_chat %}active{% endblock %}
+
+{% block content %}
+<div class="section-header">
+  <span class="section-title">Shikoyatlar</span>
+  <a href="{% url 'chat:home' %}" target="_blank" class="btn btn-ghost btn-sm">Chatni ochish</a>
+</div>
+<div class="card" style="padding:0;margin-bottom:20px">
+  <div class="table-wrap">
+    <table class="table-cards">
+      <thead><tr><th>Talaba</th><th>Xona</th><th>Xabar</th><th>Shikoyat</th><th>Sana</th><th></th></tr></thead>
+      <tbody>
+        {% for m in reported %}
+        <tr>
+          <td><a href="{% url 'panel:user_detail' m.user_id %}" class="link">{{ m.user.display_name }}</a></td>
+          <td style="color:var(--muted)">{{ m.room.title }}</td>
+          <td style="max-width:360px;overflow-wrap:anywhere">{{ m.text|truncatechars:300 }}{% if m.deleted_at %} <span class="badge badge-yellow">Yashirilgan</span>{% endif %}</td>
+          <td class="td-num">{{ m.open_reports }}</td>
+          <td class="td-date">{{ m.created_at|date:"d M, H:i" }}</td>
+          <td>
+            <form method="post" class="row-actions" style="flex-wrap:wrap">{% csrf_token %}
+              <input type="hidden" name="message" value="{{ m.pk }}">
+              <button name="action" value="dismiss" class="btn btn-ghost btn-sm">Asossiz</button>
+              <button name="action" value="delete" class="btn btn-ghost btn-sm">O'chirish</button>
+              <button name="action" value="mute_day" class="btn btn-danger btn-sm" data-confirm="Xabar o'chiriladi va talaba 1 kun yoza olmaydi. Davom etasizmi?">1 kun blok</button>
+              <button name="action" value="mute_week" class="btn btn-danger btn-sm" data-confirm="Xabar o'chiriladi va talaba 7 kun yoza olmaydi. Davom etasizmi?">7 kun blok</button>
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6"><div class="empty-state"><div class="empty-icon"><i class=lc-shield-check></i></div><div class="empty-title">Shikoyat yo'q</div>Talabalar xabarga shikoyat qilsa, shu yerda chiqadi</div></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% if mutes %}
+<div class="section-header"><span class="section-title">Bloklangan talabalar</span></div>
+<div class="card" style="padding:0;margin-bottom:20px">
+  <div class="table-wrap">
+    <table class="table-cards">
+      <thead><tr><th>Talaba</th><th>Blok tugashi</th><th></th></tr></thead>
+      <tbody>
+        {% for b in mutes %}
+        <tr>
+          <td><a href="{% url 'panel:user_detail' b.user_id %}" class="link">{{ b.user.display_name }}</a></td>
+          <td class="td-date">{{ b.until|date:"d M Y, H:i" }}</td>
+          <td><form method="post" class="row-actions">{% csrf_token %}<input type="hidden" name="user" value="{{ b.user_id }}"><button name="action" value="unmute" class="btn btn-ghost btn-sm">Blokni olish</button></form></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+<div class="section-header"><span class="section-title">So'nggi xabarlar</span></div>
+<div class="card" style="padding:0">
+  <div class="table-wrap">
+    <table class="table-cards">
+      <thead><tr><th>Talaba</th><th>Xona</th><th>Xabar</th><th>Sana</th><th></th></tr></thead>
+      <tbody>
+        {% for m in latest %}
+        <tr>
+          <td><a href="{% url 'panel:user_detail' m.user_id %}" class="link">{{ m.user.display_name }}</a></td>
+          <td style="color:var(--muted)">{{ m.room.title }}</td>
+          <td style="max-width:420px;overflow-wrap:anywhere">{{ m.text|truncatechars:200 }}{% if m.deleted_at %} <span class="badge badge-gray">O'chirilgan</span>{% endif %}</td>
+          <td class="td-date">{{ m.created_at|date:"d M, H:i" }}</td>
+          <td>{% if not m.deleted_at %}<form method="post" class="row-actions">{% csrf_token %}<input type="hidden" name="message" value="{{ m.pk }}"><button name="action" value="delete" class="btn btn-ghost btn-sm">O'chirish</button><button name="action" value="mute_day" class="btn btn-danger btn-sm" data-confirm="Xabar o'chiriladi va talaba 1 kun yoza olmaydi. Davom etasizmi?">1 kun blok</button></form>{% endif %}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5"><div class="empty-state"><div class="empty-title">Hali xabar yo'q</div></div></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

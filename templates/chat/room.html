@@ -1,0 +1,233 @@
+{% extends 'base.html' %}
+{% block title %}AbChat — {{ room.title }}{% endblock %}
+{% block page_title %}AbChat{% endblock %}
+
+{% block extra_css %}
+<style>
+.ch{width:100%;max-width:1160px;margin:0 auto;display:grid;grid-template-columns:250px minmax(0,1fr);gap:16px;height:calc(100vh - 130px);min-height:460px}
+.ch-rooms{display:flex;flex-direction:column;gap:4px;padding:12px;background:var(--card-bg);border:1px solid var(--border-color);border-radius:18px;overflow-y:auto}
+.ch-rooms h2{font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);padding:6px 10px 8px}
+.ch-room{display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;color:var(--text-color);text-decoration:none;font-size:14px;font-weight:600;min-width:0}
+.ch-room:hover{background:var(--tint-a)}
+.ch-room.active{background:var(--primary-color);color:#fff}
+.ch-room i{font-size:17px}
+.ch-room span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ch-main{display:flex;flex-direction:column;min-width:0;min-height:0;background:var(--card-bg);border:1px solid var(--border-color);border-radius:18px;overflow:hidden}
+.ch-head{padding:14px 18px;border-bottom:1px solid var(--border-color)}
+.ch-head b{font-size:15.5px}
+.ch-head p{font-size:12.5px;color:var(--text-muted);margin-top:1px}
+.ch-list{flex:1;min-height:0;overflow-y:auto;padding:14px 18px;display:flex;flex-direction:column;gap:10px}
+.ch-more{align-self:center;padding:6px 14px;border-radius:20px;border:1px solid var(--border-color);background:none;color:var(--text-muted);font:inherit;font-size:12.5px;cursor:pointer}
+.ch-empty{margin:auto;text-align:center;color:var(--text-muted);font-size:14px}
+.ch-empty i{display:block;margin:0 auto 10px;font-size:36px;opacity:.5}
+.ch-msg{display:flex;gap:9px;max-width:78%;align-self:flex-start}
+.ch-msg.mine{align-self:flex-end;flex-direction:row-reverse}
+.ch-bubble{min-width:0;padding:8px 12px;border-radius:14px;border-top-left-radius:4px;background:var(--tint-b)}
+.ch-msg.mine .ch-bubble{background:var(--primary-color);color:#fff;border-radius:14px;border-top-right-radius:4px}
+.ch-name{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;margin-bottom:2px}
+.ch-admin{font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;background:var(--primary-color);color:#fff}
+.ch-text{font-size:14px;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere}
+.ch-meta{display:flex;align-items:center;justify-content:flex-end;gap:8px;margin-top:3px;font-size:11px;color:var(--text-muted)}
+.ch-msg.mine .ch-meta{color:rgba(255,255,255,.8)}
+.ch-act{border:none;background:none;padding:0;color:inherit;cursor:pointer;opacity:.55;font-size:13px;line-height:1}
+.ch-act:hover,.ch-act:focus-visible{opacity:1}
+.ch-act:disabled{cursor:default;color:#d97706;opacity:1}
+.ch-form{padding:12px 14px;border-top:1px solid var(--border-color)}
+.ch-err{display:none;font-size:12.5px;color:#dc2626;margin-bottom:6px}
+.ch-row{display:flex;align-items:flex-end;gap:8px}
+.ch-row textarea{flex:1;min-width:0;max-height:120px;resize:none;padding:10px 14px;border-radius:14px;border:1px solid var(--border-color);background:var(--tint-a);color:var(--text-color);font:inherit;font-size:14px;line-height:1.4;outline:none}
+.ch-row textarea:focus{border-color:var(--primary-color)}
+.ch-send{width:42px;height:42px;flex-shrink:0;border:none;border-radius:50%;background:var(--primary-color);color:#fff;font-size:17px;cursor:pointer}
+.ch-send:disabled{opacity:.5;cursor:default}
+.ch-rules{margin-top:7px;font-size:11.5px;color:var(--text-muted)}
+.ch-muted{padding:14px;text-align:center;font-size:13.5px;color:var(--text-muted);border-top:1px solid var(--border-color)}
+@media (max-width:800px){
+  .ch{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);gap:10px;height:calc(100vh - 110px)}
+  .ch-rooms{flex-direction:row;overflow-x:auto;padding:6px;scrollbar-width:none}
+  .ch-rooms h2{display:none}
+  .ch-room{flex-shrink:0;padding:8px 12px;font-size:13px}
+  .ch-msg{max-width:90%}
+  .ch-list{padding:12px}
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ch">
+  <nav class="ch-rooms" aria-label="Xonalar">
+    <h2>Xonalar</h2>
+    {% for r in rooms %}
+    <a href="{% url 'chat:room' r.slug %}" class="ch-room{% if r.pk == room.pk %} active{% endif %}"{% if r.pk == room.pk %} aria-current="page"{% endif %}><i class="lc-{{ r.icon }}"></i><span>{{ r.title }}</span></a>
+    {% endfor %}
+  </nav>
+
+  <section class="ch-main">
+    <div class="ch-head"><b>{{ room.title }}</b>{% if room.description %}<p>{{ room.description }}</p>{% endif %}</div>
+    <div class="ch-list" id="chList" aria-live="polite"></div>
+    {% if mute %}
+    <div class="ch-muted">Qoidabuzarlik sababli {{ mute.until|date:"d M, H:i" }} gacha yoza olmaysiz. Xabarlarni o'qishingiz mumkin.</div>
+    {% else %}
+    <form class="ch-form" id="chForm">
+      <div class="ch-err" id="chErr" role="alert"></div>
+      <div class="ch-row">
+        <textarea id="chText" rows="1" maxlength="{{ max_length }}" placeholder="Xabar yozing..." aria-label="Xabar"></textarea>
+        <button class="ch-send" id="chSend" type="submit" aria-label="Yuborish"><i class=lc-send></i></button>
+      </div>
+      <div class="ch-rules">Hurmat bilan yozing. Telefon raqam, havola va @username yuborib bo'lmaydi. Noo'rin xabarga bayroqcha orqali shikoyat qiling.</div>
+    </form>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(() => {
+  const URLS = {list: "{% url 'chat:messages' room.slug %}", send: "{% url 'chat:send' room.slug %}", base: "{% url 'chat:home' %}xabar/"};
+  const CSRF = "{{ csrf_token }}";
+  const list = document.getElementById('chList');
+  const FAST = 5000, SLOW = 15000;
+  let lastId = 0, firstId = 0, timer = null, quietPolls = 0, busy = false;
+
+  const post = (url, body) => fetch(url, {method: 'POST', headers: {'X-CSRFToken': CSRF}, body});
+  const nearBottom = () => list.scrollHeight - list.scrollTop - list.clientHeight < 90;
+  const toBottom = () => { list.scrollTop = list.scrollHeight; };
+  const el = (tag, cls, text) => {
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text !== undefined) n.textContent = text;  // messages are user text: never innerHTML
+    return n;
+  };
+
+  function action(icon, label, onClick) {
+    const b = el('button', 'ch-act');
+    b.type = 'button'; b.title = label; b.setAttribute('aria-label', label);
+    b.append(el('i', 'lc-' + icon));
+    b.onclick = () => onClick(b);
+    return b;
+  }
+
+  function bubble(m) {
+    const row = el('div', 'ch-msg' + (m.mine ? ' mine' : ''));
+    row.id = 'm' + m.id;
+    if (!m.mine) {
+      const logo = el('span', 'ab-logo ab-logo-sm', m.initials);
+      logo.style.backgroundColor = m.color;
+      row.append(logo);
+    }
+    const box = el('div', 'ch-bubble');
+    if (!m.mine) {
+      const name = el('div', 'ch-name', m.name);
+      if (m.staff) name.append(el('span', 'ch-admin', 'Admin'));
+      box.append(name);
+    }
+    box.append(el('div', 'ch-text', m.text));
+    const meta = el('div', 'ch-meta', m.time);
+    if (!m.mine) meta.append(action('flag', 'Shikoyat qilish', async b => {
+      b.disabled = true;
+      const r = await post(`${URLS.base}${m.id}/report/`);
+      b.title = r.ok ? 'Shikoyat yuborildi' : 'Yuborilmadi';
+      if (!r.ok) b.disabled = false;
+    }));
+    if (m.can_delete) meta.append(action('trash-2', "O'chirish", async () => {
+      if (!confirm("Xabar o'chirilsinmi?")) return;
+      const r = await post(`${URLS.base}${m.id}/delete/`);
+      if (r.ok) row.remove();
+    }));
+    box.append(meta);
+    row.append(box);
+    return row;
+  }
+
+  function showEmpty() {
+    if (list.querySelector('.ch-msg') || list.querySelector('.ch-empty')) return;
+    const box = el('div', 'ch-empty');
+    box.append(el('i', 'lc-messages-square'), el('div', '', "Hali xabar yo'q. Birinchi bo'lib yozing!"));
+    list.append(box);
+  }
+
+  function add(items) {
+    const stick = nearBottom();
+    items.forEach(m => {
+      if (document.getElementById('m' + m.id)) return;
+      list.querySelector('.ch-empty')?.remove();
+      list.append(bubble(m));
+      lastId = Math.max(lastId, m.id);
+      if (!firstId) firstId = m.id;
+    });
+    if (stick) toBottom();
+  }
+
+  function moreButton() {
+    const b = el('button', 'ch-more', 'Oldingi xabarlar');
+    b.type = 'button';
+    b.onclick = async () => {
+      const d = await (await fetch(`${URLS.list}?before=${firstId}`)).json();
+      const height = list.scrollHeight;
+      b.remove();
+      const anchor = list.firstChild;
+      d.messages.forEach(m => list.insertBefore(bubble(m), anchor));
+      if (d.messages.length) firstId = d.messages[0].id;
+      if (d.messages.length === 50) list.prepend(moreButton());
+      list.scrollTop += list.scrollHeight - height;
+    };
+    return b;
+  }
+
+  async function poll() {
+    clearTimeout(timer);
+    if (document.hidden) return;  // resumes on visibilitychange
+    let count = 0;
+    try {
+      const d = await (await fetch(`${URLS.list}?after=${lastId}`)).json();
+      count = d.messages.length;
+      add(d.messages);
+      d.removed.forEach(id => document.getElementById('m' + id)?.remove());
+      showEmpty();
+    } catch (e) { /* offline: the next round tries again */ }
+    quietPolls = count ? 0 : quietPolls + 1;
+    timer = setTimeout(poll, quietPolls > 12 ? SLOW : FAST);
+  }
+
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) { quietPolls = 0; poll(); } });
+
+  (async () => {
+    const d = await (await fetch(URLS.list)).json();
+    add(d.messages);
+    if (d.messages.length === 50) list.prepend(moreButton());
+    showEmpty();
+    toBottom();
+    timer = setTimeout(poll, FAST);
+  })();
+
+  const form = document.getElementById('chForm');
+  if (!form) return;
+  const input = document.getElementById('chText'), err = document.getElementById('chErr'), sendBtn = document.getElementById('chSend');
+  const showError = text => { err.textContent = text || ''; err.style.display = text ? 'block' : 'none'; };
+  const fit = () => { input.style.height = 'auto'; input.style.height = input.scrollHeight + 2 + 'px'; };
+  input.addEventListener('input', () => { fit(); showError(''); });
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); form.requestSubmit(); }
+  });
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const text = input.value.trim();
+    if (!text || busy) return;
+    busy = true; sendBtn.disabled = true;
+    try {
+      const body = new FormData();
+      body.append('text', text);
+      const r = await post(URLS.send, body);
+      const d = await r.json();
+      if (r.ok) {
+        input.value = ''; fit();
+        add([d.message]); toBottom(); quietPolls = 0;
+      } else showError(d.error);
+    } catch (e2) {
+      showError("Yuborilmadi. Internetni tekshirib, qayta urinib ko'ring");
+    }
+    busy = false; sendBtn.disabled = false; input.focus();
+  });
+})();
+</script>
+{% endblock %}

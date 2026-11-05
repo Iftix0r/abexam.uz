@@ -1,5 +1,6 @@
 from django.urls import path
 from django.views.generic import RedirectView
+from chat import views as chat_views
 from . import views
 
 app_name = 'panel'
@@ -58,6 +59,7 @@ urlpatterns = [
     path('bookings/<int:pk>/status/', views.booking_status, name='booking_status'),
     path('bot/webhook/', views.bot_set_webhook, name='bot_set_webhook'),
 
+    path('chat/', chat_views.moderation, name='chat_moderation'),
     path('transactions/', views.transactions_list, name='transactions'),
     path('transactions/<int:pk>/approve/', views.transaction_approve, name='tx_approve'),
     path('transactions/<int:pk>/reject/', views.transaction_reject, name='tx_reject'),

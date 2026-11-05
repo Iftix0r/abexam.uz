@@ -36,6 +36,7 @@ ACTIONS = {
     'exam_day': 'Imtihon kuni',
     'booking': 'Navbat',
     'tgbot': 'Telegram bot',
+    'chat': 'AbChat moderatsiya',
 }
 
 
