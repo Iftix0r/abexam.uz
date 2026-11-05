@@ -47,6 +47,8 @@ def device_label(user_agent):
 
 def record_login(user, ip, user_agent, via='Sayt'):
     """Call before the login is written to LoginLog, so it compares with earlier ones."""
+    from .security import watch_login_success
+    watch_login_success(user, ip, user_agent)
     where = f'{device_label(user_agent)} · IP {ip}'
     url = f'/panel/users/{user.pk}/'
     if user.is_staff:

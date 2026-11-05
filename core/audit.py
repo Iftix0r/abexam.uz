@@ -6,6 +6,8 @@ from .utils import get_client_ip
 
 logger = logging.getLogger(__name__)
 
+PRIVILEGE_ACTIONS = ('admin_create', 'user_staff')
+
 # action code → label shown in the panel's log
 ACTIONS = {
     'balance': "Balans o'zgartirildi",
@@ -51,5 +53,9 @@ def log_action(request, action, target='', target_url='', details=''):
             action=action, target=str(target)[:255], target_url=str(target_url)[:255],
             details=str(details), ip=get_client_ip(request) or None,
         )
+        if action in PRIVILEGE_ACTIONS:
+            from .alerts import record_alert
+            record_alert('security', f"Admin huquqi o'zgardi: {target}", f'{ACTIONS[action]} · {user.display_name}',
+                         str(target_url))
     except Exception:
         logger.exception('audit log write failed (%s)', action)

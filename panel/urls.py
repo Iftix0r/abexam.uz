@@ -114,6 +114,7 @@ urlpatterns = [
     path('audit/', RedirectView.as_view(pattern_name='system:staff_audit')),
     path('notifications/', RedirectView.as_view(pattern_name='system:notifications')),
     path('alerts/', alert_views.alerts_list, name='alerts'),
+    path('threats/<int:pk>/', alert_views.threat_detail, name='threat_detail'),
     path('alerts/poll/', alert_views.alerts_poll, name='alerts_poll'),
     path('alerts/read-all/', alert_views.alerts_read_all, name='alerts_read_all'),
     path('alerts/<int:pk>/open/', alert_views.alert_open, name='alert_open'),

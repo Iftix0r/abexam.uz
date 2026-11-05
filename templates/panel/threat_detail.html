@@ -1,0 +1,79 @@
+{% extends 'panel/base.html' %}
+{% block title %}{{ incident.label }}{% endblock %}
+{% block page_title %}Xavfsizlik hodisasi{% endblock %}
+{% block nav_alerts %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+.td-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+.td-head h1{font-size:20px;font-weight:800;letter-spacing:-.01em}
+.td-rows{display:flex;flex-direction:column;gap:9px;font-size:13px}
+.td-rows div{display:flex;justify-content:space-between;gap:12px}
+.td-rows span{color:var(--muted);flex-shrink:0}
+.td-rows b{font-weight:600;text-align:right;overflow-wrap:anywhere;min-width:0}
+.td-sample{font-family:monospace;font-size:12px;padding:8px 10px;margin-bottom:6px;border-radius:8px;background:var(--surface2);overflow-wrap:anywhere}
+.td-note{font-size:13.5px;line-height:1.6}
+.td-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:14px 0 6px}
+.td-side{display:flex;flex-direction:column;gap:16px;min-width:0}
+.td-link{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;min-width:0}
+.td-link:last-child{border-bottom:none}
+.td-link small{color:var(--muted);font-size:11.5px;white-space:nowrap}
+</style>
+{% endblock %}
+
+{% block content %}
+<nav class="breadcrumb">
+  <a href="{% url 'panel:alerts' %}?tab=security">Xavfsizlik</a>
+  <span class="bc-sep">/</span>
+  <span class="bc-current">{{ incident.label }}</span>
+</nav>
+
+<div class="grid-sidebar-r">
+  <div class="td-side">
+    <div class="card">
+      <div class="td-head"><h1>{{ incident.label }}</h1><span class="badge {{ incident.badge }}">{{ incident.severity_label }} xavf</span></div>
+      <p class="td-note">{{ incident.what }}</p>
+      <div class="td-label">Nima qilish kerak</div>
+      <p class="td-note">{{ incident.advice }}</p>
+    </div>
+    {% if incident.samples %}
+    <div class="card">
+      <div class="section-title" style="margin-bottom:12px">So'rovlar namunasi</div>
+      {% for s in incident.samples %}<div class="td-sample">{{ s }}</div>{% endfor %}
+    </div>
+    {% endif %}
+    <div class="card">
+      <div class="section-title" style="margin-bottom:8px">Shu IP dan kirgan hisoblar</div>
+      {% for a in accounts %}
+      <a class="td-link" href="{% url 'panel:user_detail' a.user_id %}"><span class="link">{{ a.name }}</span><small>{{ a.n }} marta · {{ a.last|date:"d M, H:i" }}</small></a>
+      {% empty %}<div style="font-size:13px;color:var(--muted)">Bu IP dan hech kim hisobiga kirmagan.</div>{% endfor %}
+    </div>
+    {% if tried %}
+    <div class="card">
+      <div class="section-title" style="margin-bottom:8px">Shu IP dan sinab ko'rilgan loginlar</div>
+      {% for t in tried %}<div class="td-link"><span>{{ t.username_attempt|default:"—" }}</span><small>{{ t.n }} marta</small></div>{% endfor %}
+    </div>
+    {% endif %}
+  </div>
+
+  <aside class="td-side">
+    <div class="card">
+      <div class="td-rows">
+        <div><span>IP manzil</span><b style="font-family:monospace">{{ incident.ip }}</b></div>
+        <div><span>Urinishlar</span><b>{{ incident.hits }}</b></div>
+        <div><span>Boshlandi</span><b>{{ incident.first_seen|date:"d M Y, H:i" }}</b></div>
+        <div><span>Oxirgi</span><b>{{ incident.last_seen|date:"d M Y, H:i" }}</b></div>
+        <div><span>Qurilma</span><b>{{ device }}</b></div>
+        {% if incident.user %}<div><span>Hisob</span><b><a href="{% url 'panel:user_detail' incident.user_id %}" class="link">{{ incident.user.display_name }}</a></b></div>{% endif %}
+      </div>
+      {% if incident.user_agent %}<div class="td-label">User-Agent</div><div class="td-sample" style="margin:0">{{ incident.user_agent }}</div>{% endif %}
+    </div>
+    {% if others %}
+    <div class="card">
+      <div class="section-title" style="margin-bottom:8px">Shu IP ning boshqa hodisalari</div>
+      {% for o in others %}<a class="td-link" href="{% url 'panel:threat_detail' o.pk %}"><span class="link">{{ o.label }}</span><small>{{ o.hits }} marta</small></a>{% endfor %}
+    </div>
+    {% endif %}
+  </aside>
+</div>
+{% endblock %}

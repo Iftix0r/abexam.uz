@@ -40,6 +40,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'core.middleware.ThreatWatchMiddleware',
     'core.middleware.MaintenanceModeMiddleware',
     'core.middleware.PanelBadgeMiddleware',
 ]
@@ -218,8 +219,10 @@ LOGGING = {
             'maxBytes': 10 * 1024 * 1024,
             'backupCount': 5,
         },
+        'threats': {'class': 'core.log_handlers.ThreatLogHandler', 'level': 'WARNING'},
     },
     'loggers': {
+        'django.security': {'handlers': ['threats'], 'level': 'WARNING'},
         'slow_queries': {
             'handlers': ['slow_queries_file'],
             'level': 'WARNING',

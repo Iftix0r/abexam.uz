@@ -3,6 +3,7 @@ import logging
 import secrets
 from itertools import groupby
 
+from core.security import record_threat
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
@@ -27,6 +28,7 @@ def webhook(request):
     Always answers 200 once the secret matches — a non-2xx makes Telegram
     resend the same update over and over."""
     if not constant_time_compare(request.headers.get('X-Telegram-Bot-Api-Secret-Token', ''), api.webhook_secret()):
+        record_threat('webhook', request)
         return HttpResponseForbidden()
     try:
         update = json.loads(request.body)

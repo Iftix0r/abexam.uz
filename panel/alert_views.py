@@ -2,19 +2,23 @@
 from datetime import timedelta
 
 from django.core.paginator import Paginator
-from django.db.models import Count, Exists, OuterRef, Q
+from django.db.models import Count, Exists, Max, OuterRef, Q, Sum
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
-from core.models import StaffAlert
+from core.alerts import device_label
+from core.models import SecurityIncident, StaffAlert
+from users.models import LoginLog
 
 from .views import panel_required
 
 PAGE_SIZE = 30
 BELL_SIZE = 8
 TODAY_KINDS = ('signup', 'login', 'payment', 'support')
+THREAT_ROWS = 30
+ACTIVE_ATTACK = timedelta(minutes=15)
 
 
 def _with_read_flag(alerts, staff):
@@ -31,6 +35,29 @@ def _day_label(moment, today):
     return None
 
 
+def _threat_overview():
+    now = timezone.now()
+    recent = SecurityIncident.objects.filter(last_seen__gte=now - timedelta(hours=24))
+    high = SecurityIncident.kinds_of('high')
+    serious = recent.exclude(kind__in=SecurityIncident.kinds_of('low'))
+    if recent.filter(kind__in=high, last_seen__gte=now - ACTIVE_ATTACK).exists():
+        state = 'attack'
+    else:
+        state = 'watch' if serious.exists() else 'calm'
+    totals = recent.aggregate(n=Count('id'), hits=Sum('hits'), ips=Count('ip', distinct=True))
+    by_kind = list(recent.values('kind').annotate(total=Sum('hits')).order_by('-total'))
+    largest = by_kind[0]['total'] if by_kind else 1
+    return {
+        'state': state, 'count': totals['n'], 'hits': totals['hits'] or 0, 'ips': totals['ips'],
+        'failed_logins': LoginLog.objects.filter(status__in=('failed', 'blocked'),
+                                                 created_at__gte=now - timedelta(hours=24)).count(),
+        'top_ips': recent.values('ip').annotate(total=Sum('hits'), n=Count('id')).order_by('-total')[:5],
+        'kinds': [{'label': SecurityIncident.KINDS[k['kind']][0], 'severity': SecurityIncident.KINDS[k['kind']][1],
+                   'total': k['total'], 'pct': round(k['total'] / largest * 100)} for k in by_kind],
+        'incidents': SecurityIncident.objects.all()[:THREAT_ROWS],
+    }
+
+
 @panel_required
 def alerts_list(request):
     tab = request.GET.get('tab', '')
@@ -42,6 +69,8 @@ def alerts_list(request):
     alerts = _with_read_flag(StaffAlert.objects.select_related('user'), request.user)
     if tab:
         alerts = alerts.filter(kind=tab)
+    if tab == 'security':  # those are listed as incidents above
+        alerts = alerts.exclude(url__startswith='/panel/threats/')
     if q:
         alerts = alerts.filter(Q(title__icontains=q) | Q(body__icontains=q))
     if only_unread:
@@ -58,8 +87,27 @@ def alerts_list(request):
         'alerts': page, 'page': page, 'tab': tab, 'q': q, 'only_unread': only_unread,
         'tabs': [{'key': key, 'label': label, 'unread': unread.get(key, 0)} for key, label in StaffAlert.LABELS.items()],
         'unread_total': sum(unread.values()),
+        'threats': _threat_overview() if tab == 'security' else None,
         'today': [{'label': StaffAlert.LABELS[k], 'n': happened.get(k, 0), 'icon': StaffAlert.ICONS[k],
                    'color': StaffAlert.COLORS[k]} for k in TODAY_KINDS],
+    })
+
+
+@panel_required
+def threat_detail(request, pk):
+    incident = get_object_or_404(SecurityIncident.objects.select_related('user'), pk=pk)
+    for alert in StaffAlert.objects.filter(url=request.path):
+        alert.read_by.add(request.user)
+    logins = LoginLog.objects.filter(ip=incident.ip)
+    accounts = (logins.filter(status='success', user__isnull=False).values('user_id', 'user__first_name', 'user__last_name',
+                                                                          'user__username')
+                .annotate(n=Count('id'), last=Max('created_at')).order_by('-last')[:10])
+    return render(request, 'panel/threat_detail.html', {
+        'incident': incident, 'device': device_label(incident.user_agent),
+        'accounts': [{**a, 'name': f"{a['user__first_name']} {a['user__last_name']}".strip() or a['user__username']}
+                     for a in accounts],
+        'tried': logins.exclude(status='success').values('username_attempt').annotate(n=Count('id')).order_by('-n')[:15],
+        'others': SecurityIncident.objects.filter(ip=incident.ip).exclude(pk=pk)[:10],
     })
 
 

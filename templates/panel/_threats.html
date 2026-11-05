@@ -1,0 +1,48 @@
+<div class="th-state {{ threats.state }}">
+  <span class="th-state-icon"><i class={% if threats.state == 'calm' %}lc-shield-check{% else %}lc-triangle-alert{% endif %}></i></span>
+  <div>
+    <b>{% if threats.state == 'attack' %}Hujum davom etmoqda{% elif threats.state == 'watch' %}Shubhali harakatlar bor{% else %}Xavf aniqlanmadi{% endif %}</b>
+    <span>{% if threats.state == 'attack' %}Oxirgi 15 daqiqada yuqori xavfli hodisa bo'ldi. Quyidagi ro'yxatni tekshiring.{% elif threats.state == 'watch' %}Oxirgi 24 soatda urinishlar bo'lgan, hozir yuqori xavfli hodisa yo'q.{% else %}Oxirgi 24 soatda hujum belgisi topilmadi.{% endif %}</span>
+  </div>
+</div>
+
+<div class="stat-grid">
+  <div class="stat-card"><div class="stat-icon" style="background:#dc262618;color:#dc2626;font-size:20px"><i class=lc-triangle-alert></i></div><div><div class="stat-val">{{ threats.count }}</div><div class="stat-label">Hodisa (24 soat)</div></div></div>
+  <div class="stat-card"><div class="stat-icon" style="background:#f9731618;color:#f97316;font-size:20px"><i class=lc-zap></i></div><div><div class="stat-val">{{ threats.hits }}</div><div class="stat-label">Urinishlar soni</div></div></div>
+  <div class="stat-card"><div class="stat-icon" style="background:#6366f118;color:#6366f1;font-size:20px"><i class=lc-globe></i></div><div><div class="stat-val">{{ threats.ips }}</div><div class="stat-label">Turli IP manzil</div></div></div>
+  <div class="stat-card"><div class="stat-icon" style="background:#ca8a0418;color:#ca8a04;font-size:20px"><i class=lc-lock></i></div><div><div class="stat-val">{{ threats.failed_logins }}</div><div class="stat-label">Xato parol</div></div></div>
+</div>
+
+{% if threats.count %}
+<div class="grid-2-eq th-split">
+  <div class="card">
+    <div class="section-title" style="margin-bottom:12px">Eng faol IP manzillar</div>
+    {% for t in threats.top_ips %}
+    <div class="th-line"><code>{{ t.ip }}</code><span>{{ t.n }} hodisa</span><b>{{ t.total }}</b></div>
+    {% endfor %}
+  </div>
+  <div class="card">
+    <div class="section-title" style="margin-bottom:12px">Hujum turlari</div>
+    {% for k in threats.kinds %}
+    <div class="th-kind"><div><span>{{ k.label }}</span><b>{{ k.total }}</b></div><div class="th-bar"><i class="{{ k.severity }}" style="width:{{ k.pct }}%"></i></div></div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<div class="card al-card" style="margin-bottom:16px">
+  <div class="al-day">Aniqlangan hodisalar</div>
+  {% for i in threats.incidents %}
+  <a class="th-row" href="{% url 'panel:threat_detail' i.pk %}">
+    <span class="badge {{ i.badge }}">{{ i.severity_label }}</span>
+    <div class="al-text">
+      <div class="al-title">{{ i.label }}</div>
+      <div class="al-body">IP {{ i.ip }}{% if i.samples %} · {{ i.samples|last|truncatechars:70 }}{% endif %}</div>
+    </div>
+    <span class="th-hits">{{ i.hits }} marta</span>
+    <span class="al-time">{{ i.last_seen|date:"d M, H:i" }}</span>
+  </a>
+  {% empty %}
+  <div class="empty-state"><div class="empty-icon"><i class=lc-shield-check></i></div>Hujum aniqlanmagan</div>
+  {% endfor %}
+</div>

@@ -14,6 +14,8 @@ from django.core.management import call_command
 from django.core.paginator import Paginator
 from django.db import IntegrityError, transaction as db_transaction
 from django.conf import settings
+from functools import wraps
+
 from django.db.models import Avg, Count, F, Max, Q, Sum
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -34,6 +36,7 @@ from exams import camera
 from exams.analysis import question_stats, regrade_exam
 from chat import services as chat_services
 from core.audit import ACTIONS, log_action
+from core.security import record_threat
 from exams.passwords import GRACE_SECONDS, exam_password, seconds_until_rotation, testlar_password
 from exams.testlar import testlar_folders
 from exams.views import finalize_attempt
@@ -58,7 +61,14 @@ def is_staff(user):
 
 
 def panel_required(view_func):
-    return login_required(user_passes_test(is_staff, login_url='/login/')(view_func))
+    guarded = login_required(user_passes_test(is_staff, login_url='/login/')(view_func))
+
+    @wraps(view_func)
+    def checked(request, *args, **kwargs):
+        if request.user.is_authenticated and not request.user.is_staff:
+            record_threat('panel_probe', request, user=request.user)
+        return guarded(request, *args, **kwargs)
+    return checked
 
 
 # ── Dashboard ──────────────────────────────────────────────────────────────────

@@ -38,6 +38,18 @@ class SlowQueryLogMiddleware:
             return self.get_response(request)
 
 
+class ThreatWatchMiddleware:
+    """Checks each request's URL for attacks; see core/security.py."""
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        from .security import inspect_request
+        inspect_request(request)
+        return self.get_response(request)
+
+
 class PanelBadgeMiddleware:
     """Annotates request.pending_tx_count / pending_results_count for
     staff, used by the panel sidebar badges (templates/panel/base.html)."""

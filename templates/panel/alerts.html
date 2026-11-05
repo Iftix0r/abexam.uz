@@ -29,29 +29,61 @@
 .al-row.unread .al-title{font-weight:700}
 .al-body{font-size:12.5px;color:var(--muted);margin-top:2px;overflow-wrap:anywhere}
 .al-time{font-size:12px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.th-state{display:flex;align-items:center;gap:14px;padding:16px 20px;margin-bottom:16px;border-radius:14px;border:1px solid}
+.th-state.calm{background:#22c55e12;border-color:#22c55e40}
+.th-state.watch{background:#eab30812;border-color:#eab30850}
+.th-state.attack{background:#ef444414;border-color:#ef444460}
+.th-state-icon{font-size:24px;flex-shrink:0}
+.th-state.calm .th-state-icon{color:var(--green)}
+.th-state.watch .th-state-icon{color:var(--yellow)}
+.th-state.attack .th-state-icon{color:var(--red)}
+.th-state b{display:block;font-size:15px;font-weight:700}
+.th-state span:not(.th-state-icon){font-size:13px;color:var(--muted)}
+.th-split{margin-bottom:16px}
+.th-line{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px}
+.th-line:last-child{border-bottom:none}
+.th-line code{flex:1;min-width:0;overflow-wrap:anywhere;font-size:12.5px}
+.th-line span{color:var(--muted);font-size:12px}
+.th-kind{margin-bottom:11px}
+.th-kind:last-child{margin-bottom:0}
+.th-kind>div:first-child{display:flex;justify-content:space-between;gap:10px;font-size:13px;margin-bottom:4px}
+.th-bar{height:6px;border-radius:6px;background:var(--surface2);overflow:hidden}
+.th-bar i{display:block;height:100%;border-radius:6px}
+.th-bar i.high{background:var(--red)}
+.th-bar i.medium{background:#eab308}
+.th-bar i.low{background:var(--muted)}
+.th-row{display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid var(--border);min-width:0}
+.th-row:last-child{border-bottom:none}
+.th-row:hover{background:var(--tint1)}
+.th-hits{font-size:12.5px;font-weight:600;white-space:nowrap}
 .al-dot{width:8px;height:8px;border-radius:50%;background:var(--primary);flex-shrink:0}
 @media (max-width:560px){
   .al-head .end{margin-left:0;width:100%;justify-content:space-between}
   .al-head .search-box{width:100%}
   .al-main{padding-left:12px;gap:11px}
   .al-row{padding-right:6px}
+  .th-row{flex-wrap:wrap;padding:12px}
+  .th-row .al-text{order:3;flex-basis:100%}
+  .th-row .al-time{margin-left:auto}
 }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="stat-grid">
-  {% for t in today %}
-  <div class="stat-card"><div class="stat-icon" style="background:{{ t.color }}18;color:{{ t.color }};font-size:20px"><i class={{ t.icon }}></i></div><div><div class="stat-val">{{ t.n }}</div><div class="stat-label">{{ t.label }} (bugun)</div></div></div>
-  {% endfor %}
-</div>
-
 <div class="seg al-tabs">
   <a href="?{% if only_unread %}unread=1{% endif %}{% if q %}&q={{ q|urlencode }}{% endif %}" class="{% if not tab %}active{% endif %}">Hammasi{% if unread_total %} <span class="nav-badge">{{ unread_total }}</span>{% endif %}</a>
   {% for t in tabs %}
   <a href="?tab={{ t.key }}{% if only_unread %}&unread=1{% endif %}{% if q %}&q={{ q|urlencode }}{% endif %}" class="{% if tab == t.key %}active{% endif %}">{{ t.label }}{% if t.unread %} <span class="nav-badge">{{ t.unread }}</span>{% endif %}</a>
   {% endfor %}
 </div>
+
+{% if threats %}{% include 'panel/_threats.html' %}{% else %}
+<div class="stat-grid">
+  {% for t in today %}
+  <div class="stat-card"><div class="stat-icon" style="background:{{ t.color }}18;color:{{ t.color }};font-size:20px"><i class={{ t.icon }}></i></div><div><div class="stat-val">{{ t.n }}</div><div class="stat-label">{{ t.label }} (bugun)</div></div></div>
+  {% endfor %}
+</div>
+{% endif %}
 
 <div class="al-head">
   <form method="get" id="alFilter" style="display:contents">
@@ -71,6 +103,8 @@
 
 <a href="" class="al-fresh" id="alFresh" hidden>Yangi bildirishnoma keldi. Ko'rish uchun bosing</a>
 
+{% if threats and alerts %}<div class="section-title" style="margin-bottom:10px">Boshqa xavfsizlik xabarlari</div>{% endif %}
+{% if alerts or not threats %}
 <div class="card al-card">
   {% for a in alerts %}
   {% ifchanged a.created_at|date:"Y-m-d" %}<div class="al-day">{% if a.day %}{{ a.day }}{% else %}{{ a.created_at|date:"d F Y" }}{% endif %}</div>{% endifchanged %}
@@ -96,6 +130,7 @@
   <div class="empty-state"><div class="empty-icon"><i class=lc-bell></i></div><div class="empty-title">{% if q or tab or only_unread %}Hech narsa topilmadi{% else %}Hali bildirishnoma yo'q{% endif %}</div>{% if not q and not tab and not only_unread %}Yangi talaba, to'lov, xabar yoki shikoyat bo'lsa shu yerda chiqadi{% endif %}</div>
   {% endfor %}
 </div>
+{% endif %}
 {% include 'panel/_pagination.html' %}
 {% endblock %}
 

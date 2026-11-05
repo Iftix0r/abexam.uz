@@ -17,7 +17,8 @@ from django.urls import path, reverse
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 
-from core.alerts import record_alert, record_login
+from core.alerts import record_login
+from core.security import record_threat, watch_failed_login
 from core.utils import get_client_ip, notify_admin_telegram, notify_new_signup, parse_json_body
 from users.forms import RegisterForm
 from users.models import LoginLog, Vocabulary
@@ -133,7 +134,8 @@ def login(request):
         LoginLog.objects.create(username_attempt=username[:150], ip=ip, user_agent=ua,
                                 status='blocked' if blocked else 'failed')
         if user_fails == _MAX_FAILS_PER_USER or ip_fails == _MAX_FAILS_PER_IP:
-            record_alert('security', f"Ko'p noto'g'ri parol (ilova): {username or '—'}", f'IP {ip}')
+            record_threat('brute_force', ip=ip, user_agent=ua, sample=username)
+        watch_failed_login(username[:150], ip, ua)
         return JsonResponse({'error': "Telefon raqam yoki parol noto'g'ri."}, status=400)
     cache.delete(_fail_keys(ip, username)[1])
     user.last_ip = ip

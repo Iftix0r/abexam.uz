@@ -159,6 +159,107 @@ class StaffAlert(models.Model):
         return cls.objects.exclude(kind__in=cls.QUIET).exclude(read_by=staff).filter(created_at__gte=since)
 
 
+class SecurityIncident(models.Model):
+    """One kind of attack from one IP, with repeats inside an hour counted in `hits`."""
+    KINDS = {
+        'scan': ('Zaiflik qidiruvi', 'medium',
+                 "Avtomatik skaner saytda ochiq fayllar va ma'lum zaif sahifalarni qidirmoqda (.env, wp-admin, .php).",
+                 "Odatda xavfsiz: bunday sahifalar saytda yo'q. Urinishlar ko'paysa, IP ni hosting firewall'ida bloklang."),
+        'sql_injection': ('SQL injection urinishi', 'high',
+                          "Manzilga ma'lumotlar bazasini aldash uchun SQL buyrug'i qo'shilgan.",
+                          "Sayt Django ORM ishlatadi, bu turdagi hujumdan himoyalangan. IP ni kuzating, ko'p takrorlansa bloklang."),
+        'xss': ('XSS urinishi', 'high',
+                "Manzilga brauzerda bajariladigan skript qo'shilgan. Maqsad boshqa foydalanuvchining sessiyasini o'g'irlash.",
+                "Shablonlar matnni avtomatik xavfsiz qiladi. Agar bu havolani kimdir talabalarga yuborgan bo'lsa, ogohlantiring."),
+        'traversal': ('Tizim fayllarini o\'qish urinishi', 'high',
+                      "Server fayllarini (/etc/passwd kabi) ochishga urinish bo'ldi.",
+                      "IP ni hosting firewall'ida bloklang va server loglarini ko'rib chiqing."),
+        'code_exec': ('Serverda kod bajarish urinishi', 'high',
+                      "Manzil orqali serverda buyruq yoki shablon kodi bajarishga urinish bo'ldi.",
+                      "IP ni darhol bloklang, server loglarini va yaqinda o'zgargan fayllarni tekshiring."),
+        'flood': ("So'rovlar oqimi (DoS)", 'high',
+                  "Bitta IP daqiqasiga juda ko'p so'rov yubormoqda. Sayt sekinlashishi mumkin.",
+                  "Sayt sekinlashgan bo'lsa, IP ni hosting firewall'ida bloklang. Internet-qidiruv boti bo'lishi ham mumkin."),
+        'brute_force': ('Parol terish', 'high',
+                        "Bitta hisobga ketma-ket noto'g'ri parol kiritildi va u vaqtincha bloklandi.",
+                        "Bu IP sizning talabangizniki bo'lishi mumkin. Agar notanish bo'lsa, hisob egasiga parolni almashtirishni ayting."),
+        'spray': ('Ko\'p hisoblarga parol sinash', 'high',
+                  "Bitta IP dan ko'plab turli hisoblarga kirishga urinildi. Bu sizib chiqqan parollar ro'yxatini sinash belgisi.",
+                  "IP ni bloklang. Shu IP dan kirib ketgan hisoblar bo'lsa, ularning parolini almashtiring."),
+        'distributed': ('Bitta hisobga ko\'p IP dan hujum', 'high',
+                        "Bir hisobga turli IP manzillardan parol sinalmoqda. Bu tashkillashtirilgan hujum belgisi.",
+                        "Hisob egasini ogohlantiring va parolini almashtiring."),
+        'staff_target': ('Admin hisobiga hujum', 'high',
+                         "Admin hisobiga ketma-ket noto'g'ri parol kiritildi.",
+                         "Bu o'zingiz bo'lmasangiz, shu admin parolini darhol almashtiring."),
+        'breach': ('Hisob buzilgan bo\'lishi mumkin', 'high',
+                   "Ko'p noto'g'ri urinishdan keyin hisobga muvaffaqiyatli kirildi. Parol topilgan bo'lishi mumkin.",
+                   "Hisob egasi bilan bog'laning. U kirmagan bo'lsa, parolni darhol almashtiring."),
+        'webhook': ('Soxta Telegram so\'rovi', 'medium',
+                    "Kimdir Telegram botining manzilga maxfiy kalitsiz so'rov yubordi.",
+                    "So'rov rad etildi. Ko'p takrorlansa, webhook kalitini yangilang."),
+        'suspicious': ('Shubhali so\'rov', 'medium',
+                       "Django so'rovni xavfli deb to'xtatdi.",
+                       "So'rov rad etildi. Takrorlansa, IP ni kuzating."),
+        'csrf': ('Qalbaki forma (CSRF)', 'low',
+                 "Himoya kalitisiz forma yuborildi. Ko'pincha sahifa uzoq ochiq qolganda ham shunday bo'ladi.",
+                 "So'rov rad etildi. Bir IP dan ko'p takrorlanmasa, e'tibor bermasa ham bo'ladi."),
+        'bad_host': ('Noto\'g\'ri domen bilan so\'rov', 'low',
+                     "Saytga boshqa domen nomi yoki to'g'ridan-to'g'ri IP orqali murojaat bo'ldi. Bu avtomatik botlarda ko'p uchraydi.",
+                     "So'rov rad etildi. Hech narsa qilish shart emas."),
+        'panel_probe': ('Talaba panelga kirishga urindi', 'low',
+                        "Xodim bo'lmagan foydalanuvchi admin panel sahifasini ochdi va rad etildi.",
+                        "Tasodif bo'lishi mumkin. Tez-tez takrorlansa, hisobni tekshiring."),
+    }
+    SEVERITY_LABELS = {'high': 'Yuqori', 'medium': "O'rta", 'low': 'Past'}
+    BADGES = {'high': 'badge-red', 'medium': 'badge-yellow', 'low': 'badge-gray'}
+
+    kind = models.CharField(max_length=20, choices=[(k, v[0]) for k, v in KINDS.items()], db_index=True)
+    ip = models.GenericIPAddressField(db_index=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True, related_name='+')
+    user_agent = models.CharField(max_length=300, blank=True)
+    hits = models.PositiveIntegerField(default=1)
+    samples = models.JSONField(default=list, blank=True)
+    first_seen = models.DateTimeField(auto_now_add=True)
+    last_seen = models.DateTimeField(db_index=True)
+
+    class Meta:
+        verbose_name = 'Xavfsizlik hodisasi'
+        verbose_name_plural = 'Xavfsizlik hodisalari'
+        ordering = ['-last_seen', '-id']
+
+    def __str__(self):
+        return f'{self.label} — {self.ip}'
+
+    @property
+    def label(self):
+        return self.KINDS[self.kind][0]
+
+    @property
+    def severity(self):
+        return self.KINDS[self.kind][1]
+
+    @property
+    def what(self):
+        return self.KINDS[self.kind][2]
+
+    @property
+    def advice(self):
+        return self.KINDS[self.kind][3]
+
+    @property
+    def severity_label(self):
+        return self.SEVERITY_LABELS[self.severity]
+
+    @property
+    def badge(self):
+        return self.BADGES[self.severity]
+
+    @classmethod
+    def kinds_of(cls, severity):
+        return [kind for kind, details in cls.KINDS.items() if details[1] == severity]
+
+
 class AuditLog(models.Model):
     """What a staff member did in the panel — balance changes, answer-key
     edits, grading, deletions — with who and when, for accountability."""

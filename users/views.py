@@ -20,7 +20,8 @@ from core.utils import (
 from exams.models import Exam, UserResult
 from exams.rating import ALL_TIME, MONTH, exam_rating
 from .backends import normalize_phone
-from core.alerts import record_alert, record_login
+from core.alerts import record_login
+from core.security import record_threat, watch_failed_login
 from .forms import DetailsForm, LoginForm, RegisterForm
 from .models import LoginLog, User, Vocabulary
 from payments.models import Transaction
@@ -109,9 +110,10 @@ class CustomLoginView(BaseLoginView):
             username_attempt=username, ip=ip,
             user_agent=ua, status='blocked' if blocked else 'failed',
         )
+        watch_failed_login(username, ip, ua)
         if user_fails == _MAX_FAILS_PER_USER or ip_fails == _MAX_FAILS_PER_IP:
             what = "IP bloklandi" if ip_fails >= _MAX_FAILS_PER_IP else "Foydalanuvchi 15 daqiqaga bloklandi"
-            record_alert('security', f"Ko'p noto'g'ri parol: {username or '—'}", f'{what} · IP {ip}')
+            record_threat('brute_force', ip=ip, user_agent=ua, sample=username)
             notify_admin_telegram(
                 f"⛔ <b>{what} (ko'p noto'g'ri urinish)</b>\n"
                 f"👤 Urinilgan username: {username or '—'}\n"
