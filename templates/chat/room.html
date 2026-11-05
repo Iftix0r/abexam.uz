@@ -4,7 +4,11 @@
 
 {% block extra_css %}
 <style>
-.ch{width:100%;max-width:1200px;margin:0 auto;display:grid;grid-template-columns:270px minmax(0,1fr);gap:16px;height:calc(100vh - 130px);min-height:480px}
+/* The chat fills the window like an app: no page scroll, and an announcement
+   banner above simply takes its share of the height. */
+.main-content{height:100vh;height:100dvh}
+.page-container{max-width:none;min-height:0;padding:14px 20px}
+.ch{flex:1;min-height:0;width:100%;display:grid;grid-template-columns:300px minmax(0,1fr);gap:16px}
 .ch-side{display:flex;flex-direction:column;gap:2px;padding:12px;background:var(--card-bg);border:1px solid var(--border-color);border-radius:18px;overflow-y:auto}
 .ch-side h2{font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);padding:8px 10px 6px}
 .ch-side h2:not(:first-child){margin-top:10px}
@@ -99,9 +103,33 @@ button.ch-sub:hover{color:var(--text-color)}
 .ch-member{display:flex;align-items:center;gap:10px;width:100%;padding:8px;border:none;border-radius:10px;background:none;color:var(--text-color);font:inherit;font-size:14px;font-weight:600;text-align:left;cursor:pointer}
 .ch-member:hover{background:var(--tint-a)}
 .ch-member span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* Desktop: room to read, so everything is a size up */
+@media (min-width:1100px){
+  .ch-room{padding:11px 12px;font-size:15px}
+  .ch-room>i{font-size:19px}
+  .ch-head{padding:15px 24px}
+  .ch-head-info b{font-size:17.5px}
+  .ch-sub{font-size:13.5px}
+  .ch-pin{padding:9px 24px;font-size:14px}
+  .ch-list{padding:20px 28px;gap:13px}
+  .ch-msg{max-width:68%;gap:11px}
+  .ch-who{height:38px}
+  .ch-who .ab-logo{width:38px;height:38px;font-size:12.5px}
+  .ch-bubble{padding:10px 15px;border-radius:16px;border-top-left-radius:5px}
+  .ch-msg.mine .ch-bubble{border-radius:16px;border-top-right-radius:5px}
+  .ch-name{font-size:13.5px}
+  .ch-text{font-size:15.5px;line-height:1.5}
+  .ch-meta{font-size:12px}
+  .ch-quote{font-size:13.5px}
+  .ch-form{padding:14px 24px 14px}
+  .ch-row textarea{padding:13px 18px;font-size:15.5px;border-radius:16px}
+  .ch-send{width:50px;height:50px;font-size:20px}
+  .ch-rules{font-size:12.5px}
+}
 @media (hover:none){.ch-bubble:hover .ch-tools{display:none}.ch-bubble.open .ch-tools{display:flex}}
 @media (max-width:800px){
-  .ch{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);gap:10px;height:calc(100vh - 110px)}
+  .page-container{padding:10px 12px}
+  .ch{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);gap:10px}
   .ch-side{flex-direction:row;overflow-x:auto;padding:6px;gap:4px;scrollbar-width:none}
   .ch-side h2,.ch-hint,.ch-room-info small{display:none}
   .ch-room{flex-shrink:0;padding:8px 12px;font-size:13px;max-width:170px}
