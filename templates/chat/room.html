@@ -150,12 +150,29 @@ button.ch-sub:hover{color:var(--text-color)}
   .ch-send{width:50px;height:50px;font-size:20px}
   .ch-rules{font-size:12.5px}
 }
-@media (hover:none){.ch-bubble:hover .ch-tools{display:none}.ch-bubble.open .ch-tools{display:flex}}
+/* Touch: a tap opens the tools, with room for a thumb, kept inside the screen */
+@media (hover:none){
+  .ch-bubble:hover .ch-tools{display:none}
+  .ch-bubble.open .ch-tools{display:flex}
+  .ch-tools{right:auto;left:-2px}
+  .ch-msg.mine .ch-tools{left:auto;right:-2px}
+  .ch-tool{width:34px;height:34px;font-size:16px}
+  .ch-chip{padding:5px 10px;font-size:13px}
+}
 @media (max-width:800px){
   .page-container{padding:10px 12px}
   .ch{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);gap:10px}
   .ch-side{flex-direction:row;overflow-x:auto;padding:6px;gap:4px;scrollbar-width:none}
-  .ch-side h2,.ch-hint,.ch-room-info small{display:none}
+  .ch-side h2,.ch-hint,.ch-room-info small,.ch-rules-long{display:none}
+  .page-container{padding:8px 10px}
+  .ch-head{padding:8px 12px}
+  .ch-stories{gap:8px;padding:8px 12px}
+  .ch-story{width:58px}
+  .ch-ring .ab-logo{width:38px;height:38px;font-size:12.5px}
+  .ch-story.all .ch-ring{width:42px;height:42px}
+  .ch-story span.nm{font-size:10.5px;-webkit-line-clamp:1}
+  .ch-form{padding:8px 10px}
+  .ch-rules{margin-top:4px;font-size:11px}
   .ch-room{flex-shrink:0;padding:8px 12px;font-size:13px;max-width:170px}
   .ch-msg{max-width:92%}
   .ch-list{padding:12px}
@@ -231,7 +248,7 @@ button.ch-sub:hover{color:var(--text-color)}
         <textarea id="chText" rows="1" maxlength="{{ max_length }}" placeholder="Xabar yozing..." aria-label="Xabar"></textarea>
         <button class="ch-send" id="chSend" type="submit" aria-label="Yuborish"><i class=lc-send></i></button>
       </div>
-      <div class="ch-rules">{% if support %}Savolingizni yozing, admin shu yerda javob beradi.{% else %}Hurmat bilan yozing. Telefon raqam, havola va @username yuborib bo'lmaydi.{% if thread %} Noo'rin xabarga shikoyat qilsangiz, adminlar o'sha xabarni ko'radi.{% endif %}{% endif %}</div>
+      <div class="ch-rules">{% if support %}Savolingizni yozing, admin shu yerda javob beradi.{% else %}<span class="ch-rules-long">Hurmat bilan yozing. </span>Telefon raqam, havola va @username yuborib bo'lmaydi.{% if thread %}<span class="ch-rules-long"> Noo'rin xabarga shikoyat qilsangiz, adminlar o'sha xabarni ko'radi.</span>{% endif %}{% endif %}</div>
     </form>
     {% endif %}
   </section>
@@ -332,7 +349,11 @@ button.ch-sub:hover{color:var(--text-color)}
       row.append(who);
     }
     const col = el('div', 'ch-col'), box = el('div', 'ch-bubble');
-    box.onclick = () => box.classList.toggle('open');
+    box.onclick = () => {
+      const opening = !box.classList.contains('open');
+      list.querySelectorAll('.ch-bubble.open').forEach(b => b.classList.remove('open'));
+      box.classList.toggle('open', opening);
+    };
 
     const tools = el('div', 'ch-tools');
     KINDS.forEach(([kind, name]) => {
@@ -664,6 +685,9 @@ button.ch-sub:hover{color:var(--text-color)}
     } catch (e) { /* a failed first load must not stop the polling below */ }
     timer = setTimeout(poll, FAST);
   })();
+
+  // On phones the room list is one scrolling row: show where you are.
+  document.querySelector('.ch-side .ch-room.active')?.scrollIntoView({block: 'nearest', inline: 'center'});
 
   // Composer
   const form = document.getElementById('chForm');

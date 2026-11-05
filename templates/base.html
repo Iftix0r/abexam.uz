@@ -2,7 +2,7 @@
 <html lang="uz" data-theme="light">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
     <title>{% block title %}AbExam - IELTS Mock Platform{% endblock %}</title>
     <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -315,6 +315,62 @@
             }
             .page-container { padding: 1rem; }
             #toggle-sidebar-top { display: flex !important; }
+
+            /* iOS zooms the page into any field under 16px */
+            input:not([type=checkbox]):not([type=radio]), select, textarea { font-size: 16px !important; }
+
+            .main-content { padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)); }
+            /* While typing the keyboard is up: the bar would only cover the field */
+            body:has(textarea:focus, input:not([type=checkbox]):focus) .tabbar { display: none !important; }
+            body:has(textarea:focus, input:not([type=checkbox]):focus) .main-content { padding-bottom: 0; }
+        }
+
+        /* Phone navigation, in thumb reach */
+        @media (min-width: 769px) { .tabbar { display: none !important; } }
+        .tabbar {
+            display: flex;
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 90;
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+            background: var(--bg-color);
+            border-top: 1px solid var(--border-color);
+        }
+        .tabbar a, .tabbar button {
+            position: relative;
+            flex: 1;
+            height: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            border: none;
+            background: none;
+            color: var(--text-muted);
+            font: inherit;
+            font-size: 11px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .tabbar a.active { color: var(--primary-color); }
+        .tabbar i, .tabbar svg { width: 22px; height: 22px; }
+        .tabbar b {
+            position: absolute;
+            top: 6px;
+            left: 50%;
+            margin-left: 6px;
+            min-width: 17px;
+            padding: 0 4px;
+            border-radius: 9px;
+            background: #d32f2f;
+            color: #fff;
+            font-size: 10px;
+            line-height: 17px;
+            text-align: center;
         }
 
         .announcement-banner {
@@ -453,6 +509,14 @@
         </div>
     </aside>
 
+    <nav class="tabbar" aria-label="Asosiy bo'limlar">
+        <a href="{% url 'dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"><i data-lucide="home"></i>Bosh sahifa</a>
+        <a href="{% url 'exams_list' %}" class="{% if request.resolver_match.url_name == 'exams_list' %}active{% endif %}"><i data-lucide="book-open"></i>Imtihon</a>
+        <a href="{% url 'games:hub' %}" class="{% if request.resolver_match.namespace == 'games' %}active{% endif %}"><i data-lucide="gamepad-2"></i>O'yin</a>
+        <a href="{% url 'chat:home' %}" class="{% if request.resolver_match.namespace == 'chat' %}active{% endif %}"><i data-lucide="messages-square"></i>AbChat{% with unread=chat_unread %}{% if unread %}<b>{{ unread }}</b>{% endif %}{% endwith %}</a>
+        <button type="button" id="tabbarMenu"><i data-lucide="menu"></i>Menyu</button>
+    </nav>
+
     <main class="main-content" id="main-content">
         {% if site_settings.announcement_active and site_settings.announcement %}
         <div class="announcement-banner" id="announcementBanner" data-key="announcement-dismissed-{{ site_settings.updated_at|date:'U' }}">
@@ -524,6 +588,7 @@
         });
 
         document.getElementById('toggle-sidebar-top').addEventListener('click', toggleSidebar);
+        document.getElementById('tabbarMenu').addEventListener('click', toggleSidebar);
 
 
         // Theme-aware colors for Chart.js — pages with charts call this instead of

@@ -2,7 +2,7 @@
 <html lang="uz" data-theme="light">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
 <title>{% block title %}AbExam Panel{% endblock %}</title>
 <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
 <script>
@@ -350,6 +350,17 @@ a.tg-pill:hover{background:#229ed92e}
   .bulk-bar{top:68px}
 }
 
+/* Touch screens: fields at 16px (iOS zooms into smaller ones), controls a thumb can hit */
+@media (max-width:960px){
+  input:not([type=checkbox]):not([type=radio]),select,textarea{font-size:16px!important}
+  .btn-sm{padding:8px 13px;min-height:36px}
+  .icon-btn{width:36px;height:36px}
+  input[type=checkbox]{width:20px;height:20px}
+  .seg{height:42px}
+  .pager-btn{min-width:36px;height:36px}
+  .hide-touch{display:none!important}
+}
+
 /* ── Responsive: phone ── */
 @media (max-width:560px){
   .topbar{padding:0 12px;gap:8px}
@@ -388,6 +399,7 @@ a.tg-pill:hover{background:#229ed92e}
   table.table-cards td[data-label]::before{content:attr(data-label);font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600;text-align:left}
   table.table-cards td:not([data-label]){justify-content:flex-start}
   table.table-cards td[colspan]{justify-content:center;text-align:center}
+  table.table-cards .u-info>div{min-width:0;overflow-wrap:anywhere}
   table.table-cards .row-actions{justify-content:flex-end;flex-wrap:wrap}
   table.table-cards .td-date{white-space:normal}
 }

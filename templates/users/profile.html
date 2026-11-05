@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load panel_ui %}
 {% block title %}Profil — AbExam{% endblock %}
 {% block page_title %}Profil{% endblock %}
 
@@ -62,7 +63,7 @@
           <div class="stat-mini-label">O'rtacha ball</div>
         </div>
         <div class="stat-mini" style="grid-column:span 2">
-          <div class="stat-mini-val" style="color:#eab308">{{ user.balance|floatformat:0 }} so'm</div>
+          <div class="stat-mini-val" style="color:#eab308">{{ user.balance|som }} so'm</div>
           <div class="stat-mini-label">Balans</div>
         </div>
       </div>

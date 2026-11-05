@@ -1,7 +1,7 @@
 <style>
 .content{max-width:none;padding-top:16px;padding-bottom:16px}
 .ib-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
-.ib{display:grid;grid-template-columns:330px minmax(0,1fr);height:calc(100vh - 140px);min-height:440px;background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:var(--card-shadow)}
+.ib{display:grid;grid-template-columns:330px minmax(0,1fr);height:calc(100vh - 140px);height:calc(100dvh - 140px);min-height:440px;background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:var(--card-shadow)}
 .ib-list{display:flex;flex-direction:column;min-height:0;border-right:1px solid var(--border)}
 .ib-search{padding:10px;border-bottom:1px solid var(--border)}
 .ib-threads{flex:1;overflow-y:auto}
@@ -34,7 +34,7 @@
 .ib-send{width:40px;height:40px;flex-shrink:0;border:none;border-radius:50%;background:var(--primary);color:#fff;font-size:16px;cursor:pointer}
 .ib-err{display:none;padding:0 14px 8px;font-size:12.5px;color:var(--red)}
 @media (max-width:760px){
-  .ib{grid-template-columns:minmax(0,1fr);height:calc(100vh - 150px)}
+  .ib{grid-template-columns:minmax(0,1fr);height:calc(100vh - 134px);height:calc(100dvh - 134px)}
   .ib.open .ib-list{display:none}
   .ib:not(.open) .ib-chat{display:none}
   .ib-back{display:inline-flex}
