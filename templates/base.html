@@ -373,6 +373,10 @@
                 <i data-lucide="trophy" style="width: 20px;"></i>
                 <span class="nav-toggle-text">Natijalar</span>
             </a>
+            <a href="{% url 'rating' %}" class="nav-link {% if request.resolver_match.url_name == 'rating' %}active{% endif %}">
+                <i data-lucide="crown" style="width: 20px;"></i>
+                <span class="nav-toggle-text">Reyting</span>
+            </a>
             <a href="{% url 'vocabulary' %}" class="nav-link {% if request.resolver_match.url_name == 'vocabulary' %}active{% endif %}">
                 <i data-lucide="languages" style="width: 20px;"></i>
                 <span class="nav-toggle-text">Lug'at</span>

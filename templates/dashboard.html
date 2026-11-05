@@ -365,6 +365,20 @@
     </section>
     {% endif %}
 
+    <!-- Rating -->
+    <section class="dash-panel">
+        <div class="dash-panel-head">
+            <h3>Reyting <span style="font-size:12px;font-weight:500;color:var(--text-muted)">· bu oy</span></h3>
+            <a href="{% url 'rating' %}">To'liq reyting →</a>
+        </div>
+        {% if rating.rows %}
+        {% include 'partials/rating_rows.html' with board=rating %}
+        {% if rating.me and rating.me.rank > 5 %}<p style="font-size:13px;color:var(--text-muted);margin-top:4px">Sizning o'rningiz: <b>#{{ rating.me.rank }}</b> / {{ rating.total }} · {{ rating.me.best|floatformat:1 }} band</p>{% endif %}
+        {% else %}
+        <p style="font-size:13px;color:var(--text-muted)">Bu oy hali mock test natijasi yo'q. Birinchi bo'ling!</p>
+        {% endif %}
+    </section>
+
     <!-- Quick links -->
     <p class="dash-section-title">Bo'limlar</p>
     <section class="dash-links">

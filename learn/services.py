@@ -315,17 +315,10 @@ def leaderboard(user, limit=20):
             u = names[r['user']]
             # Initials only, never the photo: classmates see a short name here on
             # purpose, and an avatar may be someone's own Telegram picture.
-            board.append({'rank': rank, 'name': _display_name(u), 'xp': r['total'], 'me': u.pk == user.pk,
+            board.append({'rank': rank, 'name': u.short_name, 'xp': r['total'], 'me': u.pk == user.pk,
                           'initials': u.initials, 'avatar_color': u.avatar_color})
     my = next(({'rank': i, 'xp': r['total']} for i, r in enumerate(rows, 1) if r['user'] == user.pk), None)
     return {'rows': board, 'me': my, 'total': len(rows), 'start': start, 'end': start + timedelta(days=6)}
-
-
-def _display_name(u):
-    # First name + last initial: recognisable to classmates, not a full name list.
-    if u.first_name:
-        return f"{u.first_name} {u.last_name[:1]}." if u.last_name else u.first_name
-    return u.username
 
 
 # ── "Explain my answer" (AI) ──────────────────────────────────────────────

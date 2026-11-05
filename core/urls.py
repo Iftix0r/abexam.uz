@@ -11,7 +11,7 @@ from exams.testlar import TestlarListView, testlar_file
 from tgbot.views import bot_page, schedule
 from users.views import (
     HomeView, DashboardView, CustomLoginView, RegisterView,
-    ExamsListView, ResultsListView, VocabularyView, FinanceView,
+    ExamsListView, RatingView, ResultsListView, VocabularyView, FinanceView,
     ChatAIView, ProfileView, NotificationsView, AccountDeleteView
 )
 
@@ -57,6 +57,7 @@ urlpatterns = [
     path('profile/', ProfileView.as_view(), name='profile'),
     path('exams-list/', ExamsListView.as_view(), name='exams_list'),
     path('results-list/', ResultsListView.as_view(), name='results_list'),
+    path('reyting/', RatingView.as_view(), name='rating'),
     path('jadval/', schedule, name='schedule'),
     path('telegram/', bot_page, name='telegram'),
     path('testlar/', TestlarListView.as_view(), name='testlar'),

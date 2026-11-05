@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Reyting — AbExam{% endblock %}
+{% block page_title %}Reyting{% endblock %}
+
+{% block extra_css %}
+<style>
+.rating{max-width:640px;margin:0 auto}
+.rating-head{text-align:center;margin-bottom:20px}
+.rating-head .big{font-size:44px;line-height:1}
+.rating-head h1{font-size:22px;font-weight:700;margin-top:8px}
+.rating-head p{font-size:13px;color:var(--text-muted);margin-top:4px}
+.rating-tabs{display:flex;justify-content:center;gap:8px;margin-bottom:16px}
+.rating-tabs a{padding:7px 16px;border-radius:20px;font-size:13px;font-weight:600;border:1px solid var(--border-color);color:var(--text-muted);text-decoration:none}
+.rating-tabs a.active{background:var(--primary-color);border-color:var(--primary-color);color:#fff}
+.rating-me{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;border-radius:12px;background:var(--tint-a);margin-bottom:14px;font-size:14px}
+.rating-empty{text-align:center;color:var(--text-muted);padding:32px 16px;border:1px dashed var(--border-color);border-radius:14px;font-size:14px}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="rating">
+  <div class="rating-head">
+    <div class="big"><i class=lc-trophy></i></div>
+    <h1>IELTS reytingi</h1>
+    <p>Mock testlardagi eng yaxshi natija bo'yicha</p>
+  </div>
+  <div class="rating-tabs">
+    <a href="?" class="{% if board.period != 'all' %}active{% endif %}">Bu oy</a>
+    <a href="?period=all" class="{% if board.period == 'all' %}active{% endif %}">Barcha vaqt</a>
+  </div>
+  {% if board.me %}
+  <div class="rating-me"><span>Sizning o'rningiz: <b>#{{ board.me.rank }}</b> / {{ board.total }}</span><b>{{ board.me.best|floatformat:1 }} band</b></div>
+  {% elif not user.is_staff %}
+  <div class="rating-me"><span>{% if board.period == 'all' %}Hali{% else %}Bu oy hali{% endif %} mock test topshirmadingiz. Bitta test — va siz ro'yxatdasiz!</span><a href="{% url 'exams_list' %}" style="color:var(--primary-color);font-weight:600;text-decoration:none">Boshlash →</a></div>
+  {% endif %}
+  {% if board.rows %}
+  {% include 'partials/rating_rows.html' %}
+  {% else %}
+  <div class="rating-empty">Bu davrda hali natija yo'q. Birinchi bo'ling!</div>
+  {% endif %}
+</div>
+{% endblock %}

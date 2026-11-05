@@ -4,6 +4,7 @@ from datetime import timedelta
 
 from django.test import TestCase, override_settings
 from django.urls import reverse
+from django.utils import timezone
 
 from core.models import Notification
 from users.models import User
@@ -716,4 +717,61 @@ class TestFileLogoTests(TestCase):
         info = _file_info('3', 'Listening (4).html')
         self.assertEqual(info['initials'], 'L4')
         self.assertEqual(info['avatar_color'], _file_info('3', 'Listening (4).html')['avatar_color'])
+
+
+class RatingTests(TestCase):
+    def setUp(self):
+        self.mock = Exam.objects.create(title='Mock 1', exam_type='mock')
+        self.practice = Exam.objects.create(title='Reading 1', exam_type='reading')
+        self.ali = User.objects.create_user('ali', password='pw', first_name='Ali', last_name='Valiyev')
+        self.vali = User.objects.create_user('vali', password='pw', first_name='Vali')
+
+    def _result(self, user, score, exam=None, **kwargs):
+        return UserResult.objects.create(user=user, exam=exam or self.mock, score=score, **kwargs)
+
+    def test_ranks_by_best_band_then_average(self):
+        from .rating import exam_rating
+        self._result(self.ali, 7)
+        self._result(self.ali, 5)
+        self._result(self.vali, 7)
+        board = exam_rating(self.vali)
+        self.assertEqual([r['name'] for r in board['rows']], ['Vali', 'Ali V.'])
+        self.assertEqual(board['me']['rank'], 1)
+        self.assertTrue(board['rows'][0]['me'])
+
+    def test_only_graded_mock_results_of_students_count(self):
+        from .rating import exam_rating
+        boss = User.objects.create_user('boss', password='pw', is_staff=True)
+        self._result(boss, 9)
+        self._result(self.ali, 9, exam=self.practice)
+        self._result(self.vali, 8, status=UserResult.STATUS_PENDING)
+        self.assertEqual(exam_rating(self.ali)['total'], 0)
+
+    def test_month_view_drops_old_results(self):
+        from .rating import ALL_TIME, exam_rating
+        old = self._result(self.ali, 8)
+        UserResult.objects.filter(pk=old.pk).update(completed_at=timezone.now() - timedelta(days=70))
+        self.assertEqual(exam_rating(self.ali)['total'], 0)
+        self.assertEqual(exam_rating(self.ali, ALL_TIME)['total'], 1)
+
+    def test_my_place_is_known_outside_the_shown_rows(self):
+        from .rating import exam_rating
+        self._result(self.ali, 8)
+        self._result(self.vali, 6)
+        board = exam_rating(self.vali, limit=1)
+        self.assertEqual(len(board['rows']), 1)
+        self.assertEqual(board['me']['rank'], 2)
+
+    def test_phone_number_never_shows(self):
+        phone_user = User.objects.create_user('998901234567', password='pw', phone_number='+998901234567')
+        self._result(phone_user, 8)
+        self.client.force_login(self.ali)
+        page = self.client.get(reverse('rating'), {'period': 'all'})
+        self.assertContains(page, 'Talaba')
+        self.assertNotContains(page, '998901234567')
+
+    def test_dashboard_shows_the_top_of_the_rating(self):
+        self._result(self.vali, 8)
+        self.client.force_login(self.ali)
+        self.assertContains(self.client.get(reverse('dashboard')), reverse('rating'))
 

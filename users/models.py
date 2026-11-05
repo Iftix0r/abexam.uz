@@ -34,6 +34,14 @@ class User(AbstractUser):
         digits = (self.phone_number or '').lstrip('+')
         return not digits or not self.username.startswith(digits)
 
+    @property
+    def short_name(self):
+        """For lists other students see: first name + last initial. Never the
+        username of a phone signup, which is their phone number."""
+        if self.first_name:
+            return f'{self.first_name} {self.last_name[:1]}.' if self.last_name else self.first_name
+        return self.username if self.has_own_username else 'Talaba'
+
     # Telegram-style letter avatar: up to two initials on a colour that stays
     # the same for a user (picked from the pk).
     AVATAR_COLORS = ('#e17076', '#faa774', '#a695e7', '#7bc862', '#6ec9cb', '#65aadd', '#ee7aae')
