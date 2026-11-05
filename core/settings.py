@@ -58,6 +58,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'core.context_processors.site',
                 'tgbot.context_processors.telegram',
+                'chat.context_processors.chat',
             ],
         },
     },

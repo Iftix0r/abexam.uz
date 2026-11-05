@@ -23,6 +23,7 @@ class SiteSettings(models.Model):
     # Admin Telegram chat gets pinged when work is waiting: a payment to
     # approve, a Writing to grade, a question whose answer key looks wrong.
     telegram_work_alerts = models.BooleanField(default=True)
+    chat_dm_enabled = models.BooleanField(default=True, help_text="AbChat'da talabalar lichkaga yoza oladi")
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:

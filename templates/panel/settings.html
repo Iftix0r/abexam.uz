@@ -77,6 +77,15 @@
     </label>
   </div>
 
+  <div class="card" style="margin-bottom:20px">
+    <div class="section-header"><span class="section-title">AbChat</span></div>
+    <p style="font-size:12.5px;color:var(--muted);margin-bottom:14px">O'chirilsa, lichka hammaga yopiladi. Umumiy xonalar ishlashda davom etadi.</p>
+    <label class="form-check">
+      <input type="checkbox" name="chat_dm_enabled" {% if settings.chat_dm_enabled %}checked{% endif %}>
+      Talabalar bir-biriga lichkada yoza oladi
+    </label>
+  </div>
+
   <button type="submit" class="btn btn-primary">Saqlash</button>
 </form>
 {% endblock %}

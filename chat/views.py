@@ -1,22 +1,26 @@
+from datetime import timedelta
+
 from django.contrib import messages as flash
 from django.contrib.auth.decorators import login_required
-from django.db.models import Count, Q
+from django.db.models import Avg, Count, Max, Q
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.formats import date_format
 from django.views.decorators.http import require_GET, require_POST
-from datetime import timedelta
 
 from core.audit import log_action
+from core.models import SiteSettings
+from exams.models import UserResult
 from panel.views import panel_required
 from users.models import User
 
 from . import services
-from .models import ChatMessage, ChatMute, ChatRoom
+from .models import ChatBlock, ChatMessage, ChatMute, ChatReaction, ChatRoom, ChatThread
 
 PAGE = 50
+RECENT_REACTIONS = 40
 REMOVED_WINDOW = timedelta(minutes=10)
 
 
@@ -28,70 +32,171 @@ def _int(value):
     return int(value) if value and value.isdigit() else None
 
 
-def _payload(message, viewer):
+def _dm_enabled():
+    return SiteSettings.get().chat_dm_enabled
+
+
+def _thread(request, pk):
+    if not _dm_enabled():
+        raise Http404
+    thread = get_object_or_404(ChatThread.objects.select_related('user_a', 'user_b'), pk=pk)
+    if not thread.has(request.user) or thread.is_hidden_from(request.user):
+        raise Http404
+    return thread
+
+
+def _accessible_message(request, pk):
+    message = get_object_or_404(ChatMessage.objects.select_related('thread', 'room'), pk=pk, deleted_at__isnull=True)
+    if not services.can_access(message, request.user):
+        raise Http404
+    return message
+
+
+def _reply(message):
+    target = message.reply_to
+    if target is None or target.deleted_at:
+        return None
+    return {'id': target.pk, 'name': target.user.short_name, 'text': target.text[:90]}
+
+
+def _payload(message, viewer, reactions):
     author = message.user
     # Short name and initials only, as on the rating: no photos, phones or usernames.
     return {
-        'id': message.pk, 'name': author.short_name, 'initials': author.initials, 'color': author.avatar_color,
-        'text': message.text, 'time': date_format(timezone.localtime(message.created_at), 'd M, H:i'),
+        'id': message.pk, 'user_id': author.pk, 'name': author.short_name, 'initials': author.initials,
+        'color': author.avatar_color, 'text': message.text,
+        'time': date_format(timezone.localtime(message.created_at), 'd M, H:i'),
         'mine': author.pk == viewer.pk, 'staff': author.is_staff,
         'can_delete': author.pk == viewer.pk or viewer.is_staff,
+        'reply': _reply(message), 'reactions': reactions.get(message.pk),
+    }
+
+
+def _serialized(items, viewer):
+    reactions = services.reaction_map([m.pk for m in items], viewer)
+    return [_payload(m, viewer, reactions) for m in items]
+
+
+def _page_of(queryset, request):
+    visible = queryset.filter(deleted_at__isnull=True).select_related('user', 'reply_to__user')
+    after, before = _int(request.GET.get('after')), _int(request.GET.get('before'))
+    if after is not None:
+        return list(visible.filter(pk__gt=after).order_by('pk')[:PAGE])
+    if before is not None:
+        visible = visible.filter(pk__lt=before)
+    return list(visible.order_by('-pk')[:PAGE])[::-1]
+
+
+def _recent_reactions(queryset, viewer):
+    """Live counts for the latest messages, already on the reader's screen."""
+    ids = list(queryset.filter(deleted_at__isnull=True).order_by('-pk').values_list('pk', flat=True)[:RECENT_REACTIONS])
+    found = services.reaction_map(ids, viewer)
+    return {str(pk): found.get(pk) for pk in ids}
+
+
+def _removed(queryset):
+    return list(queryset.filter(deleted_at__gte=timezone.now() - REMOVED_WINDOW).values_list('pk', flat=True))
+
+
+def _thread_rows(user):
+    rows = []
+    for thread in services.threads_of(user)[:40]:
+        other = thread.other(user)
+        last = thread.last_message
+        rows.append({
+            'id': thread.pk, 'name': other.short_name, 'initials': other.initials, 'avatar_color': other.avatar_color,
+            'preview': last.text[:40] if not last.deleted_at else "Xabar o'chirilgan",
+            'unread': last.user_id != user.pk and last.pk > thread.read_id(user),
+            'incoming': thread.status == ChatThread.REQUEST and thread.requested_by_id != user.pk,
+        })
+    return rows
+
+
+def _page_context(request, **extra):
+    dm = _dm_enabled()
+    return {
+        'rooms': list(ChatRoom.objects.filter(is_active=True)), 'dm_enabled': dm,
+        'threads': _thread_rows(request.user) if dm else [],
+        'mute': services.active_mute(request.user), 'max_length': services.MAX_LENGTH, **extra,
     }
 
 
 @login_required
 def room_page(request, slug=None):
-    rooms = list(ChatRoom.objects.filter(is_active=True))
+    context = _page_context(request)
+    rooms = context['rooms']
     if not rooms:
         raise Http404
     room = next((r for r in rooms if r.slug == slug), None) if slug else rooms[0]
     if room is None:
         raise Http404
-    return render(request, 'chat/room.html', {
-        'rooms': rooms, 'room': room, 'mute': services.active_mute(request.user),
-        'max_length': services.MAX_LENGTH,
-    })
+    return render(request, 'chat/room.html', {**context, 'room': room})
 
 
 @login_required
 @require_GET
 def message_list(request, slug):
     room = _room(slug)
-    visible = room.messages.filter(deleted_at__isnull=True).select_related('user')
-    after, before = _int(request.GET.get('after')), _int(request.GET.get('before'))
-    if after is not None:
-        items = list(visible.filter(pk__gt=after).order_by('pk')[:PAGE])
-    else:
-        if before is not None:
-            visible = visible.filter(pk__lt=before)
-        items = list(visible.order_by('-pk')[:PAGE])[::-1]
-    removed = room.messages.filter(deleted_at__gte=timezone.now() - REMOVED_WINDOW).values_list('pk', flat=True)
-    return JsonResponse({'messages': [_payload(m, request.user) for m in items], 'removed': list(removed)})
+    services.touch_presence(room, request.user)
+    pinned = room.pinned if room.pinned_id and room.pinned.deleted_at is None else None
+    return JsonResponse({
+        'messages': _serialized(_page_of(room.messages.all(), request), request.user),
+        'removed': _removed(room.messages.all()),
+        'reactions': _recent_reactions(room.messages.all(), request.user),
+        'counts': services.room_counts(room),
+        'pinned': {'id': pinned.pk, 'name': pinned.user.short_name, 'text': pinned.text[:140]} if pinned else None,
+    })
+
+
+@login_required
+@require_GET
+def members(request, slug):
+    room = _room(slug)
+    since = services.online_since()
+    rows = room.presence.select_related('user').order_by('-last_seen')[:60]
+    return JsonResponse({'members': [{
+        'id': p.user_id, 'name': p.user.short_name, 'initials': p.user.initials, 'color': p.user.avatar_color,
+        'online': p.last_seen >= since, 'staff': p.user.is_staff,
+    } for p in rows]})
+
+
+def _checked_text(request):
+    """Returns (text, error response)."""
+    mute = services.active_mute(request.user)
+    if mute:
+        until = date_format(timezone.localtime(mute.until), 'd M, H:i')
+        return None, JsonResponse({'error': f"Siz {until} gacha yoza olmaysiz"}, status=403)
+    text = services.clean_text(request.POST.get('text'))
+    error = services.rule_error(request.user, text)
+    if error:
+        return None, JsonResponse({'error': error}, status=400)
+    error = services.rate_error(request.user)
+    if error:
+        return None, JsonResponse({'error': error}, status=429)
+    return text, None
+
+
+def _reply_target(request, **where):
+    pk = _int(request.POST.get('reply_to'))
+    return ChatMessage.objects.filter(pk=pk, deleted_at__isnull=True, **where).first() if pk else None
 
 
 @login_required
 @require_POST
 def send(request, slug):
     room = _room(slug)
-    mute = services.active_mute(request.user)
-    if mute:
-        until = date_format(timezone.localtime(mute.until), 'd M, H:i')
-        return JsonResponse({'error': f"Siz {until} gacha yoza olmaysiz"}, status=403)
-    text = services.clean_text(request.POST.get('text'))
-    error = services.rule_error(request.user, text)
-    if error:
-        return JsonResponse({'error': error}, status=400)
-    error = services.rate_error(request.user)
-    if error:
-        return JsonResponse({'error': error}, status=429)
-    message = ChatMessage.objects.create(room=room, user=request.user, text=text)
-    return JsonResponse({'message': _payload(message, request.user)})
+    text, failed = _checked_text(request)
+    if failed:
+        return failed
+    message = ChatMessage.objects.create(room=room, user=request.user, text=text,
+                                         reply_to=_reply_target(request, room=room))
+    return JsonResponse({'message': _serialized([message], request.user)[0]})
 
 
 @login_required
 @require_POST
 def delete(request, pk):
-    message = get_object_or_404(ChatMessage, pk=pk, deleted_at__isnull=True)
+    message = _accessible_message(request, pk)
     if message.user_id != request.user.pk and not request.user.is_staff:
         return JsonResponse({'error': "Ruxsat yo'q"}, status=403)
     services.hide(message, by=request.user)
@@ -101,11 +206,128 @@ def delete(request, pk):
 @login_required
 @require_POST
 def report(request, pk):
-    message = get_object_or_404(ChatMessage, pk=pk, deleted_at__isnull=True)
+    message = _accessible_message(request, pk)
     if message.user_id == request.user.pk:
         return JsonResponse({'error': "O'z xabaringizga shikoyat qilib bo'lmaydi"}, status=400)
     services.report(message, request.user)
     return JsonResponse({'ok': True})
+
+
+@login_required
+@require_POST
+def react(request, pk):
+    message = _accessible_message(request, pk)
+    kind = request.POST.get('kind', '')
+    if kind not in ChatReaction.KINDS:
+        return JsonResponse({'error': "Noto'g'ri reaksiya"}, status=400)
+    services.toggle_reaction(message, request.user, kind)
+    return JsonResponse({'reactions': services.reaction_map([message.pk], request.user).get(message.pk)})
+
+
+@login_required
+@require_POST
+def pin(request, pk):
+    if not request.user.is_staff:
+        return JsonResponse({'error': "Ruxsat yo'q"}, status=403)
+    message = _accessible_message(request, pk)
+    if message.room is None:
+        return JsonResponse({'error': "Faqat xonada qadash mumkin"}, status=400)
+    room = message.room
+    room.pinned = None if room.pinned_id == message.pk else message
+    room.save(update_fields=['pinned'])
+    return JsonResponse({'ok': True})
+
+
+# ── Profile card, private chats, blocking ──────────────────────────────────────
+@login_required
+@require_GET
+def user_card(request, pk):
+    other = get_object_or_404(User, pk=pk, is_active=True)
+    stats = (UserResult.objects.graded().filter(user=other, exam__exam_type='mock', score__gt=0)
+             .aggregate(best=Max('score'), avg=Avg('score'), tests=Count('id')))
+    return JsonResponse({
+        'id': other.pk, 'name': other.short_name, 'initials': other.initials, 'color': other.avatar_color,
+        'staff': other.is_staff, 'online': services.is_online(other), 'best': stats['best'], 'tests': stats['tests'],
+        'me': other.pk == request.user.pk, 'dm': _dm_enabled(),
+        'blocked': ChatBlock.objects.filter(blocker=request.user, blocked=other).exists(),
+    })
+
+
+@login_required
+@require_POST
+def start_chat(request, pk):
+    if not _dm_enabled():
+        raise Http404
+    other = get_object_or_404(User, pk=pk, is_active=True)
+    thread, error = services.start_thread(request.user, other)
+    if error:
+        return JsonResponse({'error': error}, status=400)
+    return JsonResponse({'url': reverse('chat:thread', args=[thread.pk])})
+
+
+@login_required
+@require_POST
+def toggle_block(request, pk):
+    other = get_object_or_404(User, pk=pk)
+    if other.pk == request.user.pk or other.is_staff:
+        return JsonResponse({'error': "Bu foydalanuvchini bloklab bo'lmaydi"}, status=400)
+    block, created = ChatBlock.objects.get_or_create(blocker=request.user, blocked=other)
+    if not created:
+        block.delete()
+    return JsonResponse({'blocked': created})
+
+
+@login_required
+def thread_page(request, pk):
+    thread = _thread(request, pk)
+    other = thread.other(request.user)
+    incoming = thread.status == ChatThread.REQUEST and thread.requested_by_id != request.user.pk
+    return render(request, 'chat/room.html', _page_context(request, thread=thread, other=other, incoming=incoming))
+
+
+@login_required
+@require_GET
+def thread_messages(request, pk):
+    thread = _thread(request, pk)
+    items = _page_of(thread.messages.all(), request)
+    if items and request.GET.get('seen') == '1':
+        services.mark_read(thread, request.user, items[-1].pk)
+    other = thread.other(request.user)
+    return JsonResponse({
+        'messages': _serialized(items, request.user),
+        'removed': _removed(thread.messages.all()),
+        'reactions': _recent_reactions(thread.messages.all(), request.user),
+        'other_read': thread.read_id(other), 'other_online': services.is_online(other),
+        'send_error': services.thread_send_error(thread, request.user),
+    })
+
+
+@login_required
+@require_POST
+def thread_send(request, pk):
+    thread = _thread(request, pk)
+    error = services.thread_send_error(thread, request.user)
+    if error:
+        return JsonResponse({'error': error}, status=403)
+    text, failed = _checked_text(request)
+    if failed:
+        return failed
+    message = ChatMessage.objects.create(thread=thread, user=request.user, text=text,
+                                         reply_to=_reply_target(request, thread=thread))
+    services.after_thread_message(thread, message)
+    return JsonResponse({'message': _serialized([message], request.user)[0]})
+
+
+@login_required
+@require_POST
+def thread_answer(request, pk):
+    thread = _thread(request, pk)
+    if thread.status != ChatThread.REQUEST or thread.requested_by_id == request.user.pk:
+        return JsonResponse({'error': "So'rov topilmadi"}, status=400)
+    accept = request.POST.get('answer') == 'accept'
+    thread.status = ChatThread.ACCEPTED if accept else ChatThread.DECLINED
+    thread.save(update_fields=['status', 'updated_at'])
+    return JsonResponse({'url': reverse('chat:thread', args=[thread.pk]) if accept else reverse('chat:home')})
 
 
 # ── Moderation (panel) ─────────────────────────────────────────────────────────
@@ -115,10 +337,11 @@ def moderation(request):
         return _moderate(request)
     now = timezone.now()
     open_filter = Q(reports__resolved_at__isnull=True)
+    rooms_only = ChatMessage.objects.filter(room__isnull=False)  # private chats stay private
     return render(request, 'panel/chat_moderation.html', {
         'reported': services.open_report_messages().annotate(open_reports=Count('reports', filter=open_filter)),
         'mutes': ChatMute.objects.filter(until__gt=now).select_related('user').order_by('until'),
-        'latest': ChatMessage.objects.select_related('user', 'room').order_by('-pk')[:30],
+        'latest': rooms_only.select_related('user', 'room').order_by('-pk')[:30],
     })
 
 

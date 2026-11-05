@@ -2424,6 +2424,7 @@ def site_settings(request):
         settings_obj.exam_password_required = request.POST.get('exam_password_required') == 'on'
         settings_obj.camera_proctoring = request.POST.get('camera_proctoring') == 'on'
         settings_obj.telegram_work_alerts = request.POST.get('telegram_work_alerts') == 'on'
+        settings_obj.chat_dm_enabled = request.POST.get('chat_dm_enabled') == 'on'
         settings_obj.maintenance_message = request.POST.get('maintenance_message', '').strip()
         settings_obj.save()
         log_action(request, 'settings', 'Sayt sozlamalari', reverse('system:settings'))

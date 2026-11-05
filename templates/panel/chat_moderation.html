@@ -16,7 +16,7 @@
         {% for m in reported %}
         <tr>
           <td><a href="{% url 'panel:user_detail' m.user_id %}" class="link">{{ m.user.display_name }}</a></td>
-          <td style="color:var(--muted)">{{ m.room.title }}</td>
+          <td style="color:var(--muted)">{% if m.room %}{{ m.room.title }}{% else %}Lichka{% endif %}</td>
           <td style="max-width:360px;overflow-wrap:anywhere">{{ m.text|truncatechars:300 }}{% if m.deleted_at %} <span class="badge badge-yellow">Yashirilgan</span>{% endif %}</td>
           <td class="td-num">{{ m.open_reports }}</td>
           <td class="td-date">{{ m.created_at|date:"d M, H:i" }}</td>

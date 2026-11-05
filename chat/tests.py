@@ -9,7 +9,7 @@ from django.utils import timezone
 from users.models import User
 
 from . import services
-from .models import ChatMessage, ChatMute, ChatReport, ChatRoom
+from .models import ChatBlock, ChatMessage, ChatMute, ChatPresence, ChatReaction, ChatReport, ChatRoom, ChatThread
 
 
 @override_settings(CACHES={'default': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'}})
@@ -162,3 +162,184 @@ class ChatTests(TestCase):
         self.assertTrue(ChatMute.objects.get(user=self.vali).active)
         self.client.post(reverse('panel:chat_moderation'), {'action': 'unmute', 'user': self.vali.pk})
         self.assertFalse(ChatMute.objects.exists())
+
+
+@override_settings(CACHES={'default': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'}})
+class SocialTests(TestCase):
+    def setUp(self):
+        cache.clear()
+        self.room = ChatRoom.objects.get(slug='umumiy')
+        self.ali = User.objects.create_user('ali', password='pw', first_name='Ali')
+        self.vali = User.objects.create_user('vali', password='pw', first_name='Vali')
+        self.gani = User.objects.create_user('gani', password='pw', first_name='Gani')
+        self.boss = User.objects.create_user('boss', password='pw', is_staff=True, first_name='Boss')
+        self.client.force_login(self.ali)
+
+    def _start(self, other=None):
+        response = self.client.post(reverse('chat:start_chat', args=[(other or self.vali).pk]))
+        self.assertEqual(response.status_code, 200)
+        return ChatThread.objects.latest('pk')
+
+    def _say(self, thread, text='Salom'):
+        cache.delete(f'chat_gap:{thread.user_a_id}')
+        cache.delete(f'chat_gap:{thread.user_b_id}')
+        return self.client.post(reverse('chat:thread_send', args=[thread.pk]), {'text': text})
+
+    def test_room_shows_online_and_member_counts(self):
+        ChatPresence.objects.create(room=self.room, user=self.vali, last_seen=timezone.now())
+        ChatPresence.objects.create(room=self.room, user=self.gani, last_seen=timezone.now() - timedelta(hours=2))
+        counts = self.client.get(reverse('chat:messages', args=['umumiy'])).json()['counts']
+        self.assertEqual(counts, {'members': 3, 'online': 2})
+
+    def test_presence_is_not_written_on_every_poll(self):
+        url = reverse('chat:messages', args=['umumiy'])
+        self.client.get(url)
+        first = ChatPresence.objects.get(user=self.ali).last_seen
+        self.client.get(url)
+        self.assertEqual(ChatPresence.objects.get(user=self.ali).last_seen, first)
+
+    def test_request_allows_one_message_until_accepted(self):
+        thread = self._start()
+        self.assertEqual(thread.status, ChatThread.REQUEST)
+        self.assertEqual(self._say(thread).status_code, 200)
+        self.assertEqual(self._say(thread, 'yana').status_code, 403)
+        self.client.force_login(self.vali)
+        self.assertEqual(self._say(thread, 'javob').status_code, 403)
+        self.client.post(reverse('chat:thread_answer', args=[thread.pk]), {'answer': 'accept'})
+        self.assertEqual(self._say(thread, 'javob').status_code, 200)
+        self.client.force_login(self.ali)
+        self.assertEqual(self._say(thread, 'rahmat').status_code, 200)
+
+    def test_sender_cannot_accept_own_request(self):
+        thread = self._start()
+        self.assertEqual(self.client.post(reverse('chat:thread_answer', args=[thread.pk]),
+                                          {'answer': 'accept'}).status_code, 400)
+
+    def test_declined_thread_vanishes_for_the_decliner_only(self):
+        thread = self._start()
+        self._say(thread)
+        self.client.force_login(self.vali)
+        self.client.post(reverse('chat:thread_answer', args=[thread.pk]), {'answer': 'decline'})
+        self.assertEqual(self.client.get(reverse('chat:thread', args=[thread.pk])).status_code, 404)
+        self.client.force_login(self.ali)
+        self.assertEqual(self.client.get(reverse('chat:thread', args=[thread.pk])).status_code, 200)
+        self.assertEqual(self._say(thread, 'yana').status_code, 403)
+
+    def test_thread_is_closed_to_outsiders(self):
+        thread = self._start()
+        self._say(thread)
+        message = ChatMessage.objects.get(thread=thread)
+        self.client.force_login(self.gani)
+        self.assertEqual(self.client.get(reverse('chat:thread', args=[thread.pk])).status_code, 404)
+        self.assertEqual(self.client.get(reverse('chat:thread_messages', args=[thread.pk])).status_code, 404)
+        self.assertEqual(self._say(thread, 'men').status_code, 404)
+        for name in ('chat:report', 'chat:delete', 'chat:react'):
+            self.assertEqual(self.client.post(reverse(name, args=[message.pk]), {'kind': 'like'}).status_code, 404)
+
+    def test_staff_cannot_browse_private_chats(self):
+        thread = self._start()
+        self._say(thread, 'maxfiy matn')
+        self.client.force_login(self.boss)
+        self.assertEqual(self.client.get(reverse('chat:thread', args=[thread.pk])).status_code, 404)
+        self.assertNotContains(self.client.get(reverse('panel:chat_moderation')), 'maxfiy matn')
+
+    def test_reported_private_message_reaches_moderators(self):
+        thread = self._start()
+        self._say(thread, 'yomon gap')
+        self.client.force_login(self.vali)
+        self.client.post(reverse('chat:report', args=[ChatMessage.objects.get(thread=thread).pk]))
+        self.client.force_login(self.boss)
+        page = self.client.get(reverse('panel:chat_moderation'))
+        self.assertContains(page, 'yomon gap')
+        self.assertContains(page, 'Lichka')
+
+    def test_contact_rules_apply_in_private_too(self):
+        thread = self._start()
+        self.assertEqual(self._say(thread, 'raqamim 901234567').status_code, 400)
+
+    def test_block_stops_both_directions(self):
+        thread = self._start()
+        self._say(thread)
+        self.client.force_login(self.vali)
+        self.client.post(reverse('chat:thread_answer', args=[thread.pk]), {'answer': 'accept'})
+        self.assertTrue(self.client.post(reverse('chat:toggle_block', args=[self.ali.pk])).json()['blocked'])
+        self.assertEqual(self._say(thread).status_code, 403)
+        self.client.force_login(self.ali)
+        self.assertEqual(self._say(thread).status_code, 403)
+        self.assertEqual(self.client.post(reverse('chat:start_chat', args=[self.vali.pk])).status_code, 400)
+
+    def test_staff_cannot_be_blocked(self):
+        self.assertEqual(self.client.post(reverse('chat:toggle_block', args=[self.boss.pk])).status_code, 400)
+
+    def test_daily_request_limit(self):
+        others = [User.objects.create_user(f'u{i}', password='pw') for i in range(11)]
+        codes = [self.client.post(reverse('chat:start_chat', args=[u.pk])).status_code for u in others]
+        self.assertEqual(codes, [200] * 10 + [400])
+
+    def test_cannot_message_yourself(self):
+        self.assertEqual(self.client.post(reverse('chat:start_chat', args=[self.ali.pk])).status_code, 400)
+
+    def test_mute_covers_private_chats(self):
+        thread = self._start()
+        services.mute(self.ali, 1, self.boss)
+        self.assertEqual(self._say(thread).status_code, 403)
+
+    def test_unread_and_read_marks(self):
+        thread = self._start()
+        self._say(thread)
+        self.assertEqual(services.unread_count(self.vali), 1)
+        self.assertEqual(services.unread_count(self.ali), 0)
+        self.client.force_login(self.vali)
+        self.client.get(reverse('chat:thread_messages', args=[thread.pk]), {'seen': 1})
+        self.assertEqual(services.unread_count(self.vali), 0)
+        self.client.force_login(self.ali)
+        data = self.client.get(reverse('chat:thread_messages', args=[thread.pk])).json()
+        self.assertEqual(data['other_read'], ChatMessage.objects.get(thread=thread).pk)
+
+    def test_dm_switch_closes_private_chats_only(self):
+        from core.models import SiteSettings
+        thread = self._start()
+        settings_obj = SiteSettings.get()
+        settings_obj.chat_dm_enabled = False
+        settings_obj.save()
+        cache.clear()
+        self.assertEqual(self.client.get(reverse('chat:thread', args=[thread.pk])).status_code, 404)
+        self.assertEqual(self.client.post(reverse('chat:start_chat', args=[self.gani.pk])).status_code, 404)
+        self.assertEqual(self.client.get(reverse('chat:home')).status_code, 200)
+
+    def test_reply_stays_inside_its_room(self):
+        other_room = ChatRoom.objects.get(slug='speaking')
+        foreign = ChatMessage.objects.create(room=other_room, user=self.vali, text='boshqa')
+        local = ChatMessage.objects.create(room=self.room, user=self.vali, text='shu yerda')
+        url = reverse('chat:send', args=['umumiy'])
+        row = self.client.post(url, {'text': 'javob', 'reply_to': local.pk}).json()['message']
+        self.assertEqual(row['reply']['text'], 'shu yerda')
+        cache.clear()
+        self.assertIsNone(self.client.post(url, {'text': 'javob', 'reply_to': foreign.pk}).json()['message']['reply'])
+
+    def test_reaction_toggles_and_switches(self):
+        message = ChatMessage.objects.create(room=self.room, user=self.vali, text='x')
+        url = reverse('chat:react', args=[message.pk])
+        self.assertEqual(self.client.post(url, {'kind': 'like'}).json()['reactions'], {'counts': {'like': 1}, 'mine': 'like'})
+        self.assertEqual(self.client.post(url, {'kind': 'heart'}).json()['reactions']['mine'], 'heart')
+        self.assertIsNone(self.client.post(url, {'kind': 'heart'}).json()['reactions'])
+        self.assertEqual(self.client.post(url, {'kind': 'bad'}).status_code, 400)
+        self.assertFalse(ChatReaction.objects.exists())
+
+    def test_only_staff_pin(self):
+        message = ChatMessage.objects.create(room=self.room, user=self.vali, text='muhim')
+        url = reverse('chat:pin', args=[message.pk])
+        self.assertEqual(self.client.post(url).status_code, 403)
+        self.client.force_login(self.boss)
+        self.client.post(url)
+        pinned = self.client.get(reverse('chat:messages', args=['umumiy'])).json()['pinned']
+        self.assertEqual(pinned['text'], 'muhim')
+
+    def test_card_shows_no_contact_details(self):
+        self.vali.phone_number = '+998901112233'
+        self.vali.save()
+        card = self.client.get(reverse('chat:user_card', args=[self.vali.pk])).json()
+        self.assertEqual(card['name'], 'Vali')
+        self.assertNotIn('998901112233', str(card))
+        self.assertNotIn('vali@', str(card))
+
