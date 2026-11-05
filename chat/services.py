@@ -10,13 +10,15 @@ from django.utils import timezone
 from core.utils import notify_staff_work, site_link
 from users.models import User
 
-from .models import ChatBlock, ChatMessage, ChatMute, ChatPresence, ChatReaction, ChatReport, ChatThread
+from .models import (ChatBlock, ChatMessage, ChatMute, ChatPresence, ChatReaction, ChatReport, ChatThread,
+                     SupportThread)
 
 MAX_LENGTH = 1000
 MIN_SECONDS_BETWEEN = 2
 MAX_PER_MINUTE = 15
 AUTO_HIDE_REPORTS = 3
 MAX_REQUESTS_PER_DAY = 10
+MAX_REQUESTS_PER_DAY_PREMIUM = 30
 ONLINE_WINDOW = timedelta(seconds=75)
 PRESENCE_WRITE_EVERY = 30  # seconds; polling must not turn into a write per request
 
@@ -32,13 +34,14 @@ def clean_text(text):
     return text
 
 
-def rule_error(user, text):
-    """Why `text` cannot be posted, or None."""
+def rule_error(user, text, contacts_ok=False):
+    """Why `text` cannot be posted, or None. Talking to AB Admin, a student may
+    give a phone number or a payment detail: `contacts_ok`."""
     if not text:
         return "Xabar bo'sh"
     if len(text) > MAX_LENGTH:
         return f"Xabar {MAX_LENGTH} belgidan oshmasin"
-    if not user.is_staff and (_PHONE.search(text) or _LINK.search(text) or _HANDLE.search(text)):
+    if not contacts_ok and not user.is_staff and (_PHONE.search(text) or _LINK.search(text) or _HANDLE.search(text)):
         return "Xavfsizlik uchun telefon raqam, havola va @username yuborib bo'lmaydi"
     return None
 
@@ -100,7 +103,11 @@ def open_report_messages():
 
 
 def can_access(message, user):
-    return message.room_id is not None or message.thread.has(user)
+    if message.room_id is not None:
+        return True
+    if message.support_id is not None:
+        return message.support.user_id == user.pk or user.is_staff
+    return message.thread.has(user)
 
 
 # ── Presence ───────────────────────────────────────────────────────────────────
@@ -186,7 +193,8 @@ def start_thread(user, other):
     key = f'chat_requests:{user.pk}'
     cache.add(key, 0, 86400)
     try:
-        if cache.incr(key) > MAX_REQUESTS_PER_DAY and not user.is_staff:
+        limit = MAX_REQUESTS_PER_DAY_PREMIUM if user.is_premium else MAX_REQUESTS_PER_DAY
+        if cache.incr(key) > limit and not user.is_staff:
             return None, "Bugun juda ko'p so'rov yubordingiz, ertaga urinib ko'ring"
     except ValueError:
         pass
@@ -229,5 +237,41 @@ def threads_of(user):
 
 def unread_count(user):
     live = ChatThread.objects.exclude(status=ChatThread.DECLINED).exclude(last_message__user=user)
-    return live.filter(Q(user_a=user, last_message_id__gt=F('a_read'))
-                       | Q(user_b=user, last_message_id__gt=F('b_read'))).count()
+    private = live.filter(Q(user_a=user, last_message_id__gt=F('a_read'))
+                          | Q(user_b=user, last_message_id__gt=F('b_read'))).count()
+    support = (SupportThread.objects.filter(user=user, last_message_id__gt=F('user_read'))
+               .exclude(last_message__user=user).count())
+    return private + support
+
+
+# ── AB Admin ───────────────────────────────────────────────────────────────────
+def support_of(user):
+    return SupportThread.objects.get_or_create(user=user)[0]
+
+
+def _waiting_for_staff():
+    return SupportThread.objects.filter(last_message__user=F('user'), last_message_id__gt=F('staff_read'))
+
+
+def support_unread_total():
+    return _waiting_for_staff().count()
+
+
+def after_support_message(thread, message):
+    from_student = message.user_id == thread.user_id
+    already_waiting = from_student and _waiting_for_staff().filter(pk=thread.pk).exists()
+    thread.last_message = message
+    field = 'user_read' if from_student else 'staff_read'
+    setattr(thread, field, message.pk)
+    thread.save(update_fields=['last_message', field, 'updated_at'])
+    if from_student and not already_waiting:  # one alert per waiting chat, not per message
+        tag = ' ⭐ Premium' if thread.user.is_premium else ''
+        notify_staff_work(f"💬 <b>AB Admin</b>{tag}\n{escape(thread.user.display_name)}: {escape(message.text[:200])}",
+                          [[("Javob berish", site_link(f'/panel/chat/?t={thread.pk}'))]])
+
+
+def mark_support_read(thread, message_id, staff):
+    field = 'staff_read' if staff else 'user_read'
+    if message_id > getattr(thread, field):
+        setattr(thread, field, message_id)
+        SupportThread.objects.filter(pk=thread.pk).update(**{field: message_id})

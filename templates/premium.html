@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+{% load panel_ui %}
+{% block title %}AB Premium — AbExam{% endblock %}
+{% block page_title %}AB Premium{% endblock %}
+
+{% block extra_css %}
+<style>
+.pm{width:100%;max-width:1040px;margin:0 auto}
+.pm-hero{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;padding:32px;border-radius:22px;color:#fff;background:linear-gradient(120deg,#17181f 0%,#2a1a24 52%,#a81818 100%);box-shadow:0 14px 34px #b71c1c26;margin-bottom:20px}
+.pm-hero::after{content:'';position:absolute;right:-90px;top:-170px;width:440px;height:440px;background:radial-gradient(closest-side,rgba(255,196,84,.22),transparent);pointer-events:none}
+.pm-hero>*{position:relative;z-index:1}
+.pm-title{display:flex;align-items:center;gap:16px}
+.pm-title .ic{width:60px;height:60px;border-radius:18px;background:linear-gradient(135deg,#ffcf6b,#f59e0b);color:#3b2500;display:flex;align-items:center;justify-content:center;font-size:30px;flex-shrink:0}
+.pm-title h1{font-size:27px;font-weight:800;letter-spacing:-.02em;display:flex;align-items:center;gap:8px}
+.pm-title p{font-size:14px;opacity:.85;margin-top:3px}
+.pm-buy{text-align:right}
+.pm-price{font-size:30px;font-weight:800;letter-spacing:-.02em;line-height:1.1}
+.pm-price small{font-size:14px;font-weight:500;opacity:.8}
+.pm-btn{display:inline-block;margin-top:12px;padding:12px 26px;border:none;border-radius:12px;background:linear-gradient(135deg,#ffcf6b,#f59e0b);color:#3b2500;font:inherit;font-size:14.5px;font-weight:700;text-decoration:none;cursor:pointer}
+.pm-btn:disabled{opacity:.55;cursor:not-allowed}
+.pm-note{font-size:12.5px;opacity:.85;margin-top:8px}
+.pm-active{display:inline-flex;align-items:center;gap:7px;padding:6px 12px;border-radius:20px;background:rgba(255,255,255,.14);font-size:13px;font-weight:600}
+
+.pm-perks{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:20px}
+.pm-perk{padding:20px;border-radius:18px;background:var(--card-bg);border:1px solid var(--border-color)}
+.pm-perk i{font-size:24px;color:#f59e0b}
+.pm-perk h3{font-size:15px;font-weight:700;margin:10px 0 4px}
+.pm-perk p{font-size:13px;line-height:1.45;color:var(--text-muted)}
+
+.pm-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:16px;align-items:start}
+.pm-card{padding:22px;border-radius:18px;background:var(--card-bg);border:1px solid var(--border-color)}
+.pm-label{font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted)}
+.pm-balance{font-size:32px;font-weight:800;letter-spacing:-.02em;margin:6px 0 14px}
+.pm-balance small{font-size:15px;font-weight:500;color:var(--text-muted)}
+.pm-field{width:100%;margin-bottom:10px;padding:11px 14px;border-radius:11px;border:1px solid var(--border-color);background:var(--tint-a);color:var(--text-color);font:inherit;font-size:14px;outline:none}
+.pm-field:focus{border-color:var(--primary-color)}
+.pm-send{width:100%;padding:11px;border:none;border-radius:11px;background:var(--primary-color);color:#fff;font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+.pm-msg{display:none;margin-top:10px;font-size:13px;line-height:1.45}
+.pm-hint{margin-top:12px;font-size:12.5px;line-height:1.5;color:var(--text-muted)}
+.pm-hint a{color:var(--primary-color);font-weight:600}
+.pm-tx{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--border-color);font-size:13.5px}
+.pm-tx:last-child{border-bottom:none}
+.pm-tx small{display:block;font-size:12px;color:var(--text-muted)}
+.pm-st{font-size:11.5px;font-weight:600;padding:2px 9px;border-radius:12px;white-space:nowrap}
+.pm-st.success{background:#16a34a1f;color:#16a34a}.pm-st.pending{background:#d977061f;color:#d97706}.pm-st.failed{background:#dc26261f;color:#dc2626}
+@media (max-width:900px){.pm-perks{grid-template-columns:repeat(2,minmax(0,1fr))}.pm-grid{grid-template-columns:minmax(0,1fr)}.pm-buy{text-align:left}}
+@media (max-width:560px){.pm-hero{padding:22px}.pm-perks{gap:10px}.pm-perk{padding:15px}}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="pm">
+  <div class="pm-hero">
+    <div class="pm-title">
+      <div class="ic"><i class=lc-gem></i></div>
+      <div>
+        <h1>AB Premium <i class=lc-premium></i></h1>
+        <p>Barcha testlar va qo'shimcha imkoniyatlar bitta obunada</p>
+        {% if user.is_premium %}<div class="pm-active" style="margin-top:10px"><i class=lc-check></i>Faol · {{ user.premium_until|date:"d M Y" }} gacha ({{ user.premium_days_left }} kun)</div>{% endif %}
+      </div>
+    </div>
+    <div class="pm-buy">
+      <div class="pm-price">{{ price|som }} <small>so'm / {{ days }} kun</small></div>
+      <form method="post" action="{% url 'premium_buy' %}">{% csrf_token %}
+        <button class="pm-btn" type="submit"{% if not can_buy %} disabled{% endif %}>{% if user.is_premium %}Muddatni uzaytirish{% else %}Premium olish{% endif %}</button>
+      </form>
+      {% if not can_buy %}<div class="pm-note">Balansda yana {{ short_by|som }} so'm kerak</div>{% endif %}
+    </div>
+  </div>
+
+  <div class="pm-perks">
+    <div class="pm-perk"><i class=lc-book-open></i><h3>Barcha testlar</h3><p>Pullik imtihonlarning hammasi qo'shimcha to'lovsiz ochiladi.</p></div>
+    <div class="pm-perk"><i class=lc-badge-check></i><h3>Premium galochka</h3><p>Ismingiz yonida chat va reytingda ko'k belgi chiqadi.</p></div>
+    <div class="pm-perk"><i class=lc-headset></i><h3>Ustuvor yordam</h3><p>AB Admin suhbatingiz navbatda birinchi turadi.</p></div>
+    <div class="pm-perk"><i class=lc-messages-square></i><h3>Ko'proq tanishuv</h3><p>Lichkaga kuniga 10 emas, 30 tagacha so'rov yuborasiz.</p></div>
+  </div>
+
+  <div class="pm-grid">
+    <div class="pm-card">
+      <div class="pm-label">Balans</div>
+      <div class="pm-balance">{{ user.balance|som }} <small>so'm</small></div>
+      <input class="pm-field" type="number" id="tuAmount" min="1000" step="1000" placeholder="Summa, so'm" aria-label="Summa">
+      <input class="pm-field" type="text" id="tuPromo" placeholder="Promo kod (ixtiyoriy)" aria-label="Promo kod">
+      <button class="pm-send" id="tuSend" type="button">To'ldirish so'rovi</button>
+      <div class="pm-msg" id="tuMsg" role="status"></div>
+      <p class="pm-hint">So'rov yuborilgach to'lovni qanday qilishni <a href="{% url 'chat:support' %}">AB Admin</a> aytadi. Admin tasdiqlagach summa balansga tushadi.</p>
+    </div>
+    <div class="pm-card">
+      <div class="pm-label" style="margin-bottom:6px">Tarix</div>
+      {% for p in purchases %}
+      <div class="pm-tx"><div>AB Premium · {{ p.days }} kun<small>{{ p.created_at|date:"d M Y, H:i" }}</small></div><b>{% if p.amount %}−{{ p.amount|som }} so'm{% else %}Sovg'a{% endif %}</b></div>
+      {% endfor %}
+      {% for tx in transactions %}
+      <div class="pm-tx"><div>Balans to'ldirish<small>{{ tx.created_at|date:"d M Y, H:i" }}</small></div><span class="pm-st {{ tx.status }}">{{ tx.get_status_display }}</span><b>+{{ tx.amount|som }} so'm</b></div>
+      {% endfor %}
+      {% if not purchases and not transactions %}<p class="pm-hint">Hozircha to'lovlar yo'q.</p>{% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(() => {
+  const msg = document.getElementById('tuMsg'), btn = document.getElementById('tuSend');
+  const show = (text, ok) => { msg.textContent = text; msg.style.display = 'block'; msg.style.color = ok ? '#16a34a' : '#dc2626'; };
+  btn.addEventListener('click', async () => {
+    const amount = parseFloat(document.getElementById('tuAmount').value);
+    if (!amount || amount <= 0) return show("Summani to'g'ri kiriting", false);
+    btn.disabled = true;
+    try {
+      const r = await fetch("{% url 'payments:topup' %}", {
+        method: 'POST', headers: {'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}'},
+        body: JSON.stringify({amount, method: 'manual', promo_code: document.getElementById('tuPromo').value.trim()}),
+      });
+      const d = await r.json();
+      show(r.ok ? d.message : (d.error || 'Xatolik yuz berdi'), r.ok);
+      if (r.ok) { setTimeout(() => location.reload(), 2200); return; }
+    } catch (e) { show("Internetni tekshirib, qayta urinib ko'ring", false); }
+    btn.disabled = false;
+  });
+})();
+</script>
+{% endblock %}

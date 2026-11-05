@@ -27,3 +27,18 @@ class Transaction(models.Model):
         verbose_name = 'Tranzaksiya'
         verbose_name_plural = 'Tranzaksiyalar'
         ordering = ['-created_at']
+
+
+class PremiumPurchase(models.Model):
+    """A period of AB Premium: bought from the balance, or given by staff."""
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='premium_purchases')
+    amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    days = models.PositiveIntegerField()
+    granted_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True,
+                                   related_name='+')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = 'Premium xarid'
+        verbose_name_plural = 'Premium xaridlar'

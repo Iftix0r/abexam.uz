@@ -78,6 +78,14 @@
   </div>
 
   <div class="card" style="margin-bottom:20px">
+    <div class="section-header"><span class="section-title">AB Premium</span></div>
+    <div class="grid-2-eq" style="margin-bottom:6px">
+      <div class="form-group"><label class="form-label">Narxi (so'm)</label><input class="form-input" type="number" min="0" step="1000" name="premium_price" value="{{ settings.premium_price|floatformat:0 }}"></div>
+      <div class="form-group"><label class="form-label">Muddati (kun)</label><input class="form-input" type="number" min="1" name="premium_days" value="{{ settings.premium_days }}"></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:20px">
     <div class="section-header"><span class="section-title">AbChat</span></div>
     <p style="font-size:12.5px;color:var(--muted);margin-bottom:14px">O'chirilsa, lichka hammaga yopiladi. Umumiy xonalar ishlashda davom etadi.</p>
     <label class="form-check">

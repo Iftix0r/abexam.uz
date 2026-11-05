@@ -4,6 +4,7 @@ import json
 import logging
 import re
 from datetime import timedelta
+from decimal import Decimal, InvalidOperation
 from itertools import groupby
 from pathlib import Path
 
@@ -36,6 +37,7 @@ from exams.testlar import testlar_folders
 from exams.views import finalize_attempt
 from learn.content import LEVEL_INFO, LEVELS, get_course, get_stories, validate_course
 from learn.models import ApiToken, AppRelease, DailyXP, LearnerProfile, LessonDraft, LessonProgress, Mistake
+from payments import premium
 from payments.models import Transaction
 from tgbot import api as tg_api, avatars as tg_avatars
 from tgbot.models import Booking, ExamDay, TelegramAccount
@@ -474,6 +476,28 @@ def user_delete(request, pk):
     log_action(request, 'user_delete', f'{user.display_name} (@{user.username})', '', f'Balans: {user.balance:.0f} so\'m')
     user.delete()
     return JsonResponse({'ok': True})
+
+
+@panel_required
+@require_POST
+def user_premium(request, pk):
+    user = get_object_or_404(User, pk=pk)
+    data, err = parse_json_body(request, error_message="Noto'g'ri JSON", ok_field=True)
+    if err:
+        return err
+    try:
+        days = int(data.get('days', 0))
+    except (ValueError, TypeError):
+        return JsonResponse({'ok': False, 'error': "Noto'g'ri kun"}, status=400)
+    url = reverse('panel:user_detail', args=[user.pk])
+    if days > 0:
+        premium.grant(user, days, request.user)
+        log_action(request, 'premium', user.display_name, url, f'+{days} kun')
+    else:
+        User.objects.filter(pk=user.pk).update(premium_until=None)
+        user.premium_until = None
+        log_action(request, 'premium', user.display_name, url, 'Bekor qilindi')
+    return JsonResponse({'ok': True, 'days_left': user.premium_days_left})
 
 
 @panel_required
@@ -2425,6 +2449,12 @@ def site_settings(request):
         settings_obj.camera_proctoring = request.POST.get('camera_proctoring') == 'on'
         settings_obj.telegram_work_alerts = request.POST.get('telegram_work_alerts') == 'on'
         settings_obj.chat_dm_enabled = request.POST.get('chat_dm_enabled') == 'on'
+        try:
+            price, days = Decimal(request.POST.get('premium_price', '')), int(request.POST.get('premium_days', ''))
+            if price >= 0 and days > 0:
+                settings_obj.premium_price, settings_obj.premium_days = price, days
+        except (InvalidOperation, ValueError):
+            pass  # a blank or broken field keeps the current price
         settings_obj.maintenance_message = request.POST.get('maintenance_message', '').strip()
         settings_obj.save()
         log_action(request, 'settings', 'Sayt sozlamalari', reverse('system:settings'))

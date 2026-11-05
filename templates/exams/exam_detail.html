@@ -185,7 +185,7 @@
                     </div>
                     {% if exam.price > 0 %}
                     <div class="test-meta-item">
-                        <i class=lc-credit-card></i>&nbsp;<strong>{{ exam.price|floatformat:0 }} so'm</strong>
+                        {% if request.user.is_premium %}<i class=lc-premium></i>&nbsp;<strong>Premium bilan bepul</strong>{% else %}<i class=lc-credit-card></i>&nbsp;<strong>{{ exam.price|floatformat:0 }} so'm</strong>{% endif %}
                     </div>
                     {% else %}
                     <div class="test-meta-item" style="color:#22c55e;">
@@ -196,7 +196,7 @@
             </div>
         </div>
         <div style="padding: 0 30px 26px;">
-            {% if exam.price > 0 and request.user.balance < exam.price %}
+            {% if exam.price > 0 and request.user.balance < exam.price and not request.user.is_premium %}
             <button class="btn-start" disabled style="width:100%; padding:13px; cursor:not-allowed; opacity:.5;">Balans yetarli emas</button>
             {% elif needs_password %}
             <form method="post" action="{% url 'exams:unlock_exam' exam.id %}" class="exam-password-form">
@@ -271,12 +271,12 @@
     </div>
 
     <!-- ── Balance warning ──────────────────────────── -->
-    {% if exam.price > 0 and request.user.balance < exam.price %}
+    {% if exam.price > 0 and request.user.balance < exam.price and not request.user.is_premium %}
     <div style="background:rgba(239,68,68,.08); border:1px solid rgba(239,68,68,.2); border-radius:10px; padding:14px 20px; margin-bottom:16px; display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
         <div style="font-size:13px;">
             <i class=lc-credit-card></i>&nbsp;Balans yetarli emas: <strong>{{ request.user.balance|floatformat:0 }} so'm</strong> / kerak: <strong>{{ exam.price|floatformat:0 }} so'm</strong>
         </div>
-        <a href="{% url 'finance' %}" style="background:#ef4444; color:#fff; padding:8px 18px; border-radius:7px; text-decoration:none; font-size:12px; font-weight:700;">Balansni to'ldirish →</a>
+        <a href="{% url 'premium' %}" style="background:#ef4444; color:#fff; padding:8px 18px; border-radius:7px; text-decoration:none; font-size:12px; font-weight:700;">Balansni to'ldirish →</a>
     </div>
     {% endif %}
 

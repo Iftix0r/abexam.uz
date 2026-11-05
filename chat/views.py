@@ -13,15 +13,16 @@ from django.views.decorators.http import require_GET, require_POST
 from core.audit import log_action
 from core.models import SiteSettings
 from exams.models import UserResult
-from panel.views import panel_required
+from panel.views import _user_search, panel_required
 from users.models import User
 
 from . import services
-from .models import ChatBlock, ChatMessage, ChatMute, ChatReaction, ChatRoom, ChatThread
+from .models import ChatBlock, ChatMessage, ChatMute, ChatReaction, ChatRoom, ChatThread, SupportThread
 
 PAGE = 50
 RECENT_REACTIONS = 40
 REMOVED_WINDOW = timedelta(minutes=10)
+ADMIN_NAME = 'AB Admin'
 
 
 def _room(slug):
@@ -46,30 +47,39 @@ def _thread(request, pk):
 
 
 def _accessible_message(request, pk):
-    message = get_object_or_404(ChatMessage.objects.select_related('thread', 'room'), pk=pk, deleted_at__isnull=True)
+    message = get_object_or_404(ChatMessage.objects.select_related('thread', 'room', 'support'), pk=pk,
+                                deleted_at__isnull=True)
     if not services.can_access(message, request.user):
         raise Http404
     return message
+
+
+def _from_admin(message):
+    return message.support_id is not None and message.user_id != message.support.user_id
 
 
 def _reply(message):
     target = message.reply_to
     if target is None or target.deleted_at:
         return None
-    return {'id': target.pk, 'name': target.user.short_name, 'text': target.text[:90]}
+    return {'id': target.pk, 'name': ADMIN_NAME if _from_admin(target) else target.user.short_name,
+            'text': target.text[:90]}
 
 
 def _payload(message, viewer, reactions):
     author = message.user
     # Short name and initials only, as on the rating: no photos, phones or usernames.
-    return {
+    payload = {
         'id': message.pk, 'user_id': author.pk, 'name': author.short_name, 'initials': author.initials,
-        'color': author.avatar_color, 'text': message.text,
+        'color': author.avatar_color, 'text': message.text, 'premium': author.is_premium,
         'time': date_format(timezone.localtime(message.created_at), 'd M, H:i'),
         'mine': author.pk == viewer.pk, 'staff': author.is_staff,
         'can_delete': author.pk == viewer.pk or viewer.is_staff,
         'reply': _reply(message), 'reactions': reactions.get(message.pk),
     }
+    if _from_admin(message):  # the student sees the team, not the person
+        payload.update({'user_id': None, 'name': ADMIN_NAME, 'initials': 'AB', 'color': '#d32f2f', 'premium': False})
+    return payload
 
 
 def _serialized(items, viewer):
@@ -78,7 +88,8 @@ def _serialized(items, viewer):
 
 
 def _page_of(queryset, request):
-    visible = queryset.filter(deleted_at__isnull=True).select_related('user', 'reply_to__user')
+    visible = queryset.filter(deleted_at__isnull=True).select_related('user', 'support', 'reply_to__user',
+                                                                      'reply_to__support')
     after, before = _int(request.GET.get('after')), _int(request.GET.get('before'))
     if after is not None:
         return list(visible.filter(pk__gt=after).order_by('pk')[:PAGE])
@@ -112,9 +123,19 @@ def _thread_rows(user):
     return rows
 
 
+def _support_row(user):
+    thread = SupportThread.objects.filter(user=user).select_related('last_message').first()
+    last = thread.last_message if thread else None
+    return {
+        'preview': last.text[:40] if last else "Savol va yordam",
+        'unread': bool(last and last.user_id != user.pk and last.pk > thread.user_read),
+    }
+
+
 def _page_context(request, **extra):
     dm = _dm_enabled()
     return {
+        'support_row': _support_row(request.user),
         'rooms': list(ChatRoom.objects.filter(is_active=True)), 'dm_enabled': dm,
         'threads': _thread_rows(request.user) if dm else [],
         'mute': services.active_mute(request.user), 'max_length': services.MAX_LENGTH, **extra,
@@ -156,18 +177,19 @@ def members(request, slug):
     rows = room.presence.select_related('user').order_by('-last_seen')[:60]
     return JsonResponse({'members': [{
         'id': p.user_id, 'name': p.user.short_name, 'initials': p.user.initials, 'color': p.user.avatar_color,
-        'online': p.last_seen >= since, 'staff': p.user.is_staff,
+        'online': p.last_seen >= since, 'staff': p.user.is_staff, 'premium': p.user.is_premium,
     } for p in rows]})
 
 
-def _checked_text(request):
-    """Returns (text, error response)."""
-    mute = services.active_mute(request.user)
+def _checked_text(request, support=False):
+    """Returns (text, error response). AB Admin stays reachable when muted:
+    that is where a student asks about the mute."""
+    mute = None if support else services.active_mute(request.user)
     if mute:
         until = date_format(timezone.localtime(mute.until), 'd M, H:i')
         return None, JsonResponse({'error': f"Siz {until} gacha yoza olmaysiz"}, status=403)
     text = services.clean_text(request.POST.get('text'))
-    error = services.rule_error(request.user, text)
+    error = services.rule_error(request.user, text, contacts_ok=support)
     if error:
         return None, JsonResponse({'error': error}, status=400)
     error = services.rate_error(request.user)
@@ -207,8 +229,8 @@ def delete(request, pk):
 @require_POST
 def report(request, pk):
     message = _accessible_message(request, pk)
-    if message.user_id == request.user.pk:
-        return JsonResponse({'error': "O'z xabaringizga shikoyat qilib bo'lmaydi"}, status=400)
+    if message.user_id == request.user.pk or message.support_id:
+        return JsonResponse({'error': "Bu xabarga shikoyat qilib bo'lmaydi"}, status=400)
     services.report(message, request.user)
     return JsonResponse({'ok': True})
 
@@ -247,7 +269,7 @@ def user_card(request, pk):
              .aggregate(best=Max('score'), avg=Avg('score'), tests=Count('id')))
     return JsonResponse({
         'id': other.pk, 'name': other.short_name, 'initials': other.initials, 'color': other.avatar_color,
-        'staff': other.is_staff, 'online': services.is_online(other), 'best': stats['best'], 'tests': stats['tests'],
+        'staff': other.is_staff, 'premium': other.is_premium, 'online': services.is_online(other), 'best': stats['best'], 'tests': stats['tests'],
         'me': other.pk == request.user.pk, 'dm': _dm_enabled(),
         'blocked': ChatBlock.objects.filter(blocker=request.user, blocked=other).exists(),
     })
@@ -330,6 +352,117 @@ def thread_answer(request, pk):
     return JsonResponse({'url': reverse('chat:thread', args=[thread.pk]) if accept else reverse('chat:home')})
 
 
+# ── AB Admin, student side ─────────────────────────────────────────────────────
+@login_required
+def support_page(request):
+    return render(request, 'chat/room.html', _page_context(request, support=True))
+
+
+@login_required
+@require_GET
+def support_messages(request):
+    thread = services.support_of(request.user)
+    items = _page_of(thread.messages.all(), request)
+    if items and request.GET.get('seen') == '1':
+        services.mark_support_read(thread, items[-1].pk, staff=False)
+    return JsonResponse({
+        'messages': _serialized(items, request.user), 'removed': _removed(thread.messages.all()),
+        'reactions': _recent_reactions(thread.messages.all(), request.user),
+        'other_read': thread.staff_read, 'other_online': False, 'send_error': None,
+    })
+
+
+@login_required
+@require_POST
+def support_send(request):
+    thread = services.support_of(request.user)
+    text, failed = _checked_text(request, support=True)
+    if failed:
+        return failed
+    message = ChatMessage.objects.create(support=thread, user=request.user, text=text,
+                                         reply_to=_reply_target(request, support=thread))
+    services.after_support_message(thread, message)
+    return JsonResponse({'message': _serialized([message], request.user)[0]})
+
+
+# ── AB Admin inbox (panel) ─────────────────────────────────────────────────────
+def _inbox_rows(query):
+    threads = SupportThread.objects.filter(last_message__isnull=False).select_related('user', 'last_message')
+    if query:
+        threads = threads.filter(user__in=User.objects.filter(_user_search(query)))
+    rows = []
+    for thread in threads[:80]:
+        user, last = thread.user, thread.last_message
+        rows.append({
+            'id': thread.pk, 'name': user.display_name, 'initials': user.initials, 'color': user.avatar_color,
+            'premium': user.is_premium, 'preview': last.text[:60],
+            'mine': last.user_id != user.pk,
+            'time': date_format(timezone.localtime(last.created_at), 'd M, H:i'),
+            'unread': last.user_id == user.pk and last.pk > thread.staff_read,
+        })
+    # Waiting chats first, Premium students ahead of the rest.
+    rows.sort(key=lambda r: (not r['unread'], not (r['unread'] and r['premium'])))
+    return rows
+
+
+@panel_required
+def inbox(request):
+    return render(request, 'panel/chat_inbox.html', {'open_thread': _int(request.GET.get('t'))})
+
+
+@panel_required
+@require_GET
+def inbox_threads(request):
+    return JsonResponse({'threads': _inbox_rows(request.GET.get('q', '').strip())})
+
+
+@panel_required
+def inbox_open(request, pk):
+    thread = services.support_of(get_object_or_404(User, pk=pk))
+    return redirect(f"{reverse('panel:chat_inbox')}?t={thread.pk}")
+
+
+def _inbox_payload(message, thread):
+    from_student = message.user_id == thread.user_id
+    return {
+        'id': message.pk, 'text': message.text, 'mine': not from_student,
+        'author': '' if from_student else message.user.display_name,
+        'time': date_format(timezone.localtime(message.created_at), 'd M, H:i'),
+    }
+
+
+@panel_required
+@require_GET
+def inbox_messages(request, pk):
+    thread = get_object_or_404(SupportThread.objects.select_related('user'), pk=pk)
+    items = _page_of(thread.messages.all(), request)
+    if items:
+        services.mark_support_read(thread, items[-1].pk, staff=True)
+    user = thread.user
+    return JsonResponse({
+        'messages': [_inbox_payload(m, thread) for m in items],
+        'user': {
+            'id': user.pk, 'name': user.display_name, 'phone': user.phone_number or '', 'initials': user.initials,
+            'color': user.avatar_color, 'premium': user.is_premium, 'premium_days': user.premium_days_left,
+            'balance': float(user.balance), 'url': reverse('panel:user_detail', args=[user.pk]),
+        },
+        'user_read': thread.user_read,
+    })
+
+
+@panel_required
+@require_POST
+def inbox_send(request, pk):
+    thread = get_object_or_404(SupportThread.objects.select_related('user'), pk=pk)
+    text = services.clean_text(request.POST.get('text'))
+    error = services.rule_error(request.user, text)
+    if error:
+        return JsonResponse({'error': error}, status=400)
+    message = ChatMessage.objects.create(support=thread, user=request.user, text=text)
+    services.after_support_message(thread, message)
+    return JsonResponse({'message': _inbox_payload(message, thread)})
+
+
 # ── Moderation (panel) ─────────────────────────────────────────────────────────
 @panel_required
 def moderation(request):
@@ -337,7 +470,7 @@ def moderation(request):
         return _moderate(request)
     now = timezone.now()
     open_filter = Q(reports__resolved_at__isnull=True)
-    rooms_only = ChatMessage.objects.filter(room__isnull=False)  # private chats stay private
+    rooms_only = ChatMessage.objects.filter(room__isnull=False)  # private and support chats stay out
     return render(request, 'panel/chat_moderation.html', {
         'reported': services.open_report_messages().annotate(open_reports=Count('reports', filter=open_filter)),
         'mutes': ChatMute.objects.filter(until__gt=now).select_related('user').order_by('until'),

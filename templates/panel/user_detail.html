@@ -67,6 +67,20 @@
       </button>
     </div>
 
+    <!-- AB Premium -->
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px">
+        <span style="font-size:14px;font-weight:700">AB Premium</span>
+        {% if obj.is_premium %}<span class="badge badge-blue">{{ obj.premium_until|date:"d M Y" }} gacha</span>{% else %}<span class="badge badge-gray">Yo'q</span>{% endif %}
+      </div>
+      <div style="display:flex;gap:8px">
+        <input type="number" id="premium-days" min="1" value="30" class="form-input" style="flex:1;min-width:0" aria-label="Kun">
+        <button onclick="setPremium({{ obj.pk }})" class="btn btn-primary btn-sm">Berish</button>
+        {% if obj.is_premium %}<button onclick="setPremium({{ obj.pk }}, 0)" class="btn btn-ghost btn-sm">Bekor</button>{% endif %}
+      </div>
+      <a href="{% url 'panel:chat_open' obj.pk %}" class="btn btn-ghost btn-sm" style="margin-top:10px;width:100%;justify-content:center">AB Admin orqali yozish</a>
+    </div>
+
     <!-- Telegram -->
     <div class="card tgc-card{% if tg %} on{% endif %}">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px">
@@ -396,6 +410,12 @@ async function makeStaff(pk){
   if(d.ok){document.getElementById('staff-btn').textContent=d.is_staff?'Admin olib tashlash':'Admin qilish';toast(d.is_staff?'Admin qilindi':'Admin olib tashlandi');}
 }
 
+async function setPremium(pk, days){
+  const value = days === undefined ? parseInt(document.getElementById('premium-days').value, 10) : days;
+  if (days === undefined && !(value > 0)) { toast("Kunni to'g'ri kiriting", '#eab308'); return; }
+  const r = await fetch(`/panel/users/${pk}/premium/`, {method:'POST', headers:{'X-CSRFToken':csrf,'Content-Type':'application/json'}, body:JSON.stringify({days:value})});
+  if (r.ok) location.reload(); else toast('Saqlanmadi', '#ef4444');
+}
 async function deleteUser(pk){
   if(!await panelConfirm('Foydalanuvchini o\'chirishni tasdiqlaysizmi?'))return;
   const r=await fetch(`/panel/users/${pk}/delete/`,{method:'POST',headers:{'X-CSRFToken':csrf}});

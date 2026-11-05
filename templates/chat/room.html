@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}AbChat — {% if thread %}{{ other.short_name }}{% else %}{{ room.title }}{% endif %}{% endblock %}
+{% block title %}AbChat — {% if support %}AB Admin{% elif thread %}{{ other.short_name }}{% else %}{{ room.title }}{% endif %}{% endblock %}
 {% block page_title %}AbChat{% endblock %}
 
 {% block extra_css %}
@@ -146,6 +146,12 @@ button.ch-sub:hover{color:var(--text-color)}
     {% for r in rooms %}
     <a href="{% url 'chat:room' r.slug %}" class="ch-room{% if room and r.pk == room.pk %} active{% endif %}"><i class="lc-{{ r.icon }}"></i><div class="ch-room-info"><b>{{ r.title }}</b></div></a>
     {% endfor %}
+    <h2>Yordam</h2>
+    <a href="{% url 'chat:support' %}" class="ch-room{% if support %} active{% endif %}">
+      <span class="ab-logo ab-logo-sm" style="background-color:#d32f2f">AB</span>
+      <div class="ch-room-info"><b>AB Admin</b><small>{{ support_row.preview }}</small></div>
+      {% if support_row.unread %}<span class="ch-dot" aria-label="O'qilmagan"></span>{% endif %}
+    </a>
     {% if dm_enabled %}
     <h2>Lichka</h2>
     {% for t in threads %}
@@ -162,9 +168,12 @@ button.ch-sub:hover{color:var(--text-color)}
 
   <section class="ch-main">
     <div class="ch-head">
-      {% if thread %}
+      {% if support %}
+      <span class="ab-logo ab-logo-sm" style="background-color:#d32f2f">AB</span>
+      <div class="ch-head-info"><b>AB Admin</b><span class="ch-sub">Yordam xizmati · to'lov, savol va takliflar</span></div>
+      {% elif thread %}
       <button class="ch-who" id="chOther" data-user="{{ other.pk }}" type="button" aria-label="Profil"><span class="ab-logo ab-logo-sm" style="background-color:{{ other.avatar_color }}">{{ other.initials }}</span></button>
-      <div class="ch-head-info"><b>{{ other.short_name }}</b><span class="ch-sub" id="chStatus"></span></div>
+      <div class="ch-head-info"><b>{{ other.short_name }}{% if other.is_premium %}<i class=lc-premium></i>{% endif %}</b><span class="ch-sub" id="chStatus"></span></div>
       {% else %}
       <div class="ch-head-info"><b>{{ room.title }}</b><button class="ch-sub" id="chCounts" type="button" title="So'nggi faollarni ko'rish">{{ room.description }}</button></div>
       {% endif %}
@@ -182,7 +191,7 @@ button.ch-sub:hover{color:var(--text-color)}
         <button class="ch-btn danger" type="button" id="chBlockReq">Bloklash</button>
       </div>
     </div>
-    {% elif mute %}
+    {% elif mute and not support %}
     <div class="ch-note">Qoidabuzarlik sababli {{ mute.until|date:"d M, H:i" }} gacha yoza olmaysiz. Xabarlarni o'qishingiz mumkin.</div>
     {% else %}
     <div class="ch-note" id="chWait" hidden></div>
@@ -193,7 +202,7 @@ button.ch-sub:hover{color:var(--text-color)}
         <textarea id="chText" rows="1" maxlength="{{ max_length }}" placeholder="Xabar yozing..." aria-label="Xabar"></textarea>
         <button class="ch-send" id="chSend" type="submit" aria-label="Yuborish"><i class=lc-send></i></button>
       </div>
-      <div class="ch-rules">Hurmat bilan yozing. Telefon raqam, havola va @username yuborib bo'lmaydi.{% if thread %} Noo'rin xabarga shikoyat qilsangiz, adminlar o'sha xabarni ko'radi.{% endif %}</div>
+      <div class="ch-rules">{% if support %}Savolingizni yozing, admin shu yerda javob beradi.{% else %}Hurmat bilan yozing. Telefon raqam, havola va @username yuborib bo'lmaydi.{% if thread %} Noo'rin xabarga shikoyat qilsangiz, adminlar o'sha xabarni ko'radi.{% endif %}{% endif %}</div>
     </form>
     {% endif %}
   </section>
@@ -206,10 +215,14 @@ button.ch-sub:hover{color:var(--text-color)}
 <script>
 (() => {
   const THREAD = {% if thread %}{{ thread.pk }}{% else %}null{% endif %};
+  const SUPPORT = {% if support %}true{% else %}false{% endif %};
+  const PRIVATE = THREAD !== null || SUPPORT;
   const STAFF = {% if user.is_staff %}true{% else %}false{% endif %};
   const ROOT = "{% url 'chat:home' %}";
   const CSRF = "{{ csrf_token }}";
-  const URLS = THREAD
+  const URLS = SUPPORT
+    ? {list: `${ROOT}yordam/messages/`, send: `${ROOT}yordam/send/`}
+    : THREAD
     ? {list: `${ROOT}lichka/${THREAD}/messages/`, send: `${ROOT}lichka/${THREAD}/send/`}
     : {% if room %}{list: "{% url 'chat:messages' room.slug %}", send: "{% url 'chat:send' room.slug %}", members: "{% url 'chat:members' room.slug %}"}{% else %}{}{% endif %};
   const KINDS = [['like', 'thumbs-up'], ['heart', 'heart'], ['flame', 'flame'], ['party', 'party-popper']];
@@ -281,7 +294,7 @@ button.ch-sub:hover{color:var(--text-color)}
     const row = el('div', 'ch-msg' + (m.mine ? ' mine' : ''));
     row.id = 'm' + m.id;
     row.dataset.mine = m.mine ? '1' : '';
-    if (!m.mine && !THREAD) {
+    if (!m.mine && !PRIVATE) {
       const who = el('button', 'ch-who');
       who.type = 'button'; who.setAttribute('aria-label', m.name);
       who.append(logo(m.initials, m.color, 'sm'));
@@ -299,8 +312,8 @@ button.ch-sub:hover{color:var(--text-color)}
     });
     tools.append(el('span', 'ch-sep'));
     if (document.getElementById('chForm')) tools.append(tool('reply', 'Javob berish', () => setReply(m)));
-    if (STAFF && !THREAD) tools.append(tool('pin', 'Qadash', async () => { await post(`${ROOT}xabar/${m.id}/pin/`); poll(); }));
-    if (!m.mine) tools.append(tool('flag', 'Shikoyat qilish', async b => {
+    if (STAFF && !PRIVATE) tools.append(tool('pin', 'Qadash', async () => { await post(`${ROOT}xabar/${m.id}/pin/`); poll(); }));
+    if (!m.mine && !SUPPORT) tools.append(tool('flag', 'Shikoyat qilish', async b => {
       b.disabled = true;
       const r = await post(`${ROOT}xabar/${m.id}/report/`);
       b.title = r.ok ? 'Shikoyat yuborildi' : 'Yuborilmadi';
@@ -312,10 +325,11 @@ button.ch-sub:hover{color:var(--text-color)}
     }));
     box.append(tools);
 
-    if (!m.mine && !THREAD) {
+    if (!m.mine && !PRIVATE) {
       const name = el('button', 'ch-name', m.name);
       name.type = 'button';
       name.onclick = e => { e.stopPropagation(); openCard(m.user_id); };
+      if (m.premium) name.append(el('i', 'lc-premium'));
       if (m.staff) name.append(el('span', 'ch-admin', 'Admin'));
       box.append(name);
     }
@@ -328,7 +342,7 @@ button.ch-sub:hover{color:var(--text-color)}
     }
     box.append(el('div', 'ch-text', m.text));
     const meta = el('div', 'ch-meta', m.time);
-    if (m.mine && THREAD) meta.append(el('i', 'ch-tick lc-check'));
+    if (m.mine && PRIVATE) meta.append(el('i', 'lc-check ch-tick'));
     box.append(meta);
     col.append(box, el('div', 'ch-reacts'));
     row.append(col);
@@ -339,14 +353,14 @@ button.ch-sub:hover{color:var(--text-color)}
   function paintTicks() {
     list.querySelectorAll('.ch-msg.mine').forEach(row => {
       const tick = row.querySelector('.ch-tick');
-      if (tick) tick.className = 'ch-tick lc-' + (Number(row.id.slice(1)) <= otherRead ? 'check-check' : 'check');
+      if (tick) tick.className = 'lc-' + (Number(row.id.slice(1)) <= otherRead ? 'check-check' : 'check') + ' ch-tick';  // lc- must come first: icons.css matches on it
     });
   }
 
   function showEmpty() {
     if (list.querySelector('.ch-msg') || list.querySelector('.ch-empty')) return;
     const box = el('div', 'ch-empty');
-    box.append(icon('messages-square'), el('div', '', THREAD ? "Birinchi xabaringizni yozing" : "Hali xabar yo'q. Birinchi bo'lib yozing!"));
+    box.append(icon(SUPPORT ? 'headset' : 'messages-square'), el('div', '', SUPPORT ? "Savolingizni yozing, admin javob beradi" : THREAD ? "Birinchi xabaringizni yozing" : "Hali xabar yo'q. Birinchi bo'lib yozing!"));
     list.append(box);
   }
 
@@ -368,7 +382,10 @@ button.ch-sub:hover{color:var(--text-color)}
       const row = document.getElementById('m' + id);
       if (row) setReactions(row, data);
     });
-    if (THREAD) {
+    if (SUPPORT) {
+      otherRead = d.other_read;
+      paintTicks();
+    } else if (THREAD) {
       otherRead = d.other_read;
       paintTicks();
       const status = document.getElementById('chStatus');
@@ -393,7 +410,7 @@ button.ch-sub:hover{color:var(--text-color)}
     showEmpty();
   }
 
-  const listUrl = query => `${URLS.list}?${query}${THREAD && !document.hidden ? '&seen=1' : ''}`;
+  const listUrl = query => `${URLS.list}?${query}${PRIVATE && !document.hidden ? '&seen=1' : ''}`;
 
   function moreButton() {
     const b = el('button', 'ch-more', 'Oldingi xabarlar');
@@ -435,7 +452,9 @@ button.ch-sub:hover{color:var(--text-color)}
   async function openCard(id) {
     const u = await (await fetch(`${ROOT}u/${id}/`)).json();
     dialog.replaceChildren();
-    dialog.append(logo(u.initials, u.color), el('h3', '', u.name));
+    const title = el('h3', '', u.name);
+    if (u.premium) title.append(el('i', 'lc-premium'));
+    dialog.append(logo(u.initials, u.color), title);
     const state = el('div', 'ch-sub');
     if (u.online) state.append(el('span', 'ch-on'));
     state.append(u.online ? 'onlayn' : 'oflayn');
@@ -474,7 +493,9 @@ button.ch-sub:hover{color:var(--text-color)}
     d.members.forEach(u => {
       const row = el('button', 'ch-member');
       row.type = 'button';
-      row.append(logo(u.initials, u.color, 'sm'), el('span', '', u.name));
+      const label = el('span', '', u.name);
+      if (u.premium) label.append(el('i', 'lc-premium'));
+      row.append(logo(u.initials, u.color, 'sm'), label);
       if (u.online) row.append(el('i', 'ch-on'));
       row.onclick = () => openCard(u.id);
       dialog.append(row);
@@ -530,7 +551,7 @@ button.ch-sub:hover{color:var(--text-color)}
       if (r.ok) {
         input.value = ''; fit(); setReply(null);
         add([d.message]); toBottom(); quietPolls = 0;
-        if (THREAD) poll();
+        if (PRIVATE) poll();
       } else showError(d.error);
     } catch (e2) {
       showError("Yuborilmadi. Internetni tekshirib, qayta urinib ko'ring");

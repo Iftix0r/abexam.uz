@@ -331,7 +331,7 @@
         .announcement-banner button:hover { opacity: 1; }
     </style>
     {% block extra_css %}{% endblock %}
-<link rel="stylesheet" href="/static/icons.css?v=5">
+<link rel="stylesheet" href="/static/icons.css?v=6">
 </head>
 <body>
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -378,9 +378,9 @@
                 <span class="nav-toggle-text">AbChat</span>
                 {% with unread=chat_unread %}{% if unread %}<span style="margin-left: auto; font-size: 0.65rem; font-weight: 700; background: #d32f2f; color: #fff; border-radius: 20px; padding: 1px 7px;">{{ unread }}</span>{% endif %}{% endwith %}
             </a>
-            <a href="{% url 'finance' %}" class="nav-link {% if request.resolver_match.url_name == 'finance' %}active{% endif %}">
-                <i data-lucide="credit-card" style="width: 20px;"></i>
-                <span class="nav-toggle-text">Moliya</span>
+            <a href="{% url 'premium' %}" class="nav-link {% if request.resolver_match.url_name == 'premium' %}active{% endif %}">
+                <i data-lucide="gem" style="width: 20px;"></i>
+                <span class="nav-toggle-text">AB Premium</span>
             </a>
             {% if tg_bot_username %}
             <a href="{% url 'telegram' %}" class="nav-link {% if request.resolver_match.url_name == 'telegram' %}active{% endif %}">
@@ -396,12 +396,12 @@
         </nav>
 
         <div class="bottom-section" id="sidebar-footer">
-            <a href="{% url 'finance' %}" class="upgrade-btn">
+            <a href="{% url 'premium' %}" class="upgrade-btn">
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <div style="width: 20px; height: 20px; border: 1px solid var(--border-color); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
                         <i data-lucide="zap" style="width: 12px; color: var(--text-color);"></i>
                     </div>
-                    <span>Tarifni yangilash</span>
+                    <span>{% if user.is_premium %}Premium · {{ user.premium_days_left }} kun{% else %}AB Premium olish{% endif %}</span>
                 </div>
                 <i data-lucide="chevron-right" style="width: 14px; color: #666;"></i>
             </a>
@@ -415,7 +415,7 @@
                     {% endif %}
                 </div>
                 <div class="nav-toggle-text">
-                    <span style="font-size: 0.85rem; font-weight: 500; display: block;">{{ user.username|upper }}</span>
+                    <span style="font-size: 0.85rem; font-weight: 500; display: block;">{{ user.username|upper }}{% if user.is_premium %}<i class=lc-premium></i>{% endif %}</span>
                     <span style="font-size: 0.7rem; color: #888;">Profilni tahrirlash</span>
                 </div>
             </a>

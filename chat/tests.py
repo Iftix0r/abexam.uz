@@ -9,7 +9,8 @@ from django.utils import timezone
 from users.models import User
 
 from . import services
-from .models import ChatBlock, ChatMessage, ChatMute, ChatPresence, ChatReaction, ChatReport, ChatRoom, ChatThread
+from .models import (ChatBlock, ChatMessage, ChatMute, ChatPresence, ChatReaction, ChatReport, ChatRoom, ChatThread,
+                     SupportThread)
 
 
 @override_settings(CACHES={'default': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'}})
@@ -351,3 +352,106 @@ class SocialTests(TestCase):
         self.assertNotIn('998901112233', str(card))
         self.assertNotIn('vali@', str(card))
 
+
+
+@override_settings(CACHES={'default': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'}})
+class SupportTests(TestCase):
+    def setUp(self):
+        cache.clear()
+        self.ali = User.objects.create_user('ali', password='pw', first_name='Ali')
+        self.vali = User.objects.create_user('vali', password='pw', first_name='Vali')
+        self.boss = User.objects.create_user('boss', password='pw', is_staff=True, first_name='Bosh', last_name='Admin')
+        self.client.force_login(self.ali)
+
+    def _ask(self, text='Yordam kerak'):
+        cache.delete(f'chat_gap:{self.ali.pk}')
+        return self.client.post(reverse('chat:support_send'), {'text': text})
+
+    def _reply(self, text='Javob'):
+        thread = SupportThread.objects.get(user=self.ali)
+        self.client.force_login(self.boss)
+        self.client.post(reverse('panel:chat_send', args=[thread.pk]), {'text': text})
+        self.client.force_login(self.ali)
+
+    def test_every_user_has_ab_admin(self):
+        self.assertContains(self.client.get(reverse('chat:home')), 'AB Admin')
+        self.assertEqual(self.client.get(reverse('chat:support')).status_code, 200)
+
+    def test_student_sees_the_team_not_the_person(self):
+        self._ask()
+        self._reply('Salom')
+        rows = self.client.get(reverse('chat:support_messages')).json()['messages']
+        self.assertEqual(rows[-1]['name'], 'AB Admin')
+        self.assertIsNone(rows[-1]['user_id'])
+        self.assertNotIn('Bosh', str(rows))
+
+    def test_phone_is_allowed_to_ab_admin_only(self):
+        self.assertEqual(self._ask('raqamim 901234567').status_code, 200)
+
+    def test_muted_student_can_still_reach_admin(self):
+        services.mute(self.ali, 1, self.boss)
+        self.assertEqual(self._ask().status_code, 200)
+
+    def test_inbox_is_staff_only(self):
+        self._ask()
+        thread = SupportThread.objects.get(user=self.ali)
+        for url in (reverse('panel:chat_inbox'), reverse('panel:chat_threads'),
+                    reverse('panel:chat_messages', args=[thread.pk])):
+            self.assertEqual(self.client.get(url).status_code, 302, url)
+        self.assertEqual(self.client.post(reverse('panel:chat_send', args=[thread.pk]), {'text': 'x'}).status_code, 302)
+
+    def test_student_cannot_read_another_support_chat(self):
+        self._ask('maxfiy')
+        message = ChatMessage.objects.get(support__user=self.ali)
+        self.client.force_login(self.vali)
+        self.assertEqual(self.client.get(reverse('chat:support_messages')).json()['messages'], [])
+        self.assertEqual(self.client.post(reverse('chat:delete', args=[message.pk])).status_code, 404)
+
+    def test_support_message_cannot_be_reported(self):
+        self._ask()
+        self._reply()
+        message = ChatMessage.objects.filter(support__user=self.ali).latest('pk')
+        self.assertEqual(self.client.post(reverse('chat:report', args=[message.pk])).status_code, 400)
+
+    def test_unread_on_both_sides(self):
+        self._ask()
+        self.assertEqual(services.support_unread_total(), 1)
+        thread = SupportThread.objects.get(user=self.ali)
+        self.client.force_login(self.boss)
+        self.client.get(reverse('panel:chat_messages', args=[thread.pk]))
+        self.assertEqual(services.support_unread_total(), 0)
+        self.client.post(reverse('panel:chat_send', args=[thread.pk]), {'text': 'Javob'})
+        self.assertEqual(services.unread_count(self.ali), 1)
+        self.client.force_login(self.ali)
+        self.client.get(reverse('chat:support_messages'), {'seen': 1})
+        self.assertEqual(services.unread_count(self.ali), 0)
+
+    def test_one_alert_per_waiting_chat(self):
+        with mock.patch('chat.services.notify_staff_work') as alert:
+            self._ask('bir')
+            self._ask('ikki')
+        alert.assert_called_once()
+
+    def test_premium_students_are_served_first(self):
+        self._ask()
+        self.client.force_login(self.vali)
+        self.client.post(reverse('chat:support_send'), {'text': 'Men Premium'})
+        User.objects.filter(pk=self.ali.pk).update(premium_until=timezone.now() + timedelta(days=5))
+        self.client.force_login(self.boss)
+        rows = self.client.get(reverse('panel:chat_threads')).json()['threads']
+        self.assertEqual(rows[0]['name'], 'Ali')
+        self.assertTrue(rows[0]['premium'])
+
+    def test_inbox_search_and_open_for_user(self):
+        self._ask()
+        self.client.force_login(self.boss)
+        self.assertEqual(len(self.client.get(reverse('panel:chat_threads'), {'q': 'Ali'}).json()['threads']), 1)
+        self.assertEqual(len(self.client.get(reverse('panel:chat_threads'), {'q': 'yoq'}).json()['threads']), 0)
+        response = self.client.get(reverse('panel:chat_open', args=[self.vali.pk]))
+        self.assertIn(f'?t={SupportThread.objects.get(user=self.vali).pk}', response.url)
+
+    def test_private_chats_never_appear_in_the_inbox(self):
+        thread = ChatThread.objects.create(user_a=self.ali, user_b=self.vali, requested_by=self.ali)
+        ChatMessage.objects.create(thread=thread, user=self.ali, text='maxfiy')
+        self.client.force_login(self.boss)
+        self.assertEqual(self.client.get(reverse('panel:chat_threads')).json()['threads'], [])

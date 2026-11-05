@@ -236,6 +236,10 @@ class TakeExamView(LoginRequiredMixin, DetailView):
         if exam_needs_password(request.user, exam):
             messages.info(request, "Testni boshlash uchun test parolini kiriting.")
             return redirect('exams:exam_detail', pk=exam.pk)
+        # Noted as paid at the start, so a Premium that runs out during the
+        # exam cannot reject the submit at the end.
+        if exam.price > 0 and request.user.is_premium:
+            mark_exam_paid(request.user.pk, exam.pk)
         if exam.price > 0 and not exam_is_paid(request.user.pk, exam.pk):
             # A Django session write only persists at the end of the
             # request, so two concurrent requests (double-click, retry)

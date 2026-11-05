@@ -2,6 +2,7 @@ import re
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils import timezone
 
 
 def validate_phone(value):
@@ -19,6 +20,7 @@ class User(AbstractUser):
     is_active_student = models.BooleanField(default=True)
     bio = models.TextField(max_length=500, blank=True)
     last_ip = models.GenericIPAddressField(null=True, blank=True)
+    premium_until = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return self.username
@@ -33,6 +35,16 @@ class User(AbstractUser):
         """False when the username was generated from the phone number."""
         digits = (self.phone_number or '').lstrip('+')
         return not digits or not self.username.startswith(digits)
+
+    @property
+    def is_premium(self):
+        return bool(self.premium_until and self.premium_until > timezone.now())
+
+    @property
+    def premium_days_left(self):
+        if not self.is_premium:
+            return 0
+        return (self.premium_until - timezone.now()).days + 1
 
     @property
     def short_name(self):

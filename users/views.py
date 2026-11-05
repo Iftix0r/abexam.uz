@@ -260,15 +260,6 @@ class VocabularyView(LoginRequiredMixin, TemplateView):
         return redirect('vocabulary')
 
 
-class FinanceView(LoginRequiredMixin, TemplateView):
-    template_name = 'finance.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['transactions'] = Transaction.objects.filter(user=self.request.user)
-        return context
-
-
 class ChatAIView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         from core.ai_utils import get_ai_response

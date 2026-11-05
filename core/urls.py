@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.views.generic import RedirectView
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
@@ -8,10 +9,11 @@ from core.admin_site import AbExamAdminSite
 from core import system_views
 from panel import views as panel_views
 from exams.testlar import TestlarListView, testlar_file
+from payments.views import PremiumBuyView, PremiumView
 from tgbot.views import bot_page, schedule
 from users.views import (
     HomeView, DashboardView, CustomLoginView, RegisterView,
-    ExamsListView, RatingView, ResultsListView, VocabularyView, FinanceView,
+    ExamsListView, RatingView, ResultsListView, VocabularyView,
     ChatAIView, ProfileView, NotificationsView, AccountDeleteView
 )
 
@@ -63,7 +65,9 @@ urlpatterns = [
     path('testlar/', TestlarListView.as_view(), name='testlar'),
     path('testlar/<int:folder>/<str:filename>', testlar_file, name='testlar_file'),
     path('vocabulary/', VocabularyView.as_view(), name='vocabulary'),
-    path('finance/', FinanceView.as_view(), name='finance'),
+    path('premium/', PremiumView.as_view(), name='premium'),
+    path('premium/buy/', PremiumBuyView.as_view(), name='premium_buy'),
+    path('finance/', RedirectView.as_view(pattern_name='premium'), name='finance'),
     path('notifications/', NotificationsView.as_view(), name='notifications'),
     path('api/chat/', ChatAIView.as_view(), name='chat_api'),
     path('login/', CustomLoginView.as_view(), name='login'),

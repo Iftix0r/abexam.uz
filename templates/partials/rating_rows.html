@@ -24,7 +24,7 @@
   <div class="rt-rank">{% if r.rank == 1 %}<i class=lc-medal-gold></i>{% elif r.rank == 2 %}<i class=lc-medal-silver></i>{% elif r.rank == 3 %}<i class=lc-medal-bronze></i>{% else %}{{ r.rank }}{% endif %}</div>
   {% include 'partials/logo.html' with o=r %}
   <div class="rt-info">
-    <div class="rt-name">{{ r.name }}{% if r.me %}<small>siz</small>{% endif %}</div>
+    <div class="rt-name">{{ r.name }}{% if r.premium %}<i class=lc-premium></i>{% endif %}{% if r.me %}<small>siz</small>{% endif %}</div>
     <div class="rt-sub {% if r.best >= 7 %}rt-hi{% elif r.best >= 5.5 %}rt-mid{% else %}rt-lo{% endif %}">
       <div class="rt-bar"><b style="width:{{ r.pct }}%"></b></div>
       <span>{{ r.tests }} ta test</span>

@@ -400,9 +400,9 @@
             <div class="txt"><b>Natijalar</b><span>Barcha imtihon natijalari</span></div>
             <i data-lucide="chevron-right" class="chev" style="width:18px;"></i>
         </a>
-        <a href="{% url 'finance' %}" class="dash-link">
-            <div class="dash-stat-icon tone-violet"><i data-lucide="credit-card" style="width:20px;"></i></div>
-            <div class="txt"><b>Moliya</b><span>Balans va to'lovlar</span></div>
+        <a href="{% url 'premium' %}" class="dash-link">
+            <div class="dash-stat-icon tone-violet"><i data-lucide="gem" style="width:20px;"></i></div>
+            <div class="txt"><b>AB Premium</b><span>{% if user.is_premium %}Faol · {{ user.premium_days_left }} kun{% else %}Barcha testlar va galochka{% endif %}</span></div>
             <i data-lucide="chevron-right" class="chev" style="width:18px;"></i>
         </a>
     </section>

@@ -4,10 +4,14 @@ from django.http import JsonResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import F
 from django.utils.html import escape
+from django.contrib import messages
+from django.shortcuts import redirect
 from django.views import View
-from core.models import PromoCode
+from django.views.generic import TemplateView
+from core.models import PromoCode, SiteSettings
 from core.utils import notify_staff_work, parse_json_body, site_link
-from .models import Transaction
+from . import premium
+from .models import PremiumPurchase, Transaction
 
 
 class TopUpView(LoginRequiredMixin, View):
@@ -69,3 +73,30 @@ class TopUpView(LoginRequiredMixin, View):
             'amount': float(amount),
             'message': 'So\'rovingiz qabul qilindi. Admin tasdiqlashidan keyin balans to\'ldiriladi.',
         })
+
+
+class PremiumView(LoginRequiredMixin, TemplateView):
+    template_name = 'premium.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        settings_obj = SiteSettings.get()
+        user = self.request.user
+        context.update({
+            'price': settings_obj.premium_price, 'days': settings_obj.premium_days,
+            'can_buy': user.balance >= settings_obj.premium_price,
+            'short_by': max(settings_obj.premium_price - user.balance, 0),
+            'transactions': Transaction.objects.filter(user=user)[:8],
+            'purchases': PremiumPurchase.objects.filter(user=user)[:5],
+        })
+        return context
+
+
+class PremiumBuyView(LoginRequiredMixin, View):
+    def post(self, request):
+        error = premium.buy(request.user)
+        if error:
+            messages.error(request, error)
+        else:
+            messages.success(request, "AB Premium faollashtirildi")
+        return redirect('premium')

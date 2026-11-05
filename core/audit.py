@@ -37,6 +37,7 @@ ACTIONS = {
     'booking': 'Navbat',
     'tgbot': 'Telegram bot',
     'chat': 'AbChat moderatsiya',
+    'premium': 'AB Premium',
 }
 
 

@@ -99,7 +99,7 @@
         <div class="pd-card pd-2{% if r.me %} me{% endif %}">
           {% include 'partials/logo.html' with o=r %}
           <div class="pd-num">2</div>
-          <div class="pd-name">{{ r.name }}</div>
+          <div class="pd-name">{{ r.name }}{% if r.premium %}<i class=lc-premium></i>{% endif %}</div>
           <div class="pd-band">{{ r.best|floatformat:1 }}</div>
           <div class="pd-sub">{{ r.tests }} ta test</div>
         </div>
@@ -109,7 +109,7 @@
           <i class="lc-crown pd-crown"></i>
           {% include 'partials/logo.html' with o=r %}
           <div class="pd-num">1</div>
-          <div class="pd-name">{{ r.name }}</div>
+          <div class="pd-name">{{ r.name }}{% if r.premium %}<i class=lc-premium></i>{% endif %}</div>
           <div class="pd-band">{{ r.best|floatformat:1 }}</div>
           <div class="pd-sub">{{ r.tests }} ta test</div>
         </div>
@@ -118,7 +118,7 @@
         <div class="pd-card pd-3{% if r.me %} me{% endif %}">
           {% include 'partials/logo.html' with o=r %}
           <div class="pd-num">3</div>
-          <div class="pd-name">{{ r.name }}</div>
+          <div class="pd-name">{{ r.name }}{% if r.premium %}<i class=lc-premium></i>{% endif %}</div>
           <div class="pd-band">{{ r.best|floatformat:1 }}</div>
           <div class="pd-sub">{{ r.tests }} ta test</div>
         </div>

@@ -81,8 +81,8 @@
         <a href="{% url 'users:password_change' %}" style="display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;background:var(--tint-a);font-size:13px;color:var(--text-color)">
           <i data-lucide="lock" style="width:15px;color:#eab308"></i> Parolni o'zgartirish
         </a>
-        <a href="{% url 'finance' %}" style="display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;background:var(--tint-a);font-size:13px;color:var(--text-color)">
-          <i data-lucide="credit-card" style="width:15px;color:#6366f1"></i> Moliya
+        <a href="{% url 'premium' %}" style="display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;background:var(--tint-a);font-size:13px;color:var(--text-color)">
+          <i data-lucide="gem" style="width:15px;color:#f59e0b"></i> AB Premium
         </a>
         <a href="{% if user.telegram %}{% url 'telegram' %}{% else %}{% url 'tgbot:link' %}{% endif %}"{% if not user.telegram %} target="_blank" rel="noopener"{% endif %} style="display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;background:var(--tint-a);font-size:13px;color:var(--text-color)">
           <i data-lucide="send" style="width:15px;color:#229ed9"></i>

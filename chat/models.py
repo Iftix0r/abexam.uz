@@ -59,10 +59,26 @@ class ChatThread(models.Model):
         return self.status == self.DECLINED and user.pk != self.requested_by_id
 
 
+class SupportThread(models.Model):
+    """A student's chat with AB Admin. Every admin answers from the same inbox
+    and the student only ever sees "AB Admin", not who replied."""
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='support_thread')
+    last_message = models.ForeignKey('ChatMessage', on_delete=models.SET_NULL, null=True, blank=True, related_name='+')
+    user_read = models.BigIntegerField(default=0)
+    staff_read = models.BigIntegerField(default=0)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-updated_at']
+        verbose_name = 'AB Admin suhbati'
+        verbose_name_plural = 'AB Admin suhbatlari'
+
+
 class ChatMessage(models.Model):
-    # Exactly one of room / thread is set.
+    # Exactly one of room / thread / support is set.
     room = models.ForeignKey(ChatRoom, on_delete=models.CASCADE, related_name='messages', null=True, blank=True)
     thread = models.ForeignKey(ChatThread, on_delete=models.CASCADE, related_name='messages', null=True, blank=True)
+    support = models.ForeignKey(SupportThread, on_delete=models.CASCADE, related_name='messages', null=True, blank=True)
     reply_to = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='+')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='chat_messages')
     text = models.TextField(max_length=1000)

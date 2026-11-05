@@ -32,7 +32,8 @@ def exam_rating(user, period=MONTH, limit=50):
     # Short name and initials only: this list is visible to every student.
     rows = [{'rank': rank, 'name': users[r['user']].short_name, 'initials': users[r['user']].initials,
              'avatar_color': users[r['user']].avatar_color, 'best': r['best'], 'tests': r['tests'],
-             'pct': round(r['best'] / 9 * 100), 'me': r['user'] == user.pk}
+             'pct': round(r['best'] / 9 * 100), 'me': r['user'] == user.pk,
+             'premium': users[r['user']].is_premium}
             for rank, r in enumerate(ranked[:limit], 1)]
     me = next(({'rank': rank, 'best': r['best'], 'tests': r['tests'],
                 # Bands to reach the student just above; 0 when level on band.
