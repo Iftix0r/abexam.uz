@@ -48,8 +48,8 @@
 
     <!-- Profile card -->
     <div class="card" style="text-align:center">
-      <div style="width:80px;height:80px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:#fff;margin:0 auto 14px;overflow:hidden;border:3px solid var(--border)">
-        {% if obj.avatar %}<img src="{{ obj.avatar.url }}" style="width:100%;height:100%;object-fit:cover">{% else %}{{ obj.display_name|first|upper }}{% endif %}
+      <div class="u-avatar" style="width:80px;height:80px;border-radius:50%;background-color:{{ obj.avatar_color }};display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:#fff;margin:0 auto 14px;overflow:hidden;border:3px solid var(--border)">
+        {% if obj.avatar %}<img src="{{ obj.avatar.url }}" style="width:100%;height:100%;object-fit:cover">{% else %}{{ obj.initials }}{% endif %}
       </div>
       <div style="font-size:17px;font-weight:700">{{ obj.display_name }}</div>
       <div style="font-size:12px;color:var(--muted);margin-top:3px">{% if obj.has_own_username %}@{{ obj.username }}{% else %}{{ obj.phone_number }}{% endif %}</div>

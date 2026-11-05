@@ -122,7 +122,7 @@
           {% for r in recent_results %}
           <tr>
             <td><div class="u-info">
-              <div class="u-avatar">{% if r.user.avatar %}<img src="{{ r.user.avatar.url }}">{% else %}{{ r.user.display_name|first|upper }}{% endif %}</div>
+              {% include 'panel/_avatar.html' with u=r.user %}
               <a href="{% url 'panel:user_detail' r.user.pk %}" class="link">{{ r.user.display_name }}</a>
             </div></td>
             <td style="color:var(--muted)">{{ r.exam.title|truncatechars:26 }}</td>
@@ -144,7 +144,7 @@
       </div>
       {% for u in recent_users %}
       <div class="mini-row">
-        <div class="u-avatar">{% if u.avatar %}<img src="{{ u.avatar.url }}" alt="">{% else %}{{ u.display_name|first|upper }}{% endif %}</div>
+        {% include 'panel/_avatar.html' with u=u %}
         <div class="mini-main">
           <a href="{% url 'panel:user_detail' u.pk %}" class="mini-title">{{ u.display_name }}</a>
           <div class="mini-sub">{{ u.date_joined|date:"d M Y" }}</div>

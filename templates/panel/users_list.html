@@ -74,7 +74,7 @@
         <tr id="user-row-{{ u.pk }}">
           <td><input type="checkbox" class="row-check" value="{{ u.pk }}" onchange="updateBulk()"></td>
           <td><div class="u-info">
-            <div class="u-avatar">{% if u.avatar %}<img src="{{ u.avatar.url }}">{% else %}{{ u.display_name|first|upper }}{% endif %}</div>
+            {% include 'panel/_avatar.html' with u=u %}
             <div>
               <a href="{% url 'panel:user_detail' u.pk %}" class="link">{{ u.display_name }}</a>
               {% if u.is_superuser %}<span class="badge badge-purple" style="margin-left:4px;font-size:10px">Super</span>
