@@ -256,6 +256,19 @@ def support_of(user):
     return SupportThread.objects.get_or_create(user=user)[0]
 
 
+def message_from_admin(student, by, text, auto=False):
+    """Puts a message from AB Admin into a student's chat, and into Telegram
+    when their bot is linked."""
+    from tgbot import api as tg_api
+    from tgbot.models import TelegramAccount
+    thread = support_of(student)
+    message = ChatMessage.objects.create(support=thread, user=by, text=text, is_auto=auto)
+    after_support_message(thread, message)
+    account = TelegramAccount.objects.filter(user=student, is_blocked=False).first()
+    if account:
+        tg_api.send_async(account.chat_id, escape(text))
+
+
 def welcome_text(user):
     name = user.first_name.strip()
     greeting = f'Salom, {name}!' if name else 'Salom!'

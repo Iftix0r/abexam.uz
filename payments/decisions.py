@@ -4,9 +4,6 @@ from django.db.models import F
 from django.utils import timezone
 
 from chat import services as chat
-from chat.models import ChatMessage
-from tgbot import api as tg_api
-from tgbot.models import TelegramAccount
 from users.models import User
 
 from .models import Transaction
@@ -19,12 +16,7 @@ def _tell_student(tx, by):
         text = f"{tx.amount:,.0f} so'm to'lov so'rovingiz rad etildi.".replace(',', ' ')
         if tx.reject_reason:
             text += f" Sabab: {tx.reject_reason}"
-    thread = chat.support_of(tx.user)
-    message = ChatMessage.objects.create(support=thread, user=by, text=text, is_auto=True)
-    chat.after_support_message(thread, message)
-    account = TelegramAccount.objects.filter(user=tx.user, is_blocked=False).first()
-    if account:
-        tg_api.send_async(account.chat_id, text)
+    chat.message_from_admin(tx.user, by, text, auto=True)
 
 
 def decide(pk, approve, by, reason=''):

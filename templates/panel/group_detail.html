@@ -10,6 +10,38 @@
 .gm-item:hover{background:var(--surface2)}
 .rank{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:var(--surface2);font-size:11px;font-weight:700;color:var(--muted)}
 .rank.top{background:#eab30822;color:var(--yellow)}
+@media(max-width:560px){
+  table.table-cards tr.member-row{display:grid;grid-template-columns:repeat(12,1fr);column-gap:6px;align-items:center;padding:10px 12px}
+  table.table-cards tr.member-row td{width:auto;border:none;padding:0;text-align:left;min-width:0}
+  table.table-cards tr.member-row td:nth-child(1){grid-area:1/1/2/3}
+  table.table-cards tr.member-row td:nth-child(2){grid-area:1/3/2/10}
+  table.table-cards tr.member-row td:nth-child(7){grid-area:1/10/2/13;justify-content:flex-end}
+  table.table-cards tr.member-row td:nth-child(1)::before,table.table-cards tr.member-row td:nth-child(2)::before,table.table-cards tr.member-row td:nth-child(7)::before{display:none}
+  table.table-cards tr.member-row td:nth-child(1),table.table-cards tr.member-row td:nth-child(2){justify-content:flex-start}
+  table.table-cards tr.member-row td:nth-child(3){grid-area:2/1/3/4}
+  table.table-cards tr.member-row td:nth-child(4){grid-area:2/4/3/7}
+  table.table-cards tr.member-row td:nth-child(5){grid-area:2/7/3/10}
+  table.table-cards tr.member-row td:nth-child(6){grid-area:2/10/3/13}
+  table.table-cards tr.member-row td:nth-child(n+3):nth-child(-n+6){flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:3px;margin-top:10px}
+  table.table-cards tr.member-row td[data-label]::before{font-size:9.5px;letter-spacing:.02em}
+  table.table-cards tr.member-row .row-actions{flex-wrap:nowrap;gap:2px}
+}
+tr.member-row[hidden],table.table-cards tr.member-row[hidden]{display:none}
+.gd-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+.gd-head h1{font-size:20px;font-weight:800;letter-spacing:-.01em}
+.gd-head p{font-size:13px;color:var(--muted)}
+.gd-actions{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.gd-up{color:var(--green);font-size:12px;font-weight:700}
+.gd-down{color:var(--red);font-size:12px;font-weight:700}
+.gd-skill{margin-bottom:12px}
+.gd-skill:last-child{margin-bottom:0}
+.gd-skill div:first-child{display:flex;justify-content:space-between;font-size:13px;font-weight:600;margin-bottom:5px}
+.gd-bar{height:7px;border-radius:7px;background:var(--surface2);overflow:hidden}
+.gd-bar i{display:block;height:100%;border-radius:7px}
+.gd-mini{display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12.5px;min-width:0}
+.gd-mini:last-child{border-bottom:none}
+.gm-item .u-avatar{width:28px;height:28px;font-size:10.5px}
+.gm-who{display:flex;align-items:center;gap:8px;min-width:0}
 </style>
 
 <nav class="breadcrumb">
@@ -18,11 +50,20 @@
   <span class="bc-current">{{ group.name }}</span>
 </nav>
 
+<div class="gd-head">
+  {% include 'partials/logo.html' with o=group size='lg' %}
+  <div style="min-width:0"><h1>{{ group.name }}</h1>{% if group.description %}<p>{{ group.description }}</p>{% endif %}</div>
+  <div class="gd-actions">
+    <button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('msg-modal').classList.add('show')"><i class=lc-send></i>Guruhga xabar</button>
+    <a href="{% url 'panel:group_export' group.pk %}" class="btn btn-ghost btn-sm">↓ CSV</a>
+  </div>
+</div>
+
 <div class="stat-grid">
-  <div class="stat-card"><div><div class="stat-val">{{ rows|length }}</div><div class="stat-label">A'zolar</div></div></div>
-  <div class="stat-card"><div><div class="stat-val">{{ avg_last|default:"—" }}</div><div class="stat-label">O'rtacha band (oxirgi test)</div></div></div>
-  <div class="stat-card"><div><div class="stat-val">{% with r=rows.0 %}{% if r.last %}{{ r.last.score }}{% else %}—{% endif %}{% endwith %}</div><div class="stat-label">Eng yuqori (oxirgi test)</div></div></div>
-  <div class="stat-card"><div><div class="stat-val">{{ recent|length }}</div><div class="stat-label">So'nggi natijalar</div></div></div>
+  <div class="stat-card"><div class="stat-icon" style="background:#6366f118;color:#6366f1;font-size:20px"><i class=lc-users></i></div><div><div class="stat-val">{{ rows|length }}</div><div class="stat-label">A'zolar</div></div></div>
+  <div class="stat-card"><div class="stat-icon" style="background:#3b82f618;color:var(--blue);font-size:20px"><i class=lc-chart-column></i></div><div><div class="stat-val">{{ avg_last|default:"—" }}</div><div class="stat-label">O'rtacha band (oxirgi test)</div></div></div>
+  <div class="stat-card"><div class="stat-icon" style="background:#eab30818;color:#eab308;font-size:20px"><i class=lc-trophy></i></div><div><div class="stat-val">{% with r=rows.0 %}{% if r.last %}{{ r.last.score }}{% else %}—{% endif %}{% endwith %}</div><div class="stat-label">Eng yuqori (oxirgi test)</div></div></div>
+  <div class="stat-card"><div class="stat-icon" style="background:#22c55e18;color:var(--green);font-size:20px"><i class=lc-flame></i></div><div><div class="stat-val">{{ active_count }}</div><div class="stat-label">{{ inactive_days }} kunda faol</div></div></div>
 </div>
 
 <div class="grid-sidebar-r">
@@ -37,26 +78,35 @@
     <div class="card">
       <div class="section-header">
         <span class="section-title">Reyting</span>
-        <a href="{% url 'panel:results' %}?group={{ group.pk }}" class="btn btn-ghost btn-sm">Guruh natijalari →</a>
+        <div class="toolbar-end">
+          <div class="search-box" style="width:200px;height:32px;padding-block:0"><input id="memberFilter" placeholder="A'zoni qidirish..." aria-label="A'zoni qidirish"></div>
+          <a href="{% url 'panel:results' %}?group={{ group.pk }}" class="btn btn-ghost btn-sm">Guruh natijalari →</a>
+        </div>
       </div>
       <div class="table-wrap">
         <table class="table-cards">
           <thead><tr><th>#</th><th>Talaba</th><th>Oxirgi band</th><th>O'rtacha</th><th>Eng yaxshi</th><th>Testlar</th><th></th></tr></thead>
           <tbody>
             {% for r in rows %}
-            <tr>
+            <tr class="member-row" data-name="{{ r.user.display_name|lower }}">
               <td><span class="rank {% if forloop.counter <= 3 and r.last %}top{% endif %}">{{ forloop.counter }}</span></td>
-              <td><a href="{% url 'panel:user_detail' r.user.pk %}" class="link">{{ r.user.display_name }}</a>
-                {% if r.last %}<div style="font-size:11px;color:var(--muted)">{{ r.last.exam.title|truncatechars:30 }} · {{ r.last.completed_at|date:"d M" }}</div>{% endif %}</td>
-              <td>{% if r.last %}<span class="badge {% if r.last.score >= 7 %}badge-green{% elif r.last.score >= 5.5 %}badge-yellow{% else %}badge-red{% endif %}">{{ r.last.score }}</span>{% else %}<span style="color:var(--muted)">—</span>{% endif %}</td>
+              <td><div class="u-info">
+                {% include 'panel/_avatar.html' with u=r.user %}
+                <div><a href="{% url 'panel:user_detail' r.user.pk %}" class="link">{{ r.user.display_name }}</a>{% if r.inactive %} <span class="badge badge-gray" title="{{ inactive_days }} kundan beri test topshirmagan" style="font-size:10px">Faol emas</span>{% endif %}
+                {% if r.last %}<div style="font-size:11px;color:var(--muted)">{{ r.last.exam.title|truncatechars:30 }} · {{ r.last.completed_at|date:"d M" }}</div>{% endif %}</div>
+              </div></td>
+              <td>{% if r.last %}<span class="badge {% if r.last.score >= 7 %}badge-green{% elif r.last.score >= 5.5 %}badge-yellow{% else %}badge-red{% endif %}">{{ r.last.score }}</span>{% else %}<span style="color:var(--muted)">—</span>{% endif %}{% if r.delta %} <span class="{% if r.delta > 0 %}gd-up{% else %}gd-down{% endif %}" title="Oldingi testga nisbatan">{% if r.delta > 0 %}+{% endif %}{{ r.delta }}</span>{% endif %}</td>
               <td style="color:var(--muted)">{{ r.avg|floatformat:1|default:"—" }}</td>
               <td style="color:var(--muted)">{{ r.best|default:"—" }}</td>
               <td style="color:var(--muted)">{{ r.count }}</td>
               <td>
-                <form method="post" data-confirm="{{ r.user.display_name }} guruhdan chiqarilsinmi?">
-                  {% csrf_token %}<input type="hidden" name="action" value="remove"><input type="hidden" name="user_id" value="{{ r.user.pk }}">
-                  <button class="btn btn-ghost btn-sm" title="Guruhdan chiqarish">✕</button>
-                </form>
+                <div class="row-actions">
+                  <a href="{% url 'panel:chat_open' r.user.pk %}" class="icon-btn" title="AB Admin chatida yozish" aria-label="AB Admin chatida yozish"><i class=lc-send></i></a>
+                  <form method="post" data-confirm="{{ r.user.display_name }} guruhdan chiqarilsinmi?">
+                    {% csrf_token %}<input type="hidden" name="action" value="remove"><input type="hidden" name="user_id" value="{{ r.user.pk }}">
+                    <button class="icon-btn danger" title="Guruhdan chiqarish" aria-label="Guruhdan chiqarish"><i class=lc-x></i></button>
+                  </form>
+                </div>
               </td>
             </tr>
             {% empty %}
@@ -68,7 +118,19 @@
     </div>
   </div>
 
-  <div style="display:flex;flex-direction:column;gap:16px">
+  <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
+    {% if skills %}
+    <div class="card">
+      <div class="section-title" style="margin-bottom:12px">Ko'nikmalar bo'yicha</div>
+      {% for k in skills %}
+      <div class="gd-skill">
+        <div><span>{{ k.label }}{% if k.weak %} <span class="badge badge-red" style="font-size:10px">Zaif tomon</span>{% endif %}</span><span>{{ k.value|floatformat:1 }}</span></div>
+        <div class="gd-bar"><i style="width:{{ k.pct }}%;background:{{ k.color }}"></i></div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
     <div class="card">
       <div class="section-title" style="margin-bottom:12px">Talaba qo'shish</div>
       <form method="post" id="add-form">
@@ -97,18 +159,37 @@
     <div class="card">
       <div class="section-title" style="margin-bottom:12px">So'nggi natijalar</div>
       {% for r in recent %}
-      <div style="display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12.5px">
-        <span><a href="{% url 'panel:user_detail' r.user.pk %}">{{ r.user.display_name }}</a><br><span style="color:var(--muted);font-size:11px">{{ r.exam.title|truncatechars:26 }}</span></span>
+      <div class="gd-mini">
+        {% include 'panel/_avatar.html' with u=r.user %}
+        <span style="flex:1;min-width:0"><a href="{% url 'panel:user_detail' r.user.pk %}" class="link">{{ r.user.display_name }}</a><br><span style="color:var(--muted);font-size:11px">{{ r.exam.title|truncatechars:26 }}</span></span>
         {% if r.is_pending %}<a href="{% url 'panel:result_grade' r.pk %}" class="badge badge-yellow" style="align-self:center"><i class=lc-hourglass></i>&nbsp;Baholash</a>{% else %}<span class="badge badge-blue" style="align-self:center">{{ r.score }}</span>{% endif %}
       </div>
       {% empty %}<div class="empty-state" style="padding:12px">Hali natija yo'q</div>{% endfor %}
     </div>
   </div>
 </div>
+<div class="modal-overlay" id="msg-modal" role="dialog" aria-modal="true" aria-labelledby="msg-title">
+  <div class="modal">
+    <div class="modal-title" id="msg-title">Guruhga xabar</div>
+    <form method="post" data-confirm="Xabar guruhdagi barcha talabalarga yuboriladi. Davom etasizmi?">
+      {% csrf_token %}<input type="hidden" name="action" value="message">
+      <textarea class="form-input" name="text" rows="4" maxlength="1000" required placeholder="Masalan: Ertaga 10:00 da mock test bo'ladi"></textarea>
+      <p style="font-size:12px;color:var(--muted);margin-top:8px">Har bir talabaning AB Admin chatiga, bot ulangan bo'lsa Telegramiga ham boradi.</p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" onclick="document.getElementById('msg-modal').classList.remove('show')">Bekor</button>
+        <button class="btn btn-primary">Yuborish</button>
+      </div>
+    </form>
+  </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
+document.getElementById('memberFilter').addEventListener('input', e => {
+  const q = e.target.value.trim().toLowerCase();
+  document.querySelectorAll('.member-row').forEach(row => { row.hidden = !row.dataset.name.includes(q); });
+});
 const memberQ = document.getElementById('member-q');
 const memberResults = document.getElementById('member-results');
 let memberTimer;
@@ -126,8 +207,13 @@ memberQ.addEventListener('input', () => {
     d.users.forEach(u => {
       const b = document.createElement('button');
       b.type = 'button'; b.className = 'gm-item';
-      b.innerHTML = '<span></span><span style="color:var(--muted);font-size:11.5px"></span>';
-      b.children[0].textContent = u.name; b.children[1].textContent = u.sub;
+      const who = document.createElement('span'), logo = document.createElement('span'), name = document.createElement('span'), sub = document.createElement('span');
+      who.className = 'gm-who'; logo.className = 'u-avatar';
+      logo.style.backgroundColor = u.color; logo.textContent = u.initials;
+      name.textContent = u.name;
+      sub.style.cssText = 'color:var(--muted);font-size:11.5px'; sub.textContent = u.sub;
+      who.append(logo, name);
+      b.append(who, sub);
       b.onclick = () => { document.getElementById('add-user-id').value = u.id; document.getElementById('add-form').submit(); };
       memberResults.appendChild(b);
     });

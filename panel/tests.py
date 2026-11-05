@@ -537,3 +537,73 @@ class TransactionPanelTests(TestCase):
     def test_missing_payment_is_404(self):
         self.assertEqual(self.client.post(reverse('panel:tx_approve', args=[99999])).status_code, 404)
 
+
+class GroupPageTests(TestCase):
+    def setUp(self):
+        from datetime import timedelta
+        from django.core.cache import cache
+        from exams.models import Exam, UserResult
+        from users.models import StudyGroup
+        cache.clear()
+        self.UserResult = UserResult
+        self.boss = User.objects.create_superuser('boss', password='pw')
+        self.ali = User.objects.create_user('ali', password='pw', first_name='Ali', phone_number='+998901112233')
+        self.vali = User.objects.create_user('vali', password='pw', first_name='Vali')
+        self.outsider = User.objects.create_user('tashqi', password='pw', first_name='Tashqi')
+        self.group = StudyGroup.objects.create(name='Ertalabki guruh')
+        self.group.members.add(self.ali, self.vali)
+        self.exam = Exam.objects.create(title='Mock 1')
+        old = UserResult.objects.create(user=self.ali, exam=self.exam, score=5.5, listening_score=6, reading_score=7, writing_score=4)
+        UserResult.objects.filter(pk=old.pk).update(completed_at=timezone.now() - timedelta(days=30))
+        UserResult.objects.create(user=self.ali, exam=self.exam, score=7, listening_score=8, reading_score=7, writing_score=5)
+        self.client.force_login(self.boss)
+
+    def _page(self):
+        return self.client.get(reverse('panel:group_detail', args=[self.group.pk]))
+
+    def test_group_logo(self):
+        self.assertEqual(self.group.initials, 'EG')
+
+    def test_list_shows_members_and_activity(self):
+        page = self.client.get(reverse('panel:groups'))
+        self.assertContains(page, 'Ertalabki guruh')
+        group = page.context['groups'][0]
+        self.assertEqual((group.member_count, group.active_week), (2, 1))
+
+    def test_rows_show_change_and_inactive_members(self):
+        rows = {r['user'].pk: r for r in self._page().context['rows']}
+        self.assertEqual(rows[self.ali.pk]['delta'], 1.5)
+        self.assertFalse(rows[self.ali.pk]['inactive'])
+        self.assertIsNone(rows[self.vali.pk]['delta'])
+        self.assertTrue(rows[self.vali.pk]['inactive'])
+
+    def test_weakest_skill_is_marked(self):
+        skills = {k['label']: k for k in self._page().context['skills']}
+        self.assertTrue(skills['Writing']['weak'])
+        self.assertFalse(skills['Reading']['weak'])
+        self.assertNotIn('Speaking', skills)  # nobody took it
+
+    def test_group_message_reaches_members_only(self):
+        from chat.models import ChatMessage
+        self.client.post(reverse('panel:group_detail', args=[self.group.pk]), {'action': 'message', 'text': 'Ertaga mock'})
+        self.assertEqual(ChatMessage.objects.filter(text='Ertaga mock').count(), 2)
+        self.assertFalse(ChatMessage.objects.filter(text='Ertaga mock', support__user=self.outsider).exists())
+
+    def test_empty_group_message_is_refused(self):
+        from chat.models import ChatMessage
+        before = ChatMessage.objects.count()
+        self.client.post(reverse('panel:group_detail', args=[self.group.pk]), {'action': 'message', 'text': '  '})
+        self.assertEqual(ChatMessage.objects.count(), before)
+
+    def test_csv(self):
+        body = self.client.get(reverse('panel:group_export', args=[self.group.pk])).content.decode('utf-8-sig')
+        self.assertIn('Ali', body)
+        self.assertEqual(len(body.strip().splitlines()), 3)
+
+    def test_students_cannot_message_or_export(self):
+        from chat.models import ChatMessage
+        self.client.force_login(self.ali)
+        self.client.post(reverse('panel:group_detail', args=[self.group.pk]), {'action': 'message', 'text': 'x'})
+        self.assertFalse(ChatMessage.objects.filter(text='x').exists())
+        self.assertEqual(self.client.get(reverse('panel:group_export', args=[self.group.pk])).status_code, 302)
+

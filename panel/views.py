@@ -32,6 +32,7 @@ from core.utils import (
 from exams.models import ATTEMPT_ONLINE_WINDOW, Exam, ExamAttempt, Question, Section, UserResult
 from exams import camera
 from exams.analysis import question_stats, regrade_exam
+from chat import services as chat_services
 from core.audit import ACTIONS, log_action
 from exams.passwords import GRACE_SECONDS, exam_password, seconds_until_rotation, testlar_password
 from exams.testlar import testlar_folders
@@ -235,6 +236,9 @@ def _groups():
     return StudyGroup.objects.all()
 
 
+INACTIVE_AFTER_DAYS = 14
+
+
 def _member_rows(group):
     """One row per member with their graded-results summary, best first."""
     rows = []
@@ -243,13 +247,33 @@ def _member_rows(group):
         avg=Avg('userresult__score', filter=Q(userresult__status=UserResult.STATUS_GRADED)),
         best=Max('userresult__score', filter=Q(userresult__status=UserResult.STATUS_GRADED)),
     )
-    last_by_user = {}
+    latest = {}
     for r in (UserResult.objects.graded().filter(user__in=group.members.all())
               .select_related('exam').order_by('user_id', '-completed_at')):
-        last_by_user.setdefault(r.user_id, r)
+        pair = latest.setdefault(r.user_id, [])
+        if len(pair) < 2:
+            pair.append(r)
+    quiet_since = timezone.now() - timedelta(days=INACTIVE_AFTER_DAYS)
     for m in members:
-        rows.append({'user': m, 'count': m.n, 'avg': m.avg, 'best': m.best, 'last': last_by_user.get(m.pk)})
+        pair = latest.get(m.pk, [])
+        last = pair[0] if pair else None
+        rows.append({'user': m, 'count': m.n, 'avg': m.avg, 'best': m.best, 'last': last,
+                     'delta': round(pair[0].score - pair[1].score, 1) if len(pair) == 2 else None,
+                     'inactive': last is None or last.completed_at < quiet_since})
     rows.sort(key=lambda r: (r['last'] is None, -(r['last'].score if r['last'] else 0), -(r['avg'] or 0)))
+    return rows
+
+
+def _skill_rows(group):
+    """The group's average band per skill, weakest marked. Zero means not taken."""
+    results = UserResult.objects.graded().filter(user__in=group.members.all())
+    fields = (('Listening', 'listening_score', '#3b82f6'), ('Reading', 'reading_score', '#22c55e'),
+              ('Writing', 'writing_score', '#a855f7'), ('Speaking', 'speaking_score', '#f59e0b'))
+    averages = results.aggregate(**{f: Avg(f, filter=Q(**{f'{f}__gt': 0})) for _, f, _ in fields})
+    rows = [{'label': label, 'value': averages[f], 'pct': round(averages[f] / 9 * 100), 'color': color, 'weak': False}
+            for label, f, color in fields if averages[f]]
+    if len(rows) > 1:
+        min(rows, key=lambda r: r['value'])['weak'] = True
     return rows
 
 
@@ -272,8 +296,11 @@ def groups_list(request):
         member_count=Count('members', distinct=True),
         avg=Avg('members__userresult__score', filter=Q(members__userresult__status=UserResult.STATUS_GRADED)),
         results=Count('members__userresult', filter=Q(members__userresult__status=UserResult.STATUS_GRADED)),
-    )
-    return render(request, 'panel/groups_list.html', {'groups': groups})
+        active_week=Count('members', distinct=True, filter=Q(
+            members__userresult__completed_at__gte=timezone.now() - timedelta(days=7))),
+    ).prefetch_related('members')
+    return render(request, 'panel/groups_list.html', {'groups': groups, 'total_members': User.objects.filter(
+        study_groups__isnull=False).distinct().count()})
 
 
 @panel_required
@@ -305,6 +332,18 @@ def group_detail(request, pk):
                 group.members.remove(user)
                 log_action(request, 'group', group.name, url, f'Chiqarildi: {user.display_name}')
                 messages.success(request, f'{user.display_name} guruhdan chiqarildi')
+        elif action == 'message':
+            text = request.POST.get('text', '').strip()[:1000]
+            students = list(group.members.filter(is_active=True))
+            if not text:
+                messages.error(request, 'Xabar matnini yozing')
+            elif not students:
+                messages.error(request, "Guruhda talaba yo'q")
+            else:
+                for student in students:
+                    chat_services.message_from_admin(student, request.user, text)
+                log_action(request, 'group', group.name, url, f'Guruhga xabar: {text[:150]}')
+                messages.success(request, f"Xabar {len(students)} ta talabaga yuborildi")
         elif action == 'delete':
             log_action(request, 'group', group.name, '', f"O'chirildi ({group.members.count()} a'zo)")
             group.delete()
@@ -329,11 +368,29 @@ def group_detail(request, pk):
     progress = [{'date': k, **{f: (round(sum(v) / len(v), 2) if v else None) for f, v in b.items()}}
                 for k, b in monthly.items()]
     return render(request, 'panel/group_detail.html', {
-        'group': group, 'rows': rows,
+        'group': group, 'rows': rows, 'skills': _skill_rows(group),
+        'active_count': sum(1 for r in rows if not r['inactive']), 'inactive_days': INACTIVE_AFTER_DAYS,
         'avg_last': round(sum(r.score for r in graded) / len(graded), 1) if graded else None,
         'recent': UserResult.objects.filter(user__in=group.members.all()).select_related('user', 'exam').order_by('-completed_at')[:10],
         'progress_json': json.dumps(progress).replace('<', '\\u003c'), 'progress_count': len(progress),
     })
+
+
+@panel_required
+def group_export(request, pk):
+    from users.models import StudyGroup
+    group = get_object_or_404(StudyGroup, pk=pk)
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="group-{group.pk}.csv"'
+    response.write('\ufeff')  # Excel reads the file as UTF-8 only with a BOM
+    w = csv.writer(response)
+    w.writerow(['#', 'Talaba', 'Telefon', 'Oxirgi band', "O'zgarish", "O'rtacha", 'Eng yaxshi', 'Testlar', 'Oxirgi test'])
+    for i, r in enumerate(_member_rows(group), 1):
+        last = r['last']
+        w.writerow([i, r['user'].display_name, r['user'].phone_number or '', last.score if last else '',
+                    '' if r['delta'] is None else r['delta'], round(r['avg'], 1) if r['avg'] else '', r['best'] or '',
+                    r['count'], timezone.localtime(last.completed_at).strftime('%Y-%m-%d') if last else ''])
+    return response
 
 
 @panel_required
@@ -344,7 +401,8 @@ def group_member_search(request, pk):
     q = request.GET.get('q', '').strip()
     users = []
     if q:
-        users = [{'id': u.pk, 'name': u.display_name, 'sub': u.phone_number or f'@{u.username}'}
+        users = [{'id': u.pk, 'name': u.display_name, 'sub': u.phone_number or f'@{u.username}',
+                  'initials': u.initials, 'color': u.avatar_color}
                  for u in User.objects.filter(_user_search(q)).exclude(study_groups=group)[:8]]
     return JsonResponse({'users': users})
 

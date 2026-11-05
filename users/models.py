@@ -131,3 +131,11 @@ class StudyGroup(models.Model):
 
     def __str__(self):
         return self.name
+
+    @property
+    def initials(self):
+        return ''.join(word[0] for word in self.name.split()[:2]).upper() or '?'
+
+    @property
+    def avatar_color(self):
+        return User.AVATAR_COLORS[(self.pk or 0) % len(User.AVATAR_COLORS)]

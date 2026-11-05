@@ -3,28 +3,54 @@
 {% block page_title %}Guruhlar{% endblock %}
 {% block nav_groups %}active{% endblock %}
 
+{% block extra_css %}
+<style>
+.gr-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
+.gr-card{display:flex;flex-direction:column;gap:12px;padding:18px;border-radius:14px;background:var(--surface);border:1px solid var(--border);box-shadow:var(--card-shadow);transition:transform .15s,border-color .15s;min-width:0}
+.gr-card[hidden]{display:none}
+.gr-card:hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--primary) 35%,var(--border))}
+.gr-top{display:flex;align-items:center;gap:12px;min-width:0}
+.gr-name{font-size:15.5px;font-weight:700;overflow-wrap:anywhere}
+.gr-desc{font-size:12.5px;color:var(--muted);overflow-wrap:anywhere}
+.gr-nums{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}
+.gr-nums b{display:block;font-size:17px;font-weight:800}
+.gr-nums span{font-size:11px;color:var(--muted)}
+.gr-stack{display:flex;align-items:center;min-height:32px}
+.gr-stack .u-avatar{box-shadow:0 0 0 2px var(--surface);margin-left:-8px}
+.gr-stack .u-avatar:first-child{margin-left:0}
+.gr-more{margin-left:8px;font-size:12px;font-weight:600;color:var(--muted)}
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="grid-sidebar-r">
-  <div class="card">
-    <div class="section-header"><span class="section-title">Guruhlar ({{ groups|length }})</span></div>
-    <div class="table-wrap">
-      <table class="table-cards">
-        <thead><tr><th>Guruh</th><th>A'zolar</th><th>Natijalar</th><th>O'rtacha band</th></tr></thead>
-        <tbody>
-          {% for g in groups %}
-          <tr>
-            <td><a href="{% url 'panel:group_detail' g.pk %}" class="link">{{ g.name }}</a>
-              {% if g.description %}<div style="font-size:11.5px;color:var(--muted)">{{ g.description }}</div>{% endif %}</td>
-            <td>{{ g.member_count }}</td>
-            <td style="color:var(--muted)">{{ g.results }}</td>
-            <td>{% if g.avg %}<span class="badge {% if g.avg >= 7 %}badge-green{% elif g.avg >= 5.5 %}badge-yellow{% else %}badge-red{% endif %}">{{ g.avg|floatformat:1 }}</span>{% else %}<span style="color:var(--muted)">—</span>{% endif %}</td>
-          </tr>
-          {% empty %}
-          <tr><td colspan="4"><div class="empty-state"><div class="empty-icon"><i class=lc-users></i></div><div class="empty-title">Hali guruh yo'q</div>O'ng tomondan birinchi guruhni yarating, keyin talabalarni qo'shing</div></td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
+  <div style="min-width:0">
+    <div class="section-header">
+      <div class="search-box"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke-width="1.8"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke-width="1.8"/></svg><input id="grQ" placeholder="Guruhni qidirish..." aria-label="Guruhni qidirish"></div>
+      <span class="count-note">{{ groups|length }} ta guruh · {{ total_members }} talaba</span>
     </div>
+    <div class="gr-cards" id="grCards">
+      {% for g in groups %}
+      <a class="gr-card" href="{% url 'panel:group_detail' g.pk %}" data-name="{{ g.name|lower }} {{ g.description|lower }}">
+        <div class="gr-top">
+          {% include 'partials/logo.html' with o=g %}
+          <div style="min-width:0"><div class="gr-name">{{ g.name }}</div>{% if g.description %}<div class="gr-desc">{{ g.description }}</div>{% endif %}</div>
+        </div>
+        <div class="gr-stack">
+          {% for m in g.members.all|slice:":6" %}{% include 'panel/_avatar.html' with u=m %}{% empty %}<span class="gr-desc">Hali a'zo yo'q</span>{% endfor %}
+          {% if g.member_count > 6 %}<span class="gr-more">+{{ g.member_count|add:"-6" }}</span>{% endif %}
+        </div>
+        <div class="gr-nums">
+          <div><b>{{ g.member_count }}</b><span>A'zo</span></div>
+          <div><b>{% if g.avg %}{{ g.avg|floatformat:1 }}{% else %}—{% endif %}</b><span>O'rtacha</span></div>
+          <div><b>{{ g.active_week }}</b><span>7 kunda faol</span></div>
+        </div>
+      </a>
+      {% empty %}
+      <div class="card" style="grid-column:1/-1"><div class="empty-state"><div class="empty-icon"><i class=lc-users></i></div><div class="empty-title">Hali guruh yo'q</div>O'ng tomondan birinchi guruhni yarating, keyin talabalarni qo'shing</div></div>
+      {% endfor %}
+    </div>
+    <div class="empty-state" id="grNone" hidden>Guruh topilmadi</div>
   </div>
 
   <div class="card" style="align-self:start">
@@ -47,4 +73,19 @@
     </div>
   </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('grQ').addEventListener('input', e => {
+  const q = e.target.value.trim().toLowerCase();
+  let shown = 0;
+  document.querySelectorAll('#grCards .gr-card').forEach(card => {
+    const hit = card.dataset.name.includes(q);
+    card.hidden = !hit;
+    if (hit) shown++;
+  });
+  document.getElementById('grNone').hidden = shown > 0 || !q;
+});
+</script>
 {% endblock %}

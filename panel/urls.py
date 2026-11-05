@@ -28,6 +28,7 @@ urlpatterns = [
     path('groups/', views.groups_list, name='groups'),
     path('groups/<int:pk>/', views.group_detail, name='group_detail'),
     path('groups/<int:pk>/search/', views.group_member_search, name='group_member_search'),
+    path('groups/<int:pk>/export/', views.group_export, name='group_export'),
 
     path('exams/', views.exams_list, name='exams'),
     path('exams/bulk/', views.exams_bulk_action, name='exams_bulk'),
