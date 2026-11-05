@@ -44,7 +44,7 @@ class ThreatWatchMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
 
-    PERMISSIONS = 'camera=(self), microphone=(self), geolocation=(), payment=(), usb=()'
+    PERMISSIONS = 'camera=(self), microphone=(self), geolocation=(self), payment=(), usb=()'
 
     def __call__(self, request):
         from .blocking import refuse_blocked
@@ -53,10 +53,25 @@ class ThreatWatchMiddleware:
         if not request.path.startswith('/tg/'):  # Telegram's servers, never a visitor
             refused = refuse_blocked(request, get_client_ip(request))
             if refused is not None:
+                refused.headers.setdefault('Permissions-Policy', self.PERMISSIONS)
+                if getattr(settings, 'CONTENT_SECURITY_POLICY', ''):
+                    refused.headers.setdefault('Content-Security-Policy', settings.CONTENT_SECURITY_POLICY)
                 return refused
         inspect_request(request)
+
+        if (request.path.startswith('/panel/') or request.path.startswith('/admin/')) \
+                and request.user.is_authenticated and request.user.is_staff \
+                and request.path != '/panel/location-required/' \
+                and not request.session.get('staff_location_verified'):
+            from django.shortcuts import redirect
+            location_redirect = redirect('/panel/location-required/?next=' + request.path)
+            location_redirect.headers.setdefault('Permissions-Policy', self.PERMISSIONS)
+            if getattr(settings, 'CONTENT_SECURITY_POLICY', ''):
+                location_redirect.headers.setdefault('Content-Security-Policy', settings.CONTENT_SECURITY_POLICY)
+            return location_redirect
+
         response = self.get_response(request)
-        # Only this site may ask for the camera (exam proctoring) or the microphone.
+        # Staff panel actions require browser permissions for camera, microphone and location.
         response.headers.setdefault('Permissions-Policy', self.PERMISSIONS)
         if getattr(settings, 'CONTENT_SECURITY_POLICY', ''):
             response.headers.setdefault('Content-Security-Policy', settings.CONTENT_SECURITY_POLICY)

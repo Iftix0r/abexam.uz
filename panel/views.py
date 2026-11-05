@@ -71,6 +71,35 @@ def panel_required(view_func):
     return checked
 
 
+@panel_required
+def location_required(request):
+    if request.method == 'POST':
+        try:
+            payload = json.loads(request.body or b'{}')
+            latitude = float(payload['latitude'])
+            longitude = float(payload['longitude'])
+            accuracy = float(payload.get('accuracy', 0))
+        except (json.JSONDecodeError, KeyError, TypeError, ValueError, OverflowError):
+            return JsonResponse({'ok': False, 'error': 'Joylashuv koordinatalari noto‘g‘ri.'}, status=400)
+        if not (-90 <= latitude <= 90 and -180 <= longitude <= 180 and accuracy >= 0):
+            return JsonResponse({'ok': False, 'error': 'Joylashuv koordinatalari noto‘g‘ri.'}, status=400)
+
+        login_log = LoginLog.objects.filter(user=request.user, status='success').order_by('-created_at').first()
+        if login_log:
+            login_log.latitude = latitude
+            login_log.longitude = longitude
+            login_log.location_accuracy = accuracy
+            login_log.location_captured_at = timezone.now()
+            login_log.save(update_fields=['latitude', 'longitude', 'location_accuracy', 'location_captured_at'])
+        request.session['staff_location_verified'] = True
+        request.session.modified = True
+        return JsonResponse({'ok': True})
+
+    if request.session.get('staff_location_verified'):
+        return redirect(request.GET.get('next', '/panel/'))
+    return render(request, 'panel/location_required.html', {'next': request.GET.get('next', '/panel/')})
+
+
 # ── Dashboard ──────────────────────────────────────────────────────────────────
 @panel_required
 def dashboard(request):

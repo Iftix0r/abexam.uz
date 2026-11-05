@@ -1144,6 +1144,9 @@ class IpBlockAndCheckTests(TestCase):
     def test_signed_in_staff_always_pass(self):
         self._block()
         self.client.force_login(self.helper)
+        session = self.client.session
+        session['staff_location_verified'] = True
+        session.save()
         self.assertEqual(self.client.get('/panel/', REMOTE_ADDR='5.5.5.5').status_code, 200)
 
     def test_blocked_students_cannot_get_in(self):
@@ -1219,9 +1222,39 @@ class IpBlockAndCheckTests(TestCase):
         self.assertIn(status, (200, 403))  # the webhook's own secret check still applies
 
     def test_permissions_policy_header(self):
-        header = self.client.get('/privacy/')['Permissions-Policy']
+        header = self.client.get('/privacy/', secure=True)['Permissions-Policy']
         self.assertIn('camera=(self)', header)
-        self.assertIn('geolocation=()', header)
+        self.assertIn('geolocation=(self)', header)
+
+    def test_staff_panel_requires_location(self):
+        self.client.force_login(self.helper)
+        response = self.client.get('/panel/', secure=True)
+        self.assertRedirects(response, '/panel/location-required/?next=/panel/', fetch_redirect_response=False)
+
+    def test_staff_location_is_saved_on_latest_login(self):
+        from users.models import LoginLog
+        self.client.force_login(self.helper)
+        LoginLog.objects.create(user=self.helper, username_attempt='yordamchi', ip='5.5.5.5', status='success')
+        response = self.client.post(
+            reverse('panel:location_required'),
+            {'latitude': 41.2995, 'longitude': 69.2401, 'accuracy': 12.5},
+            content_type='application/json', secure=True,
+        )
+        self.assertEqual(response.status_code, 200)
+        login = LoginLog.objects.get(user=self.helper)
+        self.assertEqual(login.latitude, 41.2995)
+        self.assertEqual(login.longitude, 69.2401)
+        self.assertEqual(login.location_accuracy, 12.5)
+        self.assertIsNotNone(login.location_captured_at)
+
+    def test_invalid_staff_location_is_rejected(self):
+        self.client.force_login(self.helper)
+        response = self.client.post(
+            reverse('panel:location_required'),
+            {'latitude': 91, 'longitude': 69.2401, 'accuracy': 12.5},
+            content_type='application/json', secure=True,
+        )
+        self.assertEqual(response.status_code, 400)
 
     def test_checklist_is_for_superusers_only(self):
         self.client.force_login(self.helper)

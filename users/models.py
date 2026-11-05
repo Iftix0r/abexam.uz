@@ -131,6 +131,10 @@ class LoginLog(models.Model):
     ip = models.GenericIPAddressField()
     user_agent = models.CharField(max_length=300, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES)
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
+    location_accuracy = models.FloatField(null=True, blank=True)
+    location_captured_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

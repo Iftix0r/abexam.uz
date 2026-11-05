@@ -6,6 +6,7 @@ from . import alert_views, views
 app_name = 'panel'
 
 urlpatterns = [
+    path('location-required/', views.location_required, name='location_required'),
     path('', views.dashboard, name='dashboard'),
     path('search/', views.search, name='search'),
 
