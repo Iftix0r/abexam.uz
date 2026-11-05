@@ -107,7 +107,9 @@
         {% for e in exams %}
         <tr id="exam-row-{{ e.pk }}" {% if e.is_ai_generated and not e.is_reviewed %}style="background:rgba(245,158,11,.05)"{% endif %}>
           <td><input type="checkbox" class="row-check" value="{{ e.pk }}" onchange="updateBulk()"></td>
-          <td>
+          <td><div class="u-info">
+            {% include 'panel/_avatar.html' with u=e %}
+            <div>
             <a href="{% url 'panel:exam_detail' e.pk %}" class="link">{{ e.title }}</a>
             {% if e.is_ai_generated %}
               {% if e.is_reviewed %}
@@ -116,7 +118,8 @@
                 <span style="font-size:10px;background:rgba(245,158,11,.2);color:#f59e0b;border-radius:4px;padding:1px 5px;margin-left:4px"><i class=lc-hourglass></i>&nbsp;Tekshirish kerak</span>
               {% endif %}
             {% endif %}
-          </td>
+            </div>
+          </div></td>
           <td><span class="badge badge-blue" style="white-space:nowrap">{{ e.get_exam_type_display }}</span></td>
           <td>{% if e.price == 0 %}<span style="color:var(--green)">Bepul</span>{% else %}<span style="font-weight:600;white-space:nowrap">{{ e.price|som }} so'm</span>{% endif %}</td>
           <td style="color:var(--muted)">{{ e.sections_count }}</td>

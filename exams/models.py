@@ -1,4 +1,5 @@
 import os
+import re
 from datetime import timedelta
 from django.db import models
 from django.conf import settings
@@ -6,6 +7,8 @@ from django.utils import timezone
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from ckeditor.fields import RichTextField
+
+from users.models import User
 
 class Exam(models.Model):
     EXAM_TYPES = (
@@ -28,6 +31,19 @@ class Exam(models.Model):
 
     def __str__(self):
         return self.title
+
+    @property
+    def initials(self):
+        """Logo text: type letter + test number (M12, R5). Plain initials would
+        repeat, since most titles start with the same words."""
+        numbers = re.findall(r'\d+', self.title)
+        if numbers:
+            return self.exam_type[0].upper() + numbers[-1][-2:]
+        return ''.join(word[0] for word in self.title.split()[:2]).upper() or '?'
+
+    @property
+    def avatar_color(self):
+        return User.AVATAR_COLORS[(self.pk or 0) % len(User.AVATAR_COLORS)]
 
     class Meta:
         verbose_name = 'Imtihon'

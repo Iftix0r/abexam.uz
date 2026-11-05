@@ -697,3 +697,14 @@ class ProctorAlarmSettingTests(TestCase):
         site.proctor_alarm = False
         site.save()
         self.assertContains(self.client.get(url), 'const PROCTOR_ALARM = false;')
+
+
+class ExamLogoTests(TestCase):
+    def test_logo_text_is_type_and_number(self):
+        self.assertEqual(Exam(title='IELTS Full Mock Test 12').initials, 'M12')
+        self.assertEqual(Exam(title='Reading Practice 5', exam_type='reading').initials, 'R5')
+        self.assertEqual(Exam(title='Cambridge IELTS 17 — Test 1').initials, 'M1')
+
+    def test_title_without_number_uses_initials(self):
+        self.assertEqual(Exam(title='Academic writing').initials, 'AW')
+        self.assertEqual(Exam(title='').initials, '?')

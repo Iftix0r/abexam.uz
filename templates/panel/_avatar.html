@@ -1,2 +1,2 @@
-{% comment %}Profile photo, or Telegram-style initials on the user's own colour. Pass `u`, optionally `cls`.{% endcomment %}
+{% comment %}Profile photo, or Telegram-style initials on the object's own colour. Pass `u` (a user or an exam), optionally `cls`.{% endcomment %}
 <div class="{{ cls|default:'u-avatar' }}"{% if not u.avatar %} style="background-color:{{ u.avatar_color }}"{% endif %}>{% if u.avatar %}<img src="{{ u.avatar.url }}" alt="">{% else %}{{ u.initials }}{% endif %}</div>
