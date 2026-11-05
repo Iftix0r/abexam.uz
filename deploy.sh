@@ -80,6 +80,7 @@ fi
 
 step "Migratsiyalar"
 python manage.py migrate --noinput
+python manage.py migrate --check
 
 step "Statik fayllar"
 python manage.py collectstatic --noinput -v 0
