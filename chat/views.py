@@ -2,7 +2,7 @@ from datetime import timedelta
 
 from django.contrib import messages as flash
 from django.contrib.auth.decorators import login_required
-from django.db.models import Avg, Count, Max, Q
+from django.db.models import Avg, Count, F, Max, OuterRef, Q, Subquery
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -17,11 +17,12 @@ from panel.views import _user_search, panel_required
 from users.models import User
 
 from . import services
-from .models import ChatBlock, ChatMessage, ChatMute, ChatReaction, ChatRoom, ChatThread, SupportThread
+from .models import ChatBlock, ChatMessage, ChatMute, ChatPresence, ChatReaction, ChatRoom, ChatThread, SupportThread
 
 PAGE = 50
 RECENT_REACTIONS = 40
 SEARCH_LIMIT = 30
+MEMBER_PAGE = 60
 REMOVED_WINDOW = timedelta(minutes=10)
 ADMIN_NAME = 'AB Admin'
 
@@ -182,14 +183,27 @@ def message_list(request, slug):
 @login_required
 @require_GET
 def members(request, slug):
+    """Everyone with an active account, like the count in the room header:
+    online first, then by last visit, then those who never opened the chat."""
     room = _room(slug)
     services.touch_presence(room, request.user)  # this can arrive before the first message poll
     since = services.online_since()
-    rows = room.presence.select_related('user').order_by('-last_seen')[:60]
-    return JsonResponse({'members': [{
-        'id': p.user_id, 'name': p.user.short_name, 'initials': p.user.initials, 'color': p.user.avatar_color,
-        'online': p.last_seen >= since, 'staff': p.user.is_staff, 'premium': p.user.is_premium,
-    } for p in rows]})
+    people = User.objects.filter(is_active=True)
+    query = request.GET.get('q', '').strip()
+    if query:
+        # Names only: looking people up by phone or username would unmask them.
+        people = people.filter(Q(first_name__icontains=query) | Q(last_name__icontains=query))
+    seen = ChatPresence.objects.filter(room=room, user=OuterRef('pk')).values('last_seen')[:1]
+    people = people.annotate(seen=Subquery(seen)).order_by(F('seen').desc(nulls_last=True), '-date_joined')
+    total = people.count()
+    offset = _int(request.GET.get('offset')) or 0
+    return JsonResponse({
+        'total': total, 'total_label': services.compact_number(total), 'next': offset + MEMBER_PAGE,
+        'members': [{
+            'id': u.pk, 'name': u.short_name, 'initials': u.initials, 'color': u.avatar_color,
+            'online': bool(u.seen and u.seen >= since), 'staff': u.is_staff, 'premium': u.is_premium,
+        } for u in people[offset:offset + MEMBER_PAGE]],
+    })
 
 
 @login_required

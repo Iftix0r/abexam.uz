@@ -475,6 +475,32 @@ class RoomExtrasTests(TestCase):
         self.assertEqual(data[1]['name'], 'Vali')
         self.assertNotIn('998901112233', str(data))
 
+    def test_everyone_is_a_member_even_without_opening_the_chat(self):
+        User.objects.create_user('vali', password='pw', first_name='Vali')
+        User.objects.create_user('blok', password='pw', first_name='Blok', is_active=False)
+        data = self.client.get(reverse('chat:members', args=['umumiy'])).json()
+        self.assertEqual(data['total'], 2)
+        self.assertEqual({m['name'] for m in data['members']}, {'Ali', 'Vali'})
+
+    def test_member_pages_and_compact_total(self):
+        for i in range(70):
+            User.objects.create_user(f'u{i}', password='pw', first_name=f'Talaba{i}')
+        url = reverse('chat:members', args=['umumiy'])
+        first = self.client.get(url).json()
+        self.assertEqual((len(first['members']), first['total'], first['next']), (60, 71, 60))
+        self.assertEqual(len(self.client.get(url, {'offset': 60}).json()['members']), 11)
+
+    def test_member_search_is_by_name_not_phone(self):
+        User.objects.create_user('998901112233', password='pw', first_name='Dilnoza', phone_number='+998901112233')
+        url = reverse('chat:members', args=['umumiy'])
+        self.assertEqual(self.client.get(url, {'q': 'dilno'}).json()['total'], 1)
+        self.assertEqual(self.client.get(url, {'q': '99890'}).json()['total'], 0)
+
+    def test_presence_race_does_not_break_the_chat(self):
+        from django.db import IntegrityError
+        with mock.patch('chat.services.ChatPresence.objects.update_or_create', side_effect=IntegrityError):
+            self.assertEqual(self.client.get(reverse('chat:messages', args=['umumiy'])).status_code, 200)
+
     def test_i_am_online_in_the_first_member_list(self):
         data = self.client.get(reverse('chat:members', args=['umumiy'])).json()['members']
         self.assertEqual([(m['name'], m['online']) for m in data], [('Ali', True)])

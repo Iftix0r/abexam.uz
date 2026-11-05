@@ -4,6 +4,7 @@ from datetime import timedelta
 from html import escape
 
 from django.core.cache import cache
+from django.db import DatabaseError
 from django.db.models import F, Q
 from django.utils import timezone
 
@@ -112,8 +113,14 @@ def can_access(message, user):
 
 # ── Presence ───────────────────────────────────────────────────────────────────
 def touch_presence(room, user):
-    if cache.add(f'chat_seen:{room.pk}:{user.pk}', 1, PRESENCE_WRITE_EVERY):
+    if not cache.add(f'chat_seen:{room.pk}:{user.pk}', 1, PRESENCE_WRITE_EVERY):
+        return
+    try:
         ChatPresence.objects.update_or_create(room=room, user=user, defaults={'last_seen': timezone.now()})
+    except DatabaseError:
+        # Opening a room sends two requests at once, and both can try to create
+        # this row. Presence is a nicety: it must never fail the chat itself.
+        pass
 
 
 def online_since():
