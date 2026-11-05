@@ -34,19 +34,15 @@ tarixi{% endblock %} {% block nav_users %}active{% endblock %} {% block content
           </td>
           <td style="font-family: monospace; font-size: 12px">{{ log.ip }}</td>
           <td>
-            {% if log.latitude != None and log.longitude != None %}
-            <a
+            {% if log.latitude != None and log.longitude != None %}<a
               class="link"
               target="_blank"
               rel="noopener noreferrer"
               href="https://www.google.com/maps?q={{ log.latitude }},{{ log.longitude }}"
               >{{ log.latitude }}, {{ log.longitude }}</a
-            >
-            {% else %}
-            <span style="color: var(--muted); font-size: 12px"
+            >{% else %}<span style="color: var(--muted); font-size: 12px"
               >Saqlanmagan</span
-            >
-            {% endif %}
+            >{% endif %}
           </td>
           <td style="color: var(--muted); font-size: 11px">
             {{ log.user_agent|truncatechars:60 }}
