@@ -1,68 +1,80 @@
-{% extends 'panel/base.html' %} {% block title %}{{ obj.display_name }} - Login
-loglari{% endblock %} {% block page_title %}{{ obj.display_name }} - Login
-tarixi{% endblock %} {% block nav_users %}active{% endblock %} {% block content
-%}
-<nav class="breadcrumb">
-  <a href="{% url 'panel:users' %}">Foydalanuvchilar</a
-  ><span class="bc-sep">/</span>
-  <a href="{% url 'panel:user_detail' obj.pk %}">{{ obj.display_name }}</a
-  ><span class="bc-sep">/</span>
-  <span class="bc-current">Login tarixi</span>
-</nav>
-<div class="card" style="padding: 0">
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>Holat</th>
-          <th>IP manzil</th>
-          <th>Joylashuv</th>
-          <th>Brauzer</th>
-          <th>Vaqt</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for log in logs %}
-        <tr>
-          <td>
-            {% if log.status == 'success' %}<span class="badge badge-green"
-              >Kirdi</span
-            >{% elif log.status == 'failed' %}<span class="badge badge-yellow"
-              >Xato parol</span
-            >{% else %}<span class="badge badge-red">Bloklangan</span>{% endif
-            %}
-          </td>
-          <td style="font-family: monospace; font-size: 12px">{{ log.ip }}</td>
-          <td>
-            {% if log.latitude != None and log.longitude != None %}<a
-              class="link"
-              target="_blank"
-              rel="noopener noreferrer"
-              href="https://www.google.com/maps?q={{ log.latitude }},{{ log.longitude }}"
-              >{{ log.latitude }}, {{ log.longitude }}</a
-            >{% else %}<span style="color: var(--muted); font-size: 12px"
-              >Saqlanmagan</span
-            >{% endif %}
-          </td>
-          <td style="color: var(--muted); font-size: 11px">
-            {{ log.user_agent|truncatechars:60 }}
-          </td>
-          <td style="color: var(--muted); font-size: 12px">
-            {{ log.created_at|date:"d M Y, H:i:s" }}
-          </td>
-        </tr>
-        {% empty %}
-        <tr>
-          <td
-            colspan="5"
-            style="text-align: center; padding: 32px; color: var(--muted)"
-          >
-            Log yo'q
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-</div>
-{% endblock %}
+<!doctype html>
+<html lang="uz">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Login tarixi</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 24px;
+        background: #f6f6f6;
+        color: #222;
+      }
+      a {
+        color: #b91c1c;
+      }
+      main {
+        max-width: 1100px;
+        margin: auto;
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+        text-align: left;
+      }
+      th {
+        background: #eee;
+      }
+      td {
+        font-size: 13px;
+      }
+      .muted {
+        color: #777;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Login tarixi</h1>
+      <p><a href="{% url 'panel:users' %}">Foydalanuvchilar</a></p>
+      <table>
+        <thead>
+          <tr>
+            <th>Holat</th>
+            <th>IP manzil</th>
+            <th>Joylashuv</th>
+            <th>Brauzer</th>
+            <th>Vaqt</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for log in logs %}
+          <tr>
+            <td>{{ log.status }}</td>
+            <td>{{ log.ip }}</td>
+            <td>
+              {{ log.latitude|default:'Saqlanmagan' }} {{
+              log.longitude|default:'' }}
+            </td>
+            <td>{{ log.user_agent }}</td>
+            <td>{{ log.created_at }}</td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="5" class="muted">Log yo'q</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </main>
+  </body>
+</html>
