@@ -607,3 +607,54 @@ class GroupPageTests(TestCase):
         self.assertFalse(ChatMessage.objects.filter(text='x').exists())
         self.assertEqual(self.client.get(reverse('panel:group_export', args=[self.group.pk])).status_code, 302)
 
+
+class UserProfilePageTests(TestCase):
+    def setUp(self):
+        from datetime import timedelta
+        from django.core.cache import cache
+        from exams.models import Exam, UserResult
+        from payments.models import Transaction
+        cache.clear()
+        self.boss = User.objects.create_superuser('boss', password='pw')
+        self.ali = User.objects.create_user('ali', password='pw', first_name='Ali')
+        exam = Exam.objects.create(title='Mock 1')
+        old = UserResult.objects.create(user=self.ali, exam=exam, score=5.5, listening_score=6, writing_score=4)
+        UserResult.objects.filter(pk=old.pk).update(completed_at=timezone.now() - timedelta(days=30))
+        UserResult.objects.create(user=self.ali, exam=exam, score=7, listening_score=8, writing_score=5)
+        Transaction.objects.create(user=self.ali, amount=50000, status='success')
+        Transaction.objects.create(user=self.ali, amount=90000, status='failed')
+        self.client.force_login(self.boss)
+
+    def _page(self, user=None):
+        return self.client.get(reverse('panel:user_detail', args=[(user or self.ali).pk]))
+
+    def test_headline_numbers(self):
+        page = self._page()
+        self.assertEqual(page.context['last_result'].score, 7)
+        self.assertEqual(page.context['band_change'], 1.5)
+        self.assertEqual(page.context['stats']['best'], 7)
+        self.assertEqual(page.context['paid_total'], 50000)
+
+    def test_skills_mark_the_weakest(self):
+        skills = {k['label']: k for k in self._page().context['skills']}
+        self.assertTrue(skills['Writing']['weak'])
+        self.assertNotIn('Speaking', skills)
+
+    def test_activity_is_newest_first_and_short(self):
+        events = self._page().context['activity']
+        self.assertLessEqual(len(events), 6)
+        self.assertEqual([e['when'] for e in events], sorted((e['when'] for e in events), reverse=True))
+
+    def test_user_with_nothing_yet_still_opens(self):
+        fresh = User.objects.create_user('yangi', password='pw')
+        page = self._page(fresh)
+        self.assertEqual(page.status_code, 200)
+        self.assertIsNone(page.context['last_result'])
+        self.assertEqual([e['kind'] for e in page.context['activity']], ['joined'])
+
+    def test_a_failed_payment_is_not_shown_as_income(self):
+        self.assertContains(self._page(), 'text-decoration:line-through')
+
+    def test_no_delete_on_own_profile(self):
+        self.assertNotContains(self._page(self.boss), 'deleteUser(%d)' % self.boss.pk)
+

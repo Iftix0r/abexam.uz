@@ -6,8 +6,50 @@
 
 {% block extra_css %}
 <style>
+.pf-hero{padding:0;overflow:hidden;margin-bottom:20px}
+.pf-cover{position:relative;height:128px;overflow:hidden;background:linear-gradient(115deg,var(--u),color-mix(in srgb,var(--u) 45%,#d32f2f) 60%,color-mix(in srgb,var(--u) 30%,#3b1d6e))}
+.pf-cover img{position:absolute;inset:-48px;width:calc(100% + 96px);height:calc(100% + 96px);max-width:none;object-fit:cover;filter:blur(48px) saturate(1.3) brightness(.92)}
+.pf-cover::after{content:'';position:absolute;inset:0;background:radial-gradient(60% 120% at 85% 0,rgba(255,255,255,.28),transparent 70%)}
+.pf-body{display:flex;align-items:flex-end;gap:18px;padding:0 24px 20px;flex-wrap:wrap}
+.pf-photo{position:relative;margin-top:-52px;flex-shrink:0}
+.pf-avatar{width:112px;height:112px;border-radius:50%;display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:38px;font-weight:700;color:#fff;box-shadow:0 0 0 4px var(--surface),0 8px 24px #0003}
+.pf-avatar img{width:100%;height:100%;object-fit:cover}
+.pf-dot{position:absolute;right:8px;bottom:8px;width:18px;height:18px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 3px var(--surface)}
+.pf-id{flex:1;min-width:220px;padding-top:12px}
+.pf-id h1{display:flex;align-items:center;gap:7px;font-size:22px;font-weight:800;letter-spacing:-.015em;overflow-wrap:anywhere}
+.pf-id p{font-size:13px;color:var(--muted);margin-top:2px}
+.pf-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+.pf-bio{font-size:13px;color:var(--muted);line-height:1.5;padding:0 24px 20px;margin-top:-6px;overflow-wrap:anywhere}
+.pf-actions{display:flex;gap:8px;flex-wrap:wrap}
+.pf-sub{font-size:12px;color:var(--muted);margin-top:3px}
+.pf-sub b{font-weight:700}
+.pf-up{color:var(--green)}.pf-down{color:var(--red)}
+.pf-money{font-size:20px;white-space:nowrap}
+.pf-tabs{margin-bottom:16px}
+.pf-tabs a{cursor:pointer}
+.pf-panel{display:flex;flex-direction:column;gap:16px;min-width:0}
+.pf-panel[hidden]{display:none}
+.pf-side{display:flex;flex-direction:column;gap:16px;min-width:0}
+.pf-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+.pf-split{border-top:1px solid var(--border);margin:16px 0}
+.pf-line{display:flex;gap:8px}
+.pf-line .form-input{flex:1;min-width:0}
+.pf-skill{margin-bottom:13px}
+.pf-skill:last-child{margin-bottom:0}
+.pf-skill>div:first-child{display:flex;justify-content:space-between;font-size:13px;font-weight:600;margin-bottom:5px}
+.pf-bar{height:7px;border-radius:7px;background:var(--surface2);overflow:hidden}
+.pf-bar i{display:block;height:100%;border-radius:7px}
+.pf-event{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid var(--border);min-width:0}
+.pf-event:last-child{border-bottom:none}
+.pf-event>span:first-child{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px}
+.pf-event div{flex:1;min-width:0;font-size:13px;font-weight:600;overflow-wrap:anywhere}
+.pf-event small{display:block;font-size:11.5px;font-weight:400;color:var(--muted);margin-top:1px}
+.pf-group{display:flex;align-items:center;gap:9px;padding:6px 0;min-width:0}
+.pf-group a{flex:1;min-width:0;font-size:13px;font-weight:600;overflow-wrap:anywhere}
+.pf-tools{display:grid;gap:8px}
+.pf-tools .btn{width:100%;justify-content:center}
 .tgc-card{border-color:var(--border)}
-.tgc-card.on{border-color:#229ed955;background:linear-gradient(160deg,#229ed912,transparent 60%),var(--surface)}
+.tgc-card.on{border-color:#229ed955;background:linear-gradient(160deg,#229ed912,transparent 60%),var(--glass-card,var(--surface))}
 .tg-logo{width:32px;height:32px;border-radius:50%;background:#229ed9;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .tgc-card:not(.on) .tg-logo{background:var(--muted);opacity:.5}
 .tg-logo svg{width:16px;height:16px;fill:#fff;margin-left:-1px}
@@ -18,74 +60,279 @@
 .tg-rows a{color:#229ed9}
 .tg-send{background:#229ed9;color:#fff;border:0}
 .tg-send:hover{background:#1b8bc2}
+@media (max-width:560px){
+  .pf-cover{height:96px}
+  .pf-body{padding:0 16px 16px;gap:8px;flex-direction:column;align-items:center;text-align:center}
+  .pf-photo{margin-top:-48px}
+  .pf-avatar{width:96px;height:96px;font-size:32px}
+  .pf-id{min-width:0;width:100%;padding-top:4px}
+  .pf-id h1{justify-content:center;font-size:20px}
+  .pf-tags{justify-content:center}
+  .pf-bio{padding:0 16px 16px;text-align:center}
+  .pf-actions{display:grid;grid-template-columns:1fr 1fr;width:100%;margin-top:6px}
+  .pf-actions .btn{justify-content:center}
+  .pf-actions .btn-primary{grid-column:1/-1}
+  .pf-money{font-size:17px}
+  table.table-cards.pf-results tr{display:grid;grid-template-columns:repeat(4,1fr);column-gap:8px;align-items:center;padding:10px 12px}
+  table.table-cards.pf-results td{width:auto;border:none;padding:0;min-width:0;text-align:left}
+  table.table-cards.pf-results td:nth-child(1){grid-area:1/1/2/4;justify-content:flex-start;font-weight:600}
+  table.table-cards.pf-results td:nth-child(2){grid-area:1/4/2/5;justify-content:flex-end}
+  table.table-cards.pf-results td:nth-child(1)::before,table.table-cards.pf-results td:nth-child(2)::before,table.table-cards.pf-results td:nth-child(7)::before{display:none}
+  table.table-cards.pf-results td:nth-child(n+3):nth-child(-n+6){grid-row:2;justify-content:flex-start;gap:6px;margin-top:8px}
+  table.table-cards.pf-results td:nth-child(7){grid-area:3/1/4/5;justify-content:flex-start;margin-top:6px}
+  table.table-cards.pf-results td[colspan]{grid-area:1/1/2/5;justify-content:center}
+}
 </style>
 {% endblock %}
 
 {% block content %}
-<div style="margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
-  <nav class="breadcrumb" style="margin-bottom:0">
-    <a href="{% url 'panel:users' %}">Foydalanuvchilar</a>
-    <span class="bc-sep">/</span>
-    <span class="bc-current">{{ obj.display_name }}</span>
-  </nav>
-  <div style="display:flex;gap:8px;flex-wrap:wrap">
-    <a href="{% url 'panel:user_report' obj.pk %}" target="_blank" class="btn btn-ghost btn-sm"><i class=lc-file-text></i>&nbsp;Progress hisoboti</a>
-    <button onclick="openEditModal()" class="btn btn-ghost btn-sm"><i class=lc-pencil></i>&nbsp;Tahrirlash</button>
-    <button onclick="openPasswordModal()" class="btn btn-ghost btn-sm"><i class=lc-key-round></i>&nbsp;Parol</button>
-    {% if obj.is_superuser and request.user.is_superuser and obj.pk != request.user.pk %}
-    <button onclick="dropSuperuser({{ obj.pk }})" class="btn btn-ghost btn-sm">Oddiy admin qilish</button>
-    {% endif %}
-    {% if not obj.is_superuser and obj.pk != request.user.pk %}
-    <button onclick="makeStaff({{ obj.pk }})" class="btn btn-ghost btn-sm" id="staff-btn">
-      {% if obj.is_staff %}Admin olib tashlash{% else %}Admin qilish{% endif %}
-    </button>
-    <button onclick="deleteUser({{ obj.pk }})" class="btn btn-danger btn-sm">O'chirish</button>
-    {% endif %}
-  </div>
-</div>
+<nav class="breadcrumb">
+  <a href="{% url 'panel:users' %}">Foydalanuvchilar</a>
+  <span class="bc-sep">/</span>
+  <span class="bc-current">{{ obj.display_name }}</span>
+</nav>
 
-<div class="grid-sidebar-l">
-
-  <!-- Left col -->
-  <div style="display:flex;flex-direction:column;gap:16px">
-
-    <!-- Profile card -->
-    <div class="card" style="text-align:center">
-      <div class="u-avatar" style="width:80px;height:80px;border-radius:50%;background-color:{{ obj.avatar_color }};display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:#fff;margin:0 auto 14px;overflow:hidden;border:3px solid var(--border)">
-        {% if obj.avatar %}<img src="{{ obj.avatar.url }}" style="width:100%;height:100%;object-fit:cover">{% else %}{{ obj.initials }}{% endif %}
-      </div>
-      <div style="font-size:17px;font-weight:700">{{ obj.display_name }}</div>
-      <div style="font-size:12px;color:var(--muted);margin-top:3px">{% if obj.has_own_username %}@{{ obj.username }}{% else %}{{ obj.phone_number }}{% endif %}</div>
-      <div style="margin-top:10px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap">
-        {% if obj.is_active %}<span class="badge badge-green">Faol</span>{% else %}<span class="badge badge-red">Bloklangan</span>{% endif %}
+<section class="card pf-hero" style="--u:{{ obj.avatar_color }}">
+  <div class="pf-cover">{% if obj.avatar %}<img src="{{ obj.avatar.url }}" alt="">{% endif %}</div>
+  <div class="pf-body">
+    <div class="pf-photo">
+      {% include 'panel/_avatar.html' with u=obj cls='pf-avatar' %}
+      {% if online %}<span class="pf-dot" title="Onlayn"></span>{% endif %}
+    </div>
+    <div class="pf-id">
+      <h1>{{ obj.display_name }}{% if obj.is_premium %}<i class=lc-premium title="AB Premium"></i>{% endif %}</h1>
+      <p>{% if obj.has_own_username %}@{{ obj.username }}{% else %}{{ obj.phone_number }}{% endif %} · {% if online %}Onlayn{% elif obj.last_login %}Oxirgi kirish {{ obj.last_login|date:"d M, H:i" }}{% else %}Hali kirmagan{% endif %}</p>
+      <div class="pf-tags">
+        <span class="badge {% if obj.is_active %}badge-green{% else %}badge-red{% endif %}" id="status-badge">{% if obj.is_active %}Faol{% else %}Bloklangan{% endif %}</span>
         {% if obj.is_superuser %}<span class="badge badge-purple">Superadmin</span>
         {% elif obj.is_staff %}<span class="badge badge-blue">Admin</span>{% endif %}
         {% if obj.is_active_student %}<span class="badge badge-yellow">Talaba</span>{% endif %}
+        {% if tg and not tg.is_blocked %}<span class="badge badge-blue">Telegram</span>{% endif %}
       </div>
-      {% if obj.bio %}
-      <div style="font-size:12px;color:var(--muted);margin-top:10px;line-height:1.5">{{ obj.bio }}</div>
-      {% endif %}
-      <button onclick="toggleUser({{ obj.pk }})" class="btn btn-ghost btn-sm" style="margin-top:14px;width:100%" id="toggle-btn">
-        {% if obj.is_active %}<i class=lc-ban></i>&nbsp;Bloklash{% else %}✓ Faollashtirish{% endif %}
-      </button>
+    </div>
+    <div class="pf-actions">
+      <a href="{% url 'panel:chat_open' obj.pk %}" class="btn btn-primary btn-sm"><i class=lc-message-circle></i>AB Admin orqali yozish</a>
+      <button onclick="openEditModal()" class="btn btn-ghost btn-sm"><i class=lc-pencil></i>Tahrirlash</button>
+      <a href="{% url 'panel:user_report' obj.pk %}" target="_blank" class="btn btn-ghost btn-sm"><i class=lc-file-text></i>Progress hisoboti</a>
+    </div>
+  </div>
+  {% if obj.bio %}<div class="pf-bio">{{ obj.bio }}</div>{% endif %}
+</section>
+
+<div class="stat-grid">
+  <div class="stat-card"><div class="stat-icon" style="background:#3b82f618;color:var(--blue);font-size:20px"><i class=lc-target></i></div><div>
+    <div class="stat-val">{% if last_result %}{{ last_result.score }}{% else %}—{% endif %}</div><div class="stat-label">Oxirgi band</div>
+    {% if band_change %}<div class="pf-sub"><b class="{% if band_change > 0 %}pf-up{% else %}pf-down{% endif %}">{% if band_change > 0 %}+{% endif %}{{ band_change }}</b> oldingisiga nisbatan</div>{% endif %}
+  </div></div>
+  <div class="stat-card"><div class="stat-icon" style="background:#eab30818;color:#eab308;font-size:20px"><i class=lc-trophy></i></div><div>
+    <div class="stat-val">{{ stats.best|default:"—" }}</div><div class="stat-label">Eng yaxshi</div>
+    {% if stats.avg %}<div class="pf-sub">O'rtacha {{ stats.avg|floatformat:1 }}</div>{% endif %}
+  </div></div>
+  <div class="stat-card"><div class="stat-icon" style="background:#6366f118;color:#6366f1;font-size:20px"><i class=lc-file-text></i></div><div>
+    <div class="stat-val">{{ stats.total|default:0 }}</div><div class="stat-label">Baholangan test</div>
+    {% if pending_count %}<div class="pf-sub">{{ pending_count }} tasi baholanmoqda</div>{% endif %}
+  </div></div>
+  <div class="stat-card"><div class="stat-icon" style="background:#22c55e18;color:var(--green);font-size:20px"><i class=lc-credit-card></i></div><div>
+    <div class="stat-val pf-money"><span id="balance-val">{{ obj.balance|som }}</span> so'm</div><div class="stat-label">Balans</div>
+  </div></div>
+</div>
+
+<div class="grid-sidebar-r">
+  <div style="min-width:0">
+    <div class="seg pf-tabs" role="tablist" aria-label="Profil bo'limlari">
+      <a href="#umumiy" role="tab" data-tab="umumiy" class="active">Umumiy</a>
+      <a href="#natijalar" role="tab" data-tab="natijalar">Natijalar <span class="nav-badge">{{ results|length }}</span></a>
+      <a href="#tolovlar" role="tab" data-tab="tolovlar">To'lovlar</a>
+      {% if learner or app_tokens %}<a href="#kurs" role="tab" data-tab="kurs">Ingliz tili</a>{% endif %}
     </div>
 
-    <!-- AB Premium -->
+    <div class="pf-panel" data-panel="umumiy">
+      {% if progress_count %}
+      <div class="card">
+        <div class="section-header">
+          <span class="section-title">O'sish grafigi (band)</span>
+          <span style="font-size:12px;color:var(--muted)">{{ progress_count }} ta baholangan natija</span>
+        </div>
+        <div style="position:relative;height:260px"><canvas id="progressChart"></canvas></div>
+      </div>
+      {% endif %}
+      <div class="grid-2-eq" style="gap:16px">
+        <div class="card">
+          <div class="section-title" style="margin-bottom:14px">Ko'nikmalar</div>
+          {% for k in skills %}
+          <div class="pf-skill">
+            <div><span>{{ k.label }}{% if k.weak %} <span class="badge badge-red" style="font-size:10px">Zaif tomon</span>{% endif %}</span><span>{{ k.value|floatformat:1 }}</span></div>
+            <div class="pf-bar"><i style="width:{{ k.pct }}%;background:{{ k.color }}"></i></div>
+          </div>
+          {% empty %}<div class="empty-state"><div class="empty-icon"><i class=lc-chart-column></i></div>Baholangan natija hali yo'q</div>{% endfor %}
+        </div>
+        <div class="card">
+          <div class="section-title" style="margin-bottom:6px">So'nggi faollik</div>
+          {% for e in activity %}
+          <div class="pf-event">
+            {% if e.kind == 'result' %}
+            <span style="background:#3b82f618;color:var(--blue)"><i class=lc-file-text></i></span>
+            <div>{{ e.item.exam.title|truncatechars:34 }}<small>{% if e.item.is_pending %}Baholash kutilmoqda{% else %}Band {{ e.item.score }}{% endif %} · {{ e.when|date:"d M, H:i" }}</small></div>
+            {% elif e.kind == 'payment' %}
+            <span style="background:#22c55e18;color:var(--green)"><i class=lc-credit-card></i></span>
+            <div>{{ e.item.amount|som }} so'm<small>{{ e.item.get_status_display }} · {{ e.when|date:"d M, H:i" }}</small></div>
+            {% else %}
+            <span style="background:#a855f718;color:#a855f7"><i class=lc-sparkles></i></span>
+            <div>Ro'yxatdan o'tdi<small>{{ e.when|date:"d M Y" }}</small></div>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div class="pf-panel" data-panel="natijalar" hidden>
+    <!-- Natijalar -->
     <div class="card">
+      <div class="section-header">
+        <span class="section-title">Natijalar ({{ results|length }})</span>
+      </div>
+      <div class="table-wrap">
+        <table class="table-cards pf-results">
+          <thead><tr><th>Imtihon</th><th>Ball</th><th>L</th><th>R</th><th>W</th><th>S</th><th>Sana</th></tr></thead>
+          <tbody>
+            {% for r in results %}
+            <tr>
+              <td><a href="{% url 'panel:exam_detail' r.exam.pk %}" class="link">{{ r.exam.title|truncatechars:28 }}</a></td>
+              <td>{% if r.is_pending %}<a href="{% url 'panel:result_grade' r.pk %}" class="badge badge-yellow"><i class=lc-hourglass></i>&nbsp;Baholash</a>{% elif r.score >= 7.5 %}<span class="badge badge-green">{{ r.score }}</span>{% elif r.score >= 6.0 %}<span class="badge badge-yellow">{{ r.score }}</span>{% else %}<span class="badge badge-red">{{ r.score }}</span>{% endif %}</td>
+              <td style="color:var(--muted);font-size:12px">{{ r.listening_score|default:"—" }}</td>
+              <td style="color:var(--muted);font-size:12px">{{ r.reading_score|default:"—" }}</td>
+              <td style="color:var(--muted);font-size:12px">{{ r.writing_score|default:"—" }}</td>
+              <td style="color:var(--muted);font-size:12px">{{ r.speaking_score|default:"—" }}</td>
+              <td style="color:var(--muted);font-size:11px">{{ r.completed_at|date:"d M Y" }}</td>
+            </tr>
+            {% empty %}<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--muted)">Natija yo'q</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    </div>
+
+    <div class="pf-panel" data-panel="tolovlar" hidden>
+    <!-- Tranzaksiyalar -->
+    <div class="card">
+      <div class="section-header">
+        <span class="section-title">So'nggi tranzaksiyalar</span>
+        <span class="count-note">Jami to'lagan: {{ paid_total|som }} so'm</span>
+      </div>
+      <div class="table-wrap">
+        <table class="table-cards">
+          <thead><tr><th>Summa</th><th>Usul</th><th>Holat</th><th>Izoh</th><th>Sana</th></tr></thead>
+          <tbody>
+            {% for tx in transactions %}
+            <tr>
+              <td style="font-weight:600;{% if tx.status == 'success' %}color:var(--green){% elif tx.status != 'pending' %}color:var(--muted);text-decoration:line-through{% endif %}">{{ tx.amount|som }} so'm</td>
+              <td><span class="badge badge-blue" style="font-size:10px">{{ tx.get_method_display }}</span></td>
+              <td>{% if tx.status == 'success' %}<span class="badge badge-green" style="font-size:10px">OK</span>{% elif tx.status == 'pending' %}<span class="badge badge-yellow" style="font-size:10px">Kutilmoqda</span>{% else %}<span class="badge badge-red" style="font-size:10px">Xato</span>{% endif %}</td>
+              <td style="color:var(--muted);font-size:12px">{{ tx.description|default:"—"|truncatechars:30 }}</td>
+              <td style="color:var(--muted);font-size:11px">{{ tx.created_at|date:"d M Y, H:i" }}</td>
+            </tr>
+            {% empty %}<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--muted)">Tranzaksiya yo'q</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    </div>
+
+    {% if learner or app_tokens %}
+    <div class="pf-panel" data-panel="kurs" hidden>
+    <!-- Ingliz tili kursi -->
+        <div class="card">
+      <div class="section-header">
+        <span class="section-title">Ingliz tili kursi</span>
+        <a href="{% url 'panel:english_learners' %}?q={{ obj.username|urlencode }}" class="btn btn-ghost btn-sm">O'quvchilar ro'yxati</a>
+      </div>
+      {% if learner %}
+      <div class="grid-6-stat" style="margin-bottom:{% if app_tokens %}16px{% else %}0{% endif %}">
+        <div style="background:var(--surface2);border-radius:8px;padding:12px;text-align:center"><div style="font-size:18px;font-weight:700;color:var(--primary)">{{ learner.level|default:"—" }}</div><div style="font-size:11px;color:var(--muted)">Daraja</div></div>
+        <div style="background:var(--surface2);border-radius:8px;padding:12px;text-align:center"><div style="font-size:18px;font-weight:700;color:var(--yellow)">{{ learner.xp }}</div><div style="font-size:11px;color:var(--muted)">XP</div></div>
+        <div style="background:var(--surface2);border-radius:8px;padding:12px;text-align:center"><div style="font-size:18px;font-weight:700;color:#f97316"><i class=lc-flame></i>&nbsp;{{ learner.current_streak }}</div><div style="font-size:11px;color:var(--muted)">Seriya (eng uzun {{ learner.best_streak }})</div></div>
+        <div style="background:var(--surface2);border-radius:8px;padding:12px;text-align:center"><div style="font-size:18px;font-weight:700;color:var(--green)">{{ learn_stats.done }}</div><div style="font-size:11px;color:var(--muted)">Darslar</div></div>
+        <div style="background:var(--surface2);border-radius:8px;padding:12px;text-align:center"><div style="font-size:18px;font-weight:700">{{ learn_stats.avg|floatformat:0|default:"—" }}%</div><div style="font-size:11px;color:var(--muted)">O'rtacha ball</div></div>
+        <div style="background:var(--surface2);border-radius:8px;padding:12px;text-align:center"><div style="font-size:18px;font-weight:700;color:var(--blue)">{{ learn_words }}</div><div style="font-size:11px;color:var(--muted)">So'zlar</div></div>
+      </div>
+      {% endif %}
+      {% if app_tokens %}
+      <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em"><i class=lc-smartphone></i>&nbsp;Ilova qurilmalari</div>
+      <div class="table-wrap">
+        <table class="table-cards">
+          <thead><tr><th>Qurilma</th><th>Tizim</th><th>IP</th><th>Kirgan</th><th>Oxirgi faollik</th><th></th></tr></thead>
+          <tbody>
+            {% for t in app_tokens %}
+            <tr>
+              <td style="font-weight:600">{{ t.device|default:"Noma'lum" }}{% if t.app_version %} <span class="badge badge-gray">v{{ t.app_version }}</span>{% endif %}</td>
+              <td>{{ t.platform|default:"—" }}</td>
+              <td style="font-family:monospace;font-size:12px">{{ t.ip|default:"—" }}</td>
+              <td style="color:var(--muted);font-size:12px">{{ t.created_at|date:"d M Y, H:i" }}</td>
+              <td style="color:var(--muted);font-size:12px">{{ t.last_used_at|date:"d M Y, H:i"|default:"—" }}</td>
+              <td>
+                <form method="post" action="{% url 'panel:english_device_revoke' t.pk %}" data-confirm="Bu qurilmani ilovadan chiqarasizmi?">
+                  {% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+                  <button class="btn btn-danger btn-sm">Chiqarish</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+    </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <aside class="pf-side">
+    <div class="card">
+      <div class="pf-label">Balansni o'zgartirish</div>
+      <div class="pf-line">
+        <input type="number" id="add-amount" class="form-input" placeholder="Summa (+/-)" aria-label="Summa">
+        <button onclick="addBalance({{ obj.pk }})" class="btn btn-primary btn-sm">Qo'shish</button>
+      </div>
+      <input type="text" id="balance-note" class="form-input" style="margin-top:8px" placeholder="Izoh (ixtiyoriy)" aria-label="Izoh">
+      <div class="pf-split"></div>
       <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px">
-        <span style="font-size:14px;font-weight:700">AB Premium</span>
+        <span class="pf-label" style="margin:0">AB Premium</span>
         {% if obj.is_premium %}<span class="badge badge-blue">{{ obj.premium_until|date:"d M Y" }} gacha</span>{% else %}<span class="badge badge-gray">Yo'q</span>{% endif %}
       </div>
-      <div style="display:flex;gap:8px">
-        <input type="number" id="premium-days" min="1" value="30" class="form-input" style="flex:1;min-width:0" aria-label="Kun">
+      <div class="pf-line">
+        <input type="number" id="premium-days" min="1" value="30" class="form-input" aria-label="Kun">
         <button onclick="setPremium({{ obj.pk }})" class="btn btn-primary btn-sm">Berish</button>
         {% if obj.is_premium %}<button onclick="setPremium({{ obj.pk }}, 0)" class="btn btn-ghost btn-sm">Bekor</button>{% endif %}
       </div>
-      <a href="{% url 'panel:chat_open' obj.pk %}" class="btn btn-ghost btn-sm" style="margin-top:10px;width:100%;justify-content:center">AB Admin orqali yozish</a>
+    </div>
+
+    <div class="card">
+      <div class="pf-label">Guruhlar</div>
+      {% for g in user_groups %}
+      <form method="post" action="{% url 'panel:group_detail' g.pk %}" class="pf-group">
+        {% csrf_token %}<input type="hidden" name="action" value="remove"><input type="hidden" name="user_id" value="{{ obj.pk }}"><input type="hidden" name="back" value="{{ request.path }}">
+        {% include 'partials/logo.html' with o=g size='sm' %}
+        <a href="{% url 'panel:group_detail' g.pk %}">{{ g.name }}</a>
+        <button class="icon-btn danger" title="Guruhdan chiqarish" aria-label="Guruhdan chiqarish"><i class=lc-x></i></button>
+      </form>
+      {% empty %}<div style="font-size:12.5px;color:var(--muted)">Hech qaysi guruhda emas</div>{% endfor %}
+      {% if other_groups %}
+      <form method="post" id="add-group-form" style="margin-top:10px">
+        {% csrf_token %}<input type="hidden" name="action" value="add"><input type="hidden" name="user_id" value="{{ obj.pk }}"><input type="hidden" name="back" value="{{ request.path }}">
+        <select class="form-input" aria-label="Guruhga qo'shish" onchange="if(this.value){this.form.action=this.value;this.form.submit()}">
+          <option value="">+ Guruhga qo'shish…</option>
+          {% for g in other_groups %}<option value="{% url 'panel:group_detail' g.pk %}">{{ g.name }}</option>{% endfor %}
+        </select>
+      </form>
+      {% endif %}
     </div>
 
     <!-- Telegram -->
-    <div class="card tgc-card{% if tg %} on{% endif %}">
+    <div class="card tgc-card{% if tg %} on{% endif %}" id="pf-telegram">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px">
         <div style="display:flex;align-items:center;gap:10px">
           <span class="tg-logo"><svg viewBox="0 0 24 24"><path d="M21.9 4.3 18.8 19c-.2 1-.8 1.3-1.7.8l-4.6-3.4-2.2 2.1c-.3.3-.5.5-1 .5l.3-4.7 8.6-7.8c.4-.3-.1-.5-.6-.2L6.9 13 2.4 11.6c-1-.3-1-1 .2-1.5L20.6 3.2c.8-.3 1.6.2 1.3 1.1z"/></svg></span>
@@ -110,7 +357,7 @@
       <form method="post" action="{% url 'panel:user_tg_message' obj.pk %}" style="margin-top:14px">
         {% csrf_token %}
         <textarea name="text" class="form-input" rows="2" placeholder="Bot orqali xabar yozish..." required style="min-height:60px;font-size:13px"></textarea>
-        <button class="btn btn-sm tg-send" style="width:100%;margin-top:8px">✈ Telegramga yuborish</button>
+        <button class="btn btn-sm tg-send" style="width:100%;margin-top:8px"><i class=lc-send></i>Telegramga yuborish</button>
       </form>
       {% endif %}
       <form method="post" action="{% url 'panel:user_tg_unlink' obj.pk %}" data-confirm="Telegram bot bu hisobdan uzilsinmi? Natija xabarlari bormay qoladi.">
@@ -125,179 +372,34 @@
       {% endif %}
     </div>
 
-    <!-- Guruhlar -->
     <div class="card">
-      <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Guruhlar</div>
-      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">
-        {% for g in user_groups %}
-        <form method="post" action="{% url 'panel:group_detail' g.pk %}" style="display:inline">
-          {% csrf_token %}<input type="hidden" name="action" value="remove"><input type="hidden" name="user_id" value="{{ obj.pk }}"><input type="hidden" name="back" value="{{ request.path }}">
-          <span class="badge badge-blue"><a href="{% url 'panel:group_detail' g.pk %}">{{ g.name }}</a>
-            <button type="submit" title="Guruhdan chiqarish" style="background:none;border:none;color:inherit;cursor:pointer;margin-left:4px;font-size:12px">✕</button></span>
-        </form>
-        {% empty %}<span style="font-size:12px;color:var(--muted)">Hech qaysi guruhda emas</span>{% endfor %}
-      </div>
-      {% if other_groups %}
-      <form method="post" id="add-group-form" style="display:flex;gap:6px">
-        {% csrf_token %}<input type="hidden" name="action" value="add"><input type="hidden" name="user_id" value="{{ obj.pk }}"><input type="hidden" name="back" value="{{ request.path }}">
-        <select class="form-input" style="padding:6px 10px" onchange="if(this.value){this.form.action=this.value;this.form.submit()}">
-          <option value="">+ Guruhga qo'shish…</option>
-          {% for g in other_groups %}<option value="{% url 'panel:group_detail' g.pk %}">{{ g.name }}</option>{% endfor %}
-        </select>
-      </form>
-      {% endif %}
-    </div>
-
-    <!-- Info -->
-    <div class="card">
-      <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:12px;text-transform:uppercase;letter-spacing:.06em">Ma'lumotlar</div>
-      <div style="display:flex;flex-direction:column;gap:9px;font-size:13px">
-        <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Telefon</span><span>{{ obj.phone_number|default:"—" }}</span></div>
-        <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Qo'shilgan</span><span>{{ obj.date_joined|date:"d M Y" }}</span></div>
-        <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Oxirgi kirish</span><span>{{ obj.last_login|date:"d M Y, H:i"|default:"—" }}</span></div>
-        <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">IP manzil</span>
-          <span style="font-family:monospace;font-size:11px;color:var(--primary)">{{ obj.last_ip|default:"—" }}</span>
-        </div>
-      </div>
-      <a href="{% url 'panel:user_logs' obj.pk %}" class="btn btn-ghost btn-sm" style="margin-top:12px;width:100%"><i class=lc-search></i>&nbsp;Login tarixi</a>
-    </div>
-
-    <!-- Balans -->
-    <div class="card">
-      <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.06em">Balans</div>
-      <div style="font-size:26px;font-weight:700;color:var(--green)" id="balance-val">{{ obj.balance|som }} so'm</div>
-      <div style="display:flex;gap:8px;margin-top:12px">
-        <input type="number" id="add-amount" placeholder="Summa (+/-)" style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-size:13px;outline:none">
-        <button onclick="addBalance({{ obj.pk }})" class="btn btn-primary btn-sm">Qo'shish</button>
-      </div>
-      <input type="text" id="balance-note" placeholder="Izoh (ixtiyoriy)" style="width:100%;margin-top:8px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-size:12px;outline:none">
-    </div>
-
-    <!-- Stats -->
-    <div class="card">
-      <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:12px;text-transform:uppercase;letter-spacing:.06em">Statistika</div>
-      <div class="grid-2-eq" style="gap:10px">
-        <div style="background:var(--surface2);border-radius:8px;padding:12px;text-align:center">
-          <div style="font-size:20px;font-weight:700;color:var(--primary)">{{ stats.total|default:0 }}</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:2px">Imtihonlar</div>
-        </div>
-        <div style="background:var(--surface2);border-radius:8px;padding:12px;text-align:center">
-          <div style="font-size:20px;font-weight:700;color:var(--green)">{{ stats.avg|floatformat:1|default:"—" }}</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:2px">O'rtacha ball</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Right col -->
-  <div style="display:flex;flex-direction:column;gap:16px">
-
-    <!-- Ingliz tili kursi -->
-    {% if learner or app_tokens %}
-    <div class="card">
-      <div class="section-header">
-        <span class="section-title"><i class=lc-languages></i>&nbsp;Ingliz tili kursi</span>
-        <a href="{% url 'panel:english_learners' %}?q={{ obj.username|urlencode }}" class="btn btn-ghost btn-sm">O'quvchilar ro'yxati</a>
-      </div>
-      {% if learner %}
-      <div class="grid-6-stat" style="margin-bottom:{% if app_tokens %}16px{% else %}0{% endif %}">
-        <div style="background:var(--surface2);border-radius:8px;padding:12px;text-align:center"><div style="font-size:18px;font-weight:700;color:var(--primary)">{{ learner.level|default:"—" }}</div><div style="font-size:11px;color:var(--muted)">Daraja</div></div>
-        <div style="background:var(--surface2);border-radius:8px;padding:12px;text-align:center"><div style="font-size:18px;font-weight:700;color:var(--yellow)">{{ learner.xp }}</div><div style="font-size:11px;color:var(--muted)">XP</div></div>
-        <div style="background:var(--surface2);border-radius:8px;padding:12px;text-align:center"><div style="font-size:18px;font-weight:700;color:#f97316"><i class=lc-flame></i>&nbsp;{{ learner.current_streak }}</div><div style="font-size:11px;color:var(--muted)">Seriya (eng uzun {{ learner.best_streak }})</div></div>
-        <div style="background:var(--surface2);border-radius:8px;padding:12px;text-align:center"><div style="font-size:18px;font-weight:700;color:var(--green)">{{ learn_stats.done }}</div><div style="font-size:11px;color:var(--muted)">Darslar</div></div>
-        <div style="background:var(--surface2);border-radius:8px;padding:12px;text-align:center"><div style="font-size:18px;font-weight:700">{{ learn_stats.avg|floatformat:0|default:"—" }}%</div><div style="font-size:11px;color:var(--muted)">O'rtacha ball</div></div>
-        <div style="background:var(--surface2);border-radius:8px;padding:12px;text-align:center"><div style="font-size:18px;font-weight:700;color:var(--blue)">{{ learn_words }}</div><div style="font-size:11px;color:var(--muted)">So'zlar</div></div>
-      </div>
-      {% endif %}
-      {% if app_tokens %}
-      <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em"><i class=lc-smartphone></i>&nbsp;Ilova qurilmalari</div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Qurilma</th><th>Tizim</th><th>IP</th><th>Kirgan</th><th>Oxirgi faollik</th><th></th></tr></thead>
-          <tbody>
-            {% for t in app_tokens %}
-            <tr>
-              <td style="font-weight:600">{{ t.device|default:"Noma'lum" }}{% if t.app_version %} <span class="badge badge-gray">v{{ t.app_version }}</span>{% endif %}</td>
-              <td>{{ t.platform|default:"—" }}</td>
-              <td style="font-family:monospace;font-size:12px">{{ t.ip|default:"—" }}</td>
-              <td style="color:var(--muted);font-size:12px">{{ t.created_at|date:"d M Y, H:i" }}</td>
-              <td style="color:var(--muted);font-size:12px">{{ t.last_used_at|date:"d M Y, H:i"|default:"—" }}</td>
-              <td>
-                <form method="post" action="{% url 'panel:english_device_revoke' t.pk %}" data-confirm="Bu qurilmani ilovadan chiqarasizmi?">
-                  {% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
-                  <button class="btn btn-danger btn-sm">Chiqarish</button>
-                </form>
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-      {% endif %}
-    </div>
-    {% endif %}
-
-    {% if progress_count %}
-    <!-- O'sish grafigi -->
-    <div class="card">
-      <div class="section-header">
-        <span class="section-title">O'sish grafigi (band)</span>
-        <span style="font-size:12px;color:var(--muted)">{{ progress_count }} ta baholangan natija</span>
-      </div>
-      <div style="position:relative;height:260px"><canvas id="progressChart"></canvas></div>
-    </div>
-    {% endif %}
-
-    <!-- Natijalar -->
-    <div class="card">
-      <div class="section-header">
-        <span class="section-title">Natijalar ({{ results|length }})</span>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Imtihon</th><th>Ball</th><th>L</th><th>R</th><th>W</th><th>S</th><th>Sana</th></tr></thead>
-          <tbody>
-            {% for r in results %}
-            <tr>
-              <td><a href="{% url 'panel:exam_detail' r.exam.pk %}" style="color:var(--text)">{{ r.exam.title|truncatechars:28 }}</a></td>
-              <td>{% if r.is_pending %}<a href="{% url 'panel:result_grade' r.pk %}" class="badge badge-yellow"><i class=lc-hourglass></i>&nbsp;Baholash</a>{% elif r.score >= 7.5 %}<span class="badge badge-green">{{ r.score }}</span>{% elif r.score >= 6.0 %}<span class="badge badge-yellow">{{ r.score }}</span>{% else %}<span class="badge badge-red">{{ r.score }}</span>{% endif %}</td>
-              <td style="color:var(--muted);font-size:12px">{{ r.listening_score }}</td>
-              <td style="color:var(--muted);font-size:12px">{{ r.reading_score }}</td>
-              <td style="color:var(--muted);font-size:12px">{{ r.writing_score }}</td>
-              <td style="color:var(--muted);font-size:12px">{{ r.speaking_score }}</td>
-              <td style="color:var(--muted);font-size:11px">{{ r.completed_at|date:"d M Y" }}</td>
-            </tr>
-            {% empty %}<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--muted)">Natija yo'q</td></tr>
-            {% endfor %}
-          </tbody>
-        </table>
+      <div class="pf-label">Ma'lumotlar</div>
+      <div class="tg-rows">
+        <div><span>Telefon</span><b>{{ obj.phone_number|default:"—" }}</b></div>
+        <div><span>Qo'shilgan</span><b>{{ obj.date_joined|date:"d M Y" }}</b></div>
+        <div><span>Oxirgi kirish</span><b>{{ obj.last_login|date:"d M Y, H:i"|default:"—" }}</b></div>
+        <div><span>IP manzil</span><b style="font-family:monospace;font-size:12px">{{ obj.last_ip|default:"—" }}</b></div>
       </div>
     </div>
 
-    <!-- Tranzaksiyalar -->
     <div class="card">
-      <div class="section-header">
-        <span class="section-title">Tranzaksiyalar</span>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Summa</th><th>Usul</th><th>Holat</th><th>Izoh</th><th>Sana</th></tr></thead>
-          <tbody>
-            {% for tx in transactions %}
-            <tr>
-              <td style="font-weight:600;color:var(--green)">+{{ tx.amount|som }} so'm</td>
-              <td><span class="badge badge-blue" style="font-size:10px">{{ tx.get_method_display }}</span></td>
-              <td>{% if tx.status == 'success' %}<span class="badge badge-green" style="font-size:10px">OK</span>{% elif tx.status == 'pending' %}<span class="badge badge-yellow" style="font-size:10px">Kutilmoqda</span>{% else %}<span class="badge badge-red" style="font-size:10px">Xato</span>{% endif %}</td>
-              <td style="color:var(--muted);font-size:12px">{{ tx.description|default:"—"|truncatechars:30 }}</td>
-              <td style="color:var(--muted);font-size:11px">{{ tx.created_at|date:"d M Y, H:i" }}</td>
-            </tr>
-            {% empty %}<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--muted)">Tranzaksiya yo'q</td></tr>
-            {% endfor %}
-          </tbody>
-        </table>
+      <div class="pf-label">Boshqaruv</div>
+      <div class="pf-tools">
+        <a href="{% url 'panel:user_logs' obj.pk %}" class="btn btn-ghost btn-sm"><i class=lc-search></i>Login tarixi</a>
+        <button onclick="openPasswordModal()" class="btn btn-ghost btn-sm"><i class=lc-key-round></i>Parolni tiklash</button>
+        {% if obj.is_superuser and request.user.is_superuser and obj.pk != request.user.pk %}
+        <button onclick="dropSuperuser({{ obj.pk }})" class="btn btn-ghost btn-sm">Oddiy admin qilish</button>
+        {% endif %}
+        {% if not obj.is_superuser and obj.pk != request.user.pk %}
+        <button onclick="makeStaff({{ obj.pk }})" class="btn btn-ghost btn-sm" id="staff-btn">{% if obj.is_staff %}Admin olib tashlash{% else %}Admin qilish{% endif %}</button>
+        {% endif %}
+        <button onclick="toggleUser({{ obj.pk }})" class="btn btn-ghost btn-sm" id="toggle-btn">{% if obj.is_active %}<i class=lc-ban></i>Bloklash{% else %}<i class=lc-check></i>Faollashtirish{% endif %}</button>
+        {% if not obj.is_superuser and obj.pk != request.user.pk %}
+        <button onclick="deleteUser({{ obj.pk }})" class="btn btn-danger btn-sm"><i class=lc-trash-2></i>O'chirish</button>
+        {% endif %}
       </div>
     </div>
-  </div>
+  </aside>
 </div>
 
 <!-- Edit Modal -->
@@ -369,7 +471,10 @@ function closeModal(id){document.getElementById(id).classList.remove('show')}
 async function toggleUser(pk){
   const r=await fetch(`/panel/users/${pk}/toggle/`,{method:'POST',headers:{'X-CSRFToken':csrf}});
   const d=await r.json();
-  document.getElementById('toggle-btn').innerHTML=d.active?'<i class=lc-ban></i>&nbsp;Bloklash':'✓ Faollashtirish';
+  document.getElementById('toggle-btn').innerHTML=d.active?'<i class=lc-ban></i>Bloklash':'<i class=lc-check></i>Faollashtirish';
+  const status=document.getElementById('status-badge');
+  status.textContent=d.active?'Faol':'Bloklangan';
+  status.className='badge '+(d.active?'badge-green':'badge-red');
   toast(d.active?'Faollashtirildi':'Bloklandi', d.active?'#22c55e':'#ef4444');
 }
 
@@ -379,7 +484,7 @@ async function addBalance(pk){
   if(!amount)return;
   const r=await fetch(`/panel/users/${pk}/balance/`,{method:'POST',headers:{'X-CSRFToken':csrf,'Content-Type':'application/json'},body:JSON.stringify({amount:parseFloat(amount),note})});
   const d=await r.json();
-  document.getElementById('balance-val').textContent=parseFloat(d.balance).toLocaleString()+' so\'m';
+  document.getElementById('balance-val').textContent=String(Math.round(d.balance)).replace(/\B(?=(\d{3})+$)/g,'\u00a0');
   document.getElementById('add-amount').value='';
   document.getElementById('balance-note').value='';
   toast('Balans yangilandi');
@@ -432,6 +537,20 @@ async function deleteUser(pk){
   if(d.ok){toast('O\'chirildi','#ef4444');setTimeout(()=>location.href='/panel/users/',800);}
   else toast(d.error,'#ef4444');
 }
+
+// Tabs: the hash keeps the open tab across reloads and shared links
+const pfTabs = [...document.querySelectorAll('.pf-tabs a')];
+function openTab(name){
+  const tab = pfTabs.find(a => a.dataset.tab === name) || pfTabs[0];
+  pfTabs.forEach(a => { a.classList.toggle('active', a === tab); a.setAttribute('aria-selected', a === tab); });
+  document.querySelectorAll('.pf-panel').forEach(p => { p.hidden = p.dataset.panel !== tab.dataset.tab; });
+}
+pfTabs.forEach(a => a.addEventListener('click', e => {
+  e.preventDefault();
+  history.replaceState(null, '', '#' + a.dataset.tab);
+  openTab(a.dataset.tab);
+}));
+openTab(location.hash.slice(1));
 
 // Close modal on overlay click
 document.querySelectorAll('.modal-overlay').forEach(el=>{

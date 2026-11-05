@@ -176,7 +176,13 @@ def user_detail(request, pk):
     user = get_object_or_404(User, pk=pk)
     results = UserResult.objects.filter(user=user).select_related('exam').order_by('-completed_at')
     transactions = Transaction.objects.filter(user=user).order_by('-created_at')[:10]
-    stats = results.graded().aggregate(avg=Avg('score'), total=Count('id'))
+    stats = results.graded().aggregate(avg=Avg('score'), total=Count('id'), best=Max('score'))
+    latest = list(results.graded()[:2])
+    activity = sorted(
+        [{'kind': 'result', 'when': r.completed_at, 'item': r} for r in results[:6]]
+        + [{'kind': 'payment', 'when': tx.created_at, 'item': tx} for tx in transactions[:6]]
+        + [{'kind': 'joined', 'when': user.date_joined}],
+        key=lambda event: event['when'], reverse=True)[:6]
     learn_done = LessonProgress.objects.filter(user=user).exclude(lesson_slug__startswith='story:')
     # Band progress over time, oldest first. A skill the exam didn't have
     # (or Writing not graded yet) is stored as 0 — a gap, not a 0 band.
@@ -190,6 +196,11 @@ def user_detail(request, pk):
         'user_groups': user.study_groups.all(), 'other_groups': _groups().exclude(members=user),
         'progress_json': json.dumps(progress, ensure_ascii=False).replace('<', '\\u003c'), 'progress_count': len(progress),
         'obj': user, 'results': results, 'transactions': transactions, 'stats': stats,
+        'last_result': latest[0] if latest else None,
+        'band_change': round(latest[0].score - latest[1].score, 1) if len(latest) == 2 else None,
+        'pending_count': sum(1 for r in results if r.is_pending),
+        'skills': _skill_rows(results.graded()), 'activity': activity, 'online': chat_services.is_online(user),
+        'paid_total': Transaction.objects.filter(user=user, status='success').aggregate(s=Sum('amount'))['s'] or 0,
         'learner': LearnerProfile.objects.filter(user=user).first(),
         'learn_stats': learn_done.aggregate(done=Count('id'), avg=Avg('best_score')),
         'learn_words': Vocabulary.objects.filter(user=user).count(),
@@ -264,9 +275,8 @@ def _member_rows(group):
     return rows
 
 
-def _skill_rows(group):
-    """The group's average band per skill, weakest marked. Zero means not taken."""
-    results = UserResult.objects.graded().filter(user__in=group.members.all())
+def _skill_rows(results):
+    """Average band per skill over graded results, weakest marked. Zero means not taken."""
     fields = (('Listening', 'listening_score', '#3b82f6'), ('Reading', 'reading_score', '#22c55e'),
               ('Writing', 'writing_score', '#a855f7'), ('Speaking', 'speaking_score', '#f59e0b'))
     averages = results.aggregate(**{f: Avg(f, filter=Q(**{f'{f}__gt': 0})) for _, f, _ in fields})
@@ -368,7 +378,7 @@ def group_detail(request, pk):
     progress = [{'date': k, **{f: (round(sum(v) / len(v), 2) if v else None) for f, v in b.items()}}
                 for k, b in monthly.items()]
     return render(request, 'panel/group_detail.html', {
-        'group': group, 'rows': rows, 'skills': _skill_rows(group),
+        'group': group, 'rows': rows, 'skills': _skill_rows(UserResult.objects.graded().filter(user__in=group.members.all())),
         'active_count': sum(1 for r in rows if not r['inactive']), 'inactive_days': INACTIVE_AFTER_DAYS,
         'avg_last': round(sum(r.score for r in graded) / len(graded), 1) if graded else None,
         'recent': UserResult.objects.filter(user__in=group.members.all()).select_related('user', 'exam').order_by('-completed_at')[:10],
