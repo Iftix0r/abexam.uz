@@ -40,7 +40,7 @@ def _fail_keys(ip, username):
     # '+998 90…' and '90…' are the same account, so they share one counter.
     username = normalize_phone(username) or username.strip().lower()
     digest = hashlib.md5(username.encode()).hexdigest()
-    return f'login_fail_ip_{ip}', f'login_fail_user_{ip}_{digest}'
+    return f'login_fail_ip_{ip}', f'login_fail_user_{digest}'
 
 
 def _login_blocked(ip, username):
@@ -266,15 +266,29 @@ class VocabularyView(LoginRequiredMixin, TemplateView):
 
 
 class ChatAIView(LoginRequiredMixin, View):
+    CHAT_LIMIT = 20
+    CHAT_WINDOW_SECONDS = 60
+
     def post(self, request, *args, **kwargs):
         from core.ai_utils import get_ai_response
         data, err = parse_json_body(request)
         if err:
             return err
-        message = data.get('message', '').strip()
+        message = data.get('message', '')
+        if not isinstance(message, str):
+            return JsonResponse({'error': 'Xabar topilmadi'}, status=400)
+        message = message.strip()
         history = data.get('history', [])
         if not message:
             return JsonResponse({'error': 'Xabar topilmadi'}, status=400)
+
+        cache_key = f'ai_chat:{request.user.pk}'
+        if cache.add(cache_key, 1, timeout=self.CHAT_WINDOW_SECONDS):
+            request_count = 1
+        else:
+            request_count = cache.incr(cache_key)
+        if request_count > self.CHAT_LIMIT:
+            return JsonResponse({'error': "AI so'rovlar limiti oshib ketdi. Birozdan so'ng urinib ko'ring."}, status=429)
         return JsonResponse({'response': get_ai_response(message, history)})
 
 

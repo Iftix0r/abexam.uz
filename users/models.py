@@ -1,4 +1,6 @@
 import re
+import uuid
+
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -14,13 +16,20 @@ def age_on(birth_date, day):
     return day.year - birth_date.year - ((day.month, day.day) < (birth_date.month, birth_date.day))
 
 
+def avatar_upload_to(instance, filename):
+    extension = filename.rsplit('.', 1)[-1].lower() if '.' in filename else 'jpg'
+    if extension in ('jpeg', 'jpg'):
+        extension = 'jpg'
+    return f"avatars/{uuid.uuid4().hex}.{extension}"
+
+
 class User(AbstractUser):
     phone_number = models.CharField(
         max_length=15, unique=True, null=True, blank=True,
         validators=[validate_phone],
     )
     balance = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
-    avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
+    avatar = models.ImageField(upload_to=avatar_upload_to, null=True, blank=True)
     is_active_student = models.BooleanField(default=True)
     bio = models.TextField(max_length=500, blank=True)
     last_ip = models.GenericIPAddressField(null=True, blank=True)

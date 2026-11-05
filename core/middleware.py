@@ -58,6 +58,8 @@ class ThreatWatchMiddleware:
         response = self.get_response(request)
         # Only this site may ask for the camera (exam proctoring) or the microphone.
         response.headers.setdefault('Permissions-Policy', self.PERMISSIONS)
+        if getattr(settings, 'CONTENT_SECURITY_POLICY', ''):
+            response.headers.setdefault('Content-Security-Policy', settings.CONTENT_SECURITY_POLICY)
         return response
 
 

@@ -152,6 +152,12 @@ CACHES = {
 LOGOUT_REDIRECT_URL = '/login/'
 
 # ── Security headers (production only) ─────────────────────────────────────
+TRUSTED_PROXY_IPS = {
+    ip.strip()
+    for ip in os.getenv('TRUSTED_PROXY_IPS', '').split(',')
+    if ip.strip()
+}
+
 if not DEBUG:
     SECURE_SSL_REDIRECT = True
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -164,6 +170,17 @@ if not DEBUG:
     SECURE_BROWSER_XSS_FILTER = True
 
 X_FRAME_OPTIONS = 'DENY'
+
+CONTENT_SECURITY_POLICY = (
+    "default-src 'self'; "
+    "base-uri 'self'; object-src 'none'; frame-ancestors 'none'; "
+    "script-src 'self' 'unsafe-inline'; "
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+    "font-src 'self' https://fonts.gstatic.com; "
+    "img-src 'self' data: blob: https:; "
+    "media-src 'self' blob:; connect-src 'self'; "
+    "frame-src 'self' https:"
+)
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')

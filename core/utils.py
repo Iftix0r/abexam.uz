@@ -2,9 +2,11 @@ import json
 import logging
 import re
 import threading
+from ipaddress import ip_address
 from datetime import date, timedelta
 
 from django.conf import settings
+from PIL import Image, UnidentifiedImageError
 from django.db.models.functions import TruncDate, TruncMonth
 from django.http import JsonResponse
 from django.utils import timezone
@@ -14,13 +16,20 @@ logger = logging.getLogger(__name__)
 
 
 def get_client_ip(request):
-    # Reverse proxy appends the real client IP as the last hop (nginx's
-    # $proxy_add_x_forwarded_for); earlier entries can be forged by the
-    # client, so the first entry must not be trusted.
+    remote_addr = request.META.get('REMOTE_ADDR', '0.0.0.0')
+    trusted_proxies = getattr(settings, 'TRUSTED_PROXY_IPS', ())
     x_forwarded = request.META.get('HTTP_X_FORWARDED_FOR')
-    if x_forwarded:
-        return x_forwarded.split(',')[-1].strip()
-    return request.META.get('REMOTE_ADDR', '0.0.0.0')
+
+    if x_forwarded and remote_addr in trusted_proxies:
+        for address in reversed(x_forwarded.split(',')):
+            address = address.strip()
+            try:
+                ip_address(address)
+                if address not in trusted_proxies:
+                    return address
+            except ValueError:
+                continue
+    return remote_addr
 
 
 def notify_admin_telegram(message: str):
@@ -95,7 +104,7 @@ _IMAGE_TYPE_LABELS = {
 
 
 def validate_image_upload(file, max_mb, allowed_types):
-    """Validate an uploaded image's size and content type.
+    """Validate an uploaded image's size and declared/actual format.
 
     Returns an Uzbek error message if invalid, or None if the file is OK.
     """
@@ -104,6 +113,31 @@ def validate_image_upload(file, max_mb, allowed_types):
     if file.content_type not in allowed_types:
         names = ', '.join(_IMAGE_TYPE_LABELS.get(t, t) for t in allowed_types)
         return f"Faqat {names} formatlar qabul qilinadi"
+
+    raster_type_by_format = {
+        'JPEG': 'image/jpeg',
+        'PNG': 'image/png',
+        'WEBP': 'image/webp',
+    }
+    try:
+        file.seek(0)
+        with Image.open(file) as image:
+            image.verify()
+            actual_type = raster_type_by_format.get(image.format)
+    except (UnidentifiedImageError, OSError, ValueError):
+        actual_type = None
+    finally:
+        file.seek(0)
+
+    if actual_type not in allowed_types:
+        names = ', '.join(_IMAGE_TYPE_LABELS.get(t, t) for t in allowed_types)
+        return f"Faqat {names} formatlar qabul qilinadi"
+    if file.content_type != actual_type:
+        names = ', '.join(_IMAGE_TYPE_LABELS.get(t, t) for t in allowed_types)
+        return f"Faqat {names} formatlar qabul qilinadi"
+
+    extensions = {'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp'}
+    file.name = f"upload.{extensions[actual_type]}"
     return None
 
 

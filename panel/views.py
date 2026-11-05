@@ -2276,7 +2276,7 @@ def exam_generate(request):
                     return
 
                 yield f'<script>updateProgress(98, "Ma\'lumotlar bazasiga saqlanmoqda...");</script>'
-                
+
                 # Use custom duration if provided, otherwise use AI's
                 final_duration = int(custom_duration) if custom_duration else exam_data['duration_minutes']
 
@@ -2313,7 +2313,7 @@ def exam_generate(request):
                                 f"listening_{section.pk}.mp3",
                                 ContentFile(sec_data['audio_bytes'])
                             )
-                        
+
                         if sec_data.get('image_url'):
                             import requests
                             try:
@@ -2376,7 +2376,7 @@ def exam_generate(request):
             ],
             'streaming': True
         }).content.decode('utf-8')
-        
+
         return StreamingHttpResponse(chain([initial_html], stream_generator()))
 
     return render(request, 'panel/exam_generate.html', {
@@ -2619,7 +2619,7 @@ def site_settings(request):
 
         if 'logo' in request.FILES:
             logo = request.FILES['logo']
-            error = validate_image_upload(logo, 2, {'image/jpeg', 'image/png', 'image/webp', 'image/svg+xml'})
+            error = validate_image_upload(logo, 2, {'image/jpeg', 'image/png', 'image/webp'})
             if error:
                 messages.error(request, error)
                 return redirect('system:settings')

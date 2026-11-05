@@ -98,9 +98,17 @@ _TASK2_RULES = "Task 2: Minimum 250 words. A very short essay (<50 words) MUST N
 
 def get_ai_response(message, history=None):
     messages = [{"role": "system", "content": SYSTEM_PROMPT}]
-    if history:
-        messages.extend(history)
-    messages.append({"role": "user", "content": message})
+    if isinstance(history, list):
+        safe_history = []
+        for item in history[-20:]:
+            if not isinstance(item, dict):
+                continue
+            role = item.get('role')
+            content = item.get('content')
+            if role in ('user', 'assistant') and isinstance(content, str) and content.strip():
+                safe_history.append({'role': role, 'content': content[:4000]})
+        messages.extend(safe_history)
+    messages.append({"role": "user", "content": str(message).strip()[:4000]})
     try:
         response = client.chat.completions.create(
             model="gpt-4o-mini",
@@ -390,14 +398,14 @@ IMPORTANT RULES:
 Return JSON:
 {{
   "task1": {{
-    "title": "...", 
-    "instruction": "...", 
+    "title": "...",
+    "instruction": "...",
     "data_description": "FOR ACADEMIC: Detailed description of the visual data (numbers, trends, axes) for DALL-E image generation. FOR GENERAL: Background context for the letter.",
     "model_answer": "A Band 9.0 model answer (at least 150 words). STRUCTURE: Introduction/Overview, Body Paragraphs, and Conclusion (if applicable)."
   }},
   "task2": {{
-    "title": "...", 
-    "question": "...", 
+    "title": "...",
+    "question": "...",
     "instruction": "...",
     "model_answer": "A Band 9.0 model answer (at least 250 words). STRUCTURE: Introduction (Hook/Thesis), Body Paragraphs (PEEL method), and Conclusion (Summary)."
   }}
@@ -500,7 +508,7 @@ def generate_ielts_exam(
 
         yield 60, "Writing bo'limi yaratilmoqda..."
         sections.extend(_gen_writing(topic, variant, model))
-        
+
         yield 80, "Speaking bo'limi yaratilmoqda..."
         sections.extend(_gen_speaking(topic, model))
 
@@ -646,7 +654,7 @@ def _gen_writing(topic: str, variant: str, model: str) -> list:
     data = _call_ai(_WRITING_TASKS.format(variant=variant.title(), topic=topic, chart_type=chart, essay_type=essay), model, max_tokens=1500)
     t1 = data.get("task1", {})
     t2 = data.get("task2", {})
-    
+
     # Generate chart image for Academic Task 1
     image_url = None
     if variant == 'academic':
@@ -667,12 +675,12 @@ def _gen_writing(topic: str, variant: str, model: str) -> list:
             "content": f"<div style='line-height:1.8'><h3>Writing Task 1</h3><p>{t1.get('instruction','')}</p><div style='background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:16px;margin:12px 0;font-size:13px'>{t1.get('data_description','')}</div></div>",
             "image_url": image_url,
             "questions": [{
-                "order": 1, 
-                "text": q1_text, 
-                "question_type": "writing_task", 
-                "correct_answer": "", 
-                "options": [], 
-                "explanation": "Official Band 9.0 Sample Answer for Writing Task 1", 
+                "order": 1,
+                "text": q1_text,
+                "question_type": "writing_task",
+                "correct_answer": "",
+                "options": [],
+                "explanation": "Official Band 9.0 Sample Answer for Writing Task 1",
                 "model_answer": t1.get("model_answer", ""),
                 "word_limit": 150
             }],
@@ -684,12 +692,12 @@ def _gen_writing(topic: str, variant: str, model: str) -> list:
             "duration_minutes": 40,
             "content": f"<div style='line-height:1.8'><h3>Writing Task 2</h3><p>{t2.get('question','')}</p><p><strong>{t2.get('instruction','Write at least 250 words.')}</strong></p></div>",
             "questions": [{
-                "order": 1, 
-                "text": t2.get("question", ""), 
-                "question_type": "writing_task", 
-                "correct_answer": "", 
-                "options": [], 
-                "explanation": "Official Band 9.0 Sample Answer for Writing Task 2", 
+                "order": 1,
+                "text": t2.get("question", ""),
+                "question_type": "writing_task",
+                "correct_answer": "",
+                "options": [],
+                "explanation": "Official Band 9.0 Sample Answer for Writing Task 2",
                 "model_answer": t2.get("model_answer", ""),
                 "word_limit": 250
             }],
@@ -786,12 +794,12 @@ def _normalise_questions(raw: list, default_type: str = "gap_fill") -> list:
             if len(options) < 2:
                 # Emergency fallback if AI failed to provide usable options
                 options = [{"key": "A", "text": "Option A"}, {"key": "B", "text": "Option B"}, {"key": "C", "text": "Option C"}, {"key": "D", "text": "Option D"}]
-        
+
         # Fix empty question text
         qtext = str(q.get("text", "")).strip()
         if not qtext:
             qtext = f"Quyidagi bo'sh joyni to'ldiring (Savol {i})" if qtype == "gap_fill" else f"Savol matni mavjud emas ({i})"
-        
+
         result.append({
             "order": q.get("order", i),
             "text": qtext,
