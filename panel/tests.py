@@ -658,3 +658,58 @@ class UserProfilePageTests(TestCase):
     def test_no_delete_on_own_profile(self):
         self.assertNotContains(self._page(self.boss), 'deleteUser(%d)' % self.boss.pk)
 
+
+class LiveExamPageTests(TestCase):
+    def setUp(self):
+        import json
+        from django.core.cache import cache
+        from exams.models import Exam, ExamAttempt
+        from users.models import StudyGroup
+        cache.clear()
+        self.json = json
+        self.Attempt = ExamAttempt
+        self.boss = User.objects.create_superuser('boss', password='pw')
+        self.ali = User.objects.create_user('ali', password='pw', first_name='Ali')
+        self.vali = User.objects.create_user('vali', password='pw', first_name='Vali')
+        exam = Exam.objects.create(title='Mock 1')
+        self.a1 = ExamAttempt.objects.create(user=self.ali, exam=exam, client_id='a1', leave_count=4, time_left=600)
+        self.a2 = ExamAttempt.objects.create(user=self.vali, exam=exam, client_id='a2')
+        self.group = StudyGroup.objects.create(name='Ertalabki')
+        self.group.members.add(self.ali)
+        self.client.force_login(self.boss)
+        self.url = reverse('panel:attempts_live')
+
+    def test_suspicious_tab_lists_only_flagged_attempts(self):
+        page = self.client.get(self.url + '?tab=suspicious')
+        self.assertEqual(page.context['counts']['suspicious'], 1)
+        self.assertEqual([a.pk for a in page.context['attempts']], [self.a1.pk])
+
+    def test_pasted_text_also_counts_as_suspicious(self):
+        self.Attempt.objects.filter(pk=self.a2.pk).update(pasted_chars=100)
+        self.assertEqual(self.client.get(self.url).context['counts']['suspicious'], 2)
+
+    def test_countdown_starts_from_the_time_left(self):
+        rows = {a.pk: a for a in self.client.get(self.url).context['attempts']}
+        self.assertLessEqual(rows[self.a1.pk].seconds_left, 600)
+        self.assertGreater(rows[self.a1.pk].seconds_left, 590)
+
+    def test_bad_filters_do_not_break_the_page(self):
+        page = self.client.get(self.url + '?exam=abc&group=xyz')
+        self.assertEqual(page.status_code, 200)
+        self.assertEqual((page.context['exam_id'], page.context['group_id']), ('', ''))
+
+    def _command(self, **body):
+        return self.client.post(reverse('panel:attempts_command'), data=self.json.dumps(body),
+                                content_type='application/json').json()
+
+    def test_message_to_everyone_respects_the_group_filter(self):
+        self.assertEqual(self._command(all_active=True, group=self.group.pk, type='message', text='Salom')['sent'], 1)
+        self.a2.refresh_from_db()
+        self.assertFalse(self.a2.commands)
+
+    def test_message_to_everyone_without_a_filter_reaches_all(self):
+        self.assertEqual(self._command(all_active=True, type='message', text='Salom')['sent'], 2)
+
+    def test_page_has_no_browser_prompts(self):
+        self.assertNotContains(self.client.get(self.url), 'prompt(')
+

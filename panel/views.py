@@ -1920,9 +1920,16 @@ def _ago(now, moment):
     return f'{secs // 86400} kun oldin'
 
 
+SUSPICIOUS_LEAVES = 3
+SUSPICIOUS_PASTED_CHARS = 100
+LIVE_ROW_LIMIT = 200
+
+
 def _attempt_filters(now):
     online_since = now - ATTEMPT_ONLINE_WINDOW
     return {
+        'suspicious': Q(last_seen_at__gte=now - timedelta(hours=24))
+        & (Q(leave_count__gte=SUSPICIOUS_LEAVES) | Q(pasted_chars__gte=SUSPICIOUS_PASTED_CHARS)),
         'active': Q(submitted_at__isnull=True, last_seen_at__gte=online_since),
         'unsent': Q(submitted_at__isnull=True, last_seen_at__lt=online_since, answered_count__gt=0),
     }
@@ -1942,6 +1949,8 @@ def attempts_live(request):
     online_since = now - ATTEMPT_ONLINE_WINDOW
     tab = request.GET.get('tab', 'all')
     exam_id = request.GET.get('exam', '')
+    if not exam_id.isdigit():
+        exam_id = ''
     filters = _attempt_filters(now)
 
     qs = ExamAttempt.objects.select_related('user', 'exam')
@@ -1950,6 +1959,8 @@ def attempts_live(request):
     group_id = request.GET.get('group', '')
     if group_id.isdigit():
         qs = qs.filter(user__study_groups=int(group_id))
+    else:
+        group_id = ''
     recent = qs.filter(last_seen_at__gte=now - timedelta(hours=24))
     counts = {name: qs.filter(q).count() for name, q in filters.items()}
     counts['started'] = recent.count()
@@ -1959,7 +1970,8 @@ def attempts_live(request):
     else:
         tab = 'all'
         qs = recent
-    attempts = list(qs[:200])
+    hidden_rows = max(0, qs.count() - LIVE_ROW_LIMIT)
+    attempts = list(qs[:LIVE_ROW_LIMIT])
 
     exam_ids = {a.exam_id for a in attempts}
     questions = Question.objects.filter(section__exam__in=exam_ids)
@@ -1982,7 +1994,8 @@ def attempts_live(request):
         a.section_label = _SECTION_LABELS.get(a.current_section, a.current_section or '—')
         a.seen_ago = _ago(now, a.last_seen_at)
         a.writing_words = [_words(a.answers.get(qid, '')) for qid in writing_ids.get(a.exam_id, [])]
-        a.suspicious = a.leave_count >= 3 or a.pasted_chars >= 100
+        a.suspicious = a.leave_count >= SUSPICIOUS_LEAVES or a.pasted_chars >= SUSPICIOUS_PASTED_CHARS
+        a.answered_pct = min(100, round(a.answered_count / a.total_questions * 100)) if a.total_questions else 0
         a.multi_device = a.user_id in multi_device and not a.is_submitted
         a.time_left_label = ''
         if a.is_submitted:
@@ -1991,14 +2004,15 @@ def attempts_live(request):
             a.state = 'active'
             if a.time_left is not None:
                 elapsed = int((now - a.last_seen_at).total_seconds())
-                a.time_left_label = _clock(max(0, a.time_left - elapsed))
+                a.seconds_left = max(0, a.time_left - elapsed)
+                a.time_left_label = _clock(a.seconds_left)
         elif a.answered_count:
             a.state = 'unsent'
         else:
             a.state = 'abandoned'
 
     return render(request, 'panel/attempts_live.html', {
-        'attempts': attempts, 'tab': tab, 'counts': counts,
+        'attempts': attempts, 'tab': tab, 'counts': counts, 'hidden_rows': hidden_rows,
         'exam_id': exam_id, 'exams': Exam.objects.order_by('-created_at'),
         'groups': _groups(), 'group_id': group_id,
     })
@@ -2129,6 +2143,8 @@ def attempts_command(request):
         attempts = attempts.filter(last_seen_at__gte=timezone.now() - ATTEMPT_ONLINE_WINDOW)
         if data.get('exam'):
             attempts = attempts.filter(exam_id=data['exam'])
+        if data.get('group'):
+            attempts = attempts.filter(user__study_groups=data['group'])
     else:
         attempts = attempts.filter(pk__in=data.get('ids', []))
     sent = 0

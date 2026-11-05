@@ -5,7 +5,6 @@
 
 {% block content %}
 <style>
-@media (min-width:961px){tbody td .btn-sm{padding:5px 8px}}
 @keyframes rowAlert { 0%,100% { background: transparent } 50% { background: #ef444433 } }
 tr.row-alert td { animation: rowAlert 1s ease-in-out 6; }
 .cam-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-bottom:16px}
@@ -22,6 +21,61 @@ tr.row-alert td { animation: rowAlert 1s ease-in-out 6; }
 .cam-tile .cam-rec:hover{background:#000c}
 .cam-tile .cam-rec.on{background:#dc2626;border-color:#dc2626;animation:recblink 1.2s infinite}
 @keyframes recblink{50%{opacity:.65}}
+.cam-tile.flagged{border-color:var(--red);box-shadow:0 0 0 2px #ef444455}
+#liveTabs{min-width:0;max-width:100%}
+.live-state{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.live-state label{font-size:13px;color:var(--muted);display:flex;gap:6px;align-items:center;cursor:pointer}
+.live-pulse{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
+.live-pulse::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.live-pulse.on{color:var(--green)}
+.live-pulse.on::before{background:#22c55e;animation:livePulse 1.8s ease-out infinite}
+.live-pulse.bad{color:var(--red)}
+.live-pulse.bad::before{background:var(--red)}
+@keyframes livePulse{0%{box-shadow:0 0 0 0 #22c55e80}100%{box-shadow:0 0 0 9px #22c55e00}}
+@media (prefers-reduced-motion:reduce){.live-pulse.on::before{animation:none}}
+.live-tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.live-tools form{display:flex;gap:8px;flex-wrap:wrap;max-width:100%}
+.live-tools .form-input{width:auto;max-width:190px;height:36px;padding-block:0}
+.live-tools .search-box{width:200px;max-width:100%}
+.live-tools .end{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.live-feed{margin-bottom:14px;padding:14px 18px}
+.live-feed-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px;font-size:13.5px;font-weight:700}
+.live-feed-list{max-height:148px;overflow-y:auto}
+.live-feed-list a{display:flex;gap:10px;align-items:baseline;padding:5px 0;font-size:13px;border-top:1px solid var(--border)}
+.live-feed-list time{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums;flex-shrink:0}
+.live-bar{height:5px;width:96px;max-width:100%;border-radius:5px;background:var(--surface2);overflow:hidden;margin-top:5px}
+.live-bar i{display:block;height:100%;border-radius:5px;background:var(--blue)}
+.live-clock{font-weight:600;font-variant-numeric:tabular-nums}
+.live-clock.low{color:var(--red)}
+.live-help{font-size:12.5px;color:var(--muted);margin-top:12px;line-height:1.6}
+.live-help summary{cursor:pointer;font-weight:600}
+.cmd-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.cmd-chips button{padding:5px 10px;border-radius:999px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:12px;cursor:pointer}
+.cmd-chips button:hover{border-color:var(--primary)}
+.cmd-scope{font-size:12.5px;color:var(--muted);margin:-6px 0 12px}
+@media (max-width:560px){
+  .live-tools .end{margin-left:0}
+  .live-tools .search-box,.live-tools form,.live-tools .form-input{width:100%;max-width:100%}
+  .cam-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #liveTable .table-wrap{padding:10px}
+  table.table-cards.live-table tr{display:grid;grid-template-columns:22px minmax(0,1.5fr) minmax(0,1fr);column-gap:8px;row-gap:8px;align-items:start;padding:12px;margin-bottom:10px}
+  table.table-cards.live-table td{width:auto;border:none;padding:0;min-width:0;text-align:left;justify-content:flex-start}
+  table.table-cards.live-table td[data-label]::before{display:block;font-size:9.5px;margin-bottom:3px}
+  table.table-cards.live-table td:nth-child(n+3):nth-child(-n+8){display:block}
+  table.table-cards.live-table td:nth-child(1){grid-area:1/1/2/2;padding-top:8px}
+  table.table-cards.live-table td:nth-child(2){grid-area:1/2/2/3}
+  table.table-cards.live-table td:nth-child(2)::before,table.table-cards.live-table td:nth-child(3)::before,table.table-cards.live-table td:nth-child(4)::before{display:none}
+  table.table-cards.live-table td:nth-child(4){grid-area:1/3/2/4;text-align:right;padding-top:6px}
+  table.table-cards.live-table td:nth-child(3){grid-area:2/1/3/4}
+  table.table-cards.live-table td:nth-child(5){grid-area:3/1/4/3}
+  table.table-cards.live-table td:nth-child(6){grid-area:3/3/4/4}
+  table.table-cards.live-table td:nth-child(7){grid-area:4/1/5/3}
+  table.table-cards.live-table td:nth-child(8){grid-area:4/3/5/4}
+  table.table-cards.live-table td:nth-child(9){grid-area:5/1/6/4}
+  table.table-cards.live-table td[colspan]{grid-area:1/1/2/4}
+  table.table-cards.live-table .row-actions{justify-content:flex-start}
+}
+table.table-cards.live-table tr[hidden]{display:none}
 .cam-tile .cam-name{position:absolute;left:0;right:0;bottom:0;padding:4px 8px;font-size:12px;font-weight:600;color:#fff;background:linear-gradient(transparent,#000a);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 </style>
 <div id="liveStats">
@@ -46,61 +100,68 @@ tr.row-alert td { animation: rowAlert 1s ease-in-out 6; }
 </div>
 
 <div class="section-header">
-  <form method="get" style="display:flex;gap:10px;max-width:100%;flex-wrap:wrap;align-items:center">
-    <a href="?tab=all{% if exam_id %}&exam={{ exam_id }}{% endif %}{% if group_id %}&group={{ group_id }}{% endif %}" class="btn btn-sm {% if tab == 'all' %}btn-primary{% else %}btn-ghost{% endif %}">Oxirgi 24 soat</a>
-    <a href="?tab=active{% if exam_id %}&exam={{ exam_id }}{% endif %}{% if group_id %}&group={{ group_id }}{% endif %}" class="btn btn-sm {% if tab == 'active' %}btn-primary{% else %}btn-ghost{% endif %}">
-      Hozir yozmoqda{% if counts.active %} <span class="nav-badge" style="margin-left:4px;background:var(--blue)">{{ counts.active }}</span>{% endif %}
-    </a>
-    <a href="?tab=unsent{% if exam_id %}&exam={{ exam_id }}{% endif %}{% if group_id %}&group={{ group_id }}{% endif %}" class="btn btn-sm {% if tab == 'unsent' %}btn-primary{% else %}btn-ghost{% endif %}">
-      Yuborilmagan{% if counts.unsent %} <span class="nav-badge" style="margin-left:4px">{{ counts.unsent }}</span>{% endif %}
-    </a>
+  <div id="liveTabs">
+    <div class="seg">
+      <a href="?tab=all{% if exam_id %}&exam={{ exam_id }}{% endif %}{% if group_id %}&group={{ group_id }}{% endif %}" class="{% if tab == 'all' %}active{% endif %}">Oxirgi 24 soat</a>
+      <a href="?tab=active{% if exam_id %}&exam={{ exam_id }}{% endif %}{% if group_id %}&group={{ group_id }}{% endif %}" class="{% if tab == 'active' %}active{% endif %}">Hozir yozmoqda{% if counts.active %} <span class="nav-badge" style="background:var(--blue)">{{ counts.active }}</span>{% endif %}</a>
+      <a href="?tab=suspicious{% if exam_id %}&exam={{ exam_id }}{% endif %}{% if group_id %}&group={{ group_id }}{% endif %}" class="{% if tab == 'suspicious' %}active{% endif %}">Shubhali{% if counts.suspicious %} <span class="nav-badge">{{ counts.suspicious }}</span>{% endif %}</a>
+      <a href="?tab=unsent{% if exam_id %}&exam={{ exam_id }}{% endif %}{% if group_id %}&group={{ group_id }}{% endif %}" class="{% if tab == 'unsent' %}active{% endif %}">Yuborilmagan{% if counts.unsent %} <span class="nav-badge">{{ counts.unsent }}</span>{% endif %}</a>
+    </div>
+  </div>
+  <div class="live-state">
+    <span class="live-pulse" id="liveStatus" role="status">To'xtatilgan</span>
+    <label><input type="checkbox" id="autoRefresh"> Avtoyangilash</label>
+    <label title="Kimdir test oynasidan chiqsa yoki matn joylasa, shu kompyuterda ovoz chiqadi"><input type="checkbox" id="soundAlerts"> <i class=lc-bell></i>Ovoz</label>
+  </div>
+</div>
+
+<div class="live-tools">
+  <div class="search-box"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke-width="1.8"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke-width="1.8"/></svg><input id="liveQ" placeholder="Talabani qidirish..." aria-label="Talabani qidirish"></div>
+  <form method="get">
     <input type="hidden" name="tab" value="{{ tab }}">
-    <select name="exam" class="form-input" style="width:auto;max-width:100%" onchange="this.form.submit()">
+    <select name="exam" class="form-input" aria-label="Imtihon" onchange="this.form.submit()">
       <option value="">Barcha imtihonlar</option>
       {% for e in exams %}
       <option value="{{ e.pk }}" {% if exam_id == e.pk|stringformat:"s" %}selected{% endif %}>{{ e.title }}</option>
       {% endfor %}
     </select>
     {% if groups %}
-    <select name="group" class="form-input" style="width:auto;max-width:100%" onchange="this.form.submit()">
+    <select name="group" class="form-input" aria-label="Guruh" onchange="this.form.submit()">
       <option value="">Barcha guruhlar</option>
       {% for g in groups %}<option value="{{ g.pk }}" {% if group_id == g.pk|stringformat:"d" %}selected{% endif %}>{{ g.name }}</option>{% endfor %}
     </select>
     {% endif %}
   </form>
-  <div style="display:flex;gap:14px;flex-wrap:wrap">
-    <label style="font-size:13px;color:var(--muted);display:flex;gap:6px;align-items:center;cursor:pointer">
-      <input type="checkbox" id="autoRefresh"> Har 10 soniyada yangilash
-    </label>
-    <label style="font-size:13px;color:var(--muted);display:flex;gap:6px;align-items:center;cursor:pointer" title="Kimdir test oynasidan chiqsa yoki matn joylasa, shu kompyuterda ovoz chiqadi">
-      <input type="checkbox" id="soundAlerts"> <i class=lc-bell></i>&nbsp;Shubhali harakatda ovoz
-    </label>
+  <div class="end">
+    <button onclick="messageAll()" class="btn btn-ghost btn-sm"><i class=lc-megaphone></i>Hammaga xabar</button>
+    <button onclick="extraTimeAll()" class="btn btn-ghost btn-sm"><i class=lc-timer></i>Hammaga vaqt</button>
+    <button onclick="finishAll()" class="btn btn-danger btn-sm" title="Tanlangan imtihonning barcha yuborilmagan urinishlaridan natija yaratadi"><i class=lc-square></i>Hammasini yakunlash</button>
   </div>
 </div>
 
-<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
-  <button onclick="messageAll()" class="btn btn-ghost btn-sm"><i class=lc-megaphone></i>&nbsp;Hammaga xabar</button>
-  <button onclick="extraTimeAll()" class="btn btn-ghost btn-sm"><i class=lc-timer></i>&nbsp;Hammaga qo'shimcha vaqt</button>
-  <button onclick="finishAll()" class="btn btn-danger btn-sm" title="Tanlangan imtihonning barcha yuborilmagan urinishlaridan natija yaratadi"><i class=lc-square></i>&nbsp;Hammasini yakunlash</button>
-  <span id="bulkBar" style="display:none;gap:8px;align-items:center">
-    <span style="color:var(--muted);font-size:13px">Tanlangan: <b id="bulkCount">0</b></span>
-    <button onclick="messageSelected()" class="btn btn-ghost btn-sm"><i class=lc-mail></i>&nbsp;Xabar</button>
-    <button onclick="extraTimeSelected()" class="btn btn-ghost btn-sm">+ Vaqt</button>
-    <button onclick="bulkFinalize()" class="btn btn-primary btn-sm">Natija yaratish</button>
-  </span>
+<div id="bulkBar" class="bulk-bar">
+  <span style="color:var(--muted);font-size:13px">Tanlangan: <b id="bulkCount">0</b></span>
+  <button onclick="messageSelected()" class="btn btn-ghost btn-sm"><i class=lc-mail></i>Xabar</button>
+  <button onclick="extraTimeSelected()" class="btn btn-ghost btn-sm"><i class=lc-timer></i>Vaqt</button>
+  <button onclick="bulkFinalize()" class="btn btn-primary btn-sm">Natija yaratish</button>
+</div>
+
+<div class="card live-feed" id="liveFeed" hidden>
+  <div class="live-feed-head"><span><i class=lc-triangle-alert></i> Shubhali hodisalar</span><button type="button" class="btn btn-ghost btn-sm" onclick="clearFeed()">Tozalash</button></div>
+  <div class="live-feed-list" id="liveFeedList"></div>
 </div>
 
 {% if site_settings.camera_proctoring %}
 <div id="cameraGrid" data-ids="{% for a in attempts %}{% if a.state == 'active' %}{{ a.pk }},{% endif %}{% endfor %}">
   <div class="cam-grid">
     {% for a in attempts %}{% if a.state == 'active' %}
-    <a class="cam-tile" href="{% url 'panel:attempt_detail' a.pk %}" title="Kamerani kattaroq ko'rish"
+    <a class="cam-tile{% if a.suspicious %} flagged{% endif %}" href="{% url 'panel:attempt_detail' a.pk %}" title="Kamerani kattaroq ko'rish"
        data-attempt="{{ a.pk }}" data-name="{{ a.user.display_name }}" data-live="{% url 'panel:attempt_camera_live' a.pk %}">
       <span class="cam-rec" role="button" tabindex="0" title="Kamerani yozib olish (kompyuteringizga video bo'lib tushadi)"><i class=lc-circle-dot></i>&nbsp;Yozish</span>
       <video muted autoplay playsinline></video>
       <img data-cam="{% url 'panel:attempt_camera' a.pk %}" alt="">
       <span class="cam-none"><i class=lc-camera></i>&nbsp;Kamera yo'q</span>
-      <span class="cam-name">{{ a.user.display_name }}{% if a.suspicious %} <i class=lc-triangle-alert></i>{% endif %}</span>
+      <span class="cam-name">{{ a.user.display_name }}</span>
     </a>
     {% endif %}{% endfor %}
   </div>
@@ -109,86 +170,122 @@ tr.row-alert td { animation: rowAlert 1s ease-in-out 6; }
 
 <div class="card" style="padding:0" id="liveTable">
   <div class="table-wrap">
-    <table>
+    <table class="table-cards live-table">
       <thead><tr>
-        <th style="width:32px"><input type="checkbox" id="selectAll" onchange="toggleAll(this)"></th>
+        <th style="width:32px"><input type="checkbox" id="selectAll" aria-label="Hammasini tanlash" onchange="toggleAll(this)"></th>
         <th>Foydalanuvchi</th><th>Imtihon</th><th>Holat</th><th>Bo'lim / vaqt</th><th>Javoblar</th><th>Nazorat</th><th>Oxirgi faollik</th><th></th>
       </tr></thead>
       <tbody>
         {% for a in attempts %}
-        <tr id="attempt-row-{{ a.pk }}" data-user="{{ a.user.username }}" data-flags="{{ a.leave_count }}|{{ a.pasted_chars }}">
-          <td>{% if not a.is_submitted %}<input type="checkbox" class="attempt-checkbox" value="{{ a.pk }}" data-answered="{{ a.answered_count }}" onchange="updateBulk()">{% endif %}</td>
-          <td><div class="u-info">
+        <tr id="attempt-row-{{ a.pk }}" data-user="{{ a.user.display_name }}" data-q="{{ a.user.display_name|lower }} {{ a.user.username|lower }}" data-attempt="{{ a.pk }}" data-sus="{% if a.suspicious %}1{% endif %}" data-flags="{{ a.leave_count }}|{{ a.pasted_chars }}">
+          <td>{% if not a.is_submitted %}<input type="checkbox" class="attempt-checkbox" value="{{ a.pk }}" data-answered="{{ a.answered_count }}" aria-label="Tanlash" onchange="updateBulk()">{% endif %}</td>
+          <td data-label="Foydalanuvchi"><div class="u-info">
             {% include 'panel/_avatar.html' with u=a.user %}
             <div>
               <a href="{% url 'panel:user_detail' a.user.pk %}" class="link">{{ a.user.display_name }}</a>
               {% if a.multi_device %}<div><span class="badge badge-red" title="Shu akkaunt hozir boshqa kompyuterda ham test yozmoqda"><i class=lc-triangle-alert></i>&nbsp;2 qurilma</span></div>{% endif %}
             </div>
           </div></td>
-          <td style="color:var(--muted)">{{ a.exam.title|truncatechars:28 }}</td>
-          <td>
-            {% if a.state == 'submitted' %}<span class="badge badge-green">✓ Yuborildi</span>
+          <td data-label="Imtihon" style="color:var(--muted)">{{ a.exam.title|truncatechars:28 }}</td>
+          <td data-label="Holat">
+            {% if a.state == 'submitted' %}<span class="badge badge-green"><i class=lc-check></i>&nbsp;Yuborildi</span>
             {% elif a.state == 'active' %}<span class="badge badge-blue">● Yozmoqda</span>
             {% elif a.state == 'unsent' %}<span class="badge badge-red">Yuborilmagan</span>
             {% else %}<span class="badge badge-gray">Tashlab ketilgan</span>{% endif %}
             {% if a.last_error and not a.is_submitted %}<div style="font-size:11px;color:var(--red);margin-top:4px;max-width:220px" title="{{ a.last_error }}">Xato: {{ a.last_error|truncatechars:60 }}</div>{% endif %}
           </td>
-          <td>
+          <td data-label="Bo'lim / vaqt">
             <div style="color:var(--muted)">{{ a.section_label }}</div>
-            {% if a.time_left_label %}<div style="font-weight:600;font-variant-numeric:tabular-nums"><i class=lc-timer></i>&nbsp;{{ a.time_left_label }}</div>{% endif %}
+            {% if a.time_left_label %}<div class="live-clock" data-left="{{ a.seconds_left }}"><i class=lc-timer></i>&nbsp;<span>{{ a.time_left_label }}</span></div>{% endif %}
           </td>
-          <td>
+          <td data-label="Javoblar">
             <b>{{ a.answered_count }}</b><span style="color:var(--muted)"> / {{ a.total_questions }}</span>
-            {% if a.writing_words %}<div style="font-size:12px;color:var(--muted)">{% for w in a.writing_words %}T{{ forloop.counter }}: {{ w }} so'z{% if not forloop.last %} · {% endif %}{% endfor %}</div>{% endif %}
+            {% if a.total_questions %}<div class="live-bar"><i style="width:{{ a.answered_pct }}%"></i></div>{% endif %}
+            {% if a.writing_words %}<div style="font-size:12px;color:var(--muted);margin-top:3px">{% for w in a.writing_words %}T{{ forloop.counter }}: {{ w }} so'z{% if not forloop.last %} · {% endif %}{% endfor %}</div>{% endif %}
           </td>
-          <td style="font-size:12px;{% if a.suspicious %}color:var(--red);font-weight:600{% else %}color:var(--muted){% endif %}">
+          <td data-label="Nazorat" style="font-size:12px;{% if a.suspicious %}color:var(--red);font-weight:600{% else %}color:var(--muted){% endif %}">
             {% if a.leave_count %}<div title="Test oynasidan chiqishlar soni va jami vaqti">↗ {{ a.leave_count }} marta, {{ a.away_seconds }} s</div>{% endif %}
             {% if a.pasted_chars %}<div title="Writing'ga joylangan (paste) belgilar"><i class=lc-clipboard-list></i>&nbsp;{{ a.pasted_chars }} belgi</div>{% endif %}
             {% if not a.leave_count and not a.pasted_chars %}—{% endif %}
           </td>
-          <td style="color:var(--muted);font-size:12px" title="{{ a.last_seen_at|date:'d M Y, H:i:s' }}{% if a.ip %} · IP {{ a.ip }}{% endif %}">{{ a.seen_ago }}</td>
-          <td style="white-space:nowrap">
-            <a href="{% url 'panel:attempt_detail' a.pk %}" class="btn btn-ghost btn-sm" title="Javoblarni ko'rish"><i class=lc-eye></i></a>
+          <td data-label="Oxirgi faollik" style="color:var(--muted);font-size:12px" title="{{ a.last_seen_at|date:'d M Y, H:i:s' }}{% if a.ip %} · IP {{ a.ip }}{% endif %}">{{ a.seen_ago }}</td>
+          <td><div class="row-actions">
+            <a href="{% url 'panel:attempt_detail' a.pk %}" class="icon-btn" title="Javoblarni ko'rish" aria-label="Javoblarni ko'rish"><i class=lc-eye></i></a>
             {% if a.is_submitted %}
               {% if a.result_id %}<a href="{% url 'exams:result_detail' a.result_id %}" target="_blank" class="btn btn-ghost btn-sm">Natija</a>{% endif %}
             {% else %}
               {% if a.state == 'active' %}
-              <button onclick="sendCommand({ids:[{{ a.pk }}]}, 'message')" class="btn btn-ghost btn-sm" title="Xabar yuborish"><i class=lc-mail></i></button>
-              <button onclick="sendCommand({ids:[{{ a.pk }}]}, 'extra_time')" class="btn btn-ghost btn-sm" title="Qo'shimcha vaqt">+<i class=lc-timer></i></button>
+              <button onclick="sendCommand({ids:[{{ a.pk }}]}, 'message')" class="icon-btn" title="Xabar yuborish" aria-label="Xabar yuborish"><i class=lc-mail></i></button>
+              <button onclick="sendCommand({ids:[{{ a.pk }}]}, 'extra_time')" class="icon-btn" title="Qo'shimcha vaqt" aria-label="Qo'shimcha vaqt"><i class=lc-timer></i></button>
               {% endif %}
               {% if a.answered_count %}<button onclick="finalizeAttempt({{ a.pk }}, '{{ a.state }}')" class="btn btn-primary btn-sm">Natija yaratish</button>{% endif %}
-              <button onclick="deleteAttempt({{ a.pk }})" class="btn btn-danger btn-sm" title="Urinishni o'chirish">✕</button>
+              <button onclick="deleteAttempt({{ a.pk }})" class="icon-btn danger" title="Urinishni o'chirish" aria-label="Urinishni o'chirish"><i class=lc-x></i></button>
             {% endif %}
-          </td>
+          </div></td>
         </tr>
         {% empty %}
-        <tr><td colspan="9" style="text-align:center;padding:32px;color:var(--muted)">{% if tab == 'unsent' %}Yuborilmagan urinish yo'q <i class=lc-party-popper></i>{% elif tab == 'active' %}Hozir hech kim test yozmayapti{% else %}Oxirgi 24 soatda urinish yo'q{% endif %}</td></tr>
+        <tr><td colspan="9"><div class="empty-state"><div class="empty-icon"><i class={% if tab == 'unsent' %}lc-party-popper{% elif tab == 'suspicious' %}lc-shield-check{% else %}lc-clock{% endif %}></i></div>{% if tab == 'unsent' %}Yuborilmagan urinish yo'q{% elif tab == 'suspicious' %}Oxirgi 24 soatda shubhali harakat yo'q{% elif tab == 'active' %}Hozir hech kim test yozmayapti{% else %}Oxirgi 24 soatda urinish yo'q{% endif %}</div></td></tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
+  {% if hidden_rows %}<div style="padding:12px 18px;font-size:12.5px;color:var(--muted);border-top:1px solid var(--border)">Yana {{ hidden_rows }} ta urinish ko'rsatilmadi. Imtihon yoki guruh bo'yicha filtrlang.</div>{% endif %}
 </div>
+<div class="empty-state" id="liveNone" hidden>Talaba topilmadi</div>
 
-<p style="font-size:12px;color:var(--muted);margin-top:12px;line-height:1.6">
-  Test sahifasi har 20 soniyada (shubhali harakatda — darhol) javoblar va holatni serverga yuboradi; xabar va qo'shimcha vaqt o'quvchiga shu orqali ~20 soniyada yetadi.
-  <b>Nazorat</b> ustuni: test oynasidan chiqishlar (boshqa tab/dastur) va Writing'ga joylangan matn — 3+ chiqish yoki 100+ belgi qizil bilan belgilanadi.
-  «Hammasini yakunlash» tanlangan imtihonning barcha yuborilmagan urinishlaridan natija yaratadi; ochiq turgan test sahifalari to'xtaydi.
-</p>
+<details class="live-help">
+  <summary>Qanday ishlaydi?</summary>
+  <p style="margin-top:6px">Test sahifasi har 20 soniyada (shubhali harakatda darhol) javoblar va holatni serverga yuboradi. Xabar va qo'shimcha vaqt o'quvchiga shu orqali ~20 soniyada yetadi.
+  <b>Nazorat</b> ustuni: test oynasidan chiqishlar (boshqa tab yoki dastur) va Writing'ga joylangan matn. 3+ chiqish yoki 100+ belgi qizil bilan belgilanadi.
+  «Hammasini yakunlash» tanlangan imtihonning barcha yuborilmagan urinishlaridan natija yaratadi, ochiq turgan test sahifalari to'xtaydi.</p>
+</details>
+
+<div class="modal-overlay" id="cmd-modal" role="dialog" aria-modal="true" aria-labelledby="cmd-title">
+  <div class="modal">
+    <div class="modal-title" id="cmd-title">Xabar yuborish</div>
+    <div class="cmd-scope" id="cmd-scope"></div>
+    <form id="cmd-form">
+      <div id="cmd-message">
+        <textarea class="form-input" id="cmd-text" rows="3" maxlength="500" placeholder="O'quvchi ekranida chiqadigan xabar"></textarea>
+        <div class="cmd-chips" data-target="cmd-text">
+          <button type="button">10 daqiqa qoldi</button>
+          <button type="button">Test oynasidan chiqmang</button>
+          <button type="button">Javoblaringizni tekshirib oling</button>
+        </div>
+      </div>
+      <div id="cmd-time">
+        <label class="form-label" for="cmd-minutes">Necha daqiqa (joriy bo'lim taymeriga)</label>
+        <input class="form-input" id="cmd-minutes" type="number" min="1" max="60" value="5">
+        <div class="cmd-chips" data-target="cmd-minutes">
+          <button type="button">5</button><button type="button">10</button><button type="button">15</button>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" onclick="closeCommand()">Bekor</button>
+        <button class="btn btn-primary">Yuborish</button>
+      </div>
+    </form>
+  </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
 {% include 'panel/_live_camera_js.html' %}
 <script>
 const EXAM_ID = "{{ exam_id }}";
+const GROUP_ID = "{{ group_id }}";
 const REFRESH_KEY = 'panel_live_autorefresh';
 const SOUND_KEY = 'panel_live_sound';
 const autoRefresh = document.getElementById('autoRefresh');
 const soundAlerts = document.getElementById('soundAlerts');
 try {
-  autoRefresh.checked = localStorage.getItem(REFRESH_KEY) === '1';
+  autoRefresh.checked = localStorage.getItem(REFRESH_KEY) !== '0';
   soundAlerts.checked = localStorage.getItem(SOUND_KEY) === '1';
-} catch(e) {}
-autoRefresh.addEventListener('change', () => { try { localStorage.setItem(REFRESH_KEY, autoRefresh.checked ? '1' : '0'); } catch(e) {} });
+} catch(e) { autoRefresh.checked = true; }
+autoRefresh.addEventListener('change', () => {
+  try { localStorage.setItem(REFRESH_KEY, autoRefresh.checked ? '1' : '0'); } catch(e) {}
+  setStatus();
+});
 soundAlerts.addEventListener('change', () => {
   try { localStorage.setItem(SOUND_KEY, soundAlerts.checked ? '1' : '0'); } catch(e) {}
   if (soundAlerts.checked) { unlockAudio(); beep(1); }
@@ -219,6 +316,60 @@ function beep(times){
   osc.start(t0); osc.stop(t0 + times * 0.4);
 }
 
+const liveStatus = document.getElementById('liveStatus');
+let lastRefresh = new Date(), refreshFailed = false;
+function setStatus(){
+  const paused = document.querySelector('.attempt-checkbox:checked');
+  const clock = lastRefresh.toLocaleTimeString('uz-UZ', {hour12: false});
+  liveStatus.className = 'live-pulse' + (refreshFailed ? ' bad' : autoRefresh.checked && !paused ? ' on' : '');
+  liveStatus.textContent = refreshFailed ? "Aloqa yo'q"
+    : !autoRefresh.checked ? `To'xtatilgan · ${clock}`
+    : paused ? 'Tanlov tufayli pauza' : `Jonli · ${clock}`;
+}
+
+// The seconds left run down here between refreshes; each refresh resets them.
+function tickClocks(step){
+  document.querySelectorAll('.live-clock[data-left]').forEach(el => {
+    const left = Math.max(0, Number(el.dataset.left) - step);
+    el.dataset.left = left;
+    el.querySelector('span').textContent = `${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')}`;
+    el.classList.toggle('low', left < 300);
+  });
+}
+tickClocks(0);
+setInterval(() => tickClocks(1), 1000);
+
+// Search stays applied across refreshes, and hidden rows are never selected.
+const liveQ = document.getElementById('liveQ');
+function applySearch(){
+  const q = liveQ.value.trim().toLowerCase();
+  let shown = 0, rows = 0;
+  document.querySelectorAll('#liveTable tr[data-q]').forEach(tr => {
+    const hit = tr.dataset.q.includes(q);
+    tr.hidden = !hit;
+    rows++;
+    if (hit) shown++;
+    else { const cb = tr.querySelector('.attempt-checkbox'); if (cb) cb.checked = false; }
+  });
+  document.getElementById('liveNone').hidden = shown > 0 || !rows;
+  updateBulk();
+}
+liveQ.addEventListener('input', applySearch);
+
+// Alerts stay listed here after their toast is gone, until the page closes.
+const liveFeed = document.getElementById('liveFeed'), liveFeedList = document.getElementById('liveFeedList');
+function addFeed(attemptId, text){
+  const row = document.createElement('a'), time = document.createElement('time'), label = document.createElement('span');
+  row.href = `/panel/live/${attemptId}/`;
+  time.textContent = new Date().toLocaleTimeString('uz-UZ', {hour12: false});
+  label.textContent = text;
+  row.append(time, label);
+  liveFeedList.prepend(row);
+  while (liveFeedList.children.length > 30) liveFeedList.lastChild.remove();
+  liveFeed.hidden = false;
+}
+function clearFeed(){ liveFeedList.textContent = ''; liveFeed.hidden = true; }
+
 function flagMap(){
   const m = {};
   document.querySelectorAll('#liveTable tr[data-flags]').forEach(tr => { m[tr.id] = tr.dataset.flags; });
@@ -227,15 +378,17 @@ function flagMap(){
 // Refreshes the stats and table in place and calls out every student whose
 // "left the window" / "pasted" counters went up since the last refresh.
 async function refreshLive(force){
-  if (!force && document.querySelector('.attempt-checkbox:checked')) return;  // don't wipe a selection
+  if (!force && document.querySelector('.attempt-checkbox:checked')) { setStatus(); return; }  // don't wipe a selection
   let doc;
   try {
     const r = await fetch(location.href, {credentials: 'same-origin'});
-    if (!r.ok) return;
+    if (!r.ok) throw new Error(r.status);
     doc = new DOMParser().parseFromString(await r.text(), 'text/html');
-  } catch(e) { return; }
+  } catch(e) { refreshFailed = true; setStatus(); return; }
+  refreshFailed = false;
+  lastRefresh = new Date();
   const before = flagMap();
-  ['liveStats', 'liveTable'].forEach(id => {
+  ['liveStats', 'liveTabs', 'liveTable'].forEach(id => {
     const fresh = doc.getElementById(id);
     if (fresh) document.getElementById(id).innerHTML = fresh.innerHTML;
   });
@@ -249,7 +402,13 @@ async function refreshLive(force){
     syncTileVideos();
     syncRecorders();
   }
-  updateBulk();
+  document.querySelectorAll('#liveTable tr[data-attempt]').forEach(tr => {
+    const tile = document.querySelector(`#cameraGrid .cam-tile[data-attempt="${tr.dataset.attempt}"]`);
+    if (tile) tile.classList.toggle('flagged', tr.dataset.sus === '1');
+  });
+  tickClocks(0);
+  applySearch();
+  setStatus();
   const alerts = [];
   document.querySelectorAll('#liveTable tr[data-flags]').forEach(tr => {
     const old = before[tr.id];
@@ -257,7 +416,9 @@ async function refreshLive(force){
     const [l0, p0] = old.split('|').map(Number), [l1, p1] = tr.dataset.flags.split('|').map(Number);
     if (l1 > l0 || p1 > p0) {
       tr.classList.add('row-alert');
-      alerts.push(`${tr.dataset.user}: ${l1 > l0 ? 'test oynasidan chiqdi' : 'matn joyladi'}`);
+      const text = `${tr.dataset.user}: ${l1 > l0 ? 'test oynasidan chiqdi' : 'matn joyladi'}`;
+      alerts.push(text);
+      addFeed(tr.dataset.attempt, text);
     }
   });
   if (alerts.length) {
@@ -265,7 +426,8 @@ async function refreshLive(force){
     if (soundAlerts.checked) beep(3);
   }
 }
-setInterval(() => { if (autoRefresh.checked) refreshLive(); }, 10000);
+setInterval(() => { if (autoRefresh.checked && !document.hidden) refreshLive(); }, 10000);
+setStatus();
 
 // Each tile shows its student as live video (a direct, low-quality call);
 // until that connects — or if it can't — the latest snapshot, every 3 s.
@@ -353,36 +515,65 @@ if (camGridEl) {
 
 function selectedIds(){ return Array.from(document.querySelectorAll('.attempt-checkbox:checked')).map(cb => Number(cb.value)); }
 function toggleAll(master){
-  document.querySelectorAll('.attempt-checkbox').forEach(cb => cb.checked = master.checked);
+  document.querySelectorAll('.attempt-checkbox').forEach(cb => { cb.checked = master.checked && !cb.closest('tr').hidden; });
   updateBulk();
 }
 function updateBulk(){
   const n = selectedIds().length;
   document.getElementById('bulkCount').textContent = n;
-  document.getElementById('bulkBar').style.display = n ? 'inline-flex' : 'none';
+  document.getElementById('bulkBar').classList.toggle('show', n > 0);
+  setStatus();
 }
 async function postJSON(url, body){
   const r = await fetch(url, {method:'POST', headers:{'X-CSRFToken':csrf, 'Content-Type':'application/json'}, body: JSON.stringify(body || {})});
   return r.json().catch(() => ({}));
 }
 
-async function sendCommand(target, type){
-  const body = {...target, type};
+// One dialog serves both commands; `pendingCommand` is what Send will post.
+const cmdModal = document.getElementById('cmd-modal'), cmdText = document.getElementById('cmd-text'), cmdMinutes = document.getElementById('cmd-minutes');
+let pendingCommand = null;
+function commandScope(target){
+  if (target.all_active) return EXAM_ID || GROUP_ID ? 'Filtrga mos, hozir yozayotgan barcha talabalar' : 'Hozir yozayotgan barcha talabalar';
+  if (target.ids.length > 1) return `${target.ids.length} ta tanlangan talaba`;
+  const row = document.getElementById('attempt-row-' + target.ids[0]);
+  return row ? row.dataset.user : '';
+}
+function sendCommand(target, type){
+  pendingCommand = {target, type};
+  const isMessage = type === 'message';
+  document.getElementById('cmd-title').textContent = isMessage ? 'Xabar yuborish' : "Qo'shimcha vaqt";
+  document.getElementById('cmd-scope').textContent = commandScope(target);
+  document.getElementById('cmd-message').hidden = !isMessage;
+  document.getElementById('cmd-time').hidden = isMessage;
+  cmdText.value = '';
+  cmdMinutes.value = 5;
+  cmdModal.classList.add('show');
+  (isMessage ? cmdText : cmdMinutes).focus();
+}
+function closeCommand(){ cmdModal.classList.remove('show'); }
+document.querySelectorAll('.cmd-chips').forEach(row => row.addEventListener('click', e => {
+  if (e.target.tagName !== 'BUTTON') return;
+  document.getElementById(row.dataset.target).value = e.target.textContent;
+}));
+document.getElementById('cmd-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  if (!pendingCommand) return;
+  const {target, type} = pendingCommand, body = {...target, type};
   if (type === 'message') {
-    const text = prompt('O\'quvchi(lar) ekranida chiqadigan xabar:');
-    if (!text || !text.trim()) return;
-    body.text = text.trim();
+    body.text = cmdText.value.trim();
+    if (!body.text) { toast('Xabar matnini yozing', '#eab308'); return; }
   } else {
-    const minutes = prompt('Necha daqiqa qo\'shilsin? (joriy bo\'lim taymeriga)', '5');
-    if (!minutes) return;
-    body.minutes = Number(minutes);
+    body.minutes = Number(cmdMinutes.value);
   }
   const d = await postJSON('/panel/live/command/', body);
-  if (d.ok) toast(d.sent ? `${d.sent} ta o'quvchiga yuborildi (~20 soniyada yetadi)` : 'Hozir test yozayotgan o\'quvchi yo\'q', d.sent ? '#22c55e' : '#eab308');
-  else toast(d.error || 'Xatolik yuz berdi', '#ef4444');
-}
-function messageAll(){ sendCommand({all_active: true, exam: EXAM_ID || null}, 'message'); }
-function extraTimeAll(){ sendCommand({all_active: true, exam: EXAM_ID || null}, 'extra_time'); }
+  if (d.ok) {
+    closeCommand();
+    toast(d.sent ? `${d.sent} ta o'quvchiga yuborildi (~20 soniyada yetadi)` : 'Hozir test yozayotgan o\'quvchi yo\'q', d.sent ? '#22c55e' : '#eab308');
+  } else toast(d.error || 'Xatolik yuz berdi', '#ef4444');
+});
+const everyone = () => ({all_active: true, exam: EXAM_ID || null, group: GROUP_ID || null});
+function messageAll(){ sendCommand(everyone(), 'message'); }
+function extraTimeAll(){ sendCommand(everyone(), 'extra_time'); }
 function messageSelected(){ sendCommand({ids: selectedIds()}, 'message'); }
 function extraTimeSelected(){ sendCommand({ids: selectedIds()}, 'extra_time'); }
 
