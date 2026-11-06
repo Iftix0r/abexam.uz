@@ -174,11 +174,16 @@ X_FRAME_OPTIONS = 'DENY'
 CONTENT_SECURITY_POLICY = (
     "default-src 'self'; "
     "base-uri 'self'; object-src 'none'; frame-ancestors 'none'; "
-    "script-src 'self' 'unsafe-inline'; "
+    # CDNs the templates load: Lucide (unpkg), Chart.js and transformers.js
+    # (jsdelivr), html2pdf and qrcode (cdnjs). wasm-unsafe-eval, jsdelivr and
+    # the Hugging Face hosts in connect-src are for in-browser Whisper in lessons.
+    "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' "
+    "https://unpkg.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; "
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
     "font-src 'self' https://fonts.gstatic.com; "
     "img-src 'self' data: blob: https:; "
-    "media-src 'self' blob:; connect-src 'self'; "
+    "media-src 'self' blob:; "
+    "connect-src 'self' https://cdn.jsdelivr.net https://huggingface.co https://*.hf.co; "
     "frame-src 'self' https:"
 )
 
