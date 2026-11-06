@@ -88,7 +88,9 @@ def refresh(acc):
 
     old = user.avatar.name if user.avatar else ''
     storage = user.avatar.storage
-    stored = storage.save(user.avatar.field.generate_filename(user, filename), ContentFile(content))
+    # Saved directly: the field's upload_to would rename it to a random uuid and
+    # lose the PREFIX that from_telegram() relies on.
+    stored = storage.save(f'avatars/{filename}', ContentFile(content))
     # Only if the avatar is still what was read above: the student may have
     # uploaded their own photo while this one was downloading.
     unchanged = Q(avatar=old) if old else Q(avatar='') | Q(avatar__isnull=True)

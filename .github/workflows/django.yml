@@ -1,4 +1,4 @@
-name: Django CI
+name: Test va deploy
 
 on:
   push:
@@ -6,25 +6,58 @@ on:
   pull_request:
     branches: [ "main" ]
 
+permissions:
+  contents: read
+
 jobs:
-  build:
-
+  test:
     runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 4
-      matrix:
-        python-version: [3.7, 3.8, 3.9]
-
+    timeout-minutes: 15
+    env:
+      SECRET_KEY: ci-only-not-a-real-secret
+      OPENAI_API_KEY: ci-only-not-a-real-key
+      DEBUG: "True"
     steps:
     - uses: actions/checkout@v4
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
+    - uses: actions/setup-python@v5
       with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install Dependencies
+        python-version: "3.11"  # same as the server
+        cache: pip
+    - name: Paketlarni o'rnatish
+      run: pip install -r requirements.txt
+    - name: Django tekshiruvi
+      run: python manage.py check
+    - name: Yozilmagan migratsiya yo'qligini tekshirish
+      run: python manage.py makemigrations --check --dry-run
+    - name: Testlar
+      run: python manage.py test
+
+  # Runs only when every test passed. Switched on and off by the DEPLOY_ENABLED
+  # repository variable (Settings > Secrets and variables > Actions > Variables).
+  deploy:
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.DEPLOY_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    concurrency:
+      group: production-deploy
+      cancel-in-progress: false
+    steps:
+    - name: SSH kalitini tayyorlash
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
       run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-    - name: Run Tests
+        install -m 700 -d ~/.ssh
+        printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+        chmod 600 ~/.ssh/deploy_key
+        printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+    - name: Serverda deploy.sh ni ishga tushirish
+      env:
+        SSH_HOST: ${{ secrets.SSH_HOST }}
+        SSH_PORT: ${{ secrets.SSH_PORT }}
+        SSH_USER: ${{ secrets.SSH_USER }}
       run: |
-        python manage.py test
+        ssh -i ~/.ssh/deploy_key -p "$SSH_PORT" \
+          -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=20 \
+          "$SSH_USER@$SSH_HOST" 'cd /home/host7905/examab && bash deploy.sh'

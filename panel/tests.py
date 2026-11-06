@@ -1228,6 +1228,9 @@ class IpBlockAndCheckTests(TestCase):
 
     def test_staff_panel_requires_location(self):
         self.client.force_login(self.helper)
+        session = self.client.session
+        del session['staff_location_verified']  # set for every test login by the test runner
+        session.save()
         response = self.client.get('/panel/', secure=True)
         self.assertRedirects(response, '/panel/location-required/?next=/panel/', fetch_redirect_response=False)
 

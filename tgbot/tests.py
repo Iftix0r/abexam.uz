@@ -520,10 +520,11 @@ class TelegramAvatarTests(TestCase):
 
     def test_own_upload_is_never_replaced(self):
         self.user.avatar.save('me.jpg', ContentFile(b'mine'))
+        mine = self._avatar()
         self.assertEqual(avatars.refresh(self.acc), avatars.SKIPPED)
-        self.assertEqual(self._avatar(), 'avatars/me.jpg')
+        self.assertEqual(self._avatar(), mine)
         self.assertFalse(avatars.clear(self.user))
-        self.assertEqual(self._avatar(), 'avatars/me.jpg')
+        self.assertEqual(self._avatar(), mine)
 
     def test_photo_removed_in_telegram_is_removed_here(self):
         avatars.refresh(self.acc)

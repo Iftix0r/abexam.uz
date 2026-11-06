@@ -171,6 +171,8 @@ if not DEBUG:
 
 X_FRAME_OPTIONS = 'DENY'
 
+TEST_RUNNER = 'core.test_runner.ProjectTestRunner'
+
 CONTENT_SECURITY_POLICY = (
     "default-src 'self'; "
     "base-uri 'self'; object-src 'none'; frame-ancestors 'none'; "
