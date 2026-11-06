@@ -705,11 +705,13 @@ class ResumeAttemptTests(TestCase):
     def test_submit_closes_the_attempt(self):
         self._autosave()
         self._post('submit_exam', attempt_id='a1', answers=self.answers)
+        mark_exam_unlocked(self.user.pk, self.exam.pk)  # submit relocks the exam
         self.assertIsNone(self._resume())
 
     def test_later_submit_closes_older_abandoned_attempt(self):
         self._autosave('old', minutes_ago=60)
         self._post('submit_exam', attempt_id='new', answers=self.answers)
+        mark_exam_unlocked(self.user.pk, self.exam.pk)  # submit relocks the exam
         self.assertIsNone(self._resume())
 
     def test_deleted_attempt_cannot_be_resumed(self):
