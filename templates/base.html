@@ -433,15 +433,22 @@
                 <i data-lucide="home" style="width: 20px;"></i>
                 <span class="nav-toggle-text">Bosh sahifa</span>
             </a>
+            <a href="{% url 'chat:home' %}" class="nav-link {% if request.resolver_match.namespace == 'chat' %}active{% endif %}">
+                <i data-lucide="messages-square" style="width: 20px;"></i>
+                <span class="nav-toggle-text">AbChat</span>
+                {% with unread=chat_unread %}{% if unread %}<span style="margin-left: auto; font-size: 0.65rem; font-weight: 700; background: #d32f2f; color: #fff; border-radius: 20px; padding: 1px 7px;">{{ unread }}</span>{% endif %}{% endwith %}
+            </a>
             <a href="{% url 'exams_list' %}" class="nav-link {% if request.resolver_match.url_name == 'exams_list' %}active{% endif %}">
                 <i data-lucide="book-open" style="width: 20px;"></i>
                 <span class="nav-toggle-text">Imtihonlar</span>
             </a>
+            {% comment "Vaqtincha yashirilgan: Ingliz tili" %}
             <a href="{% url 'learn:hub' %}" class="nav-link {% if request.resolver_match.namespace == 'learn' %}active{% endif %}">
                 <i data-lucide="graduation-cap" style="width: 20px;"></i>
                 <span class="nav-toggle-text">Ingliz tili</span>
                 <span style="margin-left: auto; font-size: 0.6rem; font-weight: 700; background: #f59e0b; color: #000; border-radius: 6px; padding: 2px 6px;">YANGI</span>
             </a>
+            {% endcomment %}
 
             <div style="margin-top: 1.5rem; padding: 0 0.8rem; margin-bottom: 0.5rem;" class="sidebar-label">
                 <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-muted); text-transform: uppercase;">Bo'limlar</span>
@@ -457,11 +464,6 @@
             <a href="{% url 'games:hub' %}" class="nav-link {% if request.resolver_match.namespace == 'games' %}active{% endif %}">
                 <i data-lucide="gamepad-2" style="width: 20px;"></i>
                 <span class="nav-toggle-text">AB Game</span>
-            </a>
-            <a href="{% url 'chat:home' %}" class="nav-link {% if request.resolver_match.namespace == 'chat' %}active{% endif %}">
-                <i data-lucide="messages-square" style="width: 20px;"></i>
-                <span class="nav-toggle-text">AbChat</span>
-                {% with unread=chat_unread %}{% if unread %}<span style="margin-left: auto; font-size: 0.65rem; font-weight: 700; background: #d32f2f; color: #fff; border-radius: 20px; padding: 1px 7px;">{{ unread }}</span>{% endif %}{% endwith %}
             </a>
             <a href="{% url 'premium' %}" class="nav-link {% if request.resolver_match.url_name == 'premium' %}active{% endif %}">
                 <i data-lucide="gem" style="width: 20px;"></i>

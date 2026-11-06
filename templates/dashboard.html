@@ -206,7 +206,7 @@
     }
 
     /* ── Quick links ── */
-    .dash-links { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+    .dash-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
     .dash-link {
         display: flex; align-items: center; gap: 14px;
         background: var(--card-bg); border: 1px solid var(--border-color);
@@ -226,7 +226,6 @@
     .dash-section-title { font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: -6px; }
 
     @media (max-width: 1100px) {
-        .dash-links { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         .dash-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         .dash-hero { grid-template-columns: minmax(0, 1fr); }
     }
@@ -273,9 +272,11 @@
                     <i data-lucide="bar-chart-3" style="width:18px;"></i> Natijalarim
                 </a>
                 {% else %}
+                {% comment "Vaqtincha yashirilgan: Ingliz tili" %}
                 <a href="{% url 'learn:hub' %}" class="dash-btn ghost">
                     <i data-lucide="graduation-cap" style="width:18px;"></i> Ingliz tili kursi
                 </a>
+                {% endcomment %}
                 {% endif %}
             </div>
             {% if pending_count %}
@@ -425,6 +426,7 @@
     <!-- Quick links -->
     <p class="dash-section-title">Bo'limlar</p>
     <section class="dash-links">
+        {% comment "Vaqtincha yashirilgan: Ingliz tili" %}
         <a href="{% url 'learn:hub' %}" class="dash-link">
             <div class="dash-stat-icon tone-sky"><i data-lucide="graduation-cap" style="width:20px;"></i></div>
             <div class="txt">
@@ -433,6 +435,7 @@
             </div>
             <i data-lucide="chevron-right" class="chev" style="width:18px;"></i>
         </a>
+        {% endcomment %}
         <a href="{% url 'rating' %}" class="dash-link">
             <div class="dash-stat-icon tone-amber"><i data-lucide="trophy" style="width:20px;"></i></div>
             <div class="txt"><b>Reyting</b><span>Eng yaxshi natijalar</span></div>

@@ -18,6 +18,21 @@ jobs:
       OPENAI_API_KEY: ci-only-not-a-real-key
       DEBUG: "True"
     steps:
+    - name: Telegram'ga boshlanganini yuborish
+      if: github.event_name == 'push' && vars.DEPLOY_ENABLED == 'true'
+      continue-on-error: true  # a Telegram problem must never stop a deploy
+      env:
+        BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        CHAT_ID: ${{ secrets.TELEGRAM_ADMIN_CHAT_ID }}
+        COMMIT: ${{ github.event.head_commit.message }}
+        SHA: ${{ github.sha }}
+      run: |
+        [ -n "$BOT_TOKEN" ] || exit 0
+        curl -sS --fail -m 15 -o /dev/null "https://api.telegram.org/bot$BOT_TOKEN/sendMessage" \
+          --data-urlencode "chat_id=$CHAT_ID" \
+          --data-urlencode "text=🚀 Yangilanish boshlandi
+        ${COMMIT%%$'\n'*} (${SHA:0:7})
+        Testlar ishlayapti, natija 5 daqiqa ichida keladi."
     - uses: actions/checkout@v4
     - uses: actions/setup-python@v5
       with:
@@ -61,3 +76,39 @@ jobs:
         ssh -i ~/.ssh/deploy_key -p "$SSH_PORT" \
           -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=20 \
           "$SSH_USER@$SSH_HOST" 'cd /home/host7905/examab && bash deploy.sh'
+
+  # Reports the outcome, including the cases deploy.sh never sees: failed tests
+  # and a server that can't be reached.
+  notify:
+    needs: [test, deploy]
+    if: always() && github.event_name == 'push' && vars.DEPLOY_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+    - name: Telegram'ga natijani yuborish
+      continue-on-error: true
+      env:
+        BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        CHAT_ID: ${{ secrets.TELEGRAM_ADMIN_CHAT_ID }}
+        COMMIT: ${{ github.event.head_commit.message }}
+        SHA: ${{ github.sha }}
+        TEST_RESULT: ${{ needs.test.result }}
+        DEPLOY_RESULT: ${{ needs.deploy.result }}
+        RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      run: |
+        [ -n "$BOT_TOKEN" ] || exit 0
+        if [ "$DEPLOY_RESULT" = success ]; then
+          status="✅ Sayt yangilandi va tayyor"
+        elif [ "$TEST_RESULT" = failure ]; then
+          status="❌ Testlar o'tmadi, deploy qilinmadi. Sayt eski versiyada ishlayapti."
+        elif [ "$DEPLOY_RESULT" = failure ]; then
+          status="❌ Deploy xato berdi. Saytni tekshiring."
+        else
+          status="⚠️ Yangilanish oxirigacha yetmadi (test: $TEST_RESULT, deploy: $DEPLOY_RESULT)"
+        fi
+        curl -sS --fail -m 15 -o /dev/null "https://api.telegram.org/bot$BOT_TOKEN/sendMessage" \
+          --data-urlencode "chat_id=$CHAT_ID" \
+          --data-urlencode "disable_web_page_preview=true" \
+          --data-urlencode "text=$status
+        ${COMMIT%%$'\n'*} (${SHA:0:7})
+        $RUN_URL"
