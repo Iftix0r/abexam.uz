@@ -23,7 +23,19 @@ Must stay outside the page content: an animated ancestor would break position:fi
     display: block; width: 100%; padding: 0; border: 0; background: none;
     cursor: pointer; pointer-events: auto; -webkit-tap-highlight-color: transparent;
   }
+  .abj-hit { position: relative; }
   .abj-hit svg { display: block; width: 100%; height: auto; overflow: visible; transform: scaleX(var(--abj-dir, 1)); }
+  /* 3D body: the SVG stays as the invisible sizing box and as the fallback. */
+  #abjon.abj-3d .abj-hit svg { visibility: hidden; }
+  .abj-canvas {
+    position: absolute; pointer-events: none;
+    left: calc(var(--abj-size) * -0.35); top: calc(var(--abj-size) * -0.3);
+    width: calc(var(--abj-size) * 1.7); height: calc(var(--abj-size) * 1.7);
+  }
+  .abj-ground {
+    position: absolute; left: 50%; bottom: 0; width: 66%; height: 9%; pointer-events: none;
+    border-radius: 50%; background: radial-gradient(closest-side, rgba(16, 24, 40, 0.26), transparent);
+  }
 
   /* Parts turn around points given in the drawing's own coordinates. */
   .abj-fig, .abj-torso, .abj-leg-l, .abj-leg-r, .abj-arm-l, .abj-arm-r, .abj-eyes, .abj-shadow { transform-box: view-box; }
@@ -65,6 +77,10 @@ Must stay outside the page content: an animated ancestor would break position:fi
     0%, 100% { transform: translate(3px, 0); } 25% { transform: translate(0, 3px); }
     50% { transform: translate(-3px, 0); } 75% { transform: translate(0, -3px); }
   }
+  @keyframes abj-rage {
+    0%, 100% { transform: scaleX(var(--abj-dir, 1)) translateX(-2px); filter: sepia(1) saturate(6) hue-rotate(-12deg); }
+    50% { transform: scaleX(var(--abj-dir, 1)) translateX(2px); filter: none; }
+  }
   @keyframes abj-jump-shadow { 0%, 100% { transform: scale(1); opacity: 0.16; } 50% { transform: scale(0.55); opacity: 0.07; } }
   @keyframes abj-wave { 0%, 100% { transform: rotate(-88deg); } 50% { transform: rotate(-118deg); } }
   @keyframes abj-dance { 0%, 100% { transform: rotate(-8deg) translateY(0); } 25% { transform: rotate(0) translateY(-7px); } 50% { transform: rotate(8deg) translateY(0); } 75% { transform: rotate(0) translateY(-7px); } }
@@ -87,6 +103,7 @@ Must stay outside the page content: an animated ancestor would break position:fi
   #abjon[data-state="read"] .abj-arm-l { transform: rotate(-58deg); }
   #abjon[data-state="read"] .abj-arm-r { transform: rotate(58deg); }
   #abjon[data-state="read"] .abj-pupils { transform: translate(0, 3px); }
+  #abjon[data-state="angry"] .abj-hit svg { animation: abj-rage 0.22s linear infinite; }
   #abjon[data-state="flip"] .abj-fig { animation: abj-flip 0.9s cubic-bezier(0.3, 0.6, 0.5, 1) both; }
   #abjon[data-state="flip"] .abj-shadow { animation: abj-jump-shadow 0.9s ease-in-out both; }
   #abjon[data-state="leap"] .abj-fig { transform: rotate(var(--abj-rot, 0deg)); }
@@ -290,6 +307,8 @@ Must stay outside the page content: an animated ancestor would break position:fi
     "Oyog'im kalta, lekin maqsadim uzun!",
     "Listening'da quloq, Reading'da ko'z, menda esa faqat do'ppi ishlaydi!"
   ]));
+  const ANGRY = ["Bo'ldi! Jahlim chiqdi!", "Tinch qo'ying, kitob o'qiyapman!", "Yana bossangiz, do'ppimni kiyib ketaman!", "Qani, bir ko'ring! Rangim o'zgardi!"];
+  const CALM = ["Mayli, kechirdim. Do'stmiz!", "Uf... Tinchlandim.", "Jahl chiqqanda 10 gacha sanang. Men sanadim!"];
   const DODGE = ["Ushlay olmaysiz!", "Voy, qitiq! Qochdim!", "Avval testni topshiring, keyin ushlaysiz!"];
   const TICKLE = ["Hi-hi-hi! Qitiqlamang!", "Bo'ldi, bo'ldi! Boshim aylandi!", "Yana bossangiz, ballingizni kamaytiraman! Hazil!"];
   let lineIndex = 0;
@@ -300,7 +319,7 @@ Must stay outside the page content: an animated ancestor would break position:fi
   let x = 0, y = 0, dir = 1, plat = null, target = 0, B = null;
   let timer = 0, frame = 0, lastTime = 0, landNow = null, arrive = null;
   let paused = false, sayTimer = 0, chatter = 0;
-  let clicks = 0, lastClick = 0, lastDodge = 0;
+  let clicks = 0, lastClick = 0, lastDodge = 0, rot = 0, lookX = 0, lookY = 0;
 
   function measure() {
     const width = document.documentElement.clientWidth;
@@ -413,6 +432,7 @@ Must stay outside the page content: an animated ancestor would break position:fi
       plat = to;
       x = toX;
       y = span(to).top;
+      rot = 0;
       root.style.setProperty('--abj-rot', '0deg');
       place();
     };
@@ -421,7 +441,8 @@ Must stay outside the page content: an animated ancestor would break position:fi
       const eased = t * t * (3 - 2 * t);
       x = fromX + (toX - fromX) * t;
       y = fromY + (span(to).top - fromY) * t - 4 * Math.max(0, rise) * t * (1 - t);
-      root.style.setProperty('--abj-rot', spins * 360 * eased + 'deg');
+      rot = spins * 360 * eased;
+      root.style.setProperty('--abj-rot', rot + 'deg');
       place();
       if (t < 1) {
         frame = requestAnimationFrame(fly);
@@ -438,6 +459,15 @@ Must stay outside the page content: an animated ancestor would break position:fi
     act('flip', 900, () => {
       if (Math.random() < 0.25) act('dizzy', 1500);
       else next();
+    });
+  }
+
+  function rage() {
+    stop();
+    say(any(ANGRY), 3000);
+    act('angry', 2800, () => {
+      say(any(CALM), 3200);
+      act('calm', 1600);
     });
   }
 
@@ -460,12 +490,14 @@ Must stay outside the page content: an animated ancestor would break position:fi
       if (to === undefined) return walk();
       return leap(to, Math.random() < 0.6 ? (Math.random() < 0.2 ? 2 : 1) : 0);
     }
-    if (roll < 0.58) return walk();
-    if (roll < 0.7) return salto();
-    if (roll < 0.76) return act('idle', rand(1600, 3000));
-    if (roll < 0.82) return act('wave', 1800);
+    if (roll < 0.54) return walk();
+    if (roll < 0.65) return salto();
+    if (roll < 0.74) return act('spin', 2600);
+    if (roll < 0.78) return act('idle', rand(1600, 3000));
+    if (roll < 0.83) return act('wave', 1800);
     if (roll < 0.88) return act('read', 4500);
-    if (roll < 0.94) return act('dance', 3000);
+    if (roll < 0.93) return act('dance', 3000);
+    if (roll < 0.96) return rage();
     if (plat) return leap(null, 1);
     hideAndPeek();
   }
@@ -527,9 +559,11 @@ Must stay outside the page content: an animated ancestor would break position:fi
     const now = Date.now();
     clicks = now - lastClick < 1500 ? clicks + 1 : 1;
     lastClick = now;
-    const tickled = clicks >= 3;
-    if (tickled) clicks = 0;
-    if (still || landNow) return say(tickled ? any(TICKLE) : nextLine());
+    // Three quick clicks tickle him; keep going and he loses his temper.
+    const enraged = clicks >= 5, tickled = clicks === 3;
+    if (enraged) clicks = 0;
+    if (still || landNow) return say(enraged ? any(ANGRY) : tickled ? any(TICKLE) : nextLine());
+    if (enraged) return rage();
     stop();
     if (tickled) {
       say(any(TICKLE), 3500);
@@ -576,8 +610,10 @@ Must stay outside the page content: an animated ancestor would break position:fi
       const box = hit.getBoundingClientRect();
       const dx = e.clientX - (box.left + box.width / 2), dy = e.clientY - (box.top + box.height / 3);
       const length = Math.hypot(dx, dy) || 1;
-      root.style.setProperty('--abj-px', (dx / length * 3 * dir).toFixed(1) + 'px');
-      root.style.setProperty('--abj-py', (dy / length * 3).toFixed(1) + 'px');
+      lookX = dx / length * 3;
+      lookY = dy / length * 3;
+      root.style.setProperty('--abj-px', (lookX * dir).toFixed(1) + 'px');
+      root.style.setProperty('--abj-py', lookY.toFixed(1) + 'px');
     });
   }, { passive: true });
 
@@ -616,6 +652,16 @@ Must stay outside the page content: an animated ancestor would break position:fi
     measure();
   } else if (home || !still) {
     show();  // standing still in a corner could cover a page's controls, so only at home
+  }
+
+  // The 3D body comes after the page, so it never slows the page down. If it
+  // can't load or the device has no WebGL, he simply stays the SVG drawing.
+  if (!still) {
+    const load = () => import('/static/abjon3d.js?v=1')
+      .then(m => m.mount(root, () => ({ dir: dir, rot: rot, px: lookX, py: lookY })))
+      .catch(() => {});
+    if (document.readyState === 'complete') load();
+    else window.addEventListener('load', load, { once: true });
   }
 })();
 </script>
