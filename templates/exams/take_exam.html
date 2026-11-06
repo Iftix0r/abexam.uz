@@ -1093,11 +1093,13 @@
         <h3 id="recoverTitle"></h3>
         <div id="recoverBody"></div>
         <div class="review-actions">
-            <button class="btn-back" id="recoverDismissBtn" onclick="document.getElementById('recoverModal').classList.remove('active')"></button>
-            <button class="btn-confirm" id="recoverSubmitBtn" onclick="submitSavedAnswers()"></button>
+            <button class="btn-back" id="recoverDismissBtn"></button>
+            <button class="btn-confirm" id="recoverSubmitBtn"></button>
         </div>
     </div>
 </div>
+
+{{ resume|json_script:"resume-data" }}
 
 <!-- ─── MAIN ───────────────────────────────────────────── -->
 <main>
@@ -1526,6 +1528,26 @@ document.addEventListener('DOMContentLoaded', () => {
     let proctor = { leave_count: 0, away_seconds: 0, pasted_chars: 0 };
     try { Object.assign(proctor, JSON.parse(localStorage.getItem(PROCTOR_KEY) || '{}')); } catch(e) {}
 
+    // The server's copy of an unfinished attempt, which outlives a cleared
+    // browser. Another browser's copy that is still reporting is left alone:
+    // two pages on one attempt would overwrite each other's answers.
+    const serverAttempt = JSON.parse(document.getElementById('resume-data').textContent);
+    let localAttemptId = null;
+    try { localAttemptId = localStorage.getItem(ATTEMPT_KEY); } catch(e) {}
+    const sameBrowser = !!serverAttempt && localAttemptId === serverAttempt.attempt_id;
+    const resumeBlocked = !!serverAttempt && serverAttempt.online && !sameBrowser;
+    const resume = resumeBlocked ? null : serverAttempt;
+    let currentAttemptId = resume ? resume.attempt_id : null;
+    if (resume) {
+        Object.keys(proctor).forEach(k => { proctor[k] = Math.max(proctor[k] || 0, resume.proctor[k] || 0); });
+        if (!sameBrowser) {
+            try {
+                localStorage.setItem(ATTEMPT_KEY, resume.attempt_id);
+                localStorage.setItem(COMMAND_KEY, String(resume.last_command));
+            } catch(e) {}
+        }
+    }
+
     // Collect all question IDs per section
     const sectionQuestions = {}; // { sectionId: [{ id, type }] }
     {% for section in sections %}
@@ -1547,10 +1569,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     document.querySelectorAll('.header-audio').forEach(h => h.classList.toggle('active', sectionOrder[0] === 'listening'));
 
-    // Load draft
+    // Load draft. This browser's draft of the same attempt can be one
+    // autosave ahead of the server; a draft of any other attempt is stale.
+    if (resume) Object.assign(answers, resume.answers);
     try {
         const saved = JSON.parse(localStorage.getItem(DRAFT_KEY) || '{}');
-        Object.assign(answers, saved);
+        if (!resume || sameBrowser) Object.assign(answers, saved);
     } catch(e) {}
 
     // ─── DRAFT RESTORE ───────────────────────────────────
@@ -1923,6 +1947,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let pendingSectionId = {% if tab_groups.0 %}'{{ tab_groups.0.type }}'{% else %}null{% endif %};
     let pendingTabEl = null;
     let pendingDurationMinutes = {{ tab_groups.0.duration_minutes|default:60 }};
+    // Set only when resuming a section that was already running.
+    let pendingSeconds = null;
     let firstSection = true;
 
     function showSectionInstruction(id, el, sectionType, sectionTitle, qCount, duration) {
@@ -1948,7 +1974,7 @@ document.addEventListener('DOMContentLoaded', () => {
         unlockAudio();
         if (pendingSectionId) {
             _doShowSection(pendingSectionId, pendingTabEl);
-            startSectionTimer(pendingDurationMinutes, pendingSectionId);
+            startSectionTimer(pendingDurationMinutes, pendingSectionId, pendingSeconds);
             updateFooterActionButton();
             // Real IELTS starts the Listening audio the moment the section
             // opens, not on a separate manual click — this is still inside
@@ -1956,8 +1982,10 @@ document.addEventListener('DOMContentLoaded', () => {
             // gesture requirement is satisfied.
             if (pendingSectionId === 'listening') {
                 const realId = sectionIdsOfType('listening')[0];
-                if (realId) playListeningAudio(realId);
+                if (realId && pendingSeconds === null) playListeningAudio(realId);
+                else if (realId) continueListeningAudio(realId, pendingDurationMinutes * 60 - pendingSeconds);
             }
+            pendingSeconds = null;
         }
     };
 
@@ -2319,6 +2347,27 @@ document.addEventListener('DOMContentLoaded', () => {
     // ─── LISTENING: ONE-PLAY RESTRICTION ─────────────────
     const audioPlayCounts = {};
 
+    // Resuming: the recording ran on with the section timer, so it continues
+    // from that point, or counts as heard if it would have finished by then.
+    function continueListeningAudio(sectionId, startAt) {
+        const audio = document.getElementById('audio-el-' + sectionId);
+        if (!audio) return;
+        const go = () => {
+            if (startAt < audio.duration) {
+                audio.currentTime = Math.max(0, startAt);
+                playListeningAudio(sectionId);
+                return;
+            }
+            audioPlayCounts[sectionId] = 1;
+            document.getElementById('plays-left-' + sectionId).innerText = '0 marta qoldi';
+            document.getElementById('plays-left-' + sectionId).className = 'header-audio-badge used';
+            document.getElementById('play-label-' + sectionId).innerText = '✓ Audio tugadi';
+            document.getElementById('play-btn-' + sectionId).disabled = true;
+        };
+        if (audio.readyState >= 1) go();
+        else audio.addEventListener('loadedmetadata', go, { once: true });
+    }
+
     window.playListeningAudio = function(sectionId) {
         const audio = document.getElementById('audio-el-' + sectionId);
         const btn = document.getElementById('play-btn-' + sectionId);
@@ -2666,9 +2715,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function startSectionTimer(minutes, sectionType) {
+    function startSectionTimer(minutes, sectionType, seconds = null) {
         clearInterval(timerInterval);
-        timeLeft = (Number(minutes) || 60) * 60;
+        timeLeft = seconds !== null ? seconds : (Number(minutes) || 60) * 60;
         if (timerLabelEl) timerLabelEl.innerText = (sectionType || '').toUpperCase();
         updateTimer();
         timerInterval = setInterval(updateTimer, 1000);
@@ -2801,6 +2850,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function attemptId() {
+        if (currentAttemptId) return currentAttemptId;
         let id = null;
         try { id = localStorage.getItem(ATTEMPT_KEY); } catch(e) {}
         if (!id) {
@@ -2854,21 +2904,87 @@ document.addEventListener('DOMContentLoaded', () => {
         return allQuestions.filter(q => answers[q.id] && String(answers[q.id]).trim()).length;
     }
 
-    function showRecoverModal(title, html, submitLabel, dismissLabel) {
+    // No submitLabel hides that button. Both buttons close the modal first.
+    function showRecoverModal(title, html, submitLabel, dismissLabel, onSubmit = submitSavedAnswers, onDismiss = null) {
+        const modal = document.getElementById('recoverModal');
+        const submitBtn = document.getElementById('recoverSubmitBtn');
+        const dismissBtn = document.getElementById('recoverDismissBtn');
         document.getElementById('recoverTitle').innerText = title;
         document.getElementById('recoverBody').innerHTML = html;
-        document.getElementById('recoverSubmitBtn').innerText = submitLabel;
-        document.getElementById('recoverDismissBtn').innerText = dismissLabel;
-        document.getElementById('recoverModal').classList.add('active');
+        submitBtn.innerText = submitLabel;
+        submitBtn.style.display = submitLabel ? '' : 'none';
+        submitBtn.onclick = () => { modal.classList.remove('active'); onSubmit(); };
+        dismissBtn.innerText = dismissLabel;
+        dismissBtn.onclick = () => { modal.classList.remove('active'); if (onDismiss) onDismiss(); };
+        modal.classList.add('active');
     }
 
-    window.submitSavedAnswers = function() {
-        document.getElementById('recoverModal').classList.remove('active');
+    function submitSavedAnswers() {
         clearInterval(timerInterval);
         const instr = document.getElementById('sectionInstrOverlay');
         if (instr) instr.style.display = 'none';
         submitExam(false);
-    };
+    }
+
+    // ─── RESUME ───────────────────────────────────────────
+    // 'finished' means the last section ended but the submit never got
+    // through; the student goes back there to send it.
+    function resumeSectionIdx() {
+        const found = sectionOrder.indexOf(resume.section);
+        if (found >= 0) return found;
+        return resume.section === 'finished' ? sectionOrder.length - 1 : 0;
+    }
+
+    function offerResume() {
+        const section = sectionOrder[resumeSectionIdx()] || '';
+        const place = section.charAt(0).toUpperCase() + section.slice(1);
+        const left = resume.time_left === null ? '' : `, ${formatTime(resume.time_left)} vaqt bilan`;
+        showRecoverModal("Testni davom ettirish",
+            `<p style="font-weight:600; margin-bottom:8px;">Tugallanmagan urinishingiz saqlangan: ${answeredCount()} / ${allQuestions.length} ta javob.</p>
+             <p style="font-size:13px; color:#555;">Test ${place} bo'limidan${left} davom etadi. Xohlasangiz, saqlangan javoblarni hozir yuborib natijani olishingiz ham mumkin.</p>`,
+            'Testni davom ettirish', 'Javoblarni yuborish', resumeAttempt, submitSavedAnswers);
+    }
+
+    // Reached by a click, so the Listening audio is allowed to play.
+    function resumeAttempt() {
+        currentSectionIdx = resumeSectionIdx();
+        sectionOrder.slice(0, currentSectionIdx).forEach(type => {
+            document.getElementById('tab-type-' + type)?.classList.add('tab-completed', 'tab-locked');
+        });
+        const type = sectionOrder[currentSectionIdx];
+        const tab = document.getElementById('tab-type-' + type);
+        tab?.classList.remove('tab-locked');
+        // The section timer stood still while the page was closed, so the
+        // time spent away is reported to staff as a leave.
+        if (!resume.online) {
+            proctor.leave_count += 1;
+            proctor.away_seconds += resume.offline_seconds;
+            saveProctor();
+        }
+        autosave();
+        // Stopped between two sections: this one's time hasn't started yet.
+        if (resume.time_left === null) {
+            showSection(type, tab);
+            return;
+        }
+        pendingSectionId = type;
+        pendingTabEl = tab;
+        pendingDurationMinutes = Number(tab?.dataset.duration) || 60;
+        pendingSeconds = resume.time_left;
+        closeInstructionAndStart();
+        showLastAnswered(type);
+        syncToServer(true);
+    }
+
+    function showLastAnswered(type) {
+        const questions = filteredQuestionsOfType(type);
+        const last = questions.filter(q => answers[q.id]).pop();
+        if (!last) return;
+        const index = questions.indexOf(last);
+        const bounds = partBoundsFor(type);
+        if (bounds) showTypePart(type, bounds.findIndex(([start, end]) => index >= start && index < end));
+        document.getElementById('qitem-' + last.id)?.scrollIntoView({ block: 'center' });
+    }
 
     // demoSpeakingQids: superadmin QA only — question ids to grade via a
     // canned demo transcript instead of a real recording (see demoFillAndSubmit).
@@ -2891,7 +3007,7 @@ document.addEventListener('DOMContentLoaded', () => {
             msg.innerText = outcome.message;
             showRecoverModal("Javoblar yuborilmadi",
                 msg.outerHTML + `<p style="font-size:13px; color:#555;">${answeredCount()} ta javobingiz shu brauzerda saqlangan va yo'qolmaydi. Biroz kutib, qayta yuboring.</p>`,
-                'Qayta yuborish', 'Yopish');
+                'Qayta yuborish', 'Yopish', submitSavedAnswers, () => { if (resume && !examStarted) offerResume(); });
             return;
         }
         const data = outcome.data;
@@ -3360,6 +3476,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // localStorage, but reopening the page restarts the timed sections from
     // the first one — so offer to send the saved answers straight away.
     (function offerUnsentAnswers() {
+        if (resumeBlocked) {
+            showRecoverModal("Test boshqa oynada ochiq",
+                `<p style="font-weight:600; margin-bottom:8px;">Bu urinish hozir boshqa oyna yoki qurilmada ochiq.</p>
+                 <p style="font-size:13px; color:#555;">O'sha oynani yoping va 2 daqiqadan keyin sahifani yangilang. Agar u allaqachon yopilgan bo'lsa, shunchaki 2 daqiqa kuting: test to'xtagan joyidan davom etadi.</p>`,
+                '', 'Sahifani yangilash', undefined, () => { examSubmitted = true; location.reload(); });
+            return;
+        }
+        // Nothing is sent to the server until the student continues: the
+        // page isn't running a section yet, so a report from here would
+        // wipe the saved section and time.
+        if (resume) { offerResume(); return; }
         const count = answeredCount();
         if (!count) return;
         // Get the saved answers onto the server right away, so staff can

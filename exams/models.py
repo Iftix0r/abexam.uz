@@ -182,6 +182,10 @@ class UserAnswer(models.Model):
 # unsubmitted attempt not seen for this long has stopped (closed tab, lost
 # connection).
 ATTEMPT_ONLINE_WINDOW = timedelta(minutes=2)
+# How long after its last autosave a student can pick an unfinished attempt
+# up again. Autosave keeps the exam's paid flag alive for the same span, so
+# resuming within it is never charged twice.
+ATTEMPT_RESUME_WINDOW = timedelta(hours=6)
 
 
 class ExamAttempt(models.Model):

@@ -9,6 +9,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.cache import cache
 from django.core.files.storage import default_storage
 from django.db import transaction
+from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.utils import timezone
@@ -20,7 +21,7 @@ from django.views.generic import DetailView
 from core.alerts import record_alert
 from core.utils import get_client_ip, notify_staff_work, parse_json_body, site_link
 from tgbot.services import notify_result_ready
-from .models import Exam, ExamAttempt, UserAnswer, UserResult, Question
+from .models import ATTEMPT_ONLINE_WINDOW, ATTEMPT_RESUME_WINDOW, Exam, ExamAttempt, UserAnswer, UserResult, Question
 from . import camera
 from .analysis import alert_suspect_keys
 from .passwords import clear_exam_unlocked, exam_is_unlocked, exam_scope, password_required_for, try_unlock
@@ -46,6 +47,12 @@ def mark_exam_paid(user_pk, exam_pk):
     cache.set(_exam_paid_key(user_pk, exam_pk), True, timeout=_EXAM_PAID_TTL)
 
 
+def keep_exam_paid(user_pk, exam_pk):
+    """Restarts the paid flag's clock, if there is one: an attempt still in
+    progress must stay paid until the resume window after it has closed."""
+    cache.touch(_exam_paid_key(user_pk, exam_pk), _EXAM_PAID_TTL)
+
+
 def clear_exam_paid(user_pk, exam_pk):
     cache.delete(_exam_paid_key(user_pk, exam_pk))
 
@@ -54,6 +61,38 @@ def exam_needs_password(user, exam):
     """True while this user still has to enter the exam's hourly password
     before starting it — admins included."""
     return password_required_for(user) and not exam_is_unlocked(user.pk, exam.pk)
+
+
+def resumable_attempt(user, exam):
+    """The student's unfinished attempt at this exam, if it can still be
+    picked up. Only their latest attempt counts: one abandoned before a later
+    submit stays closed. Attempts with no answers are ignored, so they neither
+    resume nor hide an earlier one that has answers."""
+    attempt = ExamAttempt.objects.filter(
+        Q(answered_count__gt=0) | Q(submitted_at__isnull=False),
+        user=user, exam=exam, last_seen_at__gte=timezone.now() - ATTEMPT_RESUME_WINDOW,
+    ).first()
+    return None if attempt is None or attempt.is_submitted else attempt
+
+
+def resume_payload(attempt):
+    """What the exam page needs to carry on from the server's copy."""
+    offline = timezone.now() - attempt.last_seen_at
+    return {
+        'attempt_id': attempt.client_id,
+        'answers': attempt.answers,
+        'section': attempt.current_section,
+        'time_left': attempt.time_left,
+        'proctor': {
+            'leave_count': attempt.leave_count,
+            'away_seconds': attempt.away_seconds,
+            'pasted_chars': attempt.pasted_chars,
+        },
+        # Commands already in the list must not apply a second time.
+        'last_command': max((c['id'] for c in attempt.commands), default=0),
+        'online': offline < ATTEMPT_ONLINE_WINDOW,
+        'offline_seconds': int(offline.total_seconds()),
+    }
 
 
 def _fuzzy_match(user_ans: str, correct: str) -> bool:
@@ -198,6 +237,8 @@ class ExamDetailView(LoginRequiredMixin, DetailView):
             user=self.request.user, exam=exam
         ).order_by('-completed_at').first()
         context['needs_password'] = exam_needs_password(self.request.user, exam)
+        context['resume_attempt'] = resumable_attempt(self.request.user, exam)
+        context['already_paid'] = exam_is_paid(self.request.user.pk, exam.pk)
         return context
 
 
@@ -227,6 +268,7 @@ class TakeExamView(LoginRequiredMixin, DetailView):
         # active/payment gates — only when explicitly requested, so a
         # staff member's own normal exam-taking flow is unaffected.
         is_preview = request.user.is_staff and request.GET.get('preview') == '1'
+        self.is_preview = is_preview
         if not exam.is_active and not is_preview:
             messages.error(request, "Bu imtihon hozirda faol emas.")
             return redirect('exams:exam_detail', pk=exam.pk)
@@ -334,6 +376,8 @@ class TakeExamView(LoginRequiredMixin, DetailView):
 
         context['sections'] = sections
         context['tab_groups'] = tab_groups
+        attempt = None if self.is_preview else resumable_attempt(self.request.user, self.object)
+        context['resume'] = resume_payload(attempt) if attempt else None
         return context
 
 
@@ -644,6 +688,8 @@ class ExamAutosaveView(LoginRequiredMixin, View):
         meta = data.get('meta') if isinstance(data.get('meta'), dict) else {}
         attempt = save_attempt(request.user, exam, client_id, answers, str(data.get('section') or '')[:20],
                                meta, get_client_ip(request))
+        if exam.price > 0:
+            keep_exam_paid(request.user.pk, exam.pk)
         return JsonResponse({
             'ok': True,
             'submitted': attempt.is_submitted,

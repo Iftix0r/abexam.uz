@@ -1,7 +1,9 @@
 import io
 import json
 from datetime import timedelta
+from unittest import mock
 
+from django.core.cache import cache
 from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
@@ -10,7 +12,7 @@ from core.models import Notification
 from users.models import User
 from .models import Exam, ExamAttempt, Question, Section, UserResult
 from .passwords import exam_password, mark_exam_unlocked
-from .views import calc_writing_band, round_band
+from .views import _EXAM_PAID_TTL, _exam_paid_key, calc_writing_band, exam_is_paid, round_band
 
 
 @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
@@ -627,6 +629,152 @@ class ExamAttemptTests(TestCase):
         data = self._post('submit_exam', attempt_id='a1', answers=self.answers).json()
         self.assertEqual(data['result_id'], result.pk)
         self.assertEqual(UserResult.objects.count(), 1)
+
+
+class ResumeAttemptTests(TestCase):
+    """Brauzer tozalansa ham o'quvchi serverdagi nusxadan to'xtagan joyidan davom etadi."""
+
+    def setUp(self):
+        self.user = User.objects.create_user('student', password='pw')
+        self.exam = Exam.objects.create(title='Resume test', price=0)
+        section = Section.objects.create(exam=self.exam, title='Reading', section_type='reading', order=1)
+        self.q = Question.objects.create(section=section, text='q', question_type='gap_fill',
+                                         correct_answer='paris', order=1)
+        self.answers = {str(self.q.id): 'paris'}
+        mark_exam_unlocked(self.user.pk, self.exam.pk)
+        self.client.force_login(self.user)
+
+    def _post(self, name, **payload):
+        return self.client.post(reverse(f'exams:{name}', args=[self.exam.pk]),
+                                data=json.dumps(payload), content_type='application/json')
+
+    def _autosave(self, attempt_id='a1', minutes_ago=10, **meta):
+        self._post('autosave', attempt_id=attempt_id, answers=self.answers, section='reading',
+                   meta={'time_left': 1500, **meta})
+        attempt = ExamAttempt.objects.get(client_id=attempt_id)
+        ExamAttempt.objects.filter(pk=attempt.pk).update(
+            last_seen_at=timezone.now() - timedelta(minutes=minutes_ago))
+        return attempt
+
+    def _resume(self, query=''):
+        return self.client.get(reverse('exams:take_exam', args=[self.exam.pk]) + query).context['resume']
+
+    def test_page_gets_the_saved_attempt(self):
+        attempt = self._autosave(leave_count=2, away_seconds=30, pasted_chars=5)
+        attempt.refresh_from_db()
+        attempt.add_command(type='extra_time', seconds=300)
+        attempt.save(update_fields=['commands'])
+
+        resume = self._resume()
+        self.assertEqual(resume['attempt_id'], 'a1')
+        self.assertEqual(resume['answers'], self.answers)
+        self.assertEqual(resume['section'], 'reading')
+        self.assertEqual(resume['time_left'], 1500)
+        self.assertEqual(resume['proctor'], {'leave_count': 2, 'away_seconds': 30, 'pasted_chars': 5})
+        self.assertEqual(resume['last_command'], 1)
+        self.assertFalse(resume['online'])
+        self.assertGreaterEqual(resume['offline_seconds'], 600)
+
+    def test_resumed_attempt_stays_one_row_and_one_result(self):
+        self._autosave()
+        resume = self._resume()
+        self._post('autosave', attempt_id=resume['attempt_id'], answers=self.answers, section='reading')
+        data = self._post('submit_exam', attempt_id=resume['attempt_id'], answers=self.answers).json()
+        self.assertEqual(ExamAttempt.objects.count(), 1)
+        self.assertEqual(ExamAttempt.objects.get().result_id, data['result_id'])
+        self.assertEqual(UserResult.objects.count(), 1)
+
+    def test_attempt_still_reporting_is_marked_online(self):
+        self._autosave(minutes_ago=0)
+        self.assertTrue(self._resume()['online'])
+
+    def test_nothing_to_resume(self):
+        self.assertIsNone(self._resume())
+        # no answers yet
+        self._post('autosave', attempt_id='empty', answers={}, section='reading')
+        self.assertIsNone(self._resume())
+        # too long ago
+        self._autosave(minutes_ago=7 * 60)
+        self.assertIsNone(self._resume())
+
+    def test_empty_newer_attempt_does_not_hide_the_one_with_answers(self):
+        self._autosave('a1')
+        self._post('autosave', attempt_id='empty', answers={}, section='reading')
+        self.assertEqual(self._resume()['attempt_id'], 'a1')
+
+    def test_submit_closes_the_attempt(self):
+        self._autosave()
+        self._post('submit_exam', attempt_id='a1', answers=self.answers)
+        self.assertIsNone(self._resume())
+
+    def test_later_submit_closes_older_abandoned_attempt(self):
+        self._autosave('old', minutes_ago=60)
+        self._post('submit_exam', attempt_id='new', answers=self.answers)
+        self.assertIsNone(self._resume())
+
+    def test_deleted_attempt_cannot_be_resumed(self):
+        self._autosave().delete()
+        self.assertIsNone(self._resume())
+
+    def test_other_students_attempt_is_not_offered(self):
+        self._autosave()
+        other = User.objects.create_user('other', password='pw')
+        mark_exam_unlocked(other.pk, self.exam.pk)
+        self.client.force_login(other)
+        self.assertIsNone(self._resume())
+
+    def test_staff_preview_never_resumes(self):
+        self.user.is_staff = True
+        self.user.save(update_fields=['is_staff'])
+        self._autosave()
+        self.assertIsNone(self._resume('?preview=1'))
+
+    def test_answer_text_cannot_break_out_of_the_page_data(self):
+        self.answers = {str(self.q.id): '</script><script>alert(1)</script>'}
+        self._autosave()
+        page = self.client.get(reverse('exams:take_exam', args=[self.exam.pk]))
+        self.assertNotContains(page, '<script>alert(1)')
+
+    def test_exam_page_says_continue(self):
+        url = reverse('exams:exam_detail', args=[self.exam.pk])
+        self.assertContains(self.client.get(url), 'Testni boshlash')
+        self._autosave()
+        page = self.client.get(url)
+        self.assertContains(page, 'Testni davom ettirish')
+        self.assertNotContains(page, 'Testni boshlash')
+
+    def _make_paid(self):
+        Exam.objects.filter(pk=self.exam.pk).update(price=1000)
+        key = _exam_paid_key(self.user.pk, self.exam.pk)
+        cache.delete(key)
+        self.addCleanup(cache.delete, key)
+        return key
+
+    def test_paid_attempt_resumes_without_a_second_charge(self):
+        key = self._make_paid()
+        User.objects.filter(pk=self.user.pk).update(balance=1000)
+        url = reverse('exams:take_exam', args=[self.exam.pk])
+        self.client.get(url)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.balance, 0)
+
+        # each autosave restarts the paid flag's clock
+        with mock.patch('exams.views.cache.touch', wraps=cache.touch) as touch:
+            self._autosave()
+        touch.assert_called_with(key, _EXAM_PAID_TTL)
+
+        page = self.client.get(url)
+        self.assertEqual(page.context['resume']['attempt_id'], 'a1')
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.balance, 0)
+        # the spent balance doesn't lock them out on the exam page either
+        self.assertContains(self.client.get(reverse('exams:exam_detail', args=[self.exam.pk])),
+                            'Testni davom ettirish')
+
+    def test_autosave_alone_never_makes_an_exam_paid(self):
+        self._make_paid()
+        self._autosave()
+        self.assertFalse(exam_is_paid(self.user.pk, self.exam.pk))
 
 
 class LiveMonitoringTests(TestCase):

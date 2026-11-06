@@ -196,7 +196,10 @@
             </div>
         </div>
         <div style="padding: 0 30px 26px;">
-            {% if exam.price > 0 and request.user.balance < exam.price and not request.user.is_premium %}
+            {% if resume_attempt %}
+            <p style="margin:0 0 12px; font-size:13px; color:var(--text-muted);">Tugallanmagan urinishingiz bor: {{ resume_attempt.answered_count }} ta javob saqlangan. Test to'xtagan joyidan davom etadi.</p>
+            {% endif %}
+            {% if exam.price > 0 and request.user.balance < exam.price and not request.user.is_premium and not already_paid %}
             <button class="btn-start" disabled style="width:100%; padding:13px; cursor:not-allowed; opacity:.5;">Balans yetarli emas</button>
             {% elif needs_password %}
             <form method="post" action="{% url 'exams:unlock_exam' exam.id %}" class="exam-password-form">
@@ -205,10 +208,10 @@
                 <p>Parolni xonadagi nazoratchi (admin) beradi. Parol har soatda yangilanadi.</p>
                 <input id="exam-password" type="text" name="password" inputmode="numeric" pattern="[0-9 ]*"
                        maxlength="7" autocomplete="off" placeholder="••••••" required autofocus>
-                <button type="submit" class="btn-start" style="width:100%; padding:13px;">Testni boshlash</button>
+                <button type="submit" class="btn-start" style="width:100%; padding:13px;">{% if resume_attempt %}Testni davom ettirish{% else %}Testni boshlash{% endif %}</button>
             </form>
             {% else %}
-            <a href="{% url 'exams:take_exam' exam.id %}" class="btn-start" style="display:block; width:100%; padding:13px; text-align:center; box-sizing:border-box;">Testni boshlash</a>
+            <a href="{% url 'exams:take_exam' exam.id %}" class="btn-start" style="display:block; width:100%; padding:13px; text-align:center; box-sizing:border-box;">{% if resume_attempt %}Testni davom ettirish{% else %}Testni boshlash{% endif %}</a>
             {% endif %}
         </div>
     </div>
