@@ -456,8 +456,9 @@
 </div>
 {% endblock %}
 
+{% block abjon %}{% include 'partials/abjon.html' with home=True %}{% endblock %}
+
 {% block extra_js %}
-{% include 'partials/abjon.html' %}
 <script>
 (function () {
     const ring = document.getElementById('scoreRing');

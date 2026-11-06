@@ -921,6 +921,8 @@ document.addEventListener('keydown', e => {
   else if (e.key === 'Escape' && !cmdk.hidden) cmdkClose();
 });
 </script>
+{% include 'partials/abjon.html' %}
+<style>#abjon { z-index: 40; }</style>{# under the panel's own drawer and popovers #}
 {% block extra_js %}{% endblock %}
 </body>
 </html>

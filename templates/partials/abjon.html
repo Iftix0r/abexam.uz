@@ -1,8 +1,11 @@
 {% comment %}
-Abjon, the AbExam mascot. Roams the dashboard: walks on the cards, leaps and
-somersaults between them, jokes, and talks about the student's own results. Must stay outside .dash:
-its entrance animation would make position:fixed relative to that element.
+Abjon, the AbExam mascot, on every signed-in page except the exam itself (take_exam
+has its own shell). He walks on the cards, leaps and somersaults between them and jokes.
+With home=True (the dashboard) he also talks about the student's own results, and
+can be clicked anywhere; elsewhere he gets out of the way so he never blocks a control.
+Must stay outside the page content: an animated ancestor would break position:fixed.
 {% endcomment %}
+{% if request.user.is_authenticated %}
 <style>
   .dash { padding-bottom: 72px; }
 
@@ -13,6 +16,9 @@ its entrance animation would make position:fixed relative to that element.
     will-change: transform;
   }
   #abjon[hidden], #abjonPeek[hidden] { display: none; }
+  /* Out of the way while typing; visibility keeps his size measurable. */
+  body:has(textarea:focus, select:focus, [contenteditable="true"]:focus, input:not([type=checkbox]):not([type=radio]):focus) #abjon { visibility: hidden; }
+  @media (hover: none) { #abjon:not([data-home]) .abj-hit { pointer-events: none; } }
   .abj-hit {
     display: block; width: 100%; padding: 0; border: 0; background: none;
     cursor: pointer; pointer-events: auto; -webkit-tap-highlight-color: transparent;
@@ -103,7 +109,6 @@ its entrance animation would make position:fixed relative to that element.
     box-shadow: 0 8px 24px rgba(16, 24, 40, 0.16);
     font-size: 13px; line-height: 1.45;
     transform: translateX(calc(-50% + var(--abj-shift, 0px)));
-    pointer-events: auto;
   }
   .abj-bubble[hidden] { display: none; }
   .abj-bubble.abj-below { bottom: auto; top: calc(100% + 10px); }
@@ -118,7 +123,7 @@ its entrance animation would make position:fixed relative to that element.
     position: absolute; top: 4px; right: 4px; width: 24px; height: 24px; padding: 0;
     display: flex; align-items: center; justify-content: center;
     border: 0; border-radius: 50%; background: none; color: #676767;
-    font-size: 16px; line-height: 1; cursor: pointer;
+    font-size: 16px; line-height: 1; cursor: pointer; pointer-events: auto;
   }
   .abj-close:hover { background: rgba(0, 0, 0, 0.06); }
 
@@ -138,11 +143,12 @@ its entrance animation would make position:fixed relative to that element.
 </style>
 
 <div id="abjon" data-state="idle" hidden
-     data-name="{{ user.first_name|default:user.username }}"
+     data-name="{{ request.user.first_name|default:request.user.username }}"
+     {% if home %}data-home="1"
      data-tests="{{ stats.total_tests|default:0 }}"
      data-last="{{ recent_results.0.score|stringformat:'f' }}"
      data-pending="{{ pending_count|default:0 }}"
-     data-streak="{{ learn_streak|default:0 }}">
+     data-streak="{{ learn_streak|default:0 }}"{% endif %}>
   <div class="abj-bubble" role="status" aria-live="polite" hidden>
     <span class="abj-text"></span>
     <button type="button" class="abj-close" aria-label="Abjonni yashirish" title="Abjonni yashirish">&times;</button>
@@ -238,8 +244,11 @@ its entrance animation would make position:fixed relative to that element.
   const bubble = root.querySelector('.abj-bubble');
   const text = root.querySelector('.abj-text');
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const HIDDEN_KEY = 'abjon-hidden', GREETED_KEY = 'abjon-greeted';
-  const PLATFORMS = '.dash-hero, .dash-stats, .dash-panel, .dash-link, .dash > .tgd';
+  const home = root.dataset.home === '1';
+  const HIDDEN_KEY = 'abjon-hidden', GREETED_KEY = 'abjon-greeted', SPOKEN_KEY = 'abjon-spoken';
+  const MAX_SPOKEN = 8;  // unprompted lines per browser session, across pages
+  const PLATFORMS = ['.page-container', '.content'].map(c => [c + ' > *', c + ' > * > *', c + ' > * > * > *'].join(',')).join(',');
+  const NOT_PLATFORMS = 'input, textarea, select, button, table, thead, tbody, tr, td, th, canvas, video, iframe, form, label, svg, img, script, style';
 
   const store = (area, key, value) => {
     try {
@@ -260,7 +269,7 @@ its entrance animation would make position:fixed relative to that element.
   const pending = parseInt(data.pending, 10) || 0;
   const streak = parseInt(data.streak, 10) || 0;
   const personal = [];
-  if (!tests) personal.push("Birinchi mock testni topshirib ko'ramizmi? Natijani birga ko'ramiz!");
+  if (home && !tests) personal.push("Birinchi mock testni topshirib ko'ramizmi? Natijani birga ko'ramiz!");
   if (pending) personal.push(pending + " ta natijangiz tekshirilmoqda. Sabr qilamiz!");
   if (tests && last >= 9) personal.push(band(last) + "! Bu eng yuqori ball, tabriklayman!");
   else if (tests && last > 0) personal.push("Oxirgi natijangiz " + band(last) + ". Keyingi maqsad: " + band(last + 0.5) + "!");
@@ -290,14 +299,14 @@ its entrance animation would make position:fixed relative to that element.
   // plat is the card he stands on; null means the bottom of the screen.
   let x = 0, y = 0, dir = 1, plat = null, target = 0, B = null;
   let timer = 0, frame = 0, lastTime = 0, landNow = null, arrive = null;
-  let paused = false, sayTimer = 0, chatter = 0, autoSpoken = 0;
+  let paused = false, sayTimer = 0, chatter = 0;
   let clicks = 0, lastClick = 0, lastDodge = 0;
 
   function measure() {
     const width = document.documentElement.clientWidth;
     const sidebar = document.getElementById('sidebar');
-    const tabbar = document.querySelector('.tabbar');
-    const left = width > 768 && sidebar ? sidebar.getBoundingClientRect().right + 16 : 12;
+    const tabbar = document.querySelector('.tabbar, .lb-tabs');
+    const left = width > 768 && sidebar ? Math.max(12, sidebar.getBoundingClientRect().right + 16) : 12;
     const lift = (tabbar && getComputedStyle(tabbar).display !== 'none' ? tabbar.offsetHeight : 0) + 6;
     const size = root.offsetWidth, height = root.offsetHeight;
     peek.style.setProperty('--abj-bottom', lift + 'px');
@@ -316,11 +325,21 @@ its entrance animation would make position:fixed relative to that element.
 
   function landable(el) {
     const r = el.getBoundingClientRect();
-    return r.top >= B.height + 8 && r.top <= B.floor - 40 && r.width >= B.size + 24;
+    return r.top >= B.height + 8 && r.top <= B.floor - 40 && r.width >= B.size + 24 && r.height >= 36;
+  }
+
+  // Anything that looks like a card: pages name theirs differently.
+  function looksLikeCard(el) {
+    if (el.matches(NOT_PLATFORMS)) return false;
+    const s = getComputedStyle(el);
+    if (s.position === 'fixed' || s.visibility === 'hidden') return false;
+    const painted = parseFloat(s.borderTopWidth) > 0 || s.boxShadow !== 'none' ||
+      !/^(transparent|rgba\(\d+, \d+, \d+, 0\))$/.test(s.backgroundColor);
+    return painted && parseFloat(s.borderTopLeftRadius) >= 6;
   }
 
   function pick() {
-    const cards = Array.from(document.querySelectorAll(PLATFORMS)).filter(el => el !== plat && landable(el));
+    const cards = Array.from(document.querySelectorAll(PLATFORMS)).filter(el => el !== plat && landable(el) && looksLikeCard(el));
     if (plat) cards.push(null);
     return cards.length ? any(cards) : undefined;
   }
@@ -462,10 +481,11 @@ its entrance animation would make position:fixed relative to that element.
   // A handful of unprompted words per visit, then he only talks when asked.
   function scheduleChatter() {
     clearTimeout(chatter);
-    if (autoSpoken >= 6) return;
+    const spoken = () => parseInt(store(sessionStorage, SPOKEN_KEY), 10) || 0;
+    if (spoken() >= MAX_SPOKEN) return;
     chatter = setTimeout(() => {
       if (!document.hidden && !root.hidden && bubble.hidden) {
-        autoSpoken += 1;
+        store(sessionStorage, SPOKEN_KEY, String(spoken() + 1));
         say(nextLine());
       }
       scheduleChatter();
@@ -498,7 +518,7 @@ its entrance animation would make position:fixed relative to that element.
     clearTimeout(sayTimer);
     bubble.hidden = true;
     root.hidden = true;
-    peek.hidden = false;
+    peek.hidden = !home;  // brought back from the dashboard, so it never covers a page's controls
     measure();
     store(localStorage, HIDDEN_KEY, '1');
   }
@@ -518,16 +538,17 @@ its entrance animation would make position:fixed relative to that element.
     say(nextLine());
     act(Math.random() < 0.5 ? 'flip' : 'jump', 900, () => act('wave', 1200));
   });
-  // Usually stands still under the cursor; now and then he runs away instead.
+  // On the dashboard he usually stands still under the cursor and now and then
+  // runs away. Elsewhere he always moves, so he is never in front of a button.
   hit.addEventListener('pointerenter', e => {
     if (still || e.pointerType !== 'mouse' || landNow) return;
     const now = Date.now();
-    if (now - lastDodge > 15000 && Math.random() < 0.4) {
+    if (!home || (now - lastDodge > 15000 && Math.random() < 0.4)) {
       const to = pick();
-      if (to !== undefined) {
+      if (!home || to !== undefined) {
+        if (now - lastDodge > 15000) say(any(DODGE), 2800);
         lastDodge = now;
-        say(any(DODGE), 2800);
-        return leap(to, 1);
+        return leap(to === undefined ? null : to, 1);
       }
     }
     paused = true;
@@ -591,10 +612,11 @@ its entrance animation would make position:fixed relative to that element.
   });
 
   if (store(localStorage, HIDDEN_KEY) === '1') {
-    peek.hidden = false;
+    peek.hidden = !home;
     measure();
-  } else {
-    show();
+  } else if (home || !still) {
+    show();  // standing still in a corner could cover a page's controls, so only at home
   }
 })();
 </script>
+{% endif %}
