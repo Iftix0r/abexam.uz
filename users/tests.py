@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 from django.core.cache import cache
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import RequestFactory, TestCase, override_settings
+from django.test import Client, RequestFactory, TestCase, override_settings
 from django.urls import reverse
 from PIL import Image
 
@@ -338,3 +338,34 @@ class ProfileDetailsTests(TestCase):
         body = self.client.get(reverse('panel:users_export')).content.decode('utf-8-sig')
         self.assertIn('2000-03-15', body)
 
+
+class LogoutTests(TestCase):
+    """Chiqish POST orqali sessiyani tugatadi va /login/ ga qaytaradi."""
+
+    def setUp(self):
+        self.user = User.objects.create_user('leaver', password='pw', is_staff=True)
+        self.client.force_login(self.user)
+        self.url = reverse('users:logout')
+
+    def test_post_ends_the_session_and_goes_to_login(self):
+        resp = self.client.post(self.url)
+        self.assertRedirects(resp, '/login/', fetch_redirect_response=False)
+        self.assertNotIn('_auth_user_id', self.client.session)
+
+    def test_get_never_shows_the_admin_logged_out_page(self):
+        resp = self.client.get(self.url)
+        self.assertEqual(resp.status_code, 405)
+        self.assertNotContains(resp, 'Django administration', status_code=405)
+
+    def test_post_needs_a_csrf_token(self):
+        client = Client(enforce_csrf_checks=True)
+        client.force_login(self.user)
+        self.assertEqual(client.post(self.url).status_code, 403)
+        self.assertIn('_auth_user_id', client.session)
+
+    def test_every_menu_logs_out_with_a_form(self):
+        for name in ('dashboard', 'panel:dashboard', 'learn:hub'):
+            with self.subTest(name):
+                page = self.client.get(reverse(name))
+                self.assertContains(page, f'<form method="post" action="{self.url}"')
+                self.assertNotContains(page, f'href="{self.url}"')

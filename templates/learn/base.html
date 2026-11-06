@@ -117,10 +117,12 @@
         .lb-menu .who { padding: 10px 12px 8px; border-bottom: 1px solid var(--border-color); margin-bottom: 4px; }
         .lb-menu .who b { display: block; font-size: 0.9rem; }
         .lb-menu .who small { color: var(--text-muted); font-size: 0.78rem; }
-        .lb-menu a { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 9px; color: var(--text-color); text-decoration: none; font-size: 0.88rem; }
-        .lb-menu a:hover { background: var(--tint-a); }
-        .lb-menu a i { width: 17px; color: var(--text-muted); }
-        .lb-menu a.danger, .lb-menu a.danger i { color: var(--danger-color); }
+        .lb-menu a, .lb-menu button { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 9px; color: var(--text-color); text-decoration: none; font-size: 0.88rem; }
+        .lb-menu button { width: 100%; background: none; border: 0; font-family: inherit; cursor: pointer; }
+        .lb-menu form { margin: 0; }
+        .lb-menu a:hover, .lb-menu button:hover { background: var(--tint-a); }
+        .lb-menu a i, .lb-menu button i { width: 17px; color: var(--text-muted); }
+        .lb-menu .danger, .lb-menu .danger i { color: var(--danger-color); }
 
         .lb-msgs { max-width: 1200px; margin: 12px auto 0; padding: 0 1.5rem; width: 100%; }
         .lb-msg { padding: 10px 14px; border-radius: 12px; font-size: 0.88rem; font-weight: 500; margin-bottom: 8px; background: rgba(34,197,94,.1); color: var(--success-color); border: 1px solid rgba(34,197,94,.25); }
@@ -202,7 +204,10 @@
                         {% if user.is_staff %}<a href="{% url 'panel:dashboard' %}"><i data-lucide="shield-check"></i>Admin panel</a>{% endif %}
                         <a href="{% url 'profile' %}"><i data-lucide="user"></i>Profil</a>
                         <a href="{% url 'learn:app' %}"><i data-lucide="smartphone"></i>Mobil ilova</a>
-                        <a href="{% url 'users:logout' %}" class="danger"><i data-lucide="log-out"></i>Chiqish</a>
+                        <form method="post" action="{% url 'users:logout' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="danger"><i data-lucide="log-out"></i>Chiqish</button>
+                        </form>
                     </div>
                 </div>
                 {% else %}

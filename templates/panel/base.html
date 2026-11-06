@@ -571,9 +571,12 @@ a.tg-pill:hover{background:#229ed92e}
         <div style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ request.user.display_name }}</div>
         <div style="font-size:11px;color:var(--muted)">{% if request.user.is_superuser %}Superadmin{% else %}Admin{% endif %}</div>
       </div>
-      <a href="{% url 'users:logout' %}" title="Chiqish" style="color:var(--muted)">
-        <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
-      </a>
+      <form method="post" action="{% url 'users:logout' %}" style="display:flex;margin:0">
+        {% csrf_token %}
+        <button type="submit" title="Chiqish" aria-label="Chiqish" style="color:var(--muted);background:none;border:0;padding:0;cursor:pointer;display:flex">
+          <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        </button>
+      </form>
     </div>
   </div>
 </aside>

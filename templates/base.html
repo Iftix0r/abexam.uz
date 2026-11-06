@@ -139,6 +139,15 @@
             font-size: 0.85rem;
         }
 
+        button.profile-link {
+            width: 100%;
+            background: none;
+            border: 0;
+            font-family: inherit;
+            text-align: left;
+            cursor: pointer;
+        }
+
         .user-avatar {
             width: 32px;
             height: 32px;
@@ -507,10 +516,13 @@
                 </div>
             </a>
 
-            <a href="{% url 'users:logout' %}" class="profile-link" style="color: var(--danger-color); border-top: 1px solid var(--border-color); border-radius: 0;">
-                <i data-lucide="log-out" style="width: 20px; min-width: 20px;"></i>
-                <span>Chiqish</span>
-            </a>
+            <form method="post" action="{% url 'users:logout' %}" style="margin: 0;">
+                {% csrf_token %}
+                <button type="submit" class="profile-link" style="color: var(--danger-color); border-top: 1px solid var(--border-color); border-radius: 0;">
+                    <i data-lucide="log-out" style="width: 20px; min-width: 20px;"></i>
+                    <span>Chiqish</span>
+                </button>
+            </form>
         </div>
     </aside>
 
