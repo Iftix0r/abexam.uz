@@ -1,6 +1,6 @@
 {% comment %}
-Abjon, the AbExam mascot. Walks along the bottom of the dashboard, plays, and
-talks about the student's own results when clicked. Must stay outside .dash:
+Abjon, the AbExam mascot. Roams the dashboard: walks on the cards, leaps and
+somersaults between them, jokes, and talks about the student's own results. Must stay outside .dash:
 its entrance animation would make position:fixed relative to that element.
 {% endcomment %}
 <style>
@@ -8,7 +8,7 @@ its entrance animation would make position:fixed relative to that element.
 
   #abjon {
     --abj-size: 84px;
-    position: fixed; left: 0; bottom: var(--abj-bottom, 6px);
+    position: fixed; left: 0; top: 0;
     width: var(--abj-size); z-index: 80; pointer-events: none;
     will-change: transform;
   }
@@ -31,6 +31,7 @@ its entrance animation would make position:fixed relative to that element.
   .abj-eyes { transform-origin: 60px 62px; animation: abj-blink 4.6s infinite; }
   .abj-pupils { transform: translate(var(--abj-px, 0px), var(--abj-py, 0px)); transition: transform 0.12s; }
   .abj-open, .abj-book { opacity: 0; }
+  #abjon[data-state="leap"] .abj-fig, #abjon[data-state="flip"] .abj-fig { transform-origin: 60px 70px; }
 
   @keyframes abj-blink { 0%, 95%, 100% { transform: scaleY(1); } 97.5% { transform: scaleY(0.08); } }
   @keyframes abj-breathe { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(1.015, 0.985); } }
@@ -44,6 +45,19 @@ its entrance animation would make position:fixed relative to that element.
     82% { transform: translateY(-8px) scale(0.95, 1.06); }
     92% { transform: translateY(0) scale(1.1, 0.9); }
     100% { transform: translateY(0) scale(1, 1); }
+  }
+  @keyframes abj-flip {
+    0% { transform: translateY(0) rotate(0) scale(1.1, 0.88); }
+    16% { transform: translateY(-14px) rotate(0) scale(0.95, 1.06); }
+    55% { transform: translateY(-84px) rotate(200deg) scale(1, 1); }
+    86% { transform: translateY(-10px) rotate(345deg) scale(1, 1); }
+    100% { transform: translateY(0) rotate(360deg) scale(1, 1); }
+  }
+  @keyframes abj-land { 0% { transform: scale(1.18, 0.8); } 60% { transform: scale(0.96, 1.05); } 100% { transform: scale(1, 1); } }
+  @keyframes abj-wobble { 0%, 100% { transform: rotate(-6deg); } 50% { transform: rotate(6deg); } }
+  @keyframes abj-swirl {
+    0%, 100% { transform: translate(3px, 0); } 25% { transform: translate(0, 3px); }
+    50% { transform: translate(-3px, 0); } 75% { transform: translate(0, -3px); }
   }
   @keyframes abj-jump-shadow { 0%, 100% { transform: scale(1); opacity: 0.16; } 50% { transform: scale(0.55); opacity: 0.07; } }
   @keyframes abj-wave { 0%, 100% { transform: rotate(-88deg); } 50% { transform: rotate(-118deg); } }
@@ -67,6 +81,17 @@ its entrance animation would make position:fixed relative to that element.
   #abjon[data-state="read"] .abj-arm-l { transform: rotate(-58deg); }
   #abjon[data-state="read"] .abj-arm-r { transform: rotate(58deg); }
   #abjon[data-state="read"] .abj-pupils { transform: translate(0, 3px); }
+  #abjon[data-state="flip"] .abj-fig { animation: abj-flip 0.9s cubic-bezier(0.3, 0.6, 0.5, 1) both; }
+  #abjon[data-state="flip"] .abj-shadow { animation: abj-jump-shadow 0.9s ease-in-out both; }
+  #abjon[data-state="leap"] .abj-fig { transform: rotate(var(--abj-rot, 0deg)); }
+  #abjon[data-state="leap"] .abj-shadow { opacity: 0; }
+  #abjon[data-state="land"] .abj-fig { animation: abj-land 0.3s ease-out both; }
+  #abjon[data-state="dizzy"] .abj-fig { animation: abj-wobble 0.5s ease-in-out infinite; }
+  #abjon[data-state="dizzy"] .abj-pupils { animation: abj-swirl 0.45s linear infinite; }
+  #abjon[data-state="leap"] .abj-arm-l, #abjon[data-state="flip"] .abj-arm-l { transform: rotate(70deg); }
+  #abjon[data-state="leap"] .abj-arm-r, #abjon[data-state="flip"] .abj-arm-r { transform: rotate(-70deg); }
+  #abjon[data-state="leap"] .abj-smile, #abjon[data-state="flip"] .abj-smile { opacity: 0; }
+  #abjon[data-state="leap"] .abj-open, #abjon[data-state="flip"] .abj-open { opacity: 1; }
   #abjon[data-state="jump"] .abj-smile, #abjon[data-state="wave"] .abj-smile, #abjon[data-state="dance"] .abj-smile { opacity: 0; }
   #abjon[data-state="jump"] .abj-open, #abjon[data-state="wave"] .abj-open, #abjon[data-state="dance"] .abj-open { opacity: 1; }
 
@@ -81,6 +106,8 @@ its entrance animation would make position:fixed relative to that element.
     pointer-events: auto;
   }
   .abj-bubble[hidden] { display: none; }
+  .abj-bubble.abj-below { bottom: auto; top: calc(100% + 10px); }
+  .abj-bubble.abj-below::after { top: 0; transform: rotate(225deg); }
   .abj-bubble::after {
     content: ''; position: absolute; top: 100%; left: calc(50% - var(--abj-shift, 0px));
     margin: -5px 0 0 -6px; width: 12px; height: 12px; background: #fff;
@@ -212,6 +239,7 @@ its entrance animation would make position:fixed relative to that element.
   const text = root.querySelector('.abj-text');
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const HIDDEN_KEY = 'abjon-hidden', GREETED_KEY = 'abjon-greeted';
+  const PLATFORMS = '.dash-hero, .dash-stats, .dash-panel, .dash-link, .dash > .tgd';
 
   const store = (area, key, value) => {
     try {
@@ -220,6 +248,9 @@ its entrance animation would make position:fixed relative to that element.
     } catch (e) {}
     return null;
   };
+  const rand = (from, to) => from + Math.random() * (to - from);
+  const any = list => list[Math.floor(Math.random() * list.length)];
+  const shuffled = list => list.map(item => [Math.random(), item]).sort((a, b) => a[0] - b[0]).map(pair => pair[1]);
 
   // Lines. Built from the student's own numbers, always written with textContent.
   const band = n => n.toFixed(1).replace('.', ',');
@@ -228,46 +259,82 @@ its entrance animation would make position:fixed relative to that element.
   const last = parseFloat(data.last);
   const pending = parseInt(data.pending, 10) || 0;
   const streak = parseInt(data.streak, 10) || 0;
-  const lines = [];
-  if (!tests) lines.push("Birinchi mock testni topshirib ko'ramizmi? Natijani birga ko'ramiz!");
-  if (pending) lines.push(pending + " ta natijangiz tekshirilmoqda. Sabr qilamiz!");
-  if (tests && last >= 9) lines.push(band(last) + "! Bu eng yuqori ball, tabriklayman!");
-  else if (tests && last > 0) lines.push("Oxirgi natijangiz " + band(last) + ". Keyingi maqsad: " + band(last + 0.5) + "!");
-  if (streak > 1) lines.push(streak + " kun ketma-ket! To'xtamang!");
-  lines.push(
+  const personal = [];
+  if (!tests) personal.push("Birinchi mock testni topshirib ko'ramizmi? Natijani birga ko'ramiz!");
+  if (pending) personal.push(pending + " ta natijangiz tekshirilmoqda. Sabr qilamiz!");
+  if (tests && last >= 9) personal.push(band(last) + "! Bu eng yuqori ball, tabriklayman!");
+  else if (tests && last > 0) personal.push("Oxirgi natijangiz " + band(last) + ". Keyingi maqsad: " + band(last + 0.5) + "!");
+  if (streak > 1) personal.push(streak + " kun ketma-ket! To'xtamang!");
+  const lines = personal.concat(shuffled([
     "Reading'da avval savollarni o'qing, keyin matnga qayting.",
     "Writing Task 2 ga kamida 40 daqiqa ajrating.",
     "Listening'da javobni imlosi bilan to'g'ri yozing.",
     "Har kuni 10 ta yangi so'z, bir oyda 300 ta!",
     "Speaking'da to'xtab qolsangiz, shoshilmang va fikrni boshqacha ayting.",
-    "Do'ppim yoqdimi? Bilim olishga ham shu do'ppida boraman!"
-  );
+    "Do'ppim yoqdimi? Bilim olishga ham shu do'ppida boraman!",
+    "Writing'da 250 so'z kerak ekan. Men 3 ta yozdim, qolganini ustoz o'ylab topadi!",
+    "Salto ham sport! Buning uchun band ball berilmaydimi?",
+    "Kartochka ustida yuryapman. Buni 'reading between the lines' deyishadi!",
+    "Speaking'da gap topolmayapsizmi? Menga qarang, og'zim yopilmaydi!",
+    "O'zim sakrayman, band ballim sakramaydi. Sizniki sakrasin!",
+    "Bugun o'qimasangiz, ustozga aytib qo'yaman. Hazil! Yoki yo'q...",
+    "Oyog'im kalta, lekin maqsadim uzun!",
+    "Listening'da quloq, Reading'da ko'z, menda esa faqat do'ppi ishlaydi!"
+  ]));
+  const DODGE = ["Ushlay olmaysiz!", "Voy, qitiq! Qochdim!", "Avval testni topshiring, keyin ushlaysiz!"];
+  const TICKLE = ["Hi-hi-hi! Qitiqlamang!", "Bo'ldi, bo'ldi! Boshim aylandi!", "Yana bossangiz, ballingizni kamaytiraman! Hazil!"];
   let lineIndex = 0;
   const nextLine = () => lines[lineIndex++ % lines.length];
 
-  let x = 0, target = 0, dir = 1, timer = 0, frame = 0, lastTime = 0;
+  // x is his left edge and y the line under his feet, both in viewport pixels.
+  // plat is the card he stands on; null means the bottom of the screen.
+  let x = 0, y = 0, dir = 1, plat = null, target = 0, B = null;
+  let timer = 0, frame = 0, lastTime = 0, landNow = null, arrive = null;
   let paused = false, sayTimer = 0, chatter = 0, autoSpoken = 0;
+  let clicks = 0, lastClick = 0, lastDodge = 0;
 
-  function bounds() {
+  function measure() {
     const width = document.documentElement.clientWidth;
     const sidebar = document.getElementById('sidebar');
     const tabbar = document.querySelector('.tabbar');
     const left = width > 768 && sidebar ? sidebar.getBoundingClientRect().right + 16 : 12;
-    const tabbarUp = tabbar && getComputedStyle(tabbar).display !== 'none';
-    const lift = (tabbarUp ? tabbar.offsetHeight : 0) + 6 + 'px';
-    root.style.setProperty('--abj-bottom', lift);
-    peek.style.setProperty('--abj-bottom', lift);
-    return { left: left, right: Math.max(left, width - root.offsetWidth - 16), width: width };
+    const lift = (tabbar && getComputedStyle(tabbar).display !== 'none' ? tabbar.offsetHeight : 0) + 6;
+    const size = root.offsetWidth, height = root.offsetHeight;
+    peek.style.setProperty('--abj-bottom', lift + 'px');
+    B = {
+      width: width, size: size, height: height, left: left,
+      right: Math.max(left, width - size - 16),
+      floor: window.innerHeight - lift,
+    };
+  }
+
+  function span(to) {
+    if (!to) return { left: B.left, right: B.right, top: B.floor };
+    const r = to.getBoundingClientRect();
+    return { left: Math.max(B.left, r.left), right: Math.max(Math.max(B.left, r.left), Math.min(B.right, r.right - B.size)), top: r.top };
+  }
+
+  function landable(el) {
+    const r = el.getBoundingClientRect();
+    return r.top >= B.height + 8 && r.top <= B.floor - 40 && r.width >= B.size + 24;
+  }
+
+  function pick() {
+    const cards = Array.from(document.querySelectorAll(PLATFORMS)).filter(el => el !== plat && landable(el));
+    if (plat) cards.push(null);
+    return cards.length ? any(cards) : undefined;
   }
 
   function place() {
-    root.style.transform = 'translate3d(' + Math.round(x) + 'px, 0, 0)';
+    const foot = B.height * 0.05;
+    root.style.transform = 'translate3d(' + Math.round(x) + 'px,' + Math.round(y - B.height + foot) + 'px,0)';
     root.style.setProperty('--abj-dir', dir);
     if (bubble.hidden) return;
-    // Keep the bubble on screen when he is near an edge.
-    const width = bounds().width, half = bubble.offsetWidth / 2, centre = x + root.offsetWidth / 2;
-    const shift = Math.max(8 + half - centre, Math.min(0, width - 8 - half - centre));
+    // Keep the bubble on screen near the edges, and under him near the top.
+    const half = bubble.offsetWidth / 2, centre = x + B.size / 2;
+    const shift = Math.max(8 + half - centre, Math.min(0, B.width - 8 - half - centre));
     root.style.setProperty('--abj-shift', Math.round(shift) + 'px');
+    bubble.classList.toggle('abj-below', y - B.height - bubble.offsetHeight - 18 < 8);
   }
 
   function setState(name) { root.dataset.state = name; }
@@ -275,46 +342,113 @@ its entrance animation would make position:fixed relative to that element.
     clearTimeout(timer);
     cancelAnimationFrame(frame);
     timer = frame = 0;
+    arrive = null;
+    if (landNow) landNow();  // never left hanging in the air
   }
 
   function step(now) {
     const dt = Math.min(50, now - lastTime);
     lastTime = now;
-    const distance = target - x, move = 0.07 * dt;
+    const distance = target - x, move = 0.085 * dt;
     if (Math.abs(distance) <= move) {
       x = target;
       place();
-      return next();
+      const done = arrive;
+      arrive = null;
+      return done ? done() : next();
     }
     x += Math.sign(distance) * move;
     place();
     frame = requestAnimationFrame(step);
   }
 
-  function walk() {
-    const b = bounds();
-    target = b.left + Math.random() * (b.right - b.left);
+  function walk(to, done) {
+    const s = span(plat);
+    target = to === undefined ? rand(s.left, s.right) : to;
     dir = target < x ? -1 : 1;
+    arrive = done || null;
     setState('walk');
     lastTime = performance.now();
     frame = requestAnimationFrame(step);
   }
 
-  function act(state, ms) {
+  function act(state, ms, then) {
     setState(state);
-    timer = setTimeout(next, ms);
+    timer = setTimeout(then || next, ms);
+  }
+
+  // Flies to a card (or the floor) in an arc, somersaulting `spins` times.
+  function leap(to, spins) {
+    stop();
+    const fromX = x, fromY = y, s = span(to);
+    const toX = rand(s.left, s.right);
+    const duration = Math.min(1250, Math.max(620, Math.hypot(toX - fromX, s.top - fromY) * 1.5));
+    const peak = Math.min(fromY, s.top) - rand(80, 130);
+    const rise = Math.min(fromY, s.top) - Math.max(B.height + 6, peak);
+    const start = performance.now();
+    dir = toX < fromX ? -1 : 1;
+    setState('leap');
+
+    landNow = () => {
+      landNow = null;
+      plat = to;
+      x = toX;
+      y = span(to).top;
+      root.style.setProperty('--abj-rot', '0deg');
+      place();
+    };
+    function fly(now) {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = t * t * (3 - 2 * t);
+      x = fromX + (toX - fromX) * t;
+      y = fromY + (span(to).top - fromY) * t - 4 * Math.max(0, rise) * t * (1 - t);
+      root.style.setProperty('--abj-rot', spins * 360 * eased + 'deg');
+      place();
+      if (t < 1) {
+        frame = requestAnimationFrame(fly);
+        return;
+      }
+      landNow();
+      if (plat) plat.animate([{ transform: 'translateY(0)' }, { transform: 'translateY(4px)' }, { transform: 'translateY(0)' }], { duration: 280, easing: 'ease-out' });
+      act('land', 320);
+    }
+    frame = requestAnimationFrame(fly);
+  }
+
+  function salto() {
+    act('flip', 900, () => {
+      if (Math.random() < 0.25) act('dizzy', 1500);
+      else next();
+    });
+  }
+
+  function hideAndPeek() {
+    walk(B.width - B.size * 0.42, () => {
+      dir = -1;
+      place();
+      say("Bekinmachoq! Meni topa olmaysiz!", 3200);
+      act('idle', 3000);
+    });
   }
 
   function next() {
     stop();
     if (paused || document.hidden || root.hidden) return;
+    measure();
     const roll = Math.random();
-    if (roll < 0.45) walk();
-    else if (roll < 0.62) act('idle', 2200 + Math.random() * 2200);
-    else if (roll < 0.74) act('jump', 1500);
-    else if (roll < 0.84) act('wave', 1800);
-    else if (roll < 0.94) act('read', 5000);
-    else act('dance', 3200);
+    if (roll < 0.36) {
+      const to = pick();
+      if (to === undefined) return walk();
+      return leap(to, Math.random() < 0.6 ? (Math.random() < 0.2 ? 2 : 1) : 0);
+    }
+    if (roll < 0.58) return walk();
+    if (roll < 0.7) return salto();
+    if (roll < 0.76) return act('idle', rand(1600, 3000));
+    if (roll < 0.82) return act('wave', 1800);
+    if (roll < 0.88) return act('read', 4500);
+    if (roll < 0.94) return act('dance', 3000);
+    if (plat) return leap(null, 1);
+    hideAndPeek();
   }
 
   function say(line, ms) {
@@ -325,25 +459,27 @@ its entrance animation would make position:fixed relative to that element.
     sayTimer = setTimeout(() => { bubble.hidden = true; }, ms || 6500);
   }
 
-  // A few unprompted words per visit, then he only talks when asked.
+  // A handful of unprompted words per visit, then he only talks when asked.
   function scheduleChatter() {
     clearTimeout(chatter);
-    if (autoSpoken >= 3) return;
+    if (autoSpoken >= 6) return;
     chatter = setTimeout(() => {
       if (!document.hidden && !root.hidden && bubble.hidden) {
         autoSpoken += 1;
         say(nextLine());
       }
       scheduleChatter();
-    }, 40000 + Math.random() * 30000);
+    }, rand(25000, 45000));
   }
 
   function show() {
     paused = false;
     root.hidden = false;
     peek.hidden = true;
-    const b = bounds();
-    x = still ? b.right : b.left + (b.right - b.left) * 0.7;
+    measure();
+    plat = null;
+    x = still ? B.right : B.left + (B.right - B.left) * 0.7;
+    y = B.floor;
     place();
     if (!still) {
       next();
@@ -363,29 +499,43 @@ its entrance animation would make position:fixed relative to that element.
     bubble.hidden = true;
     root.hidden = true;
     peek.hidden = false;
-    bounds();
+    measure();
     store(localStorage, HIDDEN_KEY, '1');
   }
 
   hit.addEventListener('click', () => {
-    say(nextLine());
-    if (still) return;
+    const now = Date.now();
+    clicks = now - lastClick < 1500 ? clicks + 1 : 1;
+    lastClick = now;
+    const tickled = clicks >= 3;
+    if (tickled) clicks = 0;
+    if (still || landNow) return say(tickled ? any(TICKLE) : nextLine());
     stop();
-    setState('jump');
-    timer = setTimeout(() => {
-      setState('wave');
-      timer = setTimeout(next, 1400);
-    }, 1500);
+    if (tickled) {
+      say(any(TICKLE), 3500);
+      return act('flip', 900, () => act('dizzy', 1600));
+    }
+    say(nextLine());
+    act(Math.random() < 0.5 ? 'flip' : 'jump', 900, () => act('wave', 1200));
   });
-  // Stands still under the cursor, so he is easy to click.
+  // Usually stands still under the cursor; now and then he runs away instead.
   hit.addEventListener('pointerenter', e => {
-    if (still || e.pointerType !== 'mouse') return;
+    if (still || e.pointerType !== 'mouse' || landNow) return;
+    const now = Date.now();
+    if (now - lastDodge > 15000 && Math.random() < 0.4) {
+      const to = pick();
+      if (to !== undefined) {
+        lastDodge = now;
+        say(any(DODGE), 2800);
+        return leap(to, 1);
+      }
+    }
     paused = true;
     stop();
     setState('wave');
   });
   hit.addEventListener('pointerleave', e => {
-    if (still || e.pointerType !== 'mouse') return;
+    if (still || e.pointerType !== 'mouse' || !paused) return;
     paused = false;
     next();
   });
@@ -410,20 +560,39 @@ its entrance animation would make position:fixed relative to that element.
     });
   }, { passive: true });
 
+  // Rides his card while the page scrolls, and jumps down when it leaves the screen.
+  function follow() {
+    if (root.hidden || still || !plat || landNow) return;
+    if (!landable(plat)) {
+      paused = false;
+      return leap(null, 0);
+    }
+    const s = span(plat);
+    y = s.top;
+    x = Math.min(Math.max(x, s.left), s.right);
+    place();
+  }
+  document.addEventListener('scroll', follow, { capture: true, passive: true });
+
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) stop();
     else if (!still && !root.hidden && !paused) next();
   });
   window.addEventListener('resize', () => {
-    const b = bounds();
-    x = Math.min(Math.max(x, b.left), b.right);
-    target = Math.min(Math.max(target, b.left), b.right);
+    if (root.hidden) return measure();
+    stop();
+    measure();
+    if (plat && !landable(plat)) plat = null;
+    const s = span(plat);
+    x = Math.min(Math.max(x, s.left), s.right);
+    y = s.top;
     place();
+    if (!still && !paused) next();
   });
 
   if (store(localStorage, HIDDEN_KEY) === '1') {
     peek.hidden = false;
-    bounds();
+    measure();
   } else {
     show();
   }
