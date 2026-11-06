@@ -223,7 +223,7 @@ export function mount(root, read) {
     let turn = Math.sin(t * 0.6) * 0.16;
     if (state === 'walk') turn = now.dir * 1.05;
     else if (state === 'leap') turn = now.dir * 0.75;
-    else if (state === 'flip' || state === 'read' || state === 'angry') turn = 0;
+    else if (state === 'flip' || state === 'read' || state === 'angry' || state === 'sleep') turn = 0;
     if (state === 'spin') yaw = Math.PI * 2 * ease(clamp01(since / 2.6));
     else {
       if (yaw > Math.PI) yaw -= Math.PI * 2;
@@ -279,6 +279,10 @@ export function mount(root, read) {
     } else if (state === 'calm') {
       armZ = armRZ = 0.08;
       pitch = 0.09;
+    } else if (state === 'sleep') {
+      armZ = armRZ = 0.05;
+      pitch = 0.08;
+      roll = 0.07;
     }
 
     a.armL.rotation.z = damp(a.armL.rotation.z, -armZ, 16, dt);
@@ -296,6 +300,7 @@ export function mount(root, read) {
     let sx = 1, sy = 1;
     if (state === 'land') { sx = 1.14; sy = 0.84; }
     else if (state === 'idle' || state === 'read' || state === 'calm') sy = 1 + Math.sin(t * 2.2) * 0.012;
+    else if (state === 'sleep') sy = 1 + Math.sin(t * 1.3) * 0.02;
     squashX = damp(squashX, sx, 18, dt);
     squashY = damp(squashY, sy, 18, dt);
     a.fig.scale.set(squashX, squashY, squashX);
@@ -305,7 +310,7 @@ export function mount(root, read) {
       blinkEnd = t + 0.11;
       blinkAt = t + 2.5 + Math.random() * 3;
     }
-    a.eyes.scale.y = t < blinkEnd && state !== 'angry' ? 0.12 : 1;
+    a.eyes.scale.y = state === 'sleep' || (t < blinkEnd && state !== 'angry') ? 0.1 : 1;
 
     // Temper: flashes yellow and red, then cools back to his own colour.
     heat = damp(heat, state === 'angry' ? 1 : 0, state === 'angry' ? 7 : 2.4, dt);
@@ -340,6 +345,8 @@ export function mount(root, read) {
     if (!running) return;
     requestAnimationFrame(frame);
     if (root.hidden) { last = now; return; }
+    // Asleep he barely moves, so a few frames a second is enough and saves battery.
+    if (root.dataset.state === 'sleep' && now - last < 120) return;
     const dt = Math.min(0.05, (now - last) / 1000);
     last = now;
     clock.t += dt;

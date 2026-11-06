@@ -3,6 +3,7 @@ Abjon, the AbExam mascot, on every signed-in page except the exam itself (take_e
 has its own shell). He walks on the cards, leaps and somersaults between them and jokes.
 With home=True (the dashboard) he also talks about the student's own results, and
 can be clicked anywhere; elsewhere he gets out of the way so he never blocks a control.
+quiet=True keeps him silent on pages that record the microphone or play their own audio.
 Must stay outside the page content: an animated ancestor would break position:fixed.
 {% endcomment %}
 {% if request.user.is_authenticated %}
@@ -121,7 +122,7 @@ Must stay outside the page content: an animated ancestor would break position:fi
   .abj-bubble {
     position: absolute; bottom: calc(100% + 10px); left: 50%;
     width: max-content; max-width: min(250px, calc(100vw - 32px));
-    padding: 10px 30px 10px 14px; border-radius: 14px;
+    padding: 10px 56px 10px 14px; border-radius: 14px;
     background: #fff; color: #2d2d2d; border: 1px solid rgba(16, 24, 40, 0.1);
     box-shadow: 0 8px 24px rgba(16, 24, 40, 0.16);
     font-size: 13px; line-height: 1.45;
@@ -143,6 +144,19 @@ Must stay outside the page content: an animated ancestor would break position:fi
     font-size: 16px; line-height: 1; cursor: pointer; pointer-events: auto;
   }
   .abj-close:hover { background: rgba(0, 0, 0, 0.06); }
+  .abj-mute { right: 28px; }
+  .abj-mute svg { width: 15px; height: 15px; }
+  .abj-mute .abj-wave { display: inline; }
+  .abj-mute .abj-cross { display: none; }
+  .abj-mute[aria-pressed="true"] .abj-wave { display: none; }
+  .abj-mute[aria-pressed="true"] .abj-cross { display: inline; }
+  #abjon[data-state="sleep"] .abj-eyes { animation: none; transform: scaleY(0.08); }
+  #abjon[data-state="sleep"]::before {
+    content: 'z z Z'; position: absolute; top: -8px; right: -6px; z-index: 1;
+    color: #667085; font: 700 15px/1 Inter, system-ui, sans-serif; letter-spacing: 3px;
+    animation: abj-zzz 2.6s ease-in-out infinite;
+  }
+  @keyframes abj-zzz { 0%, 100% { opacity: 0.25; transform: translateY(4px); } 50% { opacity: 1; transform: translateY(-5px); } }
 
   #abjonPeek {
     position: fixed; right: 16px; bottom: calc(var(--abj-bottom, 6px) + 8px); z-index: 80;
@@ -161,6 +175,7 @@ Must stay outside the page content: an animated ancestor would break position:fi
 
 <div id="abjon" data-state="idle" hidden
      data-name="{{ request.user.first_name|default:request.user.username }}"
+     {% if quiet %}data-quiet="1"{% endif %}
      {% if home %}data-home="1"
      data-tests="{{ stats.total_tests|default:0 }}"
      data-last="{{ recent_results.0.score|stringformat:'f' }}"
@@ -168,6 +183,13 @@ Must stay outside the page content: an animated ancestor would break position:fi
      data-streak="{{ learn_streak|default:0 }}"{% endif %}>
   <div class="abj-bubble" role="status" aria-live="polite" hidden>
     <span class="abj-text"></span>
+    {% if not quiet %}<button type="button" class="abj-close abj-mute" aria-pressed="false" aria-label="Abjon ovozini o'chirish" title="Ovozni o'chirish / yoqish">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M11 5 6 9H2v6h4l5 4z"/>
+        <path class="abj-wave" d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/>
+        <path class="abj-cross" d="m22 9-6 6M16 9l6 6"/>
+      </svg>
+    </button>{% endif %}
     <button type="button" class="abj-close" aria-label="Abjonni yashirish" title="Abjonni yashirish">&times;</button>
   </div>
   <button type="button" class="abj-hit" aria-label="Abjon: maslahat olish">
@@ -262,7 +284,10 @@ Must stay outside the page content: an animated ancestor would break position:fi
   const text = root.querySelector('.abj-text');
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const home = root.dataset.home === '1';
+  const quiet = root.dataset.quiet === '1';
   const HIDDEN_KEY = 'abjon-hidden', GREETED_KEY = 'abjon-greeted', SPOKEN_KEY = 'abjon-spoken';
+  const MUTED_KEY = 'abjon-muted', SOUND_TIP_KEY = 'abjon-sound-tip';
+  const SLEEP_AFTER = 90000, SILENT_AFTER = 45000;  // ms without the student doing anything
   const MAX_SPOKEN = 8;  // unprompted lines per browser session, across pages
   const PLATFORMS = ['.page-container', '.content'].map(c => [c + ' > *', c + ' > * > *', c + ' > * > * > *'].join(',')).join(',');
   const NOT_PLATFORMS = 'input, textarea, select, button, table, thead, tbody, tr, td, th, canvas, video, iframe, form, label, svg, img, script, style';
@@ -375,7 +400,24 @@ Must stay outside the page content: an animated ancestor would break position:fi
     bubble.classList.toggle('abj-below', y - B.height - bubble.offsetHeight - 18 < 8);
   }
 
-  function setState(name) { root.dataset.state = name; }
+  // Sound. Off until the first click or key (browser rule) and on pages marked
+  // quiet; he also stays silent while the page plays audio or nobody is around.
+  let soundModule = null, sound = null, lastActive = Date.now(), forceSoundUntil = 0, stepped = 0;
+  let muted = store(localStorage, MUTED_KEY) === '1';
+  const pageIsPlaying = () => (window.speechSynthesis && speechSynthesis.speaking) ||
+    Array.from(document.querySelectorAll('audio, video')).some(m => !m.paused && !m.muted);
+
+  function sfx(name, options) {
+    if (!sound || muted || document.hidden || pageIsPlaying()) return;
+    const now = Date.now();
+    if (now > forceSoundUntil && now - lastActive > SILENT_AFTER) return;
+    sound.play(name, options);
+  }
+
+  function setState(name) {
+    if (root.dataset.state !== name) sfx(name);
+    root.dataset.state = name;
+  }
   function stop() {
     clearTimeout(timer);
     cancelAnimationFrame(frame);
@@ -396,6 +438,11 @@ Must stay outside the page content: an animated ancestor would break position:fi
       return done ? done() : next();
     }
     x += Math.sign(distance) * move;
+    stepped += move;
+    if (stepped > 52) {
+      stepped = 0;
+      sfx('step');
+    }
     place();
     frame = requestAnimationFrame(step);
   }
@@ -426,6 +473,7 @@ Must stay outside the page content: an animated ancestor would break position:fi
     const start = performance.now();
     dir = toX < fromX ? -1 : 1;
     setState('leap');
+    sfx('leap', { spins: spins });
 
     landNow = () => {
       landNow = null;
@@ -483,6 +531,7 @@ Must stay outside the page content: an animated ancestor would break position:fi
   function next() {
     stop();
     if (paused || document.hidden || root.hidden) return;
+    if (Date.now() - lastActive > SLEEP_AFTER) return setState('sleep');
     measure();
     const roll = Math.random();
     if (roll < 0.36) {
@@ -506,6 +555,7 @@ Must stay outside the page content: an animated ancestor would break position:fi
     text.textContent = line;
     bubble.hidden = false;
     place();
+    sfx('talk', { count: Math.round(line.length / 7) });
     clearTimeout(sayTimer);
     sayTimer = setTimeout(() => { bubble.hidden = true; }, ms || 6500);
   }
@@ -516,7 +566,7 @@ Must stay outside the page content: an animated ancestor would break position:fi
     const spoken = () => parseInt(store(sessionStorage, SPOKEN_KEY), 10) || 0;
     if (spoken() >= MAX_SPOKEN) return;
     chatter = setTimeout(() => {
-      if (!document.hidden && !root.hidden && bubble.hidden) {
+      if (!document.hidden && !root.hidden && bubble.hidden && root.dataset.state !== 'sleep') {
         store(sessionStorage, SPOKEN_KEY, String(spoken() + 1));
         say(nextLine());
       }
@@ -557,6 +607,7 @@ Must stay outside the page content: an animated ancestor would break position:fi
 
   hit.addEventListener('click', () => {
     const now = Date.now();
+    forceSoundUntil = now + 3000;
     clicks = now - lastClick < 1500 ? clicks + 1 : 1;
     lastClick = now;
     // Three quick clicks tickle him; keep going and he loses his temper.
@@ -566,6 +617,7 @@ Must stay outside the page content: an animated ancestor would break position:fi
     if (enraged) return rage();
     stop();
     if (tickled) {
+      sfx('tickle');
       say(any(TICKLE), 3500);
       return act('flip', 900, () => act('dizzy', 1600));
     }
@@ -594,7 +646,53 @@ Must stay outside the page content: an animated ancestor would break position:fi
     paused = false;
     next();
   });
-  root.querySelector('.abj-close').addEventListener('click', hide);
+  root.querySelector('.abj-close:not(.abj-mute)').addEventListener('click', hide);
+  const muteButton = root.querySelector('.abj-mute');
+  if (muteButton) {
+    muteButton.setAttribute('aria-pressed', String(muted));
+    muteButton.addEventListener('click', () => {
+      muted = !muted;
+      store(localStorage, MUTED_KEY, muted ? '1' : null);
+      muteButton.setAttribute('aria-pressed', String(muted));
+      if (!muted) forceSoundUntil = Date.now() + 1000;
+      sfx('wave');
+    });
+  }
+
+  // Sound needs a real click or key press first, and anything the student does
+  // keeps him awake.
+  function unlockSound() {
+    if (quiet || !soundModule) return;
+    if (!sound) {
+      try {
+        sound = soundModule.createSound();
+      } catch (e) {
+        return;
+      }
+    }
+    sound.unlock();
+    if (!muted && !root.hidden && store(localStorage, SOUND_TIP_KEY) !== '1') {
+      store(localStorage, SOUND_TIP_KEY, '1');
+      setTimeout(() => say("Menda ovoz ham bor! Karnay belgisi bilan o'chirsa bo'ladi."), 500);
+    }
+  }
+  function active() {
+    lastActive = Date.now();
+    if (root.dataset.state === 'sleep' && !root.hidden && !document.hidden) {
+      forceSoundUntil = lastActive + 1500;
+      sfx('wake');
+      act('wave', 1000);
+    }
+  }
+  ['pointerdown', 'keydown'].forEach(type => {
+    document.addEventListener(type, () => {
+      unlockSound();
+      active();
+    }, { capture: true, passive: true });
+  });
+  ['pointermove', 'scroll', 'touchmove'].forEach(type => {
+    document.addEventListener(type, active, { capture: true, passive: true });
+  });
   peek.addEventListener('click', () => {
     store(localStorage, HIDDEN_KEY, null);
     show();
@@ -656,12 +754,17 @@ Must stay outside the page content: an animated ancestor would break position:fi
 
   // The 3D body comes after the page, so it never slows the page down. If it
   // can't load or the device has no WebGL, he simply stays the SVG drawing.
+  const afterLoad = fn => {
+    if (document.readyState === 'complete') fn();
+    else window.addEventListener('load', fn, { once: true });
+  };
   if (!still) {
-    const load = () => import('/static/abjon3d.js?v=1')
+    afterLoad(() => import('/static/abjon3d.js?v=2')
       .then(m => m.mount(root, () => ({ dir: dir, rot: rot, px: lookX, py: lookY })))
-      .catch(() => {});
-    if (document.readyState === 'complete') load();
-    else window.addEventListener('load', load, { once: true });
+      .catch(() => {}));
+  }
+  if (!quiet) {
+    afterLoad(() => import('/static/abjon-sound.js?v=1').then(m => { soundModule = m; }).catch(() => {}));
   }
 })();
 </script>
