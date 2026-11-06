@@ -26,11 +26,17 @@
     }
     .dash-panel-head {
         display: flex; align-items: center; justify-content: space-between; gap: 12px;
-        margin-bottom: 16px;
+        min-height: 34px;
+        margin-bottom: 12px;
     }
     .dash-panel-head h3 { font-size: 14px; font-weight: 600; }
     .dash-panel-head a { padding: 8px 0; font-size: 12px; font-weight: 500; color: var(--primary-color); text-decoration: none; }
     .dash-panel-head a:hover { text-decoration: underline; }
+    .dash-more { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; font-weight: 500; color: var(--primary-color); text-decoration: none; }
+    .dash-more svg { width: 14px; height: 14px; flex-shrink: 0; transition: transform 0.15s; }
+    .dash-more:hover svg { transform: translateX(2px); }
+    /* The Telegram card carries its own margin; .dash already spaces its children. */
+    .dash > .tgd { margin: 0; }
 
     /* ── Hero ── */
     .dash-hero {
@@ -51,9 +57,10 @@
         letter-spacing: -0.03em;
         line-height: 1.15;
         margin-bottom: 10px;
+        text-wrap: balance;
     }
-    .dash-hero h1 span { color: var(--primary-color); }
-    .dash-lead { font-size: 14px; color: var(--text-muted); line-height: 1.6; max-width: 46ch; }
+    .dash-hero h1 span { color: var(--primary-color); white-space: nowrap; }
+    .dash-lead { font-size: 14px; color: var(--text-muted); line-height: 1.6; max-width: 46ch; text-wrap: pretty; }
     .dash-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
     .dash-btn {
         display: inline-flex; align-items: center; gap: 8px;
@@ -145,7 +152,16 @@
 
     /* ── Charts + sections ── */
     .dash-grid { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: 20px; }
+    .dash-grid > .dash-panel { display: flex; flex-direction: column; }
     .dash-chart { position: relative; height: 230px; }
+    .dash-chart-empty {
+        flex: 1; min-height: 230px;
+        display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+        text-align: center;
+    }
+    .dash-chart-empty b { font-size: 14px; font-weight: 600; margin-top: 4px; }
+    .dash-chart-empty p { font-size: 13px; color: var(--text-muted); line-height: 1.55; max-width: 38ch; text-wrap: pretty; }
+    .dash-chart-empty .dash-more { font-size: 13px; margin-top: 4px; }
     .dash-bars { display: flex; flex-direction: column; gap: 16px; }
     .dash-bar-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; }
     .dash-bar-row span { color: var(--text-muted); }
@@ -166,7 +182,8 @@
     .dash-results li + li { border-top: 1px solid var(--border-color); }
     .dash-results .info { flex: 1; min-width: 0; }
     .dash-results .name { font-size: 14px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .dash-results .date { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .dash-results .date { display: flex; flex-wrap: wrap; column-gap: 8px; font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .dash-results .date span { white-space: nowrap; }
     .dash-band {
         min-width: 46px; padding: 6px 10px; border-radius: 10px; text-align: center;
         font-size: 15px; font-weight: 700;
@@ -195,9 +212,10 @@
     @media (max-width: 1100px) {
         .dash-links { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         .dash-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .dash-hero { grid-template-columns: minmax(0, 1fr); }
     }
     @media (max-width: 900px) {
-        .dash-hero, .dash-grid { grid-template-columns: minmax(0, 1fr); }
+        .dash-grid { grid-template-columns: minmax(0, 1fr); }
         .dash-hero { padding: 22px; }
     }
     @media (max-width: 560px) {
@@ -279,7 +297,7 @@
                     <span class="dash-delta flat">Oldingisi bilan teng</span>
                     {% endif %}
                 {% endif %}
-                <a href="{% url 'exams:result_detail' last.pk %}" style="font-size:12.5px; color:var(--primary-color); text-decoration:none; font-weight:500;">Tahlilni ko'rish →</a>
+                <a href="{% url 'exams:result_detail' last.pk %}" class="dash-more" style="font-size:12.5px;">Tahlilni ko'rish <i data-lucide="arrow-right"></i></a>
             </div>
         </div>
         {% endwith %}
@@ -302,7 +320,7 @@
             <div><div class="dash-stat-label">O'rtacha ball</div><div class="dash-stat-value">{{ stats.avg_score|floatformat:1 }}</div></div>
         </div>
         <div class="dash-stat">
-            <div class="dash-stat-icon tone-amber"><i data-lucide="trophy" style="width:20px;"></i></div>
+            <div class="dash-stat-icon tone-amber"><i data-lucide="award" style="width:20px;"></i></div>
             <div><div class="dash-stat-label">Eng yaxshi ball</div><div class="dash-stat-value">{{ stats.best_score|floatformat:1 }}</div></div>
         </div>
         <div class="dash-stat">
@@ -320,9 +338,18 @@
         <div class="dash-panel">
             <div class="dash-panel-head">
                 <h3>Ball dinamikasi</h3>
-                <a href="{% url 'results_list' %}">Barchasi →</a>
+                <a href="{% url 'results_list' %}" class="dash-more">Barchasi <i data-lucide="arrow-right"></i></a>
             </div>
+            {% if stats.total_tests > 1 %}
             <div class="dash-chart"><canvas id="progressChart" aria-label="So'nggi testlar bo'yicha band ballari"></canvas></div>
+            {% else %}
+            <div class="dash-chart-empty">
+                <div class="dash-stat-icon tone-red"><i data-lucide="trending-up" style="width:20px;"></i></div>
+                <b>Birinchi natijangiz qayd etildi</b>
+                <p>Yana bitta test topshiring — ballingiz qanday o'zgarayotgani shu yerda grafikda ko'rinadi.</p>
+                <a href="{% url 'exams_list' %}" class="dash-more">Imtihonlarga o'tish <i data-lucide="arrow-right"></i></a>
+            </div>
+            {% endif %}
         </div>
         <div class="dash-panel">
             <div class="dash-panel-head"><h3>Bo'limlar bo'yicha</h3></div>
@@ -346,7 +373,7 @@
     <section class="dash-panel">
         <div class="dash-panel-head">
             <h3>So'nggi natijalar</h3>
-            <a href="{% url 'results_list' %}">Barchasi →</a>
+            <a href="{% url 'results_list' %}" class="dash-more">Barchasi <i data-lucide="arrow-right"></i></a>
         </div>
         <ul class="dash-results">
             {% for r in recent_results %}
@@ -355,7 +382,7 @@
                     {% include 'partials/logo.html' with o=r.exam %}
                     <div class="info">
                         <div class="name">{{ r.exam.title }}</div>
-                        <div class="date">{{ r.completed_at|date:"d.m.Y, H:i" }} · L {{ r.listening_score|floatformat:1 }} · R {{ r.reading_score|floatformat:1 }}{% if r.writing_score %} · W {{ r.writing_score|floatformat:1 }}{% endif %}</div>
+                        <div class="date"><span>{{ r.completed_at|date:"d.m.Y, H:i" }}</span><span>L {{ r.listening_score|floatformat:1 }} · R {{ r.reading_score|floatformat:1 }}{% if r.writing_score %} · W {{ r.writing_score|floatformat:1 }}{% endif %}{% if r.speaking_score %} · S {{ r.speaking_score|floatformat:1 }}{% endif %}</span></div>
                     </div>
                     <span class="dash-band {% if r.score >= 7 %}tone-green{% elif r.score >= 5.5 %}tone-amber{% else %}tone-red{% endif %}">{{ r.score|floatformat:1 }}</span>
                 </a>
@@ -369,7 +396,7 @@
     <section class="dash-panel">
         <div class="dash-panel-head">
             <h3>Reyting <span style="font-size:12px;font-weight:500;color:var(--text-muted)">· bu oy</span></h3>
-            <a href="{% url 'rating' %}">To'liq reyting →</a>
+            <a href="{% url 'rating' %}" class="dash-more">To'liq reyting <i data-lucide="arrow-right"></i></a>
         </div>
         {% if rating.rows %}
         {% include 'partials/rating_rows.html' with board=rating %}
@@ -392,12 +419,12 @@
             <i data-lucide="chevron-right" class="chev" style="width:18px;"></i>
         </a>
         <a href="{% url 'rating' %}" class="dash-link">
-            <div class="dash-stat-icon tone-red"><i data-lucide="crown" style="width:20px;"></i></div>
+            <div class="dash-stat-icon tone-amber"><i data-lucide="trophy" style="width:20px;"></i></div>
             <div class="txt"><b>Reyting</b><span>Eng yaxshi natijalar</span></div>
             <i data-lucide="chevron-right" class="chev" style="width:18px;"></i>
         </a>
         <a href="{% url 'results_list' %}" class="dash-link">
-            <div class="dash-stat-icon tone-amber"><i data-lucide="trophy" style="width:20px;"></i></div>
+            <div class="dash-stat-icon tone-red"><i data-lucide="bar-chart-3" style="width:20px;"></i></div>
             <div class="txt"><b>Natijalar</b><span>Barcha imtihon natijalari</span></div>
             <i data-lucide="chevron-right" class="chev" style="width:18px;"></i>
         </a>
@@ -422,7 +449,7 @@
     }
 })();
 </script>
-{% if stats.total_tests and chart_labels %}
+{% if stats.total_tests > 1 %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 <script>
 (function () {
@@ -432,27 +459,32 @@
     const fill = canvas.getContext('2d').createLinearGradient(0, 0, 0, 230);
     fill.addColorStop(0, 'rgba(211,47,47,.22)');
     fill.addColorStop(1, 'rgba(211,47,47,0)');
+    // Start the axis just below the lowest band, so real progress isn't flattened
+    // against an empty 0-9 scale.
+    const bands = [...{{ chart_scores|safe }}, ...{{ chart_listening|safe }}, ...{{ chart_reading|safe }}];
+    const yMin = Math.max(0, Math.floor(Math.min(...bands)) - 1);
 
     const chart = new Chart(canvas, {
         type: 'line',
         data: {
             labels: {{ chart_labels|safe }},
             datasets: [
-                { label: 'Umumiy', data: {{ chart_scores|safe }}, borderColor: '#d32f2f', backgroundColor: fill, fill: true, tension: .35, borderWidth: 2.5, pointBackgroundColor: '#fff', pointBorderColor: '#d32f2f', pointBorderWidth: 2, pointRadius: 4, pointHoverRadius: 6 },
-                { label: 'Listening', data: {{ chart_listening|safe }}, borderColor: '#1565c0', tension: .35, borderWidth: 1.5, borderDash: [5, 4], pointRadius: 0, pointHoverRadius: 4 },
-                { label: 'Reading', data: {{ chart_reading|safe }}, borderColor: '#2e7d32', tension: .35, borderWidth: 1.5, borderDash: [5, 4], pointRadius: 0, pointHoverRadius: 4 },
+                { label: 'Umumiy', data: {{ chart_scores|safe }}, borderColor: '#d32f2f', backgroundColor: fill, fill: true, tension: .35, borderWidth: 2.5, pointBackgroundColor: '#fff', pointBorderColor: '#d32f2f', pointBorderWidth: 2, pointRadius: 4, pointHoverRadius: 6, clip: false },
+                { label: 'Listening', data: {{ chart_listening|safe }}, borderColor: '#1565c0', tension: .35, borderWidth: 1.5, borderDash: [5, 4], pointRadius: 0, pointHoverRadius: 4, clip: false },
+                { label: 'Reading', data: {{ chart_reading|safe }}, borderColor: '#2e7d32', tension: .35, borderWidth: 1.5, borderDash: [5, 4], pointRadius: 0, pointHoverRadius: 4, clip: false },
             ]
         },
         options: {
             responsive: true, maintainAspectRatio: false,
+            layout: { padding: { top: 6 } },
             interaction: { mode: 'index', intersect: false },
             plugins: {
                 legend: { position: 'bottom', labels: { color: C.tick, usePointStyle: true, pointStyle: 'line', boxWidth: 18, font: { size: 11 } } },
                 tooltip: { backgroundColor: C.surface, borderColor: C.border, borderWidth: 1, titleColor: C.text, bodyColor: C.tick, padding: 10 },
             },
             scales: {
-                x: { ticks: { color: C.tick, font: { size: 10 } }, grid: { display: false } },
-                y: { min: 0, max: 9, ticks: { color: C.tick, font: { size: 10 }, stepSize: 3 }, grid: { color: C.grid }, border: { display: false } },
+                x: { offset: true, ticks: { color: C.tick, font: { size: 11 } }, grid: { display: false } },
+                y: { min: yMin, max: 9, ticks: { color: C.tick, font: { size: 11 }, stepSize: 9 - yMin > 6 ? 3 : 1 }, grid: { color: C.grid }, border: { display: false } },
             },
         },
     });

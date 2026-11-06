@@ -263,6 +263,7 @@
             flex-grow: 1;
             overflow-y: auto;
             overflow-x: hidden;
+            padding-bottom: 8px;
         }
 
         .nav-links::-webkit-scrollbar { width: 5px; }
@@ -441,14 +442,14 @@
             </a>
 
             <div style="margin-top: 1.5rem; padding: 0 0.8rem; margin-bottom: 0.5rem;" class="sidebar-label">
-                <span style="font-size: 0.75rem; font-weight: 500; color: #888; text-transform: uppercase;">Bo'limlar</span>
+                <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-muted); text-transform: uppercase;">Bo'limlar</span>
             </div>
             <a href="{% url 'results_list' %}" class="nav-link {% if request.resolver_match.url_name == 'results_list' %}active{% endif %}">
-                <i data-lucide="trophy" style="width: 20px;"></i>
+                <i data-lucide="bar-chart-3" style="width: 20px;"></i>
                 <span class="nav-toggle-text">Natijalar</span>
             </a>
             <a href="{% url 'rating' %}" class="nav-link {% if request.resolver_match.url_name == 'rating' %}active{% endif %}">
-                <i data-lucide="crown" style="width: 20px;"></i>
+                <i data-lucide="trophy" style="width: 20px;"></i>
                 <span class="nav-toggle-text">Reyting</span>
             </a>
             <a href="{% url 'games:hub' %}" class="nav-link {% if request.resolver_match.namespace == 'games' %}active{% endif %}">
@@ -498,7 +499,7 @@
                 </div>
                 <div class="nav-toggle-text">
                     <span style="font-size: 0.85rem; font-weight: 500; display: block;">{{ user.username|upper }}{% if user.is_premium %}<i class=lc-premium></i>{% endif %}</span>
-                    <span style="font-size: 0.7rem; color: #888;">Profilni tahrirlash</span>
+                    <span style="font-size: 0.7rem; color: var(--text-muted);">Profilni tahrirlash</span>
                 </div>
             </a>
 

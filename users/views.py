@@ -168,7 +168,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         context['pending_count'] = UserResult.objects.pending().filter(user=user).count()
 
         chart_results = list(results[:8][::-1])
-        context['chart_labels'] = json.dumps([r.completed_at.strftime('%d %b') for r in chart_results])
+        context['chart_labels'] = json.dumps([r.completed_at.strftime('%d.%m') for r in chart_results])
         context['chart_scores'] = json.dumps([r.score for r in chart_results])
         context['chart_listening'] = json.dumps([r.listening_score for r in chart_results])
         context['chart_reading'] = json.dumps([r.reading_score for r in chart_results])

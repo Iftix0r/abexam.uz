@@ -17,7 +17,8 @@
   .tgd-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
   .tgd-btn{display:inline-flex;align-items:center;gap:7px;background:#229ed9;color:#fff !important;font-weight:700;font-size:14px;padding:11px 18px;border-radius:12px;text-decoration:none;white-space:nowrap}
   .tgd-btn:hover{background:#1b8bc2}
-  .tgd-link{font-size:13px;color:var(--text-muted);text-decoration:none;padding:8px}
+  .tgd-link{display:inline-flex;align-items:center;gap:4px;font-size:13px;color:var(--text-muted);text-decoration:none;padding:8px}
+  .tgd-link svg{width:14px;height:14px}
   .tgd-link:hover{color:var(--text-color)}
 </style>
 {% if tg_needs_link %}
@@ -30,7 +31,7 @@
   </div>
   <div class="tgd-actions">
     <a class="tgd-btn" href="{% url 'tgbot:link' %}" target="_blank" rel="noopener">Botni ulash</a>
-    <a class="tgd-link" href="{% url 'telegram' %}">Batafsil →</a>
+    <a class="tgd-link" href="{% url 'telegram' %}">Batafsil <i data-lucide="arrow-right"></i></a>
   </div>
 </section>
 {% else %}
@@ -42,7 +43,7 @@
   </div>
   <div class="tgd-actions">
     {% if tg_bot_url %}<a class="tgd-btn" href="{{ tg_bot_url }}" target="_blank" rel="noopener">Botni ochish</a>{% endif %}
-    <a class="tgd-link" href="{% url 'telegram' %}">Sozlamalar →</a>
+    <a class="tgd-link" href="{% url 'telegram' %}">Sozlamalar <i data-lucide="arrow-right"></i></a>
   </div>
 </section>
 {% endif %}
