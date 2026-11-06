@@ -1,0 +1,431 @@
+{% comment %}
+Abjon, the AbExam mascot. Walks along the bottom of the dashboard, plays, and
+talks about the student's own results when clicked. Must stay outside .dash:
+its entrance animation would make position:fixed relative to that element.
+{% endcomment %}
+<style>
+  .dash { padding-bottom: 72px; }
+
+  #abjon {
+    --abj-size: 84px;
+    position: fixed; left: 0; bottom: var(--abj-bottom, 6px);
+    width: var(--abj-size); z-index: 80; pointer-events: none;
+    will-change: transform;
+  }
+  #abjon[hidden], #abjonPeek[hidden] { display: none; }
+  .abj-hit {
+    display: block; width: 100%; padding: 0; border: 0; background: none;
+    cursor: pointer; pointer-events: auto; -webkit-tap-highlight-color: transparent;
+  }
+  .abj-hit svg { display: block; width: 100%; height: auto; overflow: visible; transform: scaleX(var(--abj-dir, 1)); }
+
+  /* Parts turn around points given in the drawing's own coordinates. */
+  .abj-fig, .abj-torso, .abj-leg-l, .abj-leg-r, .abj-arm-l, .abj-arm-r, .abj-eyes, .abj-shadow { transform-box: view-box; }
+  .abj-fig { transform-origin: 60px 122px; }
+  .abj-torso { transform-origin: 60px 104px; }
+  .abj-shadow { transform-origin: 60px 124px; }
+  .abj-leg-l { transform-origin: 48px 104px; }
+  .abj-leg-r { transform-origin: 72px 104px; }
+  .abj-arm-l { transform-origin: 27px 72px; transition: transform 0.25s; }
+  .abj-arm-r { transform-origin: 93px 72px; transition: transform 0.25s; }
+  .abj-eyes { transform-origin: 60px 62px; animation: abj-blink 4.6s infinite; }
+  .abj-pupils { transform: translate(var(--abj-px, 0px), var(--abj-py, 0px)); transition: transform 0.12s; }
+  .abj-open, .abj-book { opacity: 0; }
+
+  @keyframes abj-blink { 0%, 95%, 100% { transform: scaleY(1); } 97.5% { transform: scaleY(0.08); } }
+  @keyframes abj-breathe { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(1.015, 0.985); } }
+  @keyframes abj-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+  @keyframes abj-swing-a { 0%, 100% { transform: rotate(22deg); } 50% { transform: rotate(-22deg); } }
+  @keyframes abj-swing-b { 0%, 100% { transform: rotate(-22deg); } 50% { transform: rotate(22deg); } }
+  @keyframes abj-jump {
+    0% { transform: translateY(0) scale(1.1, 0.88); }
+    20% { transform: translateY(-10px) scale(0.92, 1.1); }
+    50% { transform: translateY(-62px) scale(1, 1); }
+    82% { transform: translateY(-8px) scale(0.95, 1.06); }
+    92% { transform: translateY(0) scale(1.1, 0.9); }
+    100% { transform: translateY(0) scale(1, 1); }
+  }
+  @keyframes abj-jump-shadow { 0%, 100% { transform: scale(1); opacity: 0.16; } 50% { transform: scale(0.55); opacity: 0.07; } }
+  @keyframes abj-wave { 0%, 100% { transform: rotate(-88deg); } 50% { transform: rotate(-118deg); } }
+  @keyframes abj-dance { 0%, 100% { transform: rotate(-8deg) translateY(0); } 25% { transform: rotate(0) translateY(-7px); } 50% { transform: rotate(8deg) translateY(0); } 75% { transform: rotate(0) translateY(-7px); } }
+  @keyframes abj-arm-up-l { 0%, 100% { transform: rotate(88deg); } 50% { transform: rotate(118deg); } }
+  @keyframes abj-arm-up-r { 0%, 100% { transform: rotate(-118deg); } 50% { transform: rotate(-88deg); } }
+
+  #abjon[data-state="idle"] .abj-torso, #abjon[data-state="read"] .abj-torso { animation: abj-breathe 2.8s ease-in-out infinite; }
+  #abjon[data-state="walk"] .abj-torso { animation: abj-bob 0.21s ease-in-out infinite; }
+  #abjon[data-state="walk"] .abj-leg-l, #abjon[data-state="walk"] .abj-arm-r { animation: abj-swing-a 0.42s ease-in-out infinite; }
+  #abjon[data-state="walk"] .abj-leg-r, #abjon[data-state="walk"] .abj-arm-l { animation: abj-swing-b 0.42s ease-in-out infinite; }
+  #abjon[data-state="jump"] .abj-fig { animation: abj-jump 0.75s cubic-bezier(0.3, 0.7, 0.4, 1) infinite; }
+  #abjon[data-state="jump"] .abj-shadow { animation: abj-jump-shadow 0.75s ease-in-out infinite; }
+  #abjon[data-state="jump"] .abj-arm-l { transform: rotate(70deg); }
+  #abjon[data-state="jump"] .abj-arm-r { transform: rotate(-70deg); }
+  #abjon[data-state="wave"] .abj-arm-r { animation: abj-wave 0.5s ease-in-out infinite; }
+  #abjon[data-state="dance"] .abj-fig { animation: abj-dance 0.8s ease-in-out infinite; }
+  #abjon[data-state="dance"] .abj-arm-l { animation: abj-arm-up-l 0.4s ease-in-out infinite; }
+  #abjon[data-state="dance"] .abj-arm-r { animation: abj-arm-up-r 0.4s ease-in-out infinite; }
+  #abjon[data-state="read"] .abj-book { opacity: 1; }
+  #abjon[data-state="read"] .abj-arm-l { transform: rotate(-58deg); }
+  #abjon[data-state="read"] .abj-arm-r { transform: rotate(58deg); }
+  #abjon[data-state="read"] .abj-pupils { transform: translate(0, 3px); }
+  #abjon[data-state="jump"] .abj-smile, #abjon[data-state="wave"] .abj-smile, #abjon[data-state="dance"] .abj-smile { opacity: 0; }
+  #abjon[data-state="jump"] .abj-open, #abjon[data-state="wave"] .abj-open, #abjon[data-state="dance"] .abj-open { opacity: 1; }
+
+  .abj-bubble {
+    position: absolute; bottom: calc(100% + 10px); left: 50%;
+    width: max-content; max-width: min(250px, calc(100vw - 32px));
+    padding: 10px 30px 10px 14px; border-radius: 14px;
+    background: #fff; color: #2d2d2d; border: 1px solid rgba(16, 24, 40, 0.1);
+    box-shadow: 0 8px 24px rgba(16, 24, 40, 0.16);
+    font-size: 13px; line-height: 1.45;
+    transform: translateX(calc(-50% + var(--abj-shift, 0px)));
+    pointer-events: auto;
+  }
+  .abj-bubble[hidden] { display: none; }
+  .abj-bubble::after {
+    content: ''; position: absolute; top: 100%; left: calc(50% - var(--abj-shift, 0px));
+    margin: -5px 0 0 -6px; width: 12px; height: 12px; background: #fff;
+    border-right: 1px solid rgba(16, 24, 40, 0.1); border-bottom: 1px solid rgba(16, 24, 40, 0.1);
+    transform: rotate(45deg);
+  }
+  .abj-close {
+    position: absolute; top: 4px; right: 4px; width: 24px; height: 24px; padding: 0;
+    display: flex; align-items: center; justify-content: center;
+    border: 0; border-radius: 50%; background: none; color: #676767;
+    font-size: 16px; line-height: 1; cursor: pointer;
+  }
+  .abj-close:hover { background: rgba(0, 0, 0, 0.06); }
+
+  #abjonPeek {
+    position: fixed; right: 16px; bottom: calc(var(--abj-bottom, 6px) + 8px); z-index: 80;
+    width: 46px; height: 46px; padding: 0; border-radius: 50%;
+    background: #fff; border: 1px solid rgba(16, 24, 40, 0.1);
+    box-shadow: 0 4px 14px rgba(16, 24, 40, 0.16); cursor: pointer;
+  }
+  #abjonPeek svg { display: block; width: 100%; height: 100%; }
+
+  @media (max-width: 768px) { #abjon { --abj-size: 64px; } }
+  @media (prefers-reduced-motion: reduce) {
+    #abjon *, #abjon *::after { animation: none !important; transition: none !important; }
+  }
+  @media print { #abjon, #abjonPeek { display: none !important; } }
+</style>
+
+<div id="abjon" data-state="idle" hidden
+     data-name="{{ user.first_name|default:user.username }}"
+     data-tests="{{ stats.total_tests|default:0 }}"
+     data-last="{{ recent_results.0.score|stringformat:'f' }}"
+     data-pending="{{ pending_count|default:0 }}"
+     data-streak="{{ learn_streak|default:0 }}">
+  <div class="abj-bubble" role="status" aria-live="polite" hidden>
+    <span class="abj-text"></span>
+    <button type="button" class="abj-close" aria-label="Abjonni yashirish" title="Abjonni yashirish">&times;</button>
+  </div>
+  <button type="button" class="abj-hit" aria-label="Abjon: maslahat olish">
+    <svg viewBox="0 0 120 130" aria-hidden="true">
+      <defs>
+        <radialGradient id="abjSkin" cx="38%" cy="28%" r="80%">
+          <stop offset="0" stop-color="#f26a63"/>
+          <stop offset="0.6" stop-color="#d9352f"/>
+          <stop offset="1" stop-color="#b71c1c"/>
+        </radialGradient>
+      </defs>
+      <ellipse class="abj-shadow" cx="60" cy="124" rx="31" ry="4.5" fill="#101828" opacity="0.16"/>
+      <g class="abj-fig">
+        <g class="abj-leg-l">
+          <rect x="42" y="100" width="12" height="17" rx="5" fill="#a81818"/>
+          <ellipse cx="46" cy="118" rx="11" ry="5.5" fill="#1c1d24"/>
+        </g>
+        <g class="abj-leg-r">
+          <rect x="66" y="100" width="12" height="17" rx="5" fill="#a81818"/>
+          <ellipse cx="74" cy="118" rx="11" ry="5.5" fill="#1c1d24"/>
+        </g>
+        <g class="abj-torso">
+          <g class="abj-arm-l">
+            <line x1="27" y1="72" x2="17" y2="92" stroke="#b71c1c" stroke-width="10" stroke-linecap="round"/>
+          </g>
+          <g class="abj-arm-r">
+            <line x1="93" y1="72" x2="103" y2="92" stroke="#b71c1c" stroke-width="10" stroke-linecap="round"/>
+          </g>
+          <ellipse cx="60" cy="71" rx="37" ry="38" fill="url(#abjSkin)"/>
+          <ellipse cx="60" cy="98" rx="17" ry="7.5" fill="#fff" opacity="0.14"/>
+
+          <circle cx="36" cy="75" r="5.5" fill="#ffb4a2" opacity="0.65"/>
+          <circle cx="84" cy="75" r="5.5" fill="#ffb4a2" opacity="0.65"/>
+          <g class="abj-eyes">
+            <circle cx="47" cy="62" r="11" fill="#fff"/>
+            <circle cx="73" cy="62" r="11" fill="#fff"/>
+            <g class="abj-pupils">
+              <circle cx="48" cy="63" r="6" fill="#1c1d24"/>
+              <circle cx="74" cy="63" r="6" fill="#1c1d24"/>
+              <circle cx="50" cy="60.5" r="2" fill="#fff"/>
+              <circle cx="76" cy="60.5" r="2" fill="#fff"/>
+            </g>
+          </g>
+          <path class="abj-smile" d="M51 78 Q60 87 69 78" fill="none" stroke="#5a0f0f" stroke-width="3.2" stroke-linecap="round"/>
+          <g class="abj-open">
+            <path d="M50 77 Q60 75 70 77 Q69 90 60 90 Q51 90 50 77Z" fill="#5a0f0f"/>
+            <ellipse cx="60" cy="86" rx="5.5" ry="3.2" fill="#ff8a80"/>
+          </g>
+
+          <g transform="translate(60 36) rotate(-8) scale(0.8) translate(-60 -40)">
+            <path d="M30 45 C29 22 42 13 60 13 C78 13 91 22 90 45 C72 53 48 53 30 45Z" fill="#1c1d24"/>
+            <path d="M30 45 C48 53 72 53 90 45" fill="none" stroke="#fff" stroke-width="1.6" stroke-dasharray="1.5 3.2" stroke-linecap="round" transform="translate(0 -3.5)"/>
+            <g fill="#fff">
+              <path d="M60 19 C67 26 67 34 60 42 C53 34 53 26 60 19Z"/>
+              <path d="M41 23 C47 28 49 35 45 43 C38 37 36 30 41 23Z"/>
+              <path d="M79 23 C73 28 71 35 75 43 C82 37 84 30 79 23Z"/>
+            </g>
+            <g fill="none" stroke="#1c1d24" stroke-width="1.3" stroke-linecap="round">
+              <path d="M60 25 V36"/>
+              <path d="M42.5 29 L44.5 38"/>
+              <path d="M77.5 29 L75.5 38"/>
+            </g>
+          </g>
+
+          <g class="abj-book">
+            <path d="M60 88 C52 83 42 83 35 86 V106 C42 103 52 103 60 108 C68 103 78 103 85 106 V86 C78 83 68 83 60 88Z" fill="#fff" stroke="#1c1d24" stroke-width="2.4" stroke-linejoin="round"/>
+            <path d="M60 88 V108" stroke="#1c1d24" stroke-width="2.4"/>
+            <path d="M41 91 C46 90 50 90 54 92 M41 96 C46 95 50 95 54 97 M66 92 C70 90 74 90 79 91 M66 97 C70 95 74 95 79 96" fill="none" stroke="#d32f2f" stroke-width="1.8" stroke-linecap="round"/>
+          </g>
+        </g>
+      </g>
+    </svg>
+  </button>
+</div>
+
+<button type="button" id="abjonPeek" hidden aria-label="Abjonni qaytarish" title="Abjonni qaytarish">
+  <svg viewBox="0 0 46 46" aria-hidden="true">
+    <circle cx="23" cy="26" r="13" fill="#d9352f"/>
+    <path d="M11.5 20 C11 11 16 8 23 8 C30 8 35 11 34.5 20 C27 23 19 23 11.5 20Z" fill="#1c1d24"/>
+    <circle cx="18.5" cy="26" r="3.6" fill="#fff"/><circle cx="27.5" cy="26" r="3.6" fill="#fff"/>
+    <circle cx="19" cy="26.3" r="1.9" fill="#1c1d24"/><circle cx="28" cy="26.3" r="1.9" fill="#1c1d24"/>
+  </svg>
+</button>
+
+<script>
+(function () {
+  const root = document.getElementById('abjon');
+  const peek = document.getElementById('abjonPeek');
+  if (!root || !peek) return;
+  const hit = root.querySelector('.abj-hit');
+  const bubble = root.querySelector('.abj-bubble');
+  const text = root.querySelector('.abj-text');
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const HIDDEN_KEY = 'abjon-hidden', GREETED_KEY = 'abjon-greeted';
+
+  const store = (area, key, value) => {
+    try {
+      if (value === undefined) return area.getItem(key);
+      if (value === null) area.removeItem(key); else area.setItem(key, value);
+    } catch (e) {}
+    return null;
+  };
+
+  // Lines. Built from the student's own numbers, always written with textContent.
+  const band = n => n.toFixed(1).replace('.', ',');
+  const data = root.dataset;
+  const tests = parseInt(data.tests, 10) || 0;
+  const last = parseFloat(data.last);
+  const pending = parseInt(data.pending, 10) || 0;
+  const streak = parseInt(data.streak, 10) || 0;
+  const lines = [];
+  if (!tests) lines.push("Birinchi mock testni topshirib ko'ramizmi? Natijani birga ko'ramiz!");
+  if (pending) lines.push(pending + " ta natijangiz tekshirilmoqda. Sabr qilamiz!");
+  if (tests && last >= 9) lines.push(band(last) + "! Bu eng yuqori ball, tabriklayman!");
+  else if (tests && last > 0) lines.push("Oxirgi natijangiz " + band(last) + ". Keyingi maqsad: " + band(last + 0.5) + "!");
+  if (streak > 1) lines.push(streak + " kun ketma-ket! To'xtamang!");
+  lines.push(
+    "Reading'da avval savollarni o'qing, keyin matnga qayting.",
+    "Writing Task 2 ga kamida 40 daqiqa ajrating.",
+    "Listening'da javobni imlosi bilan to'g'ri yozing.",
+    "Har kuni 10 ta yangi so'z, bir oyda 300 ta!",
+    "Speaking'da to'xtab qolsangiz, shoshilmang va fikrni boshqacha ayting.",
+    "Do'ppim yoqdimi? Bilim olishga ham shu do'ppida boraman!"
+  );
+  let lineIndex = 0;
+  const nextLine = () => lines[lineIndex++ % lines.length];
+
+  let x = 0, target = 0, dir = 1, timer = 0, frame = 0, lastTime = 0;
+  let paused = false, sayTimer = 0, chatter = 0, autoSpoken = 0;
+
+  function bounds() {
+    const width = document.documentElement.clientWidth;
+    const sidebar = document.getElementById('sidebar');
+    const tabbar = document.querySelector('.tabbar');
+    const left = width > 768 && sidebar ? sidebar.getBoundingClientRect().right + 16 : 12;
+    const tabbarUp = tabbar && getComputedStyle(tabbar).display !== 'none';
+    const lift = (tabbarUp ? tabbar.offsetHeight : 0) + 6 + 'px';
+    root.style.setProperty('--abj-bottom', lift);
+    peek.style.setProperty('--abj-bottom', lift);
+    return { left: left, right: Math.max(left, width - root.offsetWidth - 16), width: width };
+  }
+
+  function place() {
+    root.style.transform = 'translate3d(' + Math.round(x) + 'px, 0, 0)';
+    root.style.setProperty('--abj-dir', dir);
+    if (bubble.hidden) return;
+    // Keep the bubble on screen when he is near an edge.
+    const width = bounds().width, half = bubble.offsetWidth / 2, centre = x + root.offsetWidth / 2;
+    const shift = Math.max(8 + half - centre, Math.min(0, width - 8 - half - centre));
+    root.style.setProperty('--abj-shift', Math.round(shift) + 'px');
+  }
+
+  function setState(name) { root.dataset.state = name; }
+  function stop() {
+    clearTimeout(timer);
+    cancelAnimationFrame(frame);
+    timer = frame = 0;
+  }
+
+  function step(now) {
+    const dt = Math.min(50, now - lastTime);
+    lastTime = now;
+    const distance = target - x, move = 0.07 * dt;
+    if (Math.abs(distance) <= move) {
+      x = target;
+      place();
+      return next();
+    }
+    x += Math.sign(distance) * move;
+    place();
+    frame = requestAnimationFrame(step);
+  }
+
+  function walk() {
+    const b = bounds();
+    target = b.left + Math.random() * (b.right - b.left);
+    dir = target < x ? -1 : 1;
+    setState('walk');
+    lastTime = performance.now();
+    frame = requestAnimationFrame(step);
+  }
+
+  function act(state, ms) {
+    setState(state);
+    timer = setTimeout(next, ms);
+  }
+
+  function next() {
+    stop();
+    if (paused || document.hidden || root.hidden) return;
+    const roll = Math.random();
+    if (roll < 0.45) walk();
+    else if (roll < 0.62) act('idle', 2200 + Math.random() * 2200);
+    else if (roll < 0.74) act('jump', 1500);
+    else if (roll < 0.84) act('wave', 1800);
+    else if (roll < 0.94) act('read', 5000);
+    else act('dance', 3200);
+  }
+
+  function say(line, ms) {
+    text.textContent = line;
+    bubble.hidden = false;
+    place();
+    clearTimeout(sayTimer);
+    sayTimer = setTimeout(() => { bubble.hidden = true; }, ms || 6500);
+  }
+
+  // A few unprompted words per visit, then he only talks when asked.
+  function scheduleChatter() {
+    clearTimeout(chatter);
+    if (autoSpoken >= 3) return;
+    chatter = setTimeout(() => {
+      if (!document.hidden && !root.hidden && bubble.hidden) {
+        autoSpoken += 1;
+        say(nextLine());
+      }
+      scheduleChatter();
+    }, 40000 + Math.random() * 30000);
+  }
+
+  function show() {
+    paused = false;
+    root.hidden = false;
+    peek.hidden = true;
+    const b = bounds();
+    x = still ? b.right : b.left + (b.right - b.left) * 0.7;
+    place();
+    if (!still) {
+      next();
+      scheduleChatter();
+    }
+    if (store(sessionStorage, GREETED_KEY) !== '1') {
+      store(sessionStorage, GREETED_KEY, '1');
+      const name = data.name || 'do\'stim';
+      setTimeout(() => say("Salom, " + name + "! Men Abjonman, o'qishda yordamchingiz."), 900);
+    }
+  }
+
+  function hide() {
+    stop();
+    clearTimeout(chatter);
+    clearTimeout(sayTimer);
+    bubble.hidden = true;
+    root.hidden = true;
+    peek.hidden = false;
+    bounds();
+    store(localStorage, HIDDEN_KEY, '1');
+  }
+
+  hit.addEventListener('click', () => {
+    say(nextLine());
+    if (still) return;
+    stop();
+    setState('jump');
+    timer = setTimeout(() => {
+      setState('wave');
+      timer = setTimeout(next, 1400);
+    }, 1500);
+  });
+  // Stands still under the cursor, so he is easy to click.
+  hit.addEventListener('pointerenter', e => {
+    if (still || e.pointerType !== 'mouse') return;
+    paused = true;
+    stop();
+    setState('wave');
+  });
+  hit.addEventListener('pointerleave', e => {
+    if (still || e.pointerType !== 'mouse') return;
+    paused = false;
+    next();
+  });
+  root.querySelector('.abj-close').addEventListener('click', hide);
+  peek.addEventListener('click', () => {
+    store(localStorage, HIDDEN_KEY, null);
+    show();
+  });
+
+  // His eyes follow the cursor.
+  let looking = false;
+  document.addEventListener('pointermove', e => {
+    if (still || looking || root.hidden) return;
+    looking = true;
+    requestAnimationFrame(() => {
+      looking = false;
+      const box = hit.getBoundingClientRect();
+      const dx = e.clientX - (box.left + box.width / 2), dy = e.clientY - (box.top + box.height / 3);
+      const length = Math.hypot(dx, dy) || 1;
+      root.style.setProperty('--abj-px', (dx / length * 3 * dir).toFixed(1) + 'px');
+      root.style.setProperty('--abj-py', (dy / length * 3).toFixed(1) + 'px');
+    });
+  }, { passive: true });
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) stop();
+    else if (!still && !root.hidden && !paused) next();
+  });
+  window.addEventListener('resize', () => {
+    const b = bounds();
+    x = Math.min(Math.max(x, b.left), b.right);
+    target = Math.min(Math.max(target, b.left), b.right);
+    place();
+  });
+
+  if (store(localStorage, HIDDEN_KEY) === '1') {
+    peek.hidden = false;
+    bounds();
+  } else {
+    show();
+  }
+})();
+</script>
