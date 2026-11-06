@@ -7,7 +7,7 @@
     <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
@@ -97,8 +97,8 @@
         }
 
         .nav-link.active {
-            background-color: var(--primary-color);
-            color: #fff;
+            background-color: color-mix(in srgb, var(--primary-color) 10%, transparent);
+            color: var(--primary-color);
             font-weight: 600;
         }
 
@@ -250,13 +250,14 @@
             margin: 10px 0 8px;
             padding: 0.7rem 1rem;
             border-radius: 24px;
-            background: #17181f;
-            color: #fff;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
             font-size: 0.9rem;
-            font-weight: 600;
+            font-weight: 500;
             text-decoration: none;
+            transition: var(--transition);
         }
-        .admin-panel-link:hover { background: var(--primary-color); }
+        .admin-panel-link:hover { background: var(--tint-a); }
 
         .nav-links {
             list-style: none;
@@ -274,16 +275,17 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            background: var(--tint-a);
+            background: var(--primary-color);
             border-radius: 24px;
             padding: 0.8rem 1rem;
             margin-bottom: 1.5rem;
-            color: var(--text-color);
+            color: #fff;
+            font-weight: 600;
             text-decoration: none;
             transition: var(--transition);
         }
 
-        .new-chat-btn:hover { background: var(--tint-b); }
+        .new-chat-btn:hover { background: var(--primary-color-dark); }
 
         .sidebar-header {
             display: flex;
