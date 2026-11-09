@@ -7,8 +7,14 @@
 </div>
 
 <div class="th-links">
+  <a href="{% url 'panel:login_sessions' %}" class="btn btn-ghost btn-sm"><i class=lc-key-round></i>Kirishlar va seanslar</a>
   <a href="{% url 'panel:blocked_ips' %}" class="btn btn-ghost btn-sm"><i class=lc-ban></i>Bloklangan IP lar{% if threats.blocked_count %} <span class="nav-badge">{{ threats.blocked_count }}</span>{% endif %}</a>
   {% if request.user.is_superuser %}<a href="{% url 'panel:security_check' %}" class="btn btn-ghost btn-sm"><i class=lc-shield-check></i>Xavfsizlik tekshiruvi</a>{% endif %}
+</div>
+
+<div class="card" style="margin-bottom:16px;display:flex;align-items:center;gap:18px;flex-wrap:wrap">
+  <div style="width:70px;height:70px;border-radius:50%;display:grid;place-items:center;font-size:20px;font-weight:800;background:conic-gradient({% if threats.risk_score >= 60 %}var(--red){% elif threats.risk_score >= 25 %}var(--yellow){% else %}var(--green){% endif %} {{ threats.risk_score }}%,var(--surface2) 0)"><span style="width:54px;height:54px;border-radius:50%;display:grid;place-items:center;background:var(--surface)">{{ threats.risk_score }}</span></div>
+  <div style="flex:1;min-width:220px"><div class="section-title">Xavf darajasi: {% if threats.risk_score >= 60 %}yuqori{% elif threats.risk_score >= 25 %}o‘rta{% else %}past{% endif %}</div><p style="font-size:12.5px;color:var(--muted);margin-top:4px">{{ threats.high_count }} ta yuqori va {{ threats.medium_count }} ta o‘rta xavfli hodisa asosida hisoblandi. Yuqori xavfli hodisalarni va notanish seanslarni birinchi tekshiring.</p></div>
 </div>
 
 <div class="stat-grid">
@@ -23,7 +29,7 @@
   <div class="card">
     <div class="section-title" style="margin-bottom:12px">Eng faol IP manzillar</div>
     {% for t in threats.top_ips %}
-    <div class="th-line"><code>{{ t.ip }}</code><span>{{ t.n }} hodisa</span><b>{{ t.total }}</b></div>
+    <div class="th-line"><code>{{ t.ip }}</code><span>{{ t.n }} hodisa</span><b>{{ t.total }}</b>{% if t.blocked %}<span class="badge badge-red">Bloklangan</span>{% else %}<form method="post" action="{% url 'panel:ip_block' %}" data-confirm="{{ t.ip }} 24 soatga bloklansinmi?">{% csrf_token %}<input type="hidden" name="network" value="{{ t.ip }}"><input type="hidden" name="duration" value="24h"><input type="hidden" name="reason" value="Xavfsizlik markazidan bloklandi"><input type="hidden" name="back" value="{{ request.get_full_path }}"><button class="btn btn-danger btn-sm">Bloklash</button></form>{% endif %}</div>
     {% endfor %}
   </div>
   <div class="card">
@@ -34,6 +40,11 @@
   </div>
 </div>
 {% endif %}
+
+{% if threats.breached %}<div class="card" style="margin-bottom:16px">
+  <div class="section-header"><span class="section-title">Tekshirilishi kerak bo‘lgan hisoblar</span><span class="badge badge-red">Parol topilgan bo‘lishi mumkin</span></div>
+  {% for incident in threats.breached %}<div class="th-line"><span class="badge badge-red">Xavf</span><a class="link" href="{% url 'panel:user_detail' incident.user.pk %}">{{ incident.user.display_name }}</a><code>{{ incident.ip }}</code><span>{{ incident.last_seen|date:'d M, H:i' }}</span><a class="btn btn-ghost btn-sm" href="{% url 'panel:user_detail' incident.user.pk %}">Hisobni tekshirish</a></div>{% endfor %}
+</div>{% endif %}
 
 <div class="card al-card" style="margin-bottom:16px">
   <div class="al-day">Aniqlangan hodisalar</div>
@@ -60,14 +71,14 @@
     Bu qiymatlar bazadagi <code>admin_passwords</code> tuzoq jadvalida turadi va hech qayerda ishlamaydi.
     Ularni kim ishlatsa, bazani yoki zaxira nusxasini o'qigan bo'ladi. Xohlasangiz, nusxalab eski zaxira yoki eslatmalarga ham qo'yib qo'ying.
   </p>
-  {% for c in threats.canaries %}
+  {% if request.user.is_superuser %}{% for c in threats.canaries %}
   <div class="th-line">
     <span style="min-width:120px">{{ c.get_kind_display }}</span>
     <code id="canary-{{ c.pk }}">{{ c.value }}</code>
     <button type="button" class="icon-btn" title="Nusxalash" aria-label="Nusxalash" onclick="navigator.clipboard?.writeText(document.getElementById('canary-{{ c.pk }}').textContent).then(() => toast('Nusxalandi'))"><i class=lc-link></i></button>
     <b style="{% if c.hits %}color:var(--red){% endif %}">{% if c.hits %}{{ c.hits }} marta ishlatildi{% else %}Tegilmagan{% endif %}</b>
   </div>
-  {% endfor %}
+  {% endfor %}{% else %}<div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Canary token qiymatlari faqat superadminga ko‘rsatiladi.</div>{% endif %}
   {% for path in threats.decoys %}
   <div class="th-line"><span style="min-width:120px">Tuzoq sahifa</span><code>{{ path }}</code><span>robots.txt da yashirilgan</span></div>
   {% endfor %}

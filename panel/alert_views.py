@@ -46,7 +46,7 @@ def _blocked_now():
     return BlockedIP.objects.filter(Q(expires_at__isnull=True) | Q(expires_at__gt=timezone.now()))
 
 
-def _threat_overview():
+def _threat_overview(staff):
     now = timezone.now()
     recent = SecurityIncident.objects.filter(last_seen__gte=now - timedelta(hours=24))
     high = SecurityIncident.kinds_of('high')
@@ -56,18 +56,34 @@ def _threat_overview():
     else:
         state = 'watch' if serious.exists() else 'calm'
     totals = recent.aggregate(n=Count('id'), hits=Sum('hits'), ips=Count('ip', distinct=True))
+    high_count = recent.filter(kind__in=high).count()
+    medium_count = serious.exclude(kind__in=high).count()
     by_kind = list(recent.values('kind').annotate(total=Sum('hits')).order_by('-total'))
     largest = by_kind[0]['total'] if by_kind else 1
+    top_ips = list(recent.values('ip').annotate(total=Sum('hits'), n=Count('id')).order_by('-total')[:5])
+    blocked_ips = set(_blocked_now().values_list('network', flat=True))
+    for row in top_ips:
+        row['blocked'] = row['ip'] in blocked_ips or f"{row['ip']}/32" in blocked_ips or f"{row['ip']}/128" in blocked_ips
+    risk_score = min(100, high_count * 24 + medium_count * 8 + min(totals['hits'] or 0, 40))
+    breached = []
+    seen_users = set()
+    for incident in SecurityIncident.objects.filter(kind='breach', user__isnull=False).select_related('user')[:20]:
+        if incident.user_id not in seen_users:
+            breached.append(incident)
+            seen_users.add(incident.user_id)
+        if len(breached) == 5:
+            break
     return {
         'state': state, 'count': totals['n'], 'hits': totals['hits'] or 0, 'ips': totals['ips'],
+        'risk_score': risk_score, 'high_count': high_count, 'medium_count': medium_count,
         'failed_logins': LoginLog.objects.filter(status__in=('failed', 'blocked'),
                                                  created_at__gte=now - timedelta(hours=24)).count(),
-        'top_ips': recent.values('ip').annotate(total=Sum('hits'), n=Count('id')).order_by('-total')[:5],
+        'top_ips': top_ips,
         'kinds': [{'label': SecurityIncident.KINDS[k['kind']][0], 'severity': SecurityIncident.KINDS[k['kind']][1],
                    'total': k['total'], 'pct': round(k['total'] / largest * 100)} for k in by_kind],
         'incidents': SecurityIncident.objects.all()[:THREAT_ROWS],
-        'canaries': CanaryToken.objects.order_by('kind'),
-        'blocked_ips': set(_blocked_now().values_list('network', flat=True)),
+        'canaries': CanaryToken.objects.order_by('kind') if staff.is_superuser else (),
+        'blocked_ips': blocked_ips, 'breached': breached,
         'blocked_count': _blocked_now().count(),
         'decoys': DECOY_PATHS,
     }
@@ -102,7 +118,7 @@ def alerts_list(request):
         'alerts': page, 'page': page, 'tab': tab, 'q': q, 'only_unread': only_unread,
         'tabs': [{'key': key, 'label': label, 'unread': unread.get(key, 0)} for key, label in StaffAlert.LABELS.items()],
         'unread_total': sum(unread.values()),
-        'threats': _threat_overview() if tab == 'security' else None,
+        'threats': _threat_overview(request.user) if tab == 'security' else None,
         'today': [{'label': StaffAlert.LABELS[k], 'n': happened.get(k, 0), 'icon': StaffAlert.ICONS[k],
                    'color': StaffAlert.COLORS[k]} for k in TODAY_KINDS],
     })
