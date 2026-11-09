@@ -45,9 +45,12 @@ class EnglishPanelTests(TestCase):
         from users.models import LoginLog
         LoginLog.objects.create(user=self.student, username_attempt='ali', ip='1.2.3.4',
                                 user_agent='Mozilla/5.0 Chrome', status='success')
+        LoginLog.objects.create(username_attempt='ali', ip='5.6.7.8', user_agent='Bot', status='failed')
         history = self.client.get(reverse('panel:login_sessions'))
         self.assertContains(history, 'Kirishlar va seanslar')
         self.assertContains(history, '1.2.3.4')
+        self.assertContains(history, 'Shubhali IP manzillar')
+        self.assertContains(history, '5.6.7.8')
         sessions = self.client.get(reverse('panel:login_sessions'), {'tab': 'sessions'})
         self.assertContains(sessions, 'Samsung SM-A515F')
         self.assertContains(sessions, 'Mobil ilova')

@@ -11,8 +11,9 @@
 .ls-filters{display:grid;grid-template-columns:minmax(220px,1fr) 170px 170px auto;gap:9px;padding:14px 16px;background:var(--surface)}.ls-filters .search-box{width:100%;height:38px}.ls-filters .form-input{height:38px;padding-block:0}.ls-filters .btn{height:38px}
 .ls-user{display:flex;flex-direction:column;gap:2px}.ls-user strong{font-size:13px}.ls-user small,.ls-device small{color:var(--muted);font-size:11.5px}.ls-event{display:inline-flex;padding:3px 8px;border-radius:7px;font-size:11px;font-weight:650}.ls-event.success{background:#22c55e18;color:var(--green)}.ls-event.failed,.ls-event.blocked{background:#ef444418;color:var(--red)}.ls-device{display:flex;align-items:center;gap:9px}.ls-device i{width:30px;height:30px;display:grid;place-items:center;border:1px solid var(--border);border-radius:8px;color:var(--muted);background:var(--surface2)}.ls-ip{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);font-size:12px}.ls-channel{font-size:11px;color:var(--muted)}
 .ls-session-list{padding:8px 16px 16px}.ls-session{display:grid;grid-template-columns:minmax(180px,1.1fr) minmax(170px,1fr) 130px 140px auto;gap:16px;align-items:center;padding:13px 4px;border-bottom:1px solid var(--border)}.ls-session:last-child{border-bottom:0}.ls-session .badge{justify-self:start}
-@media(max-width:1050px){.ls-stats{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:700px){.ls-stats{grid-template-columns:repeat(2,1fr);gap:8px}.ls-filters{grid-template-columns:1fr 1fr}.ls-filters .search-box{grid-column:1/-1}.ls-shell .table-wrap{padding:0 12px}.ls-session{grid-template-columns:1fr 1fr}.ls-session>*:nth-child(3),.ls-session>*:nth-child(4){font-size:11px}}
+.ls-tools{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}.ls-tool{display:flex;align-items:center;gap:12px;padding:14px 16px;border:1px solid var(--border);border-radius:12px;background:var(--surface);transition:background .15s}.ls-tool:hover{background:var(--surface2)}.ls-tool i{width:36px;height:36px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);display:grid;place-items:center;color:var(--primary);font-size:16px}.ls-tool strong{display:block;font-size:13px}.ls-tool small{display:block;color:var(--muted);font-size:11px;margin-top:2px}.ls-risk{margin-bottom:18px;padding:0;overflow:hidden}.ls-risk-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 18px;border-bottom:1px solid var(--border)}.ls-risk-row{display:grid;grid-template-columns:minmax(150px,1fr) 120px 180px auto;gap:14px;align-items:center;padding:11px 18px;border-bottom:1px solid var(--border)}.ls-risk-row:last-child{border-bottom:0}
+@media(max-width:1050px){.ls-stats{grid-template-columns:repeat(3,1fr)}.ls-tools{grid-template-columns:1fr}}
+@media(max-width:700px){.ls-stats{grid-template-columns:repeat(2,1fr);gap:8px}.ls-filters{grid-template-columns:1fr 1fr}.ls-filters .search-box{grid-column:1/-1}.ls-shell .table-wrap{padding:0 12px}.ls-session{grid-template-columns:1fr 1fr}.ls-session>*:nth-child(3),.ls-session>*:nth-child(4){font-size:11px}.ls-risk-row{grid-template-columns:1fr auto}.ls-risk-row>*:nth-child(3){display:none}}
 </style>
 {% endblock %}
 
@@ -25,6 +26,17 @@
   <div class="ls-stat"><span>Ochiq seanslar</span><strong>{{ stats.sessions }}</strong><small>sayt va mobil ilova</small></div>
   <div class="ls-stat"><span>Turli IP</span><strong>{{ stats.ips }}</strong><small>so‘nggi 24 soatda</small></div>
 </section>
+
+<nav class="ls-tools" aria-label="Xavfsizlik vositalari">
+  <a class="ls-tool" href="{% url 'panel:alerts' %}?tab=security"><i class=lc-shield-alert></i><span><strong>Xavfsizlik markazi</strong><small>Hujumlar va xavfli hodisalar</small></span></a>
+  <a class="ls-tool" href="{% url 'panel:blocked_ips' %}"><i class=lc-shield-ban></i><span><strong>IP bloklash</strong><small>Manzil yoki diapazonni cheklash</small></span></a>
+  {% if request.user.is_superuser %}<a class="ls-tool" href="{% url 'panel:security_check' %}"><i class=lc-shield-check></i><span><strong>Xavfsizlik tekshiruvi</strong><small>Sozlamalar va zaif joylarni tekshirish</small></span></a>{% else %}<a class="ls-tool" href="{% url 'panel:alerts' %}"><i class=lc-bell></i><span><strong>Bildirishnomalar</strong><small>Admin ogohlantirishlarini ko‘rish</small></span></a>{% endif %}
+</nav>
+
+{% if suspicious_ips %}<section class="card ls-risk">
+  <div class="ls-risk-head"><div><strong>Shubhali IP manzillar</strong><div class="ls-channel">Oxirgi 24 soatdagi xato va bloklangan kirishlar</div></div><a class="btn btn-ghost btn-sm" href="{% url 'panel:alerts' %}?tab=security">Barcha hodisalar</a></div>
+  {% for item in suspicious_ips %}<div class="ls-risk-row"><code>{{ item.ip }}</code><span><b>{{ item.attempts }}</b> ta urinish</span><span class="td-date">{{ item.last|date:'d.m.Y H:i' }}</span>{% if item.blocked %}<span class="badge badge-red">Bloklangan</span>{% else %}<form method="post" action="{% url 'panel:ip_block' %}" data-confirm="{{ item.ip }} 24 soatga bloklansinmi?">{% csrf_token %}<input type="hidden" name="network" value="{{ item.ip }}"><input type="hidden" name="duration" value="24h"><input type="hidden" name="reason" value="Xato login urinishlari"><input type="hidden" name="back" value="{{ request.path }}"><button class="btn btn-danger btn-sm">24 soatga bloklash</button></form>{% endif %}</div>{% endfor %}
+</section>{% endif %}
 
 <section class="card ls-shell">
   <nav class="ls-tabs">

@@ -28,7 +28,7 @@ from django.utils.formats import date_format
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
 
-from core.models import SiteSettings, Notification, PromoCode
+from core.models import BlockedIP, SiteSettings, Notification, PromoCode
 from core.alerts import device_label
 from core.utils import (
     daily_series, html_paragraphs_to_text, monthly_series, parse_json_body,
@@ -306,6 +306,11 @@ def login_sessions(request):
     for row in sessions:
         row['is_current'] = row['kind_key'] == 'web' and row['id'] == request.session.session_key
 
+    suspicious_ips = list(recent.filter(status__in=('failed', 'blocked')).values('ip').annotate(
+        attempts=Count('id'), last=Max('created_at')).order_by('-attempts', '-last')[:8])
+    blocked = set(BlockedIP.objects.filter(Q(expires_at__isnull=True) | Q(expires_at__gt=now)).values_list('network', flat=True))
+    for item in suspicious_ips:
+        item['blocked'] = item['ip'] in blocked or f"{item['ip']}/32" in blocked or f"{item['ip']}/128" in blocked
     return render(request, 'panel/login_sessions.html', {
         'history': history, 'sessions': sessions, 'tab': tab, 'q': q, 'status': status, 'channel': channel,
         'stats': {
@@ -314,7 +319,7 @@ def login_sessions(request):
             'online': recent.filter(status='success', created_at__gte=now - timedelta(minutes=15)).values('user_id').distinct().count(),
             'sessions': len(sessions),
             'ips': recent.exclude(ip='').values('ip').distinct().count(),
-        },
+        }, 'suspicious_ips': suspicious_ips,
     })
 
 

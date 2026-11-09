@@ -495,15 +495,22 @@ a.tg-pill:hover{background:#229ed92e}
     Dashboard
   </a>
 
-  <a href="{% url 'panel:alerts' %}" class="nav-item {% block nav_alerts %}{% endblock %}">
+  <span class="nav-section">Xavfsizlik</span>
+  <a href="{% url 'panel:alerts' %}?tab=security" class="nav-item {% block nav_alerts %}{% endblock %}">
     <i class=lc-bell style="font-size:16px"></i>
-    <span>Bildirishnomalar</span>
+    <span>Xavfsizlik markazi</span>
     <span class="nav-badge" data-alert-count{% if not request.staff_alerts_unread %} hidden{% endif %}>{{ request.staff_alerts_unread }}</span>
   </a>
   <a href="{% url 'panel:login_sessions' %}" class="nav-item {% block nav_login_sessions %}{% endblock %}">
     <i class=lc-key-round style="font-size:16px"></i>
     <span>Kirishlar va seanslar</span>
   </a>
+  <a href="{% url 'panel:blocked_ips' %}" class="nav-item">
+    <i class=lc-shield-ban style="font-size:16px"></i><span>Bloklangan IP lar</span>
+  </a>
+  {% if request.user.is_superuser %}<a href="{% url 'panel:security_check' %}" class="nav-item">
+    <i class=lc-shield-check style="font-size:16px"></i><span>Xavfsizlik tekshiruvi</span>
+  </a>{% endif %}
   <span class="nav-section">Boshqaruv</span>
   <a href="{% url 'panel:users' %}" class="nav-item {% block nav_users %}{% endblock %}">
     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4" stroke-width="1.8"/><path stroke-width="1.8" d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
