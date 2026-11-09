@@ -10,7 +10,7 @@
 .ls-shell{padding:0;overflow:hidden}.ls-tabs{display:flex;gap:4px;padding:0 16px;border-bottom:1px solid var(--border)}.ls-tabs a{padding:14px 10px 12px;color:var(--muted);font-size:13px;font-weight:600;border-bottom:2px solid transparent}.ls-tabs a.active{color:var(--text);border-color:var(--primary)}.ls-tabs b{margin-left:5px;padding:2px 6px;border-radius:999px;background:var(--surface2);font-size:10px}
 .ls-filters{display:grid;grid-template-columns:minmax(220px,1fr) 170px 170px auto;gap:9px;padding:14px 16px;background:var(--surface)}.ls-filters .search-box{width:100%;height:38px}.ls-filters .form-input{height:38px;padding-block:0}.ls-filters .btn{height:38px}
 .ls-user{display:flex;flex-direction:column;gap:2px}.ls-user strong{font-size:13px}.ls-user small,.ls-device small{color:var(--muted);font-size:11.5px}.ls-event{display:inline-flex;padding:3px 8px;border-radius:7px;font-size:11px;font-weight:650}.ls-event.success{background:#22c55e18;color:var(--green)}.ls-event.failed,.ls-event.blocked{background:#ef444418;color:var(--red)}.ls-device{display:flex;align-items:center;gap:9px}.ls-device i{width:30px;height:30px;display:grid;place-items:center;border:1px solid var(--border);border-radius:8px;color:var(--muted);background:var(--surface2)}.ls-ip{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);font-size:12px}.ls-channel{font-size:11px;color:var(--muted)}
-.ls-session-list{padding:8px 16px 16px}.ls-session{display:grid;grid-template-columns:minmax(180px,1.1fr) minmax(170px,1fr) 140px 150px;gap:16px;align-items:center;padding:13px 4px;border-bottom:1px solid var(--border)}.ls-session:last-child{border-bottom:0}.ls-session .badge{justify-self:start}
+.ls-session-list{padding:8px 16px 16px}.ls-session{display:grid;grid-template-columns:minmax(180px,1.1fr) minmax(170px,1fr) 130px 140px auto;gap:16px;align-items:center;padding:13px 4px;border-bottom:1px solid var(--border)}.ls-session:last-child{border-bottom:0}.ls-session .badge{justify-self:start}
 @media(max-width:1050px){.ls-stats{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:700px){.ls-stats{grid-template-columns:repeat(2,1fr);gap:8px}.ls-filters{grid-template-columns:1fr 1fr}.ls-filters .search-box{grid-column:1/-1}.ls-shell .table-wrap{padding:0 12px}.ls-session{grid-template-columns:1fr 1fr}.ls-session>*:nth-child(3),.ls-session>*:nth-child(4){font-size:11px}}
 </style>
@@ -38,7 +38,8 @@
       <div class="ls-user"><strong>{{ row.user.display_name }}</strong><small>{{ row.user.phone_number|default:row.user.username }}</small></div>
       <div class="ls-device"><i class="{% if row.kind == 'Mobil ilova' %}lc-smartphone{% else %}lc-monitor{% endif %}"></i><div><strong>{{ row.device }}</strong><small>{{ row.kind }}</small></div></div>
       <span class="ls-ip">{{ row.ip|default:'—' }}</span>
-      <div><span class="badge badge-green">Faol</span><div class="ls-channel">{{ row.last_seen|date:'d.m.Y H:i'|default:'Vaqt noma’lum' }}</div></div>
+      <div><span class="badge badge-green">{% if row.is_current %}Joriy seans{% else %}Faol{% endif %}</span><div class="ls-channel">{{ row.last_seen|date:'d.m.Y H:i'|default:'Vaqt noma’lum' }}</div></div>
+      {% if row.is_current %}<span class="ls-channel">Himoyalangan</span>{% else %}<form method="post" action="{% url 'panel:session_revoke' row.kind_key row.id %}" data-confirm="{{ row.user.display_name }}ning ushbu seansi uzilsinmi?">{% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}"><button class="btn btn-danger btn-sm"><i class=lc-log-out></i> Uzish</button></form>{% endif %}
     </div>
     {% empty %}<div class="empty-state"><div class="empty-title">Ochiq seans yo‘q</div></div>{% endfor %}
   </div>

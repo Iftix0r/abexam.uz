@@ -226,6 +226,50 @@ def _login_channel(user_agent):
     return 'Sayt'
 
 
+def _active_session_rows(user_id=None):
+    now = timezone.now()
+    decoded = []
+    for session in Session.objects.filter(expire_date__gt=now).iterator():
+        try:
+            found = session.get_decoded().get('_auth_user_id')
+            if found and (user_id is None or int(found) == int(user_id)):
+                decoded.append((session, int(found)))
+        except (TypeError, ValueError):
+            continue
+    users = User.objects.in_bulk({uid for _, uid in decoded})
+    latest = {}
+    for log in LoginLog.objects.filter(user_id__in=users, status='success').order_by('user_id', '-created_at'):
+        latest.setdefault(log.user_id, log)
+    rows = [{
+        'id': session.session_key, 'kind': 'Sayt', 'kind_key': 'web', 'user': users.get(uid),
+        'device': device_label(getattr(latest.get(uid), 'user_agent', '')) or 'Veb brauzer',
+        'ip': getattr(latest.get(uid), 'ip', None), 'last_seen': getattr(latest.get(uid), 'created_at', None),
+        'expires_at': session.expire_date,
+    } for session, uid in decoded if users.get(uid)]
+    tokens = ApiToken.objects.select_related('user').order_by('-last_used_at', '-created_at')
+    if user_id is not None:
+        tokens = tokens.filter(user_id=user_id)
+    rows += [{
+        'id': str(token.pk), 'kind': 'Mobil ilova', 'kind_key': 'app', 'user': token.user,
+        'device': token.device or token.platform or 'Mobil ilova', 'ip': token.ip,
+        'last_seen': token.last_used_at or token.created_at, 'expires_at': None,
+    } for token in tokens]
+    rows.sort(key=lambda row: row['last_seen'] or now, reverse=True)
+    return rows
+
+
+def _revoke_user_sessions(user_id, keep_session_key=None):
+    removed = 0
+    for row in _active_session_rows(user_id):
+        if row['kind_key'] == 'web':
+            if keep_session_key and row['id'] == keep_session_key:
+                continue
+            removed += Session.objects.filter(session_key=row['id']).delete()[0]
+        else:
+            removed += ApiToken.objects.filter(pk=row['id']).delete()[0]
+    return removed
+
+
 @panel_required
 def login_sessions(request):
     """One operational view over login audit records and currently valid sessions."""
@@ -258,29 +302,9 @@ def login_sessions(request):
         item.device_label = device_label(item.user_agent) or "Noma'lum qurilma"
         item.channel_label = _login_channel(item.user_agent)
 
-    web_sessions = []
-    for session in Session.objects.filter(expire_date__gt=now).iterator():
-        try:
-            data = session.get_decoded()
-            user_id = data.get('_auth_user_id')
-            if user_id:
-                web_sessions.append((session, int(user_id)))
-        except (TypeError, ValueError):
-            continue
-    users = User.objects.in_bulk({user_id for _, user_id in web_sessions})
-    latest_log = {}
-    for log in LoginLog.objects.filter(user_id__in=users, status='success').order_by('user_id', '-created_at'):
-        latest_log.setdefault(log.user_id, log)
-    sessions = [{
-        'kind': 'Sayt', 'user': users.get(user_id), 'device': device_label(getattr(latest_log.get(user_id), 'user_agent', '')) or 'Veb brauzer',
-        'ip': getattr(latest_log.get(user_id), 'ip', None), 'last_seen': getattr(latest_log.get(user_id), 'created_at', None),
-        'expires_at': session.expire_date,
-    } for session, user_id in web_sessions if users.get(user_id)]
-    sessions += [{
-        'kind': 'Mobil ilova', 'user': token.user, 'device': token.device or token.platform or 'Mobil ilova',
-        'ip': token.ip, 'last_seen': token.last_used_at or token.created_at, 'expires_at': None,
-    } for token in ApiToken.objects.select_related('user').order_by('-last_used_at', '-created_at')]
-    sessions.sort(key=lambda row: row['last_seen'] or now, reverse=True)
+    sessions = _active_session_rows()
+    for row in sessions:
+        row['is_current'] = row['kind_key'] == 'web' and row['id'] == request.session.session_key
 
     return render(request, 'panel/login_sessions.html', {
         'history': history, 'sessions': sessions, 'tab': tab, 'q': q, 'status': status, 'channel': channel,
@@ -292,6 +316,52 @@ def login_sessions(request):
             'ips': recent.exclude(ip='').values('ip').distinct().count(),
         },
     })
+
+
+@panel_required
+@require_POST
+def session_revoke(request, kind, key):
+    back = request.POST.get('next', '')
+    if not url_has_allowed_host_and_scheme(back, allowed_hosts={request.get_host()}, require_https=request.is_secure()):
+        back = reverse('panel:login_sessions')
+    if kind not in {'web', 'app'}:
+        return JsonResponse({'ok': False, 'error': 'Noma’lum seans turi'}, status=404)
+    if kind == 'web':
+        if key == request.session.session_key:
+            messages.error(request, "Joriy admin seansini bu yerdan uzib bo‘lmaydi.")
+            return redirect(back)
+        session = get_object_or_404(Session, session_key=key)
+        try:
+            user_id = session.get_decoded().get('_auth_user_id')
+        except Exception:
+            user_id = None
+        target = User.objects.filter(pk=user_id).first()
+        session.delete()
+    else:
+        if not key.isdigit():
+            return JsonResponse({'ok': False, 'error': 'Noto‘g‘ri seans'}, status=404)
+        token = get_object_or_404(ApiToken.objects.select_related('user'), pk=key)
+        target = token.user
+        token.delete()
+    label = target.display_name if target else 'Noma’lum foydalanuvchi'
+    log_action(request, 'user_edit', label, reverse('panel:login_sessions'), f'{kind} seansi uzildi')
+    messages.success(request, f'{label} seansi uzildi')
+    return redirect(back)
+
+
+@panel_required
+@require_POST
+def user_sessions_revoke(request, pk):
+    target = get_object_or_404(User, pk=pk)
+    back = request.POST.get('next', '')
+    if not url_has_allowed_host_and_scheme(back, allowed_hosts={request.get_host()}, require_https=request.is_secure()):
+        back = reverse('panel:user_detail', args=[target.pk])
+    keep = request.session.session_key if target.pk == request.user.pk else None
+    removed = _revoke_user_sessions(target.pk, keep_session_key=keep)
+    log_action(request, 'user_edit', target.display_name, reverse('panel:user_detail', args=[target.pk]),
+               f'{removed} ta faol seans uzildi')
+    messages.success(request, f'{removed} ta seans uzildi')
+    return redirect(back)
 
 
 @panel_required
@@ -315,6 +385,7 @@ def user_detail(request, pk):
                                                     ('r', 'reading_score'), ('w', 'writing_score'))}}
         for r in results.graded().order_by('completed_at')
     ]
+    active_sessions = _active_session_rows(user.pk)
     return render(request, 'panel/user_detail.html', {
         'user_groups': user.study_groups.all(), 'other_groups': _groups().exclude(members=user),
         'progress_json': json.dumps(progress, ensure_ascii=False).replace('<', '\\u003c'), 'progress_count': len(progress),
@@ -330,6 +401,11 @@ def user_detail(request, pk):
         'app_tokens': ApiToken.objects.filter(user=user).order_by(F('last_used_at').desc(nulls_last=True)),
         'tg': TelegramAccount.objects.filter(user=user).annotate(bookings_n=Count('bookings')).first(),
         'tg_enabled': tg_api.enabled(),
+        'active_sessions': active_sessions,
+        'login_stats': {
+            'failed_24h': LoginLog.objects.filter(user=user, status__in=('failed', 'blocked'), created_at__gte=timezone.now() - timedelta(hours=24)).count(),
+            'ip_count': LoginLog.objects.filter(user=user).values('ip').distinct().count(),
+        },
     })
 
 
@@ -675,6 +751,8 @@ def user_toggle_active(request, pk):
     user = get_object_or_404(User, pk=pk)
     user.is_active = not user.is_active
     user.save(update_fields=['is_active'])
+    if not user.is_active:
+        _revoke_user_sessions(user.pk, keep_session_key=request.session.session_key if user.pk == request.user.pk else None)
     log_action(request, 'user_block', user.display_name, reverse('panel:user_detail', args=[user.pk]), 'Faollashtirildi' if user.is_active else 'Bloklandi')
     return JsonResponse({'active': user.is_active})
 
@@ -751,8 +829,10 @@ def user_reset_password(request, pk):
         return JsonResponse({'ok': False, 'error': 'Parol kamida 6 ta belgi bo\'lishi kerak'})
     user.set_password(new_password)
     user.save()
-    log_action(request, 'user_password', user.display_name, reverse('panel:user_detail', args=[user.pk]))
-    return JsonResponse({'ok': True})
+    removed = _revoke_user_sessions(user.pk, keep_session_key=request.session.session_key if user.pk == request.user.pk else None)
+    log_action(request, 'user_password', user.display_name, reverse('panel:user_detail', args=[user.pk]),
+               f'Parol yangilandi, {removed} ta seans uzildi')
+    return JsonResponse({'ok': True, 'sessions_revoked': removed})
 
 
 @panel_required

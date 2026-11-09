@@ -52,6 +52,17 @@ class EnglishPanelTests(TestCase):
         self.assertContains(sessions, 'Samsung SM-A515F')
         self.assertContains(sessions, 'Mobil ilova')
 
+    def test_staff_can_revoke_an_app_session(self):
+        response = self.client.post(reverse('panel:session_revoke', args=['app', self.token.pk]))
+        self.assertRedirects(response, reverse('panel:login_sessions'), fetch_redirect_response=False)
+        self.assertFalse(ApiToken.objects.filter(pk=self.token.pk).exists())
+
+    def test_current_staff_web_session_is_protected(self):
+        key = self.client.session.session_key
+        response = self.client.post(reverse('panel:session_revoke', args=['web', key]))
+        self.assertRedirects(response, reverse('panel:login_sessions'), fetch_redirect_response=False)
+        self.assertTrue(self.client.session.session_key)
+
     def test_publish_app_release(self):
         from django.core.files.uploadedfile import SimpleUploadedFile
         from learn.models import AppRelease
