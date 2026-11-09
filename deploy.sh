@@ -1,18 +1,7 @@
 #!/usr/bin/env bash
-# AbExam — serverda yangilash skripti (eskiz.uz / cPanel "Python App").
-#
-# Ishlatish (serverda, loyiha papkasida):
-#   bash deploy.sh            # oddiy yangilash
-#   bash deploy.sh --init     # BIRINCHI MARTA: papka hali git repo bo'lmasa
-#
-# Nima qiladi:
-#   1) virtualenv'ni yoqadi
-#   2) db.sqlite3 zaxira nusxasini oladi (backups/ ichiga, oxirgi 10 tasi saqlanadi)
-#   3) GitHub'dan yangi kodni oladi (main)
-#   4) requirements.txt o'zgargan bo'lsa — paketlarni o'rnatadi
-#   5) migrate + collectstatic
-#   6) saytni qayta ishga tushiradi (tmp/restart.txt)
-# Biror qadam xato bersa — skript to'xtaydi, sayt eski holatida qoladi.
+# AbExam production deployment — cPanel / Passenger.
+#   bash deploy.sh          oddiy yangilash
+#   bash deploy.sh --init   birinchi o'rnatish
 
 set -euo pipefail
 
@@ -21,28 +10,65 @@ VENV="/home/host7905/virtualenv/examab/3.11/bin/activate"
 REPO_URL="https://github.com/Iftix0r/abexam.uz.git"
 BRANCH="main"
 KEEP_BACKUPS=10
+DEPLOY_STARTED=$SECONDS
+STEP_NO=0
+TOTAL_STEPS=8
 
-green() { printf '\033[32m%s\033[0m\n' "$*"; }
-yellow() { printf '\033[33m%s\033[0m\n' "$*"; }
-red() { printf '\033[31m%s\033[0m\n' "$*"; }
-step() { echo; green "==> $*"; }
-trap 'red "XATO: deploy to'\''xtadi (yuqoridagi xabarni ko'\''ring). Sayt eski kod bilan ishlashda davom etadi."' ERR
+if [ -t 1 ] && [ -z "${NO_COLOR:-}" ]; then
+  RESET='\033[0m'; BOLD='\033[1m'; DIM='\033[2m'
+  RED='\033[38;5;196m'; GREEN='\033[38;5;46m'; YELLOW='\033[38;5;220m'
+  BLUE='\033[38;5;39m'; GRAY='\033[38;5;245m'; WHITE='\033[38;5;255m'
+else
+  RESET=''; BOLD=''; DIM=''; RED=''; GREEN=''; YELLOW=''; BLUE=''; GRAY=''; WHITE=''
+fi
+
+line() { printf "${GRAY}────────────────────────────────────────────────────────────${RESET}\n"; }
+info() { printf "  ${BLUE}●${RESET} %s\n" "$*"; }
+ok() { printf "  ${GREEN}✓${RESET} %s\n" "$*"; }
+warn() { printf "  ${YELLOW}▲${RESET} %s\n" "$*"; }
+fail() { printf "  ${RED}✕${RESET} %s\n" "$*"; }
+step() {
+  STEP_NO=$((STEP_NO + 1))
+  printf "\n${BOLD}${WHITE}[%02d/%02d]${RESET} ${BOLD}%s${RESET}\n" "$STEP_NO" "$TOTAL_STEPS" "$*"
+}
+elapsed() {
+  local total=$((SECONDS - DEPLOY_STARTED))
+  printf '%dm %02ds' $((total / 60)) $((total % 60))
+}
+on_error() {
+  local code=$?
+  echo
+  line
+  fail "Deploy ${STEP_NO}-bosqichda to'xtadi (xato kodi: ${code})"
+  printf "  ${DIM}Sayt oldingi ishlayotgan versiyada qoldi · Vaqt: %s${RESET}\n" "$(elapsed)"
+  line
+  exit "$code"
+}
+trap on_error ERR
+
+printf "\n${RED}${BOLD}   █████╗ ██████╗ ${RESET} ${WHITE}${BOLD}███████╗██╗  ██╗ █████╗ ███╗   ███╗${RESET}\n"
+printf "${RED}${BOLD}  ██╔══██╗██╔══██╗${RESET} ${WHITE}${BOLD}██╔════╝╚██╗██╔╝██╔══██╗████╗ ████║${RESET}\n"
+printf "${RED}${BOLD}  ███████║██████╔╝${RESET} ${WHITE}${BOLD}█████╗   ╚███╔╝ ███████║██╔████╔██║${RESET}\n"
+printf "${RED}${BOLD}  ██╔══██║██╔══██╗${RESET} ${WHITE}${BOLD}██╔══╝   ██╔██╗ ██╔══██║██║╚██╔╝██║${RESET}\n"
+printf "${RED}${BOLD}  ██║  ██║██████╔╝${RESET} ${WHITE}${BOLD}███████╗██╔╝ ██╗██║  ██║██║ ╚═╝ ██║${RESET}\n"
+printf "${RED}${BOLD}  ╚═╝  ╚═╝╚═════╝ ${RESET} ${WHITE}${BOLD}╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝${RESET}\n"
+printf "\n  ${DIM}Production deployment · %s · branch: %s${RESET}\n" "$(date '+%d.%m.%Y %H:%M:%S')" "$BRANCH"
+line
 
 cd "$APP_DIR"
 
-step "Virtualenv yoqilmoqda"
+step "Virtualenv tayyorlanmoqda"
 # shellcheck disable=SC1090
 source "$VENV"
-python --version
+ok "$(python --version) · virtualenv faol"
 
-# ── Birinchi marta: mavjud papkani git repo'ga aylantirish ────────────────
 if [ ! -d .git ]; then
   if [ "${1:-}" != "--init" ]; then
-    red "Bu papka hali git repo emas."
-    echo "Birinchi marta shunday ishga tushiring:  bash deploy.sh --init"
+    fail "Bu papka hali Git repository emas"
+    info "Birinchi marta: bash deploy.sh --init"
     exit 1
   fi
-  step "Git repo ulanmoqda ($REPO_URL)"
+  info "Git repository ulanmoqda: $REPO_URL"
   git init -q
   git remote add origin "$REPO_URL"
 fi
@@ -52,45 +78,55 @@ mkdir -p backups
 if [ -f db.sqlite3 ]; then
   BK="backups/db_$(date +%Y%m%d_%H%M%S).sqlite3"
   cp db.sqlite3 "$BK"
-  echo "Saqlandi: $BK"
-  # eski zaxiralarni tozalash (oxirgi $KEEP_BACKUPS tasi qoladi)
+  ok "Zaxira saqlandi: $BK"
   ls -1t backups/db_*.sqlite3 2>/dev/null | tail -n +$((KEEP_BACKUPS + 1)) | xargs -r rm -f
 else
-  yellow "db.sqlite3 topilmadi (PostgreSQL ishlatilayotgan bo'lsa — normal)"
+  warn "db.sqlite3 topilmadi (PostgreSQL ishlatilsa bu normal)"
 fi
 
-step "Yangi kod olinmoqda ($BRANCH)"
+step "Yangi kod olinmoqda"
 OLD_REQ_HASH="$(md5sum requirements.txt 2>/dev/null | cut -d' ' -f1 || true)"
 OLD_COMMIT="$(git rev-parse --short HEAD 2>/dev/null || echo 'yo'\''q')"
 git fetch -q origin "$BRANCH"
-# Serverda kod qo'lda o'zgartirilgan bo'lsa ham GitHub'dagi holatga keltiriladi.
-# .gitignore'dagi fayllar (db.sqlite3, media/, .env, logs/ ...) TEGILMAYDI.
 git reset -q --hard "origin/$BRANCH"
 NEW_COMMIT="$(git rev-parse --short HEAD)"
-echo "Kod: $OLD_COMMIT  →  $NEW_COMMIT"
-git log -1 --format='Oxirgi commit: %s (%cr)'
+ok "Versiya: $OLD_COMMIT → $NEW_COMMIT"
+info "$(git log -1 --format='%s · %cr')"
 
+step "Python paketlari tekshirilmoqda"
 NEW_REQ_HASH="$(md5sum requirements.txt | cut -d' ' -f1)"
 if [ "$OLD_REQ_HASH" != "$NEW_REQ_HASH" ] || [ "${1:-}" = "--init" ]; then
-  step "Paketlar o'rnatilmoqda (requirements.txt o'zgargan)"
+  info "requirements.txt o'zgargan — paketlar yangilanmoqda"
   pip install -q -r requirements.txt
+  ok "Paketlar o'rnatildi"
 else
-  echo "requirements.txt o'zgarmagan — paketlar o'rnatilmaydi"
+  ok "Paketlar o'zgarmagan"
 fi
 
-step "Migratsiyalar"
+step "Migratsiyalar qo'llanmoqda"
 python manage.py migrate --noinput
 python manage.py migrate --check
+ok "Ma'lumotlar bazasi sxemasi tayyor"
 
-step "Statik fayllar"
+step "Statik fayllar yig'ilmoqda"
 python manage.py collectstatic --noinput -v 0
+ok "Statik fayllar tayyor"
 
-step "Tekshiruv"
-python manage.py check --deploy --fail-level ERROR 2>&1 | grep -v "W0\|ckeditor" || true
+step "Xavfsizlik va tizim tekshiruvi"
+python manage.py check --deploy --fail-level ERROR
+ok "Django production tekshiruvi o'tdi"
 
 step "Sayt qayta ishga tushirilmoqda"
 mkdir -p tmp
 touch tmp/restart.txt
+ok "Passenger restart signali yuborildi"
 
 echo
-green "✓ Tayyor! $NEW_COMMIT versiyasi ishga tushdi."
+line
+printf "  ${GREEN}${BOLD}✓ DEPLOY MUVAFFAQIYATLI${RESET}\n"
+printf "  ${WHITE}Versiya${RESET}  ${BOLD}%s${RESET}\n" "$NEW_COMMIT"
+printf "  ${WHITE}Branch${RESET}   %s\n" "$BRANCH"
+printf "  ${WHITE}Vaqt${RESET}     %s\n" "$(elapsed)"
+printf "  ${WHITE}Holat${RESET}    ${GREEN}● AbExam ishga tushdi${RESET}\n"
+line
+echo
