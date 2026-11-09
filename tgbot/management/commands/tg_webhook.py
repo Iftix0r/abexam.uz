@@ -1,7 +1,7 @@
 """
 Telegram bot webhook'ini boshqaradi.
 
-    python manage.py tg_webhook set     # https://<SITE_URL>/tg/webhook/ ga ulaydi
+    python manage.py tg_webhook set     # maxfiy URL ga ulaydi
     python manage.py tg_webhook info    # Telegram tomonidagi holat, oxirgi xato
     python manage.py tg_webhook delete
 
@@ -36,13 +36,16 @@ class Command(BaseCommand):
             raise CommandError(".env faylida TELEGRAM_BOT_TOKEN yo'q.")
         action = options['action']
         if action == 'set':
-            url = settings.SITE_URL.rstrip('/') + '/tg/webhook/'
+            url = settings.SITE_URL.rstrip('/') + f'/tg/webhook/{api.webhook_path_token()}/'
             ok = api.call('setWebhook', url=url, secret_token=api.webhook_secret(),
-                          allowed_updates=['message', 'callback_query'], drop_pending_updates=True)
+                          max_connections=10, allowed_updates=['message', 'callback_query'],
+                          drop_pending_updates=True)
             if not ok:
                 raise CommandError("setWebhook muvaffaqiyatsiz (logs'ga qarang). SITE_URL https bo'lishi kerak.")
             api.call('setMyCommands', commands=[{'command': c, 'description': d} for c, d in COMMANDS])
             self.stdout.write(self.style.SUCCESS(f'Webhook o\'rnatildi: {url}'))
+            self.stdout.write(self.style.WARNING(
+                "Tekshirgach .env ga TELEGRAM_HIDDEN_WEBHOOK_ONLY=True qo'shing va ilovani qayta yuklang."))
         elif action == 'delete':
             api.call('deleteWebhook')
             self.stdout.write(self.style.SUCCESS("Webhook o'chirildi."))

@@ -1,6 +1,9 @@
 import hashlib
 import json
+import time
 
+import requests
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -8,6 +11,7 @@ from django.contrib.auth.views import LoginView as BaseLoginView
 from django.core.cache import cache
 from django.db.models import Avg, Count, Max
 from django.http import JsonResponse
+from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views import View
@@ -34,6 +38,7 @@ from payments.models import Transaction
 _FAIL_WINDOW = 15 * 60
 _MAX_FAILS_PER_USER = 5
 _MAX_FAILS_PER_IP = 200
+_AUTO_BLOCK_FAILS = 100
 
 
 def _fail_keys(ip, username):
@@ -46,6 +51,28 @@ def _fail_keys(ip, username):
 def _login_blocked(ip, username):
     ip_key, user_key = _fail_keys(ip, username)
     return cache.get(ip_key, 0) >= _MAX_FAILS_PER_IP or cache.get(user_key, 0) >= _MAX_FAILS_PER_USER
+
+
+def _challenge_required(ip, username):
+    ip_key, user_key = _fail_keys(ip, username)
+    return cache.get(user_key, 0) >= 3 or cache.get(ip_key, 0) >= 20
+
+
+def _turnstile_valid(request):
+    if not (settings.TURNSTILE_SITE_KEY and settings.TURNSTILE_SECRET_KEY):
+        return True
+    token = request.POST.get('cf-turnstile-response', '')
+    if not token:
+        return False
+    try:
+        response = requests.post(
+            'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+            data={'secret': settings.TURNSTILE_SECRET_KEY, 'response': token,
+                  'remoteip': get_client_ip(request)}, timeout=4,
+        )
+        return bool(response.json().get('success'))
+    except (requests.RequestException, ValueError):
+        return False
 
 
 def _bump(key):
@@ -67,11 +94,30 @@ class CustomLoginView(BaseLoginView):
         typed = self.request.POST.get('username', '')
         context['username_login'] = (nxt.startswith(('/panel', '/system', '/admin'))
                                      or any(ch.isalpha() for ch in typed))
+        context['turnstile_site_key'] = settings.TURNSTILE_SITE_KEY
+        context['challenge_required'] = _challenge_required(
+            get_client_ip(self.request), self.request.POST.get('username', self.request.GET.get('username', '')))
         return context
 
     def post(self, request, *args, **kwargs):
+        ip = get_client_ip(request)
+        username = request.POST.get('username', '')
+        retry_at = cache.get(_fail_keys(ip, username)[1] + '_retry', 0)
+        if retry_at > time.time():
+            # Count hammering during the cooldown too; otherwise a bot could
+            # avoid ever reaching the temporary block by ignoring 429s.
+            ip_key, user_key = _fail_keys(ip, username)
+            _bump(ip_key)
+            _bump(user_key)
+            wait = max(1, int(retry_at - time.time()) + 1)
+            response = HttpResponse("Juda tez urinilmoqda. Biroz kutib qayta urinib ko'ring.", status=429)
+            response['Retry-After'] = str(wait)
+            return response
+        if _challenge_required(ip, username) and not _turnstile_valid(request):
+            messages.error(request, "Robot emasligingizni tasdiqlang.")
+            return self.get(request, *args, **kwargs)
         # Only the login attempt itself is refused — the page always opens.
-        if _login_blocked(get_client_ip(request), request.POST.get('username', '')):
+        if _login_blocked(ip, username):
             messages.error(request, "Bu raqam bilan juda ko'p noto'g'ri urinish bo'ldi. "
                                     "15 daqiqadan keyin qayta urinib ko'ring.")
             return redirect(request.get_full_path())
@@ -105,6 +151,10 @@ class CustomLoginView(BaseLoginView):
         ip_key, user_key = _fail_keys(ip, username)
         user_fails = _bump(user_key)
         ip_fails = _bump(ip_key)
+        # Exponential backoff makes automated guessing slow without sleeping
+        # inside a web worker and consuming the site's own resources.
+        delay = min(30, 2 ** max(0, min(user_fails, 6) - 1))
+        cache.set(user_key + '_retry', time.time() + delay, timeout=_FAIL_WINDOW)
         blocked = user_fails >= _MAX_FAILS_PER_USER or ip_fails >= _MAX_FAILS_PER_IP
         LoginLog.objects.create(
             username_attempt=username, ip=ip,
@@ -120,6 +170,16 @@ class CustomLoginView(BaseLoginView):
                 f"🌐 IP: {ip}\n"
                 f"💻 {ua}"
             )
+        if ip_fails == _AUTO_BLOCK_FAILS:
+            from core.blocking import forget
+            from core.models import BlockedIP
+            block, created = BlockedIP.objects.get_or_create(
+                network=ip, defaults={'reason': "100 ta xato login — avtomatik 1 soatlik blok",
+                                      'expires_at': BlockedIP.expiry('1h')})
+            if created:
+                forget()
+                record_threat('brute_force', ip=ip, user_agent=ua, sample='Avtomatik 1 soat bloklandi')
+                notify_admin_telegram(f"🛡 <b>IP avtomatik bloklandi</b>\n🌐 IP: {ip}\n⏱ Muddat: 1 soat")
         return super().form_invalid(form)
 
 

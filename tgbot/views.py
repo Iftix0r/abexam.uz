@@ -73,6 +73,16 @@ def webhook(request):
     return JsonResponse({'ok': True})
 
 
+@csrf_exempt
+@require_POST
+def legacy_webhook(request):
+    """Transition endpoint; disable after `tg_webhook set` switches Telegram."""
+    from django.conf import settings
+    if settings.TELEGRAM_HIDDEN_WEBHOOK_ONLY:
+        return HttpResponse(status=404)
+    return webhook(request)
+
+
 def bot_page(request):
     """/telegram/ — what the bot does and how to connect it; signed-in users
     see their own link status here and can connect or disconnect."""

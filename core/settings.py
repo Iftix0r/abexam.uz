@@ -139,6 +139,14 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Optional bot challenges.  When both values are present, Turnstile appears
+# only after suspicious login failures; ordinary users never see a CAPTCHA.
+TURNSTILE_SITE_KEY = os.getenv('TURNSTILE_SITE_KEY', '')
+TURNSTILE_SECRET_KEY = os.getenv('TURNSTILE_SECRET_KEY', '')
+
+# Enable after `manage.py tg_webhook set` has moved Telegram to the hidden URL.
+TELEGRAM_HIDDEN_WEBHOOK_ONLY = os.getenv('TELEGRAM_HIDDEN_WEBHOOK_ONLY', 'False') == 'True'
+
 CACHES = {
     'default': {
         # File-based rather than DB-backed: login rate-limiting hits this

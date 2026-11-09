@@ -156,6 +156,7 @@
     @media (max-width: 768px) { input, select, textarea { font-size: 16px !important; } }
     </style>
 <link rel="stylesheet" href="/static/icons.css?v=9">
+{% if challenge_required and turnstile_site_key %}<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>{% endif %}
 </head>
 <body>
     <div class="login-card">
@@ -197,6 +198,10 @@
                 <label for="id_password">Parol</label>
                 <input type="password" id="id_password" name="password" placeholder="••••••••" required autocomplete="current-password">
             </div>
+
+            {% if challenge_required and turnstile_site_key %}
+            <div class="cf-turnstile" data-sitekey="{{ turnstile_site_key }}" data-theme="light" style="margin-bottom:12px"></div>
+            {% endif %}
 
             <button type="submit" class="btn">Tizimga kirish</button>
         </form>

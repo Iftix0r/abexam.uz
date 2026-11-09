@@ -96,6 +96,11 @@ def webhook_secret():
     return hashlib.sha256(f'{settings.SECRET_KEY}:tg-webhook'.encode()).hexdigest()[:40]
 
 
+def webhook_path_token():
+    """Separate, non-secret URL component that scanners cannot guess."""
+    return hashlib.sha256(f'{webhook_secret()}:url'.encode()).hexdigest()[:24]
+
+
 def bot_username():
     if settings.TELEGRAM_BOT_USERNAME:
         return settings.TELEGRAM_BOT_USERNAME.lstrip('@')
