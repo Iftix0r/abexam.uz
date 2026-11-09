@@ -61,6 +61,12 @@ input,select,textarea{font-family:inherit}
 .nav-item.active::before{display:none}
 .nav-item svg{width:18px;height:18px;flex-shrink:0;opacity:.95}
 .nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px}
+.nav-disclosure{margin-top:10px;padding-top:10px;border-top:1px solid var(--sb-border)}
+.nav-disclosure summary{list-style:none}.nav-disclosure summary::-webkit-details-marker{display:none}
+.nav-disclosure summary .nav-chevron{margin-left:auto;width:15px;height:15px;transition:transform .18s}
+.nav-disclosure[open] summary .nav-chevron{transform:rotate(180deg)}
+.nav-disclosure summary.active,.nav-disclosure[open] summary{color:var(--sb-text)}
+.nav-submenu{padding:3px 0 3px 16px}.nav-submenu .nav-item{font-size:12.5px;padding-block:7px}.nav-submenu .nav-item::after{content:'';position:absolute;left:-5px;top:0;bottom:0;border-left:1px solid var(--sb-border)}
 .sidebar-footer{margin-top:auto;padding-top:14px;border-top:1px solid var(--sb-border)}
 .user-card{display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;background:var(--sb-hover);color:var(--sb-text)}
 .user-card [style*="color:var(--muted)"]{color:var(--sb-muted)!important}
@@ -104,6 +110,9 @@ a:focus-visible,button:focus-visible,.btn:focus-visible,.nav-item:focus-visible,
   :root[data-sidebar="mini"] .nav-section{font-size:0;height:1px;background:var(--sb-border);margin:12px 8px;padding:0}
   :root[data-sidebar="mini"] .nav-item{font-size:0;gap:0;justify-content:center;padding:10px 0}
   :root[data-sidebar="mini"] .nav-badge{position:absolute;top:1px;right:3px;margin:0;padding:0 5px;font-size:9px}
+  :root[data-sidebar="mini"] .nav-disclosure{padding-top:8px}
+  :root[data-sidebar="mini"] .nav-disclosure summary{font-size:0;gap:0;justify-content:center;padding:10px 0}
+  :root[data-sidebar="mini"] .nav-disclosure summary .nav-chevron,:root[data-sidebar="mini"] .nav-submenu{display:none}
   :root[data-sidebar="mini"] .user-card{flex-direction:column;padding:8px 4px}
   :root[data-sidebar="mini"] .user-meta{display:none}
 }
@@ -495,22 +504,6 @@ a.tg-pill:hover{background:#229ed92e}
     Dashboard
   </a>
 
-  <span class="nav-section">Xavfsizlik</span>
-  <a href="{% url 'panel:alerts' %}?tab=security" class="nav-item {% block nav_alerts %}{% endblock %}">
-    <i class=lc-bell style="font-size:16px"></i>
-    <span>Xavfsizlik markazi</span>
-    <span class="nav-badge" data-alert-count{% if not request.staff_alerts_unread %} hidden{% endif %}>{{ request.staff_alerts_unread }}</span>
-  </a>
-  <a href="{% url 'panel:login_sessions' %}" class="nav-item {% block nav_login_sessions %}{% endblock %}">
-    <i class=lc-key-round style="font-size:16px"></i>
-    <span>Kirishlar va seanslar</span>
-  </a>
-  <a href="{% url 'panel:blocked_ips' %}" class="nav-item">
-    <i class=lc-shield-ban style="font-size:16px"></i><span>Bloklangan IP lar</span>
-  </a>
-  {% if request.user.is_superuser %}<a href="{% url 'panel:security_check' %}" class="nav-item">
-    <i class=lc-shield-check style="font-size:16px"></i><span>Xavfsizlik tekshiruvi</span>
-  </a>{% endif %}
   <span class="nav-section">Boshqaruv</span>
   <a href="{% url 'panel:users' %}" class="nav-item {% block nav_users %}{% endblock %}">
     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4" stroke-width="1.8"/><path stroke-width="1.8" d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
@@ -575,6 +568,20 @@ a.tg-pill:hover{background:#229ed92e}
     Analitika
   </a>
   {% endblock %}
+
+  <details class="nav-disclosure"{% if request.resolver_match.url_name == 'login_sessions' or request.resolver_match.url_name == 'blocked_ips' or request.resolver_match.url_name == 'security_check' or request.resolver_match.url_name == 'alerts' or request.resolver_match.url_name == 'threat_detail' %} open{% endif %}>
+    <summary class="nav-item{% if request.resolver_match.url_name == 'login_sessions' or request.resolver_match.url_name == 'blocked_ips' or request.resolver_match.url_name == 'security_check' or request.resolver_match.url_name == 'alerts' or request.resolver_match.url_name == 'threat_detail' %} active{% endif %}">
+      <i class=lc-shield style="font-size:17px"></i><span>Xavfsizlik</span>
+      <span class="nav-badge" data-alert-count{% if not request.staff_alerts_unread %} hidden{% endif %}>{{ request.staff_alerts_unread }}</span>
+      <i class="lc-chevron-down nav-chevron"></i>
+    </summary>
+    <div class="nav-submenu">
+      <a href="{% url 'panel:alerts' %}?tab=security" class="nav-item {% block nav_alerts %}{% endblock %}"><i class=lc-shield-alert></i><span>Xavfsizlik markazi</span></a>
+      <a href="{% url 'panel:login_sessions' %}" class="nav-item {% block nav_login_sessions %}{% endblock %}"><i class=lc-key-round></i><span>Kirishlar va seanslar</span></a>
+      <a href="{% url 'panel:blocked_ips' %}" class="nav-item{% if request.resolver_match.url_name == 'blocked_ips' %} active{% endif %}"><i class=lc-shield-ban></i><span>Bloklangan IP lar</span></a>
+      {% if request.user.is_superuser %}<a href="{% url 'panel:security_check' %}" class="nav-item{% if request.resolver_match.url_name == 'security_check' %} active{% endif %}"><i class=lc-shield-check></i><span>Tekshiruv</span></a>{% endif %}
+    </div>
+  </details>
 
   <div class="sidebar-footer">
     <div class="user-card">
