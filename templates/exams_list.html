@@ -5,7 +5,12 @@
 
 {% block extra_css %}
 <style>
-.exam-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;margin-top:24px}
+.exam-page-head{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:18px;margin-bottom:22px;padding:22px 24px;border:1px solid var(--border-color);border-radius:18px;background:linear-gradient(120deg,color-mix(in srgb,var(--primary-color) 7%,var(--card-bg)),var(--card-bg))}
+.exam-page-head h1{font-size:clamp(1.35rem,3vw,1.75rem);font-weight:700;letter-spacing:-.025em;margin-bottom:5px}
+.exam-page-head p{color:var(--text-muted);font-size:13px;line-height:1.5}
+.exam-toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:4px}
+.exam-filters{display:flex;gap:8px;flex-wrap:wrap}
+.exam-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px;margin-top:20px}
 .exam-card{background:var(--card-bg);border:1px solid var(--border-color);border-radius:20px;padding:24px;display:flex;flex-direction:column;transition:.25s;position:relative;overflow:hidden}
 .exam-card:hover{border-color:var(--primary-color);transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,.25)}
 .exam-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#d32f2f,#b71c1c);opacity:0;transition:.25s}
@@ -20,35 +25,47 @@
 .price-paid{color:var(--text-color);font-weight:700;font-size:15px}
 .btn-start{background:var(--primary-color);color:#fff;padding:9px 22px;border-radius:10px;font-weight:600;font-size:13px;text-decoration:none;transition:.15s}
 .btn-start:hover{opacity:.85}
-.filter-pill{padding:7px 16px;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border-color);background:var(--card-bg);color:var(--text-muted);transition:.15s}
+.filter-pill{padding:8px 14px;border-radius:10px;font-size:12.5px;font-weight:600;cursor:pointer;border:1px solid var(--border-color);background:var(--card-bg);color:var(--text-muted);transition:.15s}
+.filter-pill:hover{color:var(--text-color);border-color:color-mix(in srgb,var(--primary-color) 30%,var(--border-color))}
 .filter-pill.active{background:var(--primary-color);color:#fff;border-color:var(--primary-color);font-weight:600}
-.search-wrap{position:relative;max-width:320px}
+.search-wrap{position:relative;width:min(340px,100%)}
 .search-wrap input{width:100%;background:var(--card-bg);border:1px solid var(--border-color);border-radius:12px;padding:10px 14px 10px 38px;color:var(--text-color);font-size:13px;outline:none}
-.search-wrap input:focus{border-color:var(--primary-color)}
+.search-wrap input:focus{border-color:var(--primary-color);box-shadow:0 0 0 3px color-mix(in srgb,var(--primary-color) 10%,transparent)}
 .search-wrap i,.search-wrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:15px;color:var(--text-muted)}
 .completed-badge{position:absolute;top:16px;right:16px;background:#22c55e18;color:#22c55e;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px}
+.exam-count{font-size:12px;color:var(--text-muted);white-space:nowrap}
+.exam-empty{display:none;grid-column:1/-1;text-align:center;padding:56px 20px;border:1px dashed var(--border-color);border-radius:18px;color:var(--text-muted)}
+.exam-empty strong{display:block;color:var(--text-color);font-size:15px;margin:8px 0 4px}
+.exam-empty p{font-size:13px}
+@media(max-width:620px){
+  .exam-page-head{padding:18px}.search-wrap{width:100%}.exam-toolbar{align-items:flex-start}.exam-filters{flex-wrap:nowrap;overflow-x:auto;width:calc(100vw - 32px);padding-bottom:5px;scrollbar-width:none}.exam-filters::-webkit-scrollbar{display:none}.filter-pill{white-space:nowrap}.exam-grid{grid-template-columns:minmax(0,1fr);gap:12px}.exam-card{padding:19px;border-radius:16px}.exam-meta{gap:10px;flex-wrap:wrap}.btn-start{padding:9px 17px}
+}
 </style>
 {% endblock %}
 
 {% block content %}
-<div style="margin-bottom:28px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px">
+<section class="exam-page-head">
   <div>
-    <p style="color:var(--text-muted);font-size:15px">{{ exams|length }} ta imtihon mavjud</p>
+    <h1>O'zingizga mos testni tanlang</h1>
+    <p>Real IELTS formatida mashq qiling va natijangizni kuzatib boring.</p>
   </div>
   <div class="search-wrap">
     <i data-lucide="search"></i>
-    <input type="text" id="exam-search" placeholder="Imtihon qidirish...">
+    <input type="search" id="exam-search" placeholder="Imtihon qidirish..." aria-label="Imtihon qidirish" autocomplete="off">
   </div>
-</div>
+</section>
 
-<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
-  <button class="filter-pill active" data-filter="all">Barchasi</button>
-  <button class="filter-pill" data-filter="mock">Mock Test</button>
-  <button class="filter-pill" data-filter="reading">Reading</button>
-  <button class="filter-pill" data-filter="listening">Listening</button>
-  <button class="filter-pill" data-filter="writing">Writing</button>
-  <button class="filter-pill" data-filter="speaking">Speaking</button>
-  <button class="filter-pill" data-filter="free" style="color:#22c55e;border-color:#22c55e30">Bepul</button>
+<div class="exam-toolbar">
+  <div class="exam-filters" role="group" aria-label="Imtihon turi">
+    <button type="button" class="filter-pill active" data-filter="all">Barchasi</button>
+    <button type="button" class="filter-pill" data-filter="mock">Mock Test</button>
+    <button type="button" class="filter-pill" data-filter="reading">Reading</button>
+    <button type="button" class="filter-pill" data-filter="listening">Listening</button>
+    <button type="button" class="filter-pill" data-filter="writing">Writing</button>
+    <button type="button" class="filter-pill" data-filter="speaking">Speaking</button>
+    <button type="button" class="filter-pill" data-filter="free">Bepul</button>
+  </div>
+  <span class="exam-count" id="exam-count" aria-live="polite">{{ exams|length }} ta imtihon</span>
 </div>
 
 <div class="exam-grid" id="exam-grid">
@@ -79,30 +96,46 @@
     <p>Hozircha imtihonlar mavjud emas</p>
   </div>
   {% endfor %}
+  <div class="exam-empty" id="exam-empty">
+    <i data-lucide="search-x" style="width:36px;height:36px;opacity:.45"></i>
+    <strong>Imtihon topilmadi</strong>
+    <p>Qidiruv so'zini yoki tanlangan filtrni o'zgartirib ko'ring.</p>
+  </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
 lucide.createIcons();
-// Filter
+const cards=[...document.querySelectorAll('.exam-card')];
+const search=document.getElementById('exam-search');
+const count=document.getElementById('exam-count');
+const empty=document.getElementById('exam-empty');
+let activeFilter='all';
+
+function applyExamFilters(){
+  const query=search.value.trim().toLocaleLowerCase('uz');
+  let visible=0;
+  cards.forEach(card=>{
+    const typeMatch=activeFilter==='all'||(activeFilter==='free'?(card.dataset.price==='0.00'||card.dataset.price==='0'):card.dataset.type===activeFilter);
+    const searchMatch=!query||card.dataset.title.includes(query);
+    const show=typeMatch&&searchMatch;
+    card.hidden=!show;
+    card.style.display=show?'flex':'none';
+    if(show) visible++;
+  });
+  count.textContent=`${visible} ta imtihon`;
+  empty.style.display=cards.length&&visible===0?'block':'none';
+}
+
 document.querySelectorAll('.filter-pill').forEach(btn=>{
   btn.addEventListener('click',function(){
     document.querySelectorAll('.filter-pill').forEach(b=>b.classList.remove('active'));
     this.classList.add('active');
-    const f=this.dataset.filter;
-    document.querySelectorAll('.exam-card').forEach(c=>{
-      const show=f==='all'||(f==='free'?c.dataset.price==='0.00'||c.dataset.price==='0':c.dataset.type===f);
-      c.style.display=show?'flex':'none';
-    });
+    activeFilter=this.dataset.filter;
+    applyExamFilters();
   });
 });
-// Search
-document.getElementById('exam-search').addEventListener('input',function(){
-  const q=this.value.toLowerCase();
-  document.querySelectorAll('.exam-card').forEach(c=>{
-    c.style.display=c.dataset.title.includes(q)?'flex':'none';
-  });
-});
+search.addEventListener('input',applyExamFilters);
 </script>
 {% endblock %}
