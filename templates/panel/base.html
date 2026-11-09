@@ -473,6 +473,37 @@ a.tg-pill:hover{background:#229ed92e}
     .sidebar{background:color-mix(in srgb,var(--sb-bg) 92%,transparent);backdrop-filter:var(--blur-float);-webkit-backdrop-filter:var(--blur-float)}
   }
 }
+
+/* ── Final UI polish ─────────────────────────────────────────────── */
+*{scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+*::-webkit-scrollbar{width:7px;height:7px}
+*::-webkit-scrollbar-track{background:transparent}
+*::-webkit-scrollbar-thumb{background:var(--border);border-radius:10px}
+.sidebar::-webkit-scrollbar{width:0}
+.nav-item.active::before{display:block;content:'';position:absolute;left:2px;top:9px;bottom:9px;width:2px;border-radius:2px;background:var(--primary)}
+.nav-submenu .nav-item.active::before{left:-5px;top:7px;bottom:7px}
+.topbar{box-shadow:0 1px 0 rgba(255,255,255,.015)}
+.topbar-title{font-size:15px;font-weight:650}
+.card{transition:border-color .16s ease,background-color .16s ease}
+a.stat-card{transition:transform .16s ease,border-color .16s ease,background-color .16s ease}
+a.stat-card:hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--border) 55%,var(--muted))}
+.action-tile:hover{transform:translateY(-1px);border-color:color-mix(in srgb,var(--border) 55%,var(--muted))}
+.action-tile{transition:transform .15s ease,background-color .15s ease,border-color .15s ease}
+.btn{min-height:34px}
+.btn i[class^="lc-"]{width:15px;height:15px;vertical-align:0}
+.btn-sm i[class^="lc-"]{width:14px;height:14px}
+.page-hero{border:1px solid rgba(255,255,255,.09);isolation:isolate}
+.page-hero::before{content:'';position:absolute;inset:0;z-index:0;opacity:.18;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);background-size:24px 24px;mask-image:linear-gradient(90deg,transparent,black)}
+.table-wrap{border-radius:10px}
+th{position:sticky;top:0;z-index:2}
+.form-input,.search-box,.gsearch,.btn,.top-link,.theme-toggle,.icon-btn{transition-duration:.14s}
+@media(max-width:560px){
+  .content{padding:14px 12px 22px}
+  .page-hero{border-radius:13px}
+  .hero-actions{display:grid;grid-template-columns:1fr;width:100%}
+  .hero-actions .btn{width:100%;justify-content:center}
+  a.stat-card:hover,.action-tile:hover{transform:none}
+}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

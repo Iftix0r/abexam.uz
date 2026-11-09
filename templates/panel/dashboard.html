@@ -17,11 +17,15 @@
 .admin-dashboard .hero-actions i{font-size:14px}
 .admin-dashboard .stat-grid{gap:12px}
 .admin-dashboard .stat-card{position:relative;padding:18px;gap:14px;min-height:112px}
+.admin-dashboard .stat-card:nth-child(1) .stat-icon{color:#818cf8!important;background:#6366f118!important;border-color:#6366f130}
+.admin-dashboard .stat-card:nth-child(2) .stat-icon{color:#60a5fa!important;background:#3b82f618!important;border-color:#3b82f630}
+.admin-dashboard .stat-card:nth-child(3) .stat-icon{color:#facc15!important;background:#eab30818!important;border-color:#eab30830}
+.admin-dashboard .stat-card:nth-child(4) .stat-icon{color:#4ade80!important;background:#22c55e18!important;border-color:#22c55e30}
 .admin-dashboard .stat-card::after{content:'›';position:absolute;right:16px;top:16px;color:var(--muted);font-size:18px;opacity:.6}
 .admin-dashboard .stat-val{font-size:24px;font-weight:700}
 .admin-dashboard .stat-label{margin-top:4px}
 .admin-dashboard .section-header{min-height:34px;margin-bottom:12px}
-.admin-dashboard .section-title{font-size:14px;font-weight:650}
+.admin-dashboard .section-title{font-size:14px;font-weight:700;letter-spacing:-.01em}
 .admin-dashboard .action-grid{gap:10px}
 .admin-dashboard .action-tile{min-height:68px}
 .admin-dashboard .action-count{color:var(--primary)!important}
@@ -31,7 +35,7 @@
 .admin-dashboard .card{padding:20px}
 .admin-dashboard .mini-row{padding:10px 0}
 @media(max-width:1100px){.admin-dashboard .stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.admin-dashboard .grid-2{grid-template-columns:1fr}}
-@media(max-width:560px){.admin-dashboard{gap:12px}.admin-dashboard .page-hero{padding:18px}.admin-dashboard .hero-actions{width:100%}.admin-dashboard .hero-actions .btn{flex:1;justify-content:center}.admin-dashboard .stat-card{min-height:0}.admin-dashboard .card{padding:16px}}
+@media(max-width:560px){.admin-dashboard{gap:12px}.admin-dashboard .page-hero{padding:18px}.admin-dashboard .hero-actions{width:100%}.admin-dashboard .hero-actions .btn{justify-content:center}.admin-dashboard .stat-card{min-height:0}.admin-dashboard .card{padding:16px}}
 </style>
 {% endblock %}
 
