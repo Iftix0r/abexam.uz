@@ -186,6 +186,17 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             )
             if avgs[key]
         ]
+        # Turn section averages into one clear next step instead of leaving the
+        # learner to interpret four independent progress bars.
+        section_guidance = {
+            'Listening': "Har kuni audio bilan ishlang va xato javoblarning kalit so'zlarini qayta tinglang.",
+            'Reading': "Vaqt bilan passage ishlang va noto'g'ri javob sababini matndan belgilang.",
+            'Writing': "Task javoblaringizni mezonlar bo'yicha tahlil qilib, bitta zaif mezonni mashq qiling.",
+            'Speaking': "Javoblaringizni ovozga yozib, ravonlik va takroriy so'zlarni tekshiring.",
+        }
+        if context['section_bars']:
+            weakest = min(context['section_bars'], key=lambda item: item['value'])
+            context['focus_section'] = {**weakest, 'advice': section_guidance[weakest['label']]}
 
         from learn.models import LearnerProfile
         from learn.srs import due_queryset
