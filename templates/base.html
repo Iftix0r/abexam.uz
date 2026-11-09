@@ -17,40 +17,40 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
-            --bg-color: #0e0e10;
-            --sidebar-color: #1a1a1c;
-            --card-bg: #1e1e1e;
-            --primary-color: #d32f2f;
-            --primary-color-dark: #b71c1c;
-            --success-color: #2e7d32;
+            --bg-color: #212121;
+            --sidebar-color: #171717;
+            --card-bg: #2f2f2f;
+            --primary-color: #10a37f;
+            --primary-color-dark: #0d8a6b;
+            --success-color: #10a37f;
             --danger-color: #e53935;
             --text-color: #e3e3e3;
             --text-muted: #b4b4b4;
-            --border-color: rgba(255, 255, 255, 0.05);
-            --sidebar-width: 280px;
+            --border-color: rgba(255, 255, 255, 0.10);
+            --sidebar-width: 260px;
             --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             --tint-a: rgba(255, 255, 255, 0.05);
             --tint-b: rgba(255, 255, 255, 0.09);
             --shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
-            --header-bg: rgba(14, 14, 16, 0.86);
-            --sidebar-border: rgba(255, 255, 255, 0.07);
+            --header-bg: rgba(33, 33, 33, 0.88);
+            --sidebar-border: rgba(255, 255, 255, 0.08);
         }
 
         [data-theme="light"] {
             --bg-color: #ffffff;
             --sidebar-color: #f9f9f9;
-            --card-bg: #f7f7f8;
-            --primary-color: #d32f2f;
-            --primary-color-dark: #b71c1c;
-            --success-color: #2e7d32;
+            --card-bg: #ffffff;
+            --primary-color: #10a37f;
+            --primary-color-dark: #0d8a6b;
+            --success-color: #0d8a6b;
             --danger-color: #c62828;
-            --text-color: #2d2d2d;
-            --text-muted: #676767;
-            --border-color: rgba(0, 0, 0, 0.1);
+            --text-color: #0d0d0d;
+            --text-muted: #5d5d5d;
+            --border-color: rgba(13, 13, 13, 0.12);
             --tint-a: rgba(0, 0, 0, 0.035);
             --tint-b: rgba(0, 0, 0, 0.06);
             --shadow: 0 8px 28px rgba(0, 0, 0, 0.1);
-            --header-bg: rgba(255, 255, 255, 0.86);
+            --header-bg: rgba(255, 255, 255, 0.90);
             --sidebar-border: rgba(16, 24, 40, 0.08);
         }
 
@@ -87,7 +87,7 @@
             left: 0;
             overflow: hidden;
             border-right: 1px solid var(--sidebar-border);
-            box-shadow: 8px 0 30px rgba(0, 0, 0, 0.025);
+            box-shadow: none;
         }
 
         .nav-link {
@@ -97,7 +97,7 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            border-radius: 12px;
+            border-radius: 8px;
             font-size: 0.9rem;
             margin-bottom: 3px;
             transition: var(--transition);
@@ -106,14 +106,14 @@
 
         .nav-link:hover {
             background-color: var(--tint-b);
-            transform: translateX(2px);
+            transform: none;
         }
 
         .nav-link.active {
             background-color: color-mix(in srgb, var(--primary-color) 11%, transparent);
             color: var(--primary-color);
             font-weight: 600;
-            box-shadow: inset 3px 0 0 var(--primary-color);
+            box-shadow: none;
         }
 
         [data-theme="light"] .nav-link:hover {
@@ -219,7 +219,7 @@
 
         .page-container {
             width: 100%;
-            max-width: 1200px;
+            max-width: 1120px;
             padding: 2rem 1.5rem;
             margin: 0 auto;
             flex-grow: 1;
@@ -262,11 +262,11 @@
         .btn-primary {
             background-color: var(--primary-color);
             color: #fff;
-            box-shadow: 0 1px 2px rgba(211, 47, 47, 0.25);
+            box-shadow: none;
         }
 
         .btn-primary:hover {
-            box-shadow: 0 2px 10px rgba(211, 47, 47, 0.35);
+            background-color: var(--primary-color-dark);
         }
 
         .admin-panel-link {
@@ -324,8 +324,8 @@
         .brand-mark {
             width: 34px; height: 34px; border-radius: 11px; flex-shrink: 0;
             display: grid; place-items: center; color: #fff;
-            background: linear-gradient(145deg, #ef4444, #b91c1c);
-            box-shadow: 0 7px 16px rgba(211, 47, 47, 0.25);
+            background: #0d0d0d;
+            box-shadow: none;
             font-size: 14px; font-weight: 800; letter-spacing: -0.04em;
         }
         .brand-copy { display: flex; flex-direction: column; line-height: 1.1; }
@@ -440,7 +440,7 @@
             min-width: 17px;
             padding: 0 4px;
             border-radius: 9px;
-            background: #d32f2f;
+            background: var(--danger-color);
             color: #fff;
             font-size: 10px;
             line-height: 17px;
@@ -508,7 +508,7 @@
             <a href="{% url 'chat:home' %}" class="nav-link {% if request.resolver_match.namespace == 'chat' %}active{% endif %}">
                 <i data-lucide="messages-square" style="width: 20px;"></i>
                 <span class="nav-toggle-text">AbChat</span>
-                {% with unread=chat_unread %}{% if unread %}<span style="margin-left: auto; font-size: 0.65rem; font-weight: 700; background: #d32f2f; color: #fff; border-radius: 20px; padding: 1px 7px;">{{ unread }}</span>{% endif %}{% endwith %}
+                {% with unread=chat_unread %}{% if unread %}<span style="margin-left: auto; font-size: 0.65rem; font-weight: 700; background: var(--danger-color); color: #fff; border-radius: 20px; padding: 1px 7px;">{{ unread }}</span>{% endif %}{% endwith %}
             </a>
             <a href="{% url 'exams_list' %}" class="nav-link {% if request.resolver_match.url_name == 'exams_list' %}active{% endif %}">
                 <i data-lucide="book-open" style="width: 20px;"></i>
