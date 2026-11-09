@@ -63,6 +63,7 @@ input,select,textarea{font-family:inherit}
 .nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px}
 .nav-disclosure{margin-top:10px;padding-top:10px;border-top:1px solid var(--sb-border)}
 .nav-disclosure summary{list-style:none}.nav-disclosure summary::-webkit-details-marker{display:none}
+.nav-disclosure svg{stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .nav-disclosure summary .nav-chevron{margin-left:auto;width:15px;height:15px;transition:transform .18s}
 .nav-disclosure[open] summary .nav-chevron{transform:rotate(180deg)}
 .nav-disclosure summary.active,.nav-disclosure[open] summary{color:var(--sb-text)}
@@ -571,15 +572,15 @@ a.tg-pill:hover{background:#229ed92e}
 
   <details class="nav-disclosure"{% if request.resolver_match.url_name == 'login_sessions' or request.resolver_match.url_name == 'blocked_ips' or request.resolver_match.url_name == 'security_check' or request.resolver_match.url_name == 'alerts' or request.resolver_match.url_name == 'threat_detail' %} open{% endif %}>
     <summary class="nav-item{% if request.resolver_match.url_name == 'login_sessions' or request.resolver_match.url_name == 'blocked_ips' or request.resolver_match.url_name == 'security_check' or request.resolver_match.url_name == 'alerts' or request.resolver_match.url_name == 'threat_detail' %} active{% endif %}">
-      <i class=lc-shield style="font-size:17px"></i><span>Xavfsizlik</span>
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 3 20 6v5c0 5-3.4 8.5-8 10-4.6-1.5-8-5-8-10V6l8-3Z"/><path d="m9 12 2 2 4-4"/></svg><span>Xavfsizlik</span>
       <span class="nav-badge" data-alert-count{% if not request.staff_alerts_unread %} hidden{% endif %}>{{ request.staff_alerts_unread }}</span>
-      <i class="lc-chevron-down nav-chevron"></i>
+      <svg class="nav-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
     </summary>
     <div class="nav-submenu">
-      <a href="{% url 'panel:alerts' %}?tab=security" class="nav-item {% block nav_alerts %}{% endblock %}"><i class=lc-shield-alert></i><span>Xavfsizlik markazi</span></a>
-      <a href="{% url 'panel:login_sessions' %}" class="nav-item {% block nav_login_sessions %}{% endblock %}"><i class=lc-key-round></i><span>Kirishlar va seanslar</span></a>
-      <a href="{% url 'panel:blocked_ips' %}" class="nav-item{% if request.resolver_match.url_name == 'blocked_ips' %} active{% endif %}"><i class=lc-shield-ban></i><span>Bloklangan IP lar</span></a>
-      {% if request.user.is_superuser %}<a href="{% url 'panel:security_check' %}" class="nav-item{% if request.resolver_match.url_name == 'security_check' %} active{% endif %}"><i class=lc-shield-check></i><span>Tekshiruv</span></a>{% endif %}
+      <a href="{% url 'panel:alerts' %}?tab=security" class="nav-item {% block nav_alerts %}{% endblock %}"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 3 20 6v5c0 5-3.4 8.5-8 10-4.6-1.5-8-5-8-10V6l8-3Z"/><path d="M12 8v5M12 16h.01"/></svg><span>Xavfsizlik markazi</span></a>
+      <a href="{% url 'panel:login_sessions' %}" class="nav-item {% block nav_login_sessions %}{% endblock %}"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="m11 12 8-8M16 4h3v3M5 18l-2 2"/></svg><span>Kirishlar va seanslar</span></a>
+      <a href="{% url 'panel:blocked_ips' %}" class="nav-item{% if request.resolver_match.url_name == 'blocked_ips' %} active{% endif %}"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 3 20 6v5c0 5-3.4 8.5-8 10-4.6-1.5-8-5-8-10V6l8-3Z"/><path d="m8.5 8.5 7 7M15.5 8.5l-7 7"/></svg><span>Bloklangan IP lar</span></a>
+      {% if request.user.is_superuser %}<a href="{% url 'panel:security_check' %}" class="nav-item{% if request.resolver_match.url_name == 'security_check' %} active{% endif %}"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 3 20 6v5c0 5-3.4 8.5-8 10-4.6-1.5-8-5-8-10V6l8-3Z"/><path d="m9 12 2 2 4-4"/></svg><span>Tekshiruv</span></a>{% endif %}
     </div>
   </details>
 
