@@ -1,4 +1,5 @@
 """The staff notifications page and the topbar bell."""
+import math
 from datetime import timedelta
 
 from django.core.paginator import Paginator
@@ -64,7 +65,11 @@ def _threat_overview(staff):
     blocked_ips = set(_blocked_now().values_list('network', flat=True))
     for row in top_ips:
         row['blocked'] = row['ip'] in blocked_ips or f"{row['ip']}/32" in blocked_ips or f"{row['ip']}/128" in blocked_ips
-    risk_score = min(100, high_count * 24 + medium_count * 8 + min(totals['hits'] or 0, 40))
+    # Raw hit counts can be huge when one bot repeats the same medium event.
+    # Weight severity first and let volume grow logarithmically, otherwise a
+    # harmless noisy webhook makes the dashboard claim "high risk".
+    volume_score = min(20, round(math.log10((totals['hits'] or 0) + 1) * 4))
+    risk_score = min(100, high_count * 24 + medium_count * 7 + volume_score)
     breached = []
     seen_users = set()
     for incident in SecurityIncident.objects.filter(kind='breach', user__isnull=False).select_related('user')[:20]:

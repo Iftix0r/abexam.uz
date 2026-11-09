@@ -1,7 +1,7 @@
 {% extends 'panel/base.html' %}
 {% load panel_ui %}
-{% block title %}Bildirishnomalar{% endblock %}
-{% block page_title %}Bildirishnomalar{% endblock %}
+{% block title %}{% if request.GET.tab == 'security' %}Xavfsizlik markazi{% else %}Bildirishnomalar{% endif %}{% endblock %}
+{% block page_title %}{% if request.GET.tab == 'security' %}Xavfsizlik markazi{% else %}Bildirishnomalar{% endif %}{% endblock %}
 {% block nav_alerts %}active{% endblock %}
 
 {% block extra_css %}
