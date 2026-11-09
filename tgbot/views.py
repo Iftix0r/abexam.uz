@@ -1,13 +1,17 @@
 import json
 import logging
 import secrets
+import time
+from collections import Counter
 from itertools import groupby
+from threading import Lock
 
 from core.security import record_threat
+from core.utils import get_client_ip
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
-from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.utils.crypto import constant_time_compare
@@ -20,6 +24,33 @@ from .services import fmt_date, site_url
 
 logger = logging.getLogger(__name__)
 
+# Invalid webhook calls never reach the bot handler.  Keep this limiter in
+# memory: writing one cache file for every hostile request would make a flood
+# more expensive for us than simply rejecting it.
+_bad_webhooks = {'minute': 0, 'hits': Counter()}
+_bad_webhooks_lock = Lock()
+BAD_WEBHOOKS_PER_MINUTE = 30
+
+
+def _reject_fake_webhook(request):
+    ip = get_client_ip(request)
+    minute = int(time.time() // 60)
+    with _bad_webhooks_lock:
+        if _bad_webhooks['minute'] != minute:
+            _bad_webhooks['minute'] = minute
+            _bad_webhooks['hits'].clear()
+        _bad_webhooks['hits'][ip] += 1
+        limited = _bad_webhooks['hits'][ip] > BAD_WEBHOOKS_PER_MINUTE
+
+    # record_threat batches these hits in memory and writes them periodically,
+    # so the security panel remains useful without one database write per hit.
+    record_threat('webhook', request)
+    response = HttpResponse(status=429 if limited else 403)
+    response['Cache-Control'] = 'no-store'
+    if limited:
+        response['Retry-After'] = '60'
+    return response
+
 
 @csrf_exempt
 @require_POST
@@ -28,8 +59,7 @@ def webhook(request):
     Always answers 200 once the secret matches — a non-2xx makes Telegram
     resend the same update over and over."""
     if not constant_time_compare(request.headers.get('X-Telegram-Bot-Api-Secret-Token', ''), api.webhook_secret()):
-        record_threat('webhook', request)
-        return HttpResponseForbidden()
+        return _reject_fake_webhook(request)
     try:
         update = json.loads(request.body)
     except ValueError:

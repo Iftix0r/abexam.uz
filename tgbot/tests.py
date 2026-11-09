@@ -80,6 +80,22 @@ class BotTests(TestCase):
         self.assertEqual(self._webhook({'message': {}}, secret='nope').status_code, 403)
         self.assertFalse(TelegramAccount.objects.exists())
 
+    def test_webhook_rate_limits_fakes_but_not_telegram(self):
+        url = reverse('tgbot:webhook')
+        for update_id in range(31):
+            response = self.client.post(
+                url, json.dumps({'update_id': update_id}), content_type='application/json',
+                HTTP_X_TELEGRAM_BOT_API_SECRET_TOKEN='fake', REMOTE_ADDR='203.0.113.77',
+            )
+        self.assertEqual(response.status_code, 429)
+        self.assertEqual(response['Retry-After'], '60')
+
+        genuine = self.client.post(
+            url, json.dumps({'update_id': 999}), content_type='application/json',
+            HTTP_X_TELEGRAM_BOT_API_SECRET_TOKEN=api.webhook_secret(), REMOTE_ADDR='203.0.113.77',
+        )
+        self.assertEqual(genuine.status_code, 200)
+
     def test_full_booking_dialogue(self):
         self.assertEqual(self.say('/start').status_code, 200)
         self.assertIn('xush kelibsiz', self.last_text())
