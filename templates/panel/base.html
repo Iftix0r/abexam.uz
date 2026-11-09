@@ -428,16 +428,16 @@ a.tg-pill:hover{background:#229ed92e}
    dropdowns inside it under the next card. */
 @supports (background:color-mix(in srgb,red 50%,transparent)){
   :root{
-    --glass-card:color-mix(in srgb,var(--surface) 70%,transparent);
-    --glass-float:color-mix(in srgb,var(--surface) 78%,transparent);
-    --glass-edge:inset 0 1px 0 rgba(255,255,255,.05);
-    --glass-blob-a:rgba(211,47,47,.13);--glass-blob-b:rgba(59,130,246,.11);--glass-blob-c:rgba(168,85,247,.09);
+    --glass-card:var(--surface);
+    --glass-float:color-mix(in srgb,var(--surface) 92%,transparent);
+    --glass-edge:none;
+    --glass-blob-a:transparent;--glass-blob-b:transparent;--glass-blob-c:transparent;
     --scrim:rgba(6,7,10,.46);
     --blur-float:blur(18px) saturate(1.6);--blur-scrim:blur(7px) saturate(1.2);
   }
   :root[data-theme="light"]{
-    --glass-edge:inset 0 1px 0 rgba(255,255,255,.7);
-    --glass-blob-a:rgba(211,47,47,.10);--glass-blob-b:rgba(59,130,246,.11);--glass-blob-c:rgba(168,85,247,.08);
+    --glass-edge:none;
+    --glass-blob-a:transparent;--glass-blob-b:transparent;--glass-blob-c:transparent;
     --scrim:rgba(20,22,30,.30);
   }
   @media (prefers-reduced-transparency:reduce){
@@ -451,8 +451,8 @@ a.tg-pill:hover{background:#229ed92e}
     radial-gradient(38vw 38vw at 88% 4%,var(--glass-blob-a),transparent 70%),
     radial-gradient(42vw 42vw at 30% 96%,var(--glass-blob-b),transparent 70%),
     radial-gradient(30vw 30vw at 58% 46%,var(--glass-blob-c),transparent 70%)}
-  .card,.stat-card{background:var(--glass-card);box-shadow:var(--card-shadow),var(--glass-edge)}
-  .topbar{background:color-mix(in srgb,var(--surface) 66%,transparent);backdrop-filter:var(--blur-float);-webkit-backdrop-filter:var(--blur-float)}
+  .card,.stat-card{background:var(--glass-card);box-shadow:none}
+  .topbar{background:color-mix(in srgb,var(--surface) 90%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
   .bulk-bar{background:var(--glass-float);backdrop-filter:var(--blur-float);-webkit-backdrop-filter:var(--blur-float)}
   .modal-overlay,.cmdk,.sidebar-overlay{background:var(--scrim);backdrop-filter:var(--blur-scrim);-webkit-backdrop-filter:var(--blur-scrim)}
   /* These sit inside a blurred scrim, so their translucency already shows it */

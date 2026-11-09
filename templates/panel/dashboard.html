@@ -4,23 +4,55 @@
 {% block page_title %}Dashboard{% endblock %}
 {% block nav_dashboard %}active{% endblock %}
 
+{% block extra_css %}
+<style>
+.admin-dashboard{display:flex;flex-direction:column;gap:18px}
+.admin-dashboard .page-hero,.admin-dashboard .stat-grid,.admin-dashboard>.card,.admin-dashboard>.grid-2{margin-bottom:0!important}
+.admin-dashboard .page-hero{padding:26px 28px}
+.admin-dashboard .hero-title{font-size:clamp(20px,2.3vw,25px);font-weight:700}
+.admin-dashboard .hero-sub{max-width:62ch;line-height:1.5}
+.admin-dashboard .hero-actions .btn{height:36px;padding:0 12px;border-radius:8px;font-weight:500}
+.admin-dashboard .hero-actions .btn:first-child{background:#fff;color:#171717;border-color:#fff}
+.admin-dashboard .hero-actions .btn:first-child:hover{background:#f1f1f1}
+.admin-dashboard .hero-actions i{font-size:14px}
+.admin-dashboard .stat-grid{gap:12px}
+.admin-dashboard .stat-card{position:relative;padding:18px;gap:14px;min-height:112px}
+.admin-dashboard .stat-card::after{content:'›';position:absolute;right:16px;top:16px;color:var(--muted);font-size:18px;opacity:.6}
+.admin-dashboard .stat-val{font-size:24px;font-weight:700}
+.admin-dashboard .stat-label{margin-top:4px}
+.admin-dashboard .section-header{min-height:34px;margin-bottom:12px}
+.admin-dashboard .section-title{font-size:14px;font-weight:650}
+.admin-dashboard .action-grid{gap:10px}
+.admin-dashboard .action-tile{min-height:68px}
+.admin-dashboard .action-count{color:var(--primary)!important}
+.admin-dashboard .chart-wrap{height:230px}
+.admin-dashboard .grid-2{grid-template-columns:minmax(0,1.55fr) minmax(300px,.85fr);gap:18px}
+.admin-dashboard table th{background:transparent;padding-top:8px}
+.admin-dashboard .card{padding:20px}
+.admin-dashboard .mini-row{padding:10px 0}
+@media(max-width:1100px){.admin-dashboard .stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.admin-dashboard .grid-2{grid-template-columns:1fr}}
+@media(max-width:560px){.admin-dashboard{gap:12px}.admin-dashboard .page-hero{padding:18px}.admin-dashboard .hero-actions{width:100%}.admin-dashboard .hero-actions .btn{flex:1;justify-content:center}.admin-dashboard .stat-card{min-height:0}.admin-dashboard .card{padding:16px}}
+</style>
+{% endblock %}
+
 {% block content %}
+<div class="admin-dashboard">
 <div class="page-hero">
   <div>
     <div class="hero-title">{{ greeting }}, {{ request.user.first_name|default:request.user.username }} <i class=lc-hand></i></div>
     <div class="hero-sub">{{ today|date:"j F, l" }}{% if todo_any %} · sizni kutayotgan ishlar bor{% else %} · hammasi joyida{% endif %}</div>
   </div>
   <div class="hero-actions">
-    <a href="{% url 'panel:exam_create' %}" class="btn btn-sm">+ Test yaratish</a>
-    <a href="{% url 'panel:exam_import' %}" class="btn btn-sm"><i class=lc-download></i>&nbsp;Testni yuklash</a>
-    <a href="{% url 'panel:attempts_live' %}" class="btn btn-sm">● Jonli imtihon</a>
+    <a href="{% url 'panel:exam_create' %}" class="btn btn-sm"><i class=lc-plus></i> Test yaratish</a>
+    <a href="{% url 'panel:exam_import' %}" class="btn btn-sm"><i class=lc-download></i> Testni yuklash</a>
+    <a href="{% url 'panel:attempts_live' %}" class="btn btn-sm"><i class=lc-radio></i> Jonli imtihon</a>
   </div>
 </div>
 
 <div class="stat-grid">
   <a href="{% url 'panel:users' %}" class="stat-card">
     <div class="stat-icon" style="background:#6366f118">
-      <svg fill="none" stroke="#6366f1" viewBox="0 0 24 24"><path stroke-width="1.8" d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4" stroke-width="1.8"/></svg>
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4" stroke-width="1.8"/></svg>
     </div>
     <div>
       <div class="stat-val">{{ stats.total_users|som }}</div>
@@ -30,7 +62,7 @@
   </a>
   <a href="{% url 'panel:exams' %}" class="stat-card">
     <div class="stat-icon" style="background:#3b82f618">
-      <svg fill="none" stroke="#3b82f6" viewBox="0 0 24 24"><path stroke-width="1.8" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8" stroke-width="1.8"/></svg>
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8" stroke-width="1.8"/></svg>
     </div>
     <div>
       <div class="stat-val">{{ stats.total_exams|som }}</div>
@@ -40,7 +72,7 @@
   </a>
   <a href="{% url 'panel:results' %}" class="stat-card">
     <div class="stat-icon" style="background:#eab30818">
-      <svg fill="none" stroke="#eab308" viewBox="0 0 24 24"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12" stroke-width="1.8"/></svg>
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12" stroke-width="1.8"/></svg>
     </div>
     <div>
       <div class="stat-val">{{ stats.total_results|som }}</div>
@@ -49,7 +81,7 @@
   </a>
   <a href="{% url 'panel:transactions' %}" class="stat-card">
     <div class="stat-icon" style="background:#22c55e18">
-      <svg fill="none" stroke="#22c55e" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" stroke-width="1.8"/><line x1="1" y1="10" x2="23" y2="10" stroke-width="1.8"/></svg>
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" stroke-width="1.8"/><line x1="1" y1="10" x2="23" y2="10" stroke-width="1.8"/></svg>
     </div>
     <div>
       <div class="stat-val">{{ stats.total_revenue|som }} <small>so'm</small></div>
@@ -111,7 +143,7 @@
     <div class="section-header">
       <span class="section-title">So'nggi natijalar</span>
       <div style="display:flex;gap:8px">
-        <a href="{% url 'panel:results_export' %}" class="btn btn-ghost btn-sm">↓ CSV</a>
+        <a href="{% url 'panel:results_export' %}" class="btn btn-ghost btn-sm"><i class=lc-download></i> CSV</a>
         <a href="{% url 'panel:results' %}" class="btn btn-ghost btn-sm">Barchasi</a>
       </div>
     </div>
@@ -140,7 +172,7 @@
     <div class="card">
       <div class="section-header">
         <span class="section-title">Yangi a'zolar</span>
-        <a href="{% url 'panel:users_export' %}" class="btn btn-ghost btn-sm">↓ CSV</a>
+        <a href="{% url 'panel:users_export' %}" class="btn btn-ghost btn-sm"><i class=lc-download></i> CSV</a>
       </div>
       {% for u in recent_users %}
       <div class="mini-row">
@@ -180,6 +212,7 @@
     </div>
   </div>
 </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
@@ -204,8 +237,8 @@ const activityChart=new Chart(ctx,{
   data:{
     labels:{{ chart_labels|safe }},
     datasets:[
-      {label:'Yangi foydalanuvchilar',data:{{ chart_users|safe }},borderColor:'#6366f1',backgroundColor:'#6366f115',tension:.35,fill:true,pointBackgroundColor:'#6366f1',pointRadius:3,pointHoverRadius:5,borderWidth:2},
-      {label:'Natijalar',data:{{ chart_results|safe }},borderColor:'#22c55e',backgroundColor:'#22c55e10',tension:.35,fill:true,pointBackgroundColor:'#22c55e',pointRadius:3,pointHoverRadius:5,borderWidth:2},
+      {label:'Yangi foydalanuvchilar',data:{{ chart_users|safe }},borderColor:'#d32f2f',backgroundColor:'#d32f2f10',tension:.35,fill:true,pointBackgroundColor:'#d32f2f',pointRadius:3,pointHoverRadius:5,borderWidth:2},
+      {label:'Natijalar',data:{{ chart_results|safe }},borderColor:'#71717a',backgroundColor:'#71717a0d',tension:.35,fill:true,pointBackgroundColor:'#71717a',pointRadius:3,pointHoverRadius:5,borderWidth:2},
     ]
   },
   options:activityChartOptions()
