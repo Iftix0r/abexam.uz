@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 100" role="img" aria-labelledby="title desc">
+  <title id="title">ABEXAM</title>
+  <desc id="desc">Qizil va oq rangdagi piksel uslubidagi AbExam logotipi</desc>
+  <defs>
+    <filter id="hard-shadow" x="-10%" y="-10%" width="125%" height="140%">
+      <feFlood flood-color="#000" result="black"/>
+      <feComposite in="black" in2="SourceAlpha" operator="in" result="mask"/>
+      <feOffset in="mask" dx="5" dy="6" result="offset"/>
+      <feMerge><feMergeNode in="offset"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <clipPath id="letters"><text x="8" y="78" textLength="464" lengthAdjust="spacingAndGlyphs" font-family="Impact,Haettenschweiler,'Arial Black',sans-serif" font-size="82" font-weight="900">ABEXAM</text></clipPath>
+  </defs>
+  <g filter="url(#hard-shadow)" font-family="Impact,Haettenschweiler,'Arial Black',sans-serif" font-size="82" font-weight="900" stroke="#050505" stroke-width="5" stroke-linejoin="miter" paint-order="stroke fill">
+    <text x="8" y="78" textLength="120" lengthAdjust="spacingAndGlyphs" fill="#ef2b2d">AB</text>
+    <text x="128" y="78" textLength="344" lengthAdjust="spacingAndGlyphs" fill="#f7f7f3">EXAM</text>
+  </g>
+  <g clip-path="url(#letters)" stroke="#050505" stroke-width="1.2" opacity=".95">
+    <path d="M4 28h472M4 42h472M4 56h472M4 70h472"/>
+    <path d="M32 8v84M62 8v84M96 8v84M151 8v84M192 8v84M245 8v84M300 8v84M356 8v84M418 8v84" opacity=".7"/>
+  </g>
+  <path d="M133 17h6v6h-6zM220 82h7v7h-7zM371 9h5v8h-5z" fill="#9ee9ff" stroke="#050505" stroke-width="1"/>
+</svg>

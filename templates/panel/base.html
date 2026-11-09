@@ -50,7 +50,7 @@ input,select,textarea{font-family:inherit}
 .sidebar{width:var(--sidebar);transition:width .2s ease;background:var(--sb-bg);border-right:1px solid var(--sb-border);color:var(--sb-text);display:flex;flex-direction:column;position:fixed;height:100vh;z-index:50;padding:12px;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none}
 .sidebar::-webkit-scrollbar{display:none}
 .logo{display:flex;align-items:center;gap:11px;padding:6px 8px 14px;margin-bottom:6px;border-bottom:1px solid var(--sb-border)}
-.logo-icon{width:34px;height:34px;background:var(--primary);border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:#fff;flex-shrink:0;box-shadow:none}
+.logo-icon{width:34px;height:34px;background:var(--primary);border-radius:8px;display:none;align-items:center;justify-content:center;font-weight:900;font-size:12px;color:#fff;flex-shrink:0;box-shadow:3px 3px 0 #000}
 .logo-text{font-weight:700;font-size:15.5px;color:var(--sb-text);letter-spacing:-.01em}
 .logo-sub{font-size:11px;color:var(--sb-muted)}
 .nav-section{display:block;font-size:10.5px;color:var(--sb-faint);letter-spacing:.02em;font-weight:600;padding:0 12px;margin:16px 0 6px}
@@ -105,6 +105,7 @@ a:focus-visible,button:focus-visible,.btn:focus-visible,.nav-item:focus-visible,
 @media (min-width:961px){
   :root[data-sidebar="mini"]{--sidebar:68px}
   :root[data-sidebar="mini"] .logo{flex-direction:column;gap:10px;padding-inline:0}
+  :root[data-sidebar="mini"] .logo-icon{display:flex}
   :root[data-sidebar="mini"] .sidebar-collapse{margin-left:0}
   :root[data-sidebar="mini"] .sidebar-collapse svg{transform:rotate(180deg)}
   :root[data-sidebar="mini"] .logo>div:not(.logo-icon){display:none}
@@ -485,9 +486,9 @@ a.tg-pill:hover{background:#229ed92e}
 
 <aside class="sidebar" id="sidebar">
   <div class="logo">
-    <div class="logo-icon">A</div>
-    <div>
-      <div class="logo-text">AbExam</div>
+    <div class="logo-icon">AB</div>
+    <div class="logo-brand-full">
+      <img src="/static/abexam-pixel.svg?v=1" alt="AbExam" style="display:block;width:145px;max-width:100%;height:auto">
       <div class="logo-sub">{% block logo_sub %}Admin Panel{% endblock %}</div>
     </div>
     <button class="sidebar-collapse" type="button" onclick="toggleSidebar()" title="Menyuni yig'ish / ochish" aria-label="Menyuni yig'ish yoki ochish">
