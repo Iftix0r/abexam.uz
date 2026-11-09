@@ -119,3 +119,8 @@ i.lc-premium{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .ab-logo{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:50%;flex-shrink:0;color:#fff;font-size:13.5px;font-weight:700;line-height:1;letter-spacing:.02em;text-shadow:0 1px 1px rgba(0,0,0,.15);background-image:linear-gradient(180deg,rgba(255,255,255,.2),rgba(0,0,0,.08));user-select:none;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .ab-logo-sm{width:30px;height:30px;font-size:10.5px}
 .ab-logo-lg{width:60px;height:60px;font-size:19px}
+/* AbExam global page/request progress bar */
+#ab-top-loader{position:fixed;z-index:2147483647;top:0;left:0;width:100%;height:3px;transform:scaleX(0);transform-origin:left center;opacity:0;pointer-events:none;background:linear-gradient(90deg,#b91c1c,#ef2b2d 55%,#ff8a8a);box-shadow:0 0 10px rgba(239,43,45,.75);transition:transform .18s ease,opacity .2s ease}
+#ab-top-loader.is-loading{opacity:1}
+#ab-top-loader span{position:absolute;right:0;top:0;width:90px;height:100%;background:#fff;opacity:.7;filter:blur(2px);transform:skewX(-20deg)}
+@media(prefers-reduced-motion:reduce){#ab-top-loader{transition:opacity .15s linear}#ab-top-loader span{display:none}}
