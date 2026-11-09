@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
     <title>{% block title %}AbExam - IELTS Mock Platform{% endblock %}</title>
+    <script>
+        (() => {
+            const saved = localStorage.getItem('abexam-theme');
+            document.documentElement.dataset.theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        })();
+    </script>
     <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,6 +32,8 @@
             --tint-a: rgba(255, 255, 255, 0.05);
             --tint-b: rgba(255, 255, 255, 0.09);
             --shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+            --header-bg: rgba(14, 14, 16, 0.86);
+            --sidebar-border: rgba(255, 255, 255, 0.07);
         }
 
         [data-theme="light"] {
@@ -42,6 +50,8 @@
             --tint-a: rgba(0, 0, 0, 0.035);
             --tint-b: rgba(0, 0, 0, 0.06);
             --shadow: 0 8px 28px rgba(0, 0, 0, 0.1);
+            --header-bg: rgba(255, 255, 255, 0.86);
+            --sidebar-border: rgba(16, 24, 40, 0.08);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -76,6 +86,8 @@
             transition: width var(--transition), transform var(--transition);
             left: 0;
             overflow: hidden;
+            border-right: 1px solid var(--sidebar-border);
+            box-shadow: 8px 0 30px rgba(0, 0, 0, 0.025);
         }
 
         .nav-link {
@@ -85,21 +97,23 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            border-radius: 24px;
+            border-radius: 12px;
             font-size: 0.9rem;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
             transition: var(--transition);
             width: 100%;
         }
 
         .nav-link:hover {
             background-color: var(--tint-b);
+            transform: translateX(2px);
         }
 
         .nav-link.active {
-            background-color: color-mix(in srgb, var(--primary-color) 10%, transparent);
+            background-color: color-mix(in srgb, var(--primary-color) 11%, transparent);
             color: var(--primary-color);
             font-weight: 600;
+            box-shadow: inset 3px 0 0 var(--primary-color);
         }
 
         [data-theme="light"] .nav-link:hover {
@@ -178,9 +192,12 @@
             align-items: center;
             position: sticky;
             top: 0;
-            background: var(--bg-color);
+            background: var(--header-bg);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
             z-index: 50;
             border-bottom: 1px solid var(--border-color);
+            min-height: 68px;
         }
 
         .model-selector {
@@ -300,7 +317,47 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 0.5rem 0.5rem 2rem 0.5rem;
+            padding: 0.35rem 0.45rem 1.25rem;
+        }
+
+        .brand-link { text-decoration: none; display: flex; align-items: center; gap: 10px; color: var(--text-color); }
+        .brand-mark {
+            width: 34px; height: 34px; border-radius: 11px; flex-shrink: 0;
+            display: grid; place-items: center; color: #fff;
+            background: linear-gradient(145deg, #ef4444, #b91c1c);
+            box-shadow: 0 7px 16px rgba(211, 47, 47, 0.25);
+            font-size: 14px; font-weight: 800; letter-spacing: -0.04em;
+        }
+        .brand-copy { display: flex; flex-direction: column; line-height: 1.1; }
+        .brand-copy strong { font-size: 1.05rem; letter-spacing: -0.03em; }
+        .brand-copy small { color: var(--text-muted); font-size: 0.66rem; margin-top: 4px; }
+        .sidebar-label { margin: 1.25rem 0.75rem 0.45rem; }
+        .sidebar-label span { font-size: 0.67rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.09em; }
+        .top-title-wrap { display: flex; align-items: center; gap: 1rem; min-width: 0; }
+        .top-title { font-size: 1.05rem; font-weight: 650; color: var(--text-color); letter-spacing: -0.02em; white-space: nowrap; }
+        .top-actions { display: flex; align-items: center; gap: 8px; }
+        .top-icon-btn {
+            width: 40px; height: 40px; border: 1px solid transparent; border-radius: 12px;
+            display: grid; place-items: center; position: relative; cursor: pointer;
+            background: transparent; color: var(--text-muted); text-decoration: none;
+            transition: background .2s, color .2s, border-color .2s, transform .15s;
+        }
+        .top-icon-btn:hover { background: var(--tint-a); color: var(--text-color); border-color: var(--border-color); }
+        .top-icon-btn:active { transform: scale(.95); }
+        .top-profile {
+            display: flex; align-items: center; gap: 9px; padding: 5px 8px 5px 5px;
+            color: var(--text-color); text-decoration: none; border-radius: 13px;
+            border: 1px solid var(--border-color); background: var(--card-bg);
+            transition: border-color .2s, background .2s;
+        }
+        .top-profile:hover { border-color: color-mix(in srgb, var(--primary-color) 30%, var(--border-color)); background: var(--tint-a); }
+        .top-profile .user-avatar { width: 30px; height: 30px; }
+        .top-profile-name { font-size: .78rem; font-weight: 600; max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .notification-dot {
+            position: absolute; top: 3px; right: 2px; min-width: 16px; height: 16px; padding: 0 4px;
+            display: flex; align-items: center; justify-content: center; border-radius: 9px;
+            background: var(--danger-color); color: #fff; border: 2px solid var(--bg-color);
+            font-size: .58rem; font-weight: 800;
         }
 
         .sidebar-overlay {
@@ -327,6 +384,11 @@
             }
             .page-container { padding: 1rem; }
             #toggle-sidebar-top { display: flex !important; }
+            .top-navbar { min-height: 60px; padding: .65rem 1rem; }
+            .top-profile-name, .top-profile > svg { display: none; }
+            .top-profile { padding: 4px; border: 0; background: transparent; }
+            .top-actions { gap: 2px; }
+            .top-title { font-size: .98rem; overflow: hidden; text-overflow: ellipsis; }
 
             /* iOS zooms the page into any field under 16px */
             input:not([type=checkbox]):not([type=radio]), select, textarea { font-size: 16px !important; }
@@ -420,8 +482,9 @@
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <a href="/" style="text-decoration: none; display: flex; align-items: center; gap: 8px;">
-                <span style="font-weight: 600; font-size: 1.25rem; color: var(--text-color); letter-spacing: -0.02em;">AbExam</span>
+            <a href="/" class="brand-link" aria-label="AbExam bosh sahifa">
+                <span class="brand-mark">AB</span>
+                <span class="brand-copy"><strong>AbExam</strong><small>IELTS platformasi</small></span>
             </a>
         </div>
 
@@ -459,8 +522,8 @@
             </a>
             {% endcomment %}
 
-            <div style="margin-top: 1.5rem; padding: 0 0.8rem; margin-bottom: 0.5rem;" class="sidebar-label">
-                <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-muted); text-transform: uppercase;">Bo'limlar</span>
+            <div class="sidebar-label">
+                <span>Bo'limlar</span>
             </div>
             <a href="{% url 'results_list' %}" class="nav-link {% if request.resolver_match.url_name == 'results_list' %}active{% endif %}">
                 <i data-lucide="bar-chart-3" style="width: 20px;"></i>
@@ -544,24 +607,34 @@
         </div>
         {% endif %}
         <header class="top-navbar">
-            <div style="display: flex; align-items: center; gap: 1rem;">
-                <button id="toggle-sidebar-top" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; padding: 0.5rem; border-radius: 8px;" onmouseover="this.style.background='var(--border-color)'" onmouseout="this.style.background='transparent'">
+            <div class="top-title-wrap">
+                <button id="toggle-sidebar-top" class="top-icon-btn" aria-label="Menyuni ochish" aria-expanded="false">
                     <i data-lucide="panel-left" style="width: 20px;"></i>
                 </button>
-                <h2 style="font-size: 1.125rem; font-weight: 600; color: var(--text-color); letter-spacing: -0.01em;">{% block page_title %}AbExam{% endblock %}</h2>
+                <h2 class="top-title">{% block page_title %}AbExam{% endblock %}</h2>
             </div>
 
-            <div style="display: flex; align-items: center; gap: 1rem;">
+            <div class="top-actions">
                 {% if messages %}
                     {% for message in messages %}
                     <span style="font-size: 0.85rem; color: {% if message.tags == 'error' %}var(--danger-color){% else %}var(--success-color){% endif %};">{{ message }}</span>
                     {% endfor %}
                 {% endif %}
-                <a href="{% url 'notifications' %}" style="position: relative; background: transparent; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; padding: 0.5rem; border-radius: 8px; text-decoration: none;" onmouseover="this.style.background='var(--border-color)'" onmouseout="this.style.background='transparent'">
+                <button type="button" class="top-icon-btn" id="themeToggle" aria-label="Tungi rejimni yoqish" title="Ko'rinishni almashtirish">
+                    <i data-lucide="moon" style="width: 19px;"></i>
+                </button>
+                <a href="{% url 'notifications' %}" class="top-icon-btn" aria-label="Bildirishnomalar">
                     <i data-lucide="bell" style="width: 20px;"></i>
                     {% if unread_notifications_count %}
-                    <span style="position: absolute; top: 2px; right: 2px; background: var(--danger-color); color: #fff; font-size: 0.6rem; font-weight: 700; min-width: 15px; height: 15px; border-radius: 50%; display: flex; align-items: center; justify-content: center; padding: 0 3px;">{{ unread_notifications_count }}</span>
+                    <span class="notification-dot">{{ unread_notifications_count }}</span>
                     {% endif %}
+                </a>
+                <a href="{% url 'profile' %}" class="top-profile" aria-label="Profilni ochish">
+                    <span class="user-avatar" style="overflow: hidden; background: {{ user.avatar_color }};">
+                        {% if user.avatar %}<img src="{{ user.avatar.url }}" alt="" style="width:100%;height:100%;object-fit:cover;">{% else %}{{ user.initials }}{% endif %}
+                    </span>
+                    <span class="top-profile-name">{{ user.get_full_name|default:user.username }}</span>
+                    <i data-lucide="chevron-down" style="width:14px;color:var(--text-muted);"></i>
                 </a>
             </div>
         </header>
@@ -591,21 +664,40 @@
 
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('sidebarOverlay');
+        const sidebarToggle = document.getElementById('toggle-sidebar-top');
 
         // Sidebar is always expanded on desktop; on mobile it's an
         // off-canvas drawer opened/closed with this toggle.
         function toggleSidebar() {
             const isOpen = sidebar.classList.toggle('mobile-open');
             overlay.classList.toggle('active', isOpen);
+            sidebarToggle.setAttribute('aria-expanded', String(isOpen));
         }
 
         overlay.addEventListener('click', () => {
             sidebar.classList.remove('mobile-open');
             overlay.classList.remove('active');
+            sidebarToggle.setAttribute('aria-expanded', 'false');
         });
 
-        document.getElementById('toggle-sidebar-top').addEventListener('click', toggleSidebar);
+        sidebarToggle.addEventListener('click', toggleSidebar);
         document.getElementById('tabbarMenu').addEventListener('click', toggleSidebar);
+
+        const themeToggle = document.getElementById('themeToggle');
+        function syncThemeButton() {
+            const dark = document.documentElement.dataset.theme === 'dark';
+            themeToggle.innerHTML = dark ? '<i data-lucide="sun" style="width:19px"></i>' : '<i data-lucide="moon" style="width:19px"></i>';
+            themeToggle.setAttribute('aria-label', dark ? 'Kunduzgi rejimni yoqish' : 'Tungi rejimni yoqish');
+            lucide.createIcons();
+        }
+        syncThemeButton();
+        themeToggle.addEventListener('click', () => {
+            const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+            document.documentElement.dataset.theme = next;
+            localStorage.setItem('abexam-theme', next);
+            syncThemeButton();
+            window.dispatchEvent(new CustomEvent('sitethemechange', { detail: { theme: next } }));
+        });
 
 
         // Theme-aware colors for Chart.js — pages with charts call this instead of
