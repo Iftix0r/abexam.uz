@@ -1,0 +1,60 @@
+{% extends 'panel/base.html' %}
+{% block title %}Kirishlar va seanslar — AbExam{% endblock %}
+{% block page_title %}Xavfsizlik{% endblock %}
+{% block nav_login_sessions %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+.ls-head{margin-bottom:18px}.ls-head h1{font-size:22px;letter-spacing:-.025em;margin-bottom:5px}.ls-head p{color:var(--muted);font-size:13px}
+.ls-stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-bottom:18px}.ls-stat{padding:17px 18px;border:1px solid var(--border);border-radius:14px;background:var(--surface)}.ls-stat span{display:block;color:var(--muted);font-size:12px;margin-bottom:10px}.ls-stat strong{display:block;font-size:25px;line-height:1;font-variant-numeric:tabular-nums}.ls-stat small{display:block;color:var(--muted);font-size:11px;margin-top:8px}
+.ls-shell{padding:0;overflow:hidden}.ls-tabs{display:flex;gap:4px;padding:0 16px;border-bottom:1px solid var(--border)}.ls-tabs a{padding:14px 10px 12px;color:var(--muted);font-size:13px;font-weight:600;border-bottom:2px solid transparent}.ls-tabs a.active{color:var(--text);border-color:var(--primary)}.ls-tabs b{margin-left:5px;padding:2px 6px;border-radius:999px;background:var(--surface2);font-size:10px}
+.ls-filters{display:grid;grid-template-columns:minmax(220px,1fr) 170px 170px auto;gap:9px;padding:14px 16px;background:var(--surface)}.ls-filters .search-box{width:100%;height:38px}.ls-filters .form-input{height:38px;padding-block:0}.ls-filters .btn{height:38px}
+.ls-user{display:flex;flex-direction:column;gap:2px}.ls-user strong{font-size:13px}.ls-user small,.ls-device small{color:var(--muted);font-size:11.5px}.ls-event{display:inline-flex;padding:3px 8px;border-radius:7px;font-size:11px;font-weight:650}.ls-event.success{background:#22c55e18;color:var(--green)}.ls-event.failed,.ls-event.blocked{background:#ef444418;color:var(--red)}.ls-device{display:flex;align-items:center;gap:9px}.ls-device i{width:30px;height:30px;display:grid;place-items:center;border:1px solid var(--border);border-radius:8px;color:var(--muted);background:var(--surface2)}.ls-ip{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);font-size:12px}.ls-channel{font-size:11px;color:var(--muted)}
+.ls-session-list{padding:8px 16px 16px}.ls-session{display:grid;grid-template-columns:minmax(180px,1.1fr) minmax(170px,1fr) 140px 150px;gap:16px;align-items:center;padding:13px 4px;border-bottom:1px solid var(--border)}.ls-session:last-child{border-bottom:0}.ls-session .badge{justify-self:start}
+@media(max-width:1050px){.ls-stats{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:700px){.ls-stats{grid-template-columns:repeat(2,1fr);gap:8px}.ls-filters{grid-template-columns:1fr 1fr}.ls-filters .search-box{grid-column:1/-1}.ls-shell .table-wrap{padding:0 12px}.ls-session{grid-template-columns:1fr 1fr}.ls-session>*:nth-child(3),.ls-session>*:nth-child(4){font-size:11px}}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ls-head"><h1>Kirishlar va seanslar</h1><p>Kim, qachon, qaysi qurilma va IP manzildan kirganini kuzating.</p></div>
+<section class="ls-stats">
+  <div class="ls-stat"><span>Muvaffaqiyatli kirish</span><strong>{{ stats.success }}</strong><small>so‘nggi 24 soatda</small></div>
+  <div class="ls-stat"><span>Xato urinishlar</span><strong>{{ stats.failed }}</strong><small>noto‘g‘ri parol yoki blok</small></div>
+  <div class="ls-stat"><span>Hozir onlayn</span><strong>{{ stats.online }}</strong><small>so‘nggi 15 daqiqada</small></div>
+  <div class="ls-stat"><span>Ochiq seanslar</span><strong>{{ stats.sessions }}</strong><small>sayt va mobil ilova</small></div>
+  <div class="ls-stat"><span>Turli IP</span><strong>{{ stats.ips }}</strong><small>so‘nggi 24 soatda</small></div>
+</section>
+
+<section class="card ls-shell">
+  <nav class="ls-tabs">
+    <a href="?tab=history" class="{% if tab != 'sessions' %}active{% endif %}">Kirish tarixi</a>
+    <a href="?tab=sessions" class="{% if tab == 'sessions' %}active{% endif %}">Ochiq seanslar <b>{{ stats.sessions }}</b></a>
+  </nav>
+  {% if tab == 'sessions' %}
+  <div class="ls-session-list">
+    {% for row in sessions %}
+    <div class="ls-session">
+      <div class="ls-user"><strong>{{ row.user.display_name }}</strong><small>{{ row.user.phone_number|default:row.user.username }}</small></div>
+      <div class="ls-device"><i class="{% if row.kind == 'Mobil ilova' %}lc-smartphone{% else %}lc-monitor{% endif %}"></i><div><strong>{{ row.device }}</strong><small>{{ row.kind }}</small></div></div>
+      <span class="ls-ip">{{ row.ip|default:'—' }}</span>
+      <div><span class="badge badge-green">Faol</span><div class="ls-channel">{{ row.last_seen|date:'d.m.Y H:i'|default:'Vaqt noma’lum' }}</div></div>
+    </div>
+    {% empty %}<div class="empty-state"><div class="empty-title">Ochiq seans yo‘q</div></div>{% endfor %}
+  </div>
+  {% else %}
+  <form class="ls-filters" method="get">
+    <input type="hidden" name="tab" value="history">
+    <label class="search-box"><i class=lc-search></i><input name="q" value="{{ q }}" placeholder="Telefon, ism, IP, brauzer yoki qurilma"></label>
+    <select class="form-input" name="status"><option value="">Barcha hodisalar</option><option value="success" {% if status == 'success' %}selected{% endif %}>Muvaffaqiyatli</option><option value="failed" {% if status == 'failed' %}selected{% endif %}>Xato parol</option><option value="blocked" {% if status == 'blocked' %}selected{% endif %}>Bloklangan</option></select>
+    <select class="form-input" name="channel"><option value="">Barcha manbalar</option><option value="web" {% if channel == 'web' %}selected{% endif %}>Sayt</option><option value="telegram" {% if channel == 'telegram' %}selected{% endif %}>Telegram</option><option value="app" {% if channel == 'app' %}selected{% endif %}>Mobil ilova</option></select>
+    <button class="btn btn-primary" type="submit">Izlash</button>
+  </form>
+  <div class="table-wrap"><table class="table-cards"><thead><tr><th>Vaqt</th><th>Foydalanuvchi</th><th>Hodisa</th><th>Qurilma / brauzer</th><th>IP manzil</th></tr></thead><tbody>
+    {% for row in history %}<tr><td class="td-date">{{ row.created_at|date:'d.m.Y H:i:s' }}</td><td><div class="ls-user"><strong>{{ row.user.display_name|default:row.username_attempt }}</strong>{% if row.user %}<small>{{ row.user.phone_number|default:row.user.username }}</small>{% endif %}</div></td><td><span class="ls-event {{ row.status }}">{{ row.get_status_display }}</span></td><td><div class="ls-device"><i class="{% if row.channel_label == 'Mobil ilova' %}lc-smartphone{% else %}lc-monitor{% endif %}"></i><div><strong>{{ row.device_label }}</strong><small>{{ row.channel_label }}</small></div></div></td><td class="ls-ip">{{ row.ip }}</td></tr>
+    {% empty %}<tr><td colspan="5"><div class="empty-state"><div class="empty-title">Kirish hodisasi topilmadi</div>Filtrlarni o‘zgartirib ko‘ring.</div></td></tr>{% endfor %}
+  </tbody></table></div>
+  {% include 'panel/_pagination.html' with page=history %}
+  {% endif %}
+</section>
+{% endblock %}

@@ -11,6 +11,7 @@ urlpatterns = [
     path('search/', views.search, name='search'),
 
     path('users/', views.users_list, name='users'),
+    path('login-sessions/', views.login_sessions, name='login_sessions'),
     path('users/export/', views.users_export_csv, name='users_export'),
     path('users/<int:pk>/', views.user_detail, name='user_detail'),
     path('users/<int:pk>/logs/', views.user_login_logs, name='user_logs'),

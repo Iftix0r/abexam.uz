@@ -41,6 +41,17 @@ class EnglishPanelTests(TestCase):
         self.assertRedirects(resp, reverse('panel:english_devices'), fetch_redirect_response=False)
         self.assertFalse(ApiToken.objects.exists())
 
+    def test_login_sessions_combines_history_and_open_app_sessions(self):
+        from users.models import LoginLog
+        LoginLog.objects.create(user=self.student, username_attempt='ali', ip='1.2.3.4',
+                                user_agent='Mozilla/5.0 Chrome', status='success')
+        history = self.client.get(reverse('panel:login_sessions'))
+        self.assertContains(history, 'Kirishlar va seanslar')
+        self.assertContains(history, '1.2.3.4')
+        sessions = self.client.get(reverse('panel:login_sessions'), {'tab': 'sessions'})
+        self.assertContains(sessions, 'Samsung SM-A515F')
+        self.assertContains(sessions, 'Mobil ilova')
+
     def test_publish_app_release(self):
         from django.core.files.uploadedfile import SimpleUploadedFile
         from learn.models import AppRelease

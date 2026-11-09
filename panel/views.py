@@ -10,6 +10,7 @@ from pathlib import Path
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.sessions.models import Session
 from django.core.management import call_command
 from django.core.paginator import Paginator
 from django.db import IntegrityError, transaction as db_transaction
@@ -28,6 +29,7 @@ from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
 
 from core.models import SiteSettings, Notification, PromoCode
+from core.alerts import device_label
 from core.utils import (
     daily_series, html_paragraphs_to_text, monthly_series, parse_json_body,
     text_to_html_paragraphs, validate_audio_upload, validate_image_upload,
@@ -212,6 +214,83 @@ def users_list(request):
         'groups': StudyGroup.objects.all(), 'group_id': request.GET.get('group', ''),
         'region': request.GET.get('region', ''),
         'tg_stats': {'linked': linked, 'pct': round(linked / total * 100) if total else 0},
+    })
+
+
+def _login_channel(user_agent):
+    agent = (user_agent or '').lower()
+    if 'telegram' in agent:
+        return 'Telegram'
+    if any(key in agent for key in ('dart/', 'flutter', 'abexam-app', 'okhttp')):
+        return 'Mobil ilova'
+    return 'Sayt'
+
+
+@panel_required
+def login_sessions(request):
+    """One operational view over login audit records and currently valid sessions."""
+    now = timezone.now()
+    since = now - timedelta(hours=24)
+    recent = LoginLog.objects.filter(created_at__gte=since)
+    q = request.GET.get('q', '').strip()
+    status = request.GET.get('status', '')
+    channel = request.GET.get('channel', '')
+    tab = request.GET.get('tab', 'history')
+
+    logs = LoginLog.objects.select_related('user').order_by('-created_at')
+    if q:
+        logs = logs.filter(
+            Q(username_attempt__icontains=q) | Q(user__first_name__icontains=q)
+            | Q(user__last_name__icontains=q) | Q(user__phone_number__icontains=q)
+            | Q(ip__icontains=q) | Q(user_agent__icontains=q)
+        )
+    if status in {'success', 'failed', 'blocked'}:
+        logs = logs.filter(status=status)
+    if channel == 'telegram':
+        logs = logs.filter(user_agent__icontains='telegram')
+    elif channel == 'app':
+        logs = logs.filter(Q(user_agent__icontains='flutter') | Q(user_agent__icontains='dart/'))
+    elif channel == 'web':
+        logs = logs.exclude(user_agent__icontains='telegram').exclude(user_agent__icontains='flutter').exclude(user_agent__icontains='dart/')
+
+    history = Paginator(logs, 50).get_page(request.GET.get('page'))
+    for item in history:
+        item.device_label = device_label(item.user_agent) or "Noma'lum qurilma"
+        item.channel_label = _login_channel(item.user_agent)
+
+    web_sessions = []
+    for session in Session.objects.filter(expire_date__gt=now).iterator():
+        try:
+            data = session.get_decoded()
+            user_id = data.get('_auth_user_id')
+            if user_id:
+                web_sessions.append((session, int(user_id)))
+        except (TypeError, ValueError):
+            continue
+    users = User.objects.in_bulk({user_id for _, user_id in web_sessions})
+    latest_log = {}
+    for log in LoginLog.objects.filter(user_id__in=users, status='success').order_by('user_id', '-created_at'):
+        latest_log.setdefault(log.user_id, log)
+    sessions = [{
+        'kind': 'Sayt', 'user': users.get(user_id), 'device': device_label(getattr(latest_log.get(user_id), 'user_agent', '')) or 'Veb brauzer',
+        'ip': getattr(latest_log.get(user_id), 'ip', None), 'last_seen': getattr(latest_log.get(user_id), 'created_at', None),
+        'expires_at': session.expire_date,
+    } for session, user_id in web_sessions if users.get(user_id)]
+    sessions += [{
+        'kind': 'Mobil ilova', 'user': token.user, 'device': token.device or token.platform or 'Mobil ilova',
+        'ip': token.ip, 'last_seen': token.last_used_at or token.created_at, 'expires_at': None,
+    } for token in ApiToken.objects.select_related('user').order_by('-last_used_at', '-created_at')]
+    sessions.sort(key=lambda row: row['last_seen'] or now, reverse=True)
+
+    return render(request, 'panel/login_sessions.html', {
+        'history': history, 'sessions': sessions, 'tab': tab, 'q': q, 'status': status, 'channel': channel,
+        'stats': {
+            'success': recent.filter(status='success').count(),
+            'failed': recent.filter(status__in=('failed', 'blocked')).count(),
+            'online': recent.filter(status='success', created_at__gte=now - timedelta(minutes=15)).values('user_id').distinct().count(),
+            'sessions': len(sessions),
+            'ips': recent.exclude(ip='').values('ip').distinct().count(),
+        },
     })
 
 
