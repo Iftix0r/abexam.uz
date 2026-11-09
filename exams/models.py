@@ -6,7 +6,6 @@ from django.conf import settings
 from django.utils import timezone
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
-from ckeditor.fields import RichTextField
 
 from users.models import User
 
@@ -59,7 +58,9 @@ class Section(models.Model):
     exam = models.ForeignKey(Exam, related_name='sections', on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     section_type = models.CharField(max_length=20, choices=SECTION_TYPES)
-    content = RichTextField(blank=True, null=True)
+    # Stored HTML is kept as ordinary text.  CKEditor 4 was removed because
+    # upstream no longer provides security fixes for its bundled version.
+    content = models.TextField(blank=True, null=True)
     audio_file = models.FileField(upload_to='exams/audio/', blank=True, null=True)
     image = models.ImageField(upload_to='exams/images/', blank=True, null=True)
     extra_data = models.JSONField(null=True, blank=True, help_text='Vocabulary, etc.')

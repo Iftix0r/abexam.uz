@@ -42,6 +42,10 @@ ACTIONS = {
     'ip_block': 'IP bloklandi',
     'ip_unblock': 'IP blokdan chiqarildi',
     'premium': 'AB Premium',
+    'data_export': "Ma'lumot eksport qilindi",
+    'backup_download': 'Baza zaxirasi yuklab olindi',
+    'sensitive_file': 'Maxfiy tizim fayli yuklab olindi',
+    'session_hijack': "Admin sessiyasi shubhali o'zgardi",
 }
 
 

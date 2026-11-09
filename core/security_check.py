@@ -78,6 +78,24 @@ def run_checks():
                        else "Hujum haqida Telegramga xabar kelmaydi, faqat panelda ko'rinadi.",
                        ".env ga TELEGRAM_BOT_TOKEN va TELEGRAM_ADMIN_CHAT_ID ni qo'shing."))
 
+    turnstile = bool(settings.TURNSTILE_SITE_KEY and settings.TURNSTILE_SECRET_KEY)
+    items.append(_item('Shubhali loginlarda Turnstile', OK if turnstile else WARN,
+                       "Botga o'xshash loginlarda server tekshiradigan CAPTCHA ishlaydi." if turnstile
+                       else "Turnstile kalitlari yo'q: shubhali loginlarda CAPTCHA chiqmaydi.",
+                       ".env ga TURNSTILE_SITE_KEY va TURNSTILE_SECRET_KEY ni qo'shing."))
+
+    hidden_webhook = getattr(settings, 'TELEGRAM_HIDDEN_WEBHOOK_ONLY', False)
+    items.append(_item('Eski Telegram webhook yopiq', OK if hidden_webhook else WARN,
+                       "Faqat maxfiy webhook manzili ishlaydi." if hidden_webhook
+                       else "Eski /tg/webhook/ manzili hali ochiq; o'tish tugagach uni yoping.",
+                       ".env ga TELEGRAM_HIDDEN_WEBHOOK_ONLY=True qo'shib ilovani qayta yuklang."))
+
+    staff_binding = getattr(settings, 'STAFF_SESSION_BINDING', False)
+    items.append(_item('Admin sessiyasi qurilmaga bog‘langan', OK if staff_binding else WARN,
+                       "Admin cookie o'g'irlansa, boshqa tarmoq yoki brauzerda bekor qilinadi." if staff_binding
+                       else "Admin sessiyasi boshqa qurilmada qayta ishlatilishi mumkin.",
+                       ".env ga STAFF_SESSION_BINDING=True qo'shing."))
+
     backups = sorted((f for f in _backups_dir().iterdir() if f.is_file()), key=lambda f: f.stat().st_mtime)
     if backups:
         age = (now.timestamp() - backups[-1].stat().st_mtime) / 86400

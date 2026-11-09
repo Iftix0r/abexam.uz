@@ -1,14 +1,140 @@
 import logging
 import time
+import hashlib
+import ipaddress
 
 from django.conf import settings
+from django.contrib.auth import logout
+from django.core.cache import cache
 from django.db import connection
-from django.http import JsonResponse
-from django.shortcuts import render
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import redirect, render
 
 from .models import SiteSettings
 
 slow_query_logger = logging.getLogger('slow_queries')
+
+
+class SecurityBoundaryMiddleware:
+    """Protects privileged sessions and audits bulk/sensitive downloads.
+
+    It records metadata only — never cookies, passwords, tokens, response
+    bodies or exported personal data.
+    """
+
+    SENSITIVE = {
+        '/panel/users/export/': ('data_export', 20, 3600),
+        '/panel/results/export/': ('data_export', 20, 3600),
+        '/panel/transactions/export/': ('data_export', 20, 3600),
+    }
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    @staticmethod
+    def _network(ip):
+        try:
+            address = ipaddress.ip_address(ip)
+            prefix = 24 if address.version == 4 else 64
+            return str(ipaddress.ip_network(f'{address}/{prefix}', strict=False))
+        except ValueError:
+            return 'unknown'
+
+    @staticmethod
+    def _ua(request):
+        raw = request.META.get('HTTP_USER_AGENT', '')
+        return hashlib.sha256(raw.encode()).hexdigest()[:20]
+
+    def _guard_staff_session(self, request):
+        user = request.user
+        if not (user.is_authenticated and user.is_staff):
+            return None
+        now = int(time.time())
+        started = request.session.get('staff_auth_at')
+        if not started:
+            request.session['staff_auth_at'] = now
+            started = now
+        if now - int(started) > settings.STAFF_SESSION_MAX_AGE:
+            logout(request)
+            return redirect('/login/?expired=1')
+        if not settings.STAFF_SESSION_BINDING:
+            return None
+
+        from .utils import get_client_ip, notify_admin_telegram
+        current = f'{self._network(get_client_ip(request))}|{self._ua(request)}'
+        bound = request.session.get('staff_client_binding')
+        if not bound:
+            request.session['staff_client_binding'] = current
+            return None
+        if bound == current:
+            return None
+
+        from .alerts import record_alert
+        from .audit import log_action
+        from .security import record_threat
+        name = user.display_name
+        log_action(request, 'session_hijack', target=name,
+                   details='Sessiya IP tarmog‘i yoki brauzeri o‘zgardi; sessiya bekor qilindi.')
+        record_alert('security', f'Admin sessiyasi bekor qilindi: {name}',
+                     f'IP yoki brauzer kutilmaganda o‘zgardi · {get_client_ip(request)}', '/panel/login-sessions/', user)
+        record_threat('suspicious', request, user=user, sample='staff session binding changed')
+        notify_admin_telegram(
+            f'🚨 <b>Admin sessiyasi bekor qilindi</b>\n👤 {name}\n🌐 IP: {get_client_ip(request)}\n'
+            'Sabab: IP tarmog‘i yoki brauzer o‘zgardi.')
+        logout(request)
+        return redirect('/login/?security=1')
+
+    def _sensitive_kind(self, path):
+        if path in self.SENSITIVE:
+            return self.SENSITIVE[path]
+        if path.startswith('/panel/groups/') and path.endswith('/export/'):
+            return 'data_export', 20, 3600
+        if path.startswith('/panel/exam-days/') and path.endswith('/export/'):
+            return 'data_export', 20, 3600
+        if path.startswith('/system/backups/') and path.endswith('/download/'):
+            return 'backup_download', 2, 3600
+        if path.startswith('/system/files/download/'):
+            return 'sensitive_file', 5, 3600
+        return None
+
+    def __call__(self, request):
+        guarded = self._guard_staff_session(request)
+        if guarded is not None:
+            return guarded
+
+        sensitive = self._sensitive_kind(request.path)
+        if sensitive and request.user.is_authenticated and request.user.is_staff:
+            action, limit, window = sensitive
+            key = f'sensitive:{request.user.pk}:{action}'
+            count = cache.get(key, 0) + 1
+            cache.set(key, count, window)
+            if count > limit:
+                from .alerts import record_alert
+                from .security import record_threat
+                record_threat('suspicious', request, user=request.user,
+                              sample=f'{action} rate limit exceeded')
+                record_alert('security', f'Ko‘p marotaba yuklab olish to‘xtatildi: {request.user.display_name}',
+                             f'{action} · {count} ta urinish', '/panel/login-sessions/', request.user)
+                response = HttpResponse('Yuklab olish limiti oshdi. Keyinroq urinib ko‘ring.', status=429)
+                response['Retry-After'] = str(window)
+                return response
+
+        response = self.get_response(request)
+        if sensitive and request.user.is_authenticated and request.user.is_staff and response.status_code < 400:
+            from .alerts import record_alert
+            from .audit import ACTIONS, log_action
+            from .utils import get_client_ip, notify_admin_telegram
+            action = sensitive[0]
+            detail = (f'Yo‘l: {request.path} · IP: {get_client_ip(request)} · '
+                      f'Brauzer: {request.META.get("HTTP_USER_AGENT", "")[:120]}')
+            log_action(request, action, target=request.path, details=detail)
+            record_alert('security', f'{ACTIONS[action]}: {request.user.display_name}', detail,
+                         '/system/staff-audit/', request.user)
+            if action in ('backup_download', 'sensitive_file'):
+                notify_admin_telegram(
+                    f'⚠️ <b>{ACTIONS[action]}</b>\n👤 {request.user.display_name}\n'
+                    f'🌐 IP: {get_client_ip(request)}\n📁 {request.path}')
+        return response
 
 
 class SlowQueryLogMiddleware:

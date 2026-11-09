@@ -142,7 +142,10 @@ class CustomLoginView(BaseLoginView):
             f"🌐 IP: {ip}\n"
             f"💻 {ua}"
         )
-        return super().form_valid(form)
+        response = super().form_valid(form)
+        if logged_user.is_staff:
+            self.request.session['staff_auth_at'] = int(time.time())
+        return response
 
     def form_invalid(self, form):
         ip = get_client_ip(self.request)

@@ -18,7 +18,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'ckeditor',
     'core',
     'users',
     'exams',
@@ -40,6 +39,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'core.middleware.SecurityBoundaryMiddleware',
     'core.middleware.ThreatWatchMiddleware',
     'core.middleware.MaintenanceModeMiddleware',
     'core.middleware.PanelBadgeMiddleware',
@@ -159,6 +159,15 @@ CACHES = {
 
 LOGOUT_REDIRECT_URL = '/login/'
 
+# A stolen cookie must not remain useful indefinitely. Staff sessions have an
+# additional shorter absolute timeout in SecurityBoundaryMiddleware.
+SESSION_COOKIE_AGE = 12 * 60 * 60
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+SESSION_SAVE_EVERY_REQUEST = False
+STAFF_SESSION_MAX_AGE = int(os.getenv('STAFF_SESSION_MAX_AGE', 4 * 60 * 60))
+STAFF_SESSION_BINDING = os.getenv('STAFF_SESSION_BINDING', 'True') == 'True'
+
 # ── Security headers (production only) ─────────────────────────────────────
 TRUSTED_PROXY_IPS = {
     ip.strip()
@@ -178,6 +187,8 @@ if not DEBUG:
     SECURE_BROWSER_XSS_FILTER = True
 
 X_FRAME_OPTIONS = 'DENY'
+SECURE_REFERRER_POLICY = 'same-origin'
+SECURE_CROSS_ORIGIN_OPENER_POLICY = 'same-origin'
 
 TEST_RUNNER = 'core.test_runner.ProjectTestRunner'
 
@@ -188,13 +199,13 @@ CONTENT_SECURITY_POLICY = (
     # (jsdelivr), html2pdf and qrcode (cdnjs). wasm-unsafe-eval, jsdelivr and
     # the Hugging Face hosts in connect-src are for in-browser Whisper in lessons.
     "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' "
-    "https://unpkg.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; "
+    "https://unpkg.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://challenges.cloudflare.com; "
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
     "font-src 'self' https://fonts.gstatic.com; "
     "img-src 'self' data: blob: https:; "
     "media-src 'self' blob:; "
-    "connect-src 'self' https://cdn.jsdelivr.net https://huggingface.co https://*.hf.co; "
-    "frame-src 'self' https:"
+    "connect-src 'self' https://cdn.jsdelivr.net https://huggingface.co https://*.hf.co https://challenges.cloudflare.com; "
+    "frame-src 'self' https://challenges.cloudflare.com"
 )
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
