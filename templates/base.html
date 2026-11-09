@@ -67,6 +67,10 @@
         }
 
         a, button, input, select, textarea { font-family: inherit; }
+        [data-lucide] {
+            stroke-width: 1.8;
+            vector-effect: non-scaling-stroke;
+        }
         a:focus-visible, button:focus-visible, .btn:focus-visible, .nav-link:focus-visible,
         input:focus-visible, select:focus-visible, textarea:focus-visible {
             outline: 2px solid var(--primary-color);
@@ -77,7 +81,7 @@
         .sidebar {
             width: var(--sidebar-width);
             background-color: var(--sidebar-color);
-            padding: 1rem;
+            padding: 0.75rem;
             display: flex;
             flex-direction: column;
             position: fixed;
@@ -93,28 +97,31 @@
         .nav-link {
             text-decoration: none;
             color: var(--text-color);
-            padding: 0.8rem 1rem;
+            padding: 0.68rem 0.75rem;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 11px;
             border-radius: 8px;
-            font-size: 0.9rem;
-            margin-bottom: 3px;
-            transition: var(--transition);
+            font-size: 0.875rem;
+            margin-bottom: 2px;
+            transition: background-color .15s, color .15s;
             width: 100%;
         }
 
         .nav-link:hover {
-            background-color: var(--tint-b);
+            background-color: var(--tint-a);
             transform: none;
         }
 
         .nav-link.active {
-            background-color: color-mix(in srgb, var(--primary-color) 11%, transparent);
-            color: var(--primary-color);
-            font-weight: 600;
+            background-color: var(--tint-b);
+            color: var(--text-color);
+            font-weight: 500;
             box-shadow: none;
         }
+
+        .nav-link > svg { width: 18px !important; height: 18px !important; flex-shrink: 0; }
+        .nav-link.active > svg { color: var(--primary-color); }
 
         [data-theme="light"] .nav-link:hover {
             background-color: rgba(0, 0, 0, 0.05);
@@ -186,7 +193,7 @@
         }
 
         .top-navbar {
-            padding: 1rem 1.5rem;
+            padding: 0.75rem 1.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -197,7 +204,7 @@
             -webkit-backdrop-filter: blur(18px);
             z-index: 50;
             border-bottom: 1px solid var(--border-color);
-            min-height: 68px;
+            min-height: 60px;
         }
 
         .model-selector {
@@ -275,7 +282,7 @@
             gap: 10px;
             margin: 10px 0 8px;
             padding: 0.7rem 1rem;
-            border-radius: 24px;
+            border-radius: 8px;
             border: 1px solid var(--border-color);
             color: var(--text-color);
             font-size: 0.9rem;
@@ -301,43 +308,46 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            background: var(--primary-color);
-            border-radius: 24px;
-            padding: 0.8rem 1rem;
-            margin-bottom: 1.5rem;
-            color: #fff;
-            font-weight: 600;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.72rem 0.75rem;
+            margin-bottom: 1rem;
+            color: var(--text-color);
+            font-weight: 500;
+            font-size: .875rem;
             text-decoration: none;
-            transition: var(--transition);
+            transition: background .15s, border-color .15s;
         }
 
-        .new-chat-btn:hover { background: var(--primary-color-dark); }
+        .new-chat-btn:hover { background: var(--tint-a); border-color: color-mix(in srgb, var(--primary-color) 35%, var(--border-color)); }
+        .new-chat-btn > svg { width: 18px !important; height: 18px !important; color: var(--primary-color); }
 
         .sidebar-header {
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 0.35rem 0.45rem 1.25rem;
+            padding: 0.4rem 0.45rem 1rem;
         }
 
         .brand-link { text-decoration: none; display: flex; align-items: center; gap: 10px; color: var(--text-color); }
         .brand-mark {
             width: 34px; height: 34px; border-radius: 11px; flex-shrink: 0;
             display: grid; place-items: center; color: #fff;
-            background: #0d0d0d;
+            background: var(--primary-color);
             box-shadow: none;
             font-size: 14px; font-weight: 800; letter-spacing: -0.04em;
         }
         .brand-copy { display: flex; flex-direction: column; line-height: 1.1; }
         .brand-copy strong { font-size: 1.05rem; letter-spacing: -0.03em; }
         .brand-copy small { color: var(--text-muted); font-size: 0.66rem; margin-top: 4px; }
-        .sidebar-label { margin: 1.25rem 0.75rem 0.45rem; }
-        .sidebar-label span { font-size: 0.67rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.09em; }
+        .sidebar-label { margin: 1.1rem 0.75rem 0.4rem; }
+        .sidebar-label span { font-size: 0.67rem; font-weight: 600; color: var(--text-muted); letter-spacing: 0.02em; }
         .top-title-wrap { display: flex; align-items: center; gap: 1rem; min-width: 0; }
         .top-title { font-size: 1.05rem; font-weight: 650; color: var(--text-color); letter-spacing: -0.02em; white-space: nowrap; }
         .top-actions { display: flex; align-items: center; gap: 8px; }
         .top-icon-btn {
-            width: 40px; height: 40px; border: 1px solid transparent; border-radius: 12px;
+            width: 36px; height: 36px; border: 1px solid transparent; border-radius: 8px;
             display: grid; place-items: center; position: relative; cursor: pointer;
             background: transparent; color: var(--text-muted); text-decoration: none;
             transition: background .2s, color .2s, border-color .2s, transform .15s;
@@ -346,7 +356,7 @@
         .top-icon-btn:active { transform: scale(.95); }
         .top-profile {
             display: flex; align-items: center; gap: 9px; padding: 5px 8px 5px 5px;
-            color: var(--text-color); text-decoration: none; border-radius: 13px;
+            color: var(--text-color); text-decoration: none; border-radius: 9px;
             border: 1px solid var(--border-color); background: var(--card-bg);
             transition: border-color .2s, background .2s;
         }
