@@ -104,6 +104,21 @@ def listening_notes(number):
     }
 
 
+def reading_notes(number):
+    if number != 15:
+        return {}
+    return {
+        "18": """<h5>The wooden block task</h5>
+<p>Children were given a task involving blocks of wood. The blocks varied according to how their weight was distributed: the weight distribution was [[18]] in some but not in others. This was because the others were either tapered or had had [[19]] inserted in them. In the latter case, the differences between the blocks were [[20]].</p>
+<p>The children were instructed to balance each block on a [[21]]. Some children, usually the youngest ones, did the task by dealing with each block [[22]]. In other cases, children quickly started to look for [[23]]. For example, they initially presumed that all the blocks balanced in the middle. They then had to revise their ideas.</p>
+<div class="summary-word-bank">
+<span><strong>A</strong> invisible</span><span><strong>B</strong> ways</span><span><strong>C</strong> others</span><span><strong>D</strong> wood</span>
+<span><strong>E</strong> individually</span><span><strong>F</strong> repeatedly</span><span><strong>G</strong> symmetrical</span><span><strong>H</strong> rules</span>
+<span><strong>I</strong> weight</span><span><strong>J</strong> beam</span><span><strong>K</strong> metal</span>
+</div>"""
+    }
+
+
 def listening14():
     questions = []
     gaps = [
@@ -142,7 +157,7 @@ def listening14():
         questions.append(q(i, ("[Geology field trip to Iceland] Choose A, B or C.\n" if i == 21 else "") + text, ans, choices))
     topics = opts([(c, t) for c, t in zip("ABCDEFG", ["unique geological features of Iceland", "replacement of fossil fuels", "negative changes due to human activity", "energy for agriculture", "health risks of eruptions", "risk of flooding", "long-term effects of volcanoes"])])
     for i, (name, ans) in enumerate(zip(["Geothermal Fields", "The Hot Spot", "Glaciers", "Basalt Rock", "Geothermal Power Plants"], "DAFGB"), 26):
-        questions.append(q(i, ("Match each reading pack to its topic.\n" if i == 26 else "") + name, ans, [(x["key"], x["text"]) for x in topics]))
+        questions.append(q(i, ("Match each reading pack to its topic.\n" if i == 26 else "") + name, ans, [(x["key"], x["text"]) for x in topics], kind="matching"))
     final_texts = ["using ___ is better than theory", "a lot of advice is simply a ___", "a victim crisis may be due to a ___", "a preventable crisis results from a ___ in the organisation", "communicate what ___ is to be taken", "provide ___ that the crisis is not so bad", "lessen ___ opinions", "a serious ___ to reputation", "providing an ___", "in serious cases, ___ is offered"]
     final_answers = ["logic", "guess", "rumour/rumor", "mistake", "action", "proof", "negative", "threat", "apology", "compensation"]
     for i, (text, ans) in enumerate(zip(final_texts, final_answers), 31):
@@ -167,7 +182,7 @@ def listening15():
         questions.append(q(i, ("[extrahands.com] Choose A, B or C.\n" if i == 11 else "") + text, ans, choices))
     jobs = [(c, t) for c, t in zip("ABCDEFG", ["cook", "gardener", "construction worker", "tour guide", "farm labourer", "editor", "swimming pool cleaner"])]
     for i, (country, ans) in enumerate(zip(["Portugal", "Australia", "South Korea", "USA", "Italy"], "FADBC"), 16):
-        questions.append(q(i, ("Which job did Stephen do in this country?\n" if i == 16 else "") + country, ans, jobs))
+        questions.append(q(i, ("Which job did Stephen do in this country?\n" if i == 16 else "") + country, ans, jobs, kind="matching"))
     p3 = [
         ("What problem is Lorna having with her report?", "B", ABC("listing the references", "keeping to the word limit", "writing the evaluation")),
         ("Why did Charles take the course?", "C", ABC("improve job prospects", "increase self-confidence", "develop self-expression")),
@@ -179,7 +194,7 @@ def listening15():
         questions.append(q(i, ("[Song-writing course for drama students] Choose A, B or C.\n" if i == 21 else "") + text, ans, choices))
     focus = [(c, t) for c, t in zip("ABCDEFGH", ["use of own memories", "full use of the stage", "relaxation techniques", "physical expression of character", "play readings", "acting without preparation", "using a range of accents", "following instructions"])]
     for i, (teacher, ans) in enumerate(zip(["Bob Lacey", "Evelyn Chance", "Ted Winter", "Kevin Gray", "Dorothy Thomas"], "GBDHC"), 26):
-        questions.append(q(i, ("Match each teacher to the workshop focus.\n" if i == 26 else "") + teacher, ans, focus))
+        questions.append(q(i, ("Match each teacher to the workshop focus.\n" if i == 26 else "") + teacher, ans, focus, kind="matching"))
     final = ["workers employed to do ___ were arranged in rows", "workers had individual ___", "cubicles with high or low ___", "workers may have to ___ a work area", "lack of ___", "lack of ___", "risk to our ___", "reduce rent and ___ costs", "make ___ staff easier", "distracted by the ___ in the office"]
     final_answers = ["typing", "desks", "screens", "share", "privacy", "security", "health", "energy", "training", "noise"]
     for i, (text, ans) in enumerate(zip(final, final_answers), 31):
@@ -245,7 +260,7 @@ def make_exam(number, listening, audio, reading, passage_files, writing_image, t
         "description": "To‘liq IELTS Academic mock test: Listening, Reading va Writing.",
         "exam_type": "mock", "price": 0, "duration_minutes": 170, "is_active": True,
         "sections": [listen,
-            {"title": "Reading", "section_type": "reading", "order": 2, "duration_minutes": 60, "content": content, "questions": reading},
+            {"title": "Reading", "section_type": "reading", "order": 2, "duration_minutes": 60, "notes": reading_notes(number), "content": content, "questions": reading},
             {"title": "Writing", "section_type": "writing", "order": 3, "duration_minutes": 60, "image": f"images/{writing_image}", "content": "", "questions": [q(1, task1, "", kind="essay"), q(2, task2, "", kind="essay")]},
         ],
     }

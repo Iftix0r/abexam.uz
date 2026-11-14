@@ -566,7 +566,7 @@
         {
           "order": 26,
           "text": "Match each reading pack to its topic.\nGeothermal Fields",
-          "question_type": "mcq",
+          "question_type": "matching",
           "correct_answer": "D",
           "options": [
             {
@@ -605,7 +605,7 @@
         {
           "order": 27,
           "text": "The Hot Spot",
-          "question_type": "mcq",
+          "question_type": "matching",
           "correct_answer": "A",
           "options": [
             {
@@ -644,7 +644,7 @@
         {
           "order": 28,
           "text": "Glaciers",
-          "question_type": "mcq",
+          "question_type": "matching",
           "correct_answer": "F",
           "options": [
             {
@@ -683,7 +683,7 @@
         {
           "order": 29,
           "text": "Basalt Rock",
-          "question_type": "mcq",
+          "question_type": "matching",
           "correct_answer": "G",
           "options": [
             {
@@ -722,7 +722,7 @@
         {
           "order": 30,
           "text": "Geothermal Power Plants",
-          "question_type": "mcq",
+          "question_type": "matching",
           "correct_answer": "B",
           "options": [
             {
@@ -868,6 +868,7 @@
       "section_type": "reading",
       "order": 2,
       "duration_minutes": 60,
+      "notes": {},
       "content": "<h2>The Baobabs of Madagascar</h2><p></p><h2>The Future of Food Packaging</h2><p>The Future of Food Packaging Ever worn a white shirt while opening a can of tomato soup? Or left the frozen-yogurt shop bummed out by the huge trash can full of landfill-bound plastic spoons and cups? Food packaging tops the list of things you don’t think about but can mess with your day, like cheap zippers or demagnetized credit cards. A Food companies spend a lot of time thinking about packaging as a way to represent their brand and make consumers love their products. More than cosmetic details like labels or logos, a food’s container can suggest playfulness, environmental consciousness, or high technology. Packaging provides consumers’ first and last impressions of a product. B Fortunately for consumers, advances in food packaging technology promise to make food storage and preparation simpler. Consumers are growing ever more obsessed with sleek technology, reducing food waste, and minimizing health risks to themselves and the environment, and in response, food packaging is undergoing some interesting developments. Food packaging designers are hard at work to make groceries environmentally friendly, compact, and functional. C Edible packaging has been proposed as one solution to consumers’ environmental concerns because it leaves no waste. The fried chicken chain KFC, for example, is experimenting with an edible coffee-cup. Made from a hard cookie lined with heatresistant white chocolate, the cup is KFC’s attempt to reduce its landfill waste and satisfy customers who are concerned that businesses produce products that support food-system sustainability and innovation. Another company, Stonyfield Organic, introduced frozen yogurt ‘pearls’ using edible food wrappers. The skin has no flavor and can be rinsed and eaten with the yogurt (much like a grape), eliminating the need for plastic spoons or wrappers for those on the go. It seems that people still want a layer of sanitary protection, though, because the spherical yogurts are still sold in. Similarly, a company called Loliware has sold gelatin-based edible drinking cups for two years, in flavors like Madagascar vanilla and tart cherry. And last year, the company introduced edible cupcake wrappers made from potato starch. Even with these new advances, one decade-old edible invention continues to see great success — the clear paper used to wrap Japanese Botan Rice Candy. D Another development has been nonstick packaging, which can eliminate the 3 to 15 percent of sauces left inside traditional bottles, like those last trails of ketchup and mayonnaise that won’t come out no matter how hard you shake or squeeze. Liquiglide — which refers to both a company and the product it makes — is a permanently wet slippery surface that allows viscous matter to slide off easily. Liquiglide estimates that its coating could prevent 1 million tons of food waste each year. The coating is made from components approved by the US government, and, according to the company, does not affect the taste or smell of food. Another benefit of Liquiglide is that it prevents carbonated beverages from going flat. E New safety-enhancing packaging is now addressing the issue of food spoilage. It might seem this was solved long ago with the advent of the ‘Sell-by date stamp’, which was meant to warn customers of when the food would no longer be considered suitable for consumption. But after a Harvard report revealed that sell-by dates are often inaccurate because of variances in transportation and grocery store policies, and that they also contribute to America’s food-waste problem, the stamps have lost credibility in the food industry. In response, scientists are working on food packaging – like plastic wrap – that is ‘active and intelligent’ with tiny embedded sensors to first detect and later prevent food from spoiling. This advancement in food packaging draws upon nanotechnology, which is dedicated to making electronic sensors tiny and inexpensive. Of course, one could also rely on what has saved humankind from food poisoning for millennia – the senses. If it smells bad, throw it away. F Another emerging technology is packaging that disappears. MonoSol, LLC creates food-grade water-soluble bags for pre-portioned oatmeal or rice. When boiled, the bag dissolves, leaving only the food, ready to eat. MonoSol, LLC is marketing this to professional kitchens as well as consumers, as a way to pre-measure meal ingredients and ensure consistency regardless of who cooks. Tomorrow Machine, a Swedish design firm, has plans for three disappearing packages: an oil bottle made from hardened sugar that cracks open like an egg; a fruit juice container made from seaweed that will wither at the same rate as its content; and a peelable beeswax package for rice or other dry goods. G Super-compressed packaging serves the increasing number of city dwellers who generally have tiny kitchens and no storage room. Additionally, many people living in urban areas walk home from grocery stores, and they need lighter and smaller packages. Tomorrow Machine is also working on a compressed tiny package that expands into a full-size bowl when hot water is added.</p><h2>Marine Mammals Exhibit Ingenuity</h2><p></p>",
       "questions": [
         {

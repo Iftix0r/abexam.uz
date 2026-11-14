@@ -413,6 +413,17 @@ def _render_notes(template, questions):
         q = by_order.get(int(match.group(1)))
         if q is None:
             return match.group(0)
+        if q.question_type == 'matching' and q.options:
+            option_html = ''.join(
+                str(format_html('<option value="{}">{}</option>', opt.get('key', ''), opt.get('key', '')))
+                for opt in q.options
+            )
+            return format_html(
+                '<span class="notes-gap" id="qitem-{}"><span class="question-num">{}</span>'
+                '<select class="ans-input notes-input notes-select" data-qid="{}"'
+                ' onchange="saveAnswer(\'{}\', this.value)"><option value="">—</option>{}</select></span>',
+                q.id, q.display_number, q.id, q.id, mark_safe(option_html),
+            )
         return format_html(
             '<span class="notes-gap" id="qitem-{}"><span class="question-num">{}</span>'
             '<input type="text" class="ans-input notes-input" data-qid="{}" autocomplete="off"'

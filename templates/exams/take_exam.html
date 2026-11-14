@@ -805,6 +805,13 @@
         .notes-gap { white-space: nowrap; }
         .notes-gap .question-num { margin: 0 2px 0 4px; }
         .notes-input.ans-input { display: inline-block; width: 150px; margin: 0 4px 0 0; padding: 2px 8px; vertical-align: middle; background: #fffde7; }
+        .notes-select.ans-input { width: 72px; min-width: 72px; font-weight: 800; }
+        .summary-word-bank {
+            display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 5px 14px; margin-top: 14px; padding: 10px;
+            border: 1px solid var(--border); background: #fafafa; line-height: 1.45;
+        }
+        .summary-word-bank span { white-space: nowrap; }
 
         /* ─── QUESTION BLOCK HEADER ──────────────────────── */
         .q-block-header {
@@ -858,11 +865,12 @@
             .instr-card { padding: 24px 20px; }
             .instr-meta { gap: 16px; }
             .matching-group-item { overflow-x: auto; }
-            .matching-grid { font-size: 13px; min-width: 330px; }
+            .matching-grid { font-size: 13px; min-width: 380px; }
             .matching-grid th, .matching-grid td { padding: 6px 3px; }
-            .matching-grid td.grid-cell { width: 25px; }
-            .matching-grid input[type="radio"] { width: 14px; height: 14px; }
+            .matching-grid td.grid-cell { width: 30px; }
+            .matching-grid input[type="radio"] { width: 18px; height: 18px; }
             .question-image img { max-height: none; }
+            .summary-word-bank { grid-template-columns: repeat(2, minmax(0, 1fr)); font-size: 12px; gap: 5px 8px; }
         }
 
         /* ─── VIEW SETTINGS (text size / hide time / full screen) ───
@@ -1597,6 +1605,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (ta) { ta.value = val; saveWriting(q.id, val); return; }
             const inp = document.querySelector(`input[data-qid="${q.id}"]`);
             if (inp) { inp.value = val; return; }
+            const sel = document.querySelector(`select[data-qid="${q.id}"]`);
+            if (sel) { sel.value = val; return; }
             const radio = document.querySelector(`input[name="q_${q.id}"][value="${CSS.escape(val)}"]`);
             if (radio) {
                 const wrapper = radio.closest('.mcq-option');
@@ -2811,6 +2821,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         const label = radio.closest('label.mcq-option');
                         if (label) selectMCQ(label, qid, value);
                         else { radio.checked = true; saveAnswer(qid, value); }
+                    } else {
+                        const select = document.querySelector(`select[data-qid="${qid}"]`);
+                        if (select) { select.value = value; saveAnswer(qid, value); }
                     }
                 } else if (type === 'tfng') {
                     const btn = Array.from(document.querySelectorAll(`#qitem-${qid} .tfng-btn`))
