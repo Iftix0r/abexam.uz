@@ -1,0 +1,2044 @@
+{
+  "title": "IELTS Full Mock Test 14",
+  "description": "To‘liq IELTS Academic mock test: Listening, Reading va Writing.",
+  "exam_type": "mock",
+  "price": 0,
+  "duration_minutes": 170,
+  "is_active": true,
+  "sections": [
+    {
+      "title": "Listening",
+      "section_type": "listening",
+      "order": 1,
+      "duration_minutes": 40,
+      "audio_file": "../../TESTLAR/11/59435.mp3",
+      "content": "",
+      "questions": [
+        {
+          "order": 1,
+          "text": "[Amateur Dramatic Society] Complete the notes. Write ONE WORD AND/OR A NUMBER.\nLocation for rehearsals: The ___ House, Wynn",
+          "question_type": "gap_fill",
+          "correct_answer": "club",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 2,
+          "text": "They need actors and ___ singers",
+          "question_type": "gap_fill",
+          "correct_answer": "male",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 3,
+          "text": "Also need people who can ___",
+          "question_type": "gap_fill",
+          "correct_answer": "drive",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 4,
+          "text": "Meetings 6–8 p.m. every ___",
+          "question_type": "gap_fill",
+          "correct_answer": "Tuesday",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 5,
+          "text": "Closed in ___ (for 2 weeks)",
+          "question_type": "gap_fill",
+          "correct_answer": "August",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 6,
+          "text": "Standard membership: £40 (includes a ___ once a year)",
+          "question_type": "gap_fill",
+          "correct_answer": "dinner",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 7,
+          "text": "Over 60s or unemployed: £___",
+          "question_type": "gap_fill",
+          "correct_answer": "25",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 8,
+          "text": "Youth group: for people aged ___ years old and under",
+          "question_type": "gap_fill",
+          "correct_answer": "16/sixteen",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 9,
+          "text": "Shows: mostly plays by ___ authors",
+          "question_type": "gap_fill",
+          "correct_answer": "modern",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 10,
+          "text": "Family show raises money for children’s ___",
+          "question_type": "gap_fill",
+          "correct_answer": "hospital",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 11,
+          "text": "[Information for Volunteers at Clifton Bird Park] Choose A, B or C.\nThe speaker stresses the importance to Clifton Bird Park of",
+          "question_type": "mcq",
+          "correct_answer": "A",
+          "options": [
+            {
+              "key": "A",
+              "text": "birds that are now endangered"
+            },
+            {
+              "key": "B",
+              "text": "birds from all over the world"
+            },
+            {
+              "key": "C",
+              "text": "birds that are common in the local area"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 12,
+          "text": "People who volunteer to help with gardening at the park",
+          "question_type": "mcq",
+          "correct_answer": "B",
+          "options": [
+            {
+              "key": "A",
+              "text": "must work at weekends"
+            },
+            {
+              "key": "B",
+              "text": "need to come at least once a month"
+            },
+            {
+              "key": "C",
+              "text": "will only be required in the busy season"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 13,
+          "text": "Who would be the ideal gardening volunteer?",
+          "question_type": "mcq",
+          "correct_answer": "B",
+          "options": [
+            {
+              "key": "A",
+              "text": "someone who can work independently"
+            },
+            {
+              "key": "B",
+              "text": "someone willing to work in any weather"
+            },
+            {
+              "key": "C",
+              "text": "someone who knows a lot about plants"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 14,
+          "text": "Volunteer guides will mainly be working with",
+          "question_type": "mcq",
+          "correct_answer": "A",
+          "options": [
+            {
+              "key": "A",
+              "text": "international visitors"
+            },
+            {
+              "key": "B",
+              "text": "local people from Clifton"
+            },
+            {
+              "key": "C",
+              "text": "school groups"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 15,
+          "text": "What is still required for the Maintenance Day?",
+          "question_type": "mcq",
+          "correct_answer": "B",
+          "options": [
+            {
+              "key": "A",
+              "text": "food and drink"
+            },
+            {
+              "key": "B",
+              "text": "transport"
+            },
+            {
+              "key": "C",
+              "text": "tools"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 16,
+          "text": "[Clifton Bird Park map] Label the map.\nWooden bridge",
+          "question_type": "mcq",
+          "correct_answer": "F",
+          "options": [
+            {
+              "key": "A",
+              "text": "Location A"
+            },
+            {
+              "key": "B",
+              "text": "Location B"
+            },
+            {
+              "key": "C",
+              "text": "Location C"
+            },
+            {
+              "key": "D",
+              "text": "Location D"
+            },
+            {
+              "key": "E",
+              "text": "Location E"
+            },
+            {
+              "key": "F",
+              "text": "Location F"
+            },
+            {
+              "key": "G",
+              "text": "Location G"
+            },
+            {
+              "key": "H",
+              "text": "Location H"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 17,
+          "text": "Observation tower",
+          "question_type": "mcq",
+          "correct_answer": "H",
+          "options": [
+            {
+              "key": "A",
+              "text": "Location A"
+            },
+            {
+              "key": "B",
+              "text": "Location B"
+            },
+            {
+              "key": "C",
+              "text": "Location C"
+            },
+            {
+              "key": "D",
+              "text": "Location D"
+            },
+            {
+              "key": "E",
+              "text": "Location E"
+            },
+            {
+              "key": "F",
+              "text": "Location F"
+            },
+            {
+              "key": "G",
+              "text": "Location G"
+            },
+            {
+              "key": "H",
+              "text": "Location H"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 18,
+          "text": "Visitor cabins",
+          "question_type": "mcq",
+          "correct_answer": "C",
+          "options": [
+            {
+              "key": "A",
+              "text": "Location A"
+            },
+            {
+              "key": "B",
+              "text": "Location B"
+            },
+            {
+              "key": "C",
+              "text": "Location C"
+            },
+            {
+              "key": "D",
+              "text": "Location D"
+            },
+            {
+              "key": "E",
+              "text": "Location E"
+            },
+            {
+              "key": "F",
+              "text": "Location F"
+            },
+            {
+              "key": "G",
+              "text": "Location G"
+            },
+            {
+              "key": "H",
+              "text": "Location H"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 19,
+          "text": "Nesting boxes",
+          "question_type": "mcq",
+          "correct_answer": "E",
+          "options": [
+            {
+              "key": "A",
+              "text": "Location A"
+            },
+            {
+              "key": "B",
+              "text": "Location B"
+            },
+            {
+              "key": "C",
+              "text": "Location C"
+            },
+            {
+              "key": "D",
+              "text": "Location D"
+            },
+            {
+              "key": "E",
+              "text": "Location E"
+            },
+            {
+              "key": "F",
+              "text": "Location F"
+            },
+            {
+              "key": "G",
+              "text": "Location G"
+            },
+            {
+              "key": "H",
+              "text": "Location H"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 20,
+          "text": "Boat sheds",
+          "question_type": "mcq",
+          "correct_answer": "B",
+          "options": [
+            {
+              "key": "A",
+              "text": "Location A"
+            },
+            {
+              "key": "B",
+              "text": "Location B"
+            },
+            {
+              "key": "C",
+              "text": "Location C"
+            },
+            {
+              "key": "D",
+              "text": "Location D"
+            },
+            {
+              "key": "E",
+              "text": "Location E"
+            },
+            {
+              "key": "F",
+              "text": "Location F"
+            },
+            {
+              "key": "G",
+              "text": "Location G"
+            },
+            {
+              "key": "H",
+              "text": "Location H"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 21,
+          "text": "[Geology field trip to Iceland] Choose A, B or C.\nWhy mention the Mountain Code?",
+          "question_type": "mcq",
+          "correct_answer": "A",
+          "options": [
+            {
+              "key": "A",
+              "text": "It is the most relevant to their field trip"
+            },
+            {
+              "key": "B",
+              "text": "It also applies to caves"
+            },
+            {
+              "key": "C",
+              "text": "It covers the whole country"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 22,
+          "text": "Why do some participants harm the environment?",
+          "question_type": "mcq",
+          "correct_answer": "C",
+          "options": [
+            {
+              "key": "A",
+              "text": "They fail to recognise rare plants"
+            },
+            {
+              "key": "B",
+              "text": "They do not realise how fragile it is"
+            },
+            {
+              "key": "C",
+              "text": "They get too absorbed in their tasks"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 23,
+          "text": "Which rule about taking samples is most important?",
+          "question_type": "mcq",
+          "correct_answer": "C",
+          "options": [
+            {
+              "key": "A",
+              "text": "Leave the area in its natural state"
+            },
+            {
+              "key": "B",
+              "text": "Avoid removing fossils"
+            },
+            {
+              "key": "C",
+              "text": "Keep collecting to a minimum"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 24,
+          "text": "Which aspect of taking samples must they still find out about?",
+          "question_type": "mcq",
+          "correct_answer": "A",
+          "options": [
+            {
+              "key": "A",
+              "text": "taking them from private land"
+            },
+            {
+              "key": "B",
+              "text": "taking them from rock faces"
+            },
+            {
+              "key": "C",
+              "text": "taking them from man-made structures"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 25,
+          "text": "What coastal danger will they emphasise?",
+          "question_type": "mcq",
+          "correct_answer": "B",
+          "options": [
+            {
+              "key": "A",
+              "text": "falling rock"
+            },
+            {
+              "key": "B",
+              "text": "tidal movements"
+            },
+            {
+              "key": "C",
+              "text": "unstable sand"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 26,
+          "text": "Match each reading pack to its topic.\nGeothermal Fields",
+          "question_type": "mcq",
+          "correct_answer": "D",
+          "options": [
+            {
+              "key": "A",
+              "text": "unique geological features of Iceland"
+            },
+            {
+              "key": "B",
+              "text": "replacement of fossil fuels"
+            },
+            {
+              "key": "C",
+              "text": "negative changes due to human activity"
+            },
+            {
+              "key": "D",
+              "text": "energy for agriculture"
+            },
+            {
+              "key": "E",
+              "text": "health risks of eruptions"
+            },
+            {
+              "key": "F",
+              "text": "risk of flooding"
+            },
+            {
+              "key": "G",
+              "text": "long-term effects of volcanoes"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 27,
+          "text": "The Hot Spot",
+          "question_type": "mcq",
+          "correct_answer": "A",
+          "options": [
+            {
+              "key": "A",
+              "text": "unique geological features of Iceland"
+            },
+            {
+              "key": "B",
+              "text": "replacement of fossil fuels"
+            },
+            {
+              "key": "C",
+              "text": "negative changes due to human activity"
+            },
+            {
+              "key": "D",
+              "text": "energy for agriculture"
+            },
+            {
+              "key": "E",
+              "text": "health risks of eruptions"
+            },
+            {
+              "key": "F",
+              "text": "risk of flooding"
+            },
+            {
+              "key": "G",
+              "text": "long-term effects of volcanoes"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 28,
+          "text": "Glaciers",
+          "question_type": "mcq",
+          "correct_answer": "F",
+          "options": [
+            {
+              "key": "A",
+              "text": "unique geological features of Iceland"
+            },
+            {
+              "key": "B",
+              "text": "replacement of fossil fuels"
+            },
+            {
+              "key": "C",
+              "text": "negative changes due to human activity"
+            },
+            {
+              "key": "D",
+              "text": "energy for agriculture"
+            },
+            {
+              "key": "E",
+              "text": "health risks of eruptions"
+            },
+            {
+              "key": "F",
+              "text": "risk of flooding"
+            },
+            {
+              "key": "G",
+              "text": "long-term effects of volcanoes"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 29,
+          "text": "Basalt Rock",
+          "question_type": "mcq",
+          "correct_answer": "G",
+          "options": [
+            {
+              "key": "A",
+              "text": "unique geological features of Iceland"
+            },
+            {
+              "key": "B",
+              "text": "replacement of fossil fuels"
+            },
+            {
+              "key": "C",
+              "text": "negative changes due to human activity"
+            },
+            {
+              "key": "D",
+              "text": "energy for agriculture"
+            },
+            {
+              "key": "E",
+              "text": "health risks of eruptions"
+            },
+            {
+              "key": "F",
+              "text": "risk of flooding"
+            },
+            {
+              "key": "G",
+              "text": "long-term effects of volcanoes"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 30,
+          "text": "Geothermal Power Plants",
+          "question_type": "mcq",
+          "correct_answer": "B",
+          "options": [
+            {
+              "key": "A",
+              "text": "unique geological features of Iceland"
+            },
+            {
+              "key": "B",
+              "text": "replacement of fossil fuels"
+            },
+            {
+              "key": "C",
+              "text": "negative changes due to human activity"
+            },
+            {
+              "key": "D",
+              "text": "energy for agriculture"
+            },
+            {
+              "key": "E",
+              "text": "health risks of eruptions"
+            },
+            {
+              "key": "F",
+              "text": "risk of flooding"
+            },
+            {
+              "key": "G",
+              "text": "long-term effects of volcanoes"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 31,
+          "text": "[Crisis Communication Theory] Complete the notes. Write ONE WORD ONLY.\nusing ___ is better than theory",
+          "question_type": "gap_fill",
+          "correct_answer": "logic",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 32,
+          "text": "a lot of advice is simply a ___",
+          "question_type": "gap_fill",
+          "correct_answer": "guess",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 33,
+          "text": "a victim crisis may be due to a ___",
+          "question_type": "gap_fill",
+          "correct_answer": "rumour/rumor",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 34,
+          "text": "a preventable crisis results from a ___ in the organisation",
+          "question_type": "gap_fill",
+          "correct_answer": "mistake",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 35,
+          "text": "communicate what ___ is to be taken",
+          "question_type": "gap_fill",
+          "correct_answer": "action",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 36,
+          "text": "provide ___ that the crisis is not so bad",
+          "question_type": "gap_fill",
+          "correct_answer": "proof",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 37,
+          "text": "lessen ___ opinions",
+          "question_type": "gap_fill",
+          "correct_answer": "negative",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 38,
+          "text": "a serious ___ to reputation",
+          "question_type": "gap_fill",
+          "correct_answer": "threat",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 39,
+          "text": "providing an ___",
+          "question_type": "gap_fill",
+          "correct_answer": "apology",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 40,
+          "text": "in serious cases, ___ is offered",
+          "question_type": "gap_fill",
+          "correct_answer": "compensation",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        }
+      ],
+      "question_images": {
+        "16": "images/mock_test_14_clifton_map.jpg"
+      }
+    },
+    {
+      "title": "Reading",
+      "section_type": "reading",
+      "order": 2,
+      "duration_minutes": 60,
+      "content": "<h2>The Baobabs of Madagascar</h2><p></p><h2>The Future of Food Packaging</h2><p>The Future of Food Packaging Ever worn a white shirt while opening a can of tomato soup? Or left the frozen-yogurt shop bummed out by the huge trash can full of landfill-bound plastic spoons and cups? Food packaging tops the list of things you don’t think about but can mess with your day, like cheap zippers or demagnetized credit cards. A Food companies spend a lot of time thinking about packaging as a way to represent their brand and make consumers love their products. More than cosmetic details like labels or logos, a food’s container can suggest playfulness, environmental consciousness, or high technology. Packaging provides consumers’ first and last impressions of a product. B Fortunately for consumers, advances in food packaging technology promise to make food storage and preparation simpler. Consumers are growing ever more obsessed with sleek technology, reducing food waste, and minimizing health risks to themselves and the environment, and in response, food packaging is undergoing some interesting developments. Food packaging designers are hard at work to make groceries environmentally friendly, compact, and functional. C Edible packaging has been proposed as one solution to consumers’ environmental concerns because it leaves no waste. The fried chicken chain KFC, for example, is experimenting with an edible coffee-cup. Made from a hard cookie lined with heatresistant white chocolate, the cup is KFC’s attempt to reduce its landfill waste and satisfy customers who are concerned that businesses produce products that support food-system sustainability and innovation. Another company, Stonyfield Organic, introduced frozen yogurt ‘pearls’ using edible food wrappers. The skin has no flavor and can be rinsed and eaten with the yogurt (much like a grape), eliminating the need for plastic spoons or wrappers for those on the go. It seems that people still want a layer of sanitary protection, though, because the spherical yogurts are still sold in. Similarly, a company called Loliware has sold gelatin-based edible drinking cups for two years, in flavors like Madagascar vanilla and tart cherry. And last year, the company introduced edible cupcake wrappers made from potato starch. Even with these new advances, one decade-old edible invention continues to see great success — the clear paper used to wrap Japanese Botan Rice Candy. D Another development has been nonstick packaging, which can eliminate the 3 to 15 percent of sauces left inside traditional bottles, like those last trails of ketchup and mayonnaise that won’t come out no matter how hard you shake or squeeze. Liquiglide — which refers to both a company and the product it makes — is a permanently wet slippery surface that allows viscous matter to slide off easily. Liquiglide estimates that its coating could prevent 1 million tons of food waste each year. The coating is made from components approved by the US government, and, according to the company, does not affect the taste or smell of food. Another benefit of Liquiglide is that it prevents carbonated beverages from going flat. E New safety-enhancing packaging is now addressing the issue of food spoilage. It might seem this was solved long ago with the advent of the ‘Sell-by date stamp’, which was meant to warn customers of when the food would no longer be considered suitable for consumption. But after a Harvard report revealed that sell-by dates are often inaccurate because of variances in transportation and grocery store policies, and that they also contribute to America’s food-waste problem, the stamps have lost credibility in the food industry. In response, scientists are working on food packaging – like plastic wrap – that is ‘active and intelligent’ with tiny embedded sensors to first detect and later prevent food from spoiling. This advancement in food packaging draws upon nanotechnology, which is dedicated to making electronic sensors tiny and inexpensive. Of course, one could also rely on what has saved humankind from food poisoning for millennia – the senses. If it smells bad, throw it away. F Another emerging technology is packaging that disappears. MonoSol, LLC creates food-grade water-soluble bags for pre-portioned oatmeal or rice. When boiled, the bag dissolves, leaving only the food, ready to eat. MonoSol, LLC is marketing this to professional kitchens as well as consumers, as a way to pre-measure meal ingredients and ensure consistency regardless of who cooks. Tomorrow Machine, a Swedish design firm, has plans for three disappearing packages: an oil bottle made from hardened sugar that cracks open like an egg; a fruit juice container made from seaweed that will wither at the same rate as its content; and a peelable beeswax package for rice or other dry goods. G Super-compressed packaging serves the increasing number of city dwellers who generally have tiny kitchens and no storage room. Additionally, many people living in urban areas walk home from grocery stores, and they need lighter and smaller packages. Tomorrow Machine is also working on a compressed tiny package that expands into a full-size bowl when hot water is added.</p><h2>Marine Mammals Exhibit Ingenuity</h2><p></p>",
+      "questions": [
+        {
+          "order": 1,
+          "text": "[The Baobabs of Madagascar] TRUE, FALSE or NOT GIVEN.\nAll baobab species on Madagascar are unique to the island",
+          "question_type": "mcq",
+          "correct_answer": "FALSE",
+          "options": [
+            {
+              "key": "TRUE",
+              "text": "True"
+            },
+            {
+              "key": "FALSE",
+              "text": "False"
+            },
+            {
+              "key": "NOT GIVEN",
+              "text": "Not Given"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 2,
+          "text": "Adanson and Grandidier were the first foreign botanists to visit Madagascar",
+          "question_type": "mcq",
+          "correct_answer": "NOT GIVEN",
+          "options": [
+            {
+              "key": "TRUE",
+              "text": "True"
+            },
+            {
+              "key": "FALSE",
+              "text": "False"
+            },
+            {
+              "key": "NOT GIVEN",
+              "text": "Not Given"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 3,
+          "text": "The baobab can be found in most areas of Madagascar",
+          "question_type": "mcq",
+          "correct_answer": "FALSE",
+          "options": [
+            {
+              "key": "TRUE",
+              "text": "True"
+            },
+            {
+              "key": "FALSE",
+              "text": "False"
+            },
+            {
+              "key": "NOT GIVEN",
+              "text": "Not Given"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 4,
+          "text": "The Avenue des Baobabs landscape resulted from agricultural development",
+          "question_type": "mcq",
+          "correct_answer": "TRUE",
+          "options": [
+            {
+              "key": "TRUE",
+              "text": "True"
+            },
+            {
+              "key": "FALSE",
+              "text": "False"
+            },
+            {
+              "key": "NOT GIVEN",
+              "text": "Not Given"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 5,
+          "text": "The baobab provides useful products for local people",
+          "question_type": "mcq",
+          "correct_answer": "TRUE",
+          "options": [
+            {
+              "key": "TRUE",
+              "text": "True"
+            },
+            {
+              "key": "FALSE",
+              "text": "False"
+            },
+            {
+              "key": "NOT GIVEN",
+              "text": "Not Given"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 6,
+          "text": "There is general agreement about why baobabs fall down",
+          "question_type": "mcq",
+          "correct_answer": "FALSE",
+          "options": [
+            {
+              "key": "TRUE",
+              "text": "True"
+            },
+            {
+              "key": "FALSE",
+              "text": "False"
+            },
+            {
+              "key": "NOT GIVEN",
+              "text": "Not Given"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 7,
+          "text": "water from nearby fields",
+          "question_type": "gap_fill",
+          "correct_answer": "irrigation",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 8,
+          "text": "lone trees are at risk from",
+          "question_type": "gap_fill",
+          "correct_answer": "cyclones",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 9,
+          "text": "space for ___ activity",
+          "question_type": "gap_fill",
+          "correct_answer": "farming",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 10,
+          "text": "practice of ___ makes germination difficult",
+          "question_type": "gap_fill",
+          "correct_answer": "logging",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 11,
+          "text": "disappearance of certain ___ which dispersed seeds",
+          "question_type": "gap_fill",
+          "correct_answer": "animals",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 12,
+          "text": "making ___ of undamaged forest",
+          "question_type": "gap_fill",
+          "correct_answer": "maps",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 13,
+          "text": "producing a ___ about local culture",
+          "question_type": "gap_fill",
+          "correct_answer": "book",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 14,
+          "text": "[The Future of Food Packaging] Match the paragraph to a heading.\nParagraph A",
+          "question_type": "mcq",
+          "correct_answer": "ix",
+          "options": [
+            {
+              "key": "i",
+              "text": "allows consumers to use more product"
+            },
+            {
+              "key": "ii",
+              "text": "many reasons for changes"
+            },
+            {
+              "key": "iii",
+              "text": "includes utensils"
+            },
+            {
+              "key": "iv",
+              "text": "consumed with contents"
+            },
+            {
+              "key": "v",
+              "text": "compact packaging"
+            },
+            {
+              "key": "vi",
+              "text": "history of packaging"
+            },
+            {
+              "key": "vii",
+              "text": "indicates spoilage"
+            },
+            {
+              "key": "viii",
+              "text": "reusable packaging"
+            },
+            {
+              "key": "ix",
+              "text": "communicates ideas and attracts customers"
+            },
+            {
+              "key": "x",
+              "text": "vanishes or decomposes quickly"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 15,
+          "text": "Paragraph B",
+          "question_type": "mcq",
+          "correct_answer": "ii",
+          "options": [
+            {
+              "key": "i",
+              "text": "allows consumers to use more product"
+            },
+            {
+              "key": "ii",
+              "text": "many reasons for changes"
+            },
+            {
+              "key": "iii",
+              "text": "includes utensils"
+            },
+            {
+              "key": "iv",
+              "text": "consumed with contents"
+            },
+            {
+              "key": "v",
+              "text": "compact packaging"
+            },
+            {
+              "key": "vi",
+              "text": "history of packaging"
+            },
+            {
+              "key": "vii",
+              "text": "indicates spoilage"
+            },
+            {
+              "key": "viii",
+              "text": "reusable packaging"
+            },
+            {
+              "key": "ix",
+              "text": "communicates ideas and attracts customers"
+            },
+            {
+              "key": "x",
+              "text": "vanishes or decomposes quickly"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 16,
+          "text": "Paragraph C",
+          "question_type": "mcq",
+          "correct_answer": "iv",
+          "options": [
+            {
+              "key": "i",
+              "text": "allows consumers to use more product"
+            },
+            {
+              "key": "ii",
+              "text": "many reasons for changes"
+            },
+            {
+              "key": "iii",
+              "text": "includes utensils"
+            },
+            {
+              "key": "iv",
+              "text": "consumed with contents"
+            },
+            {
+              "key": "v",
+              "text": "compact packaging"
+            },
+            {
+              "key": "vi",
+              "text": "history of packaging"
+            },
+            {
+              "key": "vii",
+              "text": "indicates spoilage"
+            },
+            {
+              "key": "viii",
+              "text": "reusable packaging"
+            },
+            {
+              "key": "ix",
+              "text": "communicates ideas and attracts customers"
+            },
+            {
+              "key": "x",
+              "text": "vanishes or decomposes quickly"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 17,
+          "text": "Paragraph D",
+          "question_type": "mcq",
+          "correct_answer": "i",
+          "options": [
+            {
+              "key": "i",
+              "text": "allows consumers to use more product"
+            },
+            {
+              "key": "ii",
+              "text": "many reasons for changes"
+            },
+            {
+              "key": "iii",
+              "text": "includes utensils"
+            },
+            {
+              "key": "iv",
+              "text": "consumed with contents"
+            },
+            {
+              "key": "v",
+              "text": "compact packaging"
+            },
+            {
+              "key": "vi",
+              "text": "history of packaging"
+            },
+            {
+              "key": "vii",
+              "text": "indicates spoilage"
+            },
+            {
+              "key": "viii",
+              "text": "reusable packaging"
+            },
+            {
+              "key": "ix",
+              "text": "communicates ideas and attracts customers"
+            },
+            {
+              "key": "x",
+              "text": "vanishes or decomposes quickly"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 18,
+          "text": "Paragraph E",
+          "question_type": "mcq",
+          "correct_answer": "vii",
+          "options": [
+            {
+              "key": "i",
+              "text": "allows consumers to use more product"
+            },
+            {
+              "key": "ii",
+              "text": "many reasons for changes"
+            },
+            {
+              "key": "iii",
+              "text": "includes utensils"
+            },
+            {
+              "key": "iv",
+              "text": "consumed with contents"
+            },
+            {
+              "key": "v",
+              "text": "compact packaging"
+            },
+            {
+              "key": "vi",
+              "text": "history of packaging"
+            },
+            {
+              "key": "vii",
+              "text": "indicates spoilage"
+            },
+            {
+              "key": "viii",
+              "text": "reusable packaging"
+            },
+            {
+              "key": "ix",
+              "text": "communicates ideas and attracts customers"
+            },
+            {
+              "key": "x",
+              "text": "vanishes or decomposes quickly"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 19,
+          "text": "Paragraph F",
+          "question_type": "mcq",
+          "correct_answer": "x",
+          "options": [
+            {
+              "key": "i",
+              "text": "allows consumers to use more product"
+            },
+            {
+              "key": "ii",
+              "text": "many reasons for changes"
+            },
+            {
+              "key": "iii",
+              "text": "includes utensils"
+            },
+            {
+              "key": "iv",
+              "text": "consumed with contents"
+            },
+            {
+              "key": "v",
+              "text": "compact packaging"
+            },
+            {
+              "key": "vi",
+              "text": "history of packaging"
+            },
+            {
+              "key": "vii",
+              "text": "indicates spoilage"
+            },
+            {
+              "key": "viii",
+              "text": "reusable packaging"
+            },
+            {
+              "key": "ix",
+              "text": "communicates ideas and attracts customers"
+            },
+            {
+              "key": "x",
+              "text": "vanishes or decomposes quickly"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 20,
+          "text": "Paragraph G",
+          "question_type": "mcq",
+          "correct_answer": "v",
+          "options": [
+            {
+              "key": "i",
+              "text": "allows consumers to use more product"
+            },
+            {
+              "key": "ii",
+              "text": "many reasons for changes"
+            },
+            {
+              "key": "iii",
+              "text": "includes utensils"
+            },
+            {
+              "key": "iv",
+              "text": "consumed with contents"
+            },
+            {
+              "key": "v",
+              "text": "compact packaging"
+            },
+            {
+              "key": "vi",
+              "text": "history of packaging"
+            },
+            {
+              "key": "vii",
+              "text": "indicates spoilage"
+            },
+            {
+              "key": "viii",
+              "text": "reusable packaging"
+            },
+            {
+              "key": "ix",
+              "text": "communicates ideas and attracts customers"
+            },
+            {
+              "key": "x",
+              "text": "vanishes or decomposes quickly"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 21,
+          "text": "KFC",
+          "question_type": "mcq",
+          "correct_answer": "E",
+          "options": [
+            {
+              "key": "A",
+              "text": "expands under certain conditions"
+            },
+            {
+              "key": "B",
+              "text": "vanishes in hot water"
+            },
+            {
+              "key": "C",
+              "text": "nonstick material"
+            },
+            {
+              "key": "D",
+              "text": "made from a vegetable product"
+            },
+            {
+              "key": "E",
+              "text": "sweet hot-drink container"
+            },
+            {
+              "key": "F",
+              "text": "round edible container"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 22,
+          "text": "Loliware",
+          "question_type": "mcq",
+          "correct_answer": "D",
+          "options": [
+            {
+              "key": "A",
+              "text": "expands under certain conditions"
+            },
+            {
+              "key": "B",
+              "text": "vanishes in hot water"
+            },
+            {
+              "key": "C",
+              "text": "nonstick material"
+            },
+            {
+              "key": "D",
+              "text": "made from a vegetable product"
+            },
+            {
+              "key": "E",
+              "text": "sweet hot-drink container"
+            },
+            {
+              "key": "F",
+              "text": "round edible container"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 23,
+          "text": "Tomorrow Machine",
+          "question_type": "mcq",
+          "correct_answer": "A",
+          "options": [
+            {
+              "key": "A",
+              "text": "expands under certain conditions"
+            },
+            {
+              "key": "B",
+              "text": "vanishes in hot water"
+            },
+            {
+              "key": "C",
+              "text": "nonstick material"
+            },
+            {
+              "key": "D",
+              "text": "made from a vegetable product"
+            },
+            {
+              "key": "E",
+              "text": "sweet hot-drink container"
+            },
+            {
+              "key": "F",
+              "text": "round edible container"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 24,
+          "text": "In Japan, ___ has been edible packaging for years",
+          "question_type": "gap_fill",
+          "correct_answer": "paper",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 25,
+          "text": "Liquiglide helps bottles containing various ___",
+          "question_type": "gap_fill",
+          "correct_answer": "sauces",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 26,
+          "text": "Tomorrow Machine plans solid ___ as an oil container",
+          "question_type": "gap_fill",
+          "correct_answer": "sugar",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 27,
+          "text": "[Marine Mammals Exhibit Ingenuity] YES, NO or NOT GIVEN.\nSponge hunting may have begun with one female dolphin",
+          "question_type": "mcq",
+          "correct_answer": "YES",
+          "options": [
+            {
+              "key": "YES",
+              "text": "Yes"
+            },
+            {
+              "key": "NO",
+              "text": "No"
+            },
+            {
+              "key": "NOT GIVEN",
+              "text": "Not Given"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 28,
+          "text": "Dolphin tool use may illuminate human tool origins",
+          "question_type": "mcq",
+          "correct_answer": "YES",
+          "options": [
+            {
+              "key": "YES",
+              "text": "Yes"
+            },
+            {
+              "key": "NO",
+              "text": "No"
+            },
+            {
+              "key": "NOT GIVEN",
+              "text": "Not Given"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 29,
+          "text": "Researchers generally agree on the link between tool use and intelligence",
+          "question_type": "mcq",
+          "correct_answer": "NO",
+          "options": [
+            {
+              "key": "YES",
+              "text": "Yes"
+            },
+            {
+              "key": "NO",
+              "text": "No"
+            },
+            {
+              "key": "NOT GIVEN",
+              "text": "Not Given"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 30,
+          "text": "Other scientists have criticised Dr Mann’s analysis",
+          "question_type": "mcq",
+          "correct_answer": "NOT GIVEN",
+          "options": [
+            {
+              "key": "YES",
+              "text": "Yes"
+            },
+            {
+              "key": "NO",
+              "text": "No"
+            },
+            {
+              "key": "NOT GIVEN",
+              "text": "Not Given"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 31,
+          "text": "Dolphins use sponges",
+          "question_type": "mcq",
+          "correct_answer": "B",
+          "options": [
+            {
+              "key": "A",
+              "text": "to attract fish"
+            },
+            {
+              "key": "B",
+              "text": "to avoid injury"
+            },
+            {
+              "key": "C",
+              "text": "to supplement diet"
+            },
+            {
+              "key": "D",
+              "text": "as decoration"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 32,
+          "text": "Sponge use results in dolphins",
+          "question_type": "mcq",
+          "correct_answer": "C",
+          "options": [
+            {
+              "key": "A",
+              "text": "living longer"
+            },
+            {
+              "key": "B",
+              "text": "attracting mates"
+            },
+            {
+              "key": "C",
+              "text": "becoming isolated"
+            },
+            {
+              "key": "D",
+              "text": "becoming aggressive"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 33,
+          "text": "The fisherman",
+          "question_type": "mcq",
+          "correct_answer": "D",
+          "options": [
+            {
+              "key": "A",
+              "text": "explained the habit"
+            },
+            {
+              "key": "B",
+              "text": "made many observations"
+            },
+            {
+              "key": "C",
+              "text": "notified media"
+            },
+            {
+              "key": "D",
+              "text": "thought the sponge was a growth"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 34,
+          "text": "Finding a sponge can take time because",
+          "question_type": "mcq",
+          "correct_answer": "C",
+          "options": [
+            {
+              "key": "A",
+              "text": "some are heavy"
+            },
+            {
+              "key": "B",
+              "text": "they are rare"
+            },
+            {
+              "key": "C",
+              "text": "it must fit well"
+            },
+            {
+              "key": "D",
+              "text": "dolphins have individual preferences"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 35,
+          "text": "Few sponge users allowed researchers to",
+          "question_type": "mcq",
+          "correct_answer": "A",
+          "options": [
+            {
+              "key": "A",
+              "text": "compare behaviours within one species"
+            },
+            {
+              "key": "B",
+              "text": "track individuals"
+            },
+            {
+              "key": "C",
+              "text": "decide whether it was tool use"
+            },
+            {
+              "key": "D",
+              "text": "explain its purpose"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 36,
+          "text": "A genetic explanation",
+          "question_type": "mcq",
+          "correct_answer": "H",
+          "options": [
+            {
+              "key": "A",
+              "text": "more frequent among females"
+            },
+            {
+              "key": "B",
+              "text": "linked to a physical characteristic"
+            },
+            {
+              "key": "C",
+              "text": "only possible in salt water"
+            },
+            {
+              "key": "D",
+              "text": "more typical of males"
+            },
+            {
+              "key": "E",
+              "text": "evidence of sound use"
+            },
+            {
+              "key": "F",
+              "text": "threat to fishing"
+            },
+            {
+              "key": "G",
+              "text": "learned by observing mothers"
+            },
+            {
+              "key": "H",
+              "text": "not accepted by investigators"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 37,
+          "text": "Observation of mothers",
+          "question_type": "mcq",
+          "correct_answer": "G",
+          "options": [
+            {
+              "key": "A",
+              "text": "more frequent among females"
+            },
+            {
+              "key": "B",
+              "text": "linked to a physical characteristic"
+            },
+            {
+              "key": "C",
+              "text": "only possible in salt water"
+            },
+            {
+              "key": "D",
+              "text": "more typical of males"
+            },
+            {
+              "key": "E",
+              "text": "evidence of sound use"
+            },
+            {
+              "key": "F",
+              "text": "threat to fishing"
+            },
+            {
+              "key": "G",
+              "text": "learned by observing mothers"
+            },
+            {
+              "key": "H",
+              "text": "not accepted by investigators"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 38,
+          "text": "Continued sponge use in adulthood",
+          "question_type": "mcq",
+          "correct_answer": "A",
+          "options": [
+            {
+              "key": "A",
+              "text": "more frequent among females"
+            },
+            {
+              "key": "B",
+              "text": "linked to a physical characteristic"
+            },
+            {
+              "key": "C",
+              "text": "only possible in salt water"
+            },
+            {
+              "key": "D",
+              "text": "more typical of males"
+            },
+            {
+              "key": "E",
+              "text": "evidence of sound use"
+            },
+            {
+              "key": "F",
+              "text": "threat to fishing"
+            },
+            {
+              "key": "G",
+              "text": "learned by observing mothers"
+            },
+            {
+              "key": "H",
+              "text": "not accepted by investigators"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 39,
+          "text": "Hunting in groups",
+          "question_type": "mcq",
+          "correct_answer": "D",
+          "options": [
+            {
+              "key": "A",
+              "text": "more frequent among females"
+            },
+            {
+              "key": "B",
+              "text": "linked to a physical characteristic"
+            },
+            {
+              "key": "C",
+              "text": "only possible in salt water"
+            },
+            {
+              "key": "D",
+              "text": "more typical of males"
+            },
+            {
+              "key": "E",
+              "text": "evidence of sound use"
+            },
+            {
+              "key": "F",
+              "text": "threat to fishing"
+            },
+            {
+              "key": "G",
+              "text": "learned by observing mothers"
+            },
+            {
+              "key": "H",
+              "text": "not accepted by investigators"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 40,
+          "text": "The dolphins’ clever behaviour",
+          "question_type": "mcq",
+          "correct_answer": "B",
+          "options": [
+            {
+              "key": "A",
+              "text": "more frequent among females"
+            },
+            {
+              "key": "B",
+              "text": "linked to a physical characteristic"
+            },
+            {
+              "key": "C",
+              "text": "only possible in salt water"
+            },
+            {
+              "key": "D",
+              "text": "more typical of males"
+            },
+            {
+              "key": "E",
+              "text": "evidence of sound use"
+            },
+            {
+              "key": "F",
+              "text": "threat to fishing"
+            },
+            {
+              "key": "G",
+              "text": "learned by observing mothers"
+            },
+            {
+              "key": "H",
+              "text": "not accepted by investigators"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        }
+      ]
+    },
+    {
+      "title": "Writing",
+      "section_type": "writing",
+      "order": 3,
+      "duration_minutes": 60,
+      "image": "images/mock_test_14_task1.jpg",
+      "content": "",
+      "questions": [
+        {
+          "order": 1,
+          "text": "The table shows residential water use in one country in 1988 and 2008. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.",
+          "question_type": "essay",
+          "correct_answer": "",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 2,
+          "text": "Students today can easily find information online, so libraries are no longer necessary. To what extent do you agree or disagree?",
+          "question_type": "essay",
+          "correct_answer": "",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        }
+      ]
+    }
+  ]
+}

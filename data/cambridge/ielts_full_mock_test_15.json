@@ -1,0 +1,1962 @@
+{
+  "title": "IELTS Full Mock Test 15",
+  "description": "To‘liq IELTS Academic mock test: Listening, Reading va Writing.",
+  "exam_type": "mock",
+  "price": 0,
+  "duration_minutes": 170,
+  "is_active": true,
+  "sections": [
+    {
+      "title": "Listening",
+      "section_type": "listening",
+      "order": 1,
+      "duration_minutes": 40,
+      "audio_file": "../../TESTLAR/11/56658.mp3",
+      "content": "",
+      "questions": [
+        {
+          "order": 1,
+          "text": "[Film Club] Write ONE WORD AND/OR A NUMBER.\nNo ___ limit",
+          "question_type": "gap_fill",
+          "correct_answer": "age",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 2,
+          "text": "Student membership costs £___ per season",
+          "question_type": "gap_fill",
+          "correct_answer": "21.50",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 3,
+          "text": "£___ reduction on other films",
+          "question_type": "gap_fill",
+          "correct_answer": "2",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 4,
+          "text": "three hours’ free ___",
+          "question_type": "gap_fill",
+          "correct_answer": "parking",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 5,
+          "text": "Pablo is about a child in ___",
+          "question_type": "gap_fill",
+          "correct_answer": "Argentina",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 6,
+          "text": "wins a ___ competition",
+          "question_type": "gap_fill",
+          "correct_answer": "singing",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 7,
+          "text": "live ___ accompaniment",
+          "question_type": "gap_fill",
+          "correct_answer": "piano",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 8,
+          "text": "made in ___",
+          "question_type": "gap_fill",
+          "correct_answer": "1922",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 9,
+          "text": "type of film: a ___",
+          "question_type": "gap_fill",
+          "correct_answer": "comedy",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 10,
+          "text": "followed by a ___ by the director",
+          "question_type": "gap_fill",
+          "correct_answer": "talk",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 11,
+          "text": "[extrahands.com] Choose A, B or C.\nWhy did the founders originally need help?",
+          "question_type": "mcq",
+          "correct_answer": "A",
+          "options": [
+            {
+              "key": "A",
+              "text": "preparing fields for planting"
+            },
+            {
+              "key": "B",
+              "text": "harvesting organic crops"
+            },
+            {
+              "key": "C",
+              "text": "constructing farm buildings"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 12,
+          "text": "To remain an active member you must",
+          "question_type": "mcq",
+          "correct_answer": "A",
+          "options": [
+            {
+              "key": "A",
+              "text": "update your form every year"
+            },
+            {
+              "key": "B",
+              "text": "pay $25 every year"
+            },
+            {
+              "key": "C",
+              "text": "use the scheme every year"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 13,
+          "text": "Most volunteers search for jobs according to",
+          "question_type": "mcq",
+          "correct_answer": "B",
+          "options": [
+            {
+              "key": "A",
+              "text": "type of work"
+            },
+            {
+              "key": "B",
+              "text": "geographical location"
+            },
+            {
+              "key": "C",
+              "text": "length of time"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 14,
+          "text": "The host and volunteer should",
+          "question_type": "mcq",
+          "correct_answer": "A",
+          "options": [
+            {
+              "key": "A",
+              "text": "confirm details in writing"
+            },
+            {
+              "key": "B",
+              "text": "draw up a formal contract"
+            },
+            {
+              "key": "C",
+              "text": "meet before setting terms"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 15,
+          "text": "How are members’ problems dealt with?",
+          "question_type": "mcq",
+          "correct_answer": "B",
+          "options": [
+            {
+              "key": "A",
+              "text": "checking each new member"
+            },
+            {
+              "key": "B",
+              "text": "allowing online feedback"
+            },
+            {
+              "key": "C",
+              "text": "inspecting work and accommodation"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 16,
+          "text": "Which job did Stephen do in this country?\nPortugal",
+          "question_type": "mcq",
+          "correct_answer": "F",
+          "options": [
+            {
+              "key": "A",
+              "text": "cook"
+            },
+            {
+              "key": "B",
+              "text": "gardener"
+            },
+            {
+              "key": "C",
+              "text": "construction worker"
+            },
+            {
+              "key": "D",
+              "text": "tour guide"
+            },
+            {
+              "key": "E",
+              "text": "farm labourer"
+            },
+            {
+              "key": "F",
+              "text": "editor"
+            },
+            {
+              "key": "G",
+              "text": "swimming pool cleaner"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 17,
+          "text": "Australia",
+          "question_type": "mcq",
+          "correct_answer": "A",
+          "options": [
+            {
+              "key": "A",
+              "text": "cook"
+            },
+            {
+              "key": "B",
+              "text": "gardener"
+            },
+            {
+              "key": "C",
+              "text": "construction worker"
+            },
+            {
+              "key": "D",
+              "text": "tour guide"
+            },
+            {
+              "key": "E",
+              "text": "farm labourer"
+            },
+            {
+              "key": "F",
+              "text": "editor"
+            },
+            {
+              "key": "G",
+              "text": "swimming pool cleaner"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 18,
+          "text": "South Korea",
+          "question_type": "mcq",
+          "correct_answer": "D",
+          "options": [
+            {
+              "key": "A",
+              "text": "cook"
+            },
+            {
+              "key": "B",
+              "text": "gardener"
+            },
+            {
+              "key": "C",
+              "text": "construction worker"
+            },
+            {
+              "key": "D",
+              "text": "tour guide"
+            },
+            {
+              "key": "E",
+              "text": "farm labourer"
+            },
+            {
+              "key": "F",
+              "text": "editor"
+            },
+            {
+              "key": "G",
+              "text": "swimming pool cleaner"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 19,
+          "text": "USA",
+          "question_type": "mcq",
+          "correct_answer": "B",
+          "options": [
+            {
+              "key": "A",
+              "text": "cook"
+            },
+            {
+              "key": "B",
+              "text": "gardener"
+            },
+            {
+              "key": "C",
+              "text": "construction worker"
+            },
+            {
+              "key": "D",
+              "text": "tour guide"
+            },
+            {
+              "key": "E",
+              "text": "farm labourer"
+            },
+            {
+              "key": "F",
+              "text": "editor"
+            },
+            {
+              "key": "G",
+              "text": "swimming pool cleaner"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 20,
+          "text": "Italy",
+          "question_type": "mcq",
+          "correct_answer": "C",
+          "options": [
+            {
+              "key": "A",
+              "text": "cook"
+            },
+            {
+              "key": "B",
+              "text": "gardener"
+            },
+            {
+              "key": "C",
+              "text": "construction worker"
+            },
+            {
+              "key": "D",
+              "text": "tour guide"
+            },
+            {
+              "key": "E",
+              "text": "farm labourer"
+            },
+            {
+              "key": "F",
+              "text": "editor"
+            },
+            {
+              "key": "G",
+              "text": "swimming pool cleaner"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 21,
+          "text": "[Song-writing course for drama students] Choose A, B or C.\nWhat problem is Lorna having with her report?",
+          "question_type": "mcq",
+          "correct_answer": "B",
+          "options": [
+            {
+              "key": "A",
+              "text": "listing the references"
+            },
+            {
+              "key": "B",
+              "text": "keeping to the word limit"
+            },
+            {
+              "key": "C",
+              "text": "writing the evaluation"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 22,
+          "text": "Why did Charles take the course?",
+          "question_type": "mcq",
+          "correct_answer": "C",
+          "options": [
+            {
+              "key": "A",
+              "text": "improve job prospects"
+            },
+            {
+              "key": "B",
+              "text": "increase self-confidence"
+            },
+            {
+              "key": "C",
+              "text": "develop self-expression"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 23,
+          "text": "Which work did Lorna most enjoy?",
+          "question_type": "mcq",
+          "correct_answer": "C",
+          "options": [
+            {
+              "key": "A",
+              "text": "individual work"
+            },
+            {
+              "key": "B",
+              "text": "pair work"
+            },
+            {
+              "key": "C",
+              "text": "group work"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 24,
+          "text": "Which course content interested both students?",
+          "question_type": "mcq",
+          "correct_answer": "A",
+          "options": [
+            {
+              "key": "A",
+              "text": "song structure"
+            },
+            {
+              "key": "B",
+              "text": "writing a chorus"
+            },
+            {
+              "key": "C",
+              "text": "lyrical styles and forms"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 25,
+          "text": "Lorna found writing a song",
+          "question_type": "mcq",
+          "correct_answer": "B",
+          "options": [
+            {
+              "key": "A",
+              "text": "impossible"
+            },
+            {
+              "key": "B",
+              "text": "tiring"
+            },
+            {
+              "key": "C",
+              "text": "amusing"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 26,
+          "text": "Match each teacher to the workshop focus.\nBob Lacey",
+          "question_type": "mcq",
+          "correct_answer": "G",
+          "options": [
+            {
+              "key": "A",
+              "text": "use of own memories"
+            },
+            {
+              "key": "B",
+              "text": "full use of the stage"
+            },
+            {
+              "key": "C",
+              "text": "relaxation techniques"
+            },
+            {
+              "key": "D",
+              "text": "physical expression of character"
+            },
+            {
+              "key": "E",
+              "text": "play readings"
+            },
+            {
+              "key": "F",
+              "text": "acting without preparation"
+            },
+            {
+              "key": "G",
+              "text": "using a range of accents"
+            },
+            {
+              "key": "H",
+              "text": "following instructions"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 27,
+          "text": "Evelyn Chance",
+          "question_type": "mcq",
+          "correct_answer": "B",
+          "options": [
+            {
+              "key": "A",
+              "text": "use of own memories"
+            },
+            {
+              "key": "B",
+              "text": "full use of the stage"
+            },
+            {
+              "key": "C",
+              "text": "relaxation techniques"
+            },
+            {
+              "key": "D",
+              "text": "physical expression of character"
+            },
+            {
+              "key": "E",
+              "text": "play readings"
+            },
+            {
+              "key": "F",
+              "text": "acting without preparation"
+            },
+            {
+              "key": "G",
+              "text": "using a range of accents"
+            },
+            {
+              "key": "H",
+              "text": "following instructions"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 28,
+          "text": "Ted Winter",
+          "question_type": "mcq",
+          "correct_answer": "D",
+          "options": [
+            {
+              "key": "A",
+              "text": "use of own memories"
+            },
+            {
+              "key": "B",
+              "text": "full use of the stage"
+            },
+            {
+              "key": "C",
+              "text": "relaxation techniques"
+            },
+            {
+              "key": "D",
+              "text": "physical expression of character"
+            },
+            {
+              "key": "E",
+              "text": "play readings"
+            },
+            {
+              "key": "F",
+              "text": "acting without preparation"
+            },
+            {
+              "key": "G",
+              "text": "using a range of accents"
+            },
+            {
+              "key": "H",
+              "text": "following instructions"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 29,
+          "text": "Kevin Gray",
+          "question_type": "mcq",
+          "correct_answer": "H",
+          "options": [
+            {
+              "key": "A",
+              "text": "use of own memories"
+            },
+            {
+              "key": "B",
+              "text": "full use of the stage"
+            },
+            {
+              "key": "C",
+              "text": "relaxation techniques"
+            },
+            {
+              "key": "D",
+              "text": "physical expression of character"
+            },
+            {
+              "key": "E",
+              "text": "play readings"
+            },
+            {
+              "key": "F",
+              "text": "acting without preparation"
+            },
+            {
+              "key": "G",
+              "text": "using a range of accents"
+            },
+            {
+              "key": "H",
+              "text": "following instructions"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 30,
+          "text": "Dorothy Thomas",
+          "question_type": "mcq",
+          "correct_answer": "C",
+          "options": [
+            {
+              "key": "A",
+              "text": "use of own memories"
+            },
+            {
+              "key": "B",
+              "text": "full use of the stage"
+            },
+            {
+              "key": "C",
+              "text": "relaxation techniques"
+            },
+            {
+              "key": "D",
+              "text": "physical expression of character"
+            },
+            {
+              "key": "E",
+              "text": "play readings"
+            },
+            {
+              "key": "F",
+              "text": "acting without preparation"
+            },
+            {
+              "key": "G",
+              "text": "using a range of accents"
+            },
+            {
+              "key": "H",
+              "text": "following instructions"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 31,
+          "text": "[Office Design] Complete the notes. Write ONE WORD ONLY.\nworkers employed to do ___ were arranged in rows",
+          "question_type": "gap_fill",
+          "correct_answer": "typing",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 32,
+          "text": "workers had individual ___",
+          "question_type": "gap_fill",
+          "correct_answer": "desks",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 33,
+          "text": "cubicles with high or low ___",
+          "question_type": "gap_fill",
+          "correct_answer": "screens",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 34,
+          "text": "workers may have to ___ a work area",
+          "question_type": "gap_fill",
+          "correct_answer": "share",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 35,
+          "text": "lack of ___",
+          "question_type": "gap_fill",
+          "correct_answer": "privacy",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 36,
+          "text": "lack of ___",
+          "question_type": "gap_fill",
+          "correct_answer": "security",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 37,
+          "text": "risk to our ___",
+          "question_type": "gap_fill",
+          "correct_answer": "health",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 38,
+          "text": "reduce rent and ___ costs",
+          "question_type": "gap_fill",
+          "correct_answer": "energy",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 39,
+          "text": "make ___ staff easier",
+          "question_type": "gap_fill",
+          "correct_answer": "training",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 40,
+          "text": "distracted by the ___ in the office",
+          "question_type": "gap_fill",
+          "correct_answer": "noise",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        }
+      ]
+    },
+    {
+      "title": "Reading",
+      "section_type": "reading",
+      "order": 2,
+      "duration_minutes": 60,
+      "content": "<h2>Sydney Opera House</h2><p></p><h2>The Role of Errors in Learning</h2><p></p><h2>How Does Watching Sport Influence the Brain</h2><p>How Does Watching Sport Influence the Brain? A During the epoch when the poet Homer unveiled his grand epic, the ancient Greeks initiated a festival where men contended in a race of roughly 200 metres. The victor would be rewarded with a symbolic olive branch. This event, known as the Olympics, has transcended its humble origins to embody the human quest for progress. The captivating nature of these games raises an intriguing question: what exactly draws us in as spectators? Is it the thrill of competition, the beauty of human movement, or something happening within our brains? B In 1996, three Italian neuroscientists-Giacomo Rizzolatti, Leonardo Fogassi, and Vittorio Gallese conducted research on the premotor cortex of monkeys and made a groundbreaking discovery. They revealed a cluster of cells that act as a repository for motor actions, similar to &#x27;grammar of movement&#x27;. These cellular networks represent the &#x27;sentences&#x27; of fullbody motions that our brains meticulously retain and refine. Take the art of swinging a golf club as an example. For those who only watch the Masters Tournament on television, playing golf may appear deceptively effortless. However, for novices, smoothly manoeuvring the asymmetrical metal club presents a nearly impossible challenge. This is because novices rely on conscious effort, utilising brain regions adjacent to the premotor cortex. Experts, by contrast, instinctively execute perfectly balanced movements, as their actions are deeply ingrained and intertwined with neurons in the premotor cortex. Their swing occurs with the serenity of a refined autopilot, requiring no conscious control. This neural distinction between novices and experts provides insight into how long-term training can physically reshape the brain. C These neurons in the premotor cortex not only help explain why some athletes seem to have exceptional skills, but they also exhibit a wondrous characteristic that prompted Rizzolatti, Fogassi, and Gallese to bestow upon them the exalted label of mirror neuron&#x27;. They point out that mirror neurons are activated when a primate performs a particular action, such as grasping or holding an object, or when it witnesses another individual performing a comparable action. Humans possess an even more intricate mitor neuron system that reflects the external world in our brains, enabling us to intemalise the behaviours of others. Nonetheless, these cells necessitate what scientists refer to as &#x27;goal-orientated movements&#x27; to activate. If we stare at a photograph, a static image of a runner striding ahead, our mirror neurons remain utterly silent. It is solely when the runner is in action, be it in running, moving, or sprinting, that they are ignited. Movement, not stillness, is what speaks to our brains. D This mirroring mechanism is fundamental to our experience as spectators. When we witness a spectacular bicycle kick in football or a perfectly executed slam dunk in basketball, our mirror neuron systems are subtly stimulated, allowing us to mentally simulate the same action. This internal simulation fosters a profound connection with the athlete, as if we are participating in the movement ourselves. This phenomenon extends beyond mere observation; it can trigger a release of neurotransmitters like dopamine and endorphins, which are associated with pleasure and reward. Consequently, witnessing an athlete&#x27;s success can generate a sense of euphoria and shared triumph, while their failure might evoke a palpable sense of shared anxiety. This neural mirroring is thus a key biological basis for the emotional rollercoaster we experience while watching sports. E However, the influence of the brain on athletic performance is not confined to the premotor cortex. The anterior cingulate cortex, a region adept at error detection, also plays a pivotal role. During a high-stakes competition, this area continuously monitors an athlete&#x27;s actions, comparing intended movements with actual outcomes. When a discrepancy arises, such as a tennis player misjudging a volley, it signals an error, prompting immediate corrective adjustments. This vigilant system works in concert with the mirror neuron network to maintain performance under pressure. While mirror neurons help in the fluid execution of learned skills, the anterior cingulate ensures precision by learning from mistakes in real-time, thus safeguarding the athlete&#x27;s technique from deteriorating during critical moments. F Ultimately, the brain&#x27;s capacity to mirror and refine movement is not merely a tool for elite athletes; it is also the very reason why sport holds such universal appeal. The sight of an athlete pushing the limits of human potential does more than just entertain us. It activates a sophisticated neural network that allows us to embody the grace, power, and determination on display. This process, which integrates visual cues with our own motor representations, transforms passive watching into an active, internalised experience. We do not just see the action; we feel it, and in doing so, we connect with the fundamental human drive for excellence that has captivated us since the first races in ancient Greece</p>",
+      "questions": [
+        {
+          "order": 1,
+          "text": "[Sydney Opera House] TRUE, FALSE or NOT GIVEN.\nUtzon was famous before designing the Opera House",
+          "question_type": "mcq",
+          "correct_answer": "FALSE",
+          "options": [
+            {
+              "key": "TRUE",
+              "text": "True"
+            },
+            {
+              "key": "FALSE",
+              "text": "False"
+            },
+            {
+              "key": "NOT GIVEN",
+              "text": "Not Given"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 2,
+          "text": "All four judges favoured the design from the beginning",
+          "question_type": "mcq",
+          "correct_answer": "FALSE",
+          "options": [
+            {
+              "key": "TRUE",
+              "text": "True"
+            },
+            {
+              "key": "FALSE",
+              "text": "False"
+            },
+            {
+              "key": "NOT GIVEN",
+              "text": "Not Given"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 3,
+          "text": "His knowledge of boats inspired parts of the design",
+          "question_type": "mcq",
+          "correct_answer": "TRUE",
+          "options": [
+            {
+              "key": "TRUE",
+              "text": "True"
+            },
+            {
+              "key": "FALSE",
+              "text": "False"
+            },
+            {
+              "key": "NOT GIVEN",
+              "text": "Not Given"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 4,
+          "text": "He was impressed by Mexican opera houses",
+          "question_type": "mcq",
+          "correct_answer": "NOT GIVEN",
+          "options": [
+            {
+              "key": "TRUE",
+              "text": "True"
+            },
+            {
+              "key": "FALSE",
+              "text": "False"
+            },
+            {
+              "key": "NOT GIVEN",
+              "text": "Not Given"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 5,
+          "text": "He changed designs after construction began",
+          "question_type": "mcq",
+          "correct_answer": "TRUE",
+          "options": [
+            {
+              "key": "TRUE",
+              "text": "True"
+            },
+            {
+              "key": "FALSE",
+              "text": "False"
+            },
+            {
+              "key": "NOT GIVEN",
+              "text": "Not Given"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 6,
+          "text": "Seidler defended Utzon’s role",
+          "question_type": "mcq",
+          "correct_answer": "TRUE",
+          "options": [
+            {
+              "key": "TRUE",
+              "text": "True"
+            },
+            {
+              "key": "FALSE",
+              "text": "False"
+            },
+            {
+              "key": "NOT GIVEN",
+              "text": "Not Given"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 7,
+          "text": "Utzon returned for the 1973 opening",
+          "question_type": "mcq",
+          "correct_answer": "FALSE",
+          "options": [
+            {
+              "key": "TRUE",
+              "text": "True"
+            },
+            {
+              "key": "FALSE",
+              "text": "False"
+            },
+            {
+              "key": "NOT GIVEN",
+              "text": "Not Given"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 8,
+          "text": "Final cost: $___",
+          "question_type": "gap_fill",
+          "correct_answer": "102 million",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 9,
+          "text": "Tiles came from ___",
+          "question_type": "gap_fill",
+          "correct_answer": "Sweden",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 10,
+          "text": "Australian ___ covers outside walls",
+          "question_type": "gap_fill",
+          "correct_answer": "granite",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 11,
+          "text": "___ resident companies",
+          "question_type": "gap_fill",
+          "correct_answer": "four/4",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 12,
+          "text": "large ___ below the staircase",
+          "question_type": "gap_fill",
+          "correct_answer": "forecourt",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 13,
+          "text": "opening made the ___ visible",
+          "question_type": "gap_fill",
+          "correct_answer": "harbour",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 14,
+          "text": "[The Role of Errors in Learning] YES, NO or NOT GIVEN.\nThe teacher’s most important function is to develop good learning habits",
+          "question_type": "mcq",
+          "correct_answer": "NOT GIVEN",
+          "options": [
+            {
+              "key": "YES",
+              "text": "Yes"
+            },
+            {
+              "key": "NO",
+              "text": "No"
+            },
+            {
+              "key": "NOT GIVEN",
+              "text": "Not Given"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 15,
+          "text": "Success increased with age",
+          "question_type": "mcq",
+          "correct_answer": "NO",
+          "options": [
+            {
+              "key": "YES",
+              "text": "Yes"
+            },
+            {
+              "key": "NO",
+              "text": "No"
+            },
+            {
+              "key": "NOT GIVEN",
+              "text": "Not Given"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 16,
+          "text": "Children performed without teacher guidance",
+          "question_type": "mcq",
+          "correct_answer": "YES",
+          "options": [
+            {
+              "key": "YES",
+              "text": "Yes"
+            },
+            {
+              "key": "NO",
+              "text": "No"
+            },
+            {
+              "key": "NOT GIVEN",
+              "text": "Not Given"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 17,
+          "text": "Children frequently explained their rules clearly",
+          "question_type": "mcq",
+          "correct_answer": "NO",
+          "options": [
+            {
+              "key": "YES",
+              "text": "Yes"
+            },
+            {
+              "key": "NO",
+              "text": "No"
+            },
+            {
+              "key": "NOT GIVEN",
+              "text": "Not Given"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 18,
+          "text": "weight distribution was ___",
+          "question_type": "mcq",
+          "correct_answer": "G",
+          "options": [
+            {
+              "key": "A",
+              "text": "invisible"
+            },
+            {
+              "key": "B",
+              "text": "ways"
+            },
+            {
+              "key": "C",
+              "text": "others"
+            },
+            {
+              "key": "D",
+              "text": "wood"
+            },
+            {
+              "key": "E",
+              "text": "individually"
+            },
+            {
+              "key": "F",
+              "text": "repeatedly"
+            },
+            {
+              "key": "G",
+              "text": "symmetrical"
+            },
+            {
+              "key": "H",
+              "text": "rules"
+            },
+            {
+              "key": "I",
+              "text": "weight"
+            },
+            {
+              "key": "J",
+              "text": "beam"
+            },
+            {
+              "key": "K",
+              "text": "metal"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 19,
+          "text": "___ was inserted",
+          "question_type": "mcq",
+          "correct_answer": "K",
+          "options": [
+            {
+              "key": "A",
+              "text": "invisible"
+            },
+            {
+              "key": "B",
+              "text": "ways"
+            },
+            {
+              "key": "C",
+              "text": "others"
+            },
+            {
+              "key": "D",
+              "text": "wood"
+            },
+            {
+              "key": "E",
+              "text": "individually"
+            },
+            {
+              "key": "F",
+              "text": "repeatedly"
+            },
+            {
+              "key": "G",
+              "text": "symmetrical"
+            },
+            {
+              "key": "H",
+              "text": "rules"
+            },
+            {
+              "key": "I",
+              "text": "weight"
+            },
+            {
+              "key": "J",
+              "text": "beam"
+            },
+            {
+              "key": "K",
+              "text": "metal"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 20,
+          "text": "differences were ___",
+          "question_type": "mcq",
+          "correct_answer": "A",
+          "options": [
+            {
+              "key": "A",
+              "text": "invisible"
+            },
+            {
+              "key": "B",
+              "text": "ways"
+            },
+            {
+              "key": "C",
+              "text": "others"
+            },
+            {
+              "key": "D",
+              "text": "wood"
+            },
+            {
+              "key": "E",
+              "text": "individually"
+            },
+            {
+              "key": "F",
+              "text": "repeatedly"
+            },
+            {
+              "key": "G",
+              "text": "symmetrical"
+            },
+            {
+              "key": "H",
+              "text": "rules"
+            },
+            {
+              "key": "I",
+              "text": "weight"
+            },
+            {
+              "key": "J",
+              "text": "beam"
+            },
+            {
+              "key": "K",
+              "text": "metal"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 21,
+          "text": "balanced on a ___",
+          "question_type": "mcq",
+          "correct_answer": "J",
+          "options": [
+            {
+              "key": "A",
+              "text": "invisible"
+            },
+            {
+              "key": "B",
+              "text": "ways"
+            },
+            {
+              "key": "C",
+              "text": "others"
+            },
+            {
+              "key": "D",
+              "text": "wood"
+            },
+            {
+              "key": "E",
+              "text": "individually"
+            },
+            {
+              "key": "F",
+              "text": "repeatedly"
+            },
+            {
+              "key": "G",
+              "text": "symmetrical"
+            },
+            {
+              "key": "H",
+              "text": "rules"
+            },
+            {
+              "key": "I",
+              "text": "weight"
+            },
+            {
+              "key": "J",
+              "text": "beam"
+            },
+            {
+              "key": "K",
+              "text": "metal"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 22,
+          "text": "dealt with each block ___",
+          "question_type": "mcq",
+          "correct_answer": "E",
+          "options": [
+            {
+              "key": "A",
+              "text": "invisible"
+            },
+            {
+              "key": "B",
+              "text": "ways"
+            },
+            {
+              "key": "C",
+              "text": "others"
+            },
+            {
+              "key": "D",
+              "text": "wood"
+            },
+            {
+              "key": "E",
+              "text": "individually"
+            },
+            {
+              "key": "F",
+              "text": "repeatedly"
+            },
+            {
+              "key": "G",
+              "text": "symmetrical"
+            },
+            {
+              "key": "H",
+              "text": "rules"
+            },
+            {
+              "key": "I",
+              "text": "weight"
+            },
+            {
+              "key": "J",
+              "text": "beam"
+            },
+            {
+              "key": "K",
+              "text": "metal"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 23,
+          "text": "looked for ___",
+          "question_type": "mcq",
+          "correct_answer": "H",
+          "options": [
+            {
+              "key": "A",
+              "text": "invisible"
+            },
+            {
+              "key": "B",
+              "text": "ways"
+            },
+            {
+              "key": "C",
+              "text": "others"
+            },
+            {
+              "key": "D",
+              "text": "wood"
+            },
+            {
+              "key": "E",
+              "text": "individually"
+            },
+            {
+              "key": "F",
+              "text": "repeatedly"
+            },
+            {
+              "key": "G",
+              "text": "symmetrical"
+            },
+            {
+              "key": "H",
+              "text": "rules"
+            },
+            {
+              "key": "I",
+              "text": "weight"
+            },
+            {
+              "key": "J",
+              "text": "beam"
+            },
+            {
+              "key": "K",
+              "text": "metal"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 24,
+          "text": "a ___ problem",
+          "question_type": "gap_fill",
+          "correct_answer": "geometry",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 25,
+          "text": "by ___ him",
+          "question_type": "gap_fill",
+          "correct_answer": "questioning",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 26,
+          "text": "people dislike feeling ___",
+          "question_type": "gap_fill",
+          "correct_answer": "ignorant",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 27,
+          "text": "[How Does Watching Sport Influence the Brain?] Match information to a paragraph.\nemotional satisfaction",
+          "question_type": "mcq",
+          "correct_answer": "D",
+          "options": [
+            {
+              "key": "A",
+              "text": "Paragraph A"
+            },
+            {
+              "key": "B",
+              "text": "Paragraph B"
+            },
+            {
+              "key": "C",
+              "text": "Paragraph C"
+            },
+            {
+              "key": "D",
+              "text": "Paragraph D"
+            },
+            {
+              "key": "E",
+              "text": "Paragraph E"
+            },
+            {
+              "key": "F",
+              "text": "Paragraph F"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 28,
+          "text": "why beginners struggle",
+          "question_type": "mcq",
+          "correct_answer": "B",
+          "options": [
+            {
+              "key": "A",
+              "text": "Paragraph A"
+            },
+            {
+              "key": "B",
+              "text": "Paragraph B"
+            },
+            {
+              "key": "C",
+              "text": "Paragraph C"
+            },
+            {
+              "key": "D",
+              "text": "Paragraph D"
+            },
+            {
+              "key": "E",
+              "text": "Paragraph E"
+            },
+            {
+              "key": "F",
+              "text": "Paragraph F"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 29,
+          "text": "error detection alongside mirroring",
+          "question_type": "mcq",
+          "correct_answer": "E",
+          "options": [
+            {
+              "key": "A",
+              "text": "Paragraph A"
+            },
+            {
+              "key": "B",
+              "text": "Paragraph B"
+            },
+            {
+              "key": "C",
+              "text": "Paragraph C"
+            },
+            {
+              "key": "D",
+              "text": "Paragraph D"
+            },
+            {
+              "key": "E",
+              "text": "Paragraph E"
+            },
+            {
+              "key": "F",
+              "text": "Paragraph F"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 30,
+          "text": "human and primate mirror neurons compared",
+          "question_type": "mcq",
+          "correct_answer": "C",
+          "options": [
+            {
+              "key": "A",
+              "text": "Paragraph A"
+            },
+            {
+              "key": "B",
+              "text": "Paragraph B"
+            },
+            {
+              "key": "C",
+              "text": "Paragraph C"
+            },
+            {
+              "key": "D",
+              "text": "Paragraph D"
+            },
+            {
+              "key": "E",
+              "text": "Paragraph E"
+            },
+            {
+              "key": "F",
+              "text": "Paragraph F"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 31,
+          "text": "integrating visual and motor processes",
+          "question_type": "mcq",
+          "correct_answer": "F",
+          "options": [
+            {
+              "key": "A",
+              "text": "Paragraph A"
+            },
+            {
+              "key": "B",
+              "text": "Paragraph B"
+            },
+            {
+              "key": "C",
+              "text": "Paragraph C"
+            },
+            {
+              "key": "D",
+              "text": "Paragraph D"
+            },
+            {
+              "key": "E",
+              "text": "Paragraph E"
+            },
+            {
+              "key": "F",
+              "text": "Paragraph F"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 32,
+          "text": "first discovery of mirror neurons",
+          "question_type": "mcq",
+          "correct_answer": "B",
+          "options": [
+            {
+              "key": "A",
+              "text": "Paragraph A"
+            },
+            {
+              "key": "B",
+              "text": "Paragraph B"
+            },
+            {
+              "key": "C",
+              "text": "Paragraph C"
+            },
+            {
+              "key": "D",
+              "text": "Paragraph D"
+            },
+            {
+              "key": "E",
+              "text": "Paragraph E"
+            },
+            {
+              "key": "F",
+              "text": "Paragraph F"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 33,
+          "text": "Expert movements ingrained in premotor cortex",
+          "question_type": "mcq",
+          "correct_answer": "C",
+          "options": [
+            {
+              "key": "A",
+              "text": "immediate action correction"
+            },
+            {
+              "key": "B",
+              "text": "static images do not stimulate"
+            },
+            {
+              "key": "C",
+              "text": "actions look effortless"
+            },
+            {
+              "key": "D",
+              "text": "training changes the brain"
+            },
+            {
+              "key": "E",
+              "text": "internalise others’ actions"
+            },
+            {
+              "key": "F",
+              "text": "ignore crowd distractions"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 34,
+          "text": "Goal-oriented movement needed",
+          "question_type": "mcq",
+          "correct_answer": "B",
+          "options": [
+            {
+              "key": "A",
+              "text": "immediate action correction"
+            },
+            {
+              "key": "B",
+              "text": "static images do not stimulate"
+            },
+            {
+              "key": "C",
+              "text": "actions look effortless"
+            },
+            {
+              "key": "D",
+              "text": "training changes the brain"
+            },
+            {
+              "key": "E",
+              "text": "internalise others’ actions"
+            },
+            {
+              "key": "F",
+              "text": "ignore crowd distractions"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 35,
+          "text": "Anterior cingulate detects errors",
+          "question_type": "mcq",
+          "correct_answer": "A",
+          "options": [
+            {
+              "key": "A",
+              "text": "immediate action correction"
+            },
+            {
+              "key": "B",
+              "text": "static images do not stimulate"
+            },
+            {
+              "key": "C",
+              "text": "actions look effortless"
+            },
+            {
+              "key": "D",
+              "text": "training changes the brain"
+            },
+            {
+              "key": "E",
+              "text": "internalise others’ actions"
+            },
+            {
+              "key": "F",
+              "text": "ignore crowd distractions"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 36,
+          "text": "Human mirror system is intricate",
+          "question_type": "mcq",
+          "correct_answer": "E",
+          "options": [
+            {
+              "key": "A",
+              "text": "immediate action correction"
+            },
+            {
+              "key": "B",
+              "text": "static images do not stimulate"
+            },
+            {
+              "key": "C",
+              "text": "actions look effortless"
+            },
+            {
+              "key": "D",
+              "text": "training changes the brain"
+            },
+            {
+              "key": "E",
+              "text": "internalise others’ actions"
+            },
+            {
+              "key": "F",
+              "text": "ignore crowd distractions"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 37,
+          "text": "cells known as ___",
+          "question_type": "gap_fill",
+          "correct_answer": "mirror neurons",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 38,
+          "text": "movement must be ___",
+          "question_type": "gap_fill",
+          "correct_answer": "goal-orientated",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 39,
+          "text": "error-detecting brain area: ___",
+          "question_type": "gap_fill",
+          "correct_answer": "anterior cingulate/anterior cingulate cortex",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 40,
+          "text": "visual cues combine with our own ___",
+          "question_type": "gap_fill",
+          "correct_answer": "motor representations",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        }
+      ]
+    },
+    {
+      "title": "Writing",
+      "section_type": "writing",
+      "order": 3,
+      "duration_minutes": 60,
+      "image": "images/mock_test_15_task1.jpg",
+      "content": "",
+      "questions": [
+        {
+          "order": 1,
+          "text": "The bar chart shows the percentage of the population living in urban areas in six regions in 2003 and estimates for 2030. Summarise the main features and make comparisons.",
+          "question_type": "essay",
+          "correct_answer": "",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 2,
+          "text": "The use of social media is replacing face-to-face interaction among many people in society. Do the advantages outweigh the disadvantages?",
+          "question_type": "essay",
+          "correct_answer": "",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        }
+      ]
+    }
+  ]
+}

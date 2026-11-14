@@ -310,6 +310,28 @@ class SeedTestlar7Tests(TestCase):
         # the gap's own input is the one answers are saved from
         self.assertEqual(html.count(f'data-qid="{q1.id}"'), 1)
 
+    def test_seed_testlar11_full_mocks(self):
+        """TESTLAR/11 supplies two complete database-backed mock exams."""
+        from django.core.management import call_command
+
+        expected_audio = {14: '59435.mp3', 15: '56658.mp3'}
+        for number in (14, 15):
+            call_command(
+                'seed_cambridge',
+                file=f'data/cambridge/ielts_full_mock_test_{number}.json',
+                stdout=io.StringIO(),
+            )
+            exam = Exam.objects.get(title=f'IELTS Full Mock Test {number}')
+            listening, reading, writing = exam.sections.order_by('order')
+            self.assertEqual(listening.questions.count(), 40)
+            self.assertEqual(reading.questions.count(), 40)
+            self.assertEqual(writing.questions.count(), 2)
+            self.assertTrue(listening.audio_file.name.endswith(expected_audio[number]))
+            self.assertTrue(writing.image)
+
+        listening14 = Exam.objects.get(title='IELTS Full Mock Test 14').sections.get(order=1)
+        self.assertIn('16', listening14.extra_data['question_images'])
+
 
 class QuestionHeadingTests(TestCase):
     """Guruh nomi va ko'rsatmasi ("[Title] Instructions\\n…") 1-savol matniga
