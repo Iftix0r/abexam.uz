@@ -314,7 +314,7 @@ class SeedTestlar7Tests(TestCase):
         """TESTLAR/11 supplies two complete database-backed mock exams."""
         from django.core.management import call_command
 
-        expected_audio = {14: '59435.mp3', 15: '56658.mp3'}
+        expected_audio = {14: 'listening14.mp3', 15: 'listening15.mp3'}
         for number in (14, 15):
             call_command(
                 'seed_cambridge',
