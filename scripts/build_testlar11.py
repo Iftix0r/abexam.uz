@@ -116,6 +116,11 @@ def reading_notes(number):
 <span><strong>E</strong> individually</span><span><strong>F</strong> repeatedly</span><span><strong>G</strong> symmetrical</span><span><strong>H</strong> rules</span>
 <span><strong>I</strong> weight</span><span><strong>J</strong> beam</span><span><strong>K</strong> metal</span>
 </div>""",
+        "24": """<div class="pdf-summary summary-sentences">
+<p>The slave boy gave Socrates an incorrect answer to a [[24]] problem.</p>
+<p>Socrates led the slave boy to recognise his error by [[25]] him.</p>
+<p>According to Socrates, people dislike feeling [[26]].</p>
+</div>""",
         "37": """<div class="pdf-summary">
 <p>The appeal of sports spectatorship is deeply rooted in brain function. A key discovery involved cells known as [[37]], which store patterns for motor actions. These cells are activated not only when we perform an action but also when we observe someone else performing a similar one, but only if the movement is [[38]]. This neural activity allows spectators to mentally simulate the athletic performance they are watching.</p>
 <p>Furthermore, watching sports can trigger the release of chemicals associated with pleasure. Another brain area, the [[39]], contributes to performance by detecting mistakes. Ultimately, watching sport is an engaging experience because it uses a neural process that combines what we see with our own [[40]] for movement.</p>
@@ -245,7 +250,11 @@ def reading15():
     for i, (text, ans) in enumerate(zip(role, ["NOT GIVEN", "NO", "YES", "NO"]), 14): qs.append(q(i, ("[The Role of Errors in Learning] YES, NO or NOT GIVEN.\n" if i == 14 else "") + text, ans, yn))
     words = [(c, t) for c, t in zip("ABCDEFGHIJK", ["invisible", "ways", "others", "wood", "individually", "repeatedly", "symmetrical", "rules", "weight", "beam", "metal"])]
     for i, (text, ans) in enumerate(zip(["weight distribution was ___", "___ was inserted", "differences were ___", "balanced on a ___", "dealt with each block ___", "looked for ___"], "GKAJEH"), 18): qs.append(q(i, text, ans, words, kind="matching"))
-    for i, (text, ans) in enumerate(zip(["a ___ problem", "by ___ him", "people dislike feeling ___"], ["geometry", "questioning", "ignorant"]), 24): qs.append(q(i, text, ans))
+    sentence_prompts = [
+        "Complete the sentences below. Choose ONE WORD ONLY from the passage for each answer.\na ___ problem",
+        "by ___ him", "people dislike feeling ___",
+    ]
+    for i, (text, ans) in enumerate(zip(sentence_prompts, ["geometry", "questioning", "ignorant"]), 24): qs.append(q(i, text, ans))
     pars = [(c, f"Paragraph {c}") for c in "ABCDEF"]
     for i, (text, ans) in enumerate(zip(["emotional satisfaction", "why beginners struggle", "error detection alongside mirroring", "human and primate mirror neurons compared", "integrating visual and motor processes", "first discovery of mirror neurons"], "DBECFB"), 27): qs.append(q(i, ("[How Does Watching Sport Influence the Brain?] Match information to a paragraph.\n" if i == 27 else "") + text, ans, pars, kind="matching"))
     implications = [(c, t) for c, t in zip("ABCDEF", ["immediate action correction", "static images do not stimulate", "actions look effortless", "training changes the brain", "internalise others’ actions", "ignore crowd distractions"])]
