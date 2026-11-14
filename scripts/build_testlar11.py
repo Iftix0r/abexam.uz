@@ -126,9 +126,11 @@ def listening14():
     ]
     for i, (text, ans, choices) in enumerate(part2, 11):
         questions.append(q(i, ("[Information for Volunteers at Clifton Bird Park] Choose A, B or C.\n" if i == 11 else "") + text, ans, choices))
-    map_choices = [(c, f"Location {c}") for c in "ABCDEFGH"]
+    # Empty option labels make the renderer use one compact A–H grid instead
+    # of repeating eight long "Location A" cards below every map question.
+    map_choices = [(c, "") for c in "ABCDEFGH"]
     for i, (name, ans) in enumerate(zip(["Wooden bridge", "Observation tower", "Visitor cabins", "Nesting boxes", "Boat sheds"], "FHCEB"), 16):
-        questions.append(q(i, ("[Clifton Bird Park map] Label the map.\n" if i == 16 else "") + name, ans, map_choices))
+        questions.append(q(i, ("[Clifton Bird Park map] Label the map.\n" if i == 16 else "") + name, ans, map_choices, kind="matching"))
     part3 = [
         ("Why mention the Mountain Code?", "A", ABC("It is the most relevant to their field trip", "It also applies to caves", "It covers the whole country")),
         ("Why do some participants harm the environment?", "C", ABC("They fail to recognise rare plants", "They do not realise how fragile it is", "They get too absorbed in their tasks")),
@@ -193,9 +195,9 @@ def reading14():
     for i, (text, ans) in enumerate(zip(statements, answers), 1): qs.append(q(i, ("[The Baobabs of Madagascar] TRUE, FALSE or NOT GIVEN.\n" if i == 1 else "") + text, ans, tf))
     for i, (text, ans) in enumerate(zip(["water from nearby fields", "lone trees are at risk from", "space for ___ activity", "practice of ___ makes germination difficult", "disappearance of certain ___ which dispersed seeds", "making ___ of undamaged forest", "producing a ___ about local culture"], ["irrigation", "cyclones", "farming", "logging", "animals", "maps", "book"]), 7): qs.append(q(i, text, ans))
     headings = [(r, t) for r, t in zip(["i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix", "x"], ["allows consumers to use more product", "many reasons for changes", "includes utensils", "consumed with contents", "compact packaging", "history of packaging", "indicates spoilage", "reusable packaging", "communicates ideas and attracts customers", "vanishes or decomposes quickly"])]
-    for i, ans in enumerate(["ix", "ii", "iv", "i", "vii", "x", "v"], 14): qs.append(q(i, ("[The Future of Food Packaging] Match the paragraph to a heading.\n" if i == 14 else "") + f"Paragraph {chr(65+i-14)}", ans, headings))
+    for i, ans in enumerate(["ix", "ii", "iv", "i", "vii", "x", "v"], 14): qs.append(q(i, ("[The Future of Food Packaging] Match the paragraph to a heading.\n" if i == 14 else "") + f"Paragraph {chr(65+i-14)}", ans, headings, kind="matching"))
     dev = [(c, t) for c, t in zip("ABCDEF", ["expands under certain conditions", "vanishes in hot water", "nonstick material", "made from a vegetable product", "sweet hot-drink container", "round edible container"])]
-    for i, (company, ans) in enumerate(zip(["KFC", "Loliware", "Tomorrow Machine"], "EDA"), 21): qs.append(q(i, company, ans, dev))
+    for i, (company, ans) in enumerate(zip(["KFC", "Loliware", "Tomorrow Machine"], "EDA"), 21): qs.append(q(i, company, ans, dev, kind="matching"))
     for i, (text, ans) in enumerate(zip(["In Japan, ___ has been edible packaging for years", "Liquiglide helps bottles containing various ___", "Tomorrow Machine plans solid ___ as an oil container"], ["paper", "sauces", "sugar"]), 24): qs.append(q(i, text, ans))
     yn = [(x, x.title()) for x in ["YES", "NO", "NOT GIVEN"]]
     marine = ["Sponge hunting may have begun with one female dolphin", "Dolphin tool use may illuminate human tool origins", "Researchers generally agree on the link between tool use and intelligence", "Other scientists have criticised Dr Mann’s analysis"]
@@ -209,7 +211,7 @@ def reading14():
     ]
     for i, (text, ans, choices) in enumerate(mc, 31): qs.append(q(i, text, ans, choices))
     endings = [(c, t) for c, t in zip("ABCDEFGH", ["more frequent among females", "linked to a physical characteristic", "only possible in salt water", "more typical of males", "evidence of sound use", "threat to fishing", "learned by observing mothers", "not accepted by investigators"])]
-    for i, (text, ans) in enumerate(zip(["A genetic explanation", "Observation of mothers", "Continued sponge use in adulthood", "Hunting in groups", "The dolphins’ clever behaviour"], "HGA DB".replace(" ", "")), 36): qs.append(q(i, text, ans, endings))
+    for i, (text, ans) in enumerate(zip(["A genetic explanation", "Observation of mothers", "Continued sponge use in adulthood", "Hunting in groups", "The dolphins’ clever behaviour"], "HGA DB".replace(" ", "")), 36): qs.append(q(i, text, ans, endings, kind="matching"))
     return qs
 
 
@@ -223,12 +225,12 @@ def reading15():
     role = ["The teacher’s most important function is to develop good learning habits", "Success increased with age", "Children performed without teacher guidance", "Children frequently explained their rules clearly"]
     for i, (text, ans) in enumerate(zip(role, ["NOT GIVEN", "NO", "YES", "NO"]), 14): qs.append(q(i, ("[The Role of Errors in Learning] YES, NO or NOT GIVEN.\n" if i == 14 else "") + text, ans, yn))
     words = [(c, t) for c, t in zip("ABCDEFGHIJK", ["invisible", "ways", "others", "wood", "individually", "repeatedly", "symmetrical", "rules", "weight", "beam", "metal"])]
-    for i, (text, ans) in enumerate(zip(["weight distribution was ___", "___ was inserted", "differences were ___", "balanced on a ___", "dealt with each block ___", "looked for ___"], "GKAJEH"), 18): qs.append(q(i, text, ans, words))
+    for i, (text, ans) in enumerate(zip(["weight distribution was ___", "___ was inserted", "differences were ___", "balanced on a ___", "dealt with each block ___", "looked for ___"], "GKAJEH"), 18): qs.append(q(i, text, ans, words, kind="matching"))
     for i, (text, ans) in enumerate(zip(["a ___ problem", "by ___ him", "people dislike feeling ___"], ["geometry", "questioning", "ignorant"]), 24): qs.append(q(i, text, ans))
     pars = [(c, f"Paragraph {c}") for c in "ABCDEF"]
-    for i, (text, ans) in enumerate(zip(["emotional satisfaction", "why beginners struggle", "error detection alongside mirroring", "human and primate mirror neurons compared", "integrating visual and motor processes", "first discovery of mirror neurons"], "DBECFB"), 27): qs.append(q(i, ("[How Does Watching Sport Influence the Brain?] Match information to a paragraph.\n" if i == 27 else "") + text, ans, pars))
+    for i, (text, ans) in enumerate(zip(["emotional satisfaction", "why beginners struggle", "error detection alongside mirroring", "human and primate mirror neurons compared", "integrating visual and motor processes", "first discovery of mirror neurons"], "DBECFB"), 27): qs.append(q(i, ("[How Does Watching Sport Influence the Brain?] Match information to a paragraph.\n" if i == 27 else "") + text, ans, pars, kind="matching"))
     implications = [(c, t) for c, t in zip("ABCDEF", ["immediate action correction", "static images do not stimulate", "actions look effortless", "training changes the brain", "internalise others’ actions", "ignore crowd distractions"])]
-    for i, (text, ans) in enumerate(zip(["Expert movements ingrained in premotor cortex", "Goal-oriented movement needed", "Anterior cingulate detects errors", "Human mirror system is intricate"], "CBAE"), 33): qs.append(q(i, text, ans, implications))
+    for i, (text, ans) in enumerate(zip(["Expert movements ingrained in premotor cortex", "Goal-oriented movement needed", "Anterior cingulate detects errors", "Human mirror system is intricate"], "CBAE"), 33): qs.append(q(i, text, ans, implications, kind="matching"))
     for i, (text, ans) in enumerate(zip(["cells known as ___", "movement must be ___", "error-detecting brain area: ___", "visual cues combine with our own ___"], ["mirror neurons", "goal-orientated", "anterior cingulate/anterior cingulate cortex", "motor representations"]), 37): qs.append(q(i, text, ans))
     return qs
 
@@ -251,8 +253,15 @@ def make_exam(number, listening, audio, reading, passage_files, writing_image, t
 
 def main():
     IMAGES.mkdir(parents=True, exist_ok=True)
-    # Render the bird-park map (PDF page 4) and keep the whole page: labels A-H stay legible.
-    subprocess.run(["pdftoppm", "-f", "4", "-singlefile", "-jpeg", "-r", "150", str(SOURCE / "Listening 15.pdf"), str(IMAGES / "mock_test_14_clifton_map")], check=True)
+    # The map is physical PDF page 3 (printed page number 4).  Crop away the
+    # instructions and answer lines so phones show the actual map at a useful
+    # scale rather than a tiny full-page screenshot.
+    from PIL import Image
+    rendered = IMAGES / "mock_test_14_clifton_map_page.jpg"
+    subprocess.run(["pdftoppm", "-f", "3", "-singlefile", "-jpeg", "-r", "150", str(SOURCE / "Listening 15.pdf"), str(rendered.with_suffix(""))], check=True)
+    page = Image.open(rendered)
+    page.crop((205, 280, 1055, 1165)).save(IMAGES / "mock_test_14_clifton_map.jpg", quality=92)
+    rendered.unlink()
     (IMAGES / "mock_test_14_task1.jpg").write_bytes((SOURCE / "photo_2026-11-14_13-54-44.jpg").read_bytes())
     (IMAGES / "mock_test_15_task1.jpg").write_bytes((SOURCE / "photo_2026-02-04_14-46-36.jpg").read_bytes())
     exam14 = make_exam(14, listening14(), "listening14.mp3", reading14(), [

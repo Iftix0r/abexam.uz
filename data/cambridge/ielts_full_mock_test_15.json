@@ -1183,7 +1183,7 @@
         {
           "order": 18,
           "text": "weight distribution was ___",
-          "question_type": "mcq",
+          "question_type": "matching",
           "correct_answer": "G",
           "options": [
             {
@@ -1238,7 +1238,7 @@
         {
           "order": 19,
           "text": "___ was inserted",
-          "question_type": "mcq",
+          "question_type": "matching",
           "correct_answer": "K",
           "options": [
             {
@@ -1293,7 +1293,7 @@
         {
           "order": 20,
           "text": "differences were ___",
-          "question_type": "mcq",
+          "question_type": "matching",
           "correct_answer": "A",
           "options": [
             {
@@ -1348,7 +1348,7 @@
         {
           "order": 21,
           "text": "balanced on a ___",
-          "question_type": "mcq",
+          "question_type": "matching",
           "correct_answer": "J",
           "options": [
             {
@@ -1403,7 +1403,7 @@
         {
           "order": 22,
           "text": "dealt with each block ___",
-          "question_type": "mcq",
+          "question_type": "matching",
           "correct_answer": "E",
           "options": [
             {
@@ -1458,7 +1458,7 @@
         {
           "order": 23,
           "text": "looked for ___",
-          "question_type": "mcq",
+          "question_type": "matching",
           "correct_answer": "H",
           "options": [
             {
@@ -1543,7 +1543,7 @@
         {
           "order": 27,
           "text": "[How Does Watching Sport Influence the Brain?] Match information to a paragraph.\nemotional satisfaction",
-          "question_type": "mcq",
+          "question_type": "matching",
           "correct_answer": "D",
           "options": [
             {
@@ -1578,7 +1578,7 @@
         {
           "order": 28,
           "text": "why beginners struggle",
-          "question_type": "mcq",
+          "question_type": "matching",
           "correct_answer": "B",
           "options": [
             {
@@ -1613,7 +1613,7 @@
         {
           "order": 29,
           "text": "error detection alongside mirroring",
-          "question_type": "mcq",
+          "question_type": "matching",
           "correct_answer": "E",
           "options": [
             {
@@ -1648,7 +1648,7 @@
         {
           "order": 30,
           "text": "human and primate mirror neurons compared",
-          "question_type": "mcq",
+          "question_type": "matching",
           "correct_answer": "C",
           "options": [
             {
@@ -1683,7 +1683,7 @@
         {
           "order": 31,
           "text": "integrating visual and motor processes",
-          "question_type": "mcq",
+          "question_type": "matching",
           "correct_answer": "F",
           "options": [
             {
@@ -1718,7 +1718,7 @@
         {
           "order": 32,
           "text": "first discovery of mirror neurons",
-          "question_type": "mcq",
+          "question_type": "matching",
           "correct_answer": "B",
           "options": [
             {
@@ -1753,7 +1753,7 @@
         {
           "order": 33,
           "text": "Expert movements ingrained in premotor cortex",
-          "question_type": "mcq",
+          "question_type": "matching",
           "correct_answer": "C",
           "options": [
             {
@@ -1788,7 +1788,7 @@
         {
           "order": 34,
           "text": "Goal-oriented movement needed",
-          "question_type": "mcq",
+          "question_type": "matching",
           "correct_answer": "B",
           "options": [
             {
@@ -1823,7 +1823,7 @@
         {
           "order": 35,
           "text": "Anterior cingulate detects errors",
-          "question_type": "mcq",
+          "question_type": "matching",
           "correct_answer": "A",
           "options": [
             {
@@ -1858,7 +1858,7 @@
         {
           "order": 36,
           "text": "Human mirror system is intricate",
-          "question_type": "mcq",
+          "question_type": "matching",
           "correct_answer": "E",
           "options": [
             {
