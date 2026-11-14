@@ -115,6 +115,10 @@ def reading_notes(number):
 <span><strong>A</strong> invisible</span><span><strong>B</strong> ways</span><span><strong>C</strong> others</span><span><strong>D</strong> wood</span>
 <span><strong>E</strong> individually</span><span><strong>F</strong> repeatedly</span><span><strong>G</strong> symmetrical</span><span><strong>H</strong> rules</span>
 <span><strong>I</strong> weight</span><span><strong>J</strong> beam</span><span><strong>K</strong> metal</span>
+</div>""",
+        "37": """<div class="pdf-summary">
+<p>The appeal of sports spectatorship is deeply rooted in brain function. A key discovery involved cells known as [[37]], which store patterns for motor actions. These cells are activated not only when we perform an action but also when we observe someone else performing a similar one, but only if the movement is [[38]]. This neural activity allows spectators to mentally simulate the athletic performance they are watching.</p>
+<p>Furthermore, watching sports can trigger the release of chemicals associated with pleasure. Another brain area, the [[39]], contributes to performance by detecting mistakes. Ultimately, watching sport is an engaging experience because it uses a neural process that combines what we see with our own [[40]] for movement.</p>
 </div>"""
     }
 
@@ -246,7 +250,11 @@ def reading15():
     for i, (text, ans) in enumerate(zip(["emotional satisfaction", "why beginners struggle", "error detection alongside mirroring", "human and primate mirror neurons compared", "integrating visual and motor processes", "first discovery of mirror neurons"], "DBECFB"), 27): qs.append(q(i, ("[How Does Watching Sport Influence the Brain?] Match information to a paragraph.\n" if i == 27 else "") + text, ans, pars, kind="matching"))
     implications = [(c, t) for c, t in zip("ABCDEF", ["immediate action correction", "static images do not stimulate", "actions look effortless", "training changes the brain", "internalise others’ actions", "ignore crowd distractions"])]
     for i, (text, ans) in enumerate(zip(["Expert movements ingrained in premotor cortex", "Goal-oriented movement needed", "Anterior cingulate detects errors", "Human mirror system is intricate"], "CBAE"), 33): qs.append(q(i, text, ans, implications, kind="matching"))
-    for i, (text, ans) in enumerate(zip(["cells known as ___", "movement must be ___", "error-detecting brain area: ___", "visual cues combine with our own ___"], ["mirror neurons", "goal-orientated", "anterior cingulate/anterior cingulate cortex", "motor representations"]), 37): qs.append(q(i, text, ans))
+    summary_prompts = [
+        "Complete the summary below. Choose NO MORE THAN TWO WORDS from the passage for each answer.\ncells known as ___",
+        "movement must be ___", "error-detecting brain area: ___", "visual cues combine with our own ___",
+    ]
+    for i, (text, ans) in enumerate(zip(summary_prompts, ["mirror neurons", "goal-orientated", "anterior cingulate/anterior cingulate cortex", "motor representations"]), 37): qs.append(q(i, text, ans))
     return qs
 
 

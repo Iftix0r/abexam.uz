@@ -812,6 +812,10 @@
             border: 1px solid var(--border); background: #fafafa; line-height: 1.45;
         }
         .summary-word-bank span { white-space: nowrap; }
+        .notes-box:has(.pdf-summary) { border: 0; background: transparent; font-size: 1.05rem; line-height: 1.75; }
+        .notes-box:has(.pdf-summary) .notes-box-body { padding: 2px 0 0; }
+        .pdf-summary p { margin: 0 0 10px !important; text-align: left; }
+        .pdf-summary .notes-input.ans-input { width: 135px; border-width: 0 0 1.5px; border-radius: 0; background: #fffde7; }
 
         /* ─── QUESTION BLOCK HEADER ──────────────────────── */
         .q-block-header {
