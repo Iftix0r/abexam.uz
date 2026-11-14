@@ -57,6 +57,53 @@ def q(order, text, answer, choices=None, kind=None):
 ABC = lambda a, b, c: [("A", a), ("B", b), ("C", c)]
 
 
+def listening_notes(number):
+    if number == 14:
+        return {
+            "1": """<h5>Amateur Dramatic Society</h5>
+<p><strong>Secretary:</strong> Jane Caulfield</p>
+<p><strong>Mailing address:</strong> 117 Green Road, Prestwin</p>
+<p><strong>Location for rehearsals:</strong> The [[1]] House, Wynn</p>
+<p>No experience necessary</p>
+<p>They need actors and [[2]] singers</p>
+<p>Also need people who can [[3]]</p>
+<p>Meetings 6–8 p.m. every [[4]]</p>
+<p>Closed in [[5]] (for 2 weeks)</p>
+<h5>Membership costs</h5>
+<p><strong>Standard:</strong> £40 (includes a [[6]] once a year)</p>
+<p><strong>Over 60s or unemployed:</strong> £[[7]]</p>
+<p><strong>Youth group:</strong> for people aged [[8]] years old and under</p>
+<h5>Shows</h5>
+<p>mostly plays by [[9]] authors</p>
+<p>family show in December (raises money for children’s [[10]])</p>""",
+            "31": """<h5>Crisis Communication Theory</h5>
+<p>Some people think using [[31]] is better than theory, but a lot of advice is simply a [[32]].</p>
+<p>The organisation can be a victim, e.g. due to a [[33]]. A preventable crisis results from a [[34]] in the organisation.</p>
+<p>Communicate what [[35]] is to be taken and provide [[36]] that the crisis is not so bad.</p>
+<p>The initial objective is to lessen [[37]] opinions. Rebuild strategies matter when there is a serious [[38]] to reputation.</p>
+<p>Things can be improved by providing an [[39]]. In serious cases, [[40]] is usually offered.</p>""",
+        }
+    return {
+        "1": """<h5>Film Club</h5>
+<h5>Membership information</h5>
+<p>Club meets every 2 weeks</p>
+<p>No [[1]] limit</p>
+<p>Student membership costs £[[2]] per season</p>
+<p>Members get free entry to club films and £[[3]] reduction on other films.</p>
+<p>Members are entitled to 3 hours’ free [[4]].</p>
+<h5>Films to be shown</h5>
+<p><strong>Oct 14 — Pablo:</strong> about a child in [[5]] who runs away and wins a [[6]] competition on TV.</p>
+<p><strong>Oct 28 — The Soldier:</strong> with live [[7]] accompaniment; made in [[8]]; type of film: a [[9]].</p>
+<p><strong>Nov 11 — Tiger:</strong> followed by a [[10]] by the director.</p>""",
+        "31": """<h5>Office Design</h5>
+<p><strong>Early 20th Century:</strong> workers employed to do [[31]] were arranged in rows.</p>
+<p>First, workers had individual [[32]]; later, cubicles with high or low [[33]]; nowadays workers may have to [[34]] a work area.</p>
+<p>Employees report a lack of [[35]] and [[36]], and a risk to their [[37]].</p>
+<p>Employers say open plans reduce rent and [[38]] costs and make [[39]] staff easier.</p>
+<p>In reality, employees are often distracted by the [[40]] in the office.</p>""",
+    }
+
+
 def listening14():
     questions = []
     gaps = [
@@ -188,7 +235,7 @@ def reading15():
 
 def make_exam(number, listening, audio, reading, passage_files, writing_image, task1, task2, map_image=None):
     content = "".join(passage_html(name, marker) for name, marker in passage_files)
-    listen = {"title": "Listening", "section_type": "listening", "order": 1, "duration_minutes": 40, "audio_file": f"../../TESTLAR/11/{audio}", "content": "", "questions": listening}
+    listen = {"title": "Listening", "section_type": "listening", "order": 1, "duration_minutes": 40, "audio_file": f"../../TESTLAR/11/{audio}", "notes": listening_notes(number), "content": "", "questions": listening}
     if map_image:
         listen["question_images"] = {"16": f"images/{map_image}"}
     return {
