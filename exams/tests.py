@@ -326,6 +326,9 @@ class SeedTestlar7Tests(TestCase):
             self.assertEqual(listening.questions.count(), 40)
             self.assertEqual(reading.questions.count(), 40)
             self.assertEqual(writing.questions.count(), 2)
+            self.assertNotIn('<p></p>', reading.content)
+            self.assertEqual(reading.content.count('<h2>'), 3)
+            self.assertGreaterEqual(reading.content.count('<p>'), 15)
             self.assertEqual(
                 list(writing.questions.order_by('order').values_list('question_type', 'word_limit')),
                 [('writing_task', 150), ('writing_task', 250)],
@@ -353,6 +356,11 @@ class SeedTestlar7Tests(TestCase):
         self.assertContains(resp, '<h5>Suggested response for all crises</h5>', html=True)
         self.assertContains(resp, '<h5>Strategies to influence people’s thinking</h5>', html=True)
         self.assertContains(resp, '<h5>Protecting the organisation’s reputation</h5>', html=True)
+        # Test 14/15 Reading content uses three article-title H2 elements
+        # instead of explicit "READING PASSAGE N" markers. The client-side
+        # passage switcher must recognise that seeded format too.
+        self.assertContains(resp, "if (type === 'reading' && headings.length < 2)")
+        self.assertContains(resp, "if (titleHeadings.length >= 3) headings = titleHeadings.slice(0, 3)")
         for order in range(31, 41):
             question = listening14.questions.get(order=order)
             self.assertIn(

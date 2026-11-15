@@ -130,6 +130,17 @@
            wrapper div, which pins the text small whatever .passage-panel
            sets — let the panel's size win. */
         .passage-content [style*="font-size"] { font-size: inherit !important; }
+        .passage-content p { margin: 0 0 1rem; line-height: 1.75; }
+        .passage-content .paragraph-label {
+            display: inline-flex; align-items: center; justify-content: center;
+            min-width: 24px; height: 24px; margin-right: 8px;
+            border-radius: 50%; background: #e8eaf6; color: #283593;
+            font-size: .82rem; vertical-align: 1px;
+        }
+        .content-part-block > h1:first-child,
+        .content-part-block > h2:first-child,
+        .content-part-block > h3:first-child,
+        .content-part-block > h4:first-child { margin-bottom: 1rem; }
         .section-content[data-section-type="listening"] .passage-panel,
         .section-content[data-section-type="listening"] .panel-resizer {
             display: none;
@@ -1868,16 +1879,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 const panel = document.querySelector('.section-content[data-section-type="' + type + '"] .passage-panel');
                 if (panel) {
                     const headingRe = CONTENT_HEADING[type];
-                    const isHeading = h => h.nodeType === 1 && (h.tagName === 'H3' || h.tagName === 'H4') && headingRe.test(h.textContent.trim());
                     if (!panel.dataset.contentSplit) {
                         panel.dataset.contentSplit = '1';
-                        // The section content is server-rendered as one HTML
-                        // blob inside its own wrapper div (not panel's direct
-                        // children), so split that wrapper's children, found
-                        // via the first heading actually in it.
-                        const firstHeading = Array.from(panel.querySelectorAll('h3, h4')).find(isHeading);
-                        const contentWrapper = firstHeading ? firstHeading.parentElement : null;
+                        const contentWrapper = panel.querySelector('.passage-content');
                         if (contentWrapper) {
+                            // Imported Cambridge files carry explicit
+                            // "READING PASSAGE 1" H3/H4 markers. Some seeded
+                            // mocks (notably 14/15) only have the three
+                            // article-title H2 elements, so use those as the
+                            // passage boundaries when explicit markers are
+                            // absent. Without this fallback all three texts
+                            // remain joined in the left panel.
+                            let headings = Array.from(contentWrapper.children).filter(h =>
+                                (h.tagName === 'H3' || h.tagName === 'H4') && headingRe.test(h.textContent.trim())
+                            );
+                            if (type === 'reading' && headings.length < 2) {
+                                const titleHeadings = Array.from(contentWrapper.children).filter(h =>
+                                    h.tagName === 'H1' || h.tagName === 'H2'
+                                );
+                                if (titleHeadings.length >= 3) headings = titleHeadings.slice(0, 3);
+                            }
+                            const headingSet = new Set(headings);
+                            const isHeading = node => headingSet.has(node);
                             let currentGroup = null;
                             const groups = [];
                             Array.from(contentWrapper.childNodes).forEach(node => {
