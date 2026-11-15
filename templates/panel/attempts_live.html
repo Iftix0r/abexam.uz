@@ -25,6 +25,13 @@ tr.row-alert td { animation: rowAlert 1s ease-in-out 6; }
 #liveTabs{min-width:0;max-width:100%}
 .live-state{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
 .live-state label{font-size:13px;color:var(--muted);display:flex;gap:6px;align-items:center;cursor:pointer}
+.live-state .icon-btn.active{color:var(--primary);background:var(--surface2);border-color:var(--border)}
+.live-state .icon-btn.is-loading i{animation:liveSpin .75s linear infinite}
+@keyframes liveSpin{to{transform:rotate(360deg)}}
+body.live-monitor-mode .sidebar,body.live-monitor-mode .topbar{display:none}
+body.live-monitor-mode .main{margin-left:0}
+body.live-monitor-mode .content{max-width:none;padding:18px 22px}
+body.live-cameras-hidden #cameraGrid{display:none}
 .live-pulse{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
 .live-pulse::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--muted)}
 .live-pulse.on{color:var(--green)}
@@ -112,6 +119,9 @@ table.table-cards.live-table tr[hidden]{display:none}
     <span class="live-pulse" id="liveStatus" role="status">To'xtatilgan</span>
     <label><input type="checkbox" id="autoRefresh"> Avtoyangilash</label>
     <label title="Kimdir test oynasidan chiqsa yoki matn joylasa, shu kompyuterda ovoz chiqadi"><input type="checkbox" id="soundAlerts"> <i class=lc-bell></i>Ovoz</label>
+    <button type="button" class="icon-btn" id="refreshNow" title="Hozir yangilash" aria-label="Hozir yangilash"><i class=lc-refresh-cw></i></button>
+    {% if site_settings.camera_proctoring %}<button type="button" class="icon-btn" id="toggleCameras" title="Kameralarni yashirish yoki ko'rsatish" aria-label="Kameralarni yashirish yoki ko'rsatish"><i class=lc-camera></i></button>{% endif %}
+    <button type="button" class="icon-btn" id="monitorMode" title="To'liq ekranli nazorat oynasi" aria-label="To'liq ekranli nazorat oynasi"><i class=lc-maximize></i></button>
   </div>
 </div>
 
@@ -277,6 +287,7 @@ const EXAM_ID = "{{ exam_id }}";
 const GROUP_ID = "{{ group_id }}";
 const REFRESH_KEY = 'panel_live_autorefresh';
 const SOUND_KEY = 'panel_live_sound';
+const CAMERA_KEY = 'panel_live_cameras';
 const autoRefresh = document.getElementById('autoRefresh');
 const soundAlerts = document.getElementById('soundAlerts');
 try {
@@ -291,6 +302,48 @@ soundAlerts.addEventListener('change', () => {
   try { localStorage.setItem(SOUND_KEY, soundAlerts.checked ? '1' : '0'); } catch(e) {}
   if (soundAlerts.checked) { unlockAudio(); beep(1); }
 });
+
+const refreshNow = document.getElementById('refreshNow');
+refreshNow.addEventListener('click', async () => {
+  refreshNow.classList.add('is-loading');
+  refreshNow.disabled = true;
+  await refreshLive(true);
+  refreshNow.disabled = false;
+  refreshNow.classList.remove('is-loading');
+});
+const toggleCameras = document.getElementById('toggleCameras');
+function applyCameraVisibility(show){
+  document.body.classList.toggle('live-cameras-hidden', !show);
+  if (toggleCameras) {
+    toggleCameras.classList.toggle('active', show);
+    toggleCameras.title = show ? 'Kameralarni yashirish' : "Kameralarni ko'rsatish";
+  }
+}
+if (toggleCameras) {
+  let show = true;
+  try { show = localStorage.getItem(CAMERA_KEY) !== '0'; } catch(e) {}
+  applyCameraVisibility(show);
+  toggleCameras.addEventListener('click', () => {
+    const next = document.body.classList.contains('live-cameras-hidden');
+    applyCameraVisibility(next);
+    try { localStorage.setItem(CAMERA_KEY, next ? '1' : '0'); } catch(e) {}
+  });
+}
+const monitorMode = document.getElementById('monitorMode');
+function syncMonitorMode(){
+  const active = !!document.fullscreenElement;
+  document.body.classList.toggle('live-monitor-mode', active);
+  monitorMode.classList.toggle('active', active);
+  monitorMode.innerHTML = active ? '<i class=lc-minimize></i>' : '<i class=lc-maximize></i>';
+  monitorMode.title = active ? "To'liq ekrandan chiqish" : "To'liq ekranli nazorat oynasi";
+}
+monitorMode.addEventListener('click', async () => {
+  try {
+    if (document.fullscreenElement) await document.exitFullscreen();
+    else await document.documentElement.requestFullscreen();
+  } catch(e) { toast("Brauzer to'liq ekran rejimini ochmadi", '#eab308'); }
+});
+document.addEventListener('fullscreenchange', syncMonitorMode);
 
 // Browsers only play sound after a click on the page, so the alert audio
 // is unlocked on the first click anywhere (the table refreshes in place,

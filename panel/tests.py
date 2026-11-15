@@ -723,6 +723,11 @@ class LiveExamPageTests(TestCase):
         self.assertEqual(page.status_code, 200)
         self.assertEqual((page.context['exam_id'], page.context['group_id']), ('', ''))
 
+    def test_live_monitor_controls_are_available(self):
+        page = self.client.get(self.url)
+        self.assertContains(page, 'id="refreshNow"')
+        self.assertContains(page, 'id="monitorMode"')
+
     def _command(self, **body):
         return self.client.post(reverse('panel:attempts_command'), data=self.json.dumps(body),
                                 content_type='application/json').json()

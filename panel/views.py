@@ -2211,7 +2211,7 @@ def attempts_live(request):
         questions = questions.exclude(section__section_type='speaking')
     totals = dict(questions.values_list('section__exam').annotate(n=Count('id')))
     writing_ids = {}
-    for exam_pk, qid in (questions.filter(question_type='writing_task')
+    for exam_pk, qid in (questions.filter(question_type__in=('writing_task', 'essay'))
                          .order_by('section__order', 'order').values_list('section__exam', 'id')):
         writing_ids.setdefault(exam_pk, []).append(str(qid))
     # The same account writing from two computers at once usually means
@@ -2263,8 +2263,8 @@ def attempt_detail(request, pk):
             answer = str(attempt.answers.get(str(q.id), '')).strip()
             items.append({
                 'number': number, 'question': q, 'answer': answer,
-                'is_writing': q.question_type == 'writing_task',
-                'words': _words(answer) if q.question_type == 'writing_task' else None,
+                'is_writing': q.question_type in ('writing_task', 'essay'),
+                'words': _words(answer) if q.question_type in ('writing_task', 'essay') else None,
             })
         rows.append({'section': section, 'items': items,
                      'answered': sum(1 for i in items if i['answer'])})
