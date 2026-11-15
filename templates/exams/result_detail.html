@@ -171,7 +171,7 @@
         {% endif %}
       </div>
       {# Only the student's own essays — never the per-question answer key #}
-      {% for q in questions_data %}{% if q.question_type == 'writing_task' %}
+      {% for q in questions_data %}{% if q.question_type == 'writing_task' or q.question_type == 'essay' %}
       <div class="q-item">
         <div style="font-size:13px;font-weight:500;margin-bottom:6px"><i class=lc-pen-line></i>&nbsp;{{ q.text|truncatechars:150 }}</div>
         <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">Yozgan javobingiz (so'zlar: {{ q.user_answer|wordcount }}):</div>

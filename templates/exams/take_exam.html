@@ -509,6 +509,13 @@
         .wc-display.below  { background: #ffebee; color: #c62828; }
         .wc-display.near   { background: #fff8e1; color: #e65100; }
         .wc-display.ok     { background: #e8f5e9; color: #2e7d32; }
+        .writing-editor-footer {
+            display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+            margin-top: 8px; color: #607d8b; font-size: 12.5px;
+        }
+        .writing-editor-footer .writing-save-state { margin-left: auto; color: #2e7d32; }
+        .writing-editor-footer .writing-char-count { font-variant-numeric: tabular-nums; }
+        .writing-answer { white-space: pre-wrap; tab-size: 4; }
         .writing-tips {
             background: #fff8e1;
             border: 1px solid #ffe082;
@@ -1156,21 +1163,19 @@
 
             {% elif section.section_type == 'writing' %}
             <!-- WRITING: Task info + image + content -->
-            {% for q in section.questions.all %}{% if q.question_type == 'writing_task' %}
+            {% for q in section.questions.all %}{% if q.question_type == 'writing_task' or q.question_type == 'essay' %}
             <div class="writing-task-bar" data-task-index="{{ forloop.counter0 }}">
                 <span class="task-badge">
-                    Task {% if q.word_limit and q.word_limit <= 175 %}1{% else %}2{% endif %}
+                    Task {% if q.order == 1 %}1{% else %}2{% endif %}
                 </span>
                 <span class="writing-stat">
                     <i data-lucide="clock" style="width:13px;"></i>
-                    Tavsiya: {% if q.word_limit and q.word_limit <= 175 %}20{% else %}40{% endif %} daqiqa
+                    Tavsiya: {% if q.order == 1 %}20{% else %}40{% endif %} daqiqa
                 </span>
-                {% if q.word_limit %}
                 <span class="writing-stat">
                     <i data-lucide="type" style="width:13px;"></i>
-                    Min: <strong>{{ q.word_limit }}</strong> so'z
+                    Min: <strong>{% if q.word_limit %}{{ q.word_limit }}{% elif q.order == 1 %}150{% else %}250{% endif %}</strong> so'z
                 </span>
-                {% endif %}
                 <span id="wc-{{ q.id }}" class="wc-display below">0 so'z</span>
             </div>
             {% endif %}{% endfor %}
@@ -1187,9 +1192,9 @@
             <div class="writing-tips">
                 <h5><i data-lucide="lightbulb" style="width:13px;"></i> Examiner maslahati</h5>
                 <ul>
-                    {% for q in section.questions.all %}{% if q.question_type == 'writing_task' %}
+                    {% for q in section.questions.all %}{% if q.question_type == 'writing_task' or q.question_type == 'essay' %}
                     <li data-task-index="{{ forloop.counter0 }}" style="display:none">
-                    {% if q.word_limit and q.word_limit <= 175 %}
+                    {% if q.order == 1 %}
                     <strong>Tuzilish:</strong> Introduction → Key Features → Summary/Overview</li>
                     <li data-task-index="{{ forloop.counter0 }}" style="display:none"><strong>Vaqt:</strong> 20 daqiqadan ko'p sarflamang — Task 2 ko'proq ball beradi.</li>
                     <li data-task-index="{{ forloop.counter0 }}" style="display:none"><strong>Minimal:</strong> Kamida 150 so'z yozing.
@@ -1366,19 +1371,27 @@
                 </div>
 
                 {# ── WRITING TASK ─────────────────────────── #}
-                {% elif question.question_type == 'writing_task' %}
+                {% elif question.question_type == 'writing_task' or question.question_type == 'essay' %}
                 <div style="margin-top:6px;">
                     <textarea
-                        class="ans-input"
+                        class="ans-input writing-answer"
                         data-qid="{{ question.id }}"
                         data-writing="true"
-                        data-wordlimit="{{ question.word_limit|default:0 }}"
+                        data-wordlimit="{% if question.word_limit %}{{ question.word_limit }}{% elif question.order == 1 %}150{% else %}250{% endif %}"
                         placeholder="Inshoni shu yerga yozing..."
                         rows="16"
                         maxlength="7000"
+                        spellcheck="true"
+                        autocapitalize="sentences"
                         style="resize:vertical; min-height:320px; line-height:1.75; padding:1rem; border-radius:8px;"
                         oninput="saveWriting('{{ question.id }}', this.value)"
                     ></textarea>
+                    <div class="writing-editor-footer" aria-live="polite">
+                        <span id="wc-inline-{{ question.id }}" class="wc-display below">0 so'z</span>
+                        <span id="cc-{{ question.id }}" class="writing-char-count">0 belgi</span>
+                        <span>Minimum: {% if question.word_limit %}{{ question.word_limit }}{% elif question.order == 1 %}150{% else %}250{% endif %} so'z</span>
+                        <span id="save-state-{{ question.id }}" class="writing-save-state">Avtomatik saqlanadi</span>
+                    </div>
                 </div>
 
                 {# ── SPEAKING (short_answer → recording) ── #}
@@ -2349,16 +2362,20 @@ document.addEventListener('DOMContentLoaded', () => {
     window.saveWriting = function(qid, text) {
         answers[qid] = text;
         const words = text.trim() ? text.trim().split(/\s+/).length : 0;
-        const wc = document.getElementById('wc-' + qid);
-        if (wc) {
+        const wordCounters = [document.getElementById('wc-' + qid), document.getElementById('wc-inline-' + qid)].filter(Boolean);
+        const limit = parseInt(document.querySelector(`textarea[data-qid="${qid}"]`)?.dataset?.wordlimit || 0);
+        wordCounters.forEach(wc => {
             wc.innerText = words + ' so\'z';
-            const limit = parseInt(document.querySelector(`textarea[data-qid="${qid}"]`)?.dataset?.wordlimit || 0);
             wc.className = 'wc-display';
             if (words === 0) wc.classList.add('below');
             else if (limit > 0 && words < limit * 0.8) wc.classList.add('below');
             else if (limit > 0 && words < limit) wc.classList.add('near');
             else wc.classList.add('ok');
-        }
+        });
+        const cc = document.getElementById('cc-' + qid);
+        if (cc) cc.innerText = text.length + ' belgi';
+        const saveState = document.getElementById('save-state-' + qid);
+        if (saveState) saveState.innerText = 'Saqlandi';
         const dot = document.getElementById('dot-' + qid);
         if (dot) dot.className = 'tracker-dot' + (text.trim() ? ' answered' : '') + (reviews.has(qid) ? ' review' : '');
         updateAllTabCounts();
@@ -2836,7 +2853,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (btn) selectTFNG(btn, qid, value);
                 } else {
                     document.querySelectorAll(`[data-qid="${qid}"]`).forEach(el => { el.value = value; });
-                    if (type === 'writing_task') saveWriting(qid, value);
+                    if (type === 'writing_task' || type === 'essay') saveWriting(qid, value);
                     else saveAnswer(qid, value);
                 }
             });

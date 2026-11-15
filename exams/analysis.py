@@ -101,7 +101,7 @@ def regrade_exam(exam):
             answers = by_result[result.pk]
             counts, updates = defaultdict(lambda: [0, 0]), []
             for section in sections:
-                questions = [q for q in section.questions.all() if q.question_type != 'writing_task']
+                questions = [q for q in section.questions.all() if q.question_type not in ('writing_task', 'essay')]
                 verdicts = grade_answers(questions, lambda q: answers.get(q.id, ''))
                 for q in questions:
                     counts[section.section_type][1] += 1

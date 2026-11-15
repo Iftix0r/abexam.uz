@@ -326,6 +326,10 @@ class SeedTestlar7Tests(TestCase):
             self.assertEqual(listening.questions.count(), 40)
             self.assertEqual(reading.questions.count(), 40)
             self.assertEqual(writing.questions.count(), 2)
+            self.assertEqual(
+                list(writing.questions.order_by('order').values_list('question_type', 'word_limit')),
+                [('writing_task', 150), ('writing_task', 250)],
+            )
             self.assertTrue(listening.audio_file.name.endswith(expected_audio[number]))
             self.assertTrue(writing.image)
 

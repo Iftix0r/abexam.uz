@@ -504,7 +504,7 @@ class DemoAnswersView(LoginRequiredMixin, View):
             if question.question_type in self._GRADABLE_TYPES:
                 if question.correct_answer.strip():
                     answers[question.id] = question.correct_answer
-            elif question.question_type == 'writing_task':
+            elif question.question_type in ('writing_task', 'essay'):
                 answers[question.id] = question.model_answer.strip() or (
                     "This is a demo answer used only to verify the AI grading pipeline. " * 40
                 )
@@ -538,7 +538,7 @@ def create_result(user, exam, answers):
         verdicts = grade_answers(questions, lambda q: answers.get(str(q.id), ''))
         for question in questions:
             user_ans = str(answers.get(str(question.id), '')).strip()
-            if question.question_type == 'writing_task':
+            if question.question_type in ('writing_task', 'essay'):
                 writing_tasks.append({
                     'order': section.order,
                     'section_title': section.title,
@@ -863,7 +863,7 @@ class ResultDetailView(LoginRequiredMixin, DetailView):
             verdicts = grade_answers(questions, lambda q: db_answers.get(str(q.id), ''))
             for q in questions:
                 user_ans = str(db_answers.get(str(q.id), '')).strip()
-                if q.question_type in ('writing_task', 'short_answer'):
+                if q.question_type in ('writing_task', 'essay', 'short_answer'):
                     is_correct = None
                 else:
                     is_correct = verdicts[q.id]
@@ -878,7 +878,7 @@ class ResultDetailView(LoginRequiredMixin, DetailView):
                     'word_limit': q.word_limit,
                 })
             section.correct = correct_count
-            section.total = len([q for q in questions_data if q['question_type'] not in ('writing_task', 'short_answer')])
+            section.total = len([q for q in questions_data if q['question_type'] not in ('writing_task', 'essay', 'short_answer')])
             sections_data.append((section, questions_data))
 
         context['sections_data'] = sections_data

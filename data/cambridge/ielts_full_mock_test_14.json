@@ -2026,21 +2026,21 @@
         {
           "order": 1,
           "text": "The table shows residential water use in one country in 1988 and 2008. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.",
-          "question_type": "essay",
+          "question_type": "writing_task",
           "correct_answer": "",
           "options": [],
           "explanation": "",
-          "word_limit": 0,
+          "word_limit": 150,
           "model_answer": ""
         },
         {
           "order": 2,
           "text": "Students today can easily find information online, so libraries are no longer necessary. To what extent do you agree or disagree?",
-          "question_type": "essay",
+          "question_type": "writing_task",
           "correct_answer": "",
           "options": [],
           "explanation": "",
-          "word_limit": 0,
+          "word_limit": 250,
           "model_answer": ""
         }
       ]

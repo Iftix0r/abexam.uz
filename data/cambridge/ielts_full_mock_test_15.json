@@ -1948,21 +1948,21 @@
         {
           "order": 1,
           "text": "The bar chart shows the percentage of the population living in urban areas in six regions in 2003 and estimates for 2030. Summarise the main features and make comparisons.",
-          "question_type": "essay",
+          "question_type": "writing_task",
           "correct_answer": "",
           "options": [],
           "explanation": "",
-          "word_limit": 0,
+          "word_limit": 150,
           "model_answer": ""
         },
         {
           "order": 2,
           "text": "The use of social media is replacing face-to-face interaction among many people in society. Do the advantages outweigh the disadvantages?",
-          "question_type": "essay",
+          "question_type": "writing_task",
           "correct_answer": "",
           "options": [],
           "explanation": "",
-          "word_limit": 0,
+          "word_limit": 250,
           "model_answer": ""
         }
       ]
