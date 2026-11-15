@@ -329,6 +329,12 @@ class SeedTestlar7Tests(TestCase):
             self.assertNotIn('<p></p>', reading.content)
             self.assertEqual(reading.content.count('<h2>'), 3)
             self.assertGreaterEqual(reading.content.count('<p>'), 15)
+            first_notes_order = '7' if number == 14 else '8'
+            self.assertIn(first_notes_order, reading.extra_data['notes'])
+            first_notes = reading.extra_data['notes'][first_notes_order]
+            expected_orders = range(7, 14) if number == 14 else range(8, 14)
+            for order in expected_orders:
+                self.assertIn(f'[[{order}]]', first_notes)
             self.assertEqual(
                 list(writing.questions.order_by('order').values_list('question_type', 'word_limit')),
                 [('writing_task', 150), ('writing_task', 250)],
