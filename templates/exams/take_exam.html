@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ exam.title }} - AbExam</title>
     <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+    <script>
+        // Apply the saved colour mode before first paint to avoid a bright
+        // flash when a student opens the exam in night mode.
+        try {
+            const p = JSON.parse(localStorage.getItem('abexam_exam_view') || '{}');
+            document.documentElement.dataset.examTheme = p.theme === 'dark' ? 'dark' : 'light';
+        } catch (e) {}
+    </script>
     <!-- defer: a plain blocking <script src> here means our own inline
          script (which defines closeInstructionAndStart, saveAnswer, all
          of it) can't even start parsing until this third-party CDN file
@@ -28,6 +36,18 @@
             --ielts-yellow: #ffc107;
             --success: #2e7d32;
             --warning: #e65100;
+        }
+        :root[data-exam-theme="dark"] {
+            color-scheme: dark;
+            --bg: #10141c;
+            --text: #e8edf5;
+            --header-bg: #090c12;
+            --border: #394454;
+            --panel-bg: #171d27;
+            --q-bg: #1c2430;
+            --q-border: #354052;
+            --success: #66bb6a;
+            --warning: #ffb74d;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
         body { background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
@@ -936,6 +956,28 @@
         .vs-row:hover { color: var(--primary); }
         .vs-row .vs-state { margin-left: auto; font-size: 11px; font-weight: 700; color: #90a4ae; }
         .vs-row.on .vs-state { color: var(--success); }
+        :root[data-exam-theme="dark"] .view-settings-menu { background:#1c2430; color:var(--text); }
+        :root[data-exam-theme="dark"] .vs-label { color:#aeb9c8; }
+        :root[data-exam-theme="dark"] .vs-size { background:#171d27; color:var(--text); }
+        :root[data-exam-theme="dark"] .vs-size small { color:#9aa8ba; }
+        :root[data-exam-theme="dark"] .vs-size.active { background:#352024; }
+        :root[data-exam-theme="dark"] .vs-row { color:var(--text); border-color:var(--border); }
+        :root[data-exam-theme="dark"] .question-item,
+        :root[data-exam-theme="dark"] .notes-box,
+        :root[data-exam-theme="dark"] .notes-box-body { background:var(--q-bg); color:var(--text); }
+        :root[data-exam-theme="dark"] .ans-input,
+        :root[data-exam-theme="dark"] .inline-gap,
+        :root[data-exam-theme="dark"] .notes-input.ans-input,
+        :root[data-exam-theme="dark"] textarea { background:#111823; color:var(--text); border-color:var(--border); }
+        :root[data-exam-theme="dark"] .ans-input:focus,
+        :root[data-exam-theme="dark"] .inline-gap:focus { background:#182231; }
+        :root[data-exam-theme="dark"] .mcq-option,
+        :root[data-exam-theme="dark"] .tfng-btn { background:#171d27; color:var(--text); border-color:var(--border); }
+        :root[data-exam-theme="dark"] .q-heading-title { color:#aebcff; }
+        :root[data-exam-theme="dark"] .q-heading-instr,
+        :root[data-exam-theme="dark"] .section-label { color:#bdc7d5; }
+        :root[data-exam-theme="dark"] .passage-content .paragraph-label { background:#293451; color:#d8deff; }
+        :root[data-exam-theme="dark"] footer { background:#171d27; border-color:var(--border); }
     </style>
 <link rel="stylesheet" href="/static/icons.css?v=10">
 <script src="/static/top-loader.js?v=1" defer></script>
@@ -1027,6 +1069,9 @@
             </div>
             <button type="button" class="vs-row" id="vsHideTime">
                 <i data-lucide="clock" style="width:16px;"></i> Vaqtni yashirish <span class="vs-state"></span>
+            </button>
+            <button type="button" class="vs-row" id="vsTheme">
+                <i data-lucide="moon" style="width:16px;"></i> Tungi rejim <span class="vs-state"></span>
             </button>
             <button type="button" class="vs-row" id="vsFullscreen">
                 <i data-lucide="maximize" style="width:16px;"></i> To'liq ekran <span class="vs-state"></span>
@@ -3582,6 +3627,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const box = document.getElementById('viewSettings');
     const btn = document.getElementById('viewSettingsBtn');
     const hideRow = document.getElementById('vsHideTime');
+    const themeRow = document.getElementById('vsTheme');
     const fsRow = document.getElementById('vsFullscreen');
     let prefs = {};
     try { prefs = JSON.parse(localStorage.getItem(PREFS_KEY) || '{}'); } catch(e) {}
@@ -3596,6 +3642,12 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.toggle('timer-hidden', !!prefs.hideTime);
         hideRow.classList.toggle('on', !!prefs.hideTime);
         hideRow.querySelector('.vs-state').textContent = prefs.hideTime ? 'Yoqilgan' : "O'chiq";
+    }
+    function applyTheme() {
+        const dark = prefs.theme === 'dark';
+        document.documentElement.dataset.examTheme = dark ? 'dark' : 'light';
+        themeRow.classList.toggle('on', dark);
+        themeRow.querySelector('.vs-state').textContent = dark ? 'Tungi' : 'Kunduzgi';
     }
     function syncFullscreen() {
         const on = !!document.fullscreenElement;
@@ -3615,6 +3667,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }));
     function toggleHideTime() { prefs.hideTime = !prefs.hideTime; save(); applyHideTime(); }
     hideRow.addEventListener('click', toggleHideTime);
+    themeRow.addEventListener('click', () => {
+        prefs.theme = prefs.theme === 'dark' ? 'light' : 'dark';
+        save(); applyTheme();
+    });
     // Clicking the clock itself also shows/hides it. In the last 5 minutes
     // it shows regardless (CSS), so nobody runs out of time unaware.
     document.getElementById('timerBox').addEventListener('click', toggleHideTime);
@@ -3631,6 +3687,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     applyZoom();
     applyHideTime();
+    applyTheme();
 })();
 </script>
 </body>
