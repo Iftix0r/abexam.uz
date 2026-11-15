@@ -342,6 +342,13 @@ class SeedTestlar7Tests(TestCase):
                 self.assertIn('<li>cartoon aimed at adults</li>', film_notes)
                 for order in range(1, 11):
                     self.assertIn(f'[[{order}]]', film_notes)
+                office_notes = listening.extra_data['notes']['31']
+                self.assertNotIn('<h5>Office Design</h5>', office_notes)
+                self.assertIn('<h5>1960s to present</h5>', office_notes)
+                self.assertIn('<h5>Survey results</h5>', office_notes)
+                self.assertIn('they improve teamwork and communication', office_notes)
+                for order in range(31, 41):
+                    self.assertIn(f'[[{order}]]', office_notes)
             self.assertEqual(
                 list(writing.questions.order_by('order').values_list('question_type', 'word_limit')),
                 [('writing_task', 150), ('writing_task', 250)],
