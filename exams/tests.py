@@ -344,6 +344,11 @@ class SeedTestlar7Tests(TestCase):
         html = resp.content.decode()
         self.assertContains(resp, '<div class="notes-box-title">Crisis Communication Theory</div>', html=True)
         self.assertContains(resp, 'Complete the notes. Write ONE WORD ONLY.')
+        self.assertContains(resp, '<h5>Why do we need theory?</h5>', html=True)
+        self.assertContains(resp, '<h5>Types of crisis</h5>', html=True)
+        self.assertContains(resp, '<h5>Suggested response for all crises</h5>', html=True)
+        self.assertContains(resp, '<h5>Strategies to influence people’s thinking</h5>', html=True)
+        self.assertContains(resp, '<h5>Protecting the organisation’s reputation</h5>', html=True)
         for order in range(31, 41):
             question = listening14.questions.get(order=order)
             self.assertIn(
