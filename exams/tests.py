@@ -331,6 +331,26 @@ class SeedTestlar7Tests(TestCase):
 
         listening14 = Exam.objects.get(title='IELTS Full Mock Test 14').sections.get(order=1)
         self.assertIn('16', listening14.extra_data['question_images'])
+        self.assertEqual(set(listening14.extra_data['notes']), {'1', '31'})
+
+        # Part 4 must be rendered as the single Crisis Communication Theory
+        # notes table shown in the source test, with questions 31--40 inside
+        # the text instead of ten repeated standalone question cards.
+        user = User.objects.create_user('student14', password='pw')
+        self.client.force_login(user)
+        exam14 = listening14.exam
+        mark_exam_unlocked(user.pk, exam14.pk)
+        resp = self.client.get(reverse('exams:take_exam', args=[exam14.pk]))
+        html = resp.content.decode()
+        self.assertContains(resp, '<div class="notes-box-title">Crisis Communication Theory</div>', html=True)
+        self.assertContains(resp, 'Complete the notes. Write ONE WORD ONLY.')
+        for order in range(31, 41):
+            question = listening14.questions.get(order=order)
+            self.assertIn(
+                f'<span class="notes-gap" id="qitem-{question.id}"><span class="question-num">{order}</span>',
+                html,
+            )
+            self.assertEqual(html.count(f'data-qid="{question.id}"'), 1)
 
 
 class QuestionHeadingTests(TestCase):
