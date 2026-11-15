@@ -13,14 +13,14 @@
       "duration_minutes": 40,
       "audio_file": "../../TESTLAR/11/listening15.mp3",
       "notes": {
-        "1": "<h5>Film Club</h5>\n<h5>Membership information</h5>\n<p>Club meets every 2 weeks</p>\n<p>No [[1]] limit</p>\n<p>Student membership costs £[[2]] per season</p>\n<p>Members get free entry to club films and £[[3]] reduction on other films.</p>\n<p>Members are entitled to 3 hours’ free [[4]].</p>\n<h5>Films to be shown</h5>\n<p><strong>Oct 14 — Pablo:</strong> about a child in [[5]] who runs away and wins a [[6]] competition on TV.</p>\n<p><strong>Oct 28 — The Soldier:</strong> with live [[7]] accompaniment; made in [[8]]; type of film: a [[9]].</p>\n<p><strong>Nov 11 — Tiger:</strong> followed by a [[10]] by the director.</p>",
+        "1": "<h5>Membership information</h5>\n<p>Club meets every 2 weeks</p>\n<p>No [[1]] limit</p>\n<p>Student membership costs £[[2]] per season</p>\n<p>Members get:</p>\n<ul>\n<li>free entry to club films</li>\n<li>£[[3]] reduction on other films at cinema</li>\n</ul>\n<p>Members are entitled to 3 hours’ free [[4]]</p>\n<h5>Films to be shown:</h5>\n<p>Oct 14: <strong><em>Pablo</em></strong></p>\n<ul>\n<li>about a child in [[5]] who runs away from home and wins a [[6]] competition on TV</li>\n</ul>\n<p>Oct 28: <strong><em>The Soldier</em></strong></p>\n<ul>\n<li>with live [[7]] accompaniment</li>\n<li>made in the year [[8]]</li>\n<li>type of film: a [[9]]</li>\n</ul>\n<p>Nov 11: <strong><em>Tiger</em></strong></p>\n<ul>\n<li>cartoon aimed at adults</li>\n<li>followed by a [[10]] by the director</li>\n</ul>",
         "31": "<h5>Office Design</h5>\n<p><strong>Early 20th Century:</strong> workers employed to do [[31]] were arranged in rows.</p>\n<p>First, workers had individual [[32]]; later, cubicles with high or low [[33]]; nowadays workers may have to [[34]] a work area.</p>\n<p>Employees report a lack of [[35]] and [[36]], and a risk to their [[37]].</p>\n<p>Employers say open plans reduce rent and [[38]] costs and make [[39]] staff easier.</p>\n<p>In reality, employees are often distracted by the [[40]] in the office.</p>"
       },
       "content": "",
       "questions": [
         {
           "order": 1,
-          "text": "[Film Club] Write ONE WORD AND/OR A NUMBER.\nNo ___ limit",
+          "text": "[Film Club] Write ONE WORD AND/OR A NUMBER for each answer.\nNo ___ limit",
           "question_type": "gap_fill",
           "correct_answer": "age",
           "options": [],

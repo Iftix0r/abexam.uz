@@ -335,6 +335,13 @@ class SeedTestlar7Tests(TestCase):
             expected_orders = range(7, 14) if number == 14 else range(8, 14)
             for order in expected_orders:
                 self.assertIn(f'[[{order}]]', first_notes)
+            if number == 15:
+                film_notes = listening.extra_data['notes']['1']
+                self.assertNotIn('<h5>Film Club</h5>', film_notes)
+                self.assertIn('<li>free entry to club films</li>', film_notes)
+                self.assertIn('<li>cartoon aimed at adults</li>', film_notes)
+                for order in range(1, 11):
+                    self.assertIn(f'[[{order}]]', film_notes)
             self.assertEqual(
                 list(writing.questions.order_by('order').values_list('question_type', 'word_limit')),
                 [('writing_task', 150), ('writing_task', 250)],
