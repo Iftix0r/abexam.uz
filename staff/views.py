@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Q
 from django.http import HttpResponseForbidden
+from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
@@ -70,7 +71,8 @@ def dashboard(request):
                                                  published_at__lte=now).filter(Q(expires_at__isnull=True) | Q(expires_at__gt=now))[:4]
     return render(request, 'staff/dashboard.html', {'profile': p, 'stats': stats, 'tasks': tasks[:7],
                                                     'announcements': announcements,
-                                                    'today_report': DailyReport.objects.filter(employee=p, date=timezone.localdate()).first()})
+                                                    'today_report': DailyReport.objects.filter(employee=p, date=timezone.localdate()).first(),
+                                                    'today_attendance': Attendance.objects.filter(employee=p, date=timezone.localdate()).first()})
 
 
 @staff_required
@@ -114,9 +116,13 @@ def team_list(request):
     elif status == 'telegram':
         profiles = profiles.filter(user__staff_telegram__isnull=False)
     profiles = profiles.order_by('-is_approved', 'department__name', 'user__first_name', 'user__last_name')
+    page_obj = Paginator(profiles, 24).get_page(request.GET.get('page'))
+    query_params = request.GET.copy()
+    query_params.pop('page', None)
     departments = Department.objects.filter(is_active=True)
     return render(request, 'staff/team_list.html', {
-        'profiles': profiles, 'search': search, 'stats': stats, 'roles': StaffProfile.Role.choices,
+        'profiles': page_obj, 'page_obj': page_obj, 'query_params': query_params.urlencode(),
+        'search': search, 'stats': stats, 'roles': StaffProfile.Role.choices,
         'departments': departments, 'selected_role': role, 'selected_department': department,
         'selected_status': status,
     })
@@ -248,6 +254,8 @@ def task_list(request):
     status = request.GET.get('status')
     if status in Task.Status.values:
         tasks = tasks.filter(status=status)
+    if request.GET.get('period') == 'today':
+        tasks = tasks.filter(due_at__date=timezone.localdate())
     return render(request, 'staff/task_list.html', {'tasks': tasks, 'selected_status': status,
                                                     'statuses': Task.Status.choices})
 

@@ -1,9 +1,11 @@
 import json
 import logging
+from html import escape
 
 from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.core.cache import cache
+from django.db.models import Q
 from django.http import HttpResponse, JsonResponse
 from django.utils import timezone
 from django.utils.crypto import constant_time_compare
@@ -12,7 +14,7 @@ from django.views.decorators.http import require_POST
 
 from users.backends import normalize_phone, phone_variants
 from . import telegram_api as api
-from .models import StaffProfile, StaffTelegramAccount, Task
+from .models import Announcement, StaffProfile, StaffTelegramAccount, Task
 
 logger = logging.getLogger(__name__)
 
@@ -31,9 +33,61 @@ def _menu(account, prefix=''):
     site = settings.SITE_URL.rstrip('/')
     return api.send(account.chat_id, text, api.inline([
         ('📋 Vazifalarim', site + '/staff/tasks/'),
+        ('🗓 Bugungi ishlar', site + '/staff/tasks/?period=today'),
         ('✅ Kunlik hisobot', site + '/staff/report/'),
+        ('🏖 Ruxsat so‘rash', site + '/staff/leaves/'),
+        ('📢 E’lonlar', site + '/staff/announcements/'),
         ('🏠 Staff kabineti', site + '/staff/'),
     ]))
+
+
+def _linked_profile(account):
+    if not account.user_id:
+        return None
+    return StaffProfile.objects.filter(user=account.user, is_approved=True).first()
+
+
+def _tasks(account, today_only=False):
+    profile = _linked_profile(account)
+    if not profile:
+        return _menu(account)
+    tasks = Task.objects.filter(assignee=profile).exclude(
+        status__in=[Task.Status.DONE, Task.Status.CANCELLED]
+    ).order_by('due_at')
+    title = '🗓 <b>Bugungi ishlar</b>' if today_only else '📋 <b>Faol vazifalarim</b>'
+    if today_only:
+        tasks = tasks.filter(due_at__date=timezone.localdate())
+    rows = list(tasks[:8])
+    if not rows:
+        return api.send(account.chat_id, title + '\n\nHozircha vazifa yo‘q.')
+    status_icons = {Task.Status.NEW: '⚪', Task.Status.IN_PROGRESS: '🔵', Task.Status.REVIEW: '🟡'}
+    lines = [title, '']
+    for index, task in enumerate(rows, 1):
+        icon = '🔴' if task.is_late else status_icons.get(task.status, '📌')
+        lines.append(f'{index}. {icon} <b>{escape(task.title)}</b>\n   ⏰ {task.due_at:%d.%m %H:%M}')
+    if tasks.count() > len(rows):
+        lines.append(f'\nYana {tasks.count() - len(rows)} ta vazifa kabinetda.')
+    site = settings.SITE_URL.rstrip('/')
+    return api.send(account.chat_id, '\n'.join(lines), api.inline([('📋 Kabinetda ochish', site + '/staff/tasks/')]))
+
+
+def _announcements(account):
+    profile = _linked_profile(account)
+    if not profile:
+        return _menu(account)
+    now = timezone.now()
+    items = Announcement.objects.filter(
+        published_at__lte=now
+    ).filter(
+        Q(branch__isnull=True) | Q(branch=profile.branch),
+        Q(department__isnull=True) | Q(department=profile.department),
+    ).order_by('-is_pinned', '-published_at')[:5]
+    if not items:
+        return api.send(account.chat_id, '📢 Hozircha e’lonlar yo‘q.')
+    lines = ['📢 <b>So‘nggi e’lonlar</b>', '']
+    for item in items:
+        lines.append(f'<b>{escape(item.title)}</b>\n{escape(item.body[:180])}')
+    return api.send(account.chat_id, '\n\n'.join(lines))
 
 
 def handle(update):
@@ -62,7 +116,13 @@ def handle(update):
     if phone:
         return _link_phone(account, phone)
     command = text.split('@')[0]
-    if command in {'/start', '/menu', '/tasks', '/report'}:
+    if command == '/tasks':
+        return _tasks(account)
+    if command == '/today':
+        return _tasks(account, today_only=True)
+    if command == '/announcements':
+        return _announcements(account)
+    if command in {'/start', '/menu', '/report', '/leave'}:
         return _menu(account)
     return _menu(account)
 
