@@ -33,3 +33,13 @@ class StaffPanelTests(TestCase):
         self.client.force_login(self.employee_user)
         response = self.client.get(reverse('staff:task_create'))
         self.assertEqual(response.status_code, 403)
+
+    def test_existing_superuser_gets_staff_profile_automatically(self):
+        User = get_user_model()
+        director = User.objects.create_superuser('director', password='test-pass-123')
+        self.client.force_login(director)
+        response = self.client.get(reverse('staff:dashboard'))
+        self.assertEqual(response.status_code, 200)
+        profile = StaffProfile.objects.get(user=director)
+        self.assertEqual(profile.role, StaffProfile.Role.SUPER_ADMIN)
+        self.assertTrue(profile.is_approved)

@@ -18,6 +18,17 @@ def staff_required(view):
     @wraps(view)
     def wrapped(request, *args, **kwargs):
         profile = StaffProfile.objects.select_related('department', 'branch').filter(user=request.user, is_approved=True).first()
+        # The existing AbExam superuser is the AB Staff director too.  Create
+        # the matching profile lazily so deployment needs no manual setup.
+        if not profile and request.user.is_superuser:
+            profile, _ = StaffProfile.objects.update_or_create(
+                user=request.user,
+                defaults={
+                    'role': StaffProfile.Role.SUPER_ADMIN,
+                    'job_title': 'Direktor',
+                    'is_approved': True,
+                },
+            )
         if not profile:
             return render(request, 'staff/pending.html', status=403)
         request.staff_profile = profile
