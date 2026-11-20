@@ -18,9 +18,9 @@ def normalize_phone(raw):
     return '+' + digits
 
 
-# Uzbek mobile operator codes: Beeline 90/91, Ucell 93/94/50, Uzmobile 95/99/77,
-# Mobiuz 97/88, Perfectum 98, Humans 33, 55, OQ 20.
-UZ_MOBILE_CODES = {'20', '33', '50', '55', '77', '88', '90', '91', '93', '94', '95', '97', '98', '99'}
+# Uzbekistan subscriber/operator codes accepted for account registration.
+# 70-series numbers are also used by customers and must not be rejected.
+UZ_MOBILE_CODES = {'20', '33', '50', '55', '70', '77', '88', '90', '91', '93', '94', '95', '97', '98', '99'}
 
 
 def is_uz_mobile(phone):

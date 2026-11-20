@@ -175,10 +175,10 @@ class PhoneSignupTests(TestCase):
             resp = self._register(phone_number=fake)
             self.assertEqual(resp.status_code, 200, fake)
         self.assertFalse(User.objects.exists())
-        for ok in ('+998 33 412 09 77', '99 870 15 42'):
+        for ok in ('+998 33 412 09 77', '99 870 15 42', '+998 70 412 09 77'):
             self.client.logout()
             self.assertEqual(self._register(phone_number=ok).status_code, 302, ok)
-        self.assertEqual(User.objects.count(), 2)
+        self.assertEqual(User.objects.count(), 3)
 
     def test_all_four_fields_required(self):
         for field in ('first_name', 'last_name', 'phone_number', 'password'):
