@@ -234,6 +234,7 @@ TELEGRAM_WEBHOOK_SECRET = os.getenv('TELEGRAM_WEBHOOK_SECRET', '')
 STAFF_BOT_TOKEN = os.getenv('STAFF_BOT_TOKEN', '')
 STAFF_BOT_USERNAME = os.getenv('STAFF_BOT_USERNAME', '')
 STAFF_BOT_WEBHOOK_SECRET = os.getenv('STAFF_BOT_WEBHOOK_SECRET', '')
+STAFF_GROUP_CHAT_ID = os.getenv('STAFF_GROUP_CHAT_ID', '-1004328024246')
 # Public address used in links the bot sends and for the webhook URL.
 SITE_URL = os.getenv('SITE_URL', 'https://abexam.uz')
 

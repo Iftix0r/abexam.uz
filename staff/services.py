@@ -1,5 +1,6 @@
 from html import escape
 
+from django.conf import settings
 from django.urls import reverse
 
 from . import telegram_api
@@ -26,3 +27,14 @@ def notify_profiles(profiles, title, text, path='/staff/'):
         if profile.notifications_enabled and notify_user(profile.user, title, text, path):
             sent += 1
     return sent
+
+
+def notify_group(title, text, path='/staff/announcements/'):
+    """Send non-confidential company-wide news to the shared AbChat group."""
+    chat_id = str(settings.STAFF_GROUP_CHAT_ID).strip()
+    if not chat_id:
+        return False
+    message = (f"<b>{escape(title)}</b>\n\n{escape(text)}\n\n"
+               f"🌐 abexam.uz{path}\n\n<i>AB Education · Umumiy xabar</i>")
+    telegram_api.send_async(chat_id, message)
+    return True

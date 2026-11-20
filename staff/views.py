@@ -13,7 +13,7 @@ from .forms import (AnnouncementForm, DailyReportForm, LeaveRequestForm, StaffPr
                     SuggestionForm, TaskForm, TaskSubmitForm)
 from .models import (Announcement, Attendance, DailyReport, Department, LeaveRequest,
                      StaffProfile, Suggestion, Task, TaskEvent)
-from .services import notify_profiles, notify_task, notify_user
+from .services import notify_group, notify_profiles, notify_task, notify_user
 
 
 def staff_required(view):
@@ -392,7 +392,11 @@ def announcements(request):
         if item.department_id:
             recipients = recipients.filter(department=item.department)
         sent = notify_profiles(recipients.exclude(pk=p.pk), '📢 ' + item.title, item.body[:500], '/staff/announcements/')
-        messages.success(request, f"E'lon joylandi. Staff bot orqali {sent} xodimga yuborildi.")
+        group_sent = False
+        if not item.branch_id and not item.department_id:
+            group_sent = notify_group('📢 ' + item.title, item.body[:1000])
+        group_text = ' AbChat guruhiga ham yuborildi.' if group_sent else ''
+        messages.success(request, f"E'lon joylandi. Staff bot orqali {sent} xodimga yuborildi.{group_text}")
         return redirect('staff:announcements')
     return render(request, 'staff/announcements.html', {'announcements': qs, 'form': form})
 
