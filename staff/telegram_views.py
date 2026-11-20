@@ -37,6 +37,9 @@ def _menu(account, prefix=''):
         ('✅ Kunlik hisobot', site + '/staff/report/'),
         ('🏖 Ruxsat so‘rash', site + '/staff/leaves/'),
         ('📢 E’lonlar', site + '/staff/announcements/'),
+        ('📅 Yig‘ilishlar', site + '/staff/meetings/'),
+        ('🎯 KPI natijalarim', site + '/staff/kpi/'),
+        ('📚 Bilimlar bazasi', site + '/staff/knowledge/'),
         ('🏠 Staff kabineti', site + '/staff/'),
     ]))
 
@@ -122,7 +125,7 @@ def handle(update):
         return _tasks(account, today_only=True)
     if command == '/announcements':
         return _announcements(account)
-    if command in {'/start', '/menu', '/report', '/leave'}:
+    if command in {'/start', '/menu', '/report', '/leave', '/meetings', '/kpi', '/knowledge'}:
         return _menu(account)
     return _menu(account)
 

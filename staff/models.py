@@ -264,3 +264,66 @@ class Suggestion(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+
+
+class Meeting(models.Model):
+    title = models.CharField(max_length=200)
+    starts_at = models.DateTimeField(db_index=True)
+    location = models.CharField(max_length=200)
+    agenda = models.TextField(blank=True)
+    decisions = models.TextField(blank=True)
+    organizer = models.ForeignKey(StaffProfile, on_delete=models.PROTECT, related_name='organized_meetings')
+    participants = models.ManyToManyField(StaffProfile, related_name='meetings')
+    reminder_sent_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['starts_at']
+
+    def __str__(self):
+        return self.title
+
+
+class KPIRecord(models.Model):
+    employee = models.ForeignKey(StaffProfile, on_delete=models.CASCADE, related_name='kpi_records')
+    period = models.DateField(help_text='Hisobot oyining birinchi kuni')
+    metric = models.CharField(max_length=150)
+    target = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    actual = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    note = models.CharField(max_length=300, blank=True)
+    created_by = models.ForeignKey(StaffProfile, on_delete=models.PROTECT, related_name='created_kpis')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-period', 'employee__user__first_name', 'metric']
+
+    @property
+    def progress(self):
+        return min(100, round(float(self.actual / self.target * 100))) if self.target else 0
+
+
+class KnowledgeDocument(models.Model):
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True, blank=True)
+    file = models.FileField(upload_to='staff/knowledge/%Y/%m/', blank=True)
+    link = models.URLField(blank=True)
+    is_required = models.BooleanField(default=False)
+    uploaded_by = models.ForeignKey(StaffProfile, on_delete=models.PROTECT, related_name='knowledge_documents')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+
+class OnboardingItem(models.Model):
+    employee = models.ForeignKey(StaffProfile, on_delete=models.CASCADE, related_name='onboarding_items')
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    due_date = models.DateField(null=True, blank=True)
+    is_done = models.BooleanField(default=False)
+    completed_at = models.DateTimeField(null=True, blank=True)
+    created_by = models.ForeignKey(StaffProfile, on_delete=models.PROTECT, related_name='created_onboarding_items')
+
+    class Meta:
+        ordering = ['is_done', 'due_date', 'id']

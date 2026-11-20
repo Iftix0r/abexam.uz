@@ -11,6 +11,9 @@ COMMANDS = [
     ('report', 'Kunlik hisobot'),
     ('leave', 'Ruxsat va ta’til'),
     ('announcements', 'Jamoa e’lonlari'),
+    ('meetings', 'Yig‘ilishlar'),
+    ('kpi', 'KPI natijalarim'),
+    ('knowledge', 'Bilimlar bazasi'),
     ('menu', 'Bosh menyu'),
 ]
 

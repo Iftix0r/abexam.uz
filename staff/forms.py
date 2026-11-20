@@ -1,5 +1,6 @@
 from django import forms
-from .models import Announcement, DailyReport, LeaveRequest, StaffProfile, Suggestion, Task
+from .models import (Announcement, DailyReport, KnowledgeDocument, KPIRecord, LeaveRequest,
+                     Meeting, OnboardingItem, StaffProfile, Suggestion, Task)
 
 
 class StyledFormMixin:
@@ -84,3 +85,38 @@ class StaffProfileForm(StyledFormMixin, forms.ModelForm):
                   'manager': "Mas'ul rahbar", 'hired_at': 'Ishga kirgan sana', 'work_start': 'Ish boshlanishi',
                   'work_end': 'Ish tugashi', 'work_days': 'Ish kunlari', 'is_approved': 'Tasdiqlangan',
                   'notifications_enabled': 'Bildirishnomalar yoqilgan'}
+
+
+class MeetingForm(StyledFormMixin, forms.ModelForm):
+    class Meta:
+        model = Meeting
+        fields = ('title', 'starts_at', 'location', 'agenda', 'participants')
+        widgets = {'starts_at': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+                   'agenda': forms.Textarea(attrs={'rows': 4}),
+                   'participants': forms.SelectMultiple(attrs={'size': 8})}
+        labels = {'title': 'Yig‘ilish mavzusi', 'starts_at': 'Sana va vaqt', 'location': 'Joy',
+                  'agenda': 'Kun tartibi', 'participants': 'Ishtirokchilar'}
+
+
+class KPIRecordForm(StyledFormMixin, forms.ModelForm):
+    class Meta:
+        model = KPIRecord
+        fields = ('employee', 'period', 'metric', 'target', 'actual', 'note')
+        widgets = {'period': forms.DateInput(attrs={'type': 'date'})}
+        labels = {'employee': 'Xodim', 'period': 'Davr', 'metric': 'Ko‘rsatkich',
+                  'target': 'Reja', 'actual': 'Natija', 'note': 'Izoh'}
+
+
+class KnowledgeDocumentForm(StyledFormMixin, forms.ModelForm):
+    class Meta:
+        model = KnowledgeDocument
+        fields = ('title', 'description', 'department', 'file', 'link', 'is_required')
+        widgets = {'description': forms.Textarea(attrs={'rows': 3})}
+
+
+class OnboardingItemForm(StyledFormMixin, forms.ModelForm):
+    class Meta:
+        model = OnboardingItem
+        fields = ('employee', 'title', 'description', 'due_date')
+        widgets = {'description': forms.Textarea(attrs={'rows': 3}),
+                   'due_date': forms.DateInput(attrs={'type': 'date'})}

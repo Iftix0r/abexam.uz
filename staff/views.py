@@ -11,9 +11,11 @@ from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from .forms import (AnnouncementForm, DailyReportForm, LeaveRequestForm, StaffProfileForm,
+                    KnowledgeDocumentForm, KPIRecordForm, MeetingForm, OnboardingItemForm,
                     SuggestionForm, TaskForm, TaskSubmitForm)
-from .models import (Announcement, Attendance, DailyReport, Department, LeaveRequest,
-                     StaffProfile, Suggestion, Task, TaskEvent)
+from .models import (Announcement, Attendance, DailyReport, Department, KnowledgeDocument,
+                     KPIRecord, LeaveRequest, Meeting, OnboardingItem, StaffProfile,
+                     Suggestion, Task, TaskEvent)
 from .services import notify_group, notify_profiles, notify_task, notify_user
 
 
@@ -251,6 +253,85 @@ def suggestion_status(request, pk):
         item.status = status; item.save(update_fields=['status'])
         messages.success(request, 'Murojaat holati yangilandi.')
     return redirect('staff:suggestions')
+
+
+@staff_required
+def meetings(request):
+    p = request.staff_profile
+    qs = Meeting.objects.filter(Q(participants=p) | Q(organizer=p)).select_related('organizer__user').distinct()
+    if p.role == StaffProfile.Role.SUPER_ADMIN:
+        qs = Meeting.objects.select_related('organizer__user').all()
+    form = MeetingForm(request.POST or None) if p.can_manage else None
+    if request.method == 'POST' and form and form.is_valid():
+        item = form.save(commit=False); item.organizer = p; item.save(); form.save_m2m()
+        notify_profiles(item.participants.filter(is_approved=True), '📅 Yangi yig‘ilish',
+                        f'{item.title}\n{item.starts_at:%d.%m.%Y %H:%M}\n{item.location}', '/staff/meetings/')
+        messages.success(request, 'Yig‘ilish yaratildi va ishtirokchilarga yuborildi.')
+        return redirect('staff:meetings')
+    return render(request, 'staff/meetings.html', {'meetings': qs, 'form': form})
+
+
+@staff_required
+@require_POST
+def meeting_decisions(request, pk):
+    p = request.staff_profile
+    meeting = get_object_or_404(Meeting, pk=pk)
+    if meeting.organizer_id != p.pk and p.role != StaffProfile.Role.SUPER_ADMIN:
+        return HttpResponseForbidden()
+    meeting.decisions = request.POST.get('decisions', '').strip(); meeting.save(update_fields=['decisions'])
+    messages.success(request, 'Yig‘ilish qarorlari saqlandi.')
+    return redirect('staff:meetings')
+
+
+@staff_required
+def kpi(request):
+    p = request.staff_profile
+    qs = KPIRecord.objects.select_related('employee__user', 'employee__department')
+    if not p.can_manage:
+        qs = qs.filter(employee=p)
+    elif p.role == StaffProfile.Role.HEAD:
+        qs = qs.filter(employee__department=p.department)
+    elif p.role == StaffProfile.Role.COORDINATOR:
+        qs = qs.filter(Q(employee__manager=p) | Q(employee=p))
+    form = KPIRecordForm(request.POST or None) if p.can_manage else None
+    if request.method == 'POST' and form and form.is_valid():
+        item = form.save(commit=False); item.created_by = p; item.save()
+        notify_user(item.employee.user, '📊 KPI yangilandi', f'{item.metric}: {item.actual}/{item.target}', '/staff/kpi/')
+        messages.success(request, 'KPI ko‘rsatkichi saqlandi.'); return redirect('staff:kpi')
+    return render(request, 'staff/kpi.html', {'records': qs[:200], 'form': form})
+
+
+@staff_required
+def knowledge(request):
+    p = request.staff_profile
+    qs = KnowledgeDocument.objects.filter(Q(department__isnull=True) | Q(department=p.department)).select_related('department')
+    form = KnowledgeDocumentForm(request.POST or None, request.FILES or None) if p.can_manage else None
+    if request.method == 'POST' and form and form.is_valid():
+        item = form.save(commit=False); item.uploaded_by = p; item.save()
+        messages.success(request, 'Hujjat bilimlar bazasiga qo‘shildi.'); return redirect('staff:knowledge')
+    return render(request, 'staff/knowledge.html', {'documents': qs, 'form': form})
+
+
+@staff_required
+def onboarding(request):
+    p = request.staff_profile
+    qs = OnboardingItem.objects.select_related('employee__user')
+    if not p.can_manage:
+        qs = qs.filter(employee=p)
+    form = OnboardingItemForm(request.POST or None) if p.can_manage else None
+    if request.method == 'POST' and form and form.is_valid():
+        item = form.save(commit=False); item.created_by = p; item.save()
+        notify_user(item.employee.user, '🎓 Yangi moslashuv vazifasi', item.title, '/staff/onboarding/')
+        messages.success(request, 'Onboarding vazifasi qo‘shildi.'); return redirect('staff:onboarding')
+    return render(request, 'staff/onboarding.html', {'items': qs, 'form': form})
+
+
+@staff_required
+@require_POST
+def onboarding_done(request, pk):
+    item = get_object_or_404(OnboardingItem, pk=pk, employee=request.staff_profile)
+    item.is_done = True; item.completed_at = timezone.now(); item.save(update_fields=['is_done', 'completed_at'])
+    return redirect('staff:onboarding')
 
 
 @staff_required

@@ -24,5 +24,11 @@ urlpatterns = [
     path('suggestions/new/', views.suggestion_create, name='suggestion_create'),
     path('suggestions/', views.suggestions, name='suggestions'),
     path('suggestions/<int:pk>/status/', views.suggestion_status, name='suggestion_status'),
+    path('meetings/', views.meetings, name='meetings'),
+    path('meetings/<int:pk>/decisions/', views.meeting_decisions, name='meeting_decisions'),
+    path('kpi/', views.kpi, name='kpi'),
+    path('knowledge/', views.knowledge, name='knowledge'),
+    path('onboarding/', views.onboarding, name='onboarding'),
+    path('onboarding/<int:pk>/done/', views.onboarding_done, name='onboarding_done'),
     path('bot/webhook/<str:path_token>/', telegram_views.webhook, name='bot_webhook'),
 ]
