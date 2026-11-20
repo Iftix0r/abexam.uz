@@ -103,6 +103,7 @@ urlpatterns = [
     path('api/learn/', include('learn.api')),
     path('tg/', include('tgbot.urls', namespace='tgbot')),
     path('abchat/', include('chat.urls', namespace='chat')),
+    path('staff/', include('staff.urls', namespace='staff')),
     path('game/', include('games.urls', namespace='games')),
 ]
 

@@ -1,0 +1,214 @@
+import datetime
+
+from django.conf import settings
+from django.core.exceptions import ValidationError
+from django.db import models
+from django.utils import timezone
+
+
+class Branch(models.Model):
+    name = models.CharField(max_length=120, unique=True)
+    address = models.CharField(max_length=255, blank=True)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['name']
+        verbose_name = 'Filial'
+        verbose_name_plural = 'Filiallar'
+
+    def __str__(self):
+        return self.name
+
+
+class Department(models.Model):
+    name = models.CharField(max_length=120, unique=True)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['name']
+        verbose_name = "Bo'lim"
+        verbose_name_plural = "Bo'limlar"
+
+    def __str__(self):
+        return self.name
+
+
+class StaffProfile(models.Model):
+    class Role(models.TextChoices):
+        SUPER_ADMIN = 'super_admin', 'Super Admin'
+        COORDINATOR = 'coordinator', 'Koordinator'
+        HEAD = 'head', "Bo'lim rahbari"
+        EMPLOYEE = 'employee', 'Xodim'
+        NEW = 'new', 'Yangi xodim'
+
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='staff_profile')
+    role = models.CharField(max_length=20, choices=Role.choices, default=Role.NEW, db_index=True)
+    job_title = models.CharField(max_length=120, blank=True)
+    department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True, blank=True, related_name='members')
+    branch = models.ForeignKey(Branch, on_delete=models.SET_NULL, null=True, blank=True, related_name='members')
+    manager = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='direct_reports')
+    hired_at = models.DateField(null=True, blank=True)
+    work_start = models.TimeField(default=datetime.time(9, 0))
+    work_end = models.TimeField(default=datetime.time(18, 0))
+    work_days = models.CharField(max_length=20, default='1,2,3,4,5', help_text='1=Dushanba, 7=Yakshanba')
+    is_approved = models.BooleanField(default=False, db_index=True)
+    notifications_enabled = models.BooleanField(default=True)
+
+    class Meta:
+        verbose_name = 'Xodim profili'
+        verbose_name_plural = 'Xodim profillari'
+
+    def __str__(self):
+        return self.user.display_name
+
+    @property
+    def can_manage(self):
+        return self.role in {self.Role.SUPER_ADMIN, self.Role.COORDINATOR, self.Role.HEAD}
+
+
+class Task(models.Model):
+    class Status(models.TextChoices):
+        NEW = 'new', 'Yangi'
+        IN_PROGRESS = 'in_progress', 'Jarayonda'
+        REVIEW = 'review', 'Tekshiruvda'
+        DONE = 'done', 'Bajarildi'
+        OVERDUE = 'overdue', 'Kechikdi'
+        CANCELLED = 'cancelled', 'Bekor qilindi'
+
+    class Priority(models.TextChoices):
+        LOW = 'low', 'Past'
+        MEDIUM = 'medium', "O'rta"
+        HIGH = 'high', 'Muhim'
+        URGENT = 'urgent', 'Shoshilinch'
+
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    assignee = models.ForeignKey(StaffProfile, on_delete=models.PROTECT, related_name='tasks')
+    department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True, blank=True, related_name='tasks')
+    created_by = models.ForeignKey(StaffProfile, on_delete=models.PROTECT, related_name='created_tasks')
+    reviewer = models.ForeignKey(StaffProfile, on_delete=models.SET_NULL, null=True, blank=True, related_name='review_tasks')
+    starts_at = models.DateTimeField(default=timezone.now)
+    due_at = models.DateTimeField(db_index=True)
+    priority = models.CharField(max_length=10, choices=Priority.choices, default=Priority.MEDIUM)
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.NEW, db_index=True)
+    expected_result = models.TextField(blank=True)
+    attachment = models.FileField(upload_to='staff/tasks/%Y/%m/', blank=True)
+    result_text = models.TextField(blank=True)
+    result_file = models.FileField(upload_to='staff/results/%Y/%m/', blank=True)
+    review_comment = models.TextField(blank=True)
+    completed_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['due_at', '-priority']
+        verbose_name = 'Vazifa'
+        verbose_name_plural = 'Vazifalar'
+
+    def __str__(self):
+        return self.title
+
+    @property
+    def is_late(self):
+        return self.status not in {self.Status.DONE, self.Status.CANCELLED} and self.due_at < timezone.now()
+
+
+class TaskEvent(models.Model):
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='events')
+    actor = models.ForeignKey(StaffProfile, on_delete=models.SET_NULL, null=True, related_name='task_events')
+    from_status = models.CharField(max_length=20, blank=True)
+    to_status = models.CharField(max_length=20, blank=True)
+    comment = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+
+class DailyReport(models.Model):
+    employee = models.ForeignKey(StaffProfile, on_delete=models.CASCADE, related_name='daily_reports')
+    date = models.DateField(default=timezone.localdate)
+    completed = models.TextField("Bajarilgan ishlar")
+    unfinished = models.TextField("Tugallanmagan ishlar", blank=True)
+    problems = models.TextField("Muammolar", blank=True)
+    tomorrow_plan = models.TextField("Ertangi reja")
+    needs_help = models.TextField("Kerakli yordam", blank=True)
+    reviewed_by = models.ForeignKey(StaffProfile, on_delete=models.SET_NULL, null=True, blank=True, related_name='reviewed_reports')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=['employee', 'date'], name='unique_staff_daily_report')]
+        ordering = ['-date', '-created_at']
+
+
+class LeaveRequest(models.Model):
+    class Kind(models.TextChoices):
+        LEAVE = 'leave', "Ta'til"
+        PERMISSION = 'permission', 'Ruxsat'
+        SICK = 'sick', 'Kasallik'
+        SHIFT = 'shift', 'Smena almashtirish'
+
+    class Status(models.TextChoices):
+        PENDING = 'pending', 'Kutilmoqda'
+        APPROVED = 'approved', 'Tasdiqlandi'
+        REJECTED = 'rejected', 'Rad etildi'
+
+    employee = models.ForeignKey(StaffProfile, on_delete=models.CASCADE, related_name='leave_requests')
+    kind = models.CharField(max_length=20, choices=Kind.choices)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    reason = models.TextField()
+    status = models.CharField(max_length=15, choices=Status.choices, default=Status.PENDING, db_index=True)
+    manager_comment = models.TextField(blank=True)
+    decided_by = models.ForeignKey(StaffProfile, on_delete=models.SET_NULL, null=True, blank=True, related_name='decided_leaves')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def clean(self):
+        if self.end_date and self.start_date and self.end_date < self.start_date:
+            raise ValidationError("Tugash sanasi boshlanish sanasidan oldin bo'lishi mumkin emas.")
+
+    class Meta:
+        ordering = ['-created_at']
+
+
+class Announcement(models.Model):
+    class Kind(models.TextChoices):
+        NEWS = 'news', 'Yangilik'
+        MEETING = 'meeting', "Yig'ilish"
+        SCHEDULE = 'schedule', "Jadval o'zgarishi"
+        EVENT = 'event', 'Tadbir'
+        RULE = 'rule', 'Ichki qoida'
+        URGENT = 'urgent', 'Shoshilinch'
+
+    title = models.CharField(max_length=200)
+    body = models.TextField()
+    kind = models.CharField(max_length=15, choices=Kind.choices, default=Kind.NEWS)
+    author = models.ForeignKey(StaffProfile, on_delete=models.PROTECT, related_name='announcements')
+    branch = models.ForeignKey(Branch, on_delete=models.SET_NULL, null=True, blank=True)
+    department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True, blank=True)
+    requires_ack = models.BooleanField(default=False)
+    is_pinned = models.BooleanField(default=False)
+    published_at = models.DateTimeField(default=timezone.now)
+    expires_at = models.DateTimeField(null=True, blank=True)
+    read_by = models.ManyToManyField(StaffProfile, blank=True, related_name='read_announcements')
+
+    class Meta:
+        ordering = ['-is_pinned', '-published_at']
+
+
+class Suggestion(models.Model):
+    class Status(models.TextChoices):
+        NEW = 'new', 'Yangi'
+        REVIEW = 'review', "Ko'rib chiqilmoqda"
+        RESOLVED = 'resolved', 'Hal qilindi'
+        REJECTED = 'rejected', 'Rad etildi'
+
+    author = models.ForeignKey(StaffProfile, on_delete=models.CASCADE, related_name='suggestions')
+    title = models.CharField(max_length=200)
+    body = models.TextField()
+    is_confidential = models.BooleanField(default=False)
+    status = models.CharField(max_length=15, choices=Status.choices, default=Status.NEW)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']

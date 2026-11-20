@@ -267,6 +267,22 @@ def _admin_menu(acc):
     admin_bot.menu(acc)
 
 
+def _staff_cabinet(acc):
+    """Compact staff home inside Telegram; detailed work continues on the web panel."""
+    if not acc.user_id:
+        return reply(acc, "AB Staff uchun avval sayt hisobingizni botga ulang: " + site_url('/profile/'))
+    from staff.models import StaffProfile, Task
+    profile = StaffProfile.objects.filter(user=acc.user, is_approved=True).first()
+    if not profile:
+        return reply(acc, "Xodim profilingiz hali tasdiqlanmagan. Rahbariyat tasdiqlashini kuting.")
+    tasks = Task.objects.filter(assignee=profile).exclude(status__in=[Task.Status.DONE, Task.Status.CANCELLED])
+    late = tasks.filter(due_at__lt=timezone.now()).count()
+    text = (f"<b>AB Staff</b>\n\n👤 {escape(acc.user.display_name)}\n"
+            f"💼 {escape(profile.get_role_display())}\n📋 Faol vazifalar: <b>{tasks.count()}</b>\n"
+            f"🔴 Kechikkan: <b>{late}</b>\n\nKabinetda vazifalarni boshlash, hisobot va ruxsat so‘rovlarini yuborish mumkin.")
+    reply(acc, text, api.inline_keyboard([[('🏠 Staff kabinetini ochish', site_url('/staff/'))]]))
+
+
 _MENU_ACTIONS = {
     MENU_BOOK: _show_days, MENU_MY: _my_bookings, MENU_RESULTS: _results,
     MENU_ACCOUNT: _account_info, MENU_SUPPORT: _support, MENU_HELP: _help, MENU_ADMIN: _admin_menu,
@@ -275,6 +291,7 @@ _COMMANDS = {
     '/menu': _welcome, '/help': _help, '/navbat': _my_bookings, '/yozilish': _show_days,
     '/natijalar': _results, '/hisob': _account_info, '/savol': _support, '/ball': _band,
     '/admin': _admin_menu,
+    '/staff': _staff_cabinet,
 }
 _TAKES_TEXT = {_band}
 
