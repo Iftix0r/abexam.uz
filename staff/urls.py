@@ -5,6 +5,8 @@ from . import telegram_views
 app_name = 'staff'
 urlpatterns = [
     path('', views.dashboard, name='dashboard'),
+    path('control/', views.control_center, name='control_center'),
+    path('control/remind/<str:kind>/', views.control_remind, name='control_remind'),
     path('team/', views.team_list, name='team_list'),
     path('team/add/', views.team_add, name='team_add'),
     path('team/<int:pk>/', views.team_detail, name='team_detail'),

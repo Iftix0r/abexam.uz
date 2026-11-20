@@ -18,7 +18,8 @@ document.addEventListener('DOMContentLoaded', () => {
   menu.addEventListener('click', () => body.classList.toggle('drawer-open'));
   overlay.addEventListener('click', close);
   document.querySelectorAll('.side a').forEach(a => a.addEventListener('click', close));
-  const iconMap = [['/staff/team/','users'],['/staff/goals/','target'],['/staff/tasks/','list-checks'],['/staff/meetings/','calendar-days'],['/staff/attendance/','clock-3'],['/staff/reports/','chart-no-axes-combined'],['/staff/report/','clipboard-check'],['/staff/kpi/','gauge'],['/staff/knowledge/','book-open'],['/staff/onboarding/','graduation-cap'],['/staff/announcements/','megaphone'],['/staff/leaves/','palmtree'],['/staff/suggestions/','message-square-more'],['/staff/','layout-dashboard']];
+  {% if request.staff_profile.can_manage %}document.querySelector('.side .nav')?.insertAdjacentHTML('afterbegin','<a href="{% url "staff:control_center" %}">Nazorat markazi</a>');{% endif %}
+  const iconMap = [['/staff/control/','scan-eye'],['/staff/team/','users'],['/staff/goals/','target'],['/staff/tasks/','list-checks'],['/staff/meetings/','calendar-days'],['/staff/attendance/','clock-3'],['/staff/reports/','chart-no-axes-combined'],['/staff/report/','clipboard-check'],['/staff/kpi/','gauge'],['/staff/knowledge/','book-open'],['/staff/onboarding/','graduation-cap'],['/staff/announcements/','megaphone'],['/staff/leaves/','palmtree'],['/staff/suggestions/','message-square-more'],['/staff/','layout-dashboard']];
   const sideLinks = [...document.querySelectorAll('.side .nav a')];
   sideLinks.forEach(a => {
     const icon = iconMap.find(([path]) => new URL(a.href, location.origin).pathname.startsWith(path));

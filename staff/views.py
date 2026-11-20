@@ -78,6 +78,76 @@ def dashboard(request):
 
 
 @staff_required
+def control_center(request):
+    p = request.staff_profile
+    if not p.can_manage:
+        return HttpResponseForbidden()
+    today, now = timezone.localdate(), timezone.now()
+    people = StaffProfile.objects.filter(is_approved=True).select_related(
+        'user', 'user__staff_telegram', 'department', 'branch', 'manager__user')
+    if p.role == StaffProfile.Role.HEAD:
+        people = people.filter(department=p.department)
+    elif p.role == StaffProfile.Role.COORDINATOR:
+        people = people.filter(Q(manager=p) | Q(pk=p.pk))
+
+    people_ids = list(people.values_list('pk', flat=True))
+    on_leave_ids = LeaveRequest.objects.filter(
+        employee_id__in=people_ids, status=LeaveRequest.Status.APPROVED,
+        start_date__lte=today, end_date__gte=today).values_list('employee_id', flat=True)
+    local_time = timezone.localtime(now).time()
+    workday_people = [item for item in people if str(today.isoweekday()) in item.work_days.split(',')]
+    attendance_expected = [item.pk for item in workday_people if local_time >= item.work_start]
+    report_expected = [item.pk for item in workday_people if local_time >= item.work_end]
+    missing_reports = people.filter(pk__in=report_expected).exclude(daily_reports__date=today)
+    absent = people.filter(pk__in=attendance_expected).exclude(pk__in=on_leave_ids).exclude(attendance__date=today)
+    overdue = visible_tasks(p).exclude(status__in=[Task.Status.DONE, Task.Status.CANCELLED]).filter(
+        due_at__lt=now).order_by('due_at')
+    pending_leaves = LeaveRequest.objects.filter(
+        employee_id__in=people_ids, status=LeaveRequest.Status.PENDING).select_related('employee__user')
+    pending_staff = StaffProfile.objects.filter(is_approved=False).select_related('user', 'department') \
+        if p.role == StaffProfile.Role.SUPER_ADMIN else StaffProfile.objects.none()
+    bot_unlinked = people.filter(user__staff_telegram__isnull=True)
+    context = {
+        'counts': {'overdue': overdue.count(), 'missing_reports': missing_reports.count(),
+                   'absent': absent.count(), 'pending_leaves': pending_leaves.count(),
+                   'pending_staff': pending_staff.count(), 'bot_unlinked': bot_unlinked.count()},
+        'overdue': overdue[:20], 'missing_reports': missing_reports[:20], 'absent': absent[:20],
+        'pending_leaves': pending_leaves[:20], 'pending_staff': pending_staff[:20],
+        'bot_unlinked': bot_unlinked[:20], 'today': today,
+    }
+    return render(request, 'staff/control_center.html', context)
+
+
+@staff_required
+@require_POST
+def control_remind(request, kind):
+    p = request.staff_profile
+    if not p.can_manage or kind not in {'reports', 'attendance', 'deadlines'}:
+        return HttpResponseForbidden()
+    today, now = timezone.localdate(), timezone.now()
+    people = StaffProfile.objects.filter(is_approved=True)
+    if p.role == StaffProfile.Role.HEAD:
+        people = people.filter(department=p.department)
+    elif p.role == StaffProfile.Role.COORDINATOR:
+        people = people.filter(Q(manager=p) | Q(pk=p.pk))
+    if kind == 'reports':
+        targets = people.exclude(daily_reports__date=today)
+        sent = notify_profiles(targets, '✅ Kunlik hisobot eslatmasi',
+                               'Rahbaringiz bugungi hisobotni yuborishingizni so‘radi.', '/staff/report/')
+    elif kind == 'attendance':
+        targets = people.exclude(attendance__date=today)
+        sent = notify_profiles(targets, '🕘 Davomat eslatmasi',
+                               'Ishga kelish vaqtingizni Staff kabinetida belgilang.', '/staff/attendance/')
+    else:
+        sent = 0
+        tasks = visible_tasks(p).exclude(status__in=[Task.Status.DONE, Task.Status.CANCELLED]).filter(due_at__lt=now)
+        for task in tasks:
+            sent += int(notify_user(task.assignee.user, '🔴 Kechikkan vazifa', task.title, f'/staff/tasks/{task.pk}/'))
+    messages.success(request, f'{sent} ta eslatma Staff bot orqali yuborildi.')
+    return redirect('staff:control_center')
+
+
+@staff_required
 def team_list(request):
     p = request.staff_profile
     profiles = StaffProfile.objects.select_related(
