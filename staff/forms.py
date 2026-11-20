@@ -1,5 +1,5 @@
 from django import forms
-from .models import (Announcement, DailyReport, KnowledgeDocument, KPIRecord, LeaveRequest,
+from .models import (Announcement, DailyReport, Goal, KnowledgeDocument, KPIRecord, LeaveRequest,
                      Meeting, OnboardingItem, StaffProfile, Suggestion, Task)
 
 
@@ -120,3 +120,16 @@ class OnboardingItemForm(StyledFormMixin, forms.ModelForm):
         fields = ('employee', 'title', 'description', 'due_date')
         widgets = {'description': forms.Textarea(attrs={'rows': 3}),
                    'due_date': forms.DateInput(attrs={'type': 'date'})}
+
+
+class GoalForm(StyledFormMixin, forms.ModelForm):
+    class Meta:
+        model = Goal
+        fields = ('title', 'description', 'owner', 'department', 'target_date', 'progress', 'status', 'tasks')
+        widgets = {'description': forms.Textarea(attrs={'rows': 3}),
+                   'target_date': forms.DateInput(attrs={'type': 'date'}),
+                   'progress': forms.NumberInput(attrs={'min': 0, 'max': 100}),
+                   'tasks': forms.SelectMultiple(attrs={'size': 7})}
+        labels = {'title': 'Maqsad', 'description': 'Tavsif', 'owner': 'Mas’ul', 'department': 'Bo‘lim',
+                  'target_date': 'Muddati', 'progress': 'Progress (%)', 'status': 'Holat',
+                  'tasks': 'Bog‘langan vazifalar'}

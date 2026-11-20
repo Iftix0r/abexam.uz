@@ -11,9 +11,9 @@ from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from .forms import (AnnouncementForm, DailyReportForm, LeaveRequestForm, StaffProfileForm,
-                    KnowledgeDocumentForm, KPIRecordForm, MeetingForm, OnboardingItemForm,
+                    GoalForm, KnowledgeDocumentForm, KPIRecordForm, MeetingForm, OnboardingItemForm,
                     SuggestionForm, TaskForm, TaskSubmitForm)
-from .models import (Announcement, Attendance, DailyReport, Department, KnowledgeDocument,
+from .models import (Announcement, Attendance, DailyReport, Department, Goal, KnowledgeDocument,
                      KPIRecord, LeaveRequest, Meeting, OnboardingItem, StaffProfile,
                      Suggestion, Task, TaskEvent)
 from .services import notify_group, notify_profiles, notify_task, notify_user
@@ -332,6 +332,24 @@ def onboarding_done(request, pk):
     item = get_object_or_404(OnboardingItem, pk=pk, employee=request.staff_profile)
     item.is_done = True; item.completed_at = timezone.now(); item.save(update_fields=['is_done', 'completed_at'])
     return redirect('staff:onboarding')
+
+
+@staff_required
+def goals(request):
+    p = request.staff_profile
+    qs = Goal.objects.select_related('owner__user', 'department').prefetch_related('tasks')
+    if not p.can_manage:
+        qs = qs.filter(Q(owner=p) | Q(department=p.department)).distinct()
+    elif p.role == StaffProfile.Role.HEAD:
+        qs = qs.filter(department=p.department)
+    elif p.role == StaffProfile.Role.COORDINATOR:
+        qs = qs.filter(Q(owner__manager=p) | Q(owner=p)).distinct()
+    form = GoalForm(request.POST or None) if p.can_manage else None
+    if request.method == 'POST' and form and form.is_valid():
+        item = form.save(commit=False); item.created_by = p; item.save(); form.save_m2m()
+        notify_user(item.owner.user, '🎯 Yangi maqsad', f'{item.title}\nMuddat: {item.target_date:%d.%m.%Y}', '/staff/goals/')
+        messages.success(request, 'Maqsad yaratildi.'); return redirect('staff:goals')
+    return render(request, 'staff/goals.html', {'goals': qs, 'form': form})
 
 
 @staff_required

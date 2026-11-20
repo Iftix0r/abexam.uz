@@ -4,7 +4,7 @@ from django.core.management.base import BaseCommand
 from django.utils import timezone
 
 from staff.models import DailyReport, Meeting, StaffProfile, Task
-from staff.services import notify_profiles, notify_user
+from staff.services import notify_group, notify_profiles, notify_user
 
 
 class Command(BaseCommand):
@@ -17,6 +17,11 @@ class Command(BaseCommand):
         kind, sent = options['kind'], 0
         now, today = timezone.now(), timezone.localdate()
         if kind == 'morning':
+            total_today = Task.objects.filter(due_at__date=today).exclude(
+                status__in=[Task.Status.DONE, Task.Status.CANCELLED]).count()
+            notify_group('☀️ Xayrli tong, AB Education jamoasi!',
+                         f'Ish kuni boshlanishiga oz qoldi. Bugun jamoada {total_today} ta faol vazifa bor. '
+                         'Har bir xodim o‘z rejasini Staff bot va kabinetdan tekshirsin.', '/staff/tasks/?period=today')
             for profile in StaffProfile.objects.filter(is_approved=True).select_related('user', 'user__staff_telegram'):
                 count = Task.objects.filter(assignee=profile, due_at__date=today).exclude(
                     status__in=[Task.Status.DONE, Task.Status.CANCELLED]).count()
@@ -27,6 +32,9 @@ class Command(BaseCommand):
             profiles = StaffProfile.objects.filter(is_approved=True).exclude(daily_reports__date=today)
             sent = notify_profiles(profiles, '✅ Kunlik hisobot vaqti',
                                    'Bugungi bajargan ishlaringiz va ertangi rejangizni yuboring.', '/staff/report/')
+            notify_group('🌙 Ish kuni yakunlandi',
+                         'Bugungi natijalarni yakunlab, kunlik hisobotni Staff kabinetida yuborishni unutmang.',
+                         '/staff/report/')
         elif kind == 'deadlines':
             tasks = Task.objects.filter(due_at__range=(now, now + timedelta(hours=24))).exclude(
                 status__in=[Task.Status.DONE, Task.Status.CANCELLED])

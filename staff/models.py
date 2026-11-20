@@ -327,3 +327,29 @@ class OnboardingItem(models.Model):
 
     class Meta:
         ordering = ['is_done', 'due_date', 'id']
+
+
+class Goal(models.Model):
+    class Status(models.TextChoices):
+        PLANNED = 'planned', 'Rejada'
+        ACTIVE = 'active', 'Jarayonda'
+        ACHIEVED = 'achieved', 'Erishildi'
+        PAUSED = 'paused', 'To‘xtatilgan'
+
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    owner = models.ForeignKey(StaffProfile, on_delete=models.PROTECT, related_name='goals')
+    department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True, blank=True, related_name='goals')
+    target_date = models.DateField()
+    progress = models.PositiveSmallIntegerField(default=0)
+    status = models.CharField(max_length=15, choices=Status.choices, default=Status.PLANNED)
+    tasks = models.ManyToManyField(Task, blank=True, related_name='goals')
+    created_by = models.ForeignKey(StaffProfile, on_delete=models.PROTECT, related_name='created_goals')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['status', 'target_date']
+
+    def clean(self):
+        if not 0 <= self.progress <= 100:
+            raise ValidationError('Progress 0 dan 100 gacha bo‘lishi kerak.')

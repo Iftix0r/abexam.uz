@@ -33,6 +33,7 @@ def _menu(account, prefix=''):
     site = settings.SITE_URL.rstrip('/')
     return api.send(account.chat_id, text, api.inline([
         ('📋 Vazifalarim', site + '/staff/tasks/'),
+        ('🎯 Maqsadlar', site + '/staff/goals/'),
         ('🗓 Bugungi ishlar', site + '/staff/tasks/?period=today'),
         ('✅ Kunlik hisobot', site + '/staff/report/'),
         ('🏖 Ruxsat so‘rash', site + '/staff/leaves/'),
@@ -125,7 +126,7 @@ def handle(update):
         return _tasks(account, today_only=True)
     if command == '/announcements':
         return _announcements(account)
-    if command in {'/start', '/menu', '/report', '/leave', '/meetings', '/kpi', '/knowledge'}:
+    if command in {'/start', '/menu', '/report', '/leave', '/goals', '/meetings', '/kpi', '/knowledge'}:
         return _menu(account)
     return _menu(account)
 

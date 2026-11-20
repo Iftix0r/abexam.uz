@@ -30,5 +30,6 @@ urlpatterns = [
     path('knowledge/', views.knowledge, name='knowledge'),
     path('onboarding/', views.onboarding, name='onboarding'),
     path('onboarding/<int:pk>/done/', views.onboarding_done, name='onboarding_done'),
+    path('goals/', views.goals, name='goals'),
     path('bot/webhook/<str:path_token>/', telegram_views.webhook, name='bot_webhook'),
 ]

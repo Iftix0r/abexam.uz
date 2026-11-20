@@ -7,6 +7,7 @@ from staff import telegram_api as api
 COMMANDS = [
     ('start', 'AB Staff bosh menyusi'),
     ('tasks', 'Mening vazifalarim'),
+    ('goals', 'Maqsadlar'),
     ('today', 'Bugungi vazifalar'),
     ('report', 'Kunlik hisobot'),
     ('leave', 'Ruxsat va ta’til'),

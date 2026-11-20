@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import (Announcement, Attendance, Branch, DailyReport, Department, KnowledgeDocument,
+from .models import (Announcement, Attendance, Branch, DailyReport, Department, Goal, KnowledgeDocument,
                      KPIRecord, LeaveRequest, Meeting, OnboardingItem, StaffProfile,
                      StaffTelegramAccount, Suggestion, Task, TaskEvent)
 
@@ -20,4 +20,4 @@ class TaskAdmin(admin.ModelAdmin):
 
 admin.site.register([Branch, Department, StaffTelegramAccount, TaskEvent, DailyReport, Attendance,
                      LeaveRequest, Announcement, Suggestion, Meeting, KPIRecord,
-                     KnowledgeDocument, OnboardingItem])
+                     KnowledgeDocument, OnboardingItem, Goal])
