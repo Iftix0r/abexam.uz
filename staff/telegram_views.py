@@ -1,4 +1,5 @@
 import json
+import logging
 
 from django.contrib.auth import get_user_model
 from django.conf import settings
@@ -9,9 +10,11 @@ from django.utils.crypto import constant_time_compare
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
-from users.backends import normalize_phone
+from users.backends import normalize_phone, phone_variants
 from . import telegram_api as api
 from .models import StaffProfile, StaffTelegramAccount, Task
+
+logger = logging.getLogger(__name__)
 
 
 def _menu(account, prefix=''):
@@ -46,21 +49,44 @@ def handle(update):
     account.save(update_fields=['username', 'first_name', 'last_seen_at', 'is_blocked'])
     if message.get('contact'):
         contact = message['contact']
-        if contact.get('user_id') != chat['id']:
+        # Telegram may omit user_id on older clients.  A present, different
+        # value means a forwarded contact and must not be used for login.
+        if contact.get('user_id') is not None and contact.get('user_id') != chat['id']:
             return api.send(account.chat_id, 'Faqat o‘zingizning telefon raqamingizni yuboring.')
         phone = normalize_phone(contact.get('phone_number', ''))
-        User = get_user_model()
-        user = User.objects.filter(phone_number=phone).first()
-        if not user or not StaffProfile.objects.filter(user=user, is_approved=True).exists():
-            return api.send(account.chat_id, 'Bu raqam bilan tasdiqlangan xodim topilmadi. Rahbariyatga murojaat qiling.')
-        StaffTelegramAccount.objects.filter(user=user).exclude(pk=account.pk).update(user=None)
-        account.user = user
-        account.save(update_fields=['user'])
-        return _menu(account, '✅ Hisobingiz muvaffaqiyatli ulandi.')
-    text = (message.get('text') or '').split('@')[0]
-    if text in {'/start', '/menu', '/tasks', '/report'}:
+        return _link_phone(account, phone)
+    text = (message.get('text') or '').strip()
+    # Desktop clients sometimes paste the number instead of sending a contact.
+    phone = normalize_phone(text)
+    if phone:
+        return _link_phone(account, phone)
+    command = text.split('@')[0]
+    if command in {'/start', '/menu', '/tasks', '/report'}:
         return _menu(account)
     return _menu(account)
+
+
+def _link_phone(account, phone):
+    if not phone:
+        return api.send(account.chat_id, 'Telefon raqami noto‘g‘ri. Masalan: +998901234567')
+    User = get_user_model()
+    user = User.objects.filter(phone_number__in=phone_variants(phone)).order_by('pk').first()
+    if not user:
+        return api.send(account.chat_id,
+                        'Bu telefon raqami AbExam hisobida topilmadi. Saytdagi profilingizga shu raqamni kiriting.')
+    profile = StaffProfile.objects.filter(user=user, is_approved=True).first()
+    if not profile and user.is_superuser:
+        profile, _ = StaffProfile.objects.update_or_create(
+            user=user,
+            defaults={'role': StaffProfile.Role.SUPER_ADMIN, 'job_title': 'Direktor', 'is_approved': True},
+        )
+    if not profile:
+        return api.send(account.chat_id,
+                        'AbExam hisobingiz topildi, lekin Staff profilingiz tasdiqlanmagan. Super admin tasdiqlashi kerak.')
+    StaffTelegramAccount.objects.filter(user=user).exclude(pk=account.pk).update(user=None)
+    account.user = user
+    account.save(update_fields=['user'])
+    return _menu(account, '✅ Hisobingiz muvaffaqiyatli ulandi.')
 
 
 @csrf_exempt
@@ -75,5 +101,8 @@ def webhook(request, path_token):
     except ValueError:
         return HttpResponse(status=200)
     if cache.add(f"staff_tg_update:{update.get('update_id')}", 1, 86400):
-        handle(update)
+        try:
+            handle(update)
+        except Exception:
+            logger.exception('AB Staff Telegram update %s failed', update.get('update_id'))
     return JsonResponse({'ok': True})
