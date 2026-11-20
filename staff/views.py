@@ -10,7 +10,8 @@ from django.views.decorators.http import require_POST
 
 from .forms import (AnnouncementForm, DailyReportForm, LeaveRequestForm, StaffProfileForm,
                     SuggestionForm, TaskForm, TaskSubmitForm)
-from .models import Announcement, Attendance, DailyReport, LeaveRequest, StaffProfile, Suggestion, Task, TaskEvent
+from .models import (Announcement, Attendance, DailyReport, Department, LeaveRequest,
+                     StaffProfile, Suggestion, Task, TaskEvent)
 from .services import notify_task, notify_user
 
 
@@ -73,18 +74,49 @@ def dashboard(request):
 @staff_required
 def team_list(request):
     p = request.staff_profile
-    profiles = StaffProfile.objects.select_related('user', 'department', 'branch', 'manager__user')
+    profiles = StaffProfile.objects.select_related(
+        'user', 'user__staff_telegram', 'department', 'branch', 'manager__user'
+    ).annotate(
+        active_tasks=Count('tasks', filter=~Q(tasks__status__in=[Task.Status.DONE, Task.Status.CANCELLED]), distinct=True),
+        done_tasks=Count('tasks', filter=Q(tasks__status=Task.Status.DONE), distinct=True),
+    )
     if not p.can_manage:
         profiles = profiles.filter(is_approved=True)
     elif p.role == StaffProfile.Role.HEAD:
         profiles = profiles.filter(department=p.department)
     elif p.role == StaffProfile.Role.COORDINATOR:
         profiles = profiles.filter(Q(manager=p) | Q(pk=p.pk))
+    scope = profiles
+    stats = {
+        'total': scope.count(),
+        'active': scope.filter(is_approved=True).count(),
+        'pending': scope.filter(is_approved=False).count(),
+        'telegram': scope.filter(user__staff_telegram__isnull=False).count(),
+    }
     search = request.GET.get('q', '').strip()
     if search:
         profiles = profiles.filter(Q(user__first_name__icontains=search) | Q(user__last_name__icontains=search) |
                                    Q(job_title__icontains=search) | Q(department__name__icontains=search))
-    return render(request, 'staff/team_list.html', {'profiles': profiles, 'search': search})
+    role = request.GET.get('role', '')
+    if role in StaffProfile.Role.values:
+        profiles = profiles.filter(role=role)
+    department = request.GET.get('department', '')
+    if department.isdigit():
+        profiles = profiles.filter(department_id=department)
+    status = request.GET.get('status', '')
+    if status == 'active':
+        profiles = profiles.filter(is_approved=True)
+    elif status == 'pending':
+        profiles = profiles.filter(is_approved=False)
+    elif status == 'telegram':
+        profiles = profiles.filter(user__staff_telegram__isnull=False)
+    profiles = profiles.order_by('-is_approved', 'department__name', 'user__first_name', 'user__last_name')
+    departments = Department.objects.filter(is_active=True)
+    return render(request, 'staff/team_list.html', {
+        'profiles': profiles, 'search': search, 'stats': stats, 'roles': StaffProfile.Role.choices,
+        'departments': departments, 'selected_role': role, 'selected_department': department,
+        'selected_status': status,
+    })
 
 
 @staff_required
@@ -199,7 +231,10 @@ def task_create(request):
     p = request.staff_profile
     if not p.can_manage:
         return HttpResponseForbidden('Vazifa yaratish huquqi yo‘q.')
-    form = TaskForm(request.POST or None, request.FILES or None)
+    initial = {}
+    if request.GET.get('assignee', '').isdigit():
+        initial['assignee'] = request.GET['assignee']
+    form = TaskForm(request.POST or None, request.FILES or None, initial=initial)
     allowed = StaffProfile.objects.filter(is_approved=True)
     if p.role == StaffProfile.Role.HEAD:
         allowed = allowed.filter(department=p.department)
