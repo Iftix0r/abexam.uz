@@ -79,7 +79,8 @@ def _link_phone(account, phone):
     if not profile and user.is_superuser:
         profile, _ = StaffProfile.objects.update_or_create(
             user=user,
-            defaults={'role': StaffProfile.Role.SUPER_ADMIN, 'job_title': 'Direktor', 'is_approved': True},
+            defaults={'role': StaffProfile.Role.SUPER_ADMIN, 'position': StaffProfile.Position.DIRECTOR,
+                      'job_title': 'Direktor', 'is_approved': True},
         )
     if not profile:
         return api.send(account.chat_id,

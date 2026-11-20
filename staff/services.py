@@ -18,3 +18,11 @@ def notify_user(user, title, text, path='/staff/'):
 def notify_task(task):
     return notify_user(task.assignee.user, '📋 Yangi vazifa',
                        f"{task.title}\nMuddat: {task.due_at:%d.%m.%Y %H:%M}", f'/staff/tasks/{task.pk}/')
+
+
+def notify_profiles(profiles, title, text, path='/staff/'):
+    sent = 0
+    for profile in profiles.select_related('user', 'user__staff_telegram'):
+        if profile.notifications_enabled and notify_user(profile.user, title, text, path):
+            sent += 1
+    return sent

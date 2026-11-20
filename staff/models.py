@@ -41,8 +41,27 @@ class StaffProfile(models.Model):
         EMPLOYEE = 'employee', 'Xodim'
         NEW = 'new', 'Yangi xodim'
 
+    class Position(models.TextChoices):
+        DIRECTOR = 'director', 'Direktor'
+        COORDINATOR = 'coordinator', 'Koordinator'
+        DEPARTMENT_HEAD = 'department_head', "Bo‘lim boshlig‘i"
+        ADMINISTRATOR = 'administrator', 'Administrator'
+        ENGLISH_TEACHER = 'english_teacher', "Ingliz tili o‘qituvchisi"
+        KOREAN_TEACHER = 'korean_teacher', "Koreys tili o‘qituvchisi"
+        IT_TEACHER = 'it_teacher', "IT va dasturlash o‘qituvchisi"
+        TARGETOLOGIST = 'targetologist', 'Targetolog'
+        MARKETER = 'marketer', 'Marketolog'
+        SMM = 'smm', 'SMM mutaxassisi'
+        CONTENT = 'content', 'Kontent yaratuvchi'
+        VIDEOGRAPHER = 'videographer', 'Videograf'
+        ACCOUNTANT = 'accountant', 'Buxgalter'
+        HR = 'hr', 'HR / Kadrlar'
+        TECHNICAL = 'technical', 'Texnik xodim'
+        OTHER = 'other', 'Boshqa'
+
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='staff_profile')
     role = models.CharField(max_length=20, choices=Role.choices, default=Role.NEW, db_index=True)
+    position = models.CharField(max_length=30, choices=Position.choices, default=Position.OTHER, db_index=True)
     job_title = models.CharField(max_length=120, blank=True)
     department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True, blank=True, related_name='members')
     branch = models.ForeignKey(Branch, on_delete=models.SET_NULL, null=True, blank=True, related_name='members')

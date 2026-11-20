@@ -6,6 +6,7 @@ app_name = 'staff'
 urlpatterns = [
     path('', views.dashboard, name='dashboard'),
     path('team/', views.team_list, name='team_list'),
+    path('team/add/', views.team_add, name='team_add'),
     path('team/<int:pk>/', views.team_detail, name='team_detail'),
     path('tasks/', views.task_list, name='task_list'),
     path('tasks/new/', views.task_create, name='task_create'),

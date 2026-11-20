@@ -75,12 +75,12 @@ class SuggestionForm(StyledFormMixin, forms.ModelForm):
 class StaffProfileForm(StyledFormMixin, forms.ModelForm):
     class Meta:
         model = StaffProfile
-        fields = ('role', 'job_title', 'department', 'branch', 'manager', 'hired_at', 'work_start', 'work_end',
+        fields = ('role', 'position', 'job_title', 'department', 'branch', 'manager', 'hired_at', 'work_start', 'work_end',
                   'work_days', 'is_approved', 'notifications_enabled')
         widgets = {'hired_at': forms.DateInput(attrs={'type': 'date'}),
                    'work_start': forms.TimeInput(attrs={'type': 'time'}),
                    'work_end': forms.TimeInput(attrs={'type': 'time'})}
-        labels = {'role': 'Rol', 'job_title': 'Lavozim', 'department': "Bo'lim", 'branch': 'Filial',
+        labels = {'role': 'Tizimdagi rol', 'position': 'Lavozim turi', 'job_title': 'Qo‘shimcha lavozim nomi', 'department': "Bo'lim", 'branch': 'Filial',
                   'manager': "Mas'ul rahbar", 'hired_at': 'Ishga kirgan sana', 'work_start': 'Ish boshlanishi',
                   'work_end': 'Ish tugashi', 'work_days': 'Ish kunlari', 'is_approved': 'Tasdiqlangan',
                   'notifications_enabled': 'Bildirishnomalar yoqilgan'}

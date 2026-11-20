@@ -4,8 +4,8 @@ from .models import Announcement, Attendance, Branch, DailyReport, Department, L
 
 @admin.register(StaffProfile)
 class StaffProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'role', 'job_title', 'department', 'branch', 'is_approved')
-    list_filter = ('role', 'is_approved', 'department', 'branch')
+    list_display = ('user', 'role', 'position', 'job_title', 'department', 'branch', 'is_approved')
+    list_filter = ('role', 'position', 'is_approved', 'department', 'branch')
     search_fields = ('user__first_name', 'user__last_name', 'user__username', 'job_title')
 
 

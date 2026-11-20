@@ -1,6 +1,7 @@
 from functools import wraps
 
 from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Q
 from django.http import HttpResponseForbidden
@@ -12,7 +13,7 @@ from .forms import (AnnouncementForm, DailyReportForm, LeaveRequestForm, StaffPr
                     SuggestionForm, TaskForm, TaskSubmitForm)
 from .models import (Announcement, Attendance, DailyReport, Department, LeaveRequest,
                      StaffProfile, Suggestion, Task, TaskEvent)
-from .services import notify_task, notify_user
+from .services import notify_profiles, notify_task, notify_user
 
 
 def staff_required(view):
@@ -27,6 +28,7 @@ def staff_required(view):
                 user=request.user,
                 defaults={
                     'role': StaffProfile.Role.SUPER_ADMIN,
+                    'position': StaffProfile.Position.DIRECTOR,
                     'job_title': 'Direktor',
                     'is_approved': True,
                 },
@@ -96,7 +98,8 @@ def team_list(request):
     search = request.GET.get('q', '').strip()
     if search:
         profiles = profiles.filter(Q(user__first_name__icontains=search) | Q(user__last_name__icontains=search) |
-                                   Q(job_title__icontains=search) | Q(department__name__icontains=search))
+                                   Q(job_title__icontains=search) | Q(department__name__icontains=search) |
+                                   Q(position__icontains=search))
     role = request.GET.get('role', '')
     if role in StaffProfile.Role.values:
         profiles = profiles.filter(role=role)
@@ -117,6 +120,25 @@ def team_list(request):
         'departments': departments, 'selected_role': role, 'selected_department': department,
         'selected_status': status,
     })
+
+
+@staff_required
+def team_add(request):
+    if request.staff_profile.role != StaffProfile.Role.SUPER_ADMIN:
+        return HttpResponseForbidden()
+    User = get_user_model()
+    query = request.GET.get('q', '').strip()
+    users = User.objects.filter(staff_profile__isnull=True).order_by('-date_joined')
+    if query:
+        users = users.filter(Q(first_name__icontains=query) | Q(last_name__icontains=query) |
+                             Q(username__icontains=query) | Q(phone_number__icontains=query))
+    if request.method == 'POST':
+        user = get_object_or_404(User, pk=request.POST.get('user_id'), staff_profile__isnull=True)
+        profile = StaffProfile.objects.create(user=user, role=StaffProfile.Role.NEW,
+                                              position=StaffProfile.Position.OTHER, is_approved=False)
+        messages.success(request, 'Xodim Staff tizimiga qo‘shildi. Endi rol, lavozim va bo‘limini belgilang.')
+        return redirect('staff:team_detail', pk=profile.pk)
+    return render(request, 'staff/team_add.html', {'users': users[:50], 'search': query})
 
 
 @staff_required
@@ -184,6 +206,10 @@ def attendance_action(request, action):
         item.check_in = timezone.now()
         item.late_reason = request.POST.get('late_reason', '')[:300]
         item.save()
+        if item.is_late and p.manager:
+            notify_user(p.manager.user, '🕘 Xodim kechikdi',
+                        f'{p.user.display_name} — {timezone.localtime(item.check_in):%H:%M}. {item.late_reason}',
+                        '/staff/attendance/')
         messages.success(request, 'Ishga kelgan vaqtingiz belgilandi.')
     elif action == 'out' and item.check_in and not item.check_out:
         item.check_out = timezone.now(); item.save()
@@ -302,6 +328,9 @@ def report_create(request):
         item.employee = p
         item.date = timezone.localdate()
         item.save()
+        if p.manager:
+            notify_user(p.manager.user, '✅ Yangi kunlik hisobot',
+                        f'{p.user.display_name} bugungi hisobotini yubordi.', '/staff/reports/')
         messages.success(request, 'Kunlik hisobotingiz saqlandi.')
         return redirect('staff:dashboard')
     return render(request, 'staff/form.html', {'form': form, 'title': 'Kunlik hisobot', 'button': 'Hisobotni saqlash'})
@@ -324,8 +353,10 @@ def leave_create(request):
     form = LeaveRequestForm(request.POST)
     if form.is_valid():
         leave = form.save(commit=False); leave.employee = request.staff_profile; leave.save()
+        recipients = StaffProfile.objects.filter(role=StaffProfile.Role.SUPER_ADMIN, is_approved=True)
         if request.staff_profile.manager:
-            notify_user(request.staff_profile.manager.user, '🏖 Yangi ruxsat so‘rovi', request.staff_profile.user.display_name, '/staff/leaves/')
+            recipients = StaffProfile.objects.filter(pk=request.staff_profile.manager_id)
+        notify_profiles(recipients, '🏖 Yangi ruxsat so‘rovi', request.staff_profile.user.display_name, '/staff/leaves/')
         messages.success(request, "So'rovingiz yuborildi.")
     else:
         messages.error(request, "So'rov ma'lumotlarini tekshiring.")
@@ -355,7 +386,13 @@ def announcements(request):
     form = AnnouncementForm(request.POST or None) if p.can_manage else None
     if request.method == 'POST' and form and form.is_valid():
         item = form.save(commit=False); item.author = p; item.save()
-        messages.success(request, "E'lon joylandi.")
+        recipients = StaffProfile.objects.filter(is_approved=True)
+        if item.branch_id:
+            recipients = recipients.filter(branch=item.branch)
+        if item.department_id:
+            recipients = recipients.filter(department=item.department)
+        sent = notify_profiles(recipients.exclude(pk=p.pk), '📢 ' + item.title, item.body[:500], '/staff/announcements/')
+        messages.success(request, f"E'lon joylandi. Staff bot orqali {sent} xodimga yuborildi.")
         return redirect('staff:announcements')
     return render(request, 'staff/announcements.html', {'announcements': qs, 'form': form})
 
