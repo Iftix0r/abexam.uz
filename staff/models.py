@@ -66,6 +66,20 @@ class StaffProfile(models.Model):
         return self.role in {self.Role.SUPER_ADMIN, self.Role.COORDINATOR, self.Role.HEAD}
 
 
+class StaffTelegramAccount(models.Model):
+    chat_id = models.BigIntegerField(unique=True)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True,
+                                related_name='staff_telegram')
+    username = models.CharField(max_length=64, blank=True)
+    first_name = models.CharField(max_length=128, blank=True)
+    is_blocked = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_seen_at = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f'@{self.username}' if self.username else (self.first_name or str(self.chat_id))
+
+
 class Task(models.Model):
     class Status(models.TextChoices):
         NEW = 'new', 'Yangi'

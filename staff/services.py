@@ -2,16 +2,16 @@ from html import escape
 
 from django.urls import reverse
 
-from tgbot import api
+from . import telegram_api
 
 
 def notify_user(user, title, text, path='/staff/'):
-    account = getattr(user, 'telegram', None)
+    account = getattr(user, 'staff_telegram', None)
     if not account or account.is_blocked:
         return False
     url = reverse('staff:dashboard') if path == '/staff/' else path
     message = f"<b>{escape(title)}</b>\n\n{escape(text)}\n\n🌐 abexam.uz{url}"
-    api.send_async(account.chat_id, message)
+    telegram_api.send_async(account.chat_id, message)
     return True
 
 
