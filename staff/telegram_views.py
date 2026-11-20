@@ -53,6 +53,7 @@ def handle(update):
         # value means a forwarded contact and must not be used for login.
         if contact.get('user_id') is not None and contact.get('user_id') != chat['id']:
             return api.send(account.chat_id, 'Faqat o‘zingizning telefon raqamingizni yuboring.')
+        api.send(account.chat_id, '⏳ Raqamingiz qabul qilindi, hisob tekshirilmoqda...')
         phone = normalize_phone(contact.get('phone_number', ''))
         return _link_phone(account, phone)
     text = (message.get('text') or '').strip()
@@ -105,4 +106,7 @@ def webhook(request, path_token):
             handle(update)
         except Exception:
             logger.exception('AB Staff Telegram update %s failed', update.get('update_id'))
+            chat_id = (update.get('message') or {}).get('chat', {}).get('id')
+            if chat_id:
+                api.send(chat_id, '❌ Hisobni ulashda ichki xato yuz berdi. Administrator server logini tekshirishi kerak.')
     return JsonResponse({'ok': True})
