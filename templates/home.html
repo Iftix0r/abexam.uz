@@ -110,6 +110,18 @@
             box-shadow: 0 15px 30px rgba(211, 47, 47, 0.4);
         }
 
+        .btn-staff {
+            color: var(--primary);
+            background: rgba(211, 47, 47, 0.08);
+            border: 1px solid rgba(211, 47, 47, 0.24);
+        }
+
+        .btn-staff:hover {
+            color: white;
+            background: var(--primary);
+            transform: translateY(-3px);
+        }
+
         /* Hero Section */
         .hero {
             height: 100vh;
@@ -347,6 +359,9 @@
             <a href="#pricing" class="nav-link">Narxlar</a>
             {% if tg_bot_url %}<a href="{% url 'telegram' %}" class="nav-link">Telegram bot</a>{% endif %}
             {% if user.is_authenticated %}
+                {% if user.is_staff %}
+                    <a href="{% url 'staff:dashboard' %}" class="btn btn-staff">Staff panel</a>
+                {% endif %}
                 <a href="{% url 'dashboard' %}" class="btn btn-primary">Kabinet</a>
             {% else %}
                 <a href="/login/" class="nav-link">Kirish</a>
@@ -366,6 +381,9 @@
         <a href="#" onclick="closeMobileMenu()">Narxlar</a>
         {% if tg_bot_url %}<a href="{% url 'telegram' %}" onclick="closeMobileMenu()">Telegram bot</a>{% endif %}
         {% if user.is_authenticated %}
+            {% if user.is_staff %}
+                <a href="{% url 'staff:dashboard' %}" onclick="closeMobileMenu()" style="color: var(--primary); font-weight: 700;">Staff panel</a>
+            {% endif %}
             <a href="{% url 'dashboard' %}">Kabinet</a>
         {% else %}
             <a href="/login/">Kirish</a>
