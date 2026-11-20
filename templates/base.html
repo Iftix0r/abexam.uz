@@ -291,6 +291,7 @@
             transition: var(--transition);
         }
         .admin-panel-link:hover { background: var(--tint-a); }
+        .admin-panel-link + .admin-panel-link { margin-top: 0; }
 
         .nav-links {
             list-style: none;
@@ -507,6 +508,10 @@
         <a href="{% url 'panel:dashboard' %}" class="admin-panel-link">
             <i data-lucide="shield-check" style="width: 20px;"></i>
             <span class="nav-toggle-text">Admin panel</span>
+        </a>
+        <a href="{% url 'staff:dashboard' %}" class="admin-panel-link">
+            <i data-lucide="users" style="width: 20px;"></i>
+            <span class="nav-toggle-text">Staff panel</span>
         </a>
         {% endif %}
 
