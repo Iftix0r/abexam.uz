@@ -1,5 +1,5 @@
 from django import forms
-from .models import Announcement, DailyReport, LeaveRequest, Suggestion, Task
+from .models import Announcement, DailyReport, LeaveRequest, StaffProfile, Suggestion, Task
 
 
 class StyledFormMixin:
@@ -70,3 +70,17 @@ class SuggestionForm(StyledFormMixin, forms.ModelForm):
         fields = ('title', 'body', 'is_confidential')
         widgets = {'body': forms.Textarea(attrs={'rows': 5})}
         labels = {'title': 'Mavzu', 'body': 'Taklif yoki muammo', 'is_confidential': 'Maxfiy murojaat'}
+
+
+class StaffProfileForm(StyledFormMixin, forms.ModelForm):
+    class Meta:
+        model = StaffProfile
+        fields = ('role', 'job_title', 'department', 'branch', 'manager', 'hired_at', 'work_start', 'work_end',
+                  'work_days', 'is_approved', 'notifications_enabled')
+        widgets = {'hired_at': forms.DateInput(attrs={'type': 'date'}),
+                   'work_start': forms.TimeInput(attrs={'type': 'time'}),
+                   'work_end': forms.TimeInput(attrs={'type': 'time'})}
+        labels = {'role': 'Rol', 'job_title': 'Lavozim', 'department': "Bo'lim", 'branch': 'Filial',
+                  'manager': "Mas'ul rahbar", 'hired_at': 'Ishga kirgan sana', 'work_start': 'Ish boshlanishi',
+                  'work_end': 'Ish tugashi', 'work_days': 'Ish kunlari', 'is_approved': 'Tasdiqlangan',
+                  'notifications_enabled': 'Bildirishnomalar yoqilgan'}

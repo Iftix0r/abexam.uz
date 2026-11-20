@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Announcement, Branch, DailyReport, Department, LeaveRequest, StaffProfile, StaffTelegramAccount, Suggestion, Task, TaskEvent
+from .models import Announcement, Attendance, Branch, DailyReport, Department, LeaveRequest, StaffProfile, StaffTelegramAccount, Suggestion, Task, TaskEvent
 
 
 @admin.register(StaffProfile)
@@ -16,4 +16,4 @@ class TaskAdmin(admin.ModelAdmin):
     search_fields = ('title', 'description', 'assignee__user__first_name', 'assignee__user__last_name')
 
 
-admin.site.register([Branch, Department, StaffTelegramAccount, TaskEvent, DailyReport, LeaveRequest, Announcement, Suggestion])
+admin.site.register([Branch, Department, StaffTelegramAccount, TaskEvent, DailyReport, Attendance, LeaveRequest, Announcement, Suggestion])

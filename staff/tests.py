@@ -43,3 +43,13 @@ class StaffPanelTests(TestCase):
         profile = StaffProfile.objects.get(user=director)
         self.assertEqual(profile.role, StaffProfile.Role.SUPER_ADMIN)
         self.assertTrue(profile.is_approved)
+
+    def test_coordinator_can_open_direct_report(self):
+        self.client.force_login(self.manager_user)
+        response = self.client.get(reverse('staff:team_detail', args=[self.employee.pk]))
+        self.assertEqual(response.status_code, 200)
+
+    def test_employee_cannot_open_another_profile(self):
+        self.client.force_login(self.employee_user)
+        response = self.client.get(reverse('staff:team_detail', args=[self.manager.pk]))
+        self.assertEqual(response.status_code, 403)

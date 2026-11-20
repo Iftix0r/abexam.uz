@@ -8,8 +8,9 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
-from .forms import AnnouncementForm, DailyReportForm, LeaveRequestForm, SuggestionForm, TaskForm, TaskSubmitForm
-from .models import Announcement, DailyReport, LeaveRequest, StaffProfile, Suggestion, Task, TaskEvent
+from .forms import (AnnouncementForm, DailyReportForm, LeaveRequestForm, StaffProfileForm,
+                    SuggestionForm, TaskForm, TaskSubmitForm)
+from .models import Announcement, Attendance, DailyReport, LeaveRequest, StaffProfile, Suggestion, Task, TaskEvent
 from .services import notify_task, notify_user
 
 
@@ -57,6 +58,9 @@ def dashboard(request):
         'done': tasks.filter(status=Task.Status.DONE).count(),
         'late': tasks.exclude(status__in=[Task.Status.DONE, Task.Status.CANCELLED]).filter(due_at__lt=now).count(),
         'review': tasks.filter(status=Task.Status.REVIEW).count(),
+        'team': StaffProfile.objects.filter(is_approved=True).count() if p.can_manage else 0,
+        'pending_leaves': LeaveRequest.objects.filter(status=LeaveRequest.Status.PENDING).count() if p.can_manage else 0,
+        'reports_today': DailyReport.objects.filter(date=timezone.localdate()).count() if p.can_manage else 0,
     }
     announcements = Announcement.objects.filter(Q(branch__isnull=True) | Q(branch=p.branch),
                                                  Q(department__isnull=True) | Q(department=p.department),
@@ -64,6 +68,120 @@ def dashboard(request):
     return render(request, 'staff/dashboard.html', {'profile': p, 'stats': stats, 'tasks': tasks[:7],
                                                     'announcements': announcements,
                                                     'today_report': DailyReport.objects.filter(employee=p, date=timezone.localdate()).first()})
+
+
+@staff_required
+def team_list(request):
+    p = request.staff_profile
+    profiles = StaffProfile.objects.select_related('user', 'department', 'branch', 'manager__user')
+    if not p.can_manage:
+        profiles = profiles.filter(is_approved=True)
+    elif p.role == StaffProfile.Role.HEAD:
+        profiles = profiles.filter(department=p.department)
+    elif p.role == StaffProfile.Role.COORDINATOR:
+        profiles = profiles.filter(Q(manager=p) | Q(pk=p.pk))
+    search = request.GET.get('q', '').strip()
+    if search:
+        profiles = profiles.filter(Q(user__first_name__icontains=search) | Q(user__last_name__icontains=search) |
+                                   Q(job_title__icontains=search) | Q(department__name__icontains=search))
+    return render(request, 'staff/team_list.html', {'profiles': profiles, 'search': search})
+
+
+@staff_required
+def team_detail(request, pk):
+    viewer = request.staff_profile
+    profile = get_object_or_404(StaffProfile.objects.select_related('user', 'department', 'branch', 'manager__user'), pk=pk)
+    if not viewer.can_manage and profile.pk != viewer.pk:
+        return HttpResponseForbidden()
+    if viewer.role == StaffProfile.Role.HEAD and profile.department_id != viewer.department_id:
+        return HttpResponseForbidden()
+    if viewer.role == StaffProfile.Role.COORDINATOR and profile.pk != viewer.pk and profile.manager_id != viewer.pk:
+        return HttpResponseForbidden()
+    tasks = Task.objects.filter(assignee=profile)
+    stats = {'active': tasks.exclude(status__in=[Task.Status.DONE, Task.Status.CANCELLED]).count(),
+             'done': tasks.filter(status=Task.Status.DONE).count(),
+             'late': tasks.exclude(status__in=[Task.Status.DONE, Task.Status.CANCELLED]).filter(due_at__lt=timezone.now()).count(),
+             'reports': profile.daily_reports.count()}
+    form = StaffProfileForm(request.POST or None, instance=profile) if viewer.role == StaffProfile.Role.SUPER_ADMIN else None
+    if request.method == 'POST' and form and form.is_valid():
+        form.save()
+        messages.success(request, 'Xodim profili yangilandi.')
+        return redirect('staff:team_detail', pk=profile.pk)
+    return render(request, 'staff/team_detail.html', {'member': profile, 'stats': stats, 'tasks': tasks[:10], 'form': form})
+
+
+@staff_required
+def reports(request):
+    p = request.staff_profile
+    if not p.can_manage:
+        qs = DailyReport.objects.filter(employee=p)
+    elif p.role == StaffProfile.Role.SUPER_ADMIN:
+        qs = DailyReport.objects.all()
+    elif p.role == StaffProfile.Role.HEAD:
+        qs = DailyReport.objects.filter(employee__department=p.department)
+    else:
+        qs = DailyReport.objects.filter(Q(employee__manager=p) | Q(employee=p))
+    qs = qs.select_related('employee__user', 'employee__department')
+    date = request.GET.get('date')
+    if date:
+        qs = qs.filter(date=date)
+    return render(request, 'staff/reports.html', {'reports': qs, 'selected_date': date})
+
+
+@staff_required
+def attendance(request):
+    p = request.staff_profile
+    today = timezone.localdate()
+    item = Attendance.objects.filter(employee=p, date=today).first()
+    qs = Attendance.objects.select_related('employee__user', 'employee__department')
+    if not p.can_manage:
+        qs = qs.filter(employee=p)
+    elif p.role == StaffProfile.Role.HEAD:
+        qs = qs.filter(employee__department=p.department)
+    elif p.role == StaffProfile.Role.COORDINATOR:
+        qs = qs.filter(Q(employee__manager=p) | Q(employee=p))
+    return render(request, 'staff/attendance.html', {'today_attendance': item, 'attendance_rows': qs[:100]})
+
+
+@staff_required
+@require_POST
+def attendance_action(request, action):
+    p = request.staff_profile
+    item, _ = Attendance.objects.get_or_create(employee=p, date=timezone.localdate())
+    if action == 'in' and not item.check_in:
+        item.check_in = timezone.now()
+        item.late_reason = request.POST.get('late_reason', '')[:300]
+        item.save()
+        messages.success(request, 'Ishga kelgan vaqtingiz belgilandi.')
+    elif action == 'out' and item.check_in and not item.check_out:
+        item.check_out = timezone.now(); item.save()
+        messages.success(request, 'Ishdan chiqqan vaqtingiz belgilandi.')
+    return redirect('staff:attendance')
+
+
+@staff_required
+def suggestions(request):
+    p = request.staff_profile
+    qs = Suggestion.objects.select_related('author__user', 'author__department')
+    if not p.can_manage:
+        qs = qs.filter(author=p)
+    elif p.role != StaffProfile.Role.SUPER_ADMIN:
+        qs = qs.filter(author__department=p.department)
+    return render(request, 'staff/suggestions.html', {'suggestions': qs, 'suggestion_statuses': Suggestion.Status.choices})
+
+
+@staff_required
+@require_POST
+def suggestion_status(request, pk):
+    p = request.staff_profile
+    if not p.can_manage:
+        return HttpResponseForbidden()
+    item = get_object_or_404(Suggestion, pk=pk)
+    status = request.POST.get('status')
+    if status in Suggestion.Status.values:
+        item.status = status; item.save(update_fields=['status'])
+        messages.success(request, 'Murojaat holati yangilandi.')
+    return redirect('staff:suggestions')
 
 
 @staff_required

@@ -155,6 +155,25 @@ class DailyReport(models.Model):
         ordering = ['-date', '-created_at']
 
 
+class Attendance(models.Model):
+    employee = models.ForeignKey(StaffProfile, on_delete=models.CASCADE, related_name='attendance')
+    date = models.DateField(default=timezone.localdate)
+    check_in = models.DateTimeField(null=True, blank=True)
+    check_out = models.DateTimeField(null=True, blank=True)
+    late_reason = models.CharField(max_length=300, blank=True)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=['employee', 'date'], name='unique_staff_attendance')]
+        ordering = ['-date', 'employee__user__first_name']
+
+    @property
+    def is_late(self):
+        if not self.check_in:
+            return False
+        local = timezone.localtime(self.check_in)
+        return local.time() > self.employee.work_start
+
+
 class LeaveRequest(models.Model):
     class Kind(models.TextChoices):
         LEAVE = 'leave', "Ta'til"
