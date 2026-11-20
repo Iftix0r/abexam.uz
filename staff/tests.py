@@ -44,6 +44,17 @@ class StaffPanelTests(TestCase):
         self.assertEqual(profile.role, StaffProfile.Role.SUPER_ADMIN)
         self.assertTrue(profile.is_approved)
 
+    def test_superuser_staff_role_is_repaired(self):
+        User = get_user_model()
+        director = User.objects.create_superuser('owner', password='test-pass-123')
+        StaffProfile.objects.create(user=director, role=StaffProfile.Role.EMPLOYEE,
+                                    position=StaffProfile.Position.OTHER, is_approved=True)
+        self.client.force_login(director)
+        self.client.get(reverse('staff:dashboard'))
+        profile = StaffProfile.objects.get(user=director)
+        self.assertEqual(profile.role, StaffProfile.Role.SUPER_ADMIN)
+        self.assertEqual(profile.position, StaffProfile.Position.DIRECTOR)
+
     def test_coordinator_can_open_direct_report(self):
         self.client.force_login(self.manager_user)
         response = self.client.get(reverse('staff:team_detail', args=[self.employee.pk]))

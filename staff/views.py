@@ -22,9 +22,9 @@ def staff_required(view):
     @wraps(view)
     def wrapped(request, *args, **kwargs):
         profile = StaffProfile.objects.select_related('department', 'branch').filter(user=request.user, is_approved=True).first()
-        # The existing AbExam superuser is the AB Staff director too.  Create
-        # the matching profile lazily so deployment needs no manual setup.
-        if not profile and request.user.is_superuser:
+        # A real Django superuser can never lose AB Staff director access,
+        # even if their Staff role was accidentally changed in the UI.
+        if request.user.is_superuser:
             profile, _ = StaffProfile.objects.update_or_create(
                 user=request.user,
                 defaults={
@@ -164,7 +164,12 @@ def team_detail(request, pk):
              'reports': profile.daily_reports.count()}
     form = StaffProfileForm(request.POST or None, instance=profile) if viewer.role == StaffProfile.Role.SUPER_ADMIN else None
     if request.method == 'POST' and form and form.is_valid():
-        form.save()
+        updated = form.save(commit=False)
+        if updated.user.is_superuser:
+            updated.role = StaffProfile.Role.SUPER_ADMIN
+            updated.position = StaffProfile.Position.DIRECTOR
+            updated.is_approved = True
+        updated.save()
         messages.success(request, 'Xodim profili yangilandi.')
         return redirect('staff:team_detail', pk=profile.pk)
     return render(request, 'staff/team_detail.html', {'member': profile, 'stats': stats, 'tasks': tasks[:10], 'form': form})
