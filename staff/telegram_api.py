@@ -24,6 +24,9 @@ def webhook_path_token():
 def call(method, **params):
     if not enabled():
         return None
+    # Telegram expects reply_markup to be an object when present; sending
+    # JSON null produces “object expected as reply markup”.
+    params = {key: value for key, value in params.items() if value is not None}
     try:
         response = requests.post(f'https://api.telegram.org/bot{settings.STAFF_BOT_TOKEN}/{method}',
                                  json=params, timeout=12)
