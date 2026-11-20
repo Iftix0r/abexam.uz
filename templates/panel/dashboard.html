@@ -47,6 +47,7 @@
     <div class="hero-sub">{{ today|date:"j F, l" }}{% if todo_any %} · sizni kutayotgan ishlar bor{% else %} · hammasi joyida{% endif %}</div>
   </div>
   <div class="hero-actions">
+    <a href="{% url 'staff:dashboard' %}" class="btn btn-sm"><i class=lc-users></i> Staff panel</a>
     <a href="{% url 'panel:exam_create' %}" class="btn btn-sm"><i class=lc-plus></i> Test yaratish</a>
     <a href="{% url 'panel:exam_import' %}" class="btn btn-sm"><i class=lc-download></i> Testni yuklash</a>
     <a href="{% url 'panel:attempts_live' %}" class="btn btn-sm"><i class=lc-radio></i> Jonli imtihon</a>
