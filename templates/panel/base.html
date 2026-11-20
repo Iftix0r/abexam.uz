@@ -537,6 +537,10 @@ th{position:sticky;top:0;z-index:2}
     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5" stroke-width="1.8"/><rect x="14" y="3" width="7" height="7" rx="1.5" stroke-width="1.8"/><rect x="3" y="14" width="7" height="7" rx="1.5" stroke-width="1.8"/><rect x="14" y="14" width="7" height="7" rx="1.5" stroke-width="1.8"/></svg>
     Dashboard
   </a>
+  <a href="{% url 'staff:dashboard' %}" class="nav-item">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="9" cy="7" r="4" stroke-width="1.8"/><path stroke-width="1.8" d="M3 21v-2a6 6 0 0 1 12 0v2M16 11a4 4 0 0 1 5 3.87V21"/></svg>
+    Staff panel
+  </a>
 
   <span class="nav-section">Boshqaruv</span>
   <a href="{% url 'panel:users' %}" class="nav-item {% block nav_users %}{% endblock %}">
