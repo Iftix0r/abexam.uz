@@ -1,13 +1,15 @@
 {# Birth date and region pickers; details_script.html fills them. Pass `required=1` to require every field. #}
 <div class="details-fields" data-day="{{ user.birth_date.day|default:'' }}" data-month="{{ user.birth_date.month|default:'' }}" data-year="{{ user.birth_date.year|default:'' }}" data-region="{{ user.region }}" data-district="{{ user.district }}">
+  {% if guided %}<div class="details-section-title"><i class=lc-calendar-days></i><span>1. Tug'ilgan sanangiz</span></div>{% endif %}
   <div class="details-row">
-    <label class="details-label">Tug'ilgan sana</label>
+    <label class="details-label">{% if guided %}Kun, oy va yilni tanlang{% else %}Tug'ilgan sana{% endif %}</label>
     <div class="details-date">
       <select name="birth_day" class="form-input" aria-label="Kun"{% if required %} required{% endif %}></select>
       <select name="birth_month" class="form-input" aria-label="Oy"{% if required %} required{% endif %}></select>
       <select name="birth_year" class="form-input" aria-label="Yil"{% if required %} required{% endif %}></select>
     </div>
   </div>
+  {% if guided %}<div class="details-section-title"><i class=lc-map-pin></i><span>2. Yashash joyingiz</span></div>{% endif %}
   <div class="details-row">
     <label class="details-label">Viloyat</label>
     <select name="region" class="form-input" aria-label="Viloyat"{% if required %} required{% endif %}></select>
