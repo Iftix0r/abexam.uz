@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="600" viewBox="0 0 1000 600">
+  <rect width="1000" height="600" fill="#fff"/>
+  <style>
+    text { font-family: Arial, Helvetica, sans-serif; fill: #111; }
+    .prompt { font-size: 27px; font-weight: 700; font-style: italic; }
+    .title { font-size: 25px; }
+    .head { font-size: 24px; font-weight: 600; }
+    .cell { font-size: 23px; }
+    .grid { stroke: #222; stroke-width: 3; fill: none; }
+  </style>
+  <text class="prompt" x="30" y="45">The table below gives information on consumer spending on different items</text>
+  <text class="prompt" x="30" y="80">in five different countries in 2002.</text>
+  <text class="title" x="500" y="132" text-anchor="middle">Percentage of national consumer expenditure by category - 2002</text>
+
+  <rect x="30" y="175" width="940" height="355" fill="#e8e8e8" stroke="#222" stroke-width="3"/>
+  <rect x="290" y="175" width="680" height="355" fill="#f8f8f8"/>
+  <path class="grid" d="M290 175V530 M525 175V530 M755 175V530 M30 275H970 M30 326H970 M30 377H970 M30 428H970 M30 479H970"/>
+
+  <text class="head" x="43" y="235">Country</text>
+  <text class="head" x="408" y="218" text-anchor="middle">Food/Drinks/</text>
+  <text class="head" x="408" y="252" text-anchor="middle">Tobacco</text>
+  <text class="head" x="640" y="218" text-anchor="middle">Clothing/</text>
+  <text class="head" x="640" y="252" text-anchor="middle">Footwear</text>
+  <text class="head" x="862" y="218" text-anchor="middle">Leisure/</text>
+  <text class="head" x="862" y="252" text-anchor="middle">Education</text>
+
+  <text class="cell" x="43" y="309">Ireland</text><text class="cell" x="408" y="309" text-anchor="middle">28.91%</text><text class="cell" x="640" y="309" text-anchor="middle">6.43%</text><text class="cell" x="862" y="309" text-anchor="middle">2.21%</text>
+  <text class="cell" x="43" y="360">Italy</text><text class="cell" x="408" y="360" text-anchor="middle">16.36%</text><text class="cell" x="640" y="360" text-anchor="middle">9.00%</text><text class="cell" x="862" y="360" text-anchor="middle">3.20%</text>
+  <text class="cell" x="43" y="411">Spain</text><text class="cell" x="408" y="411" text-anchor="middle">18.80%</text><text class="cell" x="640" y="411" text-anchor="middle">6.51%</text><text class="cell" x="862" y="411" text-anchor="middle">1.98%</text>
+  <text class="cell" x="43" y="462">Sweden</text><text class="cell" x="408" y="462" text-anchor="middle">15.77%</text><text class="cell" x="640" y="462" text-anchor="middle">5.40%</text><text class="cell" x="862" y="462" text-anchor="middle">3.22%</text>
+  <text class="cell" x="43" y="513">Turkey</text><text class="cell" x="408" y="513" text-anchor="middle">32.14%</text><text class="cell" x="640" y="513" text-anchor="middle">6.63%</text><text class="cell" x="862" y="513" text-anchor="middle">4.35%</text>
+</svg>

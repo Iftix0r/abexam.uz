@@ -1943,12 +1943,12 @@
       "section_type": "writing",
       "order": 3,
       "duration_minutes": 60,
-      "image": "images/mock_test_15_task1.jpg",
+      "image": "images/mock_test_15_task1.svg",
       "content": "",
       "questions": [
         {
           "order": 1,
-          "text": "The table shows the percentage of the population who rode bicycles in one town by age group in 2012. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.",
+          "text": "The table below gives information on consumer spending on different items in five different countries in 2002. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.",
           "question_type": "writing_task",
           "correct_answer": "",
           "options": [],
