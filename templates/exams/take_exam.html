@@ -978,6 +978,97 @@
         :root[data-exam-theme="dark"] .section-label { color:#bdc7d5; }
         :root[data-exam-theme="dark"] .passage-content .paragraph-label { background:#293451; color:#d8deff; }
         :root[data-exam-theme="dark"] footer { background:#171d27; border-color:var(--border); }
+
+        /* Complete night mode: components below used hard-coded light
+           surfaces, leaving bright islands after the main panels changed. */
+        :root[data-exam-theme="dark"] .panel-resizer::after,
+        :root[data-exam-theme="dark"] .matching-group-legend,
+        :root[data-exam-theme="dark"] .matching-grid th,
+        :root[data-exam-theme="dark"] .summary-word-bank,
+        :root[data-exam-theme="dark"] .q-block-header,
+        :root[data-exam-theme="dark"] .section-tab:not(.active),
+        :root[data-exam-theme="dark"] .score-cell {
+            background:#202936; color:#dce4ef; border-color:var(--border);
+        }
+        :root[data-exam-theme="dark"] .matching-grid td,
+        :root[data-exam-theme="dark"] .matching-grid th { border-color:var(--q-border); }
+        :root[data-exam-theme="dark"] .matching-grid tbody tr:hover,
+        :root[data-exam-theme="dark"] .mcq-option:hover,
+        :root[data-exam-theme="dark"] .tfng-btn:hover { background:#222d3b; }
+        :root[data-exam-theme="dark"] .matching-group-legend .opt-key,
+        :root[data-exam-theme="dark"] .mcq-key {
+            background:#303b52; color:#c9d3ff;
+        }
+        :root[data-exam-theme="dark"] .mcq-option.selected {
+            background:#3a2027; color:#fff; border-color:#ef5350;
+        }
+        :root[data-exam-theme="dark"] .tfng-btn.selected-true,
+        :root[data-exam-theme="dark"] .tracker-dot.answered {
+            background:#183522; color:#9be5aa; border-color:#4caf65;
+        }
+        :root[data-exam-theme="dark"] .tfng-btn.selected-false {
+            background:#3b1e24; color:#ff9ca6; border-color:#ef5350;
+        }
+        :root[data-exam-theme="dark"] .tfng-btn.selected-ng,
+        :root[data-exam-theme="dark"] .tracker-dot.review {
+            background:#3b3217; color:#ffd86b; border-color:#d5a929;
+        }
+        :root[data-exam-theme="dark"] .tracker-dot {
+            background:#222b38; color:#d5deea; border-color:#566274;
+        }
+        :root[data-exam-theme="dark"] .tracker-dot:hover { background:#2b3747; }
+        :root[data-exam-theme="dark"] .tracker-group { border-color:var(--border); }
+        :root[data-exam-theme="dark"] .tracker-group-label,
+        :root[data-exam-theme="dark"] .writing-editor-footer,
+        :root[data-exam-theme="dark"] .part-title span,
+        :root[data-exam-theme="dark"] .score-cell .label { color:#aeb9c8; }
+
+        :root[data-exam-theme="dark"] .writing-task-bar {
+            background:#30213a; border-color:#8f56a8;
+        }
+        :root[data-exam-theme="dark"] .writing-stat { color:#e0b8f0; }
+        :root[data-exam-theme="dark"] .wc-display { background:#18334a; color:#8dccff; }
+        :root[data-exam-theme="dark"] .wc-display.below { background:#3b1e24; color:#ff9ca6; }
+        :root[data-exam-theme="dark"] .wc-display.near { background:#3b3217; color:#ffd86b; }
+        :root[data-exam-theme="dark"] .wc-display.ok { background:#183522; color:#9be5aa; }
+        :root[data-exam-theme="dark"] .writing-tips,
+        :root[data-exam-theme="dark"] .speaking-guide,
+        :root[data-exam-theme="dark"] .cue-card-box,
+        :root[data-exam-theme="dark"] .prep-timer-display {
+            background:#2d291d; color:#f0e6c2; border-color:#74672e;
+        }
+        :root[data-exam-theme="dark"] .writing-tips ul,
+        :root[data-exam-theme="dark"] .speaking-guide-part h5,
+        :root[data-exam-theme="dark"] .speaking-guide-part p,
+        :root[data-exam-theme="dark"] .prep-label { color:#ded4b6; }
+
+        :root[data-exam-theme="dark"] .instr-card,
+        :root[data-exam-theme="dark"] .result-card,
+        :root[data-exam-theme="dark"] .review-card,
+        :root[data-exam-theme="dark"] #note-popup {
+            background:#1c2430; color:var(--text); border-color:var(--border);
+        }
+        :root[data-exam-theme="dark"] .instr-card h2,
+        :root[data-exam-theme="dark"] .instr-meta-item .val { color:var(--text); }
+        :root[data-exam-theme="dark"] .instr-rules {
+            background:#131a24; border:1px solid var(--border);
+        }
+        :root[data-exam-theme="dark"] .instr-rules p { color:#c7d0dc; }
+        :root[data-exam-theme="dark"] .unanswered-list li {
+            background:#3a291c; color:#ffbd7a;
+        }
+        :root[data-exam-theme="dark"] .btn-back,
+        :root[data-exam-theme="dark"] #note-cancel-btn {
+            background:#2b3543; color:#e2e8f0;
+        }
+        :root[data-exam-theme="dark"] #note-delete-btn {
+            background:#3b1e24; color:#ff9ca6;
+        }
+        :root[data-exam-theme="dark"] .note-mark {
+            background:#18334a; color:#8dccff; border-color:#4fa3df;
+        }
+        :root[data-exam-theme="dark"] ::-webkit-scrollbar-track { background:#111720; }
+        :root[data-exam-theme="dark"] ::-webkit-scrollbar-thumb { background:#4a5668; }
     </style>
 <link rel="stylesheet" href="/static/icons.css?v=10">
 <script src="/static/top-loader.js?v=1" defer></script>
