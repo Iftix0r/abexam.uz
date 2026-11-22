@@ -266,7 +266,11 @@ class ProfileDetailsTests(TestCase):
         return self.client.post(reverse('profile_details'), {**self.good, **changes}).json()
 
     def test_window_shows_until_the_details_are_saved(self):
-        self.assertContains(self.client.get(reverse('dashboard')), 'detailsAsk')
+        page = self.client.get(reverse('dashboard'))
+        self.assertContains(page, 'detailsAsk')
+        self.assertNotContains(page, 'detailsLater')
+        self.assertNotContains(page, 'Keyinroq')
+        self.assertContains(page, 'Saqlash va davom etish')
         self.assertTrue(self._save()['ok'])
         self.assertNotContains(self.client.get(reverse('dashboard')), 'detailsAsk')
 
