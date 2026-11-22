@@ -411,7 +411,7 @@ class SeedTestlar7Tests(TestCase):
         self.assertIn('Dar es Salaam', reading.content)
         self.assertIn('Improving Patient Safety', reading.content)
         self.assertEqual(reading.questions.get(order=4).correct_answer, 'NOT GIVEN')
-        self.assertTrue(listening.audio_file.name.endswith('test_7.mp3'))
+        self.assertTrue(listening.audio_file.name.endswith('listening16.mp3'))
         self.assertIn('15', listening.extra_data['question_images'])
         self.assertEqual(set(listening.extra_data['notes']), {'1', '31'})
         self.assertTrue(writing.image)
