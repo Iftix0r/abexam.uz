@@ -2236,7 +2236,8 @@ def _attempt_filters(now):
     return {
         'suspicious': Q(last_seen_at__gte=now - timedelta(hours=24))
         & (Q(leave_count__gte=SUSPICIOUS_LEAVES) | Q(pasted_chars__gte=SUSPICIOUS_PASTED_CHARS)),
-        'active': Q(submitted_at__isnull=True, last_seen_at__gte=online_since),
+        'active': Q(submitted_at__isnull=True, is_paused=False, last_seen_at__gte=online_since),
+        'paused': Q(submitted_at__isnull=True, is_paused=True),
         'unsent': Q(submitted_at__isnull=True, last_seen_at__lt=online_since, answered_count__gt=0),
     }
 
@@ -2307,9 +2308,9 @@ def attempts_live(request):
         if a.is_submitted:
             a.state = 'submitted'
         elif a.last_seen_at >= online_since:
-            a.state = 'active'
+            a.state = 'paused' if a.is_paused else 'active'
             if a.time_left is not None:
-                elapsed = int((now - a.last_seen_at).total_seconds())
+                elapsed = 0 if a.is_paused else int((now - a.last_seen_at).total_seconds())
                 a.seconds_left = max(0, a.time_left - elapsed)
                 a.time_left_label = _clock(a.seconds_left)
         elif a.answered_count:
@@ -2422,7 +2423,7 @@ def attempt_camera_clip(request, pk):
 @panel_required
 @require_POST
 def attempts_command(request):
-    """Message or extra time for chosen attempts, or for everyone currently
+    """Message, extra time, pause or resume chosen attempts, or everyone currently
     writing (optionally one exam). Delivered on the page's next autosave."""
     data, err = parse_json_body(request)
     if err:
@@ -2441,6 +2442,8 @@ def attempts_command(request):
         if not 1 <= minutes <= 60:
             return JsonResponse({'ok': False, 'error': "Daqiqa 1 dan 60 gacha bo'lishi kerak"})
         command = {'type': 'extra_time', 'seconds': minutes * 60}
+    elif kind in ('pause', 'resume'):
+        command = {'type': kind}
     else:
         return JsonResponse({'ok': False, 'error': "Noma'lum buyruq"})
 
@@ -2456,7 +2459,11 @@ def attempts_command(request):
     sent = 0
     for attempt in attempts:
         attempt.add_command(**command)
-        attempt.save(update_fields=['commands'])
+        fields = ['commands']
+        if kind in ('pause', 'resume'):
+            attempt.is_paused = kind == 'pause'
+            fields.append('is_paused')
+        attempt.save(update_fields=fields)
         sent += 1
     return JsonResponse({'ok': True, 'sent': sent})
 

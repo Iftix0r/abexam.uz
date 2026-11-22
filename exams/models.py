@@ -212,9 +212,9 @@ class ExamAttempt(models.Model):
     away_seconds = models.IntegerField(default=0)
     pasted_chars = models.IntegerField(default=0, help_text="Writing'ga joylangan (paste) belgilar")
     ip = models.GenericIPAddressField(null=True, blank=True)
-    # Staff → student messages / extra time, picked up by the page on its
-    # next autosave: [{"id": n, "type": "message"|"extra_time", ...}].
+    # Staff → student controls, picked up by the page on its next autosave.
     commands = models.JSONField(default=list, blank=True)
+    is_paused = models.BooleanField(default=False, help_text="Nazoratchi urinishni vaqtincha to'xtatgan")
     started_at = models.DateTimeField(auto_now_add=True)
     last_seen_at = models.DateTimeField(default=timezone.now, db_index=True)
 

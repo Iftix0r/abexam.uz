@@ -950,6 +950,21 @@ class LiveMonitoringTests(TestCase):
         self.assertEqual(commands[1]['seconds'], 300)
         self.assertLess(commands[0]['id'], commands[1]['id'])
 
+    def test_staff_pause_state_reaches_every_autosave(self):
+        self._autosave(answers={})
+        self.client.force_login(self.admin)
+        url = reverse('panel:attempts_command')
+        self.client.post(url, data=json.dumps({'all_active': True, 'type': 'pause'}),
+                         content_type='application/json')
+        paused = self._autosave()
+        self.assertTrue(paused['paused'])
+        self.assertEqual(paused['commands'][-1]['type'], 'pause')
+
+        self.client.force_login(self.admin)
+        self.client.post(url, data=json.dumps({'all_active': True, 'type': 'resume'}),
+                         content_type='application/json')
+        self.assertFalse(self._autosave()['paused'])
+
     def test_finish_all_stops_open_pages(self):
         self._autosave(answers={str(self.w.id): 'essay'})
         self.client.force_login(self.admin)

@@ -111,6 +111,7 @@ table.table-cards.live-table tr[hidden]{display:none}
     <div class="seg">
       <a href="?tab=all{% if exam_id %}&exam={{ exam_id }}{% endif %}{% if group_id %}&group={{ group_id }}{% endif %}" class="{% if tab == 'all' %}active{% endif %}">Oxirgi 24 soat</a>
       <a href="?tab=active{% if exam_id %}&exam={{ exam_id }}{% endif %}{% if group_id %}&group={{ group_id }}{% endif %}" class="{% if tab == 'active' %}active{% endif %}">Hozir yozmoqda{% if counts.active %} <span class="nav-badge" style="background:var(--blue)">{{ counts.active }}</span>{% endif %}</a>
+      <a href="?tab=paused{% if exam_id %}&exam={{ exam_id }}{% endif %}{% if group_id %}&group={{ group_id }}{% endif %}" class="{% if tab == 'paused' %}active{% endif %}">Pauzada{% if counts.paused %} <span class="nav-badge" style="background:#eab308">{{ counts.paused }}</span>{% endif %}</a>
       <a href="?tab=suspicious{% if exam_id %}&exam={{ exam_id }}{% endif %}{% if group_id %}&group={{ group_id }}{% endif %}" class="{% if tab == 'suspicious' %}active{% endif %}">Shubhali{% if counts.suspicious %} <span class="nav-badge">{{ counts.suspicious }}</span>{% endif %}</a>
       <a href="?tab=unsent{% if exam_id %}&exam={{ exam_id }}{% endif %}{% if group_id %}&group={{ group_id }}{% endif %}" class="{% if tab == 'unsent' %}active{% endif %}">Yuborilmagan{% if counts.unsent %} <span class="nav-badge">{{ counts.unsent }}</span>{% endif %}</a>
     </div>
@@ -145,6 +146,8 @@ table.table-cards.live-table tr[hidden]{display:none}
   <div class="end">
     <button onclick="messageAll()" class="btn btn-ghost btn-sm"><i class=lc-megaphone></i>Hammaga xabar</button>
     <button onclick="extraTimeAll()" class="btn btn-ghost btn-sm"><i class=lc-timer></i>Hammaga vaqt</button>
+    <button onclick="controlAttempts(everyone(), 'pause')" class="btn btn-ghost btn-sm"><i class=lc-circle-pause></i>Pauza</button>
+    <button onclick="controlAttempts(everyone(), 'resume')" class="btn btn-ghost btn-sm"><i class=lc-play></i>Davom</button>
     <button onclick="finishAll()" class="btn btn-danger btn-sm" title="Tanlangan imtihonning barcha yuborilmagan urinishlaridan natija yaratadi"><i class=lc-square></i>Hammasini yakunlash</button>
   </div>
 </div>
@@ -153,6 +156,8 @@ table.table-cards.live-table tr[hidden]{display:none}
   <span style="color:var(--muted);font-size:13px">Tanlangan: <b id="bulkCount">0</b></span>
   <button onclick="messageSelected()" class="btn btn-ghost btn-sm"><i class=lc-mail></i>Xabar</button>
   <button onclick="extraTimeSelected()" class="btn btn-ghost btn-sm"><i class=lc-timer></i>Vaqt</button>
+  <button onclick="controlAttempts({ids:selectedIds()}, 'pause')" class="btn btn-ghost btn-sm"><i class=lc-circle-pause></i>Pauza</button>
+  <button onclick="controlAttempts({ids:selectedIds()}, 'resume')" class="btn btn-ghost btn-sm"><i class=lc-play></i>Davom</button>
   <button onclick="bulkFinalize()" class="btn btn-primary btn-sm">Natija yaratish</button>
 </div>
 
@@ -162,9 +167,9 @@ table.table-cards.live-table tr[hidden]{display:none}
 </div>
 
 {% if site_settings.camera_proctoring %}
-<div id="cameraGrid" data-ids="{% for a in attempts %}{% if a.state == 'active' %}{{ a.pk }},{% endif %}{% endfor %}">
+<div id="cameraGrid" data-ids="{% for a in attempts %}{% if a.state == 'active' or a.state == 'paused' %}{{ a.pk }},{% endif %}{% endfor %}">
   <div class="cam-grid">
-    {% for a in attempts %}{% if a.state == 'active' %}
+    {% for a in attempts %}{% if a.state == 'active' or a.state == 'paused' %}
     <a class="cam-tile{% if a.suspicious %} flagged{% endif %}" href="{% url 'panel:attempt_detail' a.pk %}" title="Kamerani kattaroq ko'rish"
        data-attempt="{{ a.pk }}" data-name="{{ a.user.display_name }}" data-live="{% url 'panel:attempt_camera_live' a.pk %}">
       <span class="cam-rec" role="button" tabindex="0" title="Kamerani yozib olish (kompyuteringizga video bo'lib tushadi)"><i class=lc-circle-dot></i>&nbsp;Yozish</span>
@@ -199,6 +204,7 @@ table.table-cards.live-table tr[hidden]{display:none}
           <td data-label="Imtihon" style="color:var(--muted)">{{ a.exam.title|truncatechars:28 }}</td>
           <td data-label="Holat">
             {% if a.state == 'submitted' %}<span class="badge badge-green"><i class=lc-check></i>&nbsp;Yuborildi</span>
+            {% elif a.state == 'paused' %}<span class="badge" style="background:#eab30822;color:#ca8a04"><i class=lc-circle-pause></i>&nbsp;Pauzada</span>
             {% elif a.state == 'active' %}<span class="badge badge-blue">● Yozmoqda</span>
             {% elif a.state == 'unsent' %}<span class="badge badge-red">Yuborilmagan</span>
             {% else %}<span class="badge badge-gray">Tashlab ketilgan</span>{% endif %}
@@ -206,7 +212,7 @@ table.table-cards.live-table tr[hidden]{display:none}
           </td>
           <td data-label="Bo'lim / vaqt">
             <div style="color:var(--muted)">{{ a.section_label }}</div>
-            {% if a.time_left_label %}<div class="live-clock" data-left="{{ a.seconds_left }}"><i class=lc-timer></i>&nbsp;<span>{{ a.time_left_label }}</span></div>{% endif %}
+            {% if a.time_left_label %}<div class="live-clock" data-left="{{ a.seconds_left }}" data-paused="{% if a.is_paused %}1{% else %}0{% endif %}"><i class=lc-timer></i>&nbsp;<span>{{ a.time_left_label }}</span></div>{% endif %}
           </td>
           <td data-label="Javoblar">
             <b>{{ a.answered_count }}</b><span style="color:var(--muted)"> / {{ a.total_questions }}</span>
@@ -224,9 +230,11 @@ table.table-cards.live-table tr[hidden]{display:none}
             {% if a.is_submitted %}
               {% if a.result_id %}<a href="{% url 'exams:result_detail' a.result_id %}" target="_blank" class="btn btn-ghost btn-sm">Natija</a>{% endif %}
             {% else %}
-              {% if a.state == 'active' %}
+              {% if a.state == 'active' or a.state == 'paused' %}
               <button onclick="sendCommand({ids:[{{ a.pk }}]}, 'message')" class="icon-btn" title="Xabar yuborish" aria-label="Xabar yuborish"><i class=lc-mail></i></button>
               <button onclick="sendCommand({ids:[{{ a.pk }}]}, 'extra_time')" class="icon-btn" title="Qo'shimcha vaqt" aria-label="Qo'shimcha vaqt"><i class=lc-timer></i></button>
+              {% if a.is_paused %}<button onclick="controlAttempts({ids:[{{ a.pk }}]}, 'resume')" class="icon-btn" title="Imtihonni davom ettirish" aria-label="Imtihonni davom ettirish"><i class=lc-play></i></button>
+              {% else %}<button onclick="controlAttempts({ids:[{{ a.pk }}]}, 'pause')" class="icon-btn" title="Imtihonni pauzaga qo'yish" aria-label="Imtihonni pauzaga qo'yish"><i class=lc-circle-pause></i></button>{% endif %}
               {% endif %}
               {% if a.answered_count %}<button onclick="finalizeAttempt({{ a.pk }}, '{{ a.state }}')" class="btn btn-primary btn-sm">Natija yaratish</button>{% endif %}
               <button onclick="deleteAttempt({{ a.pk }})" class="icon-btn danger" title="Urinishni o'chirish" aria-label="Urinishni o'chirish"><i class=lc-x></i></button>
@@ -384,7 +392,7 @@ function setStatus(){
 // The seconds left run down here between refreshes; each refresh resets them.
 function tickClocks(step){
   document.querySelectorAll('.live-clock[data-left]').forEach(el => {
-    const left = Math.max(0, Number(el.dataset.left) - step);
+    const left = Math.max(0, Number(el.dataset.left) - (el.dataset.paused === '1' ? 0 : step));
     el.dataset.left = left;
     el.querySelector('span').textContent = `${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')}`;
     el.classList.toggle('low', left < 300);
@@ -631,6 +639,17 @@ function extraTimeAll(){ sendCommand(everyone(), 'extra_time'); }
 function messageSelected(){ sendCommand({ids: selectedIds()}, 'message'); }
 function extraTimeSelected(){ sendCommand({ids: selectedIds()}, 'extra_time'); }
 
+async function controlAttempts(target, type){
+  if (!target.all_active && !target.ids.length) { toast('Avval urinishlarni tanlang', '#eab308'); return; }
+  const action = type === 'pause' ? "pauzaga qo'yish" : 'davom ettirish';
+  if (!await panelConfirm(`${commandScope(target)} uchun imtihonni ${action} kerakmi?`)) return;
+  const d = await postJSON('/panel/live/command/', {...target, type});
+  if (d.ok) {
+    toast(d.sent ? `${d.sent} ta urinishga buyruq yuborildi` : "Mos faol urinish yo'q", d.sent ? '#22c55e' : '#eab308');
+    setTimeout(() => refreshLive(true), 400);
+  } else toast(d.error || 'Xatolik yuz berdi', '#ef4444');
+}
+
 async function finishAll(){
   if (!EXAM_ID) { toast('Avval yuqoridan imtihonni tanlang', '#eab308'); return; }
   if (!await panelConfirm("Shu imtihonning BARCHA yuborilmagan urinishlaridan (hozir yozayotganlar ham) natija yaratilsinmi? Ochiq test sahifalari to'xtaydi.")) return;
@@ -639,7 +658,7 @@ async function finishAll(){
   else toast(d.error || 'Xatolik yuz berdi', '#ef4444');
 }
 async function finalizeAttempt(pk, state){
-  const warn = state === 'active'
+  const warn = state === 'active' || state === 'paused'
     ? "Bu o'quvchi hozir ham test yozmoqda! Hozirgi javoblaridan natija yaratilsinmi? Uning test sahifasi to'xtaydi."
     : "Saqlangan javoblardan natija yaratilsinmi?";
   if (!await panelConfirm(warn)) return;

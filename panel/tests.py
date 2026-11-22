@@ -764,6 +764,17 @@ class LiveExamPageTests(TestCase):
     def test_message_to_everyone_without_a_filter_reaches_all(self):
         self.assertEqual(self._command(all_active=True, type='message', text='Salom')['sent'], 2)
 
+    def test_pause_and_resume_are_persisted(self):
+        self.assertEqual(self._command(ids=[self.a1.pk], type='pause')['sent'], 1)
+        self.a1.refresh_from_db()
+        self.assertTrue(self.a1.is_paused)
+        self.assertEqual(self.a1.commands[-1]['type'], 'pause')
+
+        self.assertEqual(self._command(ids=[self.a1.pk], type='resume')['sent'], 1)
+        self.a1.refresh_from_db()
+        self.assertFalse(self.a1.is_paused)
+        self.assertEqual(self.a1.commands[-1]['type'], 'resume')
+
     def test_page_has_no_browser_prompts(self):
         self.assertNotContains(self.client.get(self.url), 'prompt(')
 

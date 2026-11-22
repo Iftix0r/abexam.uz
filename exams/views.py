@@ -706,6 +706,7 @@ class ExamAutosaveView(LoginRequiredMixin, View):
             'submitted': attempt.is_submitted,
             'result_id': attempt.result_id,
             'commands': attempt.commands,
+            'paused': attempt.is_paused,
         })
 
 

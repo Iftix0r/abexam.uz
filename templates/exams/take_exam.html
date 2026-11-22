@@ -1226,6 +1226,15 @@
             style="position:absolute; top:8px; right:10px; background:none; border:none; color:#fff; font-size:18px; cursor:pointer;">×</button>
 </div>
 
+<div id="staffPauseOverlay" style="display:none; position:fixed; inset:0; z-index:2900; background:rgba(9,18,31,.94);
+     align-items:center; justify-content:center; padding:20px; backdrop-filter:blur(5px);">
+    <div style="max-width:520px; text-align:center; color:#fff;">
+        <div style="font-size:58px; line-height:1;"><i class=lc-circle-pause></i></div>
+        <h2 style="font-size:1.65rem; font-weight:800; margin:16px 0 10px;">Imtihon vaqtincha to'xtatildi</h2>
+        <p style="font-size:15px; line-height:1.65; color:#cbd5e1;">Nazoratchi davom ettirguncha taymer kamaymaydi. Sahifani yopmang.</p>
+    </div>
+</div>
+
 <!-- ─── PROCTOR WARNING (red screen) ───────────────────── -->
 <div id="proctorWarning" style="display:none; position:fixed; inset:0; z-index:2550; background:rgba(198,40,40,.92);
      align-items:center; justify-content:center; padding:16px;">
@@ -2166,6 +2175,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.closeInstructionAndStart = function() {
         document.getElementById('sectionInstrOverlay').style.display = 'none';
+        document.getElementById('staffPauseOverlay').style.display = 'none';
         examStarted = true;
         unlockAudio();
         if (pendingSectionId) {
@@ -2347,6 +2357,7 @@ document.addEventListener('DOMContentLoaded', () => {
             finishedByStaff(data.result_id);
             return;
         }
+        setStaffPaused(Boolean(data.paused));
         let lastCmd = 0;
         try { lastCmd = Number(localStorage.getItem(COMMAND_KEY)) || 0; } catch(e) {}
         const lines = [];
@@ -2358,6 +2369,10 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (c.type === 'extra_time') {
                 timeLeft += Number(c.seconds) || 0;
                 lines.push(`Sizga qo'shimcha ${Math.round((Number(c.seconds) || 0) / 60)} daqiqa berildi.`);
+            } else if (c.type === 'pause') {
+                lines.push("Imtihon nazoratchi tomonidan vaqtincha to'xtatildi.");
+            } else if (c.type === 'resume') {
+                lines.push("Imtihon davom ettirildi. Taymer yana ishlayapti.");
             }
             lastCmd = Math.max(lastCmd, c.id);
         });
@@ -2894,15 +2909,25 @@ document.addEventListener('DOMContentLoaded', () => {
     // on the last one) instead of ending the whole attempt early.
     let timeLeft = 0;
     let timerInterval = null;
+    let staffPaused = false;
     const timerEl = document.getElementById('countdown');
     const timerBox = document.getElementById('timerBox');
     const timerLabelEl = document.getElementById('timerSectionLabel');
+
+    function setStaffPaused(paused) {
+        if (staffPaused === paused) return;
+        staffPaused = paused;
+        const overlay = document.getElementById('staffPauseOverlay');
+        if (overlay) overlay.style.display = paused ? 'flex' : 'none';
+        if (paused) pauseAllListeningAudio();
+    }
 
     function updateTimer() {
         const h = Math.floor(timeLeft / 3600);
         const m = Math.floor((timeLeft % 3600) / 60);
         const s = timeLeft % 60;
         if (timerEl) timerEl.innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+        if (staffPaused) return;
         if (timeLeft <= 0) {
             finishCurrentSectionAndAdvance(true);
         } else {
