@@ -1,0 +1,1948 @@
+{
+  "title": "IELTS Full Mock Test 16",
+  "description": "To‘liq IELTS Academic mock test: Listening, Reading va Writing.",
+  "exam_type": "mock",
+  "price": 0,
+  "duration_minutes": 170,
+  "is_active": true,
+  "sections": [
+    {
+      "title": "Listening",
+      "section_type": "listening",
+      "order": 1,
+      "duration_minutes": 40,
+      "audio_file": "../../TESTLAR/12/test 7.mp3",
+      "notes": {
+        "1": "<h5>Places to visit with children</h5><p><strong>Alma Park</strong></p><ul><li>A family ticket is $[[1]]</li><li>The fastest bus takes about [[2]] minutes</li><li>Hold some animals and have a [[3]] for a small fee</li></ul><p><strong>The Entertainment Room</strong></p><ul><li>John [[4]] is performing</li><li>Performances run from Tuesday to [[5]]</li><li>There is a [[6]] on tickets for Monday night's preview</li></ul><p><strong>The City</strong></p><ul><li>Go to the city centre [[7]] to see a special exhibition</li><li>For origami, take a small [[8]]</li></ul><p><strong>Bunyabbie Island</strong></p><ul><li>Salty Lake is on the [[9]] side</li><li>You are not allowed to [[10]] on the island</li></ul>",
+        "31": "<h5>The Music of Salvatore Sciarrino</h5><p><strong>Work</strong></p><ul><li>He has written many [[31]]</li><li>Won a 2011 award for [[32]] in music</li></ul><p><strong>Musical characteristics</strong></p><ul><li>Music often features [[33]] and very soft sounds</li><li>Violin sounds resemble those in [[34]]</li><li>Seen as a [[35]] of music</li><li>Compared to a distant [[36]]</li></ul><p><strong>Concert piece</strong></p><ul><li>Written in memory of a [[37]]</li><li>Starts with a sound like [[38]], made by moving large pieces of [[39]]</li><li>Has a traditional [[40]]</li></ul>"
+      },
+      "content": "",
+      "question_images": {
+        "15": "images/mock_test_16_school_fair_map.jpg"
+      },
+      "questions": [
+        {
+          "order": 1,
+          "text": "[Places to visit with children] Complete the notes. Write ONE WORD AND/OR A NUMBER.\nA family ticket is $___",
+          "question_type": "gap_fill",
+          "correct_answer": "65",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 2,
+          "text": "The fastest bus takes about ___ minutes",
+          "question_type": "gap_fill",
+          "correct_answer": "40",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 3,
+          "text": "You can hold some animals and have a ___ for a small fee",
+          "question_type": "gap_fill",
+          "correct_answer": "photo",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 4,
+          "text": "John ___ is performing",
+          "question_type": "gap_fill",
+          "correct_answer": "Rosie",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 5,
+          "text": "Performances run from Tuesday to ___",
+          "question_type": "gap_fill",
+          "correct_answer": "Saturday",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 6,
+          "text": "There is a ___ on tickets for Monday night's preview",
+          "question_type": "gap_fill",
+          "correct_answer": "discount",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 7,
+          "text": "Go to the city centre ___ to see a special exhibition",
+          "question_type": "gap_fill",
+          "correct_answer": "museum",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 8,
+          "text": "For origami, take a small ___",
+          "question_type": "gap_fill",
+          "correct_answer": "box",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 9,
+          "text": "Salty Lake is on the ___ side of Bunyabbie Island",
+          "question_type": "gap_fill",
+          "correct_answer": "ocean",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 10,
+          "text": "You are not allowed to ___ on the island",
+          "question_type": "gap_fill",
+          "correct_answer": "camp",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 11,
+          "text": "[School fair volunteer roles] Match each role to the correct comment.\nEntertainment co-ordinator",
+          "question_type": "matching",
+          "correct_answer": "E",
+          "options": [
+            {
+              "key": "A",
+              "text": "An office will be provided for this role"
+            },
+            {
+              "key": "B",
+              "text": "More than one person is needed for this role"
+            },
+            {
+              "key": "C",
+              "text": "This is a new role for this year's fair"
+            },
+            {
+              "key": "D",
+              "text": "This role will start next month"
+            },
+            {
+              "key": "E",
+              "text": "This role will mainly involve evening work"
+            },
+            {
+              "key": "F",
+              "text": "You need your own transport"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 12,
+          "text": "Advertising and promotion co-ordinator",
+          "question_type": "matching",
+          "correct_answer": "B",
+          "options": [
+            {
+              "key": "A",
+              "text": "An office will be provided for this role"
+            },
+            {
+              "key": "B",
+              "text": "More than one person is needed for this role"
+            },
+            {
+              "key": "C",
+              "text": "This is a new role for this year's fair"
+            },
+            {
+              "key": "D",
+              "text": "This role will start next month"
+            },
+            {
+              "key": "E",
+              "text": "This role will mainly involve evening work"
+            },
+            {
+              "key": "F",
+              "text": "You need your own transport"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 13,
+          "text": "Technical co-ordinator",
+          "question_type": "matching",
+          "correct_answer": "F",
+          "options": [
+            {
+              "key": "A",
+              "text": "An office will be provided for this role"
+            },
+            {
+              "key": "B",
+              "text": "More than one person is needed for this role"
+            },
+            {
+              "key": "C",
+              "text": "This is a new role for this year's fair"
+            },
+            {
+              "key": "D",
+              "text": "This role will start next month"
+            },
+            {
+              "key": "E",
+              "text": "This role will mainly involve evening work"
+            },
+            {
+              "key": "F",
+              "text": "You need your own transport"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 14,
+          "text": "Staffing co-ordinator",
+          "question_type": "matching",
+          "correct_answer": "C",
+          "options": [
+            {
+              "key": "A",
+              "text": "An office will be provided for this role"
+            },
+            {
+              "key": "B",
+              "text": "More than one person is needed for this role"
+            },
+            {
+              "key": "C",
+              "text": "This is a new role for this year's fair"
+            },
+            {
+              "key": "D",
+              "text": "This role will start next month"
+            },
+            {
+              "key": "E",
+              "text": "This role will mainly involve evening work"
+            },
+            {
+              "key": "F",
+              "text": "You need your own transport"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 15,
+          "text": "[School fair map] Label the map.\nFairground rides",
+          "question_type": "matching",
+          "correct_answer": "I",
+          "options": [
+            {
+              "key": "A",
+              "text": ""
+            },
+            {
+              "key": "B",
+              "text": ""
+            },
+            {
+              "key": "C",
+              "text": ""
+            },
+            {
+              "key": "D",
+              "text": ""
+            },
+            {
+              "key": "E",
+              "text": ""
+            },
+            {
+              "key": "F",
+              "text": ""
+            },
+            {
+              "key": "G",
+              "text": ""
+            },
+            {
+              "key": "H",
+              "text": ""
+            },
+            {
+              "key": "I",
+              "text": ""
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 16,
+          "text": "Entertainment stage",
+          "question_type": "matching",
+          "correct_answer": "D",
+          "options": [
+            {
+              "key": "A",
+              "text": ""
+            },
+            {
+              "key": "B",
+              "text": ""
+            },
+            {
+              "key": "C",
+              "text": ""
+            },
+            {
+              "key": "D",
+              "text": ""
+            },
+            {
+              "key": "E",
+              "text": ""
+            },
+            {
+              "key": "F",
+              "text": ""
+            },
+            {
+              "key": "G",
+              "text": ""
+            },
+            {
+              "key": "H",
+              "text": ""
+            },
+            {
+              "key": "I",
+              "text": ""
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 17,
+          "text": "Café",
+          "question_type": "matching",
+          "correct_answer": "A",
+          "options": [
+            {
+              "key": "A",
+              "text": ""
+            },
+            {
+              "key": "B",
+              "text": ""
+            },
+            {
+              "key": "C",
+              "text": ""
+            },
+            {
+              "key": "D",
+              "text": ""
+            },
+            {
+              "key": "E",
+              "text": ""
+            },
+            {
+              "key": "F",
+              "text": ""
+            },
+            {
+              "key": "G",
+              "text": ""
+            },
+            {
+              "key": "H",
+              "text": ""
+            },
+            {
+              "key": "I",
+              "text": ""
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 18,
+          "text": "First aid tent",
+          "question_type": "matching",
+          "correct_answer": "H",
+          "options": [
+            {
+              "key": "A",
+              "text": ""
+            },
+            {
+              "key": "B",
+              "text": ""
+            },
+            {
+              "key": "C",
+              "text": ""
+            },
+            {
+              "key": "D",
+              "text": ""
+            },
+            {
+              "key": "E",
+              "text": ""
+            },
+            {
+              "key": "F",
+              "text": ""
+            },
+            {
+              "key": "G",
+              "text": ""
+            },
+            {
+              "key": "H",
+              "text": ""
+            },
+            {
+              "key": "I",
+              "text": ""
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 19,
+          "text": "Market stalls",
+          "question_type": "matching",
+          "correct_answer": "E",
+          "options": [
+            {
+              "key": "A",
+              "text": ""
+            },
+            {
+              "key": "B",
+              "text": ""
+            },
+            {
+              "key": "C",
+              "text": ""
+            },
+            {
+              "key": "D",
+              "text": ""
+            },
+            {
+              "key": "E",
+              "text": ""
+            },
+            {
+              "key": "F",
+              "text": ""
+            },
+            {
+              "key": "G",
+              "text": ""
+            },
+            {
+              "key": "H",
+              "text": ""
+            },
+            {
+              "key": "I",
+              "text": ""
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 20,
+          "text": "Pony rides",
+          "question_type": "matching",
+          "correct_answer": "B",
+          "options": [
+            {
+              "key": "A",
+              "text": ""
+            },
+            {
+              "key": "B",
+              "text": ""
+            },
+            {
+              "key": "C",
+              "text": ""
+            },
+            {
+              "key": "D",
+              "text": ""
+            },
+            {
+              "key": "E",
+              "text": ""
+            },
+            {
+              "key": "F",
+              "text": ""
+            },
+            {
+              "key": "G",
+              "text": ""
+            },
+            {
+              "key": "H",
+              "text": ""
+            },
+            {
+              "key": "I",
+              "text": ""
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 21,
+          "text": "[Environmental Science modules] Match each module to the student's opinion.\nStatistics for environmental research",
+          "question_type": "matching",
+          "correct_answer": "F",
+          "options": [
+            {
+              "key": "A",
+              "text": "was surprisingly interesting"
+            },
+            {
+              "key": "B",
+              "text": "covered too many topics"
+            },
+            {
+              "key": "C",
+              "text": "included out-of-date materials"
+            },
+            {
+              "key": "D",
+              "text": "involved practical applications"
+            },
+            {
+              "key": "E",
+              "text": "supplied useful technical information"
+            },
+            {
+              "key": "F",
+              "text": "was too basic to be useful"
+            },
+            {
+              "key": "G",
+              "text": "provided unnecessary detail"
+            },
+            {
+              "key": "H",
+              "text": "was relevant to a topic in the news"
+            },
+            {
+              "key": "I",
+              "text": "seemed too limited geographically"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 22,
+          "text": "Sewage and drainage systems",
+          "question_type": "matching",
+          "correct_answer": "A",
+          "options": [
+            {
+              "key": "A",
+              "text": "was surprisingly interesting"
+            },
+            {
+              "key": "B",
+              "text": "covered too many topics"
+            },
+            {
+              "key": "C",
+              "text": "included out-of-date materials"
+            },
+            {
+              "key": "D",
+              "text": "involved practical applications"
+            },
+            {
+              "key": "E",
+              "text": "supplied useful technical information"
+            },
+            {
+              "key": "F",
+              "text": "was too basic to be useful"
+            },
+            {
+              "key": "G",
+              "text": "provided unnecessary detail"
+            },
+            {
+              "key": "H",
+              "text": "was relevant to a topic in the news"
+            },
+            {
+              "key": "I",
+              "text": "seemed too limited geographically"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 23,
+          "text": "Agriculture and food security",
+          "question_type": "matching",
+          "correct_answer": "C",
+          "options": [
+            {
+              "key": "A",
+              "text": "was surprisingly interesting"
+            },
+            {
+              "key": "B",
+              "text": "covered too many topics"
+            },
+            {
+              "key": "C",
+              "text": "included out-of-date materials"
+            },
+            {
+              "key": "D",
+              "text": "involved practical applications"
+            },
+            {
+              "key": "E",
+              "text": "supplied useful technical information"
+            },
+            {
+              "key": "F",
+              "text": "was too basic to be useful"
+            },
+            {
+              "key": "G",
+              "text": "provided unnecessary detail"
+            },
+            {
+              "key": "H",
+              "text": "was relevant to a topic in the news"
+            },
+            {
+              "key": "I",
+              "text": "seemed too limited geographically"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 24,
+          "text": "Sustainable energy",
+          "question_type": "matching",
+          "correct_answer": "D",
+          "options": [
+            {
+              "key": "A",
+              "text": "was surprisingly interesting"
+            },
+            {
+              "key": "B",
+              "text": "covered too many topics"
+            },
+            {
+              "key": "C",
+              "text": "included out-of-date materials"
+            },
+            {
+              "key": "D",
+              "text": "involved practical applications"
+            },
+            {
+              "key": "E",
+              "text": "supplied useful technical information"
+            },
+            {
+              "key": "F",
+              "text": "was too basic to be useful"
+            },
+            {
+              "key": "G",
+              "text": "provided unnecessary detail"
+            },
+            {
+              "key": "H",
+              "text": "was relevant to a topic in the news"
+            },
+            {
+              "key": "I",
+              "text": "seemed too limited geographically"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 25,
+          "text": "Government policy",
+          "question_type": "matching",
+          "correct_answer": "I",
+          "options": [
+            {
+              "key": "A",
+              "text": "was surprisingly interesting"
+            },
+            {
+              "key": "B",
+              "text": "covered too many topics"
+            },
+            {
+              "key": "C",
+              "text": "included out-of-date materials"
+            },
+            {
+              "key": "D",
+              "text": "involved practical applications"
+            },
+            {
+              "key": "E",
+              "text": "supplied useful technical information"
+            },
+            {
+              "key": "F",
+              "text": "was too basic to be useful"
+            },
+            {
+              "key": "G",
+              "text": "provided unnecessary detail"
+            },
+            {
+              "key": "H",
+              "text": "was relevant to a topic in the news"
+            },
+            {
+              "key": "I",
+              "text": "seemed too limited geographically"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 26,
+          "text": "Water management",
+          "question_type": "matching",
+          "correct_answer": "G",
+          "options": [
+            {
+              "key": "A",
+              "text": "was surprisingly interesting"
+            },
+            {
+              "key": "B",
+              "text": "covered too many topics"
+            },
+            {
+              "key": "C",
+              "text": "included out-of-date materials"
+            },
+            {
+              "key": "D",
+              "text": "involved practical applications"
+            },
+            {
+              "key": "E",
+              "text": "supplied useful technical information"
+            },
+            {
+              "key": "F",
+              "text": "was too basic to be useful"
+            },
+            {
+              "key": "G",
+              "text": "provided unnecessary detail"
+            },
+            {
+              "key": "H",
+              "text": "was relevant to a topic in the news"
+            },
+            {
+              "key": "I",
+              "text": "seemed too limited geographically"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 27,
+          "text": "Which TWO aspects of the course organisation did both students like?",
+          "question_type": "mcq",
+          "correct_answer": "D",
+          "options": [
+            {
+              "key": "A",
+              "text": "the amount of reading"
+            },
+            {
+              "key": "B",
+              "text": "flexibility in the length of the course"
+            },
+            {
+              "key": "C",
+              "text": "convenience of choosing when to take modules"
+            },
+            {
+              "key": "D",
+              "text": "range of modules offered"
+            },
+            {
+              "key": "E",
+              "text": "relevance of the module content"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 28,
+          "text": "Select the second answer.",
+          "question_type": "mcq",
+          "correct_answer": "E",
+          "options": [
+            {
+              "key": "A",
+              "text": "the amount of reading"
+            },
+            {
+              "key": "B",
+              "text": "flexibility in the length of the course"
+            },
+            {
+              "key": "C",
+              "text": "convenience of choosing when to take modules"
+            },
+            {
+              "key": "D",
+              "text": "range of modules offered"
+            },
+            {
+              "key": "E",
+              "text": "relevance of the module content"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 29,
+          "text": "Which TWO suggestions for written assignments do they recommend?",
+          "question_type": "mcq",
+          "correct_answer": "A",
+          "options": [
+            {
+              "key": "A",
+              "text": "Change the time for choosing a topic"
+            },
+            {
+              "key": "B",
+              "text": "Increase the permitted word limit"
+            },
+            {
+              "key": "C",
+              "text": "Arrange discussions with fellow students"
+            },
+            {
+              "key": "D",
+              "text": "Schedule face-to-face tutor feedback"
+            },
+            {
+              "key": "E",
+              "text": "Give more help in topic selection"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 30,
+          "text": "Select the second answer.",
+          "question_type": "mcq",
+          "correct_answer": "C",
+          "options": [
+            {
+              "key": "A",
+              "text": "Change the time for choosing a topic"
+            },
+            {
+              "key": "B",
+              "text": "Increase the permitted word limit"
+            },
+            {
+              "key": "C",
+              "text": "Arrange discussions with fellow students"
+            },
+            {
+              "key": "D",
+              "text": "Schedule face-to-face tutor feedback"
+            },
+            {
+              "key": "E",
+              "text": "Give more help in topic selection"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 31,
+          "text": "[The Music of Salvatore Sciarrino] Complete the notes. Write ONE WORD ONLY.\nhas written many ___",
+          "question_type": "gap_fill",
+          "correct_answer": "essays",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 32,
+          "text": "award in 2011 for ___ in music",
+          "question_type": "gap_fill",
+          "correct_answer": "originality",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 33,
+          "text": "music often features ___",
+          "question_type": "gap_fill",
+          "correct_answer": "silence",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 34,
+          "text": "violin sounds resemble those found in ___",
+          "question_type": "gap_fill",
+          "correct_answer": "nature",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 35,
+          "text": "seen as a ___ of music",
+          "question_type": "gap_fill",
+          "correct_answer": "pioneer",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 36,
+          "text": "music compared to a distant ___",
+          "question_type": "gap_fill",
+          "correct_answer": "volcano",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 37,
+          "text": "written in memory of a ___",
+          "question_type": "gap_fill",
+          "correct_answer": "friend",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 38,
+          "text": "noise sounds like ___",
+          "question_type": "gap_fill",
+          "correct_answer": "thunder",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 39,
+          "text": "made by moving large pieces of ___",
+          "question_type": "gap_fill",
+          "correct_answer": "metal",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 40,
+          "text": "has a traditional ___",
+          "question_type": "gap_fill",
+          "correct_answer": "structure",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        }
+      ]
+    },
+    {
+      "title": "Reading",
+      "section_type": "reading",
+      "order": 2,
+      "duration_minutes": 60,
+      "content": "<h2>Think Small</h2><p>Izon is a New Zealand company specialising in nanoscience — the study of atoms, molecules and other very small pieces of matter.</p><p>The new US headquarters of Izon are situated in Cambridge, Massachusetts, one of the most important global centres of scientific research and technology. Half the other offices in the building Izon shares have scientific names like Stemgent, or the word &#x27;pharmaceutical&#x27; in the name. In the past three years, Izon has expanded to 17 times its previous size. It&#x27;s done so selling only one product that it&#x27;s been developing since 2004, the qNano. This is an adjustable tool for the measurement and analysis of tiny particles in scientific research, which comes with a $27,000 price tag. Izon&#x27;s success results from the fact that the qNano machine provides precise measurements, while similar machines of the same price only offer averaging techniques. In effect, researchers using the qNano are able to gather information about very small things, and it has many possible applications from drug delivery analysis through to environmental research.</p><p>Kristoffer Bolen is Izon&#x27;s US head of sales. Alongside his full-time role with the company, he&#x27;s just finished the fifth semester of six for his High-Tech Master of Business Administration at Northeastern University, which will be his second master&#x27;s degree, alongside a Master of Science. These soon-to-be twin master&#x27;s degrees provide Bolen with the perfect combination of skills for his job, which depends on him being able to manage the sales process and also comprehend in depth a very complicated piece of technology. When a customer buys a qNano device, an Izon representative will fly anywhere in America to train them how to use the instrument. The representative then checks in with the client on an ongoing basis to be completely informed about how each qNano is being used, and then liaises with technicians back in New Zealand.</p><p>The Izon story started 8 years ago in New Zealand. Hans van der Voorn was aimless, having sold his own company, and was looking for something more taxing to set his mind to. Van der Voorn was introduced to three scientists with an idea that involved simply a small plastic membrane with a tiny adjustable hole to measure a range of very small particles. Initially he put up an investment of $1.5 million to move the process forward to the development of a prototype, and this led to the founding of Izon and the production of the qNano. Van der Voorn believes that the worlds of science and business sometimes don&#x27;t understand each other very well. However, he thinks that engineering can be a bridge between the two, and his long experience in that field has been crucial to the company&#x27;s success. He soon realised that Izon was going to need people on the ground overseas if it was going to grow, so the US office was opened. For now Izon trades in the US as a foreign company, so avoids the high level of compliance that comes with being an American-registered company. But he sees that one day soon this will change, as Izon&#x27;s current position disallows it from entering into partnerships locally.</p><p>Marketing the qNano is complicated. Izon needs scientists both to buy and advertise the product. The science world may seem like a big playing field, but it&#x27;s actually a small group. As a result, the critical</p><p>part of the company&#x27;s marketing is articles that clients publish describing work they have performed with the qNano. So for Izon the sale isn&#x27;t enough in itself; it also has a stake in how customers are using the qNano. That&#x27;s where Yaniv Gaynor comes in. As development and training manager, he&#x27;s involved throughout the sales process and manages most of the customer&#x27;s post-sale experience. The sales process is new for Gaynor, who shifted cities and switched from a role as teacher at the University of Minnesota to his first private sector role with Izon. &#x27;It&#x27;s tricky, it&#x27;s challenging, and it&#x27;s not in my comfort zone,&#x27; he concedes. But nine out of ten times, if there&#x27;s an unhappy customer, he&#x27;s able to turn their experience around. And there&#x27;s another part to this, because sitting with customers as they learn about the qNano, Gaynor gets to see how they are using the product. &#x27;People ask very good questions, and these are great triggers for future development,&#x27; he says.</p><p>&#x27;Our business is selling research tools,&#x27; van der Voorn says. But he knows that the application range of this tool is wide. For instance, Izon is engaged in a project with Harvard University, looking for a particular type of particle of blood that is a symptom of the medical condition of thrombosis. If in the future they can identify this particle, they can design a simple test for it. This would make it easier for doctors to diagnose thrombosis. Another planned development is eventually to shift the US base to more spacious offices on the other side of town. With larger headquarters, the company will be able to bring clients into the Izon building for training with its product, rather than travelling to them, which will hopefully result in an even closer relationship between the company and its customers.</p><h2>The problems of getting around the city of Dar es Salaam</h2><p>Dar es Salaam in Tanzania is one of the fastest growing cities in Africa. Its population has increased eightfold since 1980 and swells by half a million people every year. United Nations projections anticipate it will become a megacity within seven years as its population passes 10 million, reaching 13.4 million by 2035. Daniel Hoornweg for the Global Cities Institute forecasts the city could be home to an incredible 73.7 million people by 2100.</p><p>Today, four out of five of its people live in single-storey informal settlements on the spreading edges of the city, where the journey to and from the centre regularly takes over two hours. It can be longer if rain turns the dirt roads to mud.</p><p>Even in the middle of the day, traffic frequently slows to a stop without warning. It is not unusual for cars and minibuses to queue for 20 minutes at a key intersection. A single suburban rail line serves residents in a few areas to the south but is tiny in the context of the wider city. Outside the centre many rely on boda boda (motorbike taxis) to navigate the narrow side streets and potholed mud roads that make up much of the metropolis. Their safety record is scandalous.</p><p>Dar es Salaam&#x27;s reliance on four arterial roads into the city is a legacy of the colonial government that planned the city at the start of the 20th century to cater for a population of 35,000. Most of the current growth is made up of young people arriving from the countryside to find work, and as the population has exploded, Dar es Salaam has grown around those four highways. Nearly all the expansion is happening on the periphery, and nearly all takes place informally without any agreed strategy.</p><p>But Dar es Salaam is pinning its hopes on a solution that could offer a different model for Africa&#x27;s megacities, giving them an alternative to a future controlled by the private car. Unlike many cities on the continent, Dar es Salaam isn&#x27;t trying to build a metro. It has chosen a less exciting but cheaper and more achievable method: the bus.</p><p>The DART bus rapid transit (BRT) system runs on bus lanes separated from other traffic, mostly in the middle of the road to reduce stoppages. Ticket purchase and control takes place at stations prior to boarding and the buses are step-free, which means the entire route is accessible to people using wheelchairs or who are travelling with baby buggies.</p><p>&#x27;The new buses are much, much better,&#x27; says Paulas George, a young IT worker. He takes the bus every day and it has cut his journey time by two-thirds. He says it is not perfect, though, complaining that drivers often refuse to turn on the air conditioning to save fuel.</p><p>That is not the only problem. A shortage of buses after a serious flood at the main depot during the rainy season means the system is carrying 200,000 people a day - half the expected capacity. Smartcards can&#x27;t be used as the mechanical readers aren&#x27;t working either, forcing passengers to buy individual paper tickets for every journey. Each is printed with a scannable QR code, but there are no scanners. Staff stand by the gates and tear tickets as people enter. As a result, queues are considerable at peak times.</p><p>Morogoro Road to the north-west of the city was phase I of the BRT project. Phases II and Ill will install bus lanes along Nyerere Road to the south-west and Kilwa Road to the south. Construction on both routes is due to start imminently. Phase IV, towards Bagamoyo in the north, is in the preliminary design stage. &#x27;Much of the city will have access to a world-class transport system within the space of a few years,&#x27; says Chris Kost, the Africa director of ITDP (the Institute for Transportation and Development Policy). All phases are being planned to high standards and, once complete, a third of city residents will be within a short walk of the BRT network.</p><p>The ITDP regrets Africa&#x27;s obsession with metros. &#x27;With a metro, an international firm will often just parachute in its own system,&#x27; says Kost. &#x27;Bus rapid transit allows existing stakeholders to get involved. That&#x27;s what we did in Dar es Salaam and what we&#x27;re planning in Nairobi, where the bus bodies will be built in the city and local operators will look after tickets, fare collection and IT ... Bus rapid transit has been transformational for Dar es Salaam. For millions of people in African cities, this is their best hope of ever being connected.&#x27;</p><h2>Improving Patient Safety</h2><h3>Packaging</h3><p>One of the most prominent design issues in pharmacy is that of drug packages and the patient information leaflets (PILs) included in them. Many pharmacists are concerned that current designs are &#x27;accidents waiting to happen&#x27;. The UK government shares this concern and, in 2003, the National Patient Safety Agency created a new role, appointing Colum Lowe, who has 14 years&#x27; experience as a designer in the private sector, as head of design and human factors.</p><p>Packaging design in the pharmaceutical industry is handled by either in-house teams or external design agencies. For packaging design of over-the-counter medicines, which do not have to be dispensed by a pharmacist but can be bought directly from a sales assistant, characteristics such as attractiveness and distinguishability are important and so these are usually commissioned from an external design team. The marketing team prepares the initial brief and the designers come up with six or seven designs. Two or three of these are then tested on a consumer group. In contrast, most designs for prescription-only products are created in-house. In some cases, this may simply involve the company&#x27;s design team applying the house design and then handing it over to design engineers rather than testing the design on a consumer group. Clearly this process cannot adequately address the needs of the wide variety of patients using medication.</p><h3>Design considerations</h3><p>In her book Information Design for Patient Safety, Thea Swayne highlighted a multitude of design problems. For example, drugs that look or sound alike can lead to confusion, small type sizes and even the glare on silver foil packaging can lead to names or instructions being misread. One such example is a drug that was accidentally injected into a patient through the spine (intrathecally) rather than through the veins (intravenously). Investigations following this tragedy attributed some blame to the poor choice of typescript used on the drug container. Furthermore, according to Swayne, real situations in which medicines are used include a parent giving a cough medicine to a child in the middle of the night; packaging should be designed for moments such as these rather than for the ideal world of a hospital.</p><h3>Safety and compliance</h3><p>Child protection is another area that gives designers opportunities to improve safety. According to the Child Accident Prevention Trust, 70% of children admitted to hospital with suspected poisoning have swallowed medicines, and although child-resistant lids have helped, they are not yet fully effective. There is scope for improving what is currently available, according to Richard Mawle, a freelance product designer who feels it is not just children who are blocked by child-proof closures. Many child-resistant packs are based on strength but older people may have the same level of strength as a child, he explained, and suggested that better designs could rely on cognitive skills, for example removing the lid using a three-step process.</p><p>Mawle also worked on a project which involved applying his skills to packaging and PILs. Commenting on the information presented, he said there can be an awful lot of junk at the beginning of PILs. For example, why are company details towards the beginning of a leaflet when what might be more vital for the patient is that the medicine should not be taken with alcohol?</p><h3>Design principles and guidelines</h3><p>Most designers work according to basic principles; for example, certain print styles are known to be more difficult to read than others. Look-alike boxes present the potential for errors and an obvious solution would be to use colour to highlight a larger dosage of a drug. However, according to Thea Swayne, designating a colour to a particular dosage is not recommended because this could lead to the user not reading the text on a box.</p><p>Design features can provide the basis for lengthy debates. One argument is that if all packaging was white with black lettering, people would have no choice but to read every box carefully. The problem is that trials of drug packaging are few. Although some designers take results from signage studies into account, proving that a particular feature is beneficial can be difficult. Current UK legislation requires packaging to include the name of the medicine in Braille, but, according to Karel van der Waarde, a design consultant to the pharmaceutical industry, it is not known how much visually impaired patients will benefit nor how much the reading of visually able patients will be impaired. Van der Waarde is sceptical about current legislation and says that many regulatory authorities do not have the resources to handle packaging information properly. They do not look at the use of packaging in a practical context; they only see one box at a time and not several together as pharmacists would do.</p><h3>Innovation</h3><p>On a positive note, a recent innovation exhibition revealed several new designs. &#x27;The popper&#x27; aims to help arthritis sufferers remove tablets from blister packs, and &#x27;Pluspoint&#x27; is an adrenaline auto-injector aimed at overcoming the fact that many patients do not carry their medication due to its prohibitive size. The aim of good design is to try to make things more user-friendly as well as safer. The guidelines in Information Design for Patient Safety are not intended to be legally binding. Rather, the book&#x27;s purpose is to create a basic design standard and to stimulate innovation. The challenge for the pharmaceutical industry is to adopt such a standard.</p>",
+      "questions": [
+        {
+          "order": 1,
+          "text": "[Think Small] TRUE, FALSE or NOT GIVEN.\nIzon's new US headquarters are located in an area popular with other science businesses.",
+          "question_type": "mcq",
+          "correct_answer": "TRUE",
+          "options": [
+            {
+              "key": "TRUE",
+              "text": "True"
+            },
+            {
+              "key": "FALSE",
+              "text": "False"
+            },
+            {
+              "key": "NOT GIVEN",
+              "text": "Not Given"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 2,
+          "text": "Izon's growth in the last three years has been faster than the company predicted.",
+          "question_type": "mcq",
+          "correct_answer": "NOT GIVEN",
+          "options": [
+            {
+              "key": "TRUE",
+              "text": "True"
+            },
+            {
+              "key": "FALSE",
+              "text": "False"
+            },
+            {
+              "key": "NOT GIVEN",
+              "text": "Not Given"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 3,
+          "text": "Since 2004, Izon has developed a range of equipment for scientific research.",
+          "question_type": "mcq",
+          "correct_answer": "FALSE",
+          "options": [
+            {
+              "key": "TRUE",
+              "text": "True"
+            },
+            {
+              "key": "FALSE",
+              "text": "False"
+            },
+            {
+              "key": "NOT GIVEN",
+              "text": "Not Given"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 4,
+          "text": "One advantage of the qNano is that it is cheaper than its competitors.",
+          "question_type": "mcq",
+          "correct_answer": "NOT GIVEN",
+          "options": [
+            {
+              "key": "TRUE",
+              "text": "True"
+            },
+            {
+              "key": "FALSE",
+              "text": "False"
+            },
+            {
+              "key": "NOT GIVEN",
+              "text": "Not Given"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 5,
+          "text": "Drug delivery analysis will be the most profitable application of the qNano.",
+          "question_type": "mcq",
+          "correct_answer": "NOT GIVEN",
+          "options": [
+            {
+              "key": "TRUE",
+              "text": "True"
+            },
+            {
+              "key": "FALSE",
+              "text": "False"
+            },
+            {
+              "key": "NOT GIVEN",
+              "text": "Not Given"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 6,
+          "text": "Kristoffer Bolen is still completing his studies.",
+          "question_type": "mcq",
+          "correct_answer": "TRUE",
+          "options": [
+            {
+              "key": "TRUE",
+              "text": "True"
+            },
+            {
+              "key": "FALSE",
+              "text": "False"
+            },
+            {
+              "key": "NOT GIVEN",
+              "text": "Not Given"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 7,
+          "text": "Bolen's job requires him to fully understand how the qNano works.",
+          "question_type": "mcq",
+          "correct_answer": "TRUE",
+          "options": [
+            {
+              "key": "TRUE",
+              "text": "True"
+            },
+            {
+              "key": "FALSE",
+              "text": "False"
+            },
+            {
+              "key": "NOT GIVEN",
+              "text": "Not Given"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 8,
+          "text": "Complete the notes. Choose ONE WORD ONLY.\nHe made the ___ which enabled the prototype to be created.",
+          "question_type": "gap_fill",
+          "correct_answer": "investment",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 9,
+          "text": "His background in ___ and business gave him the skills to run Izon.",
+          "question_type": "gap_fill",
+          "correct_answer": "engineering",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 10,
+          "text": "Marketing relies on ___ about customers' research.",
+          "question_type": "gap_fill",
+          "correct_answer": "articles",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 11,
+          "text": "Yaniv Gaynor was formerly a ___, with no sales experience.",
+          "question_type": "gap_fill",
+          "correct_answer": "teacher",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 12,
+          "text": "To diagnose thrombosis, a ___ may be developed.",
+          "question_type": "gap_fill",
+          "correct_answer": "test",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 13,
+          "text": "___ will be done at Izon's US headquarters.",
+          "question_type": "gap_fill",
+          "correct_answer": "training",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 14,
+          "text": "[Dar es Salaam] TRUE, FALSE or NOT GIVEN.\nThe population is rising more rapidly than previously predicted.",
+          "question_type": "mcq",
+          "correct_answer": "NOT GIVEN",
+          "options": [
+            {
+              "key": "TRUE",
+              "text": "True"
+            },
+            {
+              "key": "FALSE",
+              "text": "False"
+            },
+            {
+              "key": "NOT GIVEN",
+              "text": "Not Given"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 15,
+          "text": "Most residents live in high-rise blocks on the edge of the city.",
+          "question_type": "mcq",
+          "correct_answer": "FALSE",
+          "options": [
+            {
+              "key": "TRUE",
+              "text": "True"
+            },
+            {
+              "key": "FALSE",
+              "text": "False"
+            },
+            {
+              "key": "NOT GIVEN",
+              "text": "Not Given"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 16,
+          "text": "Residents have been consulted about the suburban rail line.",
+          "question_type": "mcq",
+          "correct_answer": "NOT GIVEN",
+          "options": [
+            {
+              "key": "TRUE",
+              "text": "True"
+            },
+            {
+              "key": "FALSE",
+              "text": "False"
+            },
+            {
+              "key": "NOT GIVEN",
+              "text": "Not Given"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 17,
+          "text": "The majority of present residential development is unplanned.",
+          "question_type": "mcq",
+          "correct_answer": "TRUE",
+          "options": [
+            {
+              "key": "TRUE",
+              "text": "True"
+            },
+            {
+              "key": "FALSE",
+              "text": "False"
+            },
+            {
+              "key": "NOT GIVEN",
+              "text": "Not Given"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 18,
+          "text": "The authorities followed a public transport plan adopted by many African cities.",
+          "question_type": "mcq",
+          "correct_answer": "FALSE",
+          "options": [
+            {
+              "key": "TRUE",
+              "text": "True"
+            },
+            {
+              "key": "FALSE",
+              "text": "False"
+            },
+            {
+              "key": "NOT GIVEN",
+              "text": "Not Given"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 19,
+          "text": "Complete the notes. Choose ONE WORD ONLY.\nbuses use designated ___ to cut down on delays",
+          "question_type": "gap_fill",
+          "correct_answer": "lanes",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 20,
+          "text": "passengers pay fares before ___",
+          "question_type": "gap_fill",
+          "correct_answer": "boarding",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 21,
+          "text": "passengers in ___ can use every part of the system",
+          "question_type": "gap_fill",
+          "correct_answer": "wheelchairs",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 22,
+          "text": "temperature control is not activated to reduce ___ use",
+          "question_type": "gap_fill",
+          "correct_answer": "fuel",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 23,
+          "text": "vehicle shortage followed a severe ___",
+          "question_type": "gap_fill",
+          "correct_answer": "flood",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 24,
+          "text": "passengers cannot use ___ because readers are broken",
+          "question_type": "gap_fill",
+          "correct_answer": "smartcards",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 25,
+          "text": "tickets are checked manually at station ___",
+          "question_type": "gap_fill",
+          "correct_answer": "gates",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 26,
+          "text": "___ build up during rush hours",
+          "question_type": "gap_fill",
+          "correct_answer": "queues",
+          "options": [],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 27,
+          "text": "[Improving Patient Safety] Match each statement to a person or group.\nElderly people need containers that do not require force to open.",
+          "question_type": "matching",
+          "correct_answer": "C",
+          "options": [
+            {
+              "key": "A",
+              "text": "Thea Swayne"
+            },
+            {
+              "key": "B",
+              "text": "The Child Accident Prevention Trust"
+            },
+            {
+              "key": "C",
+              "text": "Richard Mawle"
+            },
+            {
+              "key": "D",
+              "text": "Karel van der Waarde"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 28,
+          "text": "Adapting packaging for blind people may disadvantage sighted people.",
+          "question_type": "matching",
+          "correct_answer": "D",
+          "options": [
+            {
+              "key": "A",
+              "text": "Thea Swayne"
+            },
+            {
+              "key": "B",
+              "text": "The Child Accident Prevention Trust"
+            },
+            {
+              "key": "C",
+              "text": "Richard Mawle"
+            },
+            {
+              "key": "D",
+              "text": "Karel van der Waarde"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 29,
+          "text": "Specially designed containers have not eliminated accidental swallowing.",
+          "question_type": "matching",
+          "correct_answer": "B",
+          "options": [
+            {
+              "key": "A",
+              "text": "Thea Swayne"
+            },
+            {
+              "key": "B",
+              "text": "The Child Accident Prevention Trust"
+            },
+            {
+              "key": "C",
+              "text": "Richard Mawle"
+            },
+            {
+              "key": "D",
+              "text": "Karel van der Waarde"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 30,
+          "text": "Designers must consider how drugs are used at home.",
+          "question_type": "matching",
+          "correct_answer": "A",
+          "options": [
+            {
+              "key": "A",
+              "text": "Thea Swayne"
+            },
+            {
+              "key": "B",
+              "text": "The Child Accident Prevention Trust"
+            },
+            {
+              "key": "C",
+              "text": "Richard Mawle"
+            },
+            {
+              "key": "D",
+              "text": "Karel van der Waarde"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 31,
+          "text": "Governing bodies need to compare different containers.",
+          "question_type": "matching",
+          "correct_answer": "D",
+          "options": [
+            {
+              "key": "A",
+              "text": "Thea Swayne"
+            },
+            {
+              "key": "B",
+              "text": "The Child Accident Prevention Trust"
+            },
+            {
+              "key": "C",
+              "text": "Richard Mawle"
+            },
+            {
+              "key": "D",
+              "text": "Karel van der Waarde"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 32,
+          "text": "Medicine information is not listed in the right order.",
+          "question_type": "matching",
+          "correct_answer": "C",
+          "options": [
+            {
+              "key": "A",
+              "text": "Thea Swayne"
+            },
+            {
+              "key": "B",
+              "text": "The Child Accident Prevention Trust"
+            },
+            {
+              "key": "C",
+              "text": "Richard Mawle"
+            },
+            {
+              "key": "D",
+              "text": "Karel van der Waarde"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 33,
+          "text": "Complete the summary using the list A-G.\nThe initial proposal is written by the ...",
+          "question_type": "matching",
+          "correct_answer": "E",
+          "options": [
+            {
+              "key": "A",
+              "text": "consumers"
+            },
+            {
+              "key": "B",
+              "text": "design engineers"
+            },
+            {
+              "key": "C",
+              "text": "external design team"
+            },
+            {
+              "key": "D",
+              "text": "in-house design team"
+            },
+            {
+              "key": "E",
+              "text": "marketing team"
+            },
+            {
+              "key": "F",
+              "text": "pharmaceutical industry"
+            },
+            {
+              "key": "G",
+              "text": "pharmacists"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 34,
+          "text": "Several designs are produced by the ...",
+          "question_type": "matching",
+          "correct_answer": "C",
+          "options": [
+            {
+              "key": "A",
+              "text": "consumers"
+            },
+            {
+              "key": "B",
+              "text": "design engineers"
+            },
+            {
+              "key": "C",
+              "text": "external design team"
+            },
+            {
+              "key": "D",
+              "text": "in-house design team"
+            },
+            {
+              "key": "E",
+              "text": "marketing team"
+            },
+            {
+              "key": "F",
+              "text": "pharmaceutical industry"
+            },
+            {
+              "key": "G",
+              "text": "pharmacists"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 35,
+          "text": "Selected designs are shown to ...",
+          "question_type": "matching",
+          "correct_answer": "A",
+          "options": [
+            {
+              "key": "A",
+              "text": "consumers"
+            },
+            {
+              "key": "B",
+              "text": "design engineers"
+            },
+            {
+              "key": "C",
+              "text": "external design team"
+            },
+            {
+              "key": "D",
+              "text": "in-house design team"
+            },
+            {
+              "key": "E",
+              "text": "marketing team"
+            },
+            {
+              "key": "F",
+              "text": "pharmaceutical industry"
+            },
+            {
+              "key": "G",
+              "text": "pharmacists"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 36,
+          "text": "For prescription-only drugs, the ... create the design.",
+          "question_type": "matching",
+          "correct_answer": "D",
+          "options": [
+            {
+              "key": "A",
+              "text": "consumers"
+            },
+            {
+              "key": "B",
+              "text": "design engineers"
+            },
+            {
+              "key": "C",
+              "text": "external design team"
+            },
+            {
+              "key": "D",
+              "text": "in-house design team"
+            },
+            {
+              "key": "E",
+              "text": "marketing team"
+            },
+            {
+              "key": "F",
+              "text": "pharmaceutical industry"
+            },
+            {
+              "key": "G",
+              "text": "pharmacists"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 37,
+          "text": "The design is then passed to ...",
+          "question_type": "matching",
+          "correct_answer": "B",
+          "options": [
+            {
+              "key": "A",
+              "text": "consumers"
+            },
+            {
+              "key": "B",
+              "text": "design engineers"
+            },
+            {
+              "key": "C",
+              "text": "external design team"
+            },
+            {
+              "key": "D",
+              "text": "in-house design team"
+            },
+            {
+              "key": "E",
+              "text": "marketing team"
+            },
+            {
+              "key": "F",
+              "text": "pharmaceutical industry"
+            },
+            {
+              "key": "G",
+              "text": "pharmacists"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 38,
+          "text": "What design consideration caused a drug to be given incorrectly?",
+          "question_type": "mcq",
+          "correct_answer": "B",
+          "options": [
+            {
+              "key": "A",
+              "text": "a printing error"
+            },
+            {
+              "key": "B",
+              "text": "the style of print"
+            },
+            {
+              "key": "C",
+              "text": "an incorrect label"
+            },
+            {
+              "key": "D",
+              "text": "the bottle shape"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 39,
+          "text": "What is said about using only black and white?",
+          "question_type": "mcq",
+          "correct_answer": "C",
+          "options": [
+            {
+              "key": "A",
+              "text": "Consumers would dislike it"
+            },
+            {
+              "key": "B",
+              "text": "Containers would look too similar"
+            },
+            {
+              "key": "C",
+              "text": "People would pay more attention to labels"
+            },
+            {
+              "key": "D",
+              "text": "Partially sighted people would find it helpful"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        },
+        {
+          "order": 40,
+          "text": "Why are 'the popper' and 'Pluspoint' mentioned?",
+          "question_type": "mcq",
+          "correct_answer": "A",
+          "options": [
+            {
+              "key": "A",
+              "text": "to show progress in pharmaceutical packaging design"
+            },
+            {
+              "key": "B",
+              "text": "to show design problems that cause accidents"
+            },
+            {
+              "key": "C",
+              "text": "to prove much more work is needed"
+            },
+            {
+              "key": "D",
+              "text": "to show patients need more product information"
+            }
+          ],
+          "explanation": "",
+          "word_limit": 0,
+          "model_answer": ""
+        }
+      ]
+    },
+    {
+      "title": "Writing",
+      "section_type": "writing",
+      "order": 3,
+      "duration_minutes": 60,
+      "image": "images/mock_test_16_task1.jpg",
+      "content": "",
+      "questions": [
+        {
+          "order": 1,
+          "text": "The table shows the percentage of the population who rode bicycles in one town by age group in 2012. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.",
+          "question_type": "writing_task",
+          "correct_answer": "",
+          "options": [],
+          "explanation": "",
+          "word_limit": 150,
+          "model_answer": ""
+        },
+        {
+          "order": 2,
+          "text": "Nowadays, an increasing number of people with health problems are using alternative medicines and treatments instead of visiting their normal doctor. Do you think this is a positive or negative development?",
+          "question_type": "writing_task",
+          "correct_answer": "",
+          "options": [],
+          "explanation": "",
+          "word_limit": 250,
+          "model_answer": ""
+        }
+      ]
+    }
+  ]
+}

@@ -391,6 +391,50 @@ class SeedTestlar7Tests(TestCase):
             )
             self.assertEqual(html.count(f'data-qid="{question.id}"'), 1)
 
+    def test_seed_testlar12_full_mock(self):
+        """TESTLAR/12 supplies one complete database-backed mock exam."""
+        from django.core.management import call_command
+
+        call_command(
+            'seed_cambridge',
+            file='data/cambridge/ielts_full_mock_test_16.json',
+            stdout=io.StringIO(),
+        )
+        exam = Exam.objects.get(title='IELTS Full Mock Test 16')
+        listening, reading, writing = exam.sections.order_by('order')
+        self.assertEqual(listening.questions.count(), 40)
+        self.assertEqual(reading.questions.count(), 40)
+        self.assertEqual(writing.questions.count(), 2)
+        self.assertEqual(reading.content.count('<h2>'), 3)
+        self.assertGreaterEqual(reading.content.count('<p>'), 20)
+        self.assertEqual(reading.content.count('The problems of getting around the city of Dar es Salaam'), 1)
+        self.assertIn('Dar es Salaam', reading.content)
+        self.assertIn('Improving Patient Safety', reading.content)
+        self.assertEqual(reading.questions.get(order=4).correct_answer, 'NOT GIVEN')
+        self.assertTrue(listening.audio_file.name.endswith('test_7.mp3'))
+        self.assertIn('15', listening.extra_data['question_images'])
+        self.assertEqual(set(listening.extra_data['notes']), {'1', '31'})
+        self.assertTrue(writing.image)
+        self.assertEqual(
+            list(writing.questions.order_by('order').values_list('question_type', 'word_limit')),
+            [('writing_task', 150), ('writing_task', 250)],
+        )
+
+        # Re-importing an edited seed is the normal admin workflow. It must
+        # update this exam in place without duplicating sections or questions.
+        call_command(
+            'seed_cambridge',
+            file='data/cambridge/ielts_full_mock_test_16.json',
+            stdout=io.StringIO(),
+        )
+        exam.refresh_from_db()
+        self.assertEqual(exam.sections.count(), 3)
+        self.assertEqual(
+            list(exam.sections.order_by('order').values_list('questions__order', flat=True)).count(1),
+            3,
+        )
+        self.assertEqual(sum(section.questions.count() for section in exam.sections.all()), 82)
+
 
 class QuestionHeadingTests(TestCase):
     """Guruh nomi va ko'rsatmasi ("[Title] Instructions\\n…") 1-savol matniga
