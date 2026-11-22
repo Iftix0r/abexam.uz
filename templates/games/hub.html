@@ -60,7 +60,10 @@
 .gm-badge.off i{color:var(--text-muted)}
 .gm-h{font-size:15px;font-weight:700;margin:20px 0 0}
 .gm-note{font-size:13px;color:var(--text-muted);line-height:1.45}
+.gm-missions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0 0 18px}.gm-mission{display:grid;grid-template-columns:38px 1fr auto;align-items:center;gap:10px;padding:12px 13px;border:1px solid var(--border-color);border-radius:15px;background:var(--card-bg)}.gm-mission>i{width:38px;height:38px;display:grid;place-items:center;border-radius:11px;background:#7c3aed18;color:#7c3aed;font-size:18px}.gm-mission.done>i{background:#16a34a1a;color:#16a34a}.gm-mission b{display:block;font-size:12.5px;line-height:1.25}.gm-mission small{font-size:11px;color:var(--text-muted)}.gm-mission em{font-style:normal;font-size:12px;font-weight:800;color:var(--text-muted)}.gm-mini-bar{height:4px;margin-top:6px;border-radius:4px;background:var(--tint-b);overflow:hidden}.gm-mini-bar i{display:block;height:100%;background:#7c3aed;border-radius:4px}.gm-mission.done .gm-mini-bar i{background:#16a34a}
+.gm-lifetime{display:flex;gap:12px;flex-wrap:wrap;margin:-6px 0 16px;color:var(--text-muted);font-size:12px}.gm-lifetime b{color:var(--text-color)}
 @media (max-width:900px){.gm-grid{grid-template-columns:minmax(0,1fr)}.gm-sum{grid-template-columns:1fr 1fr}.gm-sum>:first-child{grid-column:1/-1}}
+@media (max-width:700px){.gm-missions{grid-template-columns:1fr}}
 @media (max-width:560px){.gm-hero{padding:20px}.gm-cards{grid-template-columns:minmax(0,1fr)}.gm-xp{flex-basis:100%}}
 </style>
 {% endblock %}
@@ -91,6 +94,13 @@
     {% else %}
     <div class="gm-box"><small>Xatolar ustida</small><b><i class=lc-circle-check></i>&nbsp;Toza</b></div>
     {% endif %}
+  </div>
+
+  <div class="gm-lifetime"><span>Jami raund: <b>{{ stats.games }}</b></span><span>To'g'ri so'zlar: <b>{{ stats.correct }}</b></span><span>Aniqlik: <b>{{ stats.accuracy }}%</b></span><span>Eng yaxshi seriya: <b>x{{ stats.best_combo }}</b></span></div>
+
+  <h2 class="gm-h" style="margin:0 0 10px">Bugungi missiyalar</h2>
+  <div class="gm-missions">
+    {% for m in missions %}<div class="gm-mission{% if m.done %} done{% endif %}"><i class="lc-{{ m.icon }}"></i><div><b>{{ m.title }}</b><small>{% if m.done %}Bajarildi{% else %}{{ m.value }} / {{ m.goal }}{% endif %}</small><div class="gm-mini-bar"><i style="width:{{ m.pct }}%"></i></div></div><em>{% if m.done %}<i class=lc-check></i>{% else %}{{ m.pct }}%{% endif %}</em></div>{% endfor %}
   </div>
 
   <a class="gm-daily" href="{% url 'games:play' daily.slug %}?level={{ level }}" style="--c:{{ daily.color }}">

@@ -71,6 +71,7 @@
 .pl-nums b{display:block;font-size:20px;font-weight:800}
 .pl-nums span{font-size:12px;color:var(--text-muted)}
 .pl-best{display:inline-block;margin-top:8px;padding:4px 12px;border-radius:14px;background:#f59e0b24;color:#d97706;font-size:13px;font-weight:700}
+.pl-record{display:inline-flex;align-items:center;gap:5px;margin:12px 0 0;padding:5px 11px;border-radius:999px;background:var(--tint-a);color:var(--text-muted);font-size:12px;font-weight:700}.pl-grade{font-size:20px;font-weight:800;margin-bottom:10px}.pl-accuracy{font-size:12px;color:var(--text-muted);margin-top:-7px}
 .pl-miss{margin:6px 0 16px;text-align:left}
 .pl-miss h3{font-size:14px;font-weight:700;margin-bottom:6px}
 .pl-miss div{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid var(--border-color);font-size:14px}
@@ -99,6 +100,8 @@
     <div class="pl-ic"><i class="lc-{{ game.icon }}"></i></div>
     <h2>{{ game.title }}</h2>
     <p>{{ game.text }}</p>
+    <div class="pl-record"><i class=lc-trophy></i>{% if personal_best %}Shaxsiy rekord: {{ personal_best }}{% else %}Birinchi rekordingizni o'rnating{% endif %}</div>
+    <br>
     <button class="pl-go" id="plStart" type="button">Boshlash</button>
   </div>
 </div>
@@ -182,9 +185,10 @@
 
   function options(w) {
     const opts = el('div', 'pl-opts');
-    w.options.forEach(text => {
+    w.options.forEach((text, optionIndex) => {
         const b = el('button', 'pl-opt', text);
         b.type = 'button';
+        b.setAttribute('aria-label', `${optionIndex + 1}. ${text}`);
         b.onclick = () => {
           opts.querySelectorAll('button').forEach(o => { o.disabled = true; if (o.textContent === w.a) o.classList.add('good'); });
           if (text === w.a) hit(w); else { b.classList.add('bad'); miss(w); }
@@ -192,6 +196,11 @@
         };
         opts.append(b);
       });
+    RENDER.keys = e => {
+      const number = Number(e.key);
+      const button = opts.children[number - 1];
+      if (number >= 1 && number <= opts.children.length && button && !button.disabled) button.click();
+    };
     return opts;
   }
 
@@ -491,7 +500,10 @@
     [[d.correct, "To'g'ri"], [d.mistakes, 'Xato'], [`x${d.combo || 0}`, 'Seriya'], [`+${d.xp}`, 'XP']].forEach(([v, l]) => {
       const c = el('div'); c.append(el('b', '', String(v)), el('span', '', l)); nums.append(c);
     });
-    const nodes = [el('div', 'pl-score', String(d.score)), el('p', '', 'ball')];
+    const totalAnswers = Number(d.correct || 0) + Number(d.mistakes || 0);
+    const accuracy = totalAnswers ? Math.round(Number(d.correct || 0) / totalAnswers * 100) : 0;
+    const grade = accuracy >= 90 ? 'Ajoyib natija!' : accuracy >= 75 ? 'Juda yaxshi!' : accuracy >= 55 ? 'Yaxshi urinish!' : 'Mashqni davom ettiring';
+    const nodes = [el('div', 'pl-grade', grade), el('div', 'pl-score', String(d.score)), el('p', '', 'ball'), el('div', 'pl-accuracy', `Aniqlik: ${accuracy}%`)];
     nodes[1].style.margin = '2px 0 0';
     if (d.new_best) nodes.push(el('div', 'pl-best', 'Yangi rekord!'));
     const chips = el('div', 'pl-chips');

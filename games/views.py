@@ -39,6 +39,7 @@ def hub(request):
                   'min': services.DAILY_MIN_CORRECT, **services.GAMES[today]},
         'rank': services.player_rank(user), 'streak': services.play_days(user)[0],
         'mistakes': services.mistake_count(user),
+        'stats': services.player_stats(user), 'missions': services.daily_missions(user),
         'badges': [{'title': title, 'text': text, 'icon': icon, 'on': key in earned}
                    for key, title, text, icon in services.BADGES],
         'levels': LEVELS, 'level': level, 'board': services.weekly_board(request.user),
@@ -50,6 +51,7 @@ def hub(request):
 def play(request, slug):
     return render(request, 'games/play.html', {
         'slug': slug, 'game': _game(slug), 'level': _level(request, request.GET),
+        'personal_best': services.my_bests(request.user).get(slug, 0),
     })
 
 

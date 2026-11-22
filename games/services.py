@@ -265,6 +265,38 @@ def mistake_count(user):
     return GameMistake.objects.filter(user=user).count()
 
 
+def player_stats(user):
+    """Compact lifetime numbers for the game hub."""
+    stats = GameScore.objects.filter(user=user).aggregate(
+        games=Count('id'), correct=Sum('correct'), mistakes=Sum('mistakes'), best_combo=Max('combo'))
+    correct, mistakes = stats['correct'] or 0, stats['mistakes'] or 0
+    attempts = correct + mistakes
+    return {
+        'games': stats['games'] or 0,
+        'correct': correct,
+        'accuracy': round(correct / attempts * 100) if attempts else 0,
+        'best_combo': stats['best_combo'] or 0,
+    }
+
+
+def daily_missions(user):
+    """Three visible daily goals. Existing score rows are the source of truth,
+    so progress cannot be forged in the browser and resets every day."""
+    stats = GameScore.objects.filter(user=user, created_at__gte=_today_start()).aggregate(
+        games=Count('id'), correct=Sum('correct'), combo=Max('combo'))
+    values = (stats['games'] or 0, stats['correct'] or 0, stats['combo'] or 0)
+    goals = (
+        ('3 ta raund o‘ynang', 3, 'gamepad-2'),
+        ('20 ta to‘g‘ri javob', 20, 'circle-check'),
+        ('5 talik seriya qiling', 5, 'flame'),
+    )
+    return [
+        {'title': title, 'value': min(value, goal), 'goal': goal, 'icon': icon,
+         'pct': min(100, round(value / goal * 100)), 'done': value >= goal}
+        for (title, goal, icon), value in zip(goals, values)
+    ]
+
+
 def my_bests(user):
     rows = GameScore.objects.filter(user=user).values('game').annotate(best=Max('score'))
     return {r['game']: r['best'] for r in rows}

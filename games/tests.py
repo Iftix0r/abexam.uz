@@ -78,6 +78,15 @@ class GameTests(TestCase):
         self._age(token)
         self.assertEqual(self._finish(token, 0, 20).json()['score'], 0)
 
+    def test_player_stats_and_daily_missions(self):
+        GameScore.objects.create(user=self.user, game='quiz', level='A1', score=80, correct=8, mistakes=2, combo=5)
+        GameScore.objects.create(user=self.user, game='match', level='A1', score=120, correct=12, mistakes=0, combo=4)
+        stats = services.player_stats(self.user)
+        self.assertEqual(stats, {'games': 2, 'correct': 20, 'accuracy': 91, 'best_combo': 5})
+        missions = services.daily_missions(self.user)
+        self.assertEqual([m['done'] for m in missions], [False, True, True])
+        self.assertEqual(missions[0]['pct'], 67)
+
     def test_round_counts_once(self):
         token = self._start()['token']
         self._age(token)
