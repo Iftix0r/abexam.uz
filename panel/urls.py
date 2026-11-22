@@ -45,6 +45,7 @@ urlpatterns = [
     path('exams/<int:pk>/', views.exam_detail, name='exam_detail'),
     path('exams/<int:pk>/edit/', views.exam_edit, name='exam_edit'),
     path('exams/<int:pk>/delete/', views.exam_delete, name='exam_delete'),
+    path('exams/<int:pk>/duplicate/', views.exam_duplicate, name='exam_duplicate'),
     path('exams/<int:pk>/toggle/', views.exam_toggle_active, name='exam_toggle'),
     path('exams/<int:pk>/review/', views.exam_review, name='exam_review'),
 

@@ -21,6 +21,7 @@ ACTIONS = {
     'exam_edit': 'Imtihon tahrirlandi',
     'exam_toggle': "Imtihon yoqildi / o'chirildi",
     'exam_delete': "Imtihon o'chirildi",
+    'exam_duplicate': 'Imtihon nusxalandi',
     'exam_bulk': 'Imtihonlar (ommaviy)',
     'exam_import': 'Test yuklandi',
     'exam_regrade': 'Natijalar qayta hisoblandi',

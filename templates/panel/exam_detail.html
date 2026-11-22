@@ -53,6 +53,10 @@
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           <a href="{% url 'exams:take_exam' exam.pk %}?preview=1" target="_blank" class="btn btn-ghost btn-sm"><i class=lc-eye></i>&nbsp;Talaba sifatida ko'rish</a>
           <a href="{% url 'panel:exam_analysis' exam.pk %}" class="btn btn-ghost btn-sm"><i class=lc-chart-column></i>&nbsp;Savollar tahlili</a>
+          <form method="post" action="{% url 'panel:exam_duplicate' exam.pk %}" style="display:inline" onsubmit="return confirm('Imtihonni barcha bo‘lim va savollari bilan nusxalaysizmi?')">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-ghost btn-sm"><i class=lc-copy></i>&nbsp;Nusxalash</button>
+          </form>
           <a href="{% url 'panel:exam_edit' exam.pk %}" class="btn btn-ghost btn-sm">Tahrirlash</a>
           <button onclick="toggleExam({{ exam.pk }})" class="btn btn-ghost btn-sm" id="toggle-btn">
             {% if exam.is_active %}O'chirish{% else %}Yoqish{% endif %}
@@ -172,6 +176,23 @@
         {% if stats.total %}<div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Topshirishlar</span><span>{{ stats.total }}</span></div>{% endif %}
         {% if stats.avg %}<div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">O'rtacha ball</span><span style="font-weight:700;color:var(--primary)">{{ stats.avg|floatformat:1 }}</span></div>{% endif %}
       </div>
+    </div>
+
+    <div class="card" style="border-color:{% if health %}rgba(239,68,68,.28){% else %}rgba(34,197,94,.28){% endif %}">
+      <div style="font-size:12px;font-weight:700;margin-bottom:10px;text-transform:uppercase;letter-spacing:.06em;color:{% if health %}var(--red){% else %}var(--green){% endif %}">
+        <i class="{% if health %}lc-triangle-alert{% else %}lc-circle-check{% endif %}"></i>&nbsp;Test tayyorligi
+      </div>
+      {% if health %}
+        <div style="display:flex;flex-direction:column;gap:8px">
+          {% for issue in health %}
+          <div style="font-size:12px;line-height:1.45;color:var(--text);padding:8px 10px;background:rgba(239,68,68,.07);border-radius:7px">
+            <span style="color:var(--red);font-weight:800">!</span> {{ issue.text }}
+          </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div style="font-size:12.5px;color:var(--muted);line-height:1.55">Bo‘limlar, media, savol variantlari va javob kalitlari joyida. Test nashrga tayyor.</div>
+      {% endif %}
     </div>
 
     {% if exam.is_ai_generated %}

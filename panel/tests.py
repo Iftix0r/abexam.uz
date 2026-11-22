@@ -170,6 +170,30 @@ class ExamToolsPanelTests(TestCase):
         self.assertContains(resp, 'Writing baholash')
         self.assertContains(resp, f"{reverse('panel:result_grade', args=[UserResult.objects.get().pk])}")
 
+    def test_exam_readiness_and_deep_duplicate(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        from core.models import AuditLog
+        from exams.models import Exam
+        from panel.views import _exam_health
+
+        # Listening without audio is surfaced before an admin publishes it.
+        issues = _exam_health([self.section])
+        self.assertTrue(any('audio yuklanmagan' in issue['text'] for issue in issues))
+
+        self.section.audio_file = SimpleUploadedFile('source.mp3', b'ID3' + b'audio' * 20, content_type='audio/mpeg')
+        self.section.save(update_fields=['audio_file'])
+        response = self.client.post(reverse('panel:exam_duplicate', args=[self.exam.pk]))
+        duplicate = Exam.objects.exclude(pk=self.exam.pk).get()
+        self.assertRedirects(response, reverse('panel:exam_detail', args=[duplicate.pk]), fetch_redirect_response=False)
+        self.assertFalse(duplicate.is_active)
+        self.assertEqual(duplicate.sections.count(), 1)
+        copied_section = duplicate.sections.get()
+        self.assertEqual(copied_section.questions.count(), 3)
+        self.assertNotEqual(copied_section.audio_file.name, self.section.audio_file.name)
+        self.assertEqual(copied_section.audio_file.read(), self.section.audio_file.read())
+        self.assertEqual(_exam_health([copied_section]), [])
+        self.assertTrue(AuditLog.objects.filter(action='exam_duplicate', target=duplicate.title).exists())
+
 
 class PanelWorkflowTests(TestCase):
     """Re-grading, audit log, key editing, groups, Telegram alerts, report."""

@@ -1,4 +1,5 @@
 import csv
+import copy
 import io
 import json
 import logging
@@ -1001,6 +1002,7 @@ def exam_detail(request, pk):
     stats = UserResult.objects.graded().filter(exam=exam).aggregate(avg=Avg('score'), total=Count('id'))
     return render(request, 'panel/exam_detail.html', {
         'exam': exam, 'sections': sections, 'results': results, 'stats': stats,
+        'health': _exam_health(sections),
         'exam_password': exam_password(exam.pk), 'password_rotates_in': seconds_until_rotation(),
         'password_required': SiteSettings.get().exam_password_required,
     })
@@ -1064,6 +1066,29 @@ def _exam_has_content(exam):
     return Question.objects.filter(section__exam=exam).exists()
 
 
+def _exam_health(sections):
+    """Return actionable content problems for the exam detail checklist."""
+    issues = []
+    if not sections:
+        return [{'level': 'error', 'text': "Bo‘limlar hali qo‘shilmagan."}]
+    objective = {'mcq', 'tfng', 'gap_fill', 'matching'}
+    for section in sections:
+        questions = list(section.questions.all())
+        if not questions:
+            issues.append({'level': 'error', 'text': f'“{section.title}” bo‘limida savol yo‘q.'})
+        if section.section_type == 'listening' and not section.audio_file:
+            issues.append({'level': 'error', 'text': f'“{section.title}” uchun audio yuklanmagan.'})
+        orders = [q.order for q in questions]
+        if len(orders) != len(set(orders)):
+            issues.append({'level': 'error', 'text': f'“{section.title}”da takroriy savol raqamlari bor.'})
+        for q in questions:
+            if q.question_type in objective and not q.correct_answer.strip():
+                issues.append({'level': 'error', 'text': f'{section.title}, {q.order}-savolning javob kaliti bo‘sh.'})
+            if q.question_type in {'mcq', 'matching', 'tfng'} and not q.options:
+                issues.append({'level': 'error', 'text': f'{section.title}, {q.order}-savolning variantlari yo‘q.'})
+    return issues
+
+
 @panel_required
 def exam_edit(request, pk):
     exam = get_object_or_404(Exam, pk=pk)
@@ -1093,6 +1118,55 @@ def exam_delete(request, pk):
     log_action(request, 'exam_delete', exam.title, details=f'{UserResult.objects.filter(exam=exam).count()} ta natija bilan')
     exam.delete()
     return JsonResponse({'ok': True})
+
+
+@panel_required
+@require_POST
+def exam_duplicate(request, pk):
+    """Deep-copy a complete exam as an inactive draft, including media."""
+    from django.core.files.base import ContentFile
+
+    source = get_object_or_404(Exam.objects.prefetch_related('sections__questions'), pk=pk)
+    with db_transaction.atomic():
+        duplicate = Exam.objects.create(
+            title=f'{source.title} (nusxa)', description=source.description,
+            exam_type=source.exam_type, price=source.price,
+            duration_minutes=source.duration_minutes, is_active=False,
+            is_ai_generated=False, is_reviewed=False,
+        )
+        for section in source.sections.all():
+            new_section = Section(
+                exam=duplicate, title=section.title, section_type=section.section_type,
+                content=section.content, extra_data=copy.deepcopy(section.extra_data),
+                order=section.order, duration_minutes=section.duration_minutes,
+            )
+            if section.audio_file:
+                section.audio_file.open('rb')
+                new_section.audio_file.save(
+                    section.audio_file.name.rsplit('/', 1)[-1],
+                    ContentFile(section.audio_file.read()), save=False,
+                )
+                section.audio_file.close()
+            if section.image:
+                section.image.open('rb')
+                new_section.image.save(
+                    section.image.name.rsplit('/', 1)[-1],
+                    ContentFile(section.image.read()), save=False,
+                )
+                section.image.close()
+            new_section.save()
+            Question.objects.bulk_create([
+                Question(
+                    section=new_section, text=q.text, question_type=q.question_type,
+                    options=copy.deepcopy(q.options), correct_answer=q.correct_answer,
+                    explanation=q.explanation, model_answer=q.model_answer,
+                    order=q.order, word_limit=q.word_limit,
+                ) for q in section.questions.all()
+            ])
+    log_action(request, 'exam_duplicate', duplicate.title,
+               reverse('panel:exam_detail', args=[duplicate.pk]), f'Manba: {source.title}')
+    messages.success(request, f'“{source.title}” draft nusxasi yaratildi.')
+    return redirect('panel:exam_detail', pk=duplicate.pk)
 
 
 @panel_required
