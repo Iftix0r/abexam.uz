@@ -1,0 +1,110 @@
+{% extends 'panel/base.html' %}
+{% block title %}Talabalarni import qilish{% endblock %}
+{% block page_title %}Talabalarni import qilish{% endblock %}
+{% block nav_users %}active{% endblock %}
+
+{% block content %}
+<style>
+.imp-grid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:16px;align-items:start}
+.imp-sample{font-family:monospace;font-size:12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;line-height:1.7;white-space:pre;overflow-x:auto}
+.imp-help{font-size:13px;color:var(--muted);line-height:1.7}
+.imp-help b{color:var(--text)}
+.imp-stats{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+tr.imp-error td{color:var(--muted)}
+@media (max-width:900px){.imp-grid{grid-template-columns:minmax(0,1fr)}}
+</style>
+
+<nav class="breadcrumb">
+  <a href="{% url 'panel:users' %}">Foydalanuvchilar</a>
+  <span class="bc-sep">/</span>
+  <span class="bc-current">Import</span>
+</nav>
+
+{% if rows %}
+<div class="card">
+  <div class="section-header">
+    <span class="section-title">Tekshiruv natijasi</span>
+    <a href="{% url 'panel:users_import' %}" class="btn btn-ghost btn-sm">← Qaytadan</a>
+  </div>
+  <div class="imp-stats">
+    <span class="badge badge-green">{{ counts.new }} ta yangi hisob</span>
+    {% if counts.exists %}<span class="badge badge-blue">{{ counts.exists }} ta allaqachon bor</span>{% endif %}
+    {% if counts.error %}<span class="badge badge-red">{{ counts.error }} ta xato — o'tkazib yuboriladi</span>{% endif %}
+    {% if group %}<span class="badge badge-gray"><i class=lc-users></i>&nbsp;{{ group.name }}</span>{% endif %}
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>#</th><th>Ism</th><th>Familiya</th><th>Telefon</th><th>Holat</th></tr></thead>
+      <tbody>
+        {% for r in rows %}
+        <tr class="{% if r.status == 'error' %}imp-error{% endif %}">
+          <td style="color:var(--muted)">{{ r.line }}</td>
+          {% if r.status == 'error' %}
+          <td colspan="3" style="font-family:monospace;font-size:12px">{{ r.source }}</td>
+          <td><span class="badge badge-red">{{ r.error }}</span></td>
+          {% else %}
+          <td>{{ r.first_name }}</td>
+          <td>{{ r.last_name|default:"—" }}</td>
+          <td style="white-space:nowrap">{{ r.phone }}</td>
+          <td>{% if r.status == 'new' %}<span class="badge badge-green">Yangi</span>
+              {% else %}<a href="{% url 'panel:user_detail' r.user.pk %}" class="badge badge-blue" title="Paroli o'zgarmaydi">Bor: {{ r.user.display_name }}</a>{% endif %}</td>
+          {% endif %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% if counts.new or group and counts.exists %}
+  <form method="post" style="margin-top:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+    {% csrf_token %}
+    <input type="hidden" name="step" value="create">
+    <input type="hidden" name="group" value="{{ group.pk|default:'' }}">
+    <textarea name="text" hidden>{{ text }}</textarea>
+    <button class="btn btn-primary"><i class=lc-check></i>&nbsp;{% if counts.new %}{{ counts.new }} ta hisob yaratish{% else %}Guruhga qo'shish{% endif %}</button>
+    <span class="imp-help">{% if group %}{{ counts.new|add:counts.exists }} ta talaba «{{ group.name }}» guruhiga qo'shiladi.{% endif %}
+      Parollar keyingi sahifada bir marta ko'rsatiladi.</span>
+  </form>
+  {% else %}
+  <p class="imp-help" style="margin-top:16px">Yaratiladigan hisob yo'q. Ro'yxatni tuzatib qaytadan yuklang.</p>
+  {% endif %}
+</div>
+
+{% else %}
+<div class="imp-grid">
+  <div class="card">
+    <div class="section-title" style="margin-bottom:12px">Ro'yxatni yuklash</div>
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="form-group">
+        <label class="form-label" for="imp-text">Excel'dan nusxa oling yoki yozing</label>
+        <textarea class="form-input" id="imp-text" name="text" rows="10" placeholder="Ali; Valiyev; 90 123 45 67&#10;Malika; Karimova; +998 93 765 43 21"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="imp-file">yoki CSV fayl</label>
+        <input class="form-input" id="imp-file" type="file" name="file" accept=".csv,.txt,text/csv,text/plain">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="imp-group">Guruhga qo'shish (ixtiyoriy)</label>
+        <select class="form-input" id="imp-group" name="group">
+          <option value="">Guruhsiz</option>
+          {% for g in groups %}<option value="{{ g.pk }}" {% if group.pk == g.pk %}selected{% endif %}>{{ g.name }}</option>{% endfor %}
+        </select>
+      </div>
+      <button class="btn btn-primary">Tekshirish</button>
+    </form>
+  </div>
+
+  <div class="card imp-help">
+    <div class="section-title" style="margin-bottom:10px;color:var(--text)">Qanday ishlaydi</div>
+    <p>Har bir qatorda <b>ism, familiya va telefon</b>. Ustunlar <code>;</code>, <code>,</code> yoki Tab bilan ajratiladi —
+      Excel jadvalidan to'g'ridan-to'g'ri nusxa olsa bo'ladi. Sarlavha qatori va «№» ustuni o'tkazib yuboriladi.</p>
+    <div class="imp-sample">Ism;Familiya;Telefon
+Ali;Valiyev;90 123 45 67
+Malika Karimova, +998937654321</div>
+    <p style="margin-top:10px">Avval ro'yxat tekshiriladi, hech narsa yaratilmaydi. Shu raqam bilan hisobi bor talaba qayta yaratilmaydi,
+      faqat tanlangan guruhga qo'shiladi va paroli o'zgarmaydi.</p>
+    <p>Yangi talabalarga <b>avtomatik parol</b> beriladi. Ular telefon raqami va shu parol bilan kiradi, keyin parolni o'zi almashtirishi mumkin.</p>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

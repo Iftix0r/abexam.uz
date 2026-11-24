@@ -1349,3 +1349,113 @@ class IpBlockAndCheckTests(TestCase):
         items = {i['title']: i for i in self.client.get(reverse('panel:security_check')).context['check']['items']}
         self.assertEqual(items['Canary tokenlar tegilmagan']['status'], 'bad')
 
+
+
+class StudentToolsTests(TestCase):
+    """Class-list import, inactivity filters, messaging many students, and a
+    group's "who hasn't taken this exam" list."""
+
+    def setUp(self):
+        from django.core.cache import cache
+        from exams.models import Exam
+        from users.models import StudyGroup
+        cache.clear()
+        self.boss = User.objects.create_superuser('boss', password='pw')
+        self.ali = User.objects.create_user('ali', password='old-pw-1', first_name='Ali', phone_number='+998901112233')
+        self.vali = User.objects.create_user('vali', password='pw', first_name='Vali', phone_number='+998935554433')
+        self.group = StudyGroup.objects.create(name='Kechki guruh')
+        self.exam = Exam.objects.create(title='Mock 7')
+        self.client.force_login(self.boss)
+
+    def _admin_messages(self, user):
+        from chat.models import ChatMessage
+        return list(ChatMessage.objects.filter(support__user=user, is_auto=False).values_list('text', flat=True))
+
+    # ── import ──
+    def test_list_is_read_in_any_common_layout(self):
+        from panel.student_tools import parse_student_list
+        rows = parse_student_list(
+            "№;Ism;Familiya;Telefon\n"
+            "1;Malika;Karimova;93 518 27 64\n"
+            "Bobur Toshmatov, +998 (90) 222-33-44\n"
+            "Sardor\tAliyev\t998941592637\n"
+            "Ali;Valiyev;90 111 22 33\n"          # already has an account
+            "Ziyoda;Rahimova;12345\n"             # not a phone
+            "Kamola;Yusupova;93 518 27 64\n"      # same phone as line 2
+        )
+        self.assertEqual([r['status'] for r in rows], ['new', 'new', 'new', 'exists', 'error', 'error'])
+        self.assertEqual((rows[0]['first_name'], rows[0]['last_name'], rows[0]['phone']),
+                         ('Malika', 'Karimova', '+998935182764'))
+        self.assertEqual((rows[1]['first_name'], rows[1]['last_name']), ('Bobur', 'Toshmatov'))
+        self.assertEqual(rows[3]['user'], self.ali)
+        self.assertIn('2-qatorda', rows[5]['error'])
+
+    def test_check_step_creates_nothing(self):
+        before = User.objects.count()
+        resp = self.client.post(reverse('panel:users_import'), {'text': 'Malika;Karimova;93 518 27 64'})
+        self.assertContains(resp, '1 ta hisob yaratish')
+        self.assertEqual(User.objects.count(), before)
+
+    def test_create_step_makes_working_accounts_and_fills_the_group(self):
+        from core.models import AuditLog
+        text = 'Malika;Karimova;93 518 27 64\nAli;Valiyev;90 111 22 33\nbad line'
+        resp = self.client.post(reverse('panel:users_import'), {'text': text, 'group': self.group.pk, 'step': 'create'})
+        malika = User.objects.get(phone_number='+998935182764')
+        password = next(r['password'] for r in resp.context['created'])
+        self.assertContains(resp, password)
+        self.assertTrue(malika.check_password(password))
+        self.assertEqual((malika.first_name, malika.last_name), ('Malika', 'Karimova'))
+        self.assertEqual(set(self.group.members.all()), {malika, self.ali})
+        self.ali.refresh_from_db()
+        self.assertTrue(self.ali.check_password('old-pw-1'))  # an existing account keeps its password
+        self.assertTrue(AuditLog.objects.filter(action='user_import').exists())
+        # The student can sign in with the phone number and the printed password.
+        self.client.logout()
+        self.client.post(reverse('login'), {'username': '93 518 27 64', 'password': password}, secure=True)
+        self.assertEqual(self.client.session.get('_auth_user_id'), str(malika.pk))
+
+    def test_students_cannot_import(self):
+        self.client.force_login(self.vali)
+        self.client.post(reverse('panel:users_import'), {'text': 'Malika;Karimova;93 518 27 64', 'step': 'create'})
+        self.assertFalse(User.objects.filter(phone_number='+998935182764').exists())
+
+    # ── inactivity filters ──
+    def test_quiet_filter_counts_exam_activity_not_only_logins(self):
+        from datetime import timedelta
+        from exams.models import UserResult
+        long_ago = timezone.now() - timedelta(days=40)
+        User.objects.filter(pk__in=[self.ali.pk, self.vali.pk]).update(last_login=long_ago, date_joined=long_ago)
+        UserResult.objects.create(user=self.vali, exam=self.exam, score=6)  # vali took a test today
+        resp = self.client.get(reverse('panel:users'), {'activity': '14'})
+        self.assertEqual([u.username for u in resp.context['users']], ['ali'])
+        resp = self.client.get(reverse('panel:users'), {'activity': 'noexam'})
+        self.assertEqual([u.username for u in resp.context['users']], ['ali'])
+
+    # ── messaging ──
+    def test_message_reaches_ticked_students_but_not_staff(self):
+        resp = self.client.post(reverse('panel:users_message'), {'text': 'Ertaga test', 'ids': [self.ali.pk, self.boss.pk]},
+                                content_type='application/json')
+        self.assertEqual(resp.json(), {'ok': True, 'count': 1})
+        self.assertEqual(self._admin_messages(self.ali), ['Ertaga test'])
+        self.assertEqual(self._admin_messages(self.vali), [])
+
+    def test_message_to_everyone_matching_the_filter(self):
+        self.group.members.add(self.vali)
+        resp = self.client.post(reverse('panel:users_message'),
+                                {'text': 'Salom guruh', 'all_filtered': True, 'query': f'?group={self.group.pk}'},
+                                content_type='application/json')
+        self.assertEqual(resp.json()['count'], 1)
+        self.assertEqual(self._admin_messages(self.vali), ['Salom guruh'])
+        self.assertEqual(self._admin_messages(self.ali), [])
+
+    # ── group: who hasn't taken the exam ──
+    def test_group_lists_and_reminds_only_those_without_a_result(self):
+        from exams.models import UserResult
+        self.group.members.add(self.ali, self.vali)
+        UserResult.objects.create(user=self.ali, exam=self.exam, score=6.5)
+        url = reverse('panel:group_detail', args=[self.group.pk])
+        resp = self.client.get(url, {'exam': self.exam.pk})
+        self.assertEqual(resp.context['not_taken'], [self.vali])
+        self.client.post(url, {'action': 'remind', 'exam': self.exam.pk, 'text': 'Mock 7 ni topshiring'})
+        self.assertEqual(self._admin_messages(self.vali), ['Mock 7 ni topshiring'])
+        self.assertEqual(self._admin_messages(self.ali), [])

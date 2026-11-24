@@ -18,7 +18,8 @@ from django.db import IntegrityError, transaction as db_transaction
 from django.conf import settings
 from functools import wraps
 
-from django.db.models import Avg, Count, F, Max, Q, Sum
+from django.db.models import Avg, Count, F, Max, OuterRef, Q, Subquery, Sum
+from django.db.models.functions import Coalesce, Greatest
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -177,11 +178,29 @@ def _user_search(q):
     return cond
 
 
-def _filtered_users(request):
-    """The users matching the list page's filters; the CSV export reuses it."""
-    q = request.GET.get('q', '').strip()
-    filter_by = request.GET.get('filter', '')
-    users = User.objects.order_by('-date_joined')
+QUIET_DAYS = (7, 14, 30)  # choices of the "not active for N days" filter
+
+
+def _with_last_active(users):
+    """Adds last_active: the latest of the last login and the last exam
+    activity (a sitting or a result), the join date when there is neither.
+    A login alone can be weeks old for a student whose session never ended."""
+    def newest(qs, field):
+        return Subquery(qs.filter(user=OuterRef('pk')).order_by(f'-{field}').values(field)[:1])
+    return users.annotate(last_active=Greatest(
+        Coalesce('last_login', 'date_joined'),
+        Coalesce(newest(UserResult.objects, 'completed_at'), 'date_joined'),
+        Coalesce(newest(ExamAttempt.objects, 'last_seen_at'), 'date_joined'),
+    ))
+
+
+def _filtered_users(request, params=None):
+    """The users matching the list page's filters; the CSV export and the
+    bulk message reuse it (the message with the page's query string)."""
+    params = request.GET if params is None else params
+    q = params.get('q', '').strip()
+    filter_by = params.get('filter', '')
+    users = _with_last_active(User.objects.order_by('-date_joined'))
     if q:
         users = users.filter(_user_search(q))
     if filter_by == 'staff':
@@ -194,12 +213,17 @@ def _filtered_users(request):
         users = users.filter(telegram__isnull=False)
     elif filter_by == 'notg':
         users = users.filter(telegram__isnull=True)
-    group_id = request.GET.get('group', '')
+    group_id = params.get('group', '')
     if group_id.isdigit():
         users = users.filter(study_groups=int(group_id))
-    region = request.GET.get('region', '')
+    region = params.get('region', '')
     if region:
         users = users.filter(region=region)
+    activity = params.get('activity', '')
+    if activity.isdigit() and int(activity) in QUIET_DAYS:
+        users = users.filter(is_staff=False, last_active__lt=timezone.now() - timedelta(days=int(activity)))
+    elif activity == 'noexam':
+        users = users.filter(is_staff=False).exclude(userresult__isnull=False)
     return users
 
 
@@ -213,7 +237,8 @@ def users_list(request):
     return render(request, 'panel/users_list.html', {
         'users': page, 'page': page, 'q': request.GET.get('q', ''), 'filter': request.GET.get('filter', ''),
         'groups': StudyGroup.objects.all(), 'group_id': request.GET.get('group', ''),
-        'region': request.GET.get('region', ''),
+        'region': request.GET.get('region', ''), 'activity': request.GET.get('activity', ''),
+        'quiet_days': QUIET_DAYS,
         'tg_stats': {'linked': linked, 'pct': round(linked / total * 100) if total else 0},
     })
 
@@ -559,6 +584,21 @@ def group_detail(request, pk):
                     chat_services.message_from_admin(student, request.user, text)
                 log_action(request, 'group', group.name, url, f'Guruhga xabar: {text[:150]}')
                 messages.success(request, f"Xabar {len(students)} ta talabaga yuborildi")
+        elif action == 'remind':
+            exam = Exam.objects.filter(pk=request.POST.get('exam') or 0).first()
+            text = request.POST.get('text', '').strip()[:1000]
+            students = list(_not_taken(group, exam)) if exam else []
+            if not text:
+                messages.error(request, 'Xabar matnini yozing')
+            elif not students:
+                messages.error(request, "Eslatma oladigan talaba yo'q")
+            else:
+                for student in students:
+                    chat_services.message_from_admin(student, request.user, text)
+                log_action(request, 'group', group.name, url,
+                           f'Eslatma ({exam.title}, {len(students)} ta topshirmagan): {text[:150]}')
+                messages.success(request, f"Eslatma {len(students)} ta talabaga yuborildi")
+            return redirect(f'{url}?exam={exam.pk}' if exam else url)
         elif action == 'delete':
             log_action(request, 'group', group.name, '', f"O'chirildi ({group.members.count()} a'zo)")
             group.delete()
@@ -572,6 +612,8 @@ def group_detail(request, pk):
 
     rows = _member_rows(group)
     graded = [r['last'] for r in rows if r['last']]
+    exam_param = request.GET.get('exam', '')
+    check_exam = Exam.objects.filter(pk=exam_param).first() if exam_param.isdigit() else None
     # Group progress: each month's average band of its members' results.
     monthly = {}
     for r in UserResult.objects.graded().filter(user__in=group.members.all()).order_by('completed_at'):
@@ -588,7 +630,16 @@ def group_detail(request, pk):
         'avg_last': round(sum(r.score for r in graded) / len(graded), 1) if graded else None,
         'recent': UserResult.objects.filter(user__in=group.members.all()).select_related('user', 'exam').order_by('-completed_at')[:10],
         'progress_json': json.dumps(progress).replace('<', '\\u003c'), 'progress_count': len(progress),
+        'check_exams': Exam.objects.filter(is_active=True).order_by('-created_at'), 'check_exam': check_exam,
+        'not_taken': list(_not_taken(group, check_exam)) if check_exam else None,
     })
+
+
+def _not_taken(group, exam):
+    """Active students of the group with no result for this exam yet (one
+    waiting to be graded counts as taken)."""
+    return (group.members.filter(is_active=True, is_staff=False)
+            .exclude(userresult__exam=exam).order_by('first_name', 'last_name'))
 
 
 @panel_required
@@ -935,14 +986,15 @@ def users_export_csv(request):
     response.write('\ufeff')  # Excel reads the file as UTF-8 only with a BOM
     w = csv.writer(response)
     w.writerow(['ID', 'Ism Familiya', 'Username', 'Email', 'Telefon', 'Balans', 'Faol', 'Qo\'shilgan', 'Telegram',
-                'Tug\'ilgan sana', 'Viloyat', 'Tuman'])
+                'Tug\'ilgan sana', 'Viloyat', 'Tuman', 'Oxirgi faollik'])
     tg = dict(TelegramAccount.objects.filter(user__isnull=False).values_list('user_id', 'username'))
     for u in _filtered_users(request).only('pk', 'username', 'first_name', 'last_name', 'email', 'phone_number',
                                            'balance', 'is_active', 'date_joined', 'birth_date', 'region', 'district'):
         w.writerow([u.pk, u.get_full_name(), u.username, u.email, u.phone_number or '', u.balance, u.is_active,
                     u.date_joined.strftime('%Y-%m-%d'),
                     ('@' + tg[u.pk] if tg[u.pk] else 'ulangan') if u.pk in tg else '',
-                    u.birth_date.isoformat() if u.birth_date else '', u.region, u.district])
+                    u.birth_date.isoformat() if u.birth_date else '', u.region, u.district,
+                    timezone.localtime(u.last_active).strftime('%Y-%m-%d')])
     return response
 
 

@@ -19,6 +19,11 @@
       <a href="{% qs filter='tg' %}" class="{% if filter == 'tg' %}active{% endif %}" title="Telegram bot ulangan">Telegram ulangan</a>
       <a href="{% qs filter='notg' %}" class="{% if filter == 'notg' %}active{% endif %}">Ulanmagan</a>
     </div>
+    <select name="activity" class="form-input" aria-label="Faollik" onchange="this.form.submit()">
+      <option value="">Har qanday faollik</option>
+      {% for d in quiet_days %}<option value="{{ d }}" {% if activity == d|stringformat:"d" %}selected{% endif %}>{{ d }} kundan beri faol emas</option>{% endfor %}
+      <option value="noexam" {% if activity == 'noexam' %}selected{% endif %}>Hech imtihon topshirmagan</option>
+    </select>
     {% if groups %}
     <select name="region" class="form-input" aria-label="Viloyat" onchange="this.form.submit()">
       <option value="">Barcha viloyatlar</option>
@@ -37,6 +42,8 @@
       {{ tg_stats.linked }} ta ulangan · {{ tg_stats.pct }}%
     </span>
     <span class="count-note">{{ page.paginator.count }} ta</span>
+    {% if activity or filter or group_id or region or q %}<button type="button" onclick="openMessage(true)" class="btn btn-ghost btn-sm" title="Joriy filtrga mos barcha talabalarga"><i class=lc-send></i>&nbsp;Filtrdagilarga xabar</button>{% endif %}
+    <a href="{% url 'panel:users_import' %}" class="btn btn-ghost btn-sm" title="Excel/CSV ro'yxatdan ko'p talaba qo'shish"><i class=lc-upload></i>&nbsp;Import</a>
     <a href="{% url 'panel:users_export' %}{% qs %}" class="btn btn-ghost btn-sm" title="Joriy filtr bo'yicha yuklab olish">↓ CSV</a>
   </div>
 </div>
@@ -47,6 +54,7 @@
   <button onclick="bulkAction('unblock')" class="btn btn-success btn-sm">✓ Faollashtirish</button>
   <button onclick="bulkAction('block')" class="btn btn-ghost btn-sm"><i class=lc-ban></i>&nbsp;Bloklash</button>
   <button onclick="bulkAction('delete')" class="btn btn-danger btn-sm">O'chirish</button>
+  <button onclick="openMessage(false)" class="btn btn-ghost btn-sm"><i class=lc-send></i>&nbsp;Xabar</button>
   {% if groups %}
   <select id="bulk-group" class="form-input" aria-label="Guruh">
     <option value="">Guruhni tanlang…</option>
@@ -92,7 +100,7 @@
           <td style="font-weight:600;color:var(--green);white-space:nowrap">{{ u.balance|som }} so'm</td>
           <td style="font-family:monospace;font-size:11px;color:var(--muted)">{{ u.last_ip|default:"—" }}</td>
           <td>{% if u.is_active %}<span class="badge badge-green">Faol</span>{% else %}<span class="badge badge-red">Bloklangan</span>{% endif %}</td>
-          <td class="td-date">{{ u.date_joined|date:"d M Y" }}</td>
+          <td class="td-date">{{ u.date_joined|date:"d M Y" }}<div style="font-size:11px;color:var(--muted)" title="Oxirgi kirish yoki imtihon: {{ u.last_active|date:'d M Y H:i' }}">Faol: {{ u.last_active|date:"d M Y" }}</div></td>
           <td>
             <div class="row-actions">
               <a href="{% url 'panel:user_detail' u.pk %}" class="icon-btn" title="Ko'rish" aria-label="Ko'rish"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.8" d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3" stroke-width="1.8"/></svg></a>
@@ -109,6 +117,19 @@
     </table>
   </div>
   {% include 'panel/_pagination.html' %}
+</div>
+
+<div class="modal-overlay" id="msg-modal" role="dialog" aria-modal="true" aria-labelledby="msg-title">
+  <div class="modal">
+    <div class="modal-title" id="msg-title">Talabalarga xabar</div>
+    <p id="msg-target" style="font-size:13px;color:var(--muted);margin-bottom:8px"></p>
+    <textarea class="form-input" id="msg-text" rows="4" maxlength="1000" placeholder="Masalan: Salom! Bir haftadan beri test topshirmadingiz — bugun mock test bor."></textarea>
+    <p style="font-size:12px;color:var(--muted);margin-top:8px">Har bir talabaning AB Admin chatiga, bot ulangan bo'lsa Telegramiga ham boradi. Adminlar va bloklanganlarga yuborilmaydi.</p>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-ghost" onclick="closeMessage()">Bekor</button>
+      <button type="button" class="btn btn-primary" id="msg-send" onclick="sendMessage()">Yuborish</button>
+    </div>
+  </div>
 </div>
 {% endblock %}
 
@@ -155,6 +176,34 @@ async function bulkAddGroup(){
   const d=await r.json();
   if(d.ok){toast(d.count+' ta talaba "'+d.group+'" guruhiga qo\'shildi');clearSelection();setTimeout(()=>location.reload(),1000);}
   else toast(d.error||'Xatolik','#ef4444');
+}
+
+let msgAll=false;
+function openMessage(all){
+  msgAll=all;
+  const n=document.querySelectorAll('.row-check:checked').length;
+  document.getElementById('msg-target').textContent=all
+    ?'Joriy filtrga mos barcha talabalarga ({{ page.paginator.count }} ta, adminlar va bloklanganlardan tashqari)'
+    :n+' ta tanlangan foydalanuvchiga';
+  document.getElementById('msg-modal').classList.add('show');
+  document.getElementById('msg-text').focus();
+}
+function closeMessage(){document.getElementById('msg-modal').classList.remove('show');}
+
+async function sendMessage(){
+  const text=document.getElementById('msg-text').value.trim();
+  if(!text){toast('Xabar matnini yozing','#eab308');return;}
+  const body=msgAll?{text,all_filtered:true,query:location.search}
+    :{text,ids:[...document.querySelectorAll('.row-check:checked')].map(c=>c.value)};
+  const btn=document.getElementById('msg-send');
+  btn.disabled=true;
+  try{
+    const r=await fetch('{% url "panel:users_message" %}',{method:'POST',headers:{'X-CSRFToken':csrf,'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const d=await r.json();
+    if(d.ok){toast('Xabar '+d.count+' ta talabaga yuborildi');closeMessage();document.getElementById('msg-text').value='';clearSelection();}
+    else toast(d.error||'Xatolik','#ef4444');
+  }catch(e){toast('Tarmoq xatosi','#ef4444');}
+  finally{btn.disabled=false;}
 }
 
 async function quickDelete(pk){

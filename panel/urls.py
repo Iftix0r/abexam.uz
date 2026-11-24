@@ -1,7 +1,7 @@
 from django.urls import path
 from django.views.generic import RedirectView
 from chat import views as chat_views
-from . import alert_views, views
+from . import alert_views, student_tools, views
 
 app_name = 'panel'
 
@@ -14,6 +14,8 @@ urlpatterns = [
     path('login-sessions/', views.login_sessions, name='login_sessions'),
     path('login-sessions/<str:kind>/<str:key>/revoke/', views.session_revoke, name='session_revoke'),
     path('users/export/', views.users_export_csv, name='users_export'),
+    path('users/import/', student_tools.users_import, name='users_import'),
+    path('users/message/', student_tools.users_message, name='users_message'),
     path('users/<int:pk>/', views.user_detail, name='user_detail'),
     path('users/<int:pk>/logs/', views.user_login_logs, name='user_logs'),
     path('users/<int:pk>/sessions/revoke/', views.user_sessions_revoke, name='user_sessions_revoke'),

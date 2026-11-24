@@ -56,6 +56,7 @@ tr.member-row[hidden],table.table-cards tr.member-row[hidden]{display:none}
   <div style="min-width:0"><h1>{{ group.name }}</h1>{% if group.description %}<p>{{ group.description }}</p>{% endif %}</div>
   <div class="gd-actions">
     <button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('msg-modal').classList.add('show')"><i class=lc-send></i>Guruhga xabar</button>
+    <a href="{% url 'panel:users_import' %}?group={{ group.pk }}" class="btn btn-ghost btn-sm" title="Excel/CSV ro'yxatdan talabalar qo'shish"><i class=lc-upload></i>Import</a>
     <a href="{% url 'panel:group_export' group.pk %}" class="btn btn-ghost btn-sm">↓ CSV</a>
   </div>
 </div>
@@ -131,6 +132,34 @@ tr.member-row[hidden],table.table-cards tr.member-row[hidden]{display:none}
       {% endfor %}
     </div>
     {% endif %}
+
+    <div class="card" id="not-taken">
+      <div class="section-title" style="margin-bottom:12px">Kim topshirmagan?</div>
+      <form method="get" action="#not-taken">
+        <select class="form-input" name="exam" aria-label="Imtihon" onchange="this.form.submit()">
+          <option value="">Imtihonni tanlang…</option>
+          {% for e in check_exams %}<option value="{{ e.pk }}" {% if check_exam.pk == e.pk %}selected{% endif %}>{{ e.title }}</option>{% endfor %}
+        </select>
+      </form>
+      {% if check_exam %}
+        {% if not_taken %}
+        <p style="font-size:13px;margin:12px 0 8px"><b>{{ not_taken|length }}</b> ta talaba «{{ check_exam.title }}» ni hali topshirmagan:</p>
+        {% for u in not_taken %}
+        <div class="gd-mini">
+          {% include 'panel/_avatar.html' with u=u %}
+          <span style="flex:1;min-width:0"><a href="{% url 'panel:user_detail' u.pk %}" class="link">{{ u.display_name }}</a><br><span style="color:var(--muted);font-size:11px">{{ u.phone_number|default:"—" }}</span></span>
+        </div>
+        {% endfor %}
+        <form method="post" style="margin-top:12px" data-confirm="Eslatma {{ not_taken|length }} ta talabaga yuboriladi. Davom etasizmi?">
+          {% csrf_token %}<input type="hidden" name="action" value="remind"><input type="hidden" name="exam" value="{{ check_exam.pk }}">
+          <textarea class="form-input" name="text" rows="3" maxlength="1000" required>Salom! «{{ check_exam.title }}» testini hali topshirmagansiz. Iltimos, imkon qadar tezroq topshiring.</textarea>
+          <button class="btn btn-primary btn-sm" style="margin-top:8px"><i class=lc-send></i>&nbsp;Eslatma yuborish</button>
+        </form>
+        {% else %}
+        <p style="font-size:13px;color:var(--green);margin-top:12px"><i class=lc-circle-check></i> Hamma «{{ check_exam.title }}» ni topshirgan.</p>
+        {% endif %}
+      {% endif %}
+    </div>
 
     <div class="card">
       <div class="section-title" style="margin-bottom:12px">Talaba qo'shish</div>

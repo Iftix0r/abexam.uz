@@ -17,6 +17,8 @@ ACTIONS = {
     'user_password': 'Parol tiklandi',
     'user_staff': 'Admin huquqi',
     'user_bulk': 'Foydalanuvchilar (ommaviy)',
+    'user_import': "Talabalar ro'yxatdan yuklandi",
+    'user_message': 'Talabalarga xabar',
     'admin_create': 'Admin yaratildi',
     'exam_edit': 'Imtihon tahrirlandi',
     'exam_toggle': "Imtihon yoqildi / o'chirildi",

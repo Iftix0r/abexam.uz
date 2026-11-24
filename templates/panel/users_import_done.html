@@ -1,0 +1,79 @@
+{% extends 'panel/base.html' %}
+{% block title %}Import tugadi{% endblock %}
+{% block page_title %}Import tugadi{% endblock %}
+{% block nav_users %}active{% endblock %}
+
+{% block content %}
+<style>
+.cred-table td{font-size:14px}
+.cred-pw{font-family:monospace;font-size:15px;font-weight:700;letter-spacing:.04em}
+.cred-note{font-size:13px;color:var(--muted);line-height:1.6}
+@media print{
+  .sidebar,.sidebar-overlay,.topbar,.breadcrumb,.no-print{display:none!important}
+  .main{margin:0!important;padding:0!important}
+  .card{border:none!important;box-shadow:none!important;padding:0!important}
+  body{background:#fff!important;color:#000!important}
+  .cred-table td,.cred-table th{color:#000!important;border-color:#999!important}
+}
+</style>
+
+<nav class="breadcrumb">
+  <a href="{% url 'panel:users' %}">Foydalanuvchilar</a>
+  <span class="bc-sep">/</span>
+  <a href="{% url 'panel:users_import' %}">Import</a>
+  <span class="bc-sep">/</span>
+  <span class="bc-current">Tayyor</span>
+</nav>
+
+<div class="card no-print" style="margin-bottom:16px">
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+    <span class="badge badge-green">{{ created|length }} ta hisob yaratildi</span>
+    {% if counts.exists %}<span class="badge badge-blue">{{ counts.exists }} ta mavjud hisob</span>{% endif %}
+    {% if counts.error %}<span class="badge badge-red">{{ counts.error }} ta qator o'tkazib yuborildi</span>{% endif %}
+    {% if group %}<a href="{% url 'panel:group_detail' group.pk %}" class="badge badge-gray"><i class=lc-users></i>&nbsp;{{ added }} ta «{{ group.name }}» guruhida</a>{% endif %}
+  </div>
+  {% if created %}
+  <p class="cred-note"><i class=lc-triangle-alert></i> <b>Parollar faqat shu sahifada ko'rinadi</b> va hech qayerda saqlanmaydi.
+    Hozir chop eting yoki faylni yuklab oling. Keyin parolni faqat talaba sahifasida yangisiga almashtirish mumkin.</p>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+    <button type="button" class="btn btn-primary btn-sm" onclick="window.print()"><i class=lc-printer></i>&nbsp;Chop etish</button>
+    <button type="button" class="btn btn-ghost btn-sm" onclick="downloadCredentials()"><i class=lc-download></i>&nbsp;CSV yuklab olish</button>
+    <a href="{% if group %}{% url 'panel:group_detail' group.pk %}{% else %}{% url 'panel:users' %}{% endif %}" class="btn btn-ghost btn-sm">Tayyor</a>
+  </div>
+  {% endif %}
+</div>
+
+{% if created %}
+<div class="card">
+  <div class="section-title" style="margin-bottom:4px">Kirish ma'lumotlari{% if group %} — {{ group.name }}{% endif %}</div>
+  <p class="cred-note" style="margin-bottom:12px">Sayt: {{ login_url }} · Login: telefon raqam</p>
+  <div class="table-wrap">
+    <table class="cred-table">
+      <thead><tr><th>#</th><th>Talaba</th><th>Telefon (login)</th><th>Parol</th></tr></thead>
+      <tbody>
+        {% for r in created %}
+        <tr><td>{{ forloop.counter }}</td><td>{{ r.first_name }} {{ r.last_name }}</td>
+            <td style="white-space:nowrap">{{ r.phone }}</td><td class="cred-pw">{{ r.password }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function downloadCredentials(){
+  const rows=[...document.querySelectorAll('.cred-table tbody tr')].map(tr=>[...tr.children].slice(1).map(td=>td.textContent.trim()));
+  // A name starting with = + - @ would run in Excel as a formula (phones start with + and are safe).
+  const esc=(v,i)=>'"'+(i===0&&/^[=+\-@]/.test(v)?"'"+v:v).replace(/"/g,'""')+'"';
+  const csv='\uFEFF'+[['Talaba','Telefon','Parol'],...rows].map(r=>r.map(esc).join(';')).join('\r\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  a.download='talabalar-parollar.csv';
+  document.body.append(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+</script>
+{% endblock %}
