@@ -74,14 +74,20 @@ class LoginThrottleTests(TestCase):
     def _login(self, username, password):
         return self.client.post(reverse('login'), {'username': username, 'password': password}, secure=True)
 
+    def _wait_out_cooldown(self, username):
+        from users import views
+        cache.delete(views._fail_keys('127.0.0.1', username)[1] + '_retry')
+
     def test_wrong_password_shows_error(self):
         resp = self._login('ali', 'nope')
         self.assertContains(resp, "parol noto&#x27;g&#x27;ri")
 
     def test_one_users_typos_dont_block_classmates(self):
         for _ in range(6):
+            self._wait_out_cooldown('ali')
             self._login('ali', 'nope')
         # ali is locked out, even with the right password...
+        self._wait_out_cooldown('ali')
         resp = self._login('ali', 'right-pw-1')
         self.assertRedirects(resp, reverse('login'), fetch_redirect_response=False)
         self.assertNotIn('_auth_user_id', self.client.session)
@@ -90,6 +96,22 @@ class LoginThrottleTests(TestCase):
         resp = self._login('vali', 'right-pw-2')
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(self.client.session['_auth_user_id'], str(User.objects.get(username='vali').pk))
+
+    def test_hammering_during_the_cooldown_still_counts_as_brute_force(self):
+        from core.models import SecurityIncident
+        for _ in range(5):
+            resp = self._login('ali', 'nope')  # no waiting: all but the first hit the cooldown
+        self.assertEqual(resp.status_code, 429)
+        self.assertTrue(SecurityIncident.objects.filter(kind='brute_force').exists())
+
+    def test_server_own_address_is_never_auto_blocked(self):
+        from core.models import BlockedIP
+        from users import views
+        for i in range(views._AUTO_BLOCK_FAILS):
+            self._login(f'nobody{i}', 'nope')
+        self.assertFalse(BlockedIP.objects.exists())
+        self._wait_out_cooldown('vali')
+        self.assertEqual(self.client.get(reverse('login'), secure=True).status_code, 200)
 
     def test_whole_ip_blocked_only_after_many_failures(self):
         from users import views
@@ -101,7 +123,9 @@ class LoginThrottleTests(TestCase):
     def test_username_is_blocked_across_ip_changes(self):
         from users import views
         for ip in ('198.51.100.1', '198.51.100.2', '198.51.100.3', '198.51.100.4', '198.51.100.5'):
+            self._wait_out_cooldown('ali')
             self.client.post(reverse('login'), {'username': 'ali', 'password': 'wrong'}, REMOTE_ADDR=ip, secure=True)
+        self._wait_out_cooldown('ali')
         response = self.client.post(reverse('login'), {'username': 'ali', 'password': 'right-pw-1'}, REMOTE_ADDR='198.51.100.6', secure=True)
         self.assertNotIn('_auth_user_id', self.client.session)
         self.assertEqual(response.url, reverse('login'))
@@ -155,6 +179,9 @@ class AccountDeleteTests(TestCase):
 
 class PhoneSignupTests(TestCase):
     """Ro'yxat: ism, familiya, telefon, parol. Kirish: telefon + parol."""
+
+    def setUp(self):
+        cache.clear()  # login throttle counters from earlier tests
 
     def _register(self, **overrides):
         data = {'first_name': 'Ali', 'last_name': 'Valiyev', 'phone_number': '+998 90 412 09 77',
@@ -268,8 +295,7 @@ class ProfileDetailsTests(TestCase):
     def test_window_shows_until_the_details_are_saved(self):
         page = self.client.get(reverse('dashboard'))
         self.assertContains(page, 'detailsAsk')
-        self.assertNotContains(page, 'detailsLater')
-        self.assertNotContains(page, 'Keyinroq')
+        self.assertNotContains(page, 'detailsLater')  # no "later" button: the details are required
         self.assertContains(page, 'Saqlash va davom etish')
         self.assertTrue(self._save()['ok'])
         self.assertNotContains(self.client.get(reverse('dashboard')), 'detailsAsk')

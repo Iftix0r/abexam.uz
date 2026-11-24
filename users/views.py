@@ -1,4 +1,5 @@
 import hashlib
+import ipaddress
 import json
 import time
 
@@ -75,6 +76,13 @@ def _turnstile_valid(request):
         return False
 
 
+def _is_loopback(ip):
+    try:
+        return ipaddress.ip_address(ip).is_loopback
+    except ValueError:
+        return False
+
+
 def _bump(key):
     fails = cache.get(key, 0) + 1
     cache.set(key, fails, timeout=_FAIL_WINDOW)
@@ -104,12 +112,10 @@ class CustomLoginView(BaseLoginView):
         username = request.POST.get('username', '')
         retry_at = cache.get(_fail_keys(ip, username)[1] + '_retry', 0)
         if retry_at > time.time():
-            # Count hammering during the cooldown too; otherwise a bot could
-            # avoid ever reaching the temporary block by ignoring 429s.
-            ip_key, user_key = _fail_keys(ip, username)
-            _bump(ip_key)
-            _bump(user_key)
+            # Count hammering during the cooldown as a full failure; otherwise
+            # a bot ignoring 429s would skip the block, alerts and auto-block.
             wait = max(1, int(retry_at - time.time()) + 1)
+            self._record_failure(username, status='blocked')
             response = HttpResponse("Juda tez urinilmoqda. Biroz kutib qayta urinib ko'ring.", status=429)
             response['Retry-After'] = str(wait)
             return response
@@ -148,9 +154,12 @@ class CustomLoginView(BaseLoginView):
         return response
 
     def form_invalid(self, form):
+        self._record_failure(self.request.POST.get('username', ''))
+        return super().form_invalid(form)
+
+    def _record_failure(self, username, status=None):
         ip = get_client_ip(self.request)
         ua = self.request.META.get('HTTP_USER_AGENT', '')[:300]
-        username = self.request.POST.get('username', '')
         ip_key, user_key = _fail_keys(ip, username)
         user_fails = _bump(user_key)
         ip_fails = _bump(ip_key)
@@ -161,7 +170,7 @@ class CustomLoginView(BaseLoginView):
         blocked = user_fails >= _MAX_FAILS_PER_USER or ip_fails >= _MAX_FAILS_PER_IP
         LoginLog.objects.create(
             username_attempt=username, ip=ip,
-            user_agent=ua, status='blocked' if blocked else 'failed',
+            user_agent=ua, status=status or ('blocked' if blocked else 'failed'),
         )
         watch_failed_login(username, ip, ua)
         if user_fails == _MAX_FAILS_PER_USER or ip_fails == _MAX_FAILS_PER_IP:
@@ -173,7 +182,9 @@ class CustomLoginView(BaseLoginView):
                 f"🌐 IP: {ip}\n"
                 f"💻 {ua}"
             )
-        if ip_fails == _AUTO_BLOCK_FAILS:
+        # Never the server's own address: behind a misconfigured proxy every
+        # visitor would share it (the panel refuses such blocks too).
+        if ip_fails == _AUTO_BLOCK_FAILS and not _is_loopback(ip):
             from core.blocking import forget
             from core.models import BlockedIP
             block, created = BlockedIP.objects.get_or_create(
@@ -183,7 +194,6 @@ class CustomLoginView(BaseLoginView):
                 forget()
                 record_threat('brute_force', ip=ip, user_agent=ua, sample='Avtomatik 1 soat bloklandi')
                 notify_admin_telegram(f"🛡 <b>IP avtomatik bloklandi</b>\n🌐 IP: {ip}\n⏱ Muddat: 1 soat")
-        return super().form_invalid(form)
 
 
 class RegisterView(CreateView):

@@ -1007,8 +1007,11 @@ class ThreatDetectionTests(TestCase):
         self.assertEqual(self._kinds(), set())
 
     def test_success_after_many_failures_is_a_possible_breach(self):
+        from django.core.cache import cache
+        from users.views import _fail_keys
         for _ in range(3):
             self._fail('boss')
+        cache.delete(_fail_keys('8.8.8.8', 'boss')[1] + '_retry')  # the login backoff has passed
         self.client.post('/login/', {'username': 'boss', 'password': 'Very-Strong-77'}, REMOTE_ADDR='8.8.8.8')
         self.assertEqual(self.Incident.objects.get(kind='breach').user, self.boss)
 

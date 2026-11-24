@@ -504,7 +504,7 @@
     const accuracy = totalAnswers ? Math.round(Number(d.correct || 0) / totalAnswers * 100) : 0;
     const grade = accuracy >= 90 ? 'Ajoyib natija!' : accuracy >= 75 ? 'Juda yaxshi!' : accuracy >= 55 ? 'Yaxshi urinish!' : 'Mashqni davom ettiring';
     const nodes = [el('div', 'pl-grade', grade), el('div', 'pl-score', String(d.score)), el('p', '', 'ball'), el('div', 'pl-accuracy', `Aniqlik: ${accuracy}%`)];
-    nodes[1].style.margin = '2px 0 0';
+    nodes[2].style.margin = '2px 0 0';
     if (d.new_best) nodes.push(el('div', 'pl-best', 'Yangi rekord!'));
     const chips = el('div', 'pl-chips');
     if (d.daily_bonus) chips.append(el('span', 'pl-chip', `Kunlik topshiriq +${d.daily_bonus} XP`));

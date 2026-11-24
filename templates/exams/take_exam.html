@@ -2175,7 +2175,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.closeInstructionAndStart = function() {
         document.getElementById('sectionInstrOverlay').style.display = 'none';
-        document.getElementById('staffPauseOverlay').style.display = 'none';
+        // A staff pause outlives the section change: keep its screen up.
+        document.getElementById('staffPauseOverlay').style.display = staffPaused ? 'flex' : 'none';
         examStarted = true;
         unlockAudio();
         if (pendingSectionId) {
@@ -2910,6 +2911,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let timeLeft = 0;
     let timerInterval = null;
     let staffPaused = false;
+    // Listening audio the staff pause stopped, started again on resume
+    // (the student can't press play twice).
+    let audioStoppedByPause = [];
     const timerEl = document.getElementById('countdown');
     const timerBox = document.getElementById('timerBox');
     const timerLabelEl = document.getElementById('timerSectionLabel');
@@ -2919,7 +2923,14 @@ document.addEventListener('DOMContentLoaded', () => {
         staffPaused = paused;
         const overlay = document.getElementById('staffPauseOverlay');
         if (overlay) overlay.style.display = paused ? 'flex' : 'none';
-        if (paused) pauseAllListeningAudio();
+        if (paused) {
+            audioStoppedByPause = Array.from(document.querySelectorAll('audio[id^="audio-el-"]'))
+                .filter(a => !a.paused && !a.ended);
+            pauseAllListeningAudio();
+        } else {
+            audioStoppedByPause.forEach(a => a.play().catch(() => {}));
+            audioStoppedByPause = [];
+        }
     }
 
     function updateTimer() {

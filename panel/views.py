@@ -2237,7 +2237,8 @@ def _attempt_filters(now):
         'suspicious': Q(last_seen_at__gte=now - timedelta(hours=24))
         & (Q(leave_count__gte=SUSPICIOUS_LEAVES) | Q(pasted_chars__gte=SUSPICIOUS_PASTED_CHARS)),
         'active': Q(submitted_at__isnull=True, is_paused=False, last_seen_at__gte=online_since),
-        'paused': Q(submitted_at__isnull=True, is_paused=True),
+        # Same window as 'active': a paused page that was closed is 'unsent'.
+        'paused': Q(submitted_at__isnull=True, is_paused=True, last_seen_at__gte=online_since),
         'unsent': Q(submitted_at__isnull=True, last_seen_at__lt=online_since, answered_count__gt=0),
     }
 

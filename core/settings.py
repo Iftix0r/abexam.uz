@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+import sys
 from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -157,6 +158,10 @@ CACHES = {
         'LOCATION': BASE_DIR / 'cache_data',
     }
 }
+# Tests must not share the real cache folder: login-throttle counters left
+# by one run (or by local use) would fail the next run's login tests.
+if sys.argv[1:2] == ['test']:
+    CACHES = {'default': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'}}
 
 LOGOUT_REDIRECT_URL = '/login/'
 
