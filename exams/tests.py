@@ -733,6 +733,14 @@ class ChooseTwoGradingTests(TestCase):
     def test_one_wrong_letter(self):
         self.assertEqual(self._correct_count('A', 'e'), 1)
 
+    def test_pair_renders_as_one_two_tick_block(self):
+        self.client.force_login(self.user)
+        mark_exam_unlocked(self.user.pk, self.exam.pk)
+        page = self.client.get(reverse('exams:take_exam', args=[self.exam.pk])).content.decode()
+        self.assertIn(f'data-qids="{self.q1.id} {self.q2.id}"', page)
+        self.assertEqual(page.count('class="mcq-option choose-option"'), 5)
+        self.assertNotIn('second answer', page)
+
 
 class ExamAttemptTests(TestCase):
     """Javoblar serverga autosave qilinadi, retry ikkinchi natija yaratmaydi,

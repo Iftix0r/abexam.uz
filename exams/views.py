@@ -446,6 +446,10 @@ def _build_render_blocks(questions, notes=None):
     section's extra_data) turns a run of gap-fill questions into one boxed
     notes/form block, the way Listening Part 1/4 notes look on paper."""
     notes = notes or {}
+    # "Choose TWO letters" pairs: the same rows grade_answers() scores
+    # together, shown as one question with one option list where the
+    # student ticks two letters, as on the paper test.
+    choose_groups = _choose_many_groups(questions)
     blocks = []
     i, n = 0, len(questions)
     while i < n:
@@ -457,6 +461,18 @@ def _build_render_blocks(questions, notes=None):
             while j < n and questions[j].order in orders:
                 j += 1
             blocks.append({'kind': 'notes', 'questions': questions[i:j], 'template': template})
+            i = j
+        elif q.id in choose_groups:
+            j = i + 1
+            while j < n and choose_groups.get(questions[j].id) is choose_groups[q.id]:
+                j += 1
+            group = questions[i:j]
+            body = getattr(q, 'body_text', q.text)
+            blocks.append({
+                'kind': 'choose', 'questions': group, 'options': q.options,
+                'body_text': _FIRST_ANSWER_RE.sub('', body),
+                'qids': ' '.join(str(member.id) for member in group),
+            })
             i = j
         elif q.question_type == 'matching' and q.options:
             j = i + 1
@@ -477,6 +493,9 @@ def _build_render_blocks(questions, notes=None):
         block['title'] = getattr(first, 'group_title', '')
         block['instructions'] = getattr(first, 'group_instructions', '')
     return blocks
+
+
+_FIRST_ANSWER_RE = re.compile(r'\s*\(first answer\)\s*$', re.IGNORECASE)
 
 
 def _has_heading(question):
