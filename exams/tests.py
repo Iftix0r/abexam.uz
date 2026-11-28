@@ -1,5 +1,6 @@
 import io
 import json
+import re
 from datetime import timedelta
 from unittest import mock
 
@@ -434,6 +435,61 @@ class SeedTestlar7Tests(TestCase):
             3,
         )
         self.assertEqual(sum(section.questions.count() for section in exam.sections.all()), 82)
+
+    def test_seed_testlar13_full_mocks(self):
+        """TESTLAR/13 supplies two complete database-backed mock exams."""
+        from django.core.management import call_command
+
+        expected = {
+            17: {'audio': 'listening17.mp3', 'titles': ('Seaweed', 'Public Art Programs', 'The Long Road to Artificial Intelligence'),
+                 'listening_notes': {'1', '6', '13', '31'}, 'reading_notes': {'6', '24', '31'}},
+            18: {'audio': 'listening18.mp3', 'titles': ('The Importance of Business Cards', 'Nanotechnology', 'Slowness'),
+                 'listening_notes': {'1', '31'}, 'reading_notes': {'6', '14', '32'}},
+        }
+        for number, spec in expected.items():
+            call_command('seed_cambridge', file=f'data/cambridge/ielts_full_mock_test_{number}.json', stdout=io.StringIO())
+            exam = Exam.objects.get(title=f'IELTS Full Mock Test {number}')
+            listening, reading, writing = exam.sections.order_by('order')
+            self.assertEqual(listening.questions.count(), 40)
+            self.assertEqual(reading.questions.count(), 40)
+            self.assertEqual(writing.questions.count(), 2)
+            self.assertEqual(reading.content.count('<h2>'), 3)
+            for title in spec['titles']:
+                self.assertIn(title, reading.content)
+            self.assertNotIn('<p></p>', reading.content)
+            self.assertTrue(listening.audio_file.name.endswith(spec['audio']))
+            self.assertEqual(set(listening.extra_data['notes']), spec['listening_notes'])
+            self.assertEqual(set(reading.extra_data['notes']), spec['reading_notes'])
+            # Every notes gap belongs to a question of the same section.
+            for section in (listening, reading):
+                orders = set(section.questions.values_list('order', flat=True))
+                for template in section.extra_data['notes'].values():
+                    for gap in re.findall(r'\[\[(\d+)\]\]', template):
+                        self.assertIn(int(gap), orders)
+            self.assertTrue(writing.image)
+            self.assertEqual(
+                list(writing.questions.order_by('order').values_list('question_type', 'word_limit')),
+                [('writing_task', 150), ('writing_task', 250)],
+            )
+
+        listening18 = Exam.objects.get(title='IELTS Full Mock Test 18').sections.get(order=1)
+        self.assertIn('27', listening18.extra_data['question_images'])
+        # "Choose TWO" pairs share one slash answer so either order scores.
+        listening17 = Exam.objects.get(title='IELTS Full Mock Test 17').sections.get(order=1)
+        self.assertEqual(
+            list(listening17.questions.filter(order__in=(19, 20)).values_list('correct_answer', flat=True)),
+            ['B/E', 'B/E'],
+        )
+
+        # Every [[n]] gap renders as an input inside its notes box.
+        user = User.objects.create_user('student13', password='pw')
+        self.client.force_login(user)
+        for number in (17, 18):
+            exam = Exam.objects.get(title=f'IELTS Full Mock Test {number}')
+            mark_exam_unlocked(user.pk, exam.pk)
+            resp = self.client.get(reverse('exams:take_exam', args=[exam.pk]))
+            self.assertEqual(resp.status_code, 200)
+            self.assertNotRegex(resp.content.decode(), r'\[\[\d+\]\]')
 
 
 class QuestionHeadingTests(TestCase):
