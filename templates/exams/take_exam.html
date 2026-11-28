@@ -842,6 +842,12 @@
         .notes-box-body .notes-row { display: flex; gap: 12px; }
         .notes-box-body .notes-row > span:first-child { min-width: 150px; font-weight: 600; }
         .notes-box-body .notes-indent { padding-left: 24px; }
+        /* "Complete the table" questions: a gridded table that scrolls
+           sideways on phones instead of squeezing four columns. */
+        .notes-table-wrap { overflow-x: auto; margin: 4px 0 6px; }
+        .notes-table { border-collapse: collapse; width: 100%; min-width: 520px; line-height: 1.6; }
+        .notes-table th, .notes-table td { border: 1px solid #90a4ae; padding: 6px 10px; text-align: left; vertical-align: top; }
+        .notes-table th { font-weight: 700; background: rgba(69, 90, 100, .08); }
         .notes-gap { white-space: nowrap; }
         .notes-gap .question-num { margin: 0 2px 0 4px; }
         .notes-input.ans-input { display: inline-block; width: 150px; margin: 0 4px 0 0; padding: 2px 8px; vertical-align: middle; background: #fffde7; }
@@ -965,6 +971,8 @@
         :root[data-exam-theme="dark"] .question-item,
         :root[data-exam-theme="dark"] .notes-box,
         :root[data-exam-theme="dark"] .notes-box-body { background:var(--q-bg); color:var(--text); }
+        :root[data-exam-theme="dark"] .notes-table th,
+        :root[data-exam-theme="dark"] .notes-table td { border-color:var(--border); }
         :root[data-exam-theme="dark"] .ans-input,
         :root[data-exam-theme="dark"] .inline-gap,
         :root[data-exam-theme="dark"] .notes-input.ans-input,

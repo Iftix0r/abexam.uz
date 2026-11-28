@@ -463,9 +463,14 @@ class SeedTestlar7Tests(TestCase):
             # Every notes gap belongs to a question of the same section.
             for section in (listening, reading):
                 orders = set(section.questions.values_list('order', flat=True))
-                for template in section.extra_data['notes'].values():
+                for first, template in section.extra_data['notes'].items():
                     for gap in re.findall(r'\[\[(\d+)\]\]', template):
                         self.assertIn(int(gap), orders)
+                    # The box title comes from the first question's "[Title]";
+                    # the notes must not repeat it as their own heading.
+                    title = re.match(r'\[([^\]]+)\]', section.questions.get(order=int(first)).text)
+                    if title:
+                        self.assertNotIn(f'<h5>{title.group(1)}</h5>', template)
             self.assertTrue(writing.image)
             self.assertEqual(
                 list(writing.questions.order_by('order').values_list('question_type', 'word_limit')),
@@ -490,6 +495,10 @@ class SeedTestlar7Tests(TestCase):
             resp = self.client.get(reverse('exams:take_exam', args=[exam.pk]))
             self.assertEqual(resp.status_code, 200)
             self.assertNotRegex(resp.content.decode(), r'\[\[\d+\]\]')
+            if number == 17:
+                # Listening Q1-5 is a table; it scrolls sideways on phones.
+                self.assertContains(resp, '<div class="notes-table-wrap"><table class="notes-table">')
+                self.assertContains(resp, '<div class="notes-box-title">Ohope Holiday Park: Accommodation</div>', html=True)
 
 
 class QuestionHeadingTests(TestCase):

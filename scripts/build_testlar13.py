@@ -209,15 +209,13 @@ def listening17():
 
 def listening17_notes():
     return {
-        "1": """<h5>Ohope Holiday Park: Accommodation</h5>
-<table class="notes-table">
+        "1": """<div class="notes-table-wrap"><table class="notes-table">
 <tr><th>Type of cabin</th><th>Location</th><th>Facilities</th><th>Cost and charges</th></tr>
 <tr><td>Basic</td><td>next to the pool</td><td>kitchen has a fridge and a [[1]]</td><td>$35 per night</td></tr>
 <tr><td>Standard</td><td>close to [[2]]</td><td>fully-equipped kitchen and a [[3]]</td><td>$55 per night</td></tr>
 <tr><td>Standard Plus</td><td>facing the [[4]]</td><td>comes with own spa</td><td>discount of [[5]]% for bookings over ten nights</td></tr>
-</table>""",
-        "6": """<h5>General information about the holiday park and the Ohope area</h5>
-<ul>
+</table></div>""",
+        "6": """<ul>
 <li>The children can play [[6]] for free.</li>
 <li>It's possible to hire equipment for [[7]] for an afternoon.</li>
 <li>The children could visit the local [[8]] on Saturday and Sunday.</li>
@@ -225,8 +223,7 @@ def listening17_notes():
 <li>Contact [[10]] to confirm the booking.</li>
 </ul>""",
         "13": """<p>Joan's official title in Riding for the Disabled (RDA) is chairperson. In her local district there are at present twenty-two riders and [[13]] helpers on the volunteer list, out of whom [[14]] come regularly.</p>""",
-        "31": """<h5>Field trial – heat pump technology</h5>
-<p><strong>Background</strong></p>
+        "31": """<p><strong>Background</strong></p>
 <ul>
 <li>Aim in UK is to reduce carbon emissions from energy consumed in [[31]] by approximately 25%</li>
 <li>Most popular 'green' energy: [[32]]</li>
@@ -383,8 +380,7 @@ def reading17_notes():
 <p>A noticeable correlation exists between art involvement in childhood and those in [[25]].</p>
 <p>The National Photography Program allows members to grow personally and also gain [[26]].</p>
 </div>""",
-        "31": """<h5>Embodiment: an essential feature</h5>
-<p>Unlike machines, animals (including humans) have a body, including a brain which has evolved to provide [[31]] for that body and allow its genes to be passed on. An animal's senses provide it with information about its [[32]], and then it can react physically to what it [[33]] through senses. The interaction of the body and brain therefore allows the creation of a link between [[34]] and action. The [[35]] which make us human and which distinguish us from animals have their [[36]] in this link between the brain and the body, and have developed from it.</p>
+        "31": """<p>Unlike machines, animals (including humans) have a body, including a brain which has evolved to provide [[31]] for that body and allow its genes to be passed on. An animal's senses provide it with information about its [[32]], and then it can react physically to what it [[33]] through senses. The interaction of the body and brain therefore allows the creation of a link between [[34]] and action. The [[35]] which make us human and which distinguish us from animals have their [[36]] in this link between the brain and the body, and have developed from it.</p>
 <div class="summary-word-bank">
 <span><strong>A</strong> results</span><span><strong>B</strong> nourishment</span><span><strong>C</strong> basis</span><span><strong>D</strong> qualities</span>
 <span><strong>E</strong> protection</span><span><strong>F</strong> evolution</span><span><strong>G</strong> surroundings</span><span><strong>H</strong> values</span>
@@ -457,8 +453,7 @@ def listening18():
 
 def listening18_notes():
     return {
-        "1": """<h5>Library services</h5>
-<ul>
+        "1": """<ul>
 <li>Area of living: in the west of Perth</li>
 <li>Best option – Minack Library</li>
 <li>Located in [[1]] Street, next to the [[2]]</li>
@@ -477,8 +472,7 @@ def listening18_notes():
 </ul>
 <p><strong>Library shop sells</strong></p>
 <ul><li>Postcards (small selection)</li><li>[[10]] (wide range)</li></ul>""",
-        "31": """<h5>Cloud Science</h5>
-<p><strong>Origins</strong></p>
+        "31": """<p><strong>Origins</strong></p>
 <ul>
 <li>A British scientist classified clouds into three shapes, with the second type (Cumulus) resembling a cone-shaped [[31]]</li>
 <li>The third type of cloud was compared to a flat [[32]]</li>
@@ -646,8 +640,7 @@ def reading18():
 
 def reading18_notes():
     return {
-        "6": """<h5>How business works</h5>
-<p><strong>Kate Jones's research</strong></p>
+        "6": """<p><strong>Kate Jones's research</strong></p>
 <ul><li>The most important aspect of business is having [[6]] in others.</li>
 <li>[[7]] do not have the ability to establish the good relationships essential to business.</li></ul>
 <p><strong>Business and globalisation</strong></p>
@@ -658,11 +651,9 @@ def reading18_notes():
 <ul><li>Business cards clearly show the [[11]] of each person in a large company.</li>
 <li>The ritual of swapping business cards is a good way of starting a [[12]] at the beginning of a business relationship.</li>
 <li>Janet feels that in the business world, [[13]] is just as important as innovation.</li></ul>""",
-        "14": """<h5>Nanotechnology</h5>
-<p>In the same way that a child may use [[14]], scientists are now able to create new structures by combining the smallest particles known to man. We can fully appreciate the microscopic scale of this work by comparing the exact [[15]] of one atom with that of a single human hair.</p>
+        "14": """<p>In the same way that a child may use [[14]], scientists are now able to create new structures by combining the smallest particles known to man. We can fully appreciate the microscopic scale of this work by comparing the exact [[15]] of one atom with that of a single human hair.</p>
 <p>A lot of today's electronic consumer goods, such as lasers, have components that are microscopic in size. They are not the only products relying on nanotechnology. For example, a long-lasting [[16]], widely available today, relies on minute nanoparticles for its effectiveness. This was developed in the 1990s as a result of concerns about the safety of existing products.</p>""",
-        "32": """<h5>John Franklin and the Quality of Slowness</h5>
-<p>Little is known from Franklin's correspondence and published writings about his [[32]]. The author, Nadolny, suggests that Franklin's whole life can be explained by the quality of 'slowness'. He begins the book by showing how this affects the young Franklin's [[33]] activities, and makes him become [[34]]. As a child, it is the quality of [[35]] that attracts Franklin to the Arctic.</p>
+        "32": """<p>Little is known from Franklin's correspondence and published writings about his [[32]]. The author, Nadolny, suggests that Franklin's whole life can be explained by the quality of 'slowness'. He begins the book by showing how this affects the young Franklin's [[33]] activities, and makes him become [[34]]. As a child, it is the quality of [[35]] that attracts Franklin to the Arctic.</p>
 <div class="summary-word-bank">
 <span><strong>A</strong> a bully</span><span><strong>B</strong> discoveries</span><span><strong>C</strong> educational</span><span><strong>D</strong> family</span>
 <span><strong>E</strong> isolation</span><span><strong>F</strong> an outsider</span><span><strong>G</strong> personality</span><span><strong>H</strong> problems</span>
@@ -703,8 +694,12 @@ def main():
     from PIL import Image
 
     IMAGES.mkdir(parents=True, exist_ok=True)
-    (IMAGES / "mock_test_17_task1.jpg").write_bytes((SOURCE / "photo_2026-11-28_08-46-50.jpg").read_bytes())
-    (IMAGES / "mock_test_18_task1.jpg").write_bytes((SOURCE / "photo_2026-11-28_08-46-55.jpg").read_bytes())
+    # Keep only the charts: the first photo has a clipped "IELTS Bar Chart"
+    # header, the second repeats the whole task text the question shows.
+    Image.open(SOURCE / "photo_2026-11-28_08-46-50.jpg").crop((0, 26, 576, 337)).save(
+        IMAGES / "mock_test_17_task1.jpg", quality=95)
+    Image.open(SOURCE / "photo_2026-11-28_08-46-55.jpg").crop((0, 216, 512, 491)).save(
+        IMAGES / "mock_test_18_task1.jpg", quality=95)
     # The condenser diagram (Listening Q27-30) is on page 5 of the TEST 6
     # booklet; crop away the instructions and the answer lines below it.
     rendered = IMAGES / "mock_test_18_condenser_page.jpg"
